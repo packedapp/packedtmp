@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import packed.internal.container.Packlet;
 import testutil.util.AbstractApplicationTest;
@@ -37,7 +37,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceMethod() {
-        Program.start(new BaseAssembly() {
+        Program.start(new BaseBundle() {
             @Override
             public void build() {
                 assertThat(extensionsTypes()).isEmpty();
@@ -51,7 +51,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void staticField() {
-        Program.start(new BaseAssembly() {
+        Program.start(new BaseBundle() {
             @Override
             public void build() {
                 assertThat(extensionsTypes()).isEmpty();
@@ -63,7 +63,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceField() {
-        Program.start(new BaseAssembly() {
+        Program.start(new BaseBundle() {
             @Override
             public void build() {
                 assertThat(extensionsTypes()).isEmpty();
@@ -75,7 +75,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void staticMethod() {
-        Program.start(new BaseAssembly() {
+        Program.start(new BaseBundle() {
             @Override
             public void build() {
                 assertThat(extensionsTypes()).isEmpty();

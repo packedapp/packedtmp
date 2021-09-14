@@ -19,8 +19,8 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.base.Completion;
 import app.packed.build.BuildException;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
 /**
@@ -51,7 +51,7 @@ public /* primitive */ final class SomeAppImage {
      * @param wirelets
      *            optional wirelets
      */
-    private SomeAppImage(Assembly<?> assembly, Wirelet... wirelets) {
+    private SomeAppImage(Bundle<?> assembly, Wirelet... wirelets) {
         this.image = SomeApp.driver().imageOf(assembly, wirelets);
     }
 
@@ -95,14 +95,14 @@ public /* primitive */ final class SomeAppImage {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
+     * @see ApplicationDriver#imageOf(Bundle, Wirelet...)
      */
-    public static SomeAppImage of(Assembly<?> assembly, Wirelet... wirelets) {
+    public static SomeAppImage of(Bundle<?> assembly, Wirelet... wirelets) {
         return new SomeAppImage(assembly, wirelets);
     }
 }
 
-class MyAppMain extends BaseAssembly {
+class MyAppMain extends BaseBundle {
 
     private static final SomeAppImage MAIN = SomeAppImage.of(new MyAppMain());
 

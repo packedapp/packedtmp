@@ -17,7 +17,7 @@ package tests.injector;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.service.Service;
 import packed.internal.config.ConfigSite;
 import packed.internal.service.sandbox.Injector;
@@ -46,7 +46,7 @@ public class BTest {
 
     }
 
-    public static class MyAssembly extends BaseAssembly {
+    public static class MyAssembly extends BaseBundle {
 
         @Override
         protected void build() {
@@ -56,7 +56,7 @@ public class BTest {
         }
     }
 
-    public static class MyAssembly4 extends BaseAssembly {
+    public static class MyAssembly4 extends BaseBundle {
 
         @Override
         protected void build() {

@@ -32,7 +32,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Operator;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BundleMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.lifetime.LifetimePool;
@@ -279,7 +279,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     @Override
-    public ContainerMirror container() {
+    public BundleMirror container() {
         // TODO Auto-generated method stub
         return null;
     }

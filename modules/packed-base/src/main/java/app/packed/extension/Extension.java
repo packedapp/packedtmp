@@ -28,11 +28,11 @@ import app.packed.application.ApplicationDriver;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
+import app.packed.container.BundleExtension;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
@@ -55,7 +55,7 @@ import packed.internal.util.ThrowableUtil;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
+ * example, {@link BaseBundle#use(Class)} or {@link BundleConfiguration#use(Class)}.
  * 
  * <p>
  * Step1 // package private constructor // open to app.packed.base // exported to other users to use
@@ -235,7 +235,7 @@ public abstract class Extension {
      * 
      * 
      * @return a mirror for the extension
-     * @see ContainerMirror#extensions()
+     * @see BundleMirror#extensions()
      */
     protected ExtensionMirror mirror() {
         return mirrorInitialize(new ExtensionMirror());
@@ -267,7 +267,7 @@ public abstract class Extension {
      * example, by installing an extensor that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link ContainerExtension.Sub#link(Assembly, Wirelet...)}
+     * {@link BundleExtension.Sub#link(Bundle, Wirelet...)}
      */
     protected void onComplete() {
         // Time
@@ -393,7 +393,8 @@ public abstract class Extension {
     protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
     // An instance of extensorType will automatically be installed whenever the extensor is used
-    //protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>> extensorType) {}
+    // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
+    // extensorType) {}
 
     /**
      * Only parent extensions will be linked
@@ -498,7 +499,9 @@ public abstract class Extension {
         Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), c);
         MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
         try {
-            return (T) mh.invoke();
+            @SuppressWarnings("unchecked")
+            T t= (T) mh.invoke();
+            return t;
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

@@ -21,13 +21,13 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.entrypoint.Main;
 import app.packed.application.programs.SomeApp;
 import app.packed.build.BuildWirelets;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.service.ServiceLocator;
 
 /**
  *
  */
-public class HelloWorldAssembly extends BaseAssembly {
+public class HelloWorldAssembly extends BaseBundle {
 
     @Override
     protected void build() {

@@ -16,8 +16,8 @@ import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Operator;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerMirror;
+import app.packed.container.Bundle;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.mirror.SetView;
@@ -27,7 +27,7 @@ import packed.internal.application.PackedApplicationDriver;
 /**
  * A mirror of an application.
  * <p>
- * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
+ * An instance of this class is typically obtained by calling {@link #of(Bundle, Wirelet...)} on this class.
  */
 // En application kan
 //// Vaere ejet af bruger
@@ -55,7 +55,7 @@ public interface ApplicationMirror {
     }
 
     /** {@return the root container in the application.} */
-    ContainerMirror container();
+    BundleMirror container();
 
     /**
      * Returns an immutable set containing any extensions that have been disabled.
@@ -83,7 +83,7 @@ public interface ApplicationMirror {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     default Set<Class<? super Extension>> findAllExtensions(boolean includeChildApplications) {
         Set<Class<? super Extension>> result = new HashSet<>();
-        components(ContainerMirror.class).forEach(c -> result.addAll((Set) c.extensions()));
+        components(BundleMirror.class).forEach(c -> result.addAll((Set) c.extensions()));
         return Set.copyOf(result);
     }
 
@@ -238,7 +238,7 @@ public interface ApplicationMirror {
      *            optional wirelets
      * @return an application mirror
      */
-    public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+    public static ApplicationMirror of(Bundle<?> assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
 

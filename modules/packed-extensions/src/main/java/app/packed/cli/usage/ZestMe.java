@@ -16,14 +16,14 @@
 package app.packed.cli.usage;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceExtension;
 
 /**
  *
  */
-public class ZestMe extends BaseAssembly {
+public class ZestMe extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

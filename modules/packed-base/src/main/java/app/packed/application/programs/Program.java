@@ -24,8 +24,8 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
@@ -125,9 +125,9 @@ public interface Program extends AutoCloseable {
      *            optional wirelets
      * @return a new app image
      * @see ApplicationImageWirelets
-     * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
+     * @see ApplicationDriver#imageOf(Bundle, Wirelet...)
      */
-    static ApplicationImage<Program> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(Bundle<?> assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -149,14 +149,14 @@ public interface Program extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static Program start(Assembly<?> assembly, Wirelet... wirelets) {
+    static Program start(Bundle<?> assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }
 
 interface Zapp extends Program {
 
-    static Program lazyStart(Assembly<?> assembly, Wirelet... wirelets) {
+    static Program lazyStart(Bundle<?> assembly, Wirelet... wirelets) {
         // Altsaa der er vel disse interessant
 
         // initialized - lazy start
@@ -180,7 +180,7 @@ interface Zapp extends Program {
      *            optional wirelets
      * @return the new image
      */
-    static ApplicationImage<Program> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(Bundle<?> assembly, Wirelet... wirelets) {
         return Program.driver().imageOf(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
@@ -199,7 +199,7 @@ record ProgramImplementation(String name, ServiceLocator services, ApplicationRu
     }
 }
 
-class ZDdd extends BaseAssembly {
+class ZDdd extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

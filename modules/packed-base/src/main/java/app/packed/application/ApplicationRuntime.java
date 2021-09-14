@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.RunStateInfo;
@@ -163,18 +163,18 @@ public interface ApplicationRuntime {
     // Tror main er bl.a. propper det ind som et system image...
 
     // Den er cool men sgu ikke super smart for forstaelsen
-    static void run(Assembly<?> assembly, Wirelet... wirelets) {
+    static void run(Bundle<?> assembly, Wirelet... wirelets) {
         ApplicationRuntimeImplementation.DRIVER.launch(assembly, wirelets);
     }
 
     // altsaa problemet her jo i virkeligheden image...
     // Vi gider ikke have flere maader at launche et image paa...
-    static <A> A launch(ApplicationDriver<A> driver, Assembly<?> assembly, Wirelet... wirelets) {
+    static <A> A launch(ApplicationDriver<A> driver, Bundle<?> assembly, Wirelet... wirelets) {
         return driver.launch(assembly, wirelets);
     }
 
     // TODO return Image<Host>?
-    static ApplicationImage<?> newImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<?> newImage(Bundle<?> assembly, Wirelet... wirelets) {
         return ApplicationRuntimeImplementation.DRIVER.imageOf(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);

@@ -16,7 +16,7 @@ import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
 import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
@@ -117,7 +117,7 @@ public final class ApplicationSetup {
         }
 
         @Override
-        public ContainerMirror container() {
+        public BundleMirror container() {
             return ApplicationSetup.this.container.mirror();
         }
 

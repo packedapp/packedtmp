@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.ApplicationBeanConfiguration;
-import app.packed.container.ContainerExtension;
+import app.packed.container.BundleExtension;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceBeanConfiguration;
 import testutil.util.AbstractApplicationTest;
@@ -123,7 +123,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
 
     /**
      * Test that we cannot call {@link BaseContainerConfiguration#named(String)} after having linked another container via
-     * {@link ContainerExtension#link(app.packed.component.Assembly, Wirelet...)}.
+     * {@link BundleExtension#link(app.packed.component.Assembly, Wirelet...)}.
      * <p>
      * We could actually allow this as long as the assembly we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to

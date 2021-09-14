@@ -16,12 +16,12 @@
 package app.packed.application.entrypoint;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-public class HelloWorldAssembly extends BaseAssembly {
+public class HelloWorldAssembly extends BaseBundle {
 
     @Override
     protected void build() {

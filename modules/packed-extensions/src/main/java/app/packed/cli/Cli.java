@@ -5,7 +5,7 @@ import java.util.Optional;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.SomeApp;
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
 // Maaske er det en application der udelukkende starter andre applicationer...
@@ -24,19 +24,19 @@ interface Cli {
         return null;
     }
 
-    static ApplicationImage<Cli> launcher(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Cli> launcher(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static void launcher(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
+    static void launcher(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
     
-    static void run(Assembly<?> assembly, Wirelet... wirelets) {
+    static void run(Bundle<?> assembly, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
 
-    static void run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
+    static void run(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
 

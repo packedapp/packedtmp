@@ -30,7 +30,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
 
@@ -42,14 +42,14 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final ApplicationImage<Program> INSTALL31 = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Program> INSTALL31 = Program.imageOf(new BaseBundle() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
             // install(A.class);
             // install(NeedsA.class);
             for (int i = 0; i < 10; i++) {
-                link(new BaseAssembly() {
+                link(new BaseBundle() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
@@ -61,26 +61,26 @@ public class ImageBigMicro {
         }
     });
 
-    static final ApplicationImage<Program> INSTALL253 = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Program> INSTALL253 = Program.imageOf(new BaseBundle() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
-                link(new BaseAssembly() {
+                link(new BaseBundle() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         install(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
-                            link(new BaseAssembly() {
+                            link(new BaseBundle() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
                                     install(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
-                                        link(new BaseAssembly() {
+                                        link(new BaseBundle() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());
@@ -97,26 +97,26 @@ public class ImageBigMicro {
             }
         }
     });
-    static final ApplicationImage<Program> INSTALL253_NOS = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Program> INSTALL253_NOS = Program.imageOf(new BaseBundle() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
-                link(new BaseAssembly() {
+                link(new BaseBundle() {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
                         installInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
-                            link(new BaseAssembly() {
+                            link(new BaseBundle() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
                                     installInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
-                                        link(new BaseAssembly() {
+                                        link(new BaseBundle() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());

@@ -6,7 +6,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
@@ -14,7 +14,7 @@ import packed.internal.util.LookupUtil;
 public abstract class PackedComponentDriver<C extends ComponentConfiguration> {
 
     /** A handle that can access Assembly#driver. */
-    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
+    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Bundle.class, "driver",
             PackedContainerDriver.class);
 
     /** A handle that can access ComponentConfiguration#component. */
@@ -37,7 +37,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> {
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static PackedComponentDriver<?> getDriver(Assembly<?> assembly) {
+    public static PackedComponentDriver<?> getDriver(Bundle<?> assembly) {
         requireNonNull(assembly, "assembly is null");
         return (PackedComponentDriver<?>) VH_ASSEMBLY_DRIVER.get(assembly);
     }

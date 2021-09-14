@@ -19,14 +19,14 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 
 /**
  *
  */
-public class Z4 extends BaseAssembly {
+public class Z4 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -50,7 +50,7 @@ public class Z4 extends BaseAssembly {
         //Thread.sleep(10000);
     }
 
-    static class MyChild extends BaseAssembly {
+    static class MyChild extends BaseBundle {
 
         final int maxDepth;
 

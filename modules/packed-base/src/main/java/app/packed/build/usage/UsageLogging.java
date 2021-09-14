@@ -10,8 +10,8 @@ import app.packed.application.programs.SomeApp;
 import app.packed.bean.BeanMirror;
 import app.packed.build.ApplyBuildHook;
 import app.packed.component.ComponentMirror;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.sandbox.AssemblyBuildHook;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceContract;
@@ -25,10 +25,10 @@ class UsageLogging {
     @Inherited
     public @interface EnableLogging {}
 
-    record MyProc(Class<? extends Assembly<?>> assemblyType) implements AssemblyBuildHook {
+    record MyProc(Class<? extends Bundle<?>> assemblyType) implements AssemblyBuildHook {
 
         @Override
-        public void onPreBuild(ContainerConfiguration configuration) {
+        public void onPreBuild(BundleConfiguration configuration) {
             System.out.println("Assembly is " + assemblyType);
             
             configuration.use(ServiceExtension.class).provideInstance("hejhej");
@@ -37,7 +37,7 @@ class UsageLogging {
         }
 
         @Override
-        public void onPostBuild(ContainerConfiguration configuration) {
+        public void onPostBuild(BundleConfiguration configuration) {
             configuration.use(ServiceExtension.class).exportAll();
             for (ComponentMirror c : configuration.mirror().children()) {
                 if (c instanceof BeanMirror b) {

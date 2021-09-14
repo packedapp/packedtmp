@@ -35,8 +35,8 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Composer;
 import app.packed.extension.Extension;
 import app.packed.hooks.sandbox.InstanceHandle;
@@ -52,7 +52,7 @@ import packed.internal.util.StackWalkerUtil;
  * 
  * On an annotation with target Method... The annotation must declare itself in {@link #matchesAnnotation()}
  * 
- * On a subclass of {@link Assembly} (will not match components that part of an extension (different realm))
+ * On a subclass of {@link Bundle} (will not match components that part of an extension (different realm))
  * 
  * On a subclass of {@link Composer}
  * 
@@ -499,7 +499,7 @@ class SandboxBootstrap {
 
 @ZuperSupport // same
 @MethodHook(matchesAnnotation = Provide.class, extension = Extension.class, bootstrap = Zester.Scan.class)
-class Zester extends BaseAssembly {
+class Zester extends BaseBundle {
 
     /** {@inheritDoc} */
     // build vs assemble... Vi har jo ogsaa composer. Compose??

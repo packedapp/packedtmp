@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 
 /**
  *
@@ -47,7 +47,7 @@ public class AppManyChildrenMicro {
 
     @Benchmark
     public Program manyChildren() {
-        return Program.start(new BaseAssembly() {
+        return Program.start(new BaseBundle() {
             @Override
             protected void build() {
                 for (int i = 0; i < size; i++) {
@@ -57,7 +57,7 @@ public class AppManyChildrenMicro {
         });
     }
 
-    static class TAssembly extends BaseAssembly {
+    static class TAssembly extends BaseBundle {
 
         final String name;
 

@@ -19,22 +19,22 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
 /** An abstract test for testing artifacts. */
 public abstract class AbstractApplicationTest {
 
     /** An assembly with no operations. */
-    public static BaseAssembly emptyAssembly() {
-        return new BaseAssembly() {
+    public static BaseBundle emptyAssembly() {
+        return new BaseBundle() {
             @Override
             protected void build() {}
         };
     }
 
-    public static AppTester appOf(Assembly<?> source, Wirelet... wirelets) {
+    public static AppTester appOf(Bundle<?> source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
     }
 
@@ -42,11 +42,11 @@ public abstract class AbstractApplicationTest {
         return new AppTester(new AbstractConsumableAssembly(source) {}, wirelets);
     }
 
-    public static ImageTester imageOf(BaseAssembly source, Wirelet... wirelets) {
+    public static ImageTester imageOf(BaseBundle source, Wirelet... wirelets) {
         return new ImageTester(source, wirelets);
     }
 
-    protected static abstract class AbstractConsumableAssembly extends BaseAssembly {
+    protected static abstract class AbstractConsumableAssembly extends BaseBundle {
         final Consumer<? super ContainerConfigurationTester> ca;
 
         protected AbstractConsumableAssembly(Consumer<? super ContainerConfigurationTester> ca) {

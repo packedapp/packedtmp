@@ -15,20 +15,20 @@
  */
 package app.packed.job;
 
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 
 /**
  *
  */
 interface JobScheduler {
-    <S, T extends Assembly<?> & ResultBearing<S>> Job<S> schedule(T assembly);
+    <S, T extends Bundle<?> & ResultBearing<S>> Job<S> schedule(T assembly);
 
     <T> Job<T> schedule(JobAssembly<T> assembly);
 
 }
 
-class Test extends BaseAssembly implements ResultBearing<String> {
+class Test extends BaseBundle implements ResultBearing<String> {
 
     @Override
     protected void build() {}

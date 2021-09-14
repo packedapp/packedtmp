@@ -14,8 +14,9 @@ import packed.internal.util.ThrowableUtil;
 // Ja, lad os se om den giver mening at have en extension for det
 // Og ikke bare smide det direkte paa ContainerConfiguration/Extension
 // Altsaa vi har allerede installeret en Container. Som er den vi linker fra
-//
-public class ContainerExtension extends Extension {
+
+// Taenker den har baade bundles + containers...
+public class BundleExtension extends Extension {
 
     /** The service manager. */
     final ContainerSetup container;
@@ -28,7 +29,7 @@ public class ContainerExtension extends Extension {
      * @param setup
      *            an extension setup object (hidden).
      */
-    /* package-private */ ContainerExtension(ExtensionSetup extension) {
+    BundleExtension(ExtensionSetup extension) {
         this.extension = extension;
         this.container = extension.container;
     }
@@ -36,18 +37,18 @@ public class ContainerExtension extends Extension {
     // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
     // Men maaske skulle vi have noget vi kan refererer andre steder?
     // Jeg ved dog ikke hvad eftersom det er stateless
-    public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    public BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
         return link(assembly, container, container.realm, wirelets);
     }
 
     // Will maintain the realm of whoever called this method
     //// Ikke sikker på vi tager wirelets her...
-    public ContainerConfiguration add(Wirelet... wirelets) {
-        return add(ContainerDriver.defaultDriver(), wirelets);
+    public BundleConfiguration add(Wirelet... wirelets) {
+        return add(BundleDriver.defaultDriver(), wirelets);
     }
 
     //// Ikke sikker på vi tager wirelets her...
-    public ContainerConfiguration add(ContainerDriver<?> driver, Wirelet... wirelets) {
+    public BundleConfiguration add(BundleDriver<?> driver, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -62,7 +63,7 @@ public class ContainerExtension extends Extension {
      *            optional wirelets
      * @return the component that was linked
      */
-    static final ContainerMirror link(Assembly<?> assembly, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
+    static final BundleMirror link(Bundle<?> assembly, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedContainerDriver<?> driver = (PackedContainerDriver<?>) PackedComponentDriver.getDriver(assembly);
 
@@ -70,7 +71,7 @@ public class ContainerExtension extends Extension {
         RealmSetup newRealm = realm.link(driver, parent, assembly, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ContainerConfiguration configuration = driver.toConfiguration(newRealm.root);
+        BundleConfiguration configuration = driver.toConfiguration(newRealm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -82,7 +83,7 @@ public class ContainerExtension extends Extension {
         // Close the new realm again after the assembly has been successfully linked
         newRealm.close();
 
-        return (ContainerMirror) newRealm.root.mirror();
+        return (BundleMirror) newRealm.root.mirror();
     }
 
     public /* primitive */ class Sub extends ExtensionSupport {
@@ -112,8 +113,8 @@ public class ContainerExtension extends Extension {
          */
         // self link... There should be no reason why users would link a container via an extension. As the container driver is
         // already fixed, so the extension can provide no additional functionality
-        ContainerMirror selfLink(Assembly<?> assembly, Wirelet... wirelets) {
-            return ContainerExtension.link(assembly, container, extension.realm(), wirelets);
+        BundleMirror selfLink(Bundle<?> assembly, Wirelet... wirelets) {
+            return BundleExtension.link(assembly, container, extension.realm(), wirelets);
         }
 
         /**
@@ -136,7 +137,7 @@ public class ContainerExtension extends Extension {
         // Container.Owner = Operator.Extension
         // I am beginning to think that all components installed from the assembly belongs to the extension
         // And then extension is not allowed to use other extensions that its dependencies.
-        public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        public BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
     }

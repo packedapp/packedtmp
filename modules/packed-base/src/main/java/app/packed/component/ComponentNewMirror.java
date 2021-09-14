@@ -3,8 +3,8 @@ package app.packed.component;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanNewMirror;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerMirror;
+import app.packed.container.Bundle;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
@@ -22,11 +22,11 @@ import packed.internal.container.ExtensionSetup;
  * <p>
  * Extensions mirrors are typically obtained in one of the following ways:
  * <ul>
- * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
- * {@link ContainerMirror#findExtension(Class)}.</li>
+ * <li>By calling methods on other mirrors, for example, {@link BundleMirror#extensions()} or
+ * {@link BundleMirror#findExtension(Class)}.</li>
  * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror itself, for example,
- * {@link ServiceExtensionMirror#use(Assembly, app.packed.container.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Bundle, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: If overriding this class, subclasses:
@@ -34,7 +34,7 @@ import packed.internal.container.ExtensionSetup;
  * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the runtime.</li>
  * <li>Must be located in the same module as the extension itself.</li>
- * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#use(Assembly, Wirelet...)}.
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#use(Bundle, Wirelet...)}.
  * </ul>
  */
 public sealed class ComponentNewMirror permits BeanNewMirror {
@@ -76,7 +76,7 @@ public sealed class ComponentNewMirror permits BeanNewMirror {
     }
 
     /** {@return the container the extension is used in.} */
-    public final ContainerMirror container() {
+    public final BundleMirror container() {
         return component().container.mirror();
     }
 

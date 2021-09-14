@@ -17,7 +17,7 @@ package app.packed.job;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.TypeToken;
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 
 /**
  *
@@ -44,16 +44,16 @@ public interface Job<R> {
         throw new UnsupportedOperationException();
     }
 
-    static void compute(Assembly<?> assembly) {
+    static void compute(Bundle<?> assembly) {
         throw new UnsupportedOperationException();
     }
 
-    static <S, T extends Assembly<?> & ResultBearing<S>> Job<S> start(T assembly) {
+    static <S, T extends Bundle<?> & ResultBearing<S>> Job<S> start(T assembly) {
         throw new UnsupportedOperationException();
     }
 
     // Must have a compute function...
-    static <S, T extends Assembly<?> & ResultBearing<S>> Job<S> run(T assembly) {
+    static <S, T extends Bundle<?> & ResultBearing<S>> Job<S> run(T assembly) {
         throw new UnsupportedOperationException();
     }
 

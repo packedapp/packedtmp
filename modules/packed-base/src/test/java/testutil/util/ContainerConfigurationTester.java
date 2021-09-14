@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
+import app.packed.container.BaseBundle;
+import app.packed.container.BundleConfiguration;
+import app.packed.container.BundleExtension;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 
@@ -35,16 +35,16 @@ import app.packed.extension.Extension;
  */
 public class ContainerConfigurationTester {
 
-    private final ContainerConfiguration cc;
+    private final BundleConfiguration cc;
 
-    public ContainerConfigurationTester(ContainerConfiguration cc) {
+    public ContainerConfigurationTester(BundleConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
     /**
      * @return the cc
      */
-    public ContainerConfiguration configuration() {
+    public BundleConfiguration configuration() {
         return cc;
     }
 
@@ -71,8 +71,8 @@ public class ContainerConfigurationTester {
         return conf;
     }
 
-    public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
-        cc.use(ContainerExtension.class).link(child, wirelets);
+    public ContainerConfigurationTester link(BaseBundle child, Wirelet... wirelets) {
+        cc.use(BundleExtension.class).link(child, wirelets);
         return this;
     }
 

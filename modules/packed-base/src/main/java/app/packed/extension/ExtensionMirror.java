@@ -4,8 +4,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerMirror;
+import app.packed.container.Bundle;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -19,22 +19,20 @@ import packed.internal.container.ExtensionSetup;
  * <p>
  * Extension mirror instances are typically obtained in one of the following ways:
  * <ul>
- * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
- * {@link ContainerMirror#findExtension(Class)}.</li>
+ * <li>By calling methods on other mirrors, for example, {@link BundleMirror#extensions()} or
+ * {@link BundleMirror#findExtension(Class)}.</li>
  * <li>By calling {@link Extension#mirror()}, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror class, for example,
- * {@link ServiceExtensionMirror#use(Assembly, app.packed.container.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Bundle, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
- * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
+ * <li>Must be annotated with {@link ExtensionMember} indicating what extension that is being mirrored.</li>
  * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
- * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.
+ * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Bundle, Wirelet...)}.
  * </ul>
- * 
- * @param <E>
- *            the type of extension this mirror is a part of
  */
 public class ExtensionMirror {
 
@@ -54,7 +52,7 @@ public class ExtensionMirror {
     protected ExtensionMirror() {}
 
     /** {@return the container the extension is used in.} */
-    public final ContainerMirror container() {
+    public final BundleMirror container() {
         return setup().container.mirror();
     }
 
@@ -135,11 +133,11 @@ public class ExtensionMirror {
      * @param wirelets
      *            optional wirelets
      * @return stuff
-     * @see ContainerMirror#findExtension(Class)
-     * @see #of(Class, Assembly, Wirelet...)
+     * @see BundleMirror#findExtension(Class)
+     * @see #of(Class, Bundle, Wirelet...)
      */
-    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Assembly<?> assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
+    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Bundle<?> assembly, Wirelet... wirelets) {
+        return BundleMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
     /**
@@ -155,13 +153,13 @@ public class ExtensionMirror {
      * @param wirelets
      *            optional wirelets
      * @return stuff
-     * @see ContainerMirror#useExtension(Class)
-     * @see #find(Class, Assembly, Wirelet...)
+     * @see BundleMirror#useExtension(Class)
+     * @see #find(Class, Bundle, Wirelet...)
      * @throws NoSuchElementException
      *             if the root container in the mirrored application does not use the extension that the specified mirror is
      *             a part of
      */
-    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
+    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Bundle<?> assembly, Wirelet... wirelets) {
+        return BundleMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
     }
 }

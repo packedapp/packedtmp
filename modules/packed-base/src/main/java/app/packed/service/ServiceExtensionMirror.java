@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerMirror;
+import app.packed.container.Bundle;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
@@ -18,8 +18,8 @@ import packed.internal.service.ServiceManagerSetup;
 /**
  * A specialized extension mirror for {@link ServiceExtension}.
  * 
- * @see ContainerMirror#extensions()
- * @see ContainerMirror#useExtension(Class)
+ * @see BundleMirror#extensions()
+ * @see BundleMirror#useExtension(Class)
  */
 @ExtensionMember(ServiceExtension.class)
 public final class ServiceExtensionMirror extends ExtensionMirror {
@@ -69,7 +69,7 @@ public final class ServiceExtensionMirror extends ExtensionMirror {
 
     // ifPresent(), tryFind
     // Syntes find maaske er et lidt daarligt navn
-    public static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
+    public static Optional<ServiceExtensionMirror> find(Bundle<?> assembly, Wirelet... wirelets) {
         return ExtensionMirror.find(ServiceExtensionMirror.class, assembly, wirelets);
     }
 
@@ -79,9 +79,9 @@ public final class ServiceExtensionMirror extends ExtensionMirror {
      * @return
      * @throws NoSuchElementException
      *             if an
-     * @see ExtensionMirror#of(Class, Assembly, Wirelet...)
+     * @see ExtensionMirror#of(Class, Bundle, Wirelet...)
      */
-    public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+    public static ServiceExtensionMirror of(Bundle<?> assembly, Wirelet... wirelets) {
         return ExtensionMirror.of(ServiceExtensionMirror.class, assembly, wirelets);
     }
 }

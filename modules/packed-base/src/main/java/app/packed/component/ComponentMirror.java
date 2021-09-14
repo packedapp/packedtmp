@@ -24,7 +24,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirrorStream.Option;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BundleMirror;
 import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
 import packed.internal.component.ComponentSetup.AbstractBuildTimeComponentMirror;
@@ -38,7 +38,7 @@ import packed.internal.component.RuntimeComponentMirror;
  */
 // Skal laves til klasse syntes jeg
 public sealed interface ComponentMirror
-        extends Mirror permits ContainerMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
+        extends Mirror permits BundleMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
@@ -49,7 +49,7 @@ public sealed interface ComponentMirror
     Stream<ComponentMirror> components();
 
     /** {@return the container this component is a part of. If the underlying component is a container, returns this.} */
-    ContainerMirror container();
+    BundleMirror container();
 
     /** {@return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();

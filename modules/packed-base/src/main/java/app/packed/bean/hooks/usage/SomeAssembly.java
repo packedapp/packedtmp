@@ -3,7 +3,7 @@ package app.packed.bean.hooks.usage;
 import app.packed.bean.hooks.ApplyBeanHook;
 import app.packed.bean.hooks.BeanHookMapper;
 import app.packed.bean.hooks.BeanMethodHook;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.service.Provide;
 
 
@@ -12,7 +12,7 @@ import app.packed.service.Provide;
 // Altsaa mapper vi ogsaa sub klasses and super klasses??? Hvis man har adgang til super klasser vil jeg mene.
 // For sub klasses probably always
 @BeanHookMapper(from = Provide.class, to = @ApplyBeanHook(methodAccessible = MyHook.class))
-public abstract class SomeAssembly extends BaseAssembly {
+public abstract class SomeAssembly extends BaseBundle {
 
 }
 

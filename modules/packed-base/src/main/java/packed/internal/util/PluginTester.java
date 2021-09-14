@@ -18,7 +18,7 @@ package packed.internal.util;
 import java.util.ServiceLoader;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.service.ServiceWirelets;
 
 /**
@@ -27,7 +27,7 @@ import app.packed.service.ServiceWirelets;
 // Foerst lav den uden Qualifier...
 // Since we cannot have multiple services with the same key
 // We add a qualifier to every
-public class PluginTester extends BaseAssembly {
+public class PluginTester extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

@@ -3,9 +3,9 @@ package app.packed.cli.usage;
 import java.lang.invoke.MethodType;
 
 import app.packed.application.programs.SomeAppImage;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 
-public class HelloWorld extends BaseAssembly {
+public class HelloWorld extends BaseBundle {
 
     private static final SomeAppImage MAIN = SomeAppImage.of(new HelloWorld());
 

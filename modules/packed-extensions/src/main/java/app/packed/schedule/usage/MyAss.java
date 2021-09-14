@@ -1,9 +1,9 @@
 package app.packed.schedule.usage;
 
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.schedule.ScheduleExtension;
 
-public class MyAss extends BaseAssembly {
+public class MyAss extends BaseBundle {
 
     @Override
     protected void build() {

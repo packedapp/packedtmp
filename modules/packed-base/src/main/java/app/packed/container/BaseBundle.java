@@ -78,18 +78,18 @@ import app.packed.service.ServiceLocator;
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
  * 
- * A generic assembly. Normally you would extend {@link BaseAssembly}
+ * A generic assembly. Normally you would extend {@link BaseBundle}
  * 
- * @see BaseAssembly
+ * @see BaseBundle
  */
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
-public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
+public abstract class BaseBundle extends Bundle<BundleConfiguration> {
 
-    /** Creates a new assembly using {@link ContainerDriver#defaultDriver()}. */
-    protected BaseAssembly() {
-        super(ContainerDriver.defaultDriver());
+    /** Creates a new assembly using {@link BundleDriver#defaultDriver()}. */
+    protected BaseBundle() {
+        super(BundleDriver.defaultDriver());
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @param driver
      *            the container driver to use
      */
-    protected BaseAssembly(ContainerDriver<?> driver) {
+    protected BaseBundle(BundleDriver<?> driver) {
         super(driver);
     }
 
@@ -114,8 +114,8 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
         return use(BeanExtension.class);
     }
 
-    protected final ContainerExtension container() {
-        return use(ContainerExtension.class);
+    protected final BundleExtension container() {
+        return use(BundleExtension.class);
     }
 
     /**
@@ -204,7 +204,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see BaseAssembly#install(Factory)
+     * @see BaseBundle#install(Factory)
      */
     protected final <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
         return bean().install(factory);
@@ -251,9 +251,9 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the container that was linked
-     * @see ContainerExtension#link(Assembly, Wirelet...)
+     * @see BundleExtension#link(Bundle, Wirelet...)
      */
-    protected final ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    protected final BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
         return container().link(assembly, wirelets);
     }
 

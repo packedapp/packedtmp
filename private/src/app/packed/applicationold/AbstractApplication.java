@@ -1,6 +1,6 @@
 package app.packed.applicationold;
 
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 
 // Den er ikke mandatory...
 // Men kan maaske 
@@ -10,7 +10,7 @@ abstract class AbstractApplication {
     // Maaske kan vi lave noget magisk ved at sige JobCompleter<T> som dependency...
     // Og saa regne baglaens fra assemblien...
     // Nahhh, det tror jeg ikke rigtig vi kan application!=assembly
-    protected static void $extractJobFromTypeParameterOf(Class<? extends Assembly<?>> assemblyType, int parameterIndex) {
+    protected static void $extractJobFromTypeParameterOf(Class<? extends Bundle<?>> assemblyType, int parameterIndex) {
         
     }
 }

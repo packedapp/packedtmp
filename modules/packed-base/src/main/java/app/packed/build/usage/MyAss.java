@@ -1,9 +1,9 @@
 package app.packed.build.usage;
 
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 
 @MaximumComponentContainer(maxComponents = 123)
-public class MyAss extends BaseAssembly {
+public class MyAss extends BaseBundle {
 
     @Override
     protected void build() {

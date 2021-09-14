@@ -37,8 +37,8 @@ import packed.internal.util.LookupUtil;
  * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
  * functionality of Packed.
  * <p>
- * An assembly is a thin wrapper that encapsulates a {@link ContainerDriver} and the configuration of a component
- * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
+ * An assembly is a thin wrapper that encapsulates a {@link BundleDriver} and the configuration of a component
+ * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseBundle}.
  * <p>
  * Assemblies are composable via linking.
  * 
@@ -52,15 +52,15 @@ import packed.internal.util.LookupUtil;
  * @param <C>
  *            the underlying component configuration this assembly wraps
  * @see CommonContainerAssembly
- * @see BaseAssembly
+ * @see BaseBundle
  */
-public abstract class Assembly<C extends ContainerConfiguration> {
+public abstract class Bundle<C extends BundleConfiguration> {
 
     /** A marker configuration object to indicate that an assembly has already been used to build something. */
-    private static final ContainerConfiguration USED = new ContainerConfiguration();
+    private static final BundleConfiguration USED = new BundleConfiguration();
 
     /** A var handle that can update the #configuration field in ContainerConfiguration. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", BundleConfiguration.class);
 
     /**
      * The configuration of the underlying container.
@@ -76,7 +76,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable
-    private ContainerConfiguration configuration;
+    private BundleConfiguration configuration;
 
     /**
      * This assembly's container driver.
@@ -94,7 +94,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      */
     // Could we allow to override the driver when linking?
     // I think we need to define the exact usecases
-    protected Assembly(ContainerDriver<? extends C> driver) {
+    protected Bundle(BundleDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedContainerDriver<? extends C>) driver, "driver is null");
     }
 
@@ -113,17 +113,18 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     protected abstract void build();
 
     /**
-     * Checks that the assembly has not already been used. This method is typically used
+     * Checks that {@link #build()} has not been called by the framework. the assembly has not already been used. This
+     * method is typically used
      * 
      * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions do
      * not try to configure the extension after it has been configured.
      * 
      * <p>
-     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkBuildNotStarted()}.
+     * This method is a simple wrapper that just invoked {@link BundleConfiguration#checkBuildNotStarted()}.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see ContainerConfiguration#checkBuildNotStarted()
+     * @see BundleConfiguration#checkBuildNotStarted()
      */
     // Before build is started?? or do we allow to call these method
     // checkPreBuild()? // checkConfigurable()
@@ -195,7 +196,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     /**
      * {@return an unmodifiable view of every extension that is currently used in this assembly.}
      * 
-     * @see ContainerConfiguration#extensionsTypes()
+     * @see BundleConfiguration#extensionsTypes()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensionsTypes() {
@@ -228,7 +229,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      *
      * @param name
      *            the name of the container
-     * @see ContainerConfiguration#named(String)
+     * @see BundleConfiguration#named(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -242,7 +243,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     /**
      * {@return the path of the container}
      * 
-     * @see ContainerConfiguration#path()
+     * @see BundleConfiguration#path()
      */
     protected final NamespacePath path() {
         return configuration().path();
@@ -255,7 +256,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * @param wireletClass
      *            the type of wirelets to select
      * @return
-     * @see ContainerConfiguration#selectWirelets(Class)
+     * @see BundleConfiguration#selectWirelets(Class)
      */
     protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return configuration().selectWirelets(wireletClass);
@@ -274,7 +275,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * @return an instance of the specified extension class
      * @throws IllegalStateException
      *             if called after the container is no longer configurable
-     * @see ContainerConfiguration#use(Class)
+     * @see BundleConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

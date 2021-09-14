@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -45,7 +45,7 @@ public class BeanExtension extends Extension {
      * @param implementation
      *            the type of bean to install
      * @return the configuration of the bean
-     * @see BaseAssembly#install(Class)
+     * @see BaseBundle#install(Class)
      */
     public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);

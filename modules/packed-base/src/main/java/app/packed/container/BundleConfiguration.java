@@ -24,12 +24,12 @@ import packed.internal.util.ThrowableUtil;
 
 // Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
 // Eller man maa gerne kunne overskrive den, men taenker ikke Assembly kan tage andet end ContainerConfiguration...
-public non-sealed class ContainerConfiguration extends ComponentConfiguration {
+public non-sealed class BundleConfiguration extends ComponentConfiguration {
 
     /** A method handle that can access superclass ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
+            MethodType.methodType(ContainerSetup.class, BundleConfiguration.class));
 
     /** {@return a descriptor for the application the container is a part of.} */
     public ApplicationDescriptor application() {
@@ -49,8 +49,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      * {@return an unmodifiable view of the extensions that are currently used}
      * 
      * @see #use(Class)
-     * @see BaseAssembly#extensionsTypes()
-     * @see ContainerMirror#extensionsTypes()
+     * @see BaseBundle#extensionsTypes()
+     * @see BundleMirror#extensionsTypes()
      */
     public Set<Class<? extends Extension>> extensionsTypes() {
         return container().extensionsTypes();
@@ -72,13 +72,13 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** {@return a mirror for the container.} */
     @Override
-    public ContainerMirror mirror() {
+    public BundleMirror mirror() {
         return container().mirror();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerConfiguration named(String name) {
+    public BundleConfiguration named(String name) {
         super.named(name);
         return this;
     }

@@ -33,7 +33,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Operator;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BundleMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -258,7 +258,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final ContainerMirror container() {
+        public final BundleMirror container() {
             return container.mirror();
         }
 

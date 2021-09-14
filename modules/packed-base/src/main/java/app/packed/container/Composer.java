@@ -42,10 +42,10 @@ import packed.internal.util.LookupUtil;
 public abstract class Composer {
 
     /** A marker configuration object to indicate that a composer has already been used to build something. */
-    private static final ContainerConfiguration USED = new ContainerConfiguration();
+    private static final BundleConfiguration USED = new BundleConfiguration();
 
     /** A handle that can access #configuration. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", BundleConfiguration.class);
 
     /**
      * The configuration of this assembly.
@@ -61,7 +61,7 @@ public abstract class Composer {
      * This field is updated via a VarHandle.
      */
     @Nullable
-    private ContainerConfiguration configuration;
+    private BundleConfiguration configuration;
 
     /**
      * Checks that the underlying component is still configurable.
@@ -71,8 +71,8 @@ public abstract class Composer {
         configuration().container().realm.checkOpen();
     }
 
-    private ContainerConfiguration configuration() {
-        ContainerConfiguration c = configuration;
+    private BundleConfiguration configuration() {
+        BundleConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of a composer");
         } else if (c == USED) {
@@ -89,7 +89,7 @@ public abstract class Composer {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings({ "unused", "unchecked" })
-    private void doBuild(ContainerConfiguration configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
+    private void doBuild(BundleConfiguration configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
@@ -171,8 +171,8 @@ public abstract class Composer {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, ContainerDriver<ContainerConfiguration> containerDriver,
-            Function<ContainerConfiguration, C> composer, ComposerAction<? super C> configurator, Wirelet... wirelets) {
+    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, BundleDriver<BundleConfiguration> containerDriver,
+            Function<BundleConfiguration, C> composer, ComposerAction<? super C> configurator, Wirelet... wirelets) {
         return ((PackedApplicationDriver<A>) driver).compose(containerDriver, composer, configurator, wirelets);
     }
 }

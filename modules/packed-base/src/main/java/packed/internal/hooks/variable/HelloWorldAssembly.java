@@ -19,13 +19,13 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.entrypoint.Main;
 import app.packed.application.programs.SomeApp;
 import app.packed.bean.BeanExtension;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BaseBundle;
+import app.packed.container.BundleMirror;
 
 /**
  *
  */
-public class HelloWorldAssembly extends BaseAssembly {
+public class HelloWorldAssembly extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -41,7 +41,7 @@ public class HelloWorldAssembly extends BaseAssembly {
 
         ApplicationMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
 
-        ContainerMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
+        BundleMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
 
         System.out.println();
         SomeApp.driver().print(new HelloWorldAssembly());

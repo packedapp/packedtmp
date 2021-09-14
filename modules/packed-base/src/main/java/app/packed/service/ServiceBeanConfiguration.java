@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.bean.BeanSetup;
@@ -35,7 +35,7 @@ import packed.internal.util.ThrowableUtil;
  * A bean which provide an instance(s) of the bean type as a service.
  * <p>
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
- * calling one of the install methods on, for example, {@link BaseAssembly}.
+ * calling one of the install methods on, for example, {@link BaseBundle}.
  */
 //ProvidableComponentConfiguration
 // Serviceable

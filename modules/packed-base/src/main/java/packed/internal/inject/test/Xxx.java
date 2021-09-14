@@ -18,7 +18,7 @@ package packed.internal.inject.test;
 import app.packed.application.programs.Program;
 import app.packed.base.Key;
 import app.packed.base.Tag;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceLocator;
@@ -27,7 +27,7 @@ import packed.internal.inject.test.FooBar.NeedsString;
 /**
  *
  */
-class Xxx extends BaseAssembly {
+class Xxx extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -63,7 +63,7 @@ class Xxx extends BaseAssembly {
         MyEx() {}
     }
 
-    static class FooAssembly extends BaseAssembly {
+    static class FooAssembly extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override

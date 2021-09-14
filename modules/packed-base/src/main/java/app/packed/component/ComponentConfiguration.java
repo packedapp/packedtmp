@@ -19,7 +19,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -34,7 +34,7 @@ import packed.internal.component.PackedComponentDriver;
  * Instead of extending this class directly, you typically want to extend {@link ApplicationBeanConfiguration} instead.
  */
 @SuppressWarnings("rawtypes")
-public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration,FunctionConfiguration {
+public abstract sealed class ComponentConfiguration permits BeanConfiguration,BundleConfiguration,FunctionConfiguration {
 
     /** The component we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
     @Nullable

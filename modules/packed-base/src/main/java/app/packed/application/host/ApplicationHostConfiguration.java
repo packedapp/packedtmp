@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceConfiguration;
 import packed.internal.util.NativeImage;
@@ -26,25 +26,25 @@ import packed.internal.util.NativeImage;
 // Har vi en AbstractApplicationHostConfiguration???
 public class ApplicationHostConfiguration<T> {
 
-    public InstalledApplicationConfiguration<T> install(Assembly<?> assembly, Wirelet... wirelets) {
+    public InstalledApplicationConfiguration<T> install(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceConfiguration<ApplicationImage<T>> installLaunchable(Assembly<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> installLaunchable(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     // Can fail, what if never started
     // Maybe CompletaableFuture istedet for...
-    public Supplier<T> lazy(Assembly<?> assembly, Wirelet... wirelets) {
+    public Supplier<T> lazy(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    ServiceConfiguration<InstanceManager> managedInstall(Assembly<?> assembly, Wirelet... wirelets) {
+    ServiceConfiguration<InstanceManager> managedInstall(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceConfiguration<ApplicationImage<T>> multiLauncher(Assembly<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> multiLauncher(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -91,7 +91,7 @@ public class ApplicationHostConfiguration<T> {
     }
 
     // A new application that can be launched exactly once... It is a failure to
-    public ServiceConfiguration<ApplicationImage<T>> singleLauncher(Assembly<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> singleLauncher(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -107,7 +107,7 @@ public class ApplicationHostConfiguration<T> {
 //    }
 
     // Tror vi maa flytten den til ComponentConfiguration...
-    public static <T> ApplicationHostConfiguration<T> of(ContainerConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
+    public static <T> ApplicationHostConfiguration<T> of(BundleConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
         // Den er sjov...
         // Vi har ikke rigtig en klasse...
         // Men en holder, og saa er alle de ting hvor hvor vi propper (service configuration) managedInstall blot services
@@ -128,7 +128,7 @@ class OldStuff<T> extends ApplicationHostConfiguration<T> {
     // Vi vil gerne have launchmode i mirrors...
     // Men det kan vi ikke naar det bare er en wirelet..
     // onBuild(), onInitialize()
-    public void lazy2(Assembly<?> assembly, Wirelet... wirelets) {
+    public void lazy2(Bundle<?> assembly, Wirelet... wirelets) {
       //  install(assembly, ExecutionWirelets.launchMode(ApplicationLaunchMode.RUNNING).beforeThis(wirelets));
     }
 }

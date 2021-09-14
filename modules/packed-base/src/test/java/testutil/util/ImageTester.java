@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 
 /**
@@ -29,7 +29,7 @@ public class ImageTester {
 
     private final ApplicationImage<Program> image;
 
-    public ImageTester(BaseAssembly source, Wirelet... wirelets) {
+    public ImageTester(BaseBundle source, Wirelet... wirelets) {
         this(Program.imageOf(source, wirelets));
     }
 

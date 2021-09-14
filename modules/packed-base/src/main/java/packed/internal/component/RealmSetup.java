@@ -24,10 +24,10 @@ import java.util.ArrayList;
 
 import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
@@ -43,13 +43,13 @@ import packed.internal.util.LookupUtil;
  */
 public final class RealmSetup {
 
-    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            ContainerConfiguration.class);
+    /** A handle that can invoke {@link Bundle#doBuild()}. Is here because I have no better place to put it. */
+    public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Bundle.class, "doBuild", void.class,
+            BundleConfiguration.class);
 
-    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
+    /** A handle that can invoke {@link Bundle#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
-            ContainerConfiguration.class, ComposerAction.class);
+            BundleConfiguration.class, ComposerAction.class);
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
@@ -94,7 +94,7 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationDescriptorOutput buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationDescriptorOutput buildTarget, Bundle<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, buildTarget, this, wirelets);
         this.root = build.application.container;
@@ -116,7 +116,7 @@ public final class RealmSetup {
      * @param assembly
      *            the assembly to create a realm for
      */
-    private RealmSetup(RealmSetup existing, PackedContainerDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
+    private RealmSetup(RealmSetup existing, PackedContainerDriver<?> driver, ComponentSetup linkTo, Bundle<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
@@ -154,7 +154,7 @@ public final class RealmSetup {
         return current;
     }
 
-    public RealmSetup link(PackedContainerDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
+    public RealmSetup link(PackedContainerDriver<?> driver, ComponentSetup linkTo, Bundle<?> assembly, Wirelet[] wirelets) {
         // Check that the realm this component is a part of is still open
         wirePrepare();
         // Create the new realm that should be used for linking
@@ -181,7 +181,7 @@ public final class RealmSetup {
      * @param lookup
      *            the lookup to use
      * @see Extension#lookup(Lookup)
-     * @see Assembly#lookup(Lookup)
+     * @see Bundle#lookup(Lookup)
      * @see Composer#lookup(Lookup)
      */
     public void setLookup(@Nullable Lookup lookup) {

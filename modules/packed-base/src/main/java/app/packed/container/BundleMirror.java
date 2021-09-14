@@ -18,7 +18,7 @@ import app.packed.extension.InternalExtensionException;
  */
 // Tror vi skal have en liste af banned extensions.
 // Maaske baade dem inheriter, og dem vi ikke inheriter
-public non-sealed interface ContainerMirror extends ComponentMirror {
+public non-sealed interface BundleMirror extends ComponentMirror {
 
     /** {@return a {@link Set} view of mirrors for every extension that is used by the container.} */
     Set<ExtensionMirror> extensions();
@@ -41,7 +41,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      * @param extensionType
      *            the type of extension to test
      * @return {@code true} if this container uses an extension of the specified type, otherwise {@code false}
-     * @see ContainerConfiguration#isExtensionUsed(Class)
+     * @see BundleConfiguration#isExtensionUsed(Class)
      */
     boolean isExtensionUsed(Class<? extends Extension> extensionType);
 
@@ -54,7 +54,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      * @param extensionMirrorType
      *            the type of mirror to return
      * @return a mirror of the specified type
-     * @see ContainerConfiguration#use(Class)
+     * @see BundleConfiguration#use(Class)
      * @see #findExtension(Class)
      * @throws NoSuchElementException
      *             if the extension the mirror is a part of is not in use by the container
@@ -65,7 +65,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
         return findExtension(extensionMirrorType).orElseThrow();
     }
 
-    public static ContainerMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+    public static BundleMirror of(Bundle<?> assembly, Wirelet... wirelets) {
         return ApplicationMirror.of(assembly, wirelets).container();
     }
 }

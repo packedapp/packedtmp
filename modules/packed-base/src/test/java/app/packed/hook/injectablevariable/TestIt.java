@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 public class TestIt {
 
     @Test
-    public void foo() {
-        System.out.println("SDASD");
-    }
+    public void foo() {}
 
 //    @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 //    @Retention(RetentionPolicy.RUNTIME)
@@ -21,8 +19,6 @@ public class TestIt {
 //
 //        @Override
 //        protected void bootstrap() {
-//
 //        }
-//
 //    }
 }

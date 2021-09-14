@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import packed.internal.application.PackedApplicationDescriptor;
 
@@ -25,7 +25,7 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 //
     /** {@return the type of assembly.} */
     // What about composers
-    Class<? extends Assembly<?>> assemblyType();
+    Class<? extends Bundle<?>> assemblyType();
 //    // defaultLaunchMode() -> Lazy
 //
 //    // Ved ikke om vi skal have den her...

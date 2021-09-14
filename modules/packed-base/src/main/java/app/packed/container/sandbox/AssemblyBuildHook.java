@@ -3,17 +3,17 @@ package app.packed.container.sandbox;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.build.BuildHook;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
 
 /**
  * An assembly hook is super cool
  * 
  * <p>
- * For the methods on this interface taking a {@link ContainerConfiguration} the following applies:
+ * For the methods on this interface taking a {@link BundleConfiguration} the following applies:
  * 
  * The realm of the container configuration will be this class. Any value specified to
- * {@link Assembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
+ * {@link Bundle#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
  * 
  */
 // Tror kun den kan bruges paa assemblies
@@ -26,20 +26,20 @@ public non-sealed interface AssemblyBuildHook extends BuildHook {
     default void onBootstrap(Bootstrap bootstrap) {};
 
     /**
-     * Invoked immediately before {@link Assembly#build()}
+     * Invoked immediately before {@link Bundle#build()}
      * 
      * @param configuration
      *            the configuration of the container
      */
-    default void onPreBuild(ContainerConfiguration configuration) {};
+    default void onPreBuild(BundleConfiguration configuration) {};
 
     // I think this is reverse order or preBuild
 
     // Heh det er ogsaa en mulighed for at koere noget kode efter alle exceptions
     // Naeh.. For dette maa vaere inde alle exceptions skal koeres faerdige
-    default void onPostBuild(ContainerConfiguration configuration) {};
+    default void onPostBuild(BundleConfiguration configuration) {};
 
-    default void onCompleted(ContainerConfiguration configuration) {};
+    default void onCompleted(BundleConfiguration configuration) {};
 
 //    class Context extends ContainerConfiguration {
 //        // Altsaa ved ikke om det ville give mening...

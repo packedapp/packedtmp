@@ -26,7 +26,7 @@ import app.packed.application.programs.SomeApp;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildException;
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
@@ -87,10 +87,10 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see Program#imageOf(Assembly, Wirelet...)
-     * @see ServiceLocator#imageOf(Assembly, Wirelet...)
+     * @see Program#imageOf(Bundle, Wirelet...)
+     * @see ServiceLocator#imageOf(Bundle, Wirelet...)
      */
-    ApplicationImage<A> imageOf(Assembly<?> assembly, Wirelet... wirelets);
+    ApplicationImage<A> imageOf(Bundle<?> assembly, Wirelet... wirelets);
 
     /**
      * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.
@@ -105,7 +105,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link SomeApp#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * {@link SomeApp#run(Bundle, Wirelet...)} and {@link Program#start(Bundle, Wirelet...)}.
      * 
      * @param assembly
      *            the main assembly of the application
@@ -118,13 +118,13 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      *             if the application failed to initializing
      * @throws PanicException
      *             if the application had an executing phase and it fails
-     * @see Program#start(Assembly, Wirelet...)
-     * @see SomeApp#run(Assembly, Wirelet...)
-     * @see ServiceLocator#of(Assembly, Wirelet...)
+     * @see Program#start(Bundle, Wirelet...)
+     * @see SomeApp#run(Bundle, Wirelet...)
+     * @see ServiceLocator#of(Bundle, Wirelet...)
      */
-    A launch(Assembly<?> assembly, Wirelet... wirelets); // newInstance
+    A launch(Bundle<?> assembly, Wirelet... wirelets); // newInstance
 
-    default A launchJob(Assembly<?> assembly, Wirelet... wirelets) {
+    default A launchJob(Bundle<?> assembly, Wirelet... wirelets) {
         // Er ikke sikker paa vi kan bruge den hed med signaturen <A>
 
         // JobDriver
@@ -141,8 +141,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * Drivers for applications without a runtime will always return {@link InstanceState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
-     * @see #launch(Assembly, Wirelet...)
-     * @see #imageOf(Assembly, Wirelet...)
+     * @see #launch(Bundle, Wirelet...)
+     * @see #imageOf(Bundle, Wirelet...)
      * @see ExecutionWirelets#launchMode(InstanceState)
      */
     ApplicationLaunchMode launchMode();
@@ -168,9 +168,9 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      *            optional wirelets
      * @return an application mirror
      */
-    ApplicationMirror mirrorOf(Assembly<?> assembly, Wirelet... wirelets);
+    ApplicationMirror mirrorOf(Bundle<?> assembly, Wirelet... wirelets);
 
-    default void print(Assembly<?> assembly, Wirelet... wirelets) {
+    default void print(Bundle<?> assembly, Wirelet... wirelets) {
         ApplicationMirror b = ApplicationMirror.of(assembly, wirelets);
         b.forEachComponent(cc -> {
             StringBuilder sb = new StringBuilder();
@@ -184,13 +184,13 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     // Andre image optimizations
     //// Don't cache beans info
-    ApplicationImage<A> reusableImageOf(Assembly<?> assembly, Wirelet... wirelets);
+    ApplicationImage<A> reusableImageOf(Bundle<?> assembly, Wirelet... wirelets);
 
     /** {@return the type (typically an interface) of the application instances created by this driver.} */
     // This is not the resultType
     Class<?> type();
 
-    default void verify(Assembly<?> assembly, Wirelet... wirelets) {
+    default void verify(Bundle<?> assembly, Wirelet... wirelets) {
         // Attempts to build a mirror, throws Verification
 
         // Altsaa vi skal have verify med taenker jeg..
@@ -388,7 +388,7 @@ interface ApplicationDriverSandbox<A> {
     // I navnet valid ligger ikke fullfilled. Laver jeg en hjaelpe assembly.
     // er den jo stadig valid... selvom vi ikke propper fake parametere ind..
     //
-    default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
+    default void assertValid(Bundle<?> assembly, Wirelet... wirelets) {
         // Checks that the container can be sucessfully build...
         // What about fullfilled??? Er den ok hvis vi f.eks.
         // mangler nogle service argumenter???
@@ -460,11 +460,11 @@ interface ApplicationDriverSandbox<A> {
         throw new UnsupportedOperationException();
     }
 
-    default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
+    default <T extends Throwable> A launchThrowing(Bundle<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
         throw new UnsupportedOperationException();
     }
 
-    default A launchThrowing(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
+    default A launchThrowing(Bundle<?> assembly, Wirelet... wirelets) throws Throwable {
         // Tror den bliver brugt via noget ErrorHandler...
         // Hvor man specificere hvordan exceptions bliver handled
 
@@ -475,11 +475,11 @@ interface ApplicationDriverSandbox<A> {
     }
 
     // Tog den faktisk ud igen
-    default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+    default ApplicationMirror mirror(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
+    default void printContracts(Bundle<?> assembly, Wirelet... wirelets) {
 
     }
 
@@ -500,7 +500,7 @@ interface ApplicationDriverSandbox<A> {
     // Ideen er at man kan smide checked exceptions...
     // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
 
-    Validation validate(Assembly<?> assembly, Wirelet... wirelets);
+    Validation validate(Bundle<?> assembly, Wirelet... wirelets);
 
     /**
      * Create a new application driver that.
@@ -522,7 +522,7 @@ interface ApplicationDriverSandbox<A> {
     interface Builder2 {
         /**
          * Creates a new application driver that does not support instantiation of applications. These type of drivers are
-         * typically used if you only need to use {@link ApplicationDriver#build(Assembly, Wirelet...)} but do not need to
+         * typically used if you only need to use {@link ApplicationDriver#build(Bundle, Wirelet...)} but do not need to
          * create actual application instances.
          * 
          * @param <A>
@@ -554,7 +554,7 @@ interface ApplicationDriverSandbox<A> {
         }
 
         @SuppressWarnings("exports")
-        default Builder2 requireAssembly(Class<? extends Assembly<?>> assembly) {
+        default Builder2 requireAssembly(Class<? extends Bundle<?>> assembly) {
             return this;
         }
     }

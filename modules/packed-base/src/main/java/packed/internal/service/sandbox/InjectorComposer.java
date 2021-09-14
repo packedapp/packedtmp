@@ -19,13 +19,13 @@ import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
 import app.packed.component.ComponentMirror;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
+import app.packed.container.BundleDriver;
+import app.packed.container.BundleExtension;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
-import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
@@ -34,7 +34,7 @@ import app.packed.service.ServiceLocator;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link BaseAssembly}.
+ * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link BaseBundle}.
  * Unlike assemblies all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
@@ -45,9 +45,9 @@ import app.packed.service.ServiceLocator;
 public final class InjectorComposer extends Composer {
 
     private boolean initialized;
-    final ContainerConfiguration configuration;
+    final BundleConfiguration configuration;
 
-    public InjectorComposer(ContainerConfiguration cc) {
+    public InjectorComposer(BundleConfiguration cc) {
         this.configuration = cc;
     }
 
@@ -71,8 +71,8 @@ public final class InjectorComposer extends Composer {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return configuration.use(ContainerExtension.class).link(assembly, wirelets);
+    public ComponentMirror link(Bundle<?> assembly, Wirelet... wirelets) {
+        return configuration.use(BundleExtension.class).link(assembly, wirelets);
     }
 
     /**
@@ -196,7 +196,7 @@ public final class InjectorComposer extends Composer {
     }
 
     static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(Injector.driver(), ContainerDriver.defaultDriver(), InjectorComposer::new, configurator, wirelets);
+        return compose(Injector.driver(), BundleDriver.defaultDriver(), InjectorComposer::new, configurator, wirelets);
     }
 
 }

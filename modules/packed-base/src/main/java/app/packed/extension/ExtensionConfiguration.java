@@ -19,9 +19,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
+import app.packed.container.BundleConfiguration;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
@@ -154,7 +154,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * <p>
      * The specified support class's extension must be among this extension's declared dependencies.
      * <p>
-     * This method works similar to {@link ContainerConfiguration#use(Class)} except it does not return the extension but
+     * This method works similar to {@link BundleConfiguration#use(Class)} except it does not return the extension but
      * its support class instead.
      * 
      * @param <E>
@@ -170,7 +170,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *             extension
      * 
      * @see Extension#use(Class)
-     * @see ContainerConfiguration#use(Class)
+     * @see BundleConfiguration#use(Class)
      * @see #isExtensionUsed(Class)
      */
     <E extends ExtensionSupport> E use(Class<E> supportClass);

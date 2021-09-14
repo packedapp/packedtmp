@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.hooks.MethodHook;
 
@@ -33,7 +33,7 @@ public class MethodHookBootstrapTest {
             }
             
         });
-        SomeApp.run(new BaseAssembly() {
+        SomeApp.run(new BaseBundle() {
 
             @Override
             protected void build() {

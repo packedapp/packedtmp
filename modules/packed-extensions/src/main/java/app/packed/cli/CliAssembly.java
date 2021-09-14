@@ -3,8 +3,8 @@ package app.packed.cli;
 import java.util.function.Consumer;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
@@ -12,7 +12,7 @@ import app.packed.inject.Factory;
 
 // Ideen er det mere er en bootstrapper...
 
-abstract class CliAssembly extends BaseAssembly {
+abstract class CliAssembly extends BaseBundle {
 
     // Provides a result... men det goer main jo ikke...
     @SuppressWarnings("unused")
@@ -28,11 +28,11 @@ abstract class CliAssembly extends BaseAssembly {
         throw new UnsupportedOperationException();
     }
 
-    public static void main(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
+    public static void main(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
 
-    public static void main(Assembly<?> assembly, Wirelet... wirelets) {
+    public static void main(Bundle<?> assembly, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
 

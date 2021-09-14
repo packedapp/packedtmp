@@ -28,7 +28,7 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
     /** Tests that a assembly cannot be reused. */
     @Test
     public void notReusable() {
-        BaseAssembly empty = new BaseAssembly() {
+        BaseBundle empty = new BaseBundle() {
             @Override
             protected void build() {}
         };
@@ -40,7 +40,7 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
     /** Tests that a assembly cannot be reused. */
     @Test
     public void cannotLinkSelf() {
-        BaseAssembly b = new BaseAssembly() {
+        BaseBundle b = new BaseBundle() {
             @Override
             protected void build() {
                 link(this);

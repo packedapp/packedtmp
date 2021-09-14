@@ -8,27 +8,27 @@ import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.application.host.ApplicationHostExtension;
 import app.packed.application.programs.SomeApp;
 import app.packed.base.Completion;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BaseBundle;
+import app.packed.container.BundleConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.state.sandbox.InstanceState;
 
 public class UseCases {
 
-    public void lazy(ContainerConfiguration cc) {
+    public void lazy(BundleConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc, SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
 
-    public void lazy2(ContainerConfiguration cc) {
+    public void lazy2(BundleConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc,
                 SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
 
-    public void singleInstanceAcquiring(ContainerConfiguration cc) {
+    public void singleInstanceAcquiring(BundleConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
 
         hc.install(new AA()).provideSingleLauncher();
@@ -36,7 +36,7 @@ public class UseCases {
         // cc.install(AppLauncher.class);
     }
 
-    public void singleInstanceWithGuest(ContainerConfiguration cc) {
+    public void singleInstanceWithGuest(BundleConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
 
         hc.install(new AA()).provideGuest();
@@ -54,7 +54,7 @@ public class UseCases {
 
 }
 
-class HostAsExtension extends BaseAssembly {
+class HostAsExtension extends BaseBundle {
 
     @Override
     protected void build() {
@@ -73,13 +73,13 @@ class AppLauncher {
     }
 }
 
-class AA extends BaseAssembly {
+class AA extends BaseBundle {
 
     @Override
     protected void build() {}
 }
 
-class BB extends BaseAssembly {
+class BB extends BaseBundle {
 
     @Override
     protected void build() {}

@@ -16,12 +16,12 @@
 package packed.internal.inject.test;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 
 /**
  *
  */
-class Ddd extends BaseAssembly {
+class Ddd extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -48,7 +48,7 @@ class Ddd extends BaseAssembly {
         System.out.println(Program.start(new Ddd()).services());
     }
 
-    public static class FooAssembly extends BaseAssembly {
+    public static class FooAssembly extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override

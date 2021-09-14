@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerMirror;
+import app.packed.container.Bundle;
+import app.packed.container.BundleConfiguration;
+import app.packed.container.BundleMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.container.sandbox.AssemblyBuildHook;
@@ -166,7 +166,7 @@ public final class ContainerSetup extends ComponentSetup {
             String n = null;
 
             Class<?> source = realm.realmType();
-            if (Assembly.class.isAssignableFrom(source)) {
+            if (Bundle.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
                     nnn = nnn.substring(0, nnn.length() - 8);
@@ -234,9 +234,9 @@ public final class ContainerSetup extends ComponentSetup {
      * @param extensionType
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
-     * @see ContainerConfiguration#isExtensionUsed(Class)
+     * @see BundleConfiguration#isExtensionUsed(Class)
      * @see ExtensionConfiguration#isExtensionUsed(Class)
-     * @see ContainerMirror#isExtensionUsed(Class)
+     * @see BundleMirror#isExtensionUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
@@ -245,15 +245,15 @@ public final class ContainerSetup extends ComponentSetup {
 
     /** {@return a container mirror.} */
     @Override
-    public ContainerMirror mirror() {
+    public BundleMirror mirror() {
         return new BuildTimeContainerMirror();
     }
 
-    public void postBuild(ContainerConfiguration configuration) {
+    public void postBuild(BundleConfiguration configuration) {
         assemblyModel.postBuild(configuration);
     }
 
-    public void preBuild(ContainerConfiguration configuration) {
+    public void preBuild(BundleConfiguration configuration) {
         assemblyModel.preBuild(configuration);
     }
 
@@ -346,7 +346,7 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** A build-time container mirror. */
-    private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
+    private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BundleMirror {
 
         /** Extracts the extension that */
         private static final ClassValue<Class<? extends Extension>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {

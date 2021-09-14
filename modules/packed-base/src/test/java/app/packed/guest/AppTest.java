@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BaseBundle;
+import app.packed.container.BundleConfiguration;
 
 /** Tests {@link Program} (PackedApp). */
 public class AppTest {
@@ -32,8 +32,8 @@ public class AppTest {
     /** Tests an empty app. */
     @Test
     public void emptyApp() {
-        AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        Program app = Program.start(new BaseAssembly() {
+        AtomicReference<BundleConfiguration> ar = new AtomicReference<>();
+        Program app = Program.start(new BaseBundle() {
             @Override
             public void build() {
                 ar.set(configuration());
@@ -43,7 +43,7 @@ public class AppTest {
         assertThat(app).isNotNull();
         assertThat(app.name()).isNotNull();
 
-        ContainerConfiguration cc = requireNonNull(ar.get());
+        BundleConfiguration cc = requireNonNull(ar.get());
 
         // Checks that no extensions are installed by default
         assertThat(cc.extensionsTypes()).isEmpty();

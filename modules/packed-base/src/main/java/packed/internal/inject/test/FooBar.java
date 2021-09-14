@@ -18,7 +18,7 @@ package packed.internal.inject.test;
 import app.packed.application.programs.Program;
 import app.packed.base.Key;
 import app.packed.base.Tag;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtensionMirror;
 import app.packed.service.ServiceWirelets;
@@ -26,7 +26,7 @@ import app.packed.service.ServiceWirelets;
 /**
  *
  */
-public class FooBar extends BaseAssembly {
+public class FooBar extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
@@ -66,7 +66,7 @@ public class FooBar extends BaseAssembly {
         a.use(Runnable.class).run();
     }
 
-    public static class Child extends BaseAssembly {
+    public static class Child extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override

@@ -4,10 +4,10 @@ import java.util.concurrent.Callable;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.service.ServiceConfiguration;
 
-public abstract class JobAssembly<T> extends BaseAssembly {
+public abstract class JobAssembly<T> extends BaseBundle {
 
     protected JobAssembly() {
         super(null);

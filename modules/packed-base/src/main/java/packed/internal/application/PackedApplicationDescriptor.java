@@ -1,12 +1,12 @@
 package packed.internal.application;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.container.Assembly;
+import app.packed.container.Bundle;
 
 public final class PackedApplicationDescriptor implements ApplicationDescriptor {
 
     @Override
-    public Class<? extends Assembly<?>> assemblyType() {
+    public Class<? extends Bundle<?>> assemblyType() {
         // TODO Auto-generated method stub
         return null;
     }

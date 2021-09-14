@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
@@ -38,7 +38,7 @@ public class NameGeneratedTest extends AbstractApplicationTest {
         check(f -> new HelloWorldAssembly(f), "HelloWorld");
     }
 
-    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends BaseAssembly> cs, String defaultName) {
+    private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends BaseBundle> cs, String defaultName) {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name

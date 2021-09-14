@@ -3,12 +3,12 @@ package app.packed.mirror;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerMirror;
+import app.packed.container.BaseBundle;
+import app.packed.container.BundleMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtensionMirror;
 
-public class Tester extends BaseAssembly {
+public class Tester extends BaseBundle {
 
     public static void main(String[] args) {
 
@@ -16,13 +16,13 @@ public class Tester extends BaseAssembly {
             System.out.println(am);
         }
 
-        ContainerMirror.of(new Tester()).useExtension(ServiceExtensionMirror.class).contract();
+        BundleMirror.of(new Tester()).useExtension(ServiceExtensionMirror.class).contract();
         ServiceExtensionMirror.of(new Tester()).contract();
         ServiceContract.of(new Tester());
         
         
         // SEM.first(Assembly).
-        ContainerMirror cm = ContainerMirror.of(new Tester());
+        BundleMirror cm = BundleMirror.of(new Tester());
 
         cm.useExtension(ServiceExtensionMirror.class).contract();
 

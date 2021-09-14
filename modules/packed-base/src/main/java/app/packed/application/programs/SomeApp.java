@@ -21,8 +21,8 @@ import java.lang.invoke.MethodType;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
-import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets;
@@ -101,7 +101,7 @@ public final class SomeApp {
      * @throws RuntimeException
      *             if the application failed to run properly
      */
-    public static void run(Assembly<?> assembly, Wirelet... wirelets) {
+    public static void run(Bundle<?> assembly, Wirelet... wirelets) {
         driver().launch(assembly, wirelets);
     }
 }
@@ -122,7 +122,7 @@ class MainTester {
     // Altsaa tit vil man jo ogsaa gerne starte noget...
 
     public static void main(String[] args) {
-        SomeApp.run(new BaseAssembly() {
+        SomeApp.run(new BaseBundle() {
             @Override
             protected void build() {
                 link(null);
@@ -130,7 +130,7 @@ class MainTester {
         });
     }
 
-    static MainTester of(Assembly<?> assembly, Wirelet... wirelets) {
+    static MainTester of(Bundle<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 }

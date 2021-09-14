@@ -6,7 +6,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Operator;
-import app.packed.container.BaseAssembly;
+import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
@@ -52,7 +52,7 @@ public class BeanExtension2 extends Extension {
      * @param implementation
      *            the type of bean that will be installed
      * @return the configuration of the bean
-     * @see BaseAssembly#install(Class)
+     * @see BaseBundle#install(Class)
      */
     public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
