@@ -5,9 +5,11 @@ import java.time.ZoneId;
 import java.util.Set;
 
 import app.packed.base.Key;
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 
-public class TimeExtensionMirror extends ExtensionMirror<TimeExtension> {
+@ExtensionMember(TimeExtension.class)
+public class TimeExtensionMirror extends ExtensionMirror {
 
     public Set<Key<ZoneId>> zones() {
         throw new UnsupportedOperationException();

@@ -11,6 +11,7 @@ import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import packed.internal.service.ServiceManagerSetup;
 
@@ -20,7 +21,8 @@ import packed.internal.service.ServiceManagerSetup;
  * @see ContainerMirror#extensions()
  * @see ContainerMirror#useExtension(Class)
  */
-public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+@ExtensionMember(ServiceExtension.class)
+public final class ServiceExtensionMirror extends ExtensionMirror {
 
     /** The service manager */
     private final ServiceManagerSetup services;

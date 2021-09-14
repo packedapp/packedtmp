@@ -36,7 +36,7 @@ import packed.internal.container.ExtensionSetup;
  * @param <E>
  *            the type of extension this mirror is a part of
  */
-public class ExtensionMirror<E extends Extension> {
+public class ExtensionMirror {
 
     /**
      * The internal configuration of the extension we are mirrored. Is initially null but populated via
@@ -68,7 +68,7 @@ public class ExtensionMirror<E extends Extension> {
         // If we find a valid use case we can always remove final
 
         // Check other.getType()==getType()????
-        return this == other || other instanceof ExtensionMirror<?> m && setup() == m.setup();
+        return this == other || other instanceof ExtensionMirror m && setup() == m.setup();
     }
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
@@ -138,7 +138,7 @@ public class ExtensionMirror<E extends Extension> {
      * @see ContainerMirror#findExtension(Class)
      * @see #of(Class, Assembly, Wirelet...)
      */
-    public static <E extends ExtensionMirror<?>> Optional<E> find(Class<E> mirrorType, Assembly<?> assembly, Wirelet... wirelets) {
+    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
@@ -161,7 +161,7 @@ public class ExtensionMirror<E extends Extension> {
      *             if the root container in the mirrored application does not use the extension that the specified mirror is
      *             a part of
      */
-    public static <E extends ExtensionMirror<?>> E of(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
+    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
     }
 }

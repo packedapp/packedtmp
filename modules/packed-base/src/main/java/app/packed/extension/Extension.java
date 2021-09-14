@@ -237,8 +237,8 @@ public abstract class Extension {
      * @return a mirror for the extension
      * @see ContainerMirror#extensions()
      */
-    protected ExtensionMirror<?> mirror() {
-        return mirrorInitialize(new ExtensionMirror<>());
+    protected ExtensionMirror mirror() {
+        return mirrorInitialize(new ExtensionMirror());
     }
 
     /**
@@ -254,7 +254,7 @@ public abstract class Extension {
      * @throws IllegalStateException
      *             if this method has already been called on the specified mirror
      */
-    protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
+    protected final <M extends ExtensionMirror> M mirrorInitialize(M mirror) {
         mirror.initialize((ExtensionSetup) configuration());
         return mirror;
     }

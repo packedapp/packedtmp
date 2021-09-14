@@ -1,7 +1,9 @@
 package app.packed.cli;
 
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 
-public class CliExtensionMirror extends ExtensionMirror<CliExtension> {
+@ExtensionMember(CliExtension.class)
+public class CliExtensionMirror extends ExtensionMirror {
 
 }

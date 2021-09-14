@@ -2,12 +2,14 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 
 /**
  * A mirror for the {@link BeanExtension}.
  */
-public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
+@ExtensionMember(BeanExtension.class)
+public final class BeanExtensionMirror extends ExtensionMirror {
 
     /** The service manager */
     // ved ikke om vi skal have en <E> extension() fra ExtensionMirror?

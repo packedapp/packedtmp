@@ -38,12 +38,13 @@ record ExtensionSupportModel(Class<? extends Extension> extensionType, MethodHan
             Class<? extends ExtensionSupport> subtensionClass = ClassUtil.checkProperSubclass(ExtensionSupport.class, type);
 
             // Check that the subtension have an extension as declaring class
-            ExtensionMember extensionMember = subtensionClass.getDeclaredAnnotation(ExtensionMember.class);
+            ExtensionMember extensionMember = subtensionClass.getAnnotation(ExtensionMember.class);
             if (extensionMember == null) {
                 throw new InternalExtensionException(subtensionClass + " must be annotated with @ExtensionMember");
             }
 
             // TODO check same module
+            // Move to a common method
             //            
 //            if (declaringClass == null || !ExtensionSupport.class.isAssignableFrom(declaringClass)) {
 //                throw new InternalExtensionException(subtensionClass

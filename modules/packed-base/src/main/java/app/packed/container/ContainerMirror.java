@@ -21,7 +21,7 @@ import app.packed.extension.InternalExtensionException;
 public non-sealed interface ContainerMirror extends ComponentMirror {
 
     /** {@return a {@link Set} view of mirrors for every extension that is used by the container.} */
-    Set<ExtensionMirror<?>> extensions();
+    Set<ExtensionMirror> extensions();
 
     /** {@return a {@link Set} view of every extension type used by the container.} */
     Set<Class<? extends Extension>> extensionsTypes();
@@ -33,7 +33,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      *            the mirror type
      * @return a mirror of the specified type, or empty if mirror of the requested type exists
      */
-    <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType); // maybe just find
+    <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType); // maybe just find
 
     /**
      * Returns whether or not an extension of the specified type is used by the container.
@@ -61,7 +61,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      * @throws InternalExtensionException
      *             if the specified mirror class is not annotated with {@link ExtensionMember}.
      */
-    default <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
+    default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
     }
 

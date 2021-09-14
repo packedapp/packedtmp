@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,13 +33,13 @@ import app.packed.container.WireletSelection;
 import app.packed.container.sandbox.AssemblyBuildHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
-import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 
@@ -349,19 +348,18 @@ public final class ContainerSetup extends ComponentSetup {
     /** A build-time container mirror. */
     private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
-        /** A type variable extractor. */
-        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
-
         /** Extracts the extension that */
         private static final ClassValue<Class<? extends Extension>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
-     
+
             /** {@inheritDoc} */
-            @SuppressWarnings("unchecked")
             protected Class<? extends Extension> computeValue(Class<?> implementation) {
                 ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);
 
-                Type t = EXTRACTOR.extract(implementation);
-                Class<? extends Extension> extensionType = (Class<? extends Extension>) t;
+                ExtensionMember em = implementation.getAnnotation(ExtensionMember.class);
+                if (em == null) {
+                    throw new InternalExtensionException(implementation +  " must be annotated with @ExtensionMember");
+                }
+                Class<? extends Extension> extensionType = em.value();
                 ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
 
                 // Den
@@ -379,8 +377,8 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Set<ExtensionMirror<?>> extensions() {
-            HashSet<ExtensionMirror<?>> result = new HashSet<>();
+        public Set<ExtensionMirror> extensions() {
+            HashSet<ExtensionMirror> result = new HashSet<>();
             for (ExtensionSetup es : extensions.values()) {
                 result.add(es.mirror());
             }
@@ -396,7 +394,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType) {
+        public <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType) {
             requireNonNull(extensionMirrorType, "extensionMirrorType is null");
 
             // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
@@ -408,7 +406,7 @@ public final class ContainerSetup extends ComponentSetup {
                 return Optional.empty();
             } else {
                 // Call the extension.mirror to create a new mirror, this method is most likely overridden
-                ExtensionMirror<?> mirror = extension.mirror();
+                ExtensionMirror mirror = extension.mirror();
                 // Fail if the type of mirror returned by the extension does not match the specified mirror type
                 if (!extensionMirrorType.isInstance(mirror)) {
                     throw new InternalExtensionException(cl.getSimpleName() + ".mirror() was expected to return an instance of " + extensionMirrorType
