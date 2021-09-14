@@ -20,7 +20,7 @@ import java.lang.module.ModuleDescriptor.Version;
 import java.util.Optional;
 import java.util.Set;
 
-import packed.internal.container.ExtensionModel;
+import packed.internal.bundle.ExtensionModel;
 
 /**
  * An immutable extension descriptor.

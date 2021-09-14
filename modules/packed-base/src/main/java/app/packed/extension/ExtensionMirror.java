@@ -9,7 +9,7 @@ import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
-import packed.internal.container.ExtensionSetup;
+import packed.internal.bundle.ExtensionSetup;
 
 /**
  * Provides generic information about an extension used by a {@link #container}.

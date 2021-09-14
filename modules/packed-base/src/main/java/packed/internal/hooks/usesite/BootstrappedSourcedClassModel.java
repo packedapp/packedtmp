@@ -5,7 +5,7 @@ import java.lang.annotation.Annotation;
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.OldFieldHook;
-import packed.internal.container.ExtensionModel;
+import packed.internal.bundle.ExtensionModel;
 import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.invoke.OpenClass;

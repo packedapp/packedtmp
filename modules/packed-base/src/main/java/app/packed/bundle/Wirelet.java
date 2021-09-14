@@ -18,9 +18,9 @@ package app.packed.bundle;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.ApplicationBeanConfiguration;
-import packed.internal.container.CompositeWirelet;
-import packed.internal.container.InternalWirelet.OverrideNameWirelet;
-import packed.internal.container.WireletModel;
+import packed.internal.bundle.CompositeWirelet;
+import packed.internal.bundle.WireletModel;
+import packed.internal.bundle.InternalWirelet.OverrideNameWirelet;
 import packed.internal.util.StackWalkerUtil;
 
 /**

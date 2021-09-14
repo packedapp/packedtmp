@@ -1,6 +1,6 @@
 package zandbox.internal.hooks3;
 
-import packed.internal.container.ExtensionModel;
+import packed.internal.bundle.ExtensionModel;
 
 /**
  * A model of a class that employs hooks in some form.

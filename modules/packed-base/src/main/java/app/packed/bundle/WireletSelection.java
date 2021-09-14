@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import packed.internal.container.PackedWireletSelection;
+import packed.internal.bundle.PackedWireletSelection;
 
 /**
  * An ordered selection of wirelets with a common base type ({@code <W>}).

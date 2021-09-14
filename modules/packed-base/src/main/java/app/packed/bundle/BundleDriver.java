@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.extension.Extension;
-import packed.internal.container.PackedContainerDriver;
+import packed.internal.bundle.PackedContainerDriver;
 
 //2 valgmuligheder
 

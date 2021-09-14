@@ -25,7 +25,7 @@ import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
-import packed.internal.container.ExtensionSetup;
+import packed.internal.bundle.ExtensionSetup;
 
 /**
  * A configuration of an {@link Extension}.

@@ -26,9 +26,9 @@ import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
+import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.PackedContainerDriver;
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
 /**

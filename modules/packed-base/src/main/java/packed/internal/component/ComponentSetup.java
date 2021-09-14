@@ -37,8 +37,8 @@ import app.packed.component.Operator;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.component.bean.BeanSetup;
-import packed.internal.container.ContainerSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
 

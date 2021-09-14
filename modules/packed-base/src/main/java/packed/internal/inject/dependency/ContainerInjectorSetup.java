@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.ContainerSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.service.ServiceManagerSetup;
 
 public class ContainerInjectorSetup {

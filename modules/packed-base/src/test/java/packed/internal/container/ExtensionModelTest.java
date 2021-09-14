@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
+import packed.internal.bundle.ExtensionModel;
 
 /** Tests {@link ExtensionModel}. */
 public class ExtensionModelTest {

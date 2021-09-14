@@ -32,9 +32,9 @@ import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedContainerDriver;
+import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.ExtensionSetup;
+import packed.internal.bundle.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
 /**

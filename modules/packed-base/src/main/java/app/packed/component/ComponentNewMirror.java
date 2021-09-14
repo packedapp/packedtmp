@@ -11,8 +11,8 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.InternalExtensionException;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
+import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.container.ExtensionSetup;
 
 /**
  * A mirror of an extension that is in use by a {@link #container}.

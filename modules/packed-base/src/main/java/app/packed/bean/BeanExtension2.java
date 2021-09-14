@@ -11,8 +11,8 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
+import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.ExtensionSetup;
 
 /**
  * An extension used for installing beans.

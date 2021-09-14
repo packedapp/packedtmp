@@ -8,8 +8,8 @@ import java.util.Set;
 import app.packed.application.ApplicationDescriptor;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
 import app.packed.hooks.OldFieldHook;
-import packed.internal.container.ExtensionModel;
+import packed.internal.bundle.ExtensionModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TmpLoader;

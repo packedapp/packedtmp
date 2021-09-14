@@ -20,10 +20,10 @@ import app.packed.bundle.Wirelet;
 import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
+import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.PackedContainerDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
 

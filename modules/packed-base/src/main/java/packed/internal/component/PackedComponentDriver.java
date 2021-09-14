@@ -7,7 +7,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.bundle.Bundle;
 import app.packed.component.ComponentConfiguration;
-import packed.internal.container.PackedContainerDriver;
+import packed.internal.bundle.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
 /** The abstract base class for component drivers. */

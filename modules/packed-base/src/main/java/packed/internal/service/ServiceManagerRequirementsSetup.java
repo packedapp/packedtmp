@@ -25,7 +25,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.ContainerSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;

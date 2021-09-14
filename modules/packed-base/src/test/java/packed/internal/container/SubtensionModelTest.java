@@ -11,6 +11,7 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import app.packed.service.ServiceExtension;
+import packed.internal.bundle.ExtensionSupportModel;
 import packed.internal.container.SubtensionModelTest.TestExtension.SubStatic;
 import packed.internal.container.SubtensionModelTest.TestExtension.TestExtensionSupport;
 import testutil.stubs.Throwables;

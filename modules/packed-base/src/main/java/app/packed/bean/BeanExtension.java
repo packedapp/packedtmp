@@ -7,13 +7,13 @@ import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
+import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.component.bean.PackedBeanDriver;
 import packed.internal.component.bean.PackedBeanDriverBinder;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
 
 /**
  * An extension used for installing beans.

@@ -7,8 +7,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.component.bean.PackedBeanDriverBinder;
-import packed.internal.container.ContainerSetup;
 
 /**
  * A bean extension support class.

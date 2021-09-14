@@ -3,12 +3,12 @@ package app.packed.bundle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
+import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.ExtensionSetup;
+import packed.internal.bundle.PackedContainerDriver;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.ThrowableUtil;
 
 // Ja, lad os se om den giver mening at have en extension for det

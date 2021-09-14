@@ -1,4 +1,4 @@
-package packed.internal.container;
+package packed.internal.bundle;
 
 import static java.util.Objects.requireNonNull;
 
