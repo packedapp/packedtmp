@@ -45,7 +45,6 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 
 /** Build-time configuration of a container. */
-// Looks wrong with ApplicationSetup
 public final class ContainerSetup extends ComponentSetup {
 
     public final AssemblyModel assemblyModel;

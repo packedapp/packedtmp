@@ -16,7 +16,6 @@
 package tests.inject.bindinjector.assembly;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static testutil.assertj.Assertions.npe;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,6 +26,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.service.sandbox.Injector;
+import testutil.assertj.Assertions;
 
 /**
  *
@@ -41,8 +41,8 @@ public class InjectorBindAssemblyTest {
             protected void build() {}
         };
 
-        npe(() -> Injector.configure(c -> c.link((BaseAssembly) null)), "assembly");
-        npe(() -> Injector.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
+        Assertions.npe(() -> Injector.configure(c -> c.link((BaseAssembly) null)), "assembly");
+        Assertions.npe(() -> Injector.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */

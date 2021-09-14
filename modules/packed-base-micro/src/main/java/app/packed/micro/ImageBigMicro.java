@@ -42,7 +42,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final ApplicationImage<Program> INSTALL31 = Program.newImage(new BaseAssembly() {
+    static final ApplicationImage<Program> INSTALL31 = Program.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -61,7 +61,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final ApplicationImage<Program> INSTALL253 = Program.newImage(new BaseAssembly() {
+    static final ApplicationImage<Program> INSTALL253 = Program.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -97,7 +97,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final ApplicationImage<Program> INSTALL253_NOS = Program.newImage(new BaseAssembly() {
+    static final ApplicationImage<Program> INSTALL253_NOS = Program.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());

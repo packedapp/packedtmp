@@ -1,9 +1,9 @@
 package app.packed.application.various;
 
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.Daemon;
-import app.packed.application.ExecutionWirelets;
 import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.application.host.ApplicationHostExtension;
 import app.packed.application.programs.SomeApp;
@@ -16,20 +16,20 @@ import app.packed.state.sandbox.InstanceState;
 public class UseCases {
 
     public void lazy(ContainerConfiguration cc) {
-        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc, SomeApp.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc, SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
 
     public void lazy2(ContainerConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc,
-                SomeApp.driver().with(ExecutionWirelets.launchMode(InstanceState.UNINITIALIZED)));
+                SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
 
     public void singleInstanceAcquiring(ContainerConfiguration cc) {
-        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, SomeApp.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
 
         hc.install(new AA()).provideSingleLauncher();
         hc.installLaunchable(new AA());
@@ -37,7 +37,7 @@ public class UseCases {
     }
 
     public void singleInstanceWithGuest(ContainerConfiguration cc) {
-        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, SomeApp.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, SomeApp.driver().withLaunchMode(ApplicationLaunchMode.RUNNING));
 
         hc.install(new AA()).provideGuest();
         hc.installLaunchable(new AA());

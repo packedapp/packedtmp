@@ -32,6 +32,13 @@ import packed.internal.util.LookupUtil;
 /**
  * Composers does not usually have any public constructors.
  */
+// Unlike assemblies composers are typically domain specific
+
+// two modes (may support both at the same time)
+//// Create a standalone application
+//// Configures a part of an extension
+
+// Does not support mirrors
 public abstract class Composer {
 
     /** A marker configuration object to indicate that a composer has already been used to build something. */

@@ -54,20 +54,21 @@ public final class ExecutionWirelets {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a wirelet that will override the default launch mode of an application.
-     * <p>
-     * If multiple launch mode wirelets are specified, the last applied wirelet is chosen.
-     * 
-     * @param launchMode
-     *            the launchMode of the application
-     * @return the launch mode wirelet
-     */
-    // Hvad med ServiceLocator, vi skal vel skrive noget om at nogle launch modes ikke er supporteret
-    // Taenker vi kun kan bruge den ved build mode.
-    public static Wirelet launchMode(InstanceState launchMode) {
-        throw new UnsupportedOperationException();
-    }
+//    /**
+//     * Returns a wirelet that will override the default launch mode of an application.
+//     * <p>
+//     * If multiple launch mode wirelets are specified, the last applied wirelet is chosen.
+//     * 
+//     * @param launchMode
+//     *            the launchMode of the application
+//     * @return the launch mode wirelet
+//     */
+//    // Hvad med ServiceLocator, vi skal vel skrive noget om at nogle launch modes ikke er supporteret
+//    // Taenker vi kun kan bruge den ved build mode.
+//    // Altsaa ved ikke om den skal vaere en wirelet
+//    public static Wirelet launchMode(ApplicationLaunchMode launchMode) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns a wirelet that will install a shutdown hook.

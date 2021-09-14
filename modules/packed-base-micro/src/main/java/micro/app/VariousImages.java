@@ -24,10 +24,10 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationImage<Program> EMPTY_IMAGE = Program.newImage(empty());
-    public static final ApplicationImage<Program> ONE_COMPONENT_IMAGE = Program.newImage(oneComponent());
-    public static final ApplicationImage<Program> FIVE_CONTAINER_IMAGE = Program.newImage(fiveComponents());
-    public static final ApplicationImage<Program> ONE_CONTAINER_IMAGE = Program.newImage(oneContainer());
+    public static final ApplicationImage<Program> EMPTY_IMAGE = Program.imageOf(empty());
+    public static final ApplicationImage<Program> ONE_COMPONENT_IMAGE = Program.imageOf(oneComponent());
+    public static final ApplicationImage<Program> FIVE_CONTAINER_IMAGE = Program.imageOf(fiveComponents());
+    public static final ApplicationImage<Program> ONE_CONTAINER_IMAGE = Program.imageOf(oneContainer());
 
     public static BaseAssembly empty() {
         return new BaseAssembly() {

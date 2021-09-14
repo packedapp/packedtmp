@@ -23,7 +23,7 @@ import java.util.Set;
 import packed.internal.container.ExtensionModel;
 
 /**
- * An extension descriptor.
+ * An immutable extension descriptor.
  * <p>
  * This class describes various static properties of an extension. An instance of this interface is normally acquired by
  * calling {@link #of(Class)}.
@@ -98,7 +98,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * A version is present if the following holds:
      * <ul>
      * <li>The extension class is in a named module (on the module path)
-     * <li>The "--module-version" option must have been specified when compiling the module. Most modern build systems will
+     * <li>The "--module-version" option have been specified when compiling the module. Most modern build systems will
      * automatically do so.
      * </ul>
      * <p>

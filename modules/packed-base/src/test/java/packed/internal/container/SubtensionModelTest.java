@@ -7,14 +7,15 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
-import app.packed.extension.Extension.Subtension;
+import app.packed.extension.ExtensionMember;
+import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import app.packed.service.ServiceExtension;
-import packed.internal.container.SubtensionModelTest.TestExtension.Sub;
 import packed.internal.container.SubtensionModelTest.TestExtension.SubStatic;
+import packed.internal.container.SubtensionModelTest.TestExtension.TestExtensionSupport;
 import testutil.stubs.Throwables;
 
-/** Tests {@link SubtensionModel}. */
+/** Tests {@link ExtensionSupportModel}. */
 public class SubtensionModelTest {
 
     TestExtension te = new TestExtension();
@@ -22,13 +23,13 @@ public class SubtensionModelTest {
     /** Tests common functionality. */
     @Test
     public void common() {
-        SubtensionModel sm1 = SubtensionModel.of(TestExtension.Sub.class);
-        SubtensionModel sm2 = SubtensionModel.of(TestExtension.SubStatic.class);
+        ExtensionSupportModel sm1 = ExtensionSupportModel.of(TestExtension.TestExtensionSupport.class);
+        ExtensionSupportModel sm2 = ExtensionSupportModel.of(TestExtension.SubStatic.class);
 
         assertThat(sm1.extensionType()).isSameAs(TestExtension.class);
         assertThat(sm2.extensionType()).isSameAs(TestExtension.class);
 
-        Sub s = (Sub) sm1.newInstance(te, ServiceExtension.class);
+        TestExtensionSupport s = (TestExtensionSupport) sm1.newInstance(te, ServiceExtension.class);
         assertThat(s.getOuter()).isSameAs(te);
         assertThat(s.requestor).isSameAs(ServiceExtension.class);
 
@@ -38,14 +39,14 @@ public class SubtensionModelTest {
     /** Tests that the subtension has an {@link Extension} as the declaring class. */
     @Test
     public void invalidDeclaringClass() {
-        class NoDeclaringClass extends Subtension {}
-        assertThatThrownBy(() -> SubtensionModel.of(NoDeclaringClass.class)).isExactlyInstanceOf(InternalExtensionException.class);
+        class NoDeclaringClass extends ExtensionSupport {}
+        assertThatThrownBy(() -> ExtensionSupportModel.of(NoDeclaringClass.class)).isExactlyInstanceOf(InternalExtensionException.class);
     }
 
     /** Tests that we wrap exceptions in {@link InternalExtensionException}. */
     @Test
     public void throwingConstructor() {
-        SubtensionModel sm = SubtensionModel.of(TestExtension.SubThrowingConstructor.class);
+        ExtensionSupportModel sm = ExtensionSupportModel.of(TestExtension.SubThrowingConstructor.class);
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> sm.newInstance(te, ServiceExtension.class));
         a.isExactlyInstanceOf(InternalExtensionException.class);
         a.hasCause(Throwables.RuntimeException1.INSTANCE);
@@ -66,10 +67,11 @@ public class SubtensionModelTest {
 
     static class TestExtension extends Extension {
 
-        class Sub extends Subtension {
+        @ExtensionMember(TestExtension.class)
+        class TestExtensionSupport extends ExtensionSupport {
             final Class<? extends Extension> requestor;
 
-            Sub(Class<? extends Extension> requestor) {
+            TestExtensionSupport(Class<? extends Extension> requestor) {
                 this.requestor = requestor;
             }
 
@@ -78,15 +80,18 @@ public class SubtensionModelTest {
             }
         }
 
-        static class SubStatic extends Subtension {}
+        @ExtensionMember(TestExtension.class)
+        static class SubStatic extends ExtensionSupport {}
 
-        class SubThrowingConstructor extends Subtension {
+        @ExtensionMember(TestExtension.class)
+        class SubThrowingConstructor extends ExtensionSupport {
             SubThrowingConstructor() {
                 throw Throwables.RuntimeException1.INSTANCE;
             }
         }
 
-        class UnresolvedConstructor extends Subtension {
+        @ExtensionMember(TestExtension.class)
+        class UnresolvedConstructor extends ExtensionSupport {
             UnresolvedConstructor(String hmm) {}
         }
     }

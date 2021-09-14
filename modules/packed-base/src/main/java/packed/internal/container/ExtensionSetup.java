@@ -8,15 +8,16 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
+import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
-import app.packed.extension.Extension.Subtension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
+import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -28,6 +29,25 @@ import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup implements ExtensionConfiguration {
+
+    /** A handle for invoking the protected method {@link Extension#mirror()}. */
+    private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
+            ExtensionMirror.class);
+
+    /** A handle for invoking the protected method {@link Extension#onComplete()}. */
+    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
+            void.class);
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
+
+    /** A handle for invoking the protected method {@link Extension#onPreChildren()}. */
+    private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onPreChildren", void.class);
+
+    /** A handle for setting the private field Extension#context. */
+    private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
+            ExtensionConfiguration.class);
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -70,6 +90,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.extensionType = model.type();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationDescriptor application() {
+        return container.application.descriptor;
+    }
+
     protected void attributesAdd(DefaultAttributeMap dam) {
         PackedAttributeModel pam = model.attributes;
         if (pam != null) {
@@ -96,6 +122,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 //        if (container.containerChildren != null) {
 //            
 //        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
+        action.build(composer);
     }
 
     /** {@inheritDoc} */
@@ -150,12 +182,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
         }
         return e;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPartOfImage() {
-        return container.application.buildKind.isImage();
     }
 
     /** {@inheritDoc} */
@@ -238,29 +264,29 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends Subtension> E use(Class<E> subtensionClass) {
-        requireNonNull(subtensionClass, "subtensionClass is null");
+    public <E extends ExtensionSupport> E use(Class<E> supportClass) {
+        requireNonNull(supportClass, "supportClass is null");
 
         // Finds the subtension's model and its extension class
-        SubtensionModel subModel = SubtensionModel.of(subtensionClass);
-        Class<? extends Extension> subExtensionType = subModel.extensionType();
+        ExtensionSupportModel supportModel = ExtensionSupportModel.of(supportClass);
+        Class<? extends Extension> supportExtensionType = supportModel.extensionType();
 
         // Check that the requested subtension's extension is a direct dependency of this extension
-        if (!model.dependencies().contains(subExtensionType)) {
+        if (!model.dependencies().contains(supportExtensionType)) {
             // Special message if you try to use your own subtension
-            if (extensionType == subExtensionType) {
-                throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own subtension " + subExtensionType.getSimpleName() + "."
-                        + subtensionClass.getSimpleName());
+            if (extensionType == supportExtensionType) {
+                throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own support class " + supportExtensionType.getSimpleName()
+                        + "." + supportClass.getSimpleName());
             }
-            throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(subModel.extensionType())
-                    + " as a dependency in order to use " + subExtensionType.getSimpleName() + "." + subtensionClass.getSimpleName());
+            throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(supportExtensionType)
+                    + " as a dependency in order to use " + supportExtensionType.getSimpleName() + "." + supportClass.getSimpleName());
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = container.useExtension(subExtensionType, this).instance;
+        Extension instance = container.useExtension(supportExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
-        return (E) subModel.newInstance(instance, extensionType);
+        return (E) supportModel.newInstance(instance, extensionType);
     }
 
     /**
@@ -296,30 +322,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         return extension;
-    }
-
-    /** A handle for invoking the protected method {@link Extension#mirror()}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
-            ExtensionMirror.class);
-
-    /** A handle for invoking the protected method {@link Extension#onComplete()}. */
-    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
-            void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onPreChildren()}. */
-    private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onPreChildren", void.class);
-
-    /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
-            ExtensionConfiguration.class);
-
-    @Override
-    public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
-        throw new UnsupportedOperationException();
     }
 }
 

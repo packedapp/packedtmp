@@ -15,38 +15,42 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.extension.Extension;
-import app.packed.extension.Extension.Subtension;
+import app.packed.extension.ExtensionMember;
+import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
-/** A model for a {@link Extension.Subtension}. Not used outside of this package. */
-record SubtensionModel(Class<? extends Extension> extensionType, MethodHandle mhConstructor) {
+/** A model for a {@link Extension.ExtensionSupport} class. Not used outside of this package. */
+record ExtensionSupportModel(Class<? extends Extension> extensionType, MethodHandle mhConstructor) {
 
     /** Models of all subtensions. */
-    private final static ClassValue<SubtensionModel> MODELS = new ClassValue<>() {
+    private final static ClassValue<ExtensionSupportModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected SubtensionModel computeValue(Class<?> type) {
-            Class<? extends Subtension> subtensionClass = ClassUtil.checkProperSubclass(Subtension.class, type);
+        protected ExtensionSupportModel computeValue(Class<?> type) {
+            Class<? extends ExtensionSupport> subtensionClass = ClassUtil.checkProperSubclass(ExtensionSupport.class, type);
 
             // Check that the subtension have an extension as declaring class
-            Class<?> declaringClass = subtensionClass.getDeclaringClass();
-            if (declaringClass == null || !Extension.class.isAssignableFrom(declaringClass)) {
-                throw new InternalExtensionException(subtensionClass
-                        + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
+            ExtensionMember extensionMember = subtensionClass.getDeclaredAnnotation(ExtensionMember.class);
+            if (extensionMember == null) {
+                throw new InternalExtensionException(subtensionClass + " must be annotated with @ExtensionMember");
             }
 
-            @SuppressWarnings("unchecked")
-            Class<? extends Extension> extensionClass = (Class<? extends Extension>) declaringClass;
+            // TODO check same module
+            //            
+//            if (declaringClass == null || !ExtensionSupport.class.isAssignableFrom(declaringClass)) {
+//                throw new InternalExtensionException(subtensionClass
+//                        + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
+//            }
+
+            Class<? extends Extension> extensionClass = extensionMember.value();
             ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
             // Create an infuser exposing two services:
@@ -57,20 +61,14 @@ record SubtensionModel(Class<? extends Extension> extensionType, MethodHandle mh
             builder.provide(new Key<Class<? extends Extension>>() {}).adaptArgument(1); // Requesting extension
 
             // Find a method handle for the subtensions's constructor
-            MethodHandle constructor = builder.findConstructor(Subtension.class, m -> new InternalExtensionException(m));
+            MethodHandle constructor = builder.findConstructor(ExtensionSupport.class, m -> new InternalExtensionException(m));
 
-            return new SubtensionModel(extensionClass, constructor);
+            return new ExtensionSupportModel(extensionClass, constructor);
         }
     };
 
-    /** Create a new model. */
-    SubtensionModel {
-        requireNonNull(extensionType); // The declaring extension class.
-        requireNonNull(mhConstructor); // The constructor of the subtension that we model (Extension,Class)Subtension
-    }
-
     /**
-     * Creates a new subtension instance.
+     * Creates a new extension support class instance.
      * 
      * @param extension
      *            an instance of the declaring extension class
@@ -78,12 +76,12 @@ record SubtensionModel(Class<? extends Extension> extensionType, MethodHandle mh
      *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    Subtension newInstance(Extension extension, Class<? extends Extension> requestingExtensionClass) {
+    ExtensionSupport newInstance(Extension extension, Class<? extends Extension> requestingExtensionClass) {
         // mhConstructor = (Extension,Class)Subtension
         try {
-            return (Subtension) mhConstructor.invokeExact(extension, requestingExtensionClass);
+            return (ExtensionSupport) mhConstructor.invokeExact(extension, requestingExtensionClass);
         } catch (Throwable e) {
-            throw new InternalExtensionException("Instantiation of " + Subtension.class + " failed", e);
+            throw new InternalExtensionException("Instantiation of " + ExtensionSupport.class + " failed", e);
         }
     }
 
@@ -94,7 +92,7 @@ record SubtensionModel(Class<? extends Extension> extensionType, MethodHandle mh
      *            the subtension class
      * @return a model for the subtension class
      */
-    static SubtensionModel of(Class<? extends Extension.Subtension> subtensionClass) {
+    static ExtensionSupportModel of(Class<? extends ExtensionSupport> subtensionClass) {
         return MODELS.get(subtensionClass);
     }
 }

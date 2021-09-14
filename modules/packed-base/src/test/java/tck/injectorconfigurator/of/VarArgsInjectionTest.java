@@ -33,7 +33,7 @@ public class VarArgsInjectionTest {
     public void varargs() {
         Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provide(VarArgsConstructor.class);
+            c.provide(VarArgsInjectionTest.VarArgsConstructor.class);
             c.provideInstance(array);
         });
         assertThat(i.use(String[].class)).isSameAs(array);
@@ -43,7 +43,7 @@ public class VarArgsInjectionTest {
     public void array() {
         Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provide(ArrayConstructor.class);
+            c.provide(VarArgsInjectionTest.ArrayConstructor.class);
             c.provideInstance(array);
         });
         assertThat(i.use(String[].class)).isSameAs(array);

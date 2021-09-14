@@ -63,7 +63,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
-     * @see Extension#isExtensionUsed(Class)
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */

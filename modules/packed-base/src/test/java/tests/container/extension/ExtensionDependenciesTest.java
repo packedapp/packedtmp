@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionSupport;
 import testutil.util.AbstractApplicationTest;
 
 /**
@@ -58,10 +59,10 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
         @Override
         protected void onNew() {
-            use(Ex3.Sub.class);
+            use(Ex3.Ex3Support.class);
         }
 
-        class Sub extends Subtension {
+        class Sub extends ExtensionSupport {
 
         }
 
@@ -69,7 +70,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     static final class Ex3 extends Extension {
 
-        class Sub extends Subtension {
+        class Ex3Support extends ExtensionSupport {
 
         }
     }

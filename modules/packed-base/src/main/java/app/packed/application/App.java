@@ -10,6 +10,8 @@ import app.packed.service.ServiceLocator;
  * 
  * For creating application -instances -mirrors and -images.
  */
+// Ved ikke om vi vil have den i endelig version.
+// Maaske er den bare god i forbindelse med udvikling.
 public final class App {
 
     /** Appless */

@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanExtensionSupport;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionSupport;
 import app.packed.extension.old.ExtensionBeanDoubly;
 
 // Maaske er det ikke ContainerExtensor. But InheritableExtensor...
@@ -68,10 +69,10 @@ public class ConvExtension extends Extension implements ConvDiscovable {
             converters = Map.copyOf(map); // make immutable copy
         }
         // We only install an extensor if we are the root container or we have changes to the converters
-        use(BeanExtension.Sub.class).install(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
+        use(BeanExtensionSupport.class).install(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
     }
 
-    public class Sub extends Subtension {
+    public class Sub extends ExtensionSupport {
 
         public void add(Class<?> from, Function<?, ?> f) {
             ConvExtension.this.add(from, f);

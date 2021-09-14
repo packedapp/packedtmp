@@ -23,7 +23,7 @@ import java.time.zone.ZoneRulesException;
 import app.packed.container.Wirelet;
 
 /**
- * A number of wirelets that can be used together with the {@link TimeExtension}.
+ * A small number of wirelets that can be used together with the {@link TimeExtension}.
  */
 public final class TimeWirelets extends Wirelet {
 

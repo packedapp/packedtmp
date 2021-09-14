@@ -114,7 +114,7 @@ public interface ApplicationMirror {
 
     /**
      * Returns whether or the application is runnable. The value is always determined by
-     * {@link ApplicationDriver#hasRuntime()}.
+     * {@link ApplicationDriver#isExecutable()}.
      * 
      * @return whether or the application is runnable
      */

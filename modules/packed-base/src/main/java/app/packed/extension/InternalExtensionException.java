@@ -18,8 +18,8 @@ package app.packed.extension;
 /**
  * An exception typically thrown by the runtime to indicating an internal malfunction of an extension.
  * <p>
- * If you encounter this exception as the end-user of an extension. There is typically nothing you can do, except for
- * reporting the failure to the developer of the extension.
+ * If you encounter this exception when using an extension. There is typically nothing you can do, except for reporting
+ * the failure to the developer of the extension.
  */
 public class InternalExtensionException extends RuntimeException {
 

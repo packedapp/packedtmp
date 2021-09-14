@@ -1,7 +1,8 @@
 package app.packed.sql;
 
 import app.packed.bean.ApplicationBeanConfiguration;
-import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanExtensionSupport;
+import app.packed.extension.ExtensionSupport;
 import app.packed.extension.RootedExtension;
 
 // Har egentlig taget navn efter java.sql pakken og java.sql modulet.
@@ -25,18 +26,18 @@ public class SQLExtension extends RootedExtension {
 
     @Override
     protected void onNew() {
-        abc = use(BeanExtension.Sub.class).install(InnerBean.class);
+        abc = use(BeanExtensionSupport.class).install(InnerBean.class);
     }
 
     static class InnerBean {
         SQLPoolExtensionPoint point;
     }
 
-    public class Sub extends Subtension {
+    public class Sub extends ExtensionSupport {
 
         // en ting er med start, noget andet er med slut
         public void extendPool(ApplicationBeanConfiguration<? extends SQLPoolExtensionPoint> bean) {
-            use(BeanExtension.Sub.class).extensionPoint(abc, (a, b) -> a.point = b, bean);
+            use(BeanExtensionSupport.class).extensionPoint(abc, (a, b) -> a.point = b, bean);
         }
     }
 }

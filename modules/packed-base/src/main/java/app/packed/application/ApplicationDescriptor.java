@@ -4,10 +4,6 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import packed.internal.application.PackedApplicationDescriptor;
 
-// Tror den er taenkt paa at kunne blive injected (meget lightweight mirror)
-// Was ApplicationBuildInfo
-// ApplicationBuildDescriptor
-
 // Input DAW (Application) Driver Assembly Wirelets
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.
 // Saa ville den jo kunne be overskrevet paa runtime
@@ -28,6 +24,7 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 //    void checkHasRunnable(String message);
 //
     /** {@return the type of assembly.} */
+    // What about composers
     Class<? extends Assembly<?>> assemblyType();
 //    // defaultLaunchMode() -> Lazy
 //
@@ -38,8 +35,11 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 //    boolean isClosedWorld(); // isStaticImage
 //    
 //    boolean isRestartable();
-    
-    
+
+    // isHosted
+
+    // managed by extension...
+
     /**
      * What kind of build.
      */
@@ -51,7 +51,7 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 
     // En app er Image, En Sessions child app er ReusableImage
     // ApplicationBuildTarget
-    //ApplicationBuildType
+    // ApplicationBuildType
 
     // Altsaa det er jo primaert extensions der skal bruge det.
     // Tror aldrig man kommer til at switche paa den

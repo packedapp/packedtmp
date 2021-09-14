@@ -23,7 +23,6 @@ import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.InternalWirelet;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
@@ -53,7 +52,7 @@ public final class ApplicationSetup {
      * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(InstanceState)}
      * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
-    ApplicationLaunchMode launchMode;
+    final ApplicationLaunchMode launchMode;
 
     // sync entrypoint
     @Nullable
@@ -75,14 +74,14 @@ public final class ApplicationSetup {
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 
-        this.hasRuntime = driver.hasRuntime();
+        this.hasRuntime = driver.isExecutable();
 
         this.descriptor = new PackedApplicationDescriptor();
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
         this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DRIVER, null, wirelets);
-        this.runtimeAccessor = driver.hasRuntime() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
+        this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 
     public boolean hasMain() {
@@ -100,49 +99,6 @@ public final class ApplicationSetup {
     /** {@return a build-time application mirror that can be exposed to end-users} */
     public ApplicationMirror mirror() {
         return new BuildTimeApplicationMirror();
-    }
-
-    /**
-     * A wirelet that will set the launch mode of the application. Used by
-     * {@link ExecutionWirelets#launchMode(InstanceState)}.
-     */
-    public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
-
-        /** The (validated) name to override with. */
-        private final ApplicationLaunchMode launchMode;
-
-        /**
-         * Creates a new name wirelet
-         * 
-         * @param launchMode
-         *            the new launch mode of the application
-         */
-        public ApplicationLaunchModeWirelet(ApplicationLaunchMode launchMode) {
-            this.launchMode = requireNonNull(launchMode, "launchMode is null");
-           
-        }
-
-        @Override
-        protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
-            if (driver.launchMode() == launchMode) {
-                return driver;
-            }
-            return super.onApplicationDriver(driver);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void onBuild(ContainerSetup component) {
-            // TODO we probably need to check that it is launchable
-            checkIsApplication(component).launchMode = launchMode; // override any existing launch mode
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext launch) {
-            // TODO we probably need to check that it is launchable
-            launch.launchMode = launchMode;
-        }
     }
 
     /** An application mirror adaptor. */
@@ -213,3 +169,46 @@ public final class ApplicationSetup {
         }
     }
 }
+
+///**
+//* A wirelet that will set the launch mode of the application. Used by
+//* {@link ExecutionWirelets#launchMode(InstanceState)}.
+//*/
+//public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
+//
+//  /** The (validated) name to override with. */
+//  private final ApplicationLaunchMode launchMode;
+//
+//  /**
+//   * Creates a new name wirelet
+//   * 
+//   * @param launchMode
+//   *            the new launch mode of the application
+//   */
+//  public ApplicationLaunchModeWirelet(ApplicationLaunchMode launchMode) {
+//      this.launchMode = requireNonNull(launchMode, "launchMode is null");
+//     
+//  }
+//
+//  @Override
+//  protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
+//      if (driver.launchMode() == launchMode) {
+//          return driver;
+//      }
+//      return super.onApplicationDriver(driver);
+//  }
+//
+//  /** {@inheritDoc} */
+//  @Override
+//  protected void onBuild(ContainerSetup component) {
+//      // TODO we probably need to check that it is launchable
+//      checkIsApplication(component).launchMode = launchMode; // override any existing launch mode
+//  }
+//
+//  /** {@inheritDoc} */
+//  @Override
+//  public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext launch) {
+//      // TODO we probably need to check that it is launchable
+//      launch.launchMode = launchMode;
+//  }
+//}

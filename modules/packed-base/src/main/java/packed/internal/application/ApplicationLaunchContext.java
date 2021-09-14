@@ -21,11 +21,9 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
-import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceLocator;
-import app.packed.state.sandbox.InstanceState;
 import packed.internal.container.InternalWirelet;
 import packed.internal.container.WireletWrapper;
 import packed.internal.lifetime.LifetimePool;
@@ -38,13 +36,11 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class ApplicationLaunchContext implements LifetimePoolWriteable {
 
-    /** The application we are launching */
+    /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
 
-    /**
-     * The launch mode of the application. May be overridden via {@link ExecutionWirelets#launchMode(InstanceState)} if image.
-     */
-    ApplicationLaunchMode launchMode;
+    /** The launch mode of the application. */
+    final ApplicationLaunchMode launchMode;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
@@ -145,6 +141,6 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
             context.runtime.launch(application, context);
         }
 
-        return driver.newApplication(context);
+        return driver.newInstance(context);
     }
 }

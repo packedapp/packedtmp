@@ -28,11 +28,13 @@ import app.packed.base.Qualifier;
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanExtensionSupport;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.hooks.usage.OldBeanDriver.OtherBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
+import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
@@ -264,7 +266,7 @@ public class ServiceExtension extends Extension {
     @SuppressWarnings("unchecked")
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         // Create a bean driver by binding the implementation
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtension.Sub.class).wire(SINGLETON_SERVICE_BEAN_BINDER, implementation);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtensionSupport.class).wire(SINGLETON_SERVICE_BEAN_BINDER, implementation);
         return c.provide();
     }
 
@@ -282,7 +284,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
         // Create a bean driver by binding a factory
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtension.Sub.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtensionSupport.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
 
         return c.provide();
     }
@@ -321,7 +323,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
         // Create the bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtension.Sub.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtensionSupport.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
 
         return c.provide();
     }
@@ -329,14 +331,14 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // Create a bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtension.Sub.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtensionSupport.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
 
         return c; // no provide??
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtension.Sub.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, factory);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtensionSupport.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, factory);
         
         return c;
     }
@@ -425,7 +427,7 @@ public class ServiceExtension extends Extension {
      * what is being exported out from the container.
      **/
     // Tror slet vi supportere at extension kan provide services....
-    public class Sub extends Subtension {
+    public class ServiceExtensionSupport extends ExtensionSupport {
 
         // Require???
         // This is very limited as we can only require services from other
@@ -444,7 +446,7 @@ public class ServiceExtension extends Extension {
          * @param requestingExtension
          *            the requesting extension
          */
-        /* package-private */ Sub(Class<? extends Extension> requestingExtension) {
+        /* package-private */ ServiceExtensionSupport(Class<? extends Extension> requestingExtension) {
             this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
         }
 

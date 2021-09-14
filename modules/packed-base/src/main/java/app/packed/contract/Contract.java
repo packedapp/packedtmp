@@ -20,6 +20,7 @@ import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -33,7 +34,7 @@ import packed.internal.application.ApplicationLaunchContext;
 public abstract class Contract {
 
     /** A daemon driver. */
-    private static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder().executable()
+    private static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder().executable(ApplicationLaunchMode.EXECUTE_UNTIL_TERMINATED)
             .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** {@inheritDoc} */

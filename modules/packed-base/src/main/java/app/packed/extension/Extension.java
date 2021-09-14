@@ -17,6 +17,7 @@ package app.packed.extension;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -24,7 +25,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
@@ -102,10 +102,10 @@ import packed.internal.util.ThrowableUtil;
 public abstract class Extension {
 
     /**
-     * The extension context, that most methods delegate to.
+     * The extension's configuration that most methods delegate to.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#newExtension(ContainerSetup, Class)} via a varhandle. The field is
-     * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
+     * This field is initialized in {@link ExtensionSetup#newExtension(ContainerSetup, Class)} via a var handle. The field
+     * is _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
@@ -119,7 +119,7 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionConfiguration#checkIsPreCompletion()}.
+     * This method delegates to {@link ExtensionConfiguration#checkIsPreCompletion()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
@@ -147,13 +147,13 @@ public abstract class Extension {
      * on {@code Extension} due to class-member visibility rules.
      * <p>
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
-     * need to use the configuration object in the constructor. You should can declare it as a parameter in the constructor
-     * and the let the runtime dependency inject it into the instance. Another alternative is to override {@link #onNew()}
-     * to perform post initialization.
+     * need to use the configuration object in the constructor. You can declare {@code ExtensionConfiguration} as a
+     * parameter in the extension's constructor and the let the runtime dependency inject it into the extension instance.
+     * Another alternative is to override {@link #onNew()} to perform post initialization.
      * 
      * @throws IllegalStateException
      *             if invoked from the constructor of the extension.
-     * @return a context object for this extension
+     * @return a configuration object for this extension
      */
     protected final ExtensionConfiguration configuration() {
         ExtensionConfiguration c = configuration;
@@ -186,10 +186,14 @@ public abstract class Extension {
 
     /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
     /// Maaske det er vigtigt at have de 2 options.
+    /// isExtensionUsable() , makeUnusable
     protected final boolean isExtensionBanned(Class<? extends Extension> extensionType) {
         return configuration().isExtensionBanned(extensionType);
     }
 
+    // Ved ikke om vi draeber den, eller bare saetter en stor warning
+    // Problemet er at den ikke fungere skide godt paa fx JFR extension.
+    // Her er det jo root container vi skal teste
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
      * 
@@ -202,11 +206,6 @@ public abstract class Extension {
      */
     protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         return configuration().isExtensionUsed(extensionType);
-    }
-
-    /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
-    protected final boolean isPartOfImage() {
-        return configuration().isPartOfImage();
     }
 
     /**
@@ -351,7 +350,7 @@ public abstract class Extension {
      * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
      * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
      * <p>
-     * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
+     * This method cannot be called from the constructor of the extension. If you need to call it from the constructor, you
      * can instead declare a dependency on {@link ExtensionConfiguration} and call
      * {@link ExtensionConfiguration#use(Class)}.
      * 
@@ -369,17 +368,12 @@ public abstract class Extension {
      * @see ExtensionConfiguration#use(Class)
      * @see #$dependsOn(Class...)
      */
-    protected final <E extends Subtension> E use(Class<E> subtensionClass) {
+    protected final <E extends ExtensionSupport> E use(Class<E> subtensionClass) {
         return configuration().use(subtensionClass);
     }
 
-    protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
-
-    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
-            Consumer<? super T> action) {
-        // Bliver kaldt hvis den specificeret
-        // Registeres ogsaa som dependeenc
-        // $ = Static Init (s + i = $)
+    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
+        throw new Error();
     }
 
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
@@ -390,19 +384,28 @@ public abstract class Extension {
     // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
     // onFinish cannot add new extensions...
 
-    protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
-
-    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
-        throw new Error();
-    }
-
     protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
         throw new Error();
     }
 
+    protected static <T extends Extension, A> void $attributeAdd(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+
+    protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
+
     // An instance of extensorType will automatically be installed whenever the extensor is used
     protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>> extensorType) {}
 
+    /**
+     * Only parent extensions will be linked
+     */
+    // Maaske skal vi have det for begge to
+    protected static void $connectParentOnly() {
+        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
+    }
+
+    // Hmm, er det overhoved interessant at faa en Subtension???
+    // Vil vi ikke hellere have extensionen.
+    // Og man kan vel ikke bruge hook annoteringer
     @SafeVarargs
     protected static void $cycleBreaker(Class<? extends Extension>... extensions) {
         // A -DependsOn(B)
@@ -414,58 +417,22 @@ public abstract class Extension {
     }
 
     /**
-     * Only parent extensions will be linked
-     */
-    // Maaske skal vi have det for begge to
-    protected static void $connectParentOnly() {
-        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
-    }
-
-    static void $libraryFor(Module module) {
-        // Will fail if the module, class does not have version
-        // protected static void $libraryVersion(Module|Class m);
-        // protected static void $libraryWrapper(Module m);
-
-        // libraryFor(
-        // Er det mere et foreignLibray???
-        // ConverterExtension er jo sin egen version
-        // will extract verions
-    }
-
-    protected static void $requiresClassGenFullAccessToModule() {
-        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
-        // Det kan ogsaa bare vaere en dependency paa en extension...
-        // Det er faktisk maaske det lettes
-        // dependsOn(ClassGenExtension.class);
-    }
-
-    // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
-    /**
-     * Depends on 1 or more extensions always. By always we mean that whenever
-     * 
-     * @param extensions
-     *            the extensions to always depends on
-     */
-    @SafeVarargs
-    protected static void $dependsOnAlways(Class<? extends Extension>... extensions) {
-        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
-    }
-
-    /**
-     * Registers one or more dependencies of this extension.
+     * Adds one or more extensions to the set of dependencies of this extension.
      * <p>
      * Every extension that another extension directly uses must be explicitly registered. Even if the extension is only
-     * used occasionally.
+     * used on a rare occasions.
      * 
      * @param extensions
-     *            dependencies of this extension
+     *            the dependencies to add
      * @throws InternalExtensionException
      *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-     *             the extension graph. Or if this method was not called directly from an extension class initializer
+     *             the extension graph.
+     * @throws UnsupportedOperationException
+     *             if this method is called from outside of an extension's class initializer
      * @see #$dependsOnIfAvailable(String)
      * @see #$dependsOnIfAvailable(String, String, Supplier)
      */
-    // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
+    // dependencyAdd
     @SafeVarargs
     protected static void $dependsOn(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(true, extensions);
@@ -486,7 +453,6 @@ public abstract class Extension {
      * @see #$dependsOn(Class...)
      * @see Class#forName(String, boolean, ClassLoader)
      */
-    // Is always automatically optionally
     protected static Optional<Class<? extends Extension>> $dependsOnIfAvailable(String extensionName) {
         return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
     }
@@ -502,21 +468,30 @@ public abstract class Extension {
      * @param alternative
      *            sd
      * @return stuff
+     * @throws IllegalArgumentException
+     *             if the specified bootstrap class resolves to an inner class and not a static class
      */
     protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
-        Optional<Class<? extends Extension>> dep = ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
-        // The extension does not exist, create an alternative value
-        if (dep.isEmpty()) {
+        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
+        // Attempt to load an extension with the specified name
+        Optional<Class<? extends Extension>> dependency = ExtensionModel.bootstrap(callerClass).dependsOnOptionally(extensionName);
+        // The extension does not exist, return an alternative value
+        if (dependency.isEmpty()) {
             return alternative.get();
         }
 
         // The dependency exists, load the bootstrap class
         Class<?> c;
-        String bootstrapClassName = dep.get().getName() + "$" + bootstrapClass;
+        String bootstrapClassName = dependency.get().getName() + "$" + bootstrapClass;
         try {
-            c = Class.forName(bootstrapClassName, true, dep.get().getClassLoader());
+            c = Class.forName(bootstrapClassName, true, callerClass.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new InternalExtensionException("Could not load class " + bootstrapClassName, e);
+        }
+
+        // Must be a static class. As the value should be stored in a static field
+        if (!Modifier.isStatic(c.getModifiers())) {
+            throw new IllegalArgumentException();
         }
 
         // Create and return a single instance of the bootstrap class
@@ -529,15 +504,31 @@ public abstract class Extension {
         }
     }
 
+    static void $libraryFor(Module module) {
+        // Will fail if the module, class does not have version
+        // protected static void $libraryVersion(Module|Class m);
+        // protected static void $libraryWrapper(Module m);
+
+        // libraryFor(
+        // Er det mere et foreignLibray???
+        // ConverterExtension er jo sin egen version
+        // will extract verions
+    }
+
+    protected static void $requiresClassGenFullAccessToModule() {
+        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
+        // Det kan ogsaa bare vaere en dependency paa en extension...
+        // Det er faktisk maaske det lettes
+        // dependsOn(ClassGenExtension.class);
+    }
+
     /**
      * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
      * network extension
      * <p>
      * If only certain cirkus stances use checkRunnableApplication()
      */
-    protected static void $requiresRunnableApplication() {
-        //
-    }
+    protected static void $requiresRunnableApplication() {}
 //
 //    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
 //        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
@@ -571,47 +562,34 @@ public abstract class Extension {
 //    protected interface ClassComponentDriverBuilder {
 //        BeanDriver.Binder<Object, BaseBeanConfiguration> build();
 //    }
-
-    /**
-     * A Subtension is the main way for one extension to use another extension. Unless you are developing new extensions you
-     * will most likely never have to deal with these type of classes.
-     * <p>
-     * 
-     * 
-     * An extension There are no annotations that make sense for this class
-     * <p>
-     * Subtensions are how extensions
-     * 
-     * On the basis that is the end-user that determines.
-     * 
-     * <p>
-     * A Subtension is typically defined as a non-final inner class. It must have an extension as a declaring class. It must
-     * have a single (preferable non-public) constructor and should not be declared final. This constructor may have the
-     * following two types of services injected:
-     * 
-     * 
-     * 
-     * And should not be declared final... Ideen er lidt at vi saa kan dekorere den... og returnere en subclasse... Og paa
-     * den maade se hvem der kalder hvilke metoder paa den...
-     * 
-     * Hvis mig hvad FooExtension laver. Installere Y Compoennt Kalder F metode paa Subtension...
-     * 
-     * <p>
-     * Subclasses of this class supports 2 types of arguments. The extension instance that it belongs to. This is typically
-     * easiest expressed by making the subclass an inner class.
-     * 
-     * {@code Class<? extends Extension>} which is the
-     * 
-     * <p>
-     * A new instance of subclasses of this class is automatically instance created by the runtime when needed. The
-     * instances are never cached, instead a fresh one is created every time it is requested.
-     * 
-     * @see Extension#use(Class)
-     * @see ExtensionConfiguration#use(Class)
-     */
-    public static abstract class Subtension {}
 }
 
+class Zarchive {
+
+    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
+            Consumer<? super T> action) {
+        // Bliver kaldt hvis den specificeret
+        // Registeres ogsaa som dependeenc
+        // $ = Static Init (s + i = $)
+    }
+
+    // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
+    /**
+     * Depends on 1 or more extensions always. By always we mean that whenever
+     * 
+     * @param extensions
+     *            the extensions to always depends on
+     */
+    @SafeVarargs
+    // Er ikke sikker paa jeg vil have den her??? Semantikken er ikke helt klar...
+    // svare det til man kalder use(DooSupport.class)????
+    // dependsOnAlways(ConfigException.class) -> Application or Container scope???
+
+    static void $dependsOnAlways(Class<? extends Extension>... extensions) {
+        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
+    }
+
+}
 //// Ved ikke praecis hvad vi skal bruge den til...
 //// Er det close/open world check?
 // Er containers... eller er det child extensions

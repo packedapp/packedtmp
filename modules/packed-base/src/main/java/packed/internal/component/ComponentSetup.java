@@ -76,7 +76,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     public final RealmSetup realm;
 
     /**
-     * Create a new component. This constructor is always invoked from one of subclasses of this class
+     * Create a new component. This constructor is only invoked from subclasses of this class
      * 
      * @param application
      *            the application the component is a part of

@@ -49,6 +49,9 @@ import app.packed.state.sandbox.RunStateInfo;
 // Naa vi naar hen til ApplicationRuntimeExtensionMirror begynder det at blive grimt...
 // Maaske fjerner vi Extension fra mirror...
 // Environtment..
+
+// ExecutionHost
+// ExecutionManager
 public interface ApplicationRuntime {
 
     // Optional<Throwable> getFailure();
@@ -292,7 +295,7 @@ public interface ApplicationRuntime {
 *
 */
 final class ApplicationRuntimeImplementation {
-    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().executable().build(MethodHandles.lookup(), Void.class);
+    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.EXECUTE_UNTIL_TERMINATED).build(MethodHandles.lookup(), Void.class);
 }
 
 enum ApplicationRuntimeState {

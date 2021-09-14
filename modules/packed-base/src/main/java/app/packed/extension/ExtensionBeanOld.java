@@ -101,7 +101,7 @@ public abstract non-sealed class ExtensionBeanOld<E extends Extension> implement
 
     static class MyExt extends Extension {
 
-        class Sub extends Subtension {
+        class Sub extends ExtensionSupport {
             // Den kan f.eks. overskrives via wirelets?
             //// ExtensionWirelets.disableFeature(ENABLED)?
             public static ExtensionFeatureFlag ENABLED = new ExtensionFeatureFlag() {};

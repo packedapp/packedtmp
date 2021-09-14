@@ -28,9 +28,7 @@ public class ApplicationHostExtension extends Extension {
     
     // Ideen er at f.eks. vi har en specifik Session extension?
     // Evt. Session Application Assembly
-    public class Sub extends Subtension {
-        
-    }
+
     
     // Som default linker man altid trustet ting...
 }

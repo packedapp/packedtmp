@@ -1,6 +1,7 @@
 package app.packed.container;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -84,7 +85,7 @@ public class ContainerExtension extends Extension {
         return (ContainerMirror) newRealm.root.mirror();
     }
 
-    public /* primitive */ class Sub {
+    public /* primitive */ class Sub extends ExtensionSupport {
 
         ContainerSetup container;
 

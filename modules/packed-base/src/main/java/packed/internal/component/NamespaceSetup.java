@@ -8,6 +8,7 @@ package packed.internal.component;
  * <p>
  * This class is never exposed out to end-users.
  */
+// FamilySetup
 public final class NamespaceSetup {
 
     // Et build kan ikke laves ovenpaa et existerede build.

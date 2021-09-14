@@ -8,6 +8,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Operator;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.container.ContainerSetup;
@@ -102,7 +103,7 @@ public class BeanExtension2 extends Extension {
         return configuration;
     }
 
-    public static class Sub extends Subtension {
+    public static class Sub extends ExtensionSupport {
         final BeanExtension2 extension;
         final Operator agent;
 

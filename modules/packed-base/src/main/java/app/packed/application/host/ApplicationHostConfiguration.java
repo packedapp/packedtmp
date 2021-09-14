@@ -4,12 +4,10 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.ExecutionWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceConfiguration;
-import app.packed.state.sandbox.InstanceState;
 import packed.internal.util.NativeImage;
 
 /**
@@ -131,7 +129,7 @@ class OldStuff<T> extends ApplicationHostConfiguration<T> {
     // Men det kan vi ikke naar det bare er en wirelet..
     // onBuild(), onInitialize()
     public void lazy2(Assembly<?> assembly, Wirelet... wirelets) {
-        install(assembly, ExecutionWirelets.launchMode(InstanceState.UNINITIALIZED).beforeThis(wirelets));
+      //  install(assembly, ExecutionWirelets.launchMode(ApplicationLaunchMode.RUNNING).beforeThis(wirelets));
     }
 }
 

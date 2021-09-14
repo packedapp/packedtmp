@@ -20,17 +20,16 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.application.ApplicationImage;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.Extension.Subtension;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A configuration object for an {@link Extension}.
+ * A configuration of an {@link Extension}.
  * <p>
  * Normally all configuration of extensions are done via the protected final methods declared on {@link Extension}.
  * However, for complex extensions where the logic cannot easily fit into a single class. This configuration can be
@@ -46,11 +45,15 @@ import packed.internal.container.ExtensionSetup;
  * <strong>Note:</strong> Instances of this interface should never be exposed to end-users.
  */
 // Features
+// * Application Info
 // * Get/check state
 // * find ancestors
-// * Get subtensions
+// * Get extension support
 // * Get wirelets
 public sealed interface ExtensionConfiguration permits ExtensionSetup {
+
+    /** {@return a descriptor for the application the extension is a part of.} */
+    ApplicationDescriptor application();
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -67,6 +70,17 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkIsPreLinkage();
 
+    /**
+     * @param <C>
+     *            the type of composer
+     * @param composer
+     *            the composer
+     * @param action
+     *            action to execute
+     * @throws IllegalStateException
+     *             if the specified composer has already been composed
+     */
+    // Taenker det stadig ser ud som om vi kommer fra samme assembly
     <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 
     /**
@@ -114,25 +128,12 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
+    // Altsaa den snyder jo rigtig meget...
+    // Eftersom man kan vaere fristet til at teste den
     boolean isExtensionUsed(Class<? extends Extension> extensionType);
 
     /**
-     * Returns whether or not the extension is part of an {@link ApplicationImage}.
-     * <p>
-     * This can be used to clean up data structures that was only remember that people might still inspect the image
-     * 
-     * @return whether or not the extension is part of an image
-     */
-    // Problemet her med build target... er at en sub application kan definere et image...
-    // Maaske bare build target...
-    // Maaske vi bare skal skal have application().
-    boolean isPartOfImage(); // BoundaryTypes
-
-    /**
-     * Selects all container wirelets of the specified type.
-     * <p>
-     * The wirelets selected...
-     * 
+     * Returns a selection of all wirelets of the specified type.
      * <p>
      * This does not include potential runtime wirelets which the user might specify when launching from an image. Maaske
      * skal vi have en isRuntimeWireletsAllowed (if root and is image)
@@ -146,33 +147,34 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *             if the specified wirelet class is not a proper subclass of {@link Wirelet}. Or if the specified class is
      *             not located in the same module as the extension itself
      */
+    // Skal vi have en boolean allowsRuntimeWirelets() metode???
     <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletType);
 
     /**
-     * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
-     * dependencies as specified via....
+     * Returns an extension support class of the specified type.
      * <p>
-     * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionConfiguration} and call
-     * {@link ExtensionConfiguration#use(Class)}.
+     * The specified support class's extension must be among this extension's declared dependencies.
      * <p>
-     * This method works similar to {@link BaseContainerConfiguration#use(Class)}.
+     * This method works similar to {@link ContainerConfiguration#use(Class)} except it does not return the extension but
+     * its support class instead.
      * 
      * @param <E>
-     *            the type of subtension to return
-     * @param subtensionClass
-     *            the type of subtension that should be returned
-     * @return the subtension
+     *            the type of extension support class to return
+     * @param supportClass
+     *            the type of extension support class that should be returned
+     * @return the extension support class
      * @throws IllegalStateException
-     *             If invoked from the constructor of an extension. Or if the underlying container is no longer configurable
-     *             and the subtensions underlying extension have not already been created
+     *             If the underlying container is no longer configurable and the extension for which the support class is a
+     *             member of has not already been used
      * @throws InternalExtensionException
-     *             if the specified subtension's extension is not a direct dependency of this extension
+     *             if the extension for which the support class is a member of is not a declared dependency of this
+     *             extension
      * 
-     * @see BaseContainerConfiguration#use(Class)
+     * @see Extension#use(Class)
+     * @see ContainerConfiguration#use(Class)
      * @see #isExtensionUsed(Class)
      */
-    <E extends Subtension> E use(Class<E> subtensionClass);
+    <E extends ExtensionSupport> E use(Class<E> supportClass);
 }
 
 interface Zandbox {
@@ -181,12 +183,7 @@ interface Zandbox {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a descriptor for the application the extension is a part of.} */
-    default ApplicationDescriptor application() {
-        throw new UnsupportedOperationException();
-    }
-
-    default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
+    default <E extends ExtensionSupport> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
         // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
 

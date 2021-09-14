@@ -6,9 +6,10 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanExtensionSupport;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBean;
+import app.packed.extension.ExtensionSupport;
 
 // Maaske er det ikke ContainerExtensor. But InheritableExtensor...
 // "Problemet" er applikation hosts... Vi gider jo ikke have 25 forskellige extensors.
@@ -83,16 +84,16 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
         System.out.println(ff);
         if (converters.isEmpty()) {
             converters = existing;
-            use(BeanExtension.Sub.class).inheritOrInstall(ConvExtensor.class);
+            use(BeanExtensionSupport.class).inheritOrInstall(ConvExtensor.class);
         } else {
             HashMap<Class<?>, Function<?, ?>> map = new HashMap<>(existing);
             map.putAll(converters);
             converters = Map.copyOf(map); // make immutable copy
-            use(BeanExtension.Sub.class).install(ConvExtensor.class);
+            use(BeanExtensionSupport.class).install(ConvExtensor.class);
         }
     }
 
-    public class Sub extends Subtension {
+    public class Sub extends ExtensionSupport {
 
         public void add(Class<?> from, Function<?, ?> f) {
             ConvExtension2.this.add(from, f);

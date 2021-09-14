@@ -6,6 +6,7 @@ package app.packed.application;
  */
 // Ideen er at det er naar vi f.eks. har lazy start og @Get -> starter lazy starter en applikation
 // Men den fejler
+// InvalidApplicationStateException?
 public class ApplicationNotRunningException extends RuntimeException {
 
     /** */

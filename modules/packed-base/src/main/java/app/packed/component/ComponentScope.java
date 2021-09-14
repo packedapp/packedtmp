@@ -39,23 +39,23 @@ import app.packed.base.Qualifier;
 public enum ComponentScope {
 
     /** A scope that indicates any component in the same namespace. */
-    NAMESPACE,
+    NAMESPACE, // -> Family
 
     /** A scope that indicates any component within the same application. */
-    APPLICATION,
+    APPLICATION, // -> Container
 
     /** A scope that indicates any component within the same container. */
-    CONTAINER,
+    CONTAINER, // -> Bundle
 
     // Der hvor denne her giver mening, er fx naar man siger install(..., spyOnWire(Scope.COMPONENT))
     // will never be inherited
     /** A scope that indicates the single component. */
-    COMPONENT, 
+    COMPONENT,
 
     /**
      * A system where all components are part of the same build. Being part of the same build means that...
      */
-    BUILD;
+    BUILD; // -> Application
 
     /*
      * REALM

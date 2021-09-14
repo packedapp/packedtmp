@@ -50,7 +50,7 @@ public class ChildInject extends BaseAssembly {
         }
 
         public void foo() {
-            use(ServiceExtension.Sub.class).check();
+            use(ServiceExtension.ServiceExtensionSupport.class).check();
         }
 
         static {

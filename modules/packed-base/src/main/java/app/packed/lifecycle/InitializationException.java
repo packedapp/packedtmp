@@ -18,7 +18,7 @@ package app.packed.lifecycle;
 /**
  *
  */
-public class InitializationException extends RuntimeException {
+public class InitializationException extends LifecycleException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

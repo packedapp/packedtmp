@@ -2,6 +2,7 @@ package app.packed.lifecycleold;
 
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionSupport;
 
 // Taenker vi godt vil have en extension...
 
@@ -22,7 +23,7 @@ public class EntryPointExtension extends Extension {
         // Det her er en function
     }
 
-    public class Sub extends Subtension {
+    public class EntryPointExtensionSupport extends ExtensionSupport {
 
         // Kan kun bliver
         /**

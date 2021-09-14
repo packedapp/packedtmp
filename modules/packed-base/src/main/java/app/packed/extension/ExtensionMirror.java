@@ -17,7 +17,7 @@ import packed.internal.container.ExtensionSetup;
  * This class can be extended by an extension to provide more detailed information about itself. For example,
  * {@link app.packed.service.ServiceExtension} extends this class via {@link app.packed.service.ServiceExtensionMirror}.
  * <p>
- * Extensions mirrors are typically obtained in one of the following ways:
+ * Extension mirror instances are typically obtained in one of the following ways:
  * <ul>
  * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
  * {@link ContainerMirror#findExtension(Class)}.</li>

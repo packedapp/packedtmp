@@ -127,7 +127,7 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
-    static ApplicationImage<Program> newImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -180,7 +180,7 @@ interface Zapp extends Program {
      *            optional wirelets
      * @return the new image
      */
-    static ApplicationImage<Program> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
         return Program.driver().imageOf(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
@@ -198,19 +198,6 @@ record ProgramImplementation(String name, ServiceLocator services, ApplicationRu
         return "App[name = " + name() + ", state = " + runtime.state() + "] ";
     }
 }
-
-///**
-//* Returns the path of this application. Unless the app is installed as a guest, this method always returns
-//* <code>"{@literal /}"</code>.
-//*
-//* @return the path of this application
-//* @see Component#path()
-//*/
-//// The state or the component?????
-////
-//default NamespacePath path() {
-// return component().path();
-//}
 
 class ZDdd extends BaseAssembly {
 

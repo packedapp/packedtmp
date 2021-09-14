@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import app.packed.application.programs.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionSupport;
 
 /**
  *
@@ -43,7 +44,7 @@ public class Z4 extends BaseAssembly {
         
         for (;;) {
             long s = System.currentTimeMillis();
-            Program.newImage(new Z4());
+            Program.imageOf(new Z4());
             System.out.println(System.currentTimeMillis() - s);
         }
         //Thread.sleep(10000);
@@ -104,7 +105,7 @@ public class Z4 extends BaseAssembly {
             // System.out.println(ai + "E-PreChildContainers");
         }
 
-        class Sub extends Subtension {
+        class Sub extends ExtensionSupport {
 
         }
     }
