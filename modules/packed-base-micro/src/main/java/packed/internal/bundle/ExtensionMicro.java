@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.bundle;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +28,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.extension.Extension;
-import packed.internal.bundle.ExtensionModel;
 
 /**
  *

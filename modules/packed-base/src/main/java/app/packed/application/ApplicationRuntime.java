@@ -138,7 +138,7 @@ public interface ApplicationRuntime {
      */
     void stop(StopOption... options);
 
-    default CompletableFuture<?> stopAsync(StopOption... options) {
+    default CompletableFuture<Void> stopAsync(StopOption... options) {
         return stopAsync(null, new StopOption[] {});
     }
 

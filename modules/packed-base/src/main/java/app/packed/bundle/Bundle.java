@@ -37,8 +37,8 @@ import packed.internal.util.LookupUtil;
  * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
  * functionality of Packed.
  * <p>
- * An assembly is a thin wrapper that encapsulates a {@link BundleDriver} and the configuration of a component
- * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseBundle}.
+ * An assembly is a thin wrapper that encapsulates a {@link BundleDriver} and the configuration of a component provided
+ * by the driver. This class is mainly used through one of its subclasses such as {@link BaseBundle}.
  * <p>
  * Assemblies are composable via linking.
  * 
@@ -50,26 +50,25 @@ import packed.internal.util.LookupUtil;
  * 
  * 
  * @param <C>
- *            the underlying component configuration this assembly wraps
- * @see CommonContainerAssembly
+ *            the underlying configuration this bundle wraps
  * @see BaseBundle
  */
 public abstract class Bundle<C extends BundleConfiguration> {
 
-    /** A marker configuration object to indicate that an assembly has already been used to build something. */
+    /** A marker configuration object, indicating that a bundle instance has been used for building something. */
     private static final BundleConfiguration USED = new BundleConfiguration();
 
-    /** A var handle that can update the #configuration field in ContainerConfiguration. */
+    /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", BundleConfiguration.class);
 
     /**
-     * The configuration of the underlying container.
+     * The configuration object we delegate all calls to.
      * <p>
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.</li>
-     * <li>Then, as a part of the build process, it is initialized with the actual container configuration.</li>
+     * <li>Initially, this field is null, indicating that the bundle instance has not yet been used to build anything.</li>
+     * <li>Then, as a part of the build process, it is initialized with the actual bundle configuration object.</li>
      * <li>Finally, {@link #USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
@@ -263,18 +262,18 @@ public abstract class Bundle<C extends BundleConfiguration> {
     }
 
     /**
-     * Returns an instance of the specified extension class.
+     * Returns an extension instance of the specified type.
      * <p>
-     * If this is first time this method is called (with the specified extension type). An instantiate of the specified
-     * extension will be created, and subsequent invocations will return the same instance.
+     * The framework will lazily create a single instance of a particular extension. Returning the same instance for any
+     * subsequent calls.
      * 
      * @param <T>
      *            the type of extension to return
      * @param extensionType
-     *            the extension class to return an instance of
-     * @return an instance of the specified extension class
+     *            the type of extension to return
+     * @return an extension instance of the requested type
      * @throws IllegalStateException
-     *             if called after the container is no longer configurable
+     *             if called after the bundle is no longer configurable
      * @see BundleConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {

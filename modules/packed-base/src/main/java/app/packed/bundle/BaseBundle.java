@@ -31,7 +31,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 
 /**
- * Extends {@link CommonContainerAssembly} with shortcuts for some of the commonly used extensions.
+ * Extends {@link Bundle} with shortcuts for some of the commonly used extensions.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -93,10 +93,10 @@ public abstract class BaseBundle extends Bundle<BundleConfiguration> {
     }
 
     /**
-     * Creates a new assembly using the specified driver.
+     * Creates a new bundle using the specified driver.
      * 
      * @param driver
-     *            the container driver to use
+     *            the driver to wrap
      */
     protected BaseBundle(BundleDriver<?> driver) {
         super(driver);

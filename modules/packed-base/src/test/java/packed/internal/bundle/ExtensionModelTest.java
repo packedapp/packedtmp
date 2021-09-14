@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.bundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.bundle.ExtensionModel;
 
 /** Tests {@link ExtensionModel}. */
 public class ExtensionModelTest {
