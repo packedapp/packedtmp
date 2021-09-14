@@ -44,9 +44,8 @@ import app.packed.extension.Extension;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.bundle.CompositeWirelet;
-import packed.internal.bundle.PackedContainerDriver;
+import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.bundle.WireletWrapper;
-import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
@@ -139,7 +138,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Both here and linking... We could call it from within build
 
         // Extract the component driver from the field Assembly#driver
-        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
+        PackedBundleDriver<?> componentDriver = PackedBundleDriver.getDriver(assembly);
 
         // Create the initial realm realm, typically we will have a realm per container
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
@@ -169,7 +168,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(composer, "composer is null");
 
         // Extract the component driver from the composer
-        PackedContainerDriver<?> componentDriver = (PackedContainerDriver<?>) containerDriver;
+        PackedBundleDriver<?> componentDriver = (PackedBundleDriver<?>) containerDriver;
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, consumer, wirelets);

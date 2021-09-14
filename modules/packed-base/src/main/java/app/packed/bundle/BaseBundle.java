@@ -114,7 +114,7 @@ public abstract class BaseBundle extends Bundle<BundleConfiguration> {
         return use(BeanExtension.class);
     }
 
-    protected final BundleExtension container() {
+    protected final BundleExtension bundle() {
         return use(BundleExtension.class);
     }
 
@@ -254,7 +254,7 @@ public abstract class BaseBundle extends Bundle<BundleConfiguration> {
      * @see BundleExtension#link(Bundle, Wirelet...)
      */
     protected final BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
-        return container().link(assembly, wirelets);
+        return bundle().link(assembly, wirelets);
     }
 
     /**

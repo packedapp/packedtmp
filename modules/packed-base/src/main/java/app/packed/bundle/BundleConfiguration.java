@@ -1,7 +1,10 @@
 package app.packed.bundle;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
@@ -70,6 +73,21 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
         return container().isExtensionUsed(extensionType);
     }
 
+    /**
+     * The lookup object passed to this method is never made available through the public api. It is only used internally.
+     * Unless your private
+     * 
+     * @param lookup
+     *            the lookup object
+     */
+    // Hvorfor er det her ikke paa ContainerConfiguration????
+    // fx hooks ville gerne bruge den
+    // Hvis vi bare declare det final
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        container().realm.setLookup(lookup);
+    }
+
     /** {@return a mirror for the container.} */
     @Override
     public BundleMirror mirror() {
@@ -87,7 +105,7 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
-
+    
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -108,4 +126,5 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     public <E extends Extension> E use(Class<E> extensionType) {
         return container().useExtension(extensionType);
     }
+
 }

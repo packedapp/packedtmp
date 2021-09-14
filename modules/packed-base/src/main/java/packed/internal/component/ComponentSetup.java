@@ -165,7 +165,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         case APPLICATION -> application == other.application;
         case BUILD -> application.build == other.application.build;
         case COMPONENT -> this == other;
-        case CONTAINER -> container == other.container;
+        case BUNDLE -> container == other.container;
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
         };
     }

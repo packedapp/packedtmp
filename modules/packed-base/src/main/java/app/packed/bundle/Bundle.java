@@ -27,8 +27,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
 import packed.internal.bundle.ContainerSetup;
-import packed.internal.bundle.PackedContainerDriver;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -80,10 +79,10 @@ public abstract class Bundle<C extends BundleConfiguration> {
     /**
      * This assembly's container driver.
      * <p>
-     * This field is read by {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
+     * This field is read by {@link PackedBundleDriver#getDriver(Assembly)} via a varhandle.
      */
     @SuppressWarnings("unused")
-    private final PackedContainerDriver<? extends C> driver;
+    private final PackedBundleDriver<? extends C> driver;
 
     /**
      * Creates a new assembly using the specified component driver.
@@ -94,7 +93,7 @@ public abstract class Bundle<C extends BundleConfiguration> {
     // Could we allow to override the driver when linking?
     // I think we need to define the exact usecases
     protected Bundle(BundleDriver<? extends C> driver) {
-        this.driver = requireNonNull((PackedContainerDriver<? extends C>) driver, "driver is null");
+        this.driver = requireNonNull((PackedBundleDriver<? extends C>) driver, "driver is null");
     }
 
     /** {@return a descriptor for the application being built.} */
@@ -105,7 +104,7 @@ public abstract class Bundle<C extends BundleConfiguration> {
     /**
      * Invoked by the runtime as part of the build process. This is where you should compose the application
      * <p>
-     * This method will never be invoked more than once on an assembly instance.
+     * This method will never be invoked more than once on a bundle instance.
      * <p>
      * Note: This method should never be invoked directly by the user.
      */
@@ -209,25 +208,21 @@ public abstract class Bundle<C extends BundleConfiguration> {
      * @param lookup
      *            the lookup object
      */
-    // Hvorfor er det her ikke paa ContainerConfiguration????
-    // fx hooks ville gerne bruge den
-    // Hvis vi bare declare det final
     protected final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        configuration().container().realm.setLookup(lookup);
+        configuration().lookup(lookup);
     }
 
     /**
-     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
-     * is case sensitive.
+     * Sets the name of the bundle. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
+     * case sensitive.
      * <p>
-     * This method should be called as the first thing when configuring a container.
+     * This method should be called as the first thing when configuring a bundle.
      * <p>
-     * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
-     * such a way that it will have a unique name among other sibling container.
+     * If no name is set using this method. The framework will automatically assign a name to the bundle, in such a way that
+     * it will have a unique name among other sibling container.
      *
      * @param name
-     *            the name of the container
+     *            the name of the bundle
      * @see BundleConfiguration#named(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
@@ -280,6 +275,3 @@ public abstract class Bundle<C extends BundleConfiguration> {
         return configuration().use(extensionType);
     }
 }
-//Or ContainerAssembly... ligesom Image vs ApplicationImage
-//Men saa skal det vel ogsaa hedde ContainerWirelets....
-//Altsaa man bruger den jo naermest aldrig, kun andre

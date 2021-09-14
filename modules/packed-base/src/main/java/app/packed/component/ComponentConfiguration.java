@@ -22,7 +22,6 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.Wirelet;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
 
 /**
  * The base class for all component configuration classes.
@@ -36,7 +35,7 @@ import packed.internal.component.PackedComponentDriver;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,BundleConfiguration,FunctionConfiguration {
 
-    /** The component we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
+    /** The component we are wrapping. Is initially null until initialize by someone. */
     @Nullable
     private ComponentSetup component;
 
@@ -103,14 +102,6 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Bu
      */
     protected void onConfigured() {}
 
-//    /**
-//     * A method that can be overridden
-//     * 
-//     * <p>
-//     * <strong>Note:</strong> This method should never be overridden with a public modifier.
-//     */
-//    protected final void onNew() {}
-
     /**
      * Returns the full path of the component.
      * <p>
@@ -135,6 +126,15 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Bu
         return component().toString();
     }
 }
+
+
+///**
+//* A method that can be overridden
+//* 
+//* <p>
+//* <strong>Note:</strong> This method should never be overridden with a public modifier.
+//*/
+//protected final void onNew() {}
 // I don't expect this class to have any $ methods
 // They should most likely be located in the driver instead
 // A component configuration is just a thin wrapper

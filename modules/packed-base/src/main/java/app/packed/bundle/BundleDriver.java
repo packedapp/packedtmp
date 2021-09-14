@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.extension.Extension;
-import packed.internal.bundle.PackedContainerDriver;
+import packed.internal.bundle.PackedBundleDriver;
 
 //2 valgmuligheder
 
@@ -20,7 +20,7 @@ import packed.internal.bundle.PackedContainerDriver;
 //  T newContainer(ContainerDriver<T> driver);
 
 @SuppressWarnings("rawtypes")
-public sealed interface BundleDriver<C extends BundleConfiguration> permits PackedContainerDriver {
+public sealed interface BundleDriver<C extends BundleConfiguration> permits PackedBundleDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -37,7 +37,7 @@ public sealed interface BundleDriver<C extends BundleConfiguration> permits Pack
 
     /** {@return the default driver that is used to configure containers.} */
     public static BundleDriver<BundleConfiguration> defaultDriver() {
-        return PackedContainerDriver.DRIVER;
+        return PackedBundleDriver.DRIVER;
     }
 
     interface Builder {
