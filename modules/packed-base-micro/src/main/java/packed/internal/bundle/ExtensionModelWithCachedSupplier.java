@@ -62,7 +62,6 @@ final class ExtensionModelWithCachedSupplier<T> {
      * @param type
      *            the extension type
      */
-    @SuppressWarnings("unchecked")
     private ExtensionModelWithCachedSupplier(Class<? extends Extension> type) {
         this.type = requireNonNull(type);
         /// TODO Check not abstract

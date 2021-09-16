@@ -11,7 +11,6 @@ import packed.internal.application.PackedApplicationDescriptor;
 // Generiske user Attributes<> Kan saettes via Wirelets
 /**
  * An immutable descriptor of an application.
- * 
  */
 public sealed interface ApplicationDescriptor permits PackedApplicationDescriptor {
 //
@@ -23,9 +22,8 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 //
 //    void checkHasRunnable(String message);
 //
-    /** {@return the type of assembly.} */
-    // What about composers
-    Class<? extends Bundle<?>> assemblyType();
+    /** {@return the type of the root bundle.} */
+    Class<? extends Bundle<?>> bundleType();
 //    // defaultLaunchMode() -> Lazy
 //
 //    // Ved ikke om vi skal have den her...
@@ -63,23 +61,21 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
          * <p>
          * A typical use case is native images
          * 
-         * @see ApplicationDriver#newImage(Assembly, Wirelet...)
+         * @see ApplicationDriver#imageOf(Bundle, Wirelet...)
          */
         IMAGE,
 
         /**
          * Build and instantiate an application.
          * 
-         * @see ApplicationDriver#compose(app.packed.component.Composer, java.util.function.Consumer, Wirelet...)
-         * @see ApplicationDriver#launch(Assembly, Wirelet...)
+         * @see ApplicationDriver#launch(Bundle, Wirelet...)
          */
         INSTANCE, // LAUNCH
 
         /**
          * Build a mirror of some kind, for example, an {@link ApplicationMirror}.
          *
-         * @see ApplicationDriver#
-         * @see ApplicationMirror#of(Assembly, Wirelet...)
+         * @see ApplicationMirror#of(Bundle, Wirelet...)
          */
         MIRROR,
 

@@ -1,7 +1,7 @@
-package app.packed.application.host;
+package app.packed.bundle.host;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.various.VersionableApplicationMirror;
+import app.packed.application.deployer.VersionableApplicationMirror;
 import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 

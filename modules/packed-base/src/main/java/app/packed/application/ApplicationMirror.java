@@ -8,15 +8,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.application.host.ApplicationHost;
-import app.packed.application.host.ApplicationHostMirror;
 import app.packed.application.various.TaskListMirror;
-import app.packed.application.various.VersionableApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
+import app.packed.bundle.host.ApplicationHost;
+import app.packed.bundle.host.ApplicationHostMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Operator;
 import app.packed.extension.Extension;
@@ -31,7 +30,7 @@ import packed.internal.application.PackedApplicationDriver;
  */
 // En application kan
 //// Vaere ejet af bruger
-//// Member of an extension
+//// Member of an extension (neeej sjaeldent, if ever...)
 //// Controlled by an extension
 
 // Fx Session er controlled by WebExtension men er ikke member af den
@@ -40,13 +39,19 @@ public interface ApplicationMirror {
     /** {@return the build the application is a part of.} */
     BuildMirror build();
 
+    /** {@return the root bundle in the application.} */
+    BundleMirror bundle();
+
+    /** {@return the type of the root bundle.} */ // IDK bundle().type() might be fine
+    default Class<? extends Bundle<?>> bundleType() {
+        return bundle().type();
+    }
+
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
-    ApplicationDescriptor descriptor();
-    
     default Stream<ComponentMirror> components() {
-        return container().components();
+        return bundle().components();
     }
 
     /** {@return the component in the application}. */
@@ -54,8 +59,8 @@ public interface ApplicationMirror {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the root container in the application.} */
-    BundleMirror container();
+    /** {@return a descriptor for the application.} */
+    ApplicationDescriptor descriptor();
 
     /**
      * Returns an immutable set containing any extensions that have been disabled.
@@ -109,7 +114,7 @@ public interface ApplicationMirror {
     }
 
     default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        container().components().forEach(action);
+        bundle().components().forEach(action);
     }
 
     /**
@@ -171,13 +176,14 @@ public interface ApplicationMirror {
     /**
      * Returns the name of the application.
      * <p>
-     * The name of an application is always identical to the name of the root container.
+     * The name of an application is always identical to the name of the root bundle.
      * 
      * @return the name of the application
+     * @see Bundle#named(String)
      * @see Wirelet#named(String)
      */
     default String name() {
-        return container().name();
+        return bundle().name();
     }
 
     default Operator owner() {
@@ -185,7 +191,7 @@ public interface ApplicationMirror {
     }
 
     default void print() {
-        container().print();
+        bundle().print();
     }
 
     default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
@@ -197,14 +203,21 @@ public interface ApplicationMirror {
         return select(BeanMirror.class);
     }
 
-    /**
-     * <p>
-     * A root application always returns empty
-     * 
-     * @return whether or not this application is a part of a versionable application
-     */
-    default Optional<VersionableApplicationMirror> versionable() {
-        throw new UnsupportedOperationException();
+    default long version() {
+        // Taenker det er rart at kunne skelne imellem applicationer der supporter versioning og dem der ikke goer..
+        // Maaske returnere en optional<long>???
+        return 1;
+
+        //
+//      /**
+//       * <p>
+//       * A root application always returns empty
+//       * 
+//       * @return whether or not this application is a part of a versionable application
+//       */
+//      default Optional<VersionableApplicationMirror> versionable() {
+//          throw new UnsupportedOperationException();
+//      }
     }
 
     default TreeWalker<ApplicationMirror> walker() {
@@ -238,6 +251,7 @@ public interface ApplicationMirror {
      *            optional wirelets
      * @return an application mirror
      */
+    // IDK om vi bare altid bruger en Application Launcher class...
     public static ApplicationMirror of(Bundle<?> assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }

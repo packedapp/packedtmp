@@ -20,7 +20,7 @@ import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
  * non-runnable application will fail with {@link UnavailableExtensionException}.
  * 
  */
-// ExecutionWirelets
+///// ContainerWirelets???
 public final class ExecutionWirelets {
     private ExecutionWirelets() {}
 
@@ -106,11 +106,11 @@ public final class ExecutionWirelets {
     // excludes start?? IDK
     // Altsaa det giver jo mening at faa en total tid taenker jeg
     // Omvendt tror jeg ikke det giver mening at tage build time med...
-    // 
-    
+    //
+
     // timeToStart() If the application does not start within the X time
     // Shut it down
-    
+
     /**
      * 
      * @param duration

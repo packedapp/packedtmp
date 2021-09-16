@@ -4,12 +4,12 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.Daemon;
-import app.packed.application.host.ApplicationHostConfiguration;
-import app.packed.application.host.ApplicationHostExtension;
 import app.packed.application.programs.SomeApp;
 import app.packed.base.Completion;
 import app.packed.bundle.BaseBundle;
 import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.host.ApplicationHostConfiguration;
+import app.packed.bundle.host.ApplicationHostExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.state.sandbox.InstanceState;
 

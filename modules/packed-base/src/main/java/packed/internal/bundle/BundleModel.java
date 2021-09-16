@@ -17,21 +17,19 @@ import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
-/**
- * A model of an {@link Bundle}.
- */
-public final /* primitive */ class AssemblyModel {
+/** A model of an {@link Bundle}. */
+public final /* primitive */ class BundleModel {
     private final AssemblyBuildHook[] hooks;
 
-    private AssemblyModel(AssemblyBuildHook[] hooks) {
+    private BundleModel(AssemblyBuildHook[] hooks) {
         this.hooks = requireNonNull(hooks);
     }
 
     /** Cached models. */
-    private final static ClassValue<AssemblyModel> MODELS = new ClassValue<>() {
+    private final static ClassValue<BundleModel> MODELS = new ClassValue<>() {
 
         @Override
-        protected AssemblyModel computeValue(Class<?> type) {
+        protected BundleModel computeValue(Class<?> type) {
             ArrayList<AssemblyBuildHook> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof ApplyBuildHook h) {
@@ -61,7 +59,7 @@ public final /* primitive */ class AssemblyModel {
                     }
                 }
             }
-            return new AssemblyModel(hooks.toArray(s -> new AssemblyBuildHook[s]));
+            return new BundleModel(hooks.toArray(s -> new AssemblyBuildHook[s]));
         }
     };
 
@@ -73,11 +71,12 @@ public final /* primitive */ class AssemblyModel {
 
     public void postBuild(BundleConfiguration configuration) {
         for (AssemblyBuildHook h : hooks) {
-            h.onPostBuild(configuration);;
+            h.onPostBuild(configuration);
+            ;
         }
     }
 
-    public static AssemblyModel of(Class<?> assemblyOrComposer) {
+    public static BundleModel of(Class<?> assemblyOrComposer) {
         return MODELS.get(assemblyOrComposer);
     }
 }

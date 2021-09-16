@@ -39,7 +39,6 @@ public final class PackedBeanDriver<C extends BeanConfiguration<?>> implements O
         return binder.kind();
     }
 
-    @SuppressWarnings("unchecked")
     public C toConfiguration0(ComponentSetup context) {
         try {
             // TODO.. vi bruger ikke context'en lige nu. Men

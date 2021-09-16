@@ -52,6 +52,7 @@ import app.packed.state.sandbox.RunStateInfo;
 
 // ExecutionHost
 // ExecutionManager
+// Application Container
 public interface ApplicationRuntime {
 
     // Optional<Throwable> getFailure();

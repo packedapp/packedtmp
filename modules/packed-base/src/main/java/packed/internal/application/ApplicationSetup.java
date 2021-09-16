@@ -12,11 +12,11 @@ import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
-import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
 import app.packed.build.BuildMirror;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
+import app.packed.bundle.host.ApplicationHostMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
@@ -117,7 +117,7 @@ public final class ApplicationSetup {
         }
 
         @Override
-        public BundleMirror container() {
+        public BundleMirror bundle() {
             return ApplicationSetup.this.container.mirror();
         }
 

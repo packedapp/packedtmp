@@ -1,4 +1,4 @@
-package app.packed.application.host;
+package app.packed.bundle.host;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.various.UseCases.Guest;

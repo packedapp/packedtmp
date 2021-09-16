@@ -12,7 +12,13 @@ import packed.internal.util.ThrowableUtil;
 // Og ikke bare smide det direkte paa ContainerConfiguration/Extension
 // Altsaa vi har allerede installeret en Container. Som er den vi linker fra
 
+// Det der taler imod det, er hvis support er spredt udover flere extensions.
+// Eftersom vi ikke kan tilfoeje flere extensions efter vi har tilfoejet den foerste af dem
+
+
 // Taenker den har baade bundles + containers...
+
+
 public class BundleExtension extends Extension {
 
     /** The service manager. */
@@ -34,6 +40,8 @@ public class BundleExtension extends Extension {
     // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
     // Men maaske skulle vi have noget vi kan refererer andre steder?
     // Jeg ved dog ikke hvad eftersom det er stateless
+    
+    // LinkedBundle
     public BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
         return link(assembly, container, container.realm, wirelets);
     }

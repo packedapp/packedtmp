@@ -39,7 +39,7 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
         return container().application.descriptor;
     }
 
-    /** {@return the container setup instance that we are wrapping.} */
+    /** {@return the wrapped configuration instance.} */
     ContainerSetup container() {
         try {
             return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
@@ -49,7 +49,7 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     }
 
     /**
-     * {@return an unmodifiable view of the extensions that are currently used}
+     * {@return an unmodifiable view of the extensions that are currently used.}
      * 
      * @see #use(Class)
      * @see BaseBundle#extensionsTypes()
@@ -105,7 +105,7 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
-    
+
     /**
      * Returns an extension of the specified type.
      * <p>

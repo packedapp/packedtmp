@@ -53,7 +53,6 @@ LifetimePool pool) implements MethodAccessor<T> {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public T invoke() throws Throwable {
         return (T) mh.invoke(pool);

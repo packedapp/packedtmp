@@ -67,7 +67,7 @@ public @interface ServiceHook {
          * @throws InvalidKeyException
          *             if a valid key could not be created
          * @see Key#convertField(java.lang.reflect.Field)
-         * @see Key#convertParameter(app.packed.base.Parameter)
+         * @see Key#convertParameter(java.lang.reflect.Parameter)
          * @see Key#convertTypeLiteral(app.packed.base.TypeToken)
          */
         // Hmm, hvordan klare vi Provider, Lazy, Optional her...

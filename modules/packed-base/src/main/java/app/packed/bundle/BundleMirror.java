@@ -12,18 +12,17 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 
 /**
- * A mirror of a container (component).
+ * A mirror of a bundle (component).
  * <p>
  * An instance of this class is typically opb
  */
-// Tror vi skal have en liste af banned extensions.
-// Maaske baade dem inheriter, og dem vi ikke inheriter
+// Tror vi skal have en liste af banned extensions, Maaske baade dem inheriter, og dem vi ikke inheriter
 public non-sealed interface BundleMirror extends ComponentMirror {
 
-    /** {@return a {@link Set} view of mirrors for every extension that is used by the container.} */
+    /** {@return a {@link Set} view of mirrors for every extension that is in use.} */
     Set<ExtensionMirror> extensions();
 
-    /** {@return a {@link Set} view of every extension type used by the container.} */
+    /** {@return a {@link Set} view of every extension type that is in use.} */
     Set<Class<? extends Extension>> extensionsTypes();
 
     /**
@@ -46,6 +45,17 @@ public non-sealed interface BundleMirror extends ComponentMirror {
     boolean isExtensionUsed(Class<? extends Extension> extensionType);
 
     /**
+     * Returns the bundle class that was used to build the bundle.
+     * <p>
+     * (alternative, defining bundle type) Returns the bundle type which is the class used for building the bundle
+     * <p>
+     * If composer returns {@code Bundle.class} except for example ServiceExtension.transformExports
+     * 
+     * @return the bundle type
+     */
+    Class<? extends Bundle<?>> type();
+
+    /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws
      * {@link NoSuchElementException} if the container does not use the specified extension type.
      * 
@@ -66,6 +76,6 @@ public non-sealed interface BundleMirror extends ComponentMirror {
     }
 
     public static BundleMirror of(Bundle<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(assembly, wirelets).container();
+        return ApplicationMirror.of(assembly, wirelets).bundle();
     }
 }

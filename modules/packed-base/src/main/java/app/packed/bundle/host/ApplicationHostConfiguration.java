@@ -1,4 +1,4 @@
-package app.packed.application.host;
+package app.packed.bundle.host;
 
 import java.util.function.Supplier;
 

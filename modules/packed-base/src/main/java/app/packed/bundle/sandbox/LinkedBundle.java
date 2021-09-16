@@ -13,28 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks.usage;
-
-import java.lang.invoke.MethodHandle;
-
-import app.packed.bundle.host.ApplicationHost;
+package app.packed.bundle.sandbox;
 
 /**
  *
  */
-class Tester extends InterceptingExtensionMethodSetup {
+// Returneres after link()...
+interface LinkedBundle {
 
-    public void intercept(MethodHandle m) {}
-
-    public static void main(String[] args) {
-        ApplicationHost.platformHost().forEach(e -> System.out.println(e.name()));
-    }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    protected void configure() {
-//
-//        MethodHandle mh = MethodHandles.filterReturnValue(handle(), null);
-//        intercept(mh);
-//    }
 }

@@ -46,7 +46,7 @@ import packed.internal.util.ClassUtil;
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
 
-    public final AssemblyModel assemblyModel;
+    public final BundleModel assemblyModel;
 
     /** Child containers, lazy initialized. */
     @Nullable
@@ -98,7 +98,7 @@ public final class ContainerSetup extends ComponentSetup {
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
-        this.assemblyModel = AssemblyModel.of(realm.realmType());
+        this.assemblyModel = BundleModel.of(realm.realmType());
 
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
@@ -431,6 +431,13 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        public Class<? extends Bundle<?>> type() {
+            return (Class) Bundle.class;
         }
     }
 }

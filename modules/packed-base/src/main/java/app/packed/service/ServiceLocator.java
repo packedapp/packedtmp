@@ -159,7 +159,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return the new service locator
      */
     @Reflectable
-    ServiceLocator spawn(ComposerAction<ServiceComposer> transmuter);
+    ServiceLocator spawn(ComposerAction<ServiceComposer> action);
 
     /**
      * Returns a service with the specified key. Or throws a {@link NoSuchElementException} if no such service is available.

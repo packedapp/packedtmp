@@ -211,8 +211,8 @@ public abstract class Extension {
     /**
      * Returns a mirror for the extension.
      * <p>
-     * This method can be overridden to overridden to provide a custom mirror. For example, {@link ServiceExtension}
-     * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
+     * This method can be overridden to provide a customized mirror. For example, {@link ServiceExtension} overrides this
+     * method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
      * If this method is overridden, {@link #mirrorInitialize(ExtensionMirror)} must be called with the new mirror instance
      * before returning from the method: <pre>
@@ -225,14 +225,12 @@ public abstract class Extension {
      * }
      * }</pre>
      * <p>
-     * 
-     * Must support being populated at any point. Including immediately after the extension is created. After
-     * {@link Extension#onNew()} returns.
-     * 
+     * NOTE: This method may be called at any point in time by the runtime. Care should be taken to make sure that a valid
+     * mirror is returned at any point in time.
+     * <p>
      * Subclasses may choose to make this method public.
      * <p>
-     * If this method is overridden and null is returned. The runtime will throw a runtime exception.
-     * 
+     * This method should never return null.
      * 
      * @return a mirror for the extension
      * @see BundleMirror#extensions()
@@ -264,7 +262,7 @@ public abstract class Extension {
      * <p>
      * <strong>NOTE:</strong> At this stage the set of extensions used by the container are fixed. It is not possible to
      * start using extension that are not already used, for example, via calls to {@link #use(Class)}. Or indirectly, for
-     * example, by installing an extensor that uses extensions that have not already been used.
+     * example, by installing a bean that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
      * {@link BundleExtension.Sub#link(Bundle, Wirelet...)}
@@ -282,20 +280,19 @@ public abstract class Extension {
 
     /**
      * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned successfully),
-     * but before the new extension instance is returned to the end-user.
+     * but before the new extension instance is made available to the user.
      * <p>
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
      * The next lifecycle method that will be called is {@link #onPreChildren()}, which is called immediately before any
-     * child containers are added
+     * child containers are added.
      * 
      * @see #onPreChildren()
      * @see #onComplete()
      */
     protected void onNew() {}
 
-    // onPreUserContainerWiring???
     /**
      * Invoked (by the runtime) when.
      * <p>
@@ -309,6 +306,7 @@ public abstract class Extension {
      */
     // onPreembleComplete
     // onPreLinkage
+    // onPreWiring????
     protected void onPreChildren() {
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
@@ -499,9 +497,7 @@ public abstract class Extension {
         Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), c);
         MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
         try {
-            @SuppressWarnings("unchecked")
-            T t= (T) mh.invoke();
-            return t;
+            return (T) mh.invoke();
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
