@@ -37,13 +37,13 @@ import app.packed.component.Operator;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
 
 /** Abstract build-time setup of a component. */
-public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
+public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -53,7 +53,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     LinkedHashMap<String, ComponentSetup> children;
 
     /** The container this component is a part of. A container is a part of it self. */
-    public final ContainerSetup container;
+    public final BundleSetup container;
 
     /** The depth of the component in the tree. */
     protected final int depth;
@@ -99,7 +99,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
         this.application = requireNonNull(application);
-        this.container = this instanceof ContainerSetup container ? container : parent.container;
+        this.container = this instanceof BundleSetup container ? container : parent.container;
     }
 
     final AttributeMap attributes() {
@@ -162,8 +162,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         requireNonNull(scope, "scope is null");
         requireNonNull(other, "other is null");
         return switch (scope) {
-        case APPLICATION -> application == other.application;
-        case BUILD -> application.build == other.application.build;
+        case CONTAINER -> application == other.application;
+        case APPLICATION -> application.build == other.application.build;
         case COMPONENT -> this == other;
         case BUNDLE -> container == other.container;
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
@@ -179,7 +179,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         checkIsWiring();
 
         // If a name has been set using a wirelet it cannot be overridden
-        if (this instanceof ContainerSetup cs && cs.nameInitializedWithWirelet) {
+        if (this instanceof BundleSetup cs && cs.nameInitializedWithWirelet) {
             return;
         } else if (name.equals(this.name)) {
             return;
@@ -258,7 +258,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final BundleMirror container() {
+        public final BundleMirror bundle() {
             return container.mirror();
         }
 

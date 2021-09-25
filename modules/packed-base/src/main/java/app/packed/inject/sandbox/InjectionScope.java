@@ -21,19 +21,28 @@ import java.lang.reflect.Member;
  *
  */
 public enum InjectionScope {
-    
+
+    CLASS,
+
     /**
      * A scope to a particular {@link Member (field, constructor, or method)}.
-     *  
-     *  */
+     * 
+     */
     MEMBER,
-    
-    CLASS,
-    
-    PROTOTYPE,
-    
-    SINGLETON, //CONTAINER, LOCATOR
 
-    REQUEST;
+    PROTOTYPE,
+
+    REQUEST, // CONTAINER, LOCATOR
+
+    SINGLETON;
 }
 // Hvad har Wirelet af scope??? Protortpe eller Singleton taenker jeg
+
+enum InjectionScope2 {
+
+    BUNDLE,
+
+    CLASS,
+
+    MEMBER_OR_FUNCTION;    
+}

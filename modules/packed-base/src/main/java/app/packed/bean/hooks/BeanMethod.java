@@ -3,8 +3,10 @@ package app.packed.bean.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
+import java.util.function.Function;
 
 import app.packed.base.Nullable;
+import app.packed.inject.Variable;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
@@ -19,7 +21,7 @@ import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
  * hooks that each have A single bootstrap Hvad goer vi med abstract klasser her??? Det er maaske ikke kun performance
  * at vi skal cache dem. Ellers kan vi ligesom ikke holder kontrakten om kun at aktivere det en gang...
  */
-public abstract non-sealed class BeanMethodHook extends BeanHook {
+public abstract non-sealed class BeanMethod extends BeanHookElement {
 
     /**
      * A bootstrap object using by this class. Should only be read via {@link #context()}. Updated via
@@ -62,12 +64,26 @@ public abstract non-sealed class BeanMethodHook extends BeanHook {
     }
 
     /**
-     * Returns a method handle that gives access to the method as specified by {@link Lookup#unreflect(Method)}.
+     * Returns a direct method handle for the underlying method as specified by {@link Lookup#unreflect(Method)}.
      * 
      * @return a method handle
      */
+    //// Issues er her, at man ikke kan bruge decorators/aop
+    //// i nogen form. Eftersom, den er raw...
+    //// Maaske vi skal markere den som "Undecorateable..."
     public final MethodHandle methodHandle() {
         return processor().unreflect();
+    }
+
+    // Will have precedens over any class based injector that have been set
+    public final void useInjector(Function<Variable, ?> f) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Will have precedens over any class or method based injector that have been set
+    public final void useInjector(int index, Function<Variable, ?> f) {
+        // Overrides any default injector for the parameter at the specified index
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -78,16 +94,16 @@ public abstract non-sealed class BeanMethodHook extends BeanHook {
 
 class ZAddMe {
 
-    void $metaHook(Class<? extends BeanMethodHook> hook) {
-        // Bootstrap models are not cached
-    }
-    
     void $cacheDisable() {
         // Bootstrap models are not cached
     }
-    
+
     // One model for ApplicationBean, other model other drivers
     void $cachePerBeanDriver() {
+        // Bootstrap models are not cached
+    }
+
+    void $metaHook(Class<? extends BeanMethod> hook) {
         // Bootstrap models are not cached
     }
 }

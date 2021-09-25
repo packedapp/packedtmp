@@ -24,7 +24,7 @@ interface BuildProcessor<T> {
     T get();
     
     public static void main(String[] args) {
-        BuildProcessor<ApplicationMirror> p = BuildProcessor.of(Daemon::mirror, new TstExt(), Wirelet.named("qweqwe"));
+        BuildProcessor<ApplicationMirror> p = BuildProcessor.of(Daemon::mirrorOf, new TstExt(), Wirelet.named("qweqwe"));
         
         BuildProcessor<Daemon> px = BuildProcessor.of(Daemon::run, new TstExt(), Wirelet.named("qweqwe"));
         

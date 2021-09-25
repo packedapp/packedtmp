@@ -1,8 +1,9 @@
-package app.packed.bean.hooks.usage;
+package packed.internal.component.bean;
 
 import java.util.function.Function;
 
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.hooks.usage.BeanType;
 
 /**
  * A driver for creating bean components.

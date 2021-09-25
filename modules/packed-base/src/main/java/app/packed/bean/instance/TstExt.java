@@ -12,8 +12,9 @@ public class TstExt extends BaseBundle {
 
     @Override
     protected void build() {
+        new Exception().printStackTrace();
         use(MyExt.class);
-        installInstance("werwer").inject("xxxx");
+        installInstance("werwer");//.inject("xxxx");
         link(new Subbb());
     }
 

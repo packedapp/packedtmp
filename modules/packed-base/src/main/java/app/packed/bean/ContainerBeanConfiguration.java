@@ -18,13 +18,13 @@ package app.packed.bean;
 import java.util.concurrent.Callable;
 
 /**
- * The configuration of an application bean.
+ * The configuration of a container bean.
  * <p>
  * that can serve as basis for actual component configuration types.
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public non-sealed class ApplicationBeanConfiguration<T> extends BeanConfiguration<T> {
+public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
 
     public <X extends Runnable & Callable<String>> X foo() {
         return null;
@@ -38,7 +38,7 @@ public non-sealed class ApplicationBeanConfiguration<T> extends BeanConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationBeanConfiguration<T> named(String name) {
+    public ContainerBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }

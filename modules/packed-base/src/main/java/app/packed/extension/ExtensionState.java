@@ -5,7 +5,7 @@ package app.packed.extension;
 
     NEW,
 
-    HALF_CLOSED,
+    HALF_CLOSED, // Linking, Wiring
 
     CLOSED;
 }

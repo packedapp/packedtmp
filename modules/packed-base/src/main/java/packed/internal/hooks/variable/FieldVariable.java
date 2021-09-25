@@ -15,8 +15,6 @@
  */
 package packed.internal.hooks.variable;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.reflect.Field;
 import java.util.Optional;
 
@@ -25,32 +23,29 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class FieldVariable extends AbstractVariable {
-
-    final Field field;
+public final class FieldVariable extends AbstractVariable<Field> {
 
     /**
      * @param e
      */
     public FieldVariable(Field e) {
         super(e);
-        this.field = requireNonNull(e);
     }
 
     /** {@inheritDoc} */
     public Optional<String> name() {
-        return Optional.of(field.getName());
+        return Optional.of(element.getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getType() {
-        return field.getType();
+        return element.getType();
     }
 
     /** {@inheritDoc} */
     @Override
     public TypeToken<?> typeToken() {
-        return TypeToken.fromField(field);
+        return TypeToken.fromField(element);
     }
 }

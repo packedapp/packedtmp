@@ -25,13 +25,13 @@ import app.packed.inject.Variable;
 /**
  *
  */
-public abstract class AbstractVariable implements Variable {
+public abstract class AbstractVariable<E extends AnnotatedElement> implements Variable {
 
     /** The annotated element. */
     // Maybe make an abstract method instead. then we don't need to store it.
-    final AnnotatedElement element;
+    final E element;
 
-    AbstractVariable(AnnotatedElement e) {
+    AbstractVariable(E e) {
         this.element = requireNonNull(e);
     }
 

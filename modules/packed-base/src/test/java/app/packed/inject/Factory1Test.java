@@ -44,7 +44,6 @@ public class Factory1Test {
         assertThat(d.key()).isEqualTo(Key.of(String.class));
         // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
         // String.class)
-        assertThat(d.member()).isEmpty();
         //assertThat(d.variable()).isEmpty();
     }
 

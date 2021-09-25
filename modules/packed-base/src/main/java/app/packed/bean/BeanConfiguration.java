@@ -14,15 +14,15 @@ import app.packed.state.sandbox.InstanceState;
  */
 @SuppressWarnings("rawtypes")
 public abstract sealed class BeanConfiguration<T>
-        extends ComponentConfiguration permits ApplicationBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration {
-
-    public <E> BeanConfiguration<T> inject(Class<E> key, E instance) {
-        return inject(Key.of(key), instance);
-    }
+        extends ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration {
 
     public <E> BeanConfiguration<T> decorate(Key<E> key, Function<E, E> mapper) {
         /// Mnahhh
         throw new UnsupportedOperationException();
+    }
+
+    public <E> BeanConfiguration<T> inject(Class<E> key, E instance) {
+        return inject(Key.of(key), instance);
     }
 
     // Taenker den overrider
@@ -36,13 +36,6 @@ public abstract sealed class BeanConfiguration<T>
     @SuppressWarnings("unchecked")
     public BeanConfiguration<T> inject(Object instance) {
         return inject((Class) instance.getClass(), instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanConfiguration<T> named(String name) {
-        super.named(name);
-        return this;
     }
 
     /** {@return the kind of bean that is being configured. } */
@@ -60,6 +53,13 @@ public abstract sealed class BeanConfiguration<T>
     protected BeanMirror mirror() {
         // Jeg taenker det er er
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanConfiguration<T> named(String name) {
+        super.named(name);
+        return this;
     }
 
     /**

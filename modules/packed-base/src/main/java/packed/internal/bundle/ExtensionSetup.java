@@ -50,12 +50,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             ExtensionConfiguration.class);
 
     /** The container where the extension is used. */
-    public final ContainerSetup container;
+    public final BundleSetup bundle;
 
     /** The type of extension that is being configured. */
     public final Class<? extends Extension> extensionType;
 
-    /** The extension instance, instantiated and set in {@link #newExtension(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated and set in {@link #newExtension(BundleSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -84,8 +84,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @param model
      *            the model of the extension
      */
-    private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
-        this.container = requireNonNull(container);
+    private ExtensionSetup(BundleSetup container, ExtensionModel model) {
+        this.bundle = requireNonNull(container);
         this.model = requireNonNull(model);
         this.extensionType = model.type();
     }
@@ -93,7 +93,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public ApplicationDescriptor application() {
-        return container.application.descriptor;
+        return bundle.application.descriptor;
     }
 
     protected void attributesAdd(DefaultAttributeMap dam) {
@@ -134,7 +134,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
-        ContainerSetup parent = container.containerParent;
+        BundleSetup parent = bundle.containerParent;
         while (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
@@ -150,7 +150,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
         requireNonNull(type, "type is null");
-        ContainerSetup parent = container.containerParent;
+        BundleSetup parent = bundle.containerParent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
@@ -187,7 +187,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public boolean isExtensionUsed(Class<? extends Extension> extensionClass) {
-        return container.isExtensionUsed(extensionClass);
+        return bundle.isExtensionUsed(extensionClass);
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
@@ -253,7 +253,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
         // been consumed
-        WireletWrapper wirelets = container.wirelets;
+        WireletWrapper wirelets = bundle.wirelets;
         if (wirelets == null || wirelets.unconsumed() == 0) {
             return WireletSelection.of();
         }
@@ -283,7 +283,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = container.useExtension(supportExtensionType, this).instance;
+        Extension instance = bundle.useExtension(supportExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) supportModel.newInstance(instance, extensionType);
@@ -298,7 +298,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      *            the extension to create
      * @return the new extension
      */
-    static ExtensionSetup newExtension(ContainerSetup container, Class<? extends Extension> extensionClass) {
+    static ExtensionSetup newExtension(BundleSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);

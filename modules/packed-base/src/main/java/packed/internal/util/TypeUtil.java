@@ -116,6 +116,13 @@ public final class TypeUtil {
      */
     public static Class<?> rawTypeOf(Type type) {
         requireNonNull(type, "type is null");
+//        if (true) {
+//            return switch(type) {
+//            case Class<?> cl -> cl;
+//            default -> null;
+//            }
+//        }
+        
         if (type instanceof Class<?> cl) {
             return cl;
         } else if (type instanceof ParameterizedType pt) {

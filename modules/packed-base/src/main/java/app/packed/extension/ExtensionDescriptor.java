@@ -31,7 +31,7 @@ import packed.internal.bundle.ExtensionModel;
  * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
  * The information provided by this descriptor are static information about the extension itself.
  */
-public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> permits ExtensionModel {
+public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescriptor>permits ExtensionModel {
 
     /**
      * In order to xxxx is a total order between all loaded extension forms..
@@ -55,11 +55,11 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
     @Override
     int compareTo(ExtensionDescriptor descriptor);
 
-    /** {@return an immutable unordered set of every (direct) dependency of this extension.} */
+    /** {@return an immutable unordered set containing every dependency the extension declares.} */
     Set<Class<? extends Extension>> dependencies();
 
     /**
-     * Returns the depth of the extension in a global extension dependency graph.
+     * Returns the depth of the extension in the extension dependency graph.
      * <p>
      * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
      * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
@@ -158,7 +158,7 @@ interface SandboxExtensionDescriptor {
      * 
      * @return
      */
-    default Optional<Module> library() {
+    default Optional<Module> libraryModule() {
         // Ideen er lidt som AppVersion fra Helm charts
         // Syntes den er rigtig smart
         // A library is typically something that is released separately from PAcked
@@ -170,7 +170,7 @@ interface SandboxExtensionDescriptor {
     // Saa maaske libraryModuleVersion()...
     // IDK could give people the wrong impression
     default Optional<Version> libraryVersion() {
-        Optional<Module> m = library();
+        Optional<Module> m = libraryModule();
         if (m.isPresent()) {
             ModuleDescriptor descriptor = m.get().getDescriptor();
             return descriptor == null ? Optional.empty() : descriptor.version();

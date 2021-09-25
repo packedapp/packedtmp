@@ -25,12 +25,11 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanExtensionSupport;
 import app.packed.bean.hooks.usage.BeanType;
-import app.packed.bean.hooks.usage.OldBeanDriver.OtherBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
@@ -43,6 +42,7 @@ import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.component.bean.PackedBeanDriverBinder;
+import packed.internal.component.bean.OldBeanDriver.OtherBeanDriver;
 import packed.internal.service.ServiceManagerSetup;
 import packed.internal.service.runtime.AbstractServiceLocator;
 import packed.internal.service.sandbox.InjectorComposer;
@@ -107,7 +107,7 @@ public class ServiceExtension extends Extension {
      *            an extension setup object (hidden).
      */
     /* package-private */ ServiceExtension(ExtensionSetup setup) {
-        this.services = setup.container.injection.newServiceManagerFromServiceExtension();
+        this.services = setup.bundle.injection.newServiceManagerFromServiceExtension();
     }
 
     // Validates the outward facing contract
@@ -188,7 +188,7 @@ public class ServiceExtension extends Extension {
     }
 
     // Her kan en extension faktisk exporte ting...
-    public <T> ExportedServiceConfiguration<T> export(ApplicationBeanConfiguration<T> bean) {
+    public <T> ExportedServiceConfiguration<T> export(ContainerBeanConfiguration<T> bean) {
         // Taenker det ogsaa er maaden vi kam exportere 
         return bean(bean).sourceExport();
     }
@@ -245,7 +245,7 @@ public class ServiceExtension extends Extension {
         return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
-    public <T> ServiceConfiguration<T> provide(ApplicationBeanConfiguration<T> bean) {
+    public <T> ServiceConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
         throw new UnsupportedOperationException();
     }
     

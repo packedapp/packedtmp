@@ -17,7 +17,7 @@ package app.packed.component;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.Wirelet;
@@ -30,7 +30,7 @@ import packed.internal.component.ComponentSetup;
  * <p>
  * All component configuration classes must extend, directly or indirectly, from this class.
  * 
- * Instead of extending this class directly, you typically want to extend {@link ApplicationBeanConfiguration} instead.
+ * Instead of extending this class directly, you typically want to extend {@link ContainerBeanConfiguration} instead.
  */
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,BundleConfiguration,FunctionConfiguration {

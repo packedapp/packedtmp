@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import app.packed.hooks.BeanMethodBootstrap;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.ClassHook.Bootstrap;
-import app.packed.hooks.MethodHook;
 import app.packed.hooks.OldFieldHook;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;
@@ -37,11 +37,11 @@ import packed.internal.util.ThrowableUtil;
 /** A model of class hook */
 public final class UseSiteClassHookModel {
 
-    /** A handle for invoking {@link MethodHook.Bootstrap#bootstrap()}. */
+    /** A handle for invoking {@link BeanMethodBootstrap#bootstrap()}. */
     private static final MethodHandle MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
             "bootstrap", void.class);
 
-    /** A handle for accessing {@link MethodHook.Bootstrap#processor}. */
+    /** A handle for accessing {@link BeanMethodBootstrap#processor}. */
     private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
             "builder", UseSiteClassHookModel.Builder.class);
 
@@ -91,12 +91,12 @@ public final class UseSiteClassHookModel {
             return List.copyOf(list);
         }
 
-        public List<MethodHook.Bootstrap> methods(boolean declaredFieldsOnly, Class<?>... skipClasses) {
-            ArrayList<MethodHook.Bootstrap> list = new ArrayList<>();
+        public List<BeanMethodBootstrap> methods(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+            ArrayList<BeanMethodBootstrap> list = new ArrayList<>();
             for (Method m : source.type().getDeclaredMethods()) {
                 // TODO I think we need to do some filtering on bridge and maybe synthetic methods
                 UseSiteMethodHookModel.Builder b = new UseSiteMethodHookModel.Builder(source, ExposedMethodBootstrap.MODEL, m);
-                list.add((MethodHook.Bootstrap) b.initialize());
+                list.add((BeanMethodBootstrap) b.initialize());
             }
             return List.copyOf(list);
         }
@@ -109,7 +109,7 @@ public final class UseSiteClassHookModel {
             static final FieldHookModel MODEL = FieldHookModel.getModelForFake(ExposedFieldBootstrap.class);
         }
 
-        static class ExposedMethodBootstrap extends MethodHook.Bootstrap {
+        static class ExposedMethodBootstrap extends BeanMethodBootstrap {
             static final MethodHookBootstrapModel MODEL = MethodHookBootstrapModel.getModelForFake(ExposedMethodBootstrap.class);
         }
     }

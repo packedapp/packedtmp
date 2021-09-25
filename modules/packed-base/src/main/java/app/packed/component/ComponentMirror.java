@@ -37,8 +37,7 @@ import packed.internal.component.RuntimeComponentMirror;
  * derivatives. In packed everything is a component.
  */
 // Skal laves til klasse syntes jeg
-public sealed interface ComponentMirror
-        extends Mirror permits BundleMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
+public sealed interface ComponentMirror extends Mirror permits BundleMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
@@ -48,8 +47,8 @@ public sealed interface ComponentMirror
 
     Stream<ComponentMirror> components();
 
-    /** {@return the container this component is a part of. If the underlying component is a container, returns this.} */
-    BundleMirror container();
+    /** {@return the bundle this component is a part of. If this component represents a bundle, returns this.} */
+    BundleMirror bundle(); // in application / in build??
 
     /** {@return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();

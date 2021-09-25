@@ -1,7 +1,7 @@
 package app.packed.bundle;
 
 import app.packed.extension.Extension;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.component.ComponentSetup;
@@ -22,7 +22,7 @@ import packed.internal.util.ThrowableUtil;
 public class BundleExtension extends Extension {
 
     /** The service manager. */
-    final ContainerSetup container;
+    final BundleSetup container;
 
     final ExtensionSetup extension;
 
@@ -34,7 +34,7 @@ public class BundleExtension extends Extension {
      */
     BundleExtension(ExtensionSetup extension) {
         this.extension = extension;
-        this.container = extension.container;
+        this.container = extension.bundle;
     }
 
     // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...

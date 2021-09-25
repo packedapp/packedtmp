@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.build.BuildException;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMember;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.service.ServiceExtension;
@@ -58,7 +59,8 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 // Maaske skal de vaere "manuelle" paa en eller anden maade dem der bruger Extension
-@MethodHook(bootstrap = MySidecar.class, extension = Extension.class)
+@ExtensionMember(Extension.class)
+@MethodHook(bootstrap = MySidecar.class)
 // I think this creates a job...
 
 // Den skal vaere i app.packed.application fremover

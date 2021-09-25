@@ -12,16 +12,16 @@ import app.packed.build.ApplyBuildHook;
 import app.packed.build.BuildHook;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.sandbox.AssemblyBuildHook;
+import app.packed.bundle.sandbox.BundleHook;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an {@link Bundle}. */
 public final /* primitive */ class BundleModel {
-    private final AssemblyBuildHook[] hooks;
+    private final BundleHook[] hooks;
 
-    private BundleModel(AssemblyBuildHook[] hooks) {
+    private BundleModel(BundleHook[] hooks) {
         this.hooks = requireNonNull(hooks);
     }
 
@@ -30,11 +30,11 @@ public final /* primitive */ class BundleModel {
 
         @Override
         protected BundleModel computeValue(Class<?> type) {
-            ArrayList<AssemblyBuildHook> hooks = new ArrayList<>();
+            ArrayList<BundleHook> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof ApplyBuildHook h) {
                     for (Class<? extends BuildHook> b : h.value()) {
-                        if (AssemblyBuildHook.class.isAssignableFrom(b)) {
+                        if (BundleHook.class.isAssignableFrom(b)) {
                             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), b, Class.class);
                             builder.provide(new Key<Class<? extends Bundle<?>>>() {}).adaptArgument(0);
                             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
@@ -46,11 +46,11 @@ public final /* primitive */ class BundleModel {
 
                             // Find a method handle for the extension's constructor
 
-                            MethodHandle constructor = builder.findConstructor(AssemblyBuildHook.class, m -> new InternalExtensionException(m));
+                            MethodHandle constructor = builder.findConstructor(BundleHook.class, m -> new InternalExtensionException(m));
 
-                            AssemblyBuildHook instance;
+                            BundleHook instance;
                             try {
-                                instance = (AssemblyBuildHook) constructor.invokeExact(type);
+                                instance = (BundleHook) constructor.invokeExact(type);
                             } catch (Throwable t) {
                                 throw ThrowableUtil.orUndeclared(t);
                             }
@@ -59,19 +59,19 @@ public final /* primitive */ class BundleModel {
                     }
                 }
             }
-            return new BundleModel(hooks.toArray(s -> new AssemblyBuildHook[s]));
+            return new BundleModel(hooks.toArray(s -> new BundleHook[s]));
         }
     };
 
     public void preBuild(BundleConfiguration configuration) {
-        for (AssemblyBuildHook h : hooks) {
-            h.onPreBuild(configuration);
+        for (BundleHook h : hooks) {
+            h.beforeBuild(configuration);
         }
     }
 
     public void postBuild(BundleConfiguration configuration) {
-        for (AssemblyBuildHook h : hooks) {
-            h.onPostBuild(configuration);
+        for (BundleHook h : hooks) {
+            h.afterBuild(configuration);
             ;
         }
     }
@@ -82,7 +82,7 @@ public final /* primitive */ class BundleModel {
 }
 
 class ContainerBuildHookModel {
-    final AssemblyBuildHook hook;
+    final BundleHook hook;
 
     ContainerBuildHookModel(Builder builder) {
         this.hook = null;

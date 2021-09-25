@@ -20,7 +20,7 @@ import app.packed.bundle.host.ApplicationHostMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
@@ -42,7 +42,7 @@ public final class ApplicationSetup {
     public final ApplicationDescriptorOutput buildKind;
 
     /** The root container of the application. Created in the constructor of this class. */
-    public final ContainerSetup container;
+    public final BundleSetup container;
 
     public final boolean hasRuntime;
 
@@ -80,7 +80,7 @@ public final class ApplicationSetup {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedBundleDriver.DRIVER, null, wirelets);
+        this.container = new BundleSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedBundleDriver.DRIVER, null, wirelets);
         this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 

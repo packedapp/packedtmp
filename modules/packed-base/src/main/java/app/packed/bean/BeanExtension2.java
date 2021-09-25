@@ -2,21 +2,16 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.bundle.BaseBundle;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.Operator;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionSetup;
 
 /**
- * An extension used for installing beans.
- * Two main types of functionality
+ * An extension used for installing beans. Two main types of functionality
  * 
  * Controls the lifecycle of bean instances
  * 
@@ -25,25 +20,24 @@ import packed.internal.bundle.ExtensionSetup;
  */
 public class BeanExtension2 extends Extension {
 
-    /** The service manager. */
-    final ContainerSetup container;
-
-    final ExtensionSetup extension;
+    /** The bundle we are registering the beans in. */
+    final BundleSetup bundle;
 
     /**
      * Create a new bean extension.
      * 
      * @param setup
-     *            an extension setup object (hidden).
+     *            an extension setup object (only available for extensions in packed.base).
      */
     /* package-private */ BeanExtension2(ExtensionSetup extension) {
-        this.extension = extension;
-        this.container = extension.container;
+        this.bundle = extension.bundle;
     }
 
     /**
-     * Installs a new application bean that will instantiate and wrap a single instance of the specified {@link Class} when
-     * the application is initialized.
+     * Installs a new bean of the specified type with this extension's bundle as the parent component. A single instance of
+     * the specified class will be instantiated together with the container this extension's bundle is a part of
+     * 
+     * that will instantiate and a instance of the specified {@link Class} when the container is initialized.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
@@ -54,9 +48,9 @@ public class BeanExtension2 extends Extension {
      * @return the configuration of the bean
      * @see BaseBundle#install(Class)
      */
-    public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
+    public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return wire(new ApplicationBeanConfiguration<>(), Operator.user(), implementation);
+        return wire(new ContainerBeanConfiguration<>(), Operator.user(), implementation);
     }
 
     /**
@@ -67,9 +61,9 @@ public class BeanExtension2 extends Extension {
      * @return the configuration of the bean
      * @see CommonContainerAssembly#install(Factory)
      */
-    public <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
+    public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return wire(new ApplicationBeanConfiguration<>(), Operator.user(), factory);
+        return wire(new ContainerBeanConfiguration<>(), Operator.user(), factory);
     }
 
     /**
@@ -84,18 +78,9 @@ public class BeanExtension2 extends Extension {
      *            the component instance to install
      * @return this configuration
      */
-    public <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
-        checkInstance(instance);
-        return wire(new ApplicationBeanConfiguration<>(), Operator.user(), instance);
-    }
-
-    private static void checkInstance(Object instance) {
-        requireNonNull(instance, "instance is null");
-        if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Factory.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
-        }
+    public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
+        checkIsProperInstance(instance);
+        return wire(new ContainerBeanConfiguration<>(), Operator.user(), instance);
     }
 
     <B extends BeanConfiguration<?>> B wire(B configuration, Operator owner, Object source) {
@@ -103,49 +88,18 @@ public class BeanExtension2 extends Extension {
         return configuration;
     }
 
-    public static class Sub extends ExtensionSupport {
-        final BeanExtension2 extension;
-        final Operator agent;
-
-        Sub(BeanExtension2 extension, Operator agent) {
-            this.extension = extension;
-            this.agent = agent;
-        }
-
-        // Beans where the owner is itself
-
-        public final <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
-            requireNonNull(implementation, "implementation is null");
-            return extension.wire(new ApplicationBeanConfiguration<>(), agent, implementation);
-        }
-
-        public final <T, B extends BeanConfiguration<T>> B register(Operator agent, BeanDriver driver, B configuration, Class<T> implementation) {
-            requireNonNull(implementation, "implementation is null");
-            extension.wire(configuration, agent, implementation);
-            throw new UnsupportedOperationException();
-        }
-
-        public final <T, B extends BeanConfiguration<T>> B registerChild(Operator agent, ComponentConfiguration parent, BeanDriver driver,
-                B configuration, Class<T> implementation) {
-            throw new UnsupportedOperationException();
-        }
-
-        public final MethodHandle accessor(ApplicationBeanConfiguration<?> configuration) {
-            throw new UnsupportedOperationException();
-        }
-
-        // Must have been created by this subtension
-        // (ExtensionContext) -> Object
-        public final MethodHandle newInstance(UnmanagedBeanConfiguration<?> configuration) {
-            return newInstanceBuilder(configuration).build();
-        }
-
-        public final MethodHandleBuilder newInstanceBuilder(UnmanagedBeanConfiguration<?> configuration) {
-            throw new UnsupportedOperationException();
-        }
-
-        public final MethodHandle processor(ManagedBeanConfiguration<?> configuration) {
-            throw new UnsupportedOperationException();
+    /**
+     * Checks that the specified instance object is not a instance of {@link Class} or {@link Factory}.
+     * 
+     * @param instance
+     *            the object to check
+     */
+    private static void checkIsProperInstance(Object instance) {
+        requireNonNull(instance, "instance is null");
+        if (Class.class.isInstance(instance)) {
+            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
+        } else if (Factory.class.isInstance(instance)) {
+            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
     }
 }

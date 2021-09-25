@@ -1,4 +1,4 @@
-package app.packed.bean.hooks;
+package app.packed.bean.hooks.sandbox;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;

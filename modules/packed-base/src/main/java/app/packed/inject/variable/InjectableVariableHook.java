@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks.sandbox;
+package app.packed.inject.variable;
 
 /**
  *
  */
-public interface VariableBinder {
-
+public @interface InjectableVariableHook {
+    Class<?>[] annotated() default {}; // on annotations
+ 
+    Class<?>[] typed() default {};  // on the type
 }
+// Maaske vi kun supportere Typed
+
+
+
+//// Eller maaske har vi to typer
+
+
+/// Kunne vaere interessant mht til Wirelets... boo(FooWirelet w)
+// Men saa inject boo(Stuff<FooWirelet>) istedet for
+// String[] subClassOf() default {};
+// String[] exactType() default {};

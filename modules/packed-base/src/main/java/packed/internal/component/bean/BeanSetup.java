@@ -165,7 +165,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         if (s == null) {
             Key<?> key;
             if (factory != null) {
-                key = factory.key();
+                key = Key.convertTypeLiteral(factory.typeLiteral());
             } else {
                 key = Key.of(hookModel.clazz); // Move to model?? What if instance has Qualifier???
             }

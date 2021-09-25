@@ -30,7 +30,7 @@ import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.WireletSelection;
-import app.packed.bundle.sandbox.AssemblyBuildHook;
+import app.packed.bundle.sandbox.BundleHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMember;
@@ -44,20 +44,20 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 
 /** Build-time configuration of a container. */
-public final class ContainerSetup extends ComponentSetup {
+public final class BundleSetup extends ComponentSetup {
 
     public final BundleModel assemblyModel;
 
     /** Child containers, lazy initialized. */
     @Nullable
-    public ArrayList<ContainerSetup> containerChildren;
+    public ArrayList<BundleSetup> containerChildren;
 
     /** The depth of this container in relation to other containers. */
     public final int containerDepth;
 
     /** This container's parent (if non-root). */
     @Nullable
-    public final ContainerSetup containerParent;
+    public final BundleSetup containerParent;
 
     /** All extensions in use, in no particular order. */
     final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
@@ -94,7 +94,7 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver<?> driver,
+    public BundleSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
@@ -153,7 +153,7 @@ public final class ContainerSetup extends ComponentSetup {
 
             // Add this container to the children of the parent
             this.containerParent.runPredContainerChildren();
-            ArrayList<ContainerSetup> c = containerParent.containerChildren;
+            ArrayList<BundleSetup> c = containerParent.containerChildren;
             if (c == null) {
                 c = containerParent.containerChildren = new ArrayList<>(5);
             }
@@ -187,7 +187,7 @@ public final class ContainerSetup extends ComponentSetup {
         assert name != null;
     }
 
-    public void applyAssemblyHook(AssemblyBuildHook hook) {
+    public void applyAssemblyHook(BundleHook hook) {
         // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration
         // der lige pludselig kan have andre rettigheder.
         // Teoretisk attack mulighed, spawn en ny traad med configurationen.
@@ -199,7 +199,7 @@ public final class ContainerSetup extends ComponentSetup {
         // We recursively close all children in the same realm first
         // We do not close individual components
         if (containerChildren != null) {
-            for (ContainerSetup c : containerChildren) {
+            for (BundleSetup c : containerChildren) {
                 if (c.realm == realm) {
                     c.closeRealm();
                 }
@@ -246,7 +246,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** {@return a container mirror.} */
     @Override
     public BundleMirror mirror() {
-        return new BuildTimeContainerMirror();
+        return new BuildTimeBundleMirror();
     }
 
     public void postBuild(BundleConfiguration configuration) {
@@ -345,8 +345,8 @@ public final class ContainerSetup extends ComponentSetup {
         return (E) extension.instance(); // extract the extension instance
     }
 
-    /** A build-time container mirror. */
-    private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BundleMirror {
+    /** A build-time bundle mirror. */
+    private final class BuildTimeBundleMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BundleMirror {
 
         /** Extracts the extension that */
         private static final ClassValue<Class<? extends Extension>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
@@ -388,7 +388,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension>> extensionsTypes() {
-            return ContainerSetup.this.extensionsTypes();
+            return BundleSetup.this.extensionsTypes();
         }
 
         /** {@inheritDoc} */
@@ -419,7 +419,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-            return ContainerSetup.this.isExtensionUsed(extensionType);
+            return BundleSetup.this.isExtensionUsed(extensionType);
         }
 
         @Override

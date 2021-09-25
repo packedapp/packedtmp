@@ -15,7 +15,7 @@ import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 
 /**
- * A mirror of an extension that is in use by a {@link #container}.
+ * A mirror of an extension that is in use by a {@link #bundle}.
  * <p>
  * This class can be overridden to provide a specialized mirror for an extension. For example,
  * {@link app.packed.service.ServiceExtension} provides {@link app.packed.service.ServiceExtensionMirror}.

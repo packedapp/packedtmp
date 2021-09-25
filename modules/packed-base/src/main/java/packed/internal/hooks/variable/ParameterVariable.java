@@ -25,7 +25,7 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class ParameterVariable extends AbstractVariable {
+public final class ParameterVariable extends AbstractVariable<Parameter> {
 
     final Parameter p;
 

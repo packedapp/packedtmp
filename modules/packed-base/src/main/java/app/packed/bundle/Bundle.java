@@ -26,7 +26,7 @@ import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.util.LookupUtil;
 
@@ -167,7 +167,7 @@ public abstract class Bundle<C extends BundleConfiguration> {
         // I'm not we need volatile here
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
-            ContainerSetup cs = configuration.container();
+            BundleSetup cs = configuration.container();
 
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
@@ -192,7 +192,7 @@ public abstract class Bundle<C extends BundleConfiguration> {
     }
 
     /**
-     * {@return an unmodifiable view of every extension that is currently used in this assembly.}
+     * {@return an unmodifiable view of the extensions that are currently used in this bundle.}
      * 
      * @see BundleConfiguration#extensionsTypes()
      * @see #use(Class)
@@ -208,6 +208,11 @@ public abstract class Bundle<C extends BundleConfiguration> {
      * @param lookup
      *            the lookup object
      */
+    // ??? Is this beans only????? Should we put it there? IDK
+    // Maaske... Kunne vaere super fedt jo hvis vi kunne
+    // Mnahhh, altsaa hvis vi faar noget FN paa et tidspunkt.
+    // Hvor vi tager reflection (a.la. Factory.ofMethod) saa
+    // skal vi jo ogsaa bruge den der. IDK
     protected final void lookup(Lookup lookup) {
         configuration().lookup(lookup);
     }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -31,7 +31,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 
 /**
- * Extends {@link Bundle} with shortcuts for some of the commonly used extensions.
+ * Extends {@link Bundle} with shortcuts for some commonly used extensions.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -193,7 +193,7 @@ public abstract class BaseBundle extends Bundle<BundleConfiguration> {
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected final <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
+    protected final <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         return bean().install(implementation);
     }
 
@@ -206,7 +206,7 @@ public abstract class BaseBundle extends Bundle<BundleConfiguration> {
      * @return the configuration of the component
      * @see BaseBundle#install(Factory)
      */
-    protected final <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
+    protected final <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         return bean().install(factory);
     }
 
@@ -222,7 +222,7 @@ public abstract class BaseBundle extends Bundle<BundleConfiguration> {
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
+    protected final <T> ContainerBeanConfiguration<T> installInstance(T instance) {
         return bean().installInstance(instance);
     }
 

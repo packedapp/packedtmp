@@ -32,7 +32,7 @@ import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.util.LookupUtil;
@@ -78,7 +78,7 @@ public final class RealmSetup {
      * When we close the realm we then run through this list and recursively close each container.
      */
     // Hmm burde kunne bruge traet istedet for
-    private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
+    private ArrayList<BundleSetup> rootContainers = new ArrayList<>(1);
 
     /**
      * Creates a new realm for an extension.
@@ -89,7 +89,7 @@ public final class RealmSetup {
      */
     public RealmSetup(ExtensionSetup extension) {
         this.realmType = this.extensionType = extension.extensionType;
-        this.build = extension.container.application.build;
+        this.build = extension.bundle.application.build;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
@@ -120,7 +120,7 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
-        this.root = new ContainerSetup(build.application, this, build.application.container.lifetime, driver, linkTo, wirelets);
+        this.root = new BundleSetup(build.application, this, build.application.container.lifetime, driver, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {
@@ -144,7 +144,7 @@ public final class RealmSetup {
             current = null;
         }
         isClosed = true;
-        for (ContainerSetup c : rootContainers) {
+        for (BundleSetup c : rootContainers) {
             c.closeRealm();
         }
         assert root.name != null;
@@ -193,7 +193,7 @@ public final class RealmSetup {
         current = component;
 
         // TODO: Move to class I think
-        if (component instanceof ContainerSetup container) {
+        if (component instanceof BundleSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {
                 rootContainers.add(container);
             }

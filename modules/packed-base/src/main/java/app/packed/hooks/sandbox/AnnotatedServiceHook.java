@@ -1,4 +1,4 @@
-package app.packed.hooks.v2;
+package app.packed.hooks.sandbox;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;

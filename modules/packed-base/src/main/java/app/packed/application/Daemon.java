@@ -76,13 +76,9 @@ public interface Daemon extends AutoCloseable {
      *            optional wirelets
      * @return an application mirror for the daemon
      */
-    static ApplicationMirror mirror(Bundle<?> assembly, Wirelet... wirelets) {
+    static ApplicationMirror mirrorOf(Bundle<?> assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
-//  Nej, kalder det ikke reflect    
-//    static ApplicationMirror reflect(Assembly<?> assembly, Wirelet... wirelets) {
-//        return ApplicationMirror.of(driver(), assembly, wirelets);
-//    }
 
     // When do want to run a daemon???
     // Isn't it main...

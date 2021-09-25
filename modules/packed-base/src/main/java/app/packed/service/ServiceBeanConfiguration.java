@@ -21,7 +21,7 @@ import java.lang.invoke.MethodType;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bundle.BaseBundle;
 import app.packed.component.ComponentConfiguration;
@@ -39,7 +39,7 @@ import packed.internal.util.ThrowableUtil;
  */
 //ProvidableComponentConfiguration
 // Serviceable
-public class ServiceBeanConfiguration<T> extends ApplicationBeanConfiguration<T> {
+public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(

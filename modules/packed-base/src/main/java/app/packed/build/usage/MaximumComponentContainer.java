@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 import app.packed.build.ApplyBuildHook;
 import app.packed.build.BuildException;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.sandbox.AssemblyBuildHook;
+import app.packed.bundle.BundleMirror;
+import app.packed.bundle.sandbox.BundleHook;
 
 @ApplyBuildHook(RandomProcX.class)
 @Target({ ElementType.TYPE})
@@ -19,11 +19,11 @@ public @interface MaximumComponentContainer {
     int maxComponents();
 }
 
-record RandomProcX(MaximumComponentContainer pc) implements AssemblyBuildHook {
+record RandomProcX(MaximumComponentContainer pc) implements BundleHook {
 
     @Override
-    public void onCompleted(BundleConfiguration configuration) {
-        if (configuration.mirror().components().count() > pc.maxComponents()) {
+    public void onCompleted(BundleMirror mirror) {
+        if (mirror.components().count() > pc.maxComponents()) {
             throw new BuildException("Cannot define a container with more than " + pc.maxComponents() + " components in a single container");
         }
     }

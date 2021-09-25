@@ -24,6 +24,7 @@ import app.packed.hooks.MethodHook;
 @Documented
 @Inherited
 // Er nok mere frisk paa at dele processoren
+// Repeatable... Fordi super classes skal have lov at definere dem...
 @Repeatable(ApplyBuildHook.All.class)
 // prefix methods on Context with on????
 public @interface ApplyBuildHook {
@@ -45,8 +46,3 @@ public @interface ApplyBuildHook {
     }
 
 }
-// Hvordan relatere den til ContainerDriver????
-
-// ContainerDriver er der altid kun 1 af. En BuildProcessor kan der vaere flere af.
-
-// Saa hvis vi f.eks. saetter typen (UNMANAGED) af en bean. Saa skal det vaere en driver

@@ -38,7 +38,7 @@ import app.packed.bundle.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionModel;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.invoke.Infuser;
@@ -104,7 +104,7 @@ public abstract class Extension {
     /**
      * The extension's configuration that most methods delegate to.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#newExtension(ContainerSetup, Class)} via a var handle. The field
+     * This field is initialized in {@link ExtensionSetup#newExtension(BundleSetup, Class)} via a var handle. The field
      * is _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
@@ -142,7 +142,7 @@ public abstract class Extension {
     }
 
     /**
-     * Returns the configuration object that this extension wraps. The configuration object is typically used standalone in
+     * Returns the configuration object that this extension wraps. The configuration object can be used standalone in
      * situations where the extension needs to delegate responsibility to classes that cannot invoke the protected methods
      * on {@code Extension} due to class-member visibility rules.
      * <p>
@@ -159,7 +159,7 @@ public abstract class Extension {
         ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
-                    + "initialization before the extension is returned to the user, override " + Extension.class.getSimpleName() + "#onNew()");
+                    + "initialization before the extension is returned to the user, override Extension#onNew()");
         }
         return c;
     }
@@ -265,7 +265,7 @@ public abstract class Extension {
      * example, by installing a bean that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link BundleExtension.Sub#link(Bundle, Wirelet...)}
+     * {@link BundleExtension.BeanExtensionSupport2#link(Bundle, Wirelet...)}
      */
     protected void onComplete() {
         // Time

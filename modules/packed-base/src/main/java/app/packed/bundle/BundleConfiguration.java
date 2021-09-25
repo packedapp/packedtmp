@@ -11,7 +11,7 @@ import java.util.Set;
 import app.packed.application.ApplicationDescriptor;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -32,7 +32,7 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     /** A method handle that can access superclass ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(ContainerSetup.class, BundleConfiguration.class));
+            MethodType.methodType(BundleSetup.class, BundleConfiguration.class));
 
     /** {@return a descriptor for the application the container is a part of.} */
     public ApplicationDescriptor application() {
@@ -40,9 +40,9 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     }
 
     /** {@return the wrapped configuration instance.} */
-    ContainerSetup container() {
+    BundleSetup container() {
         try {
-            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
+            return (BundleSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

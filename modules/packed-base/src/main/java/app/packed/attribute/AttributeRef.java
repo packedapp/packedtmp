@@ -1,7 +1,5 @@
 package app.packed.attribute;
 
-import app.packed.inject.sandbox.ServiceAttributes;
-
 @interface AttributeRef {
 
     /** The class that declares the attribute. */
@@ -19,7 +17,7 @@ import app.packed.inject.sandbox.ServiceAttributes;
 class MyPolicy {
 
     // Er sgu ikke paent
-    public boolean doRetry(@AttributeRef(declaredBy = ServiceAttributes.class, name = "exported-services") long aa) {
-        return false;
-    }
+//    public boolean doRetry(@AttributeRef(declaredBy = ServiceAttributes.class, name = "exported-services") long aa) {
+//        return false;
+//    }
 }

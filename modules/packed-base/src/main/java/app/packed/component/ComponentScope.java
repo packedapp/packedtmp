@@ -42,7 +42,7 @@ public enum ComponentScope {
     NAMESPACE, // -> Family
 
     /** A scope that indicates any component within the same application. */
-    APPLICATION, // -> Container
+    CONTAINER, // -> Container
 
     /** A scope that indicates any component within the same bundle. */
     BUNDLE, // -> Bundle
@@ -52,10 +52,13 @@ public enum ComponentScope {
     /** A scope that indicates the single component. */
     COMPONENT,
 
+    /** A scope that indicates any component within the same application. */
+    APPLICATION;
+
     /**
      * A system where all components are part of the same build. Being part of the same build means that...
      */
-    BUILD; // -> Application
+    /// BUILD
 
     /*
      * REALM
@@ -66,6 +69,12 @@ public enum ComponentScope {
     public boolean in(ComponentMirror c1, ComponentMirror c2) {
         return c1.isInSame(this, c2);
     }
+}
+
+final class Scope {
+    Scope(String name) {}
+
+    public static final Scope APPLICATION = new Scope("Application");
 }
 
 enum ComponentScope2 {
@@ -112,7 +121,7 @@ class XComp2 {
     }
 
     // Maaske konfigurere man en event bus til det...
-    public void ev(@Scoped(ComponentScope.APPLICATION) EventBus eb) {
+    public void ev(@Scoped(ComponentScope.CONTAINER) EventBus eb) {
 
     }
 

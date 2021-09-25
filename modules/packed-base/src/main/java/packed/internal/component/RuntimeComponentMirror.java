@@ -279,7 +279,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     @Override
-    public BundleMirror container() {
+    public BundleMirror bundle() {
         // TODO Auto-generated method stub
         return null;
     }

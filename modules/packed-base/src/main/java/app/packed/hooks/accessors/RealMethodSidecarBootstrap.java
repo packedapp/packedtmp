@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.hooks.MethodHook;
+import app.packed.hooks.BeanMethodBootstrap;
 import app.packed.inject.Factory;
 import app.packed.inject.Variable;
 import app.packed.inject.sandbox.FactoryType;
@@ -39,7 +39,7 @@ import app.packed.inject.sandbox.FactoryType;
 
 // Skal metoderne vaere protected????
 // Ikke hvis man skal kunne specificere den til extensions...
-public abstract class RealMethodSidecarBootstrap extends MethodHook.Bootstrap {
+public abstract class RealMethodSidecarBootstrap extends BeanMethodBootstrap {
     final boolean needsInstance() {
         return !Modifier.isStatic(method().getModifiers());
     }

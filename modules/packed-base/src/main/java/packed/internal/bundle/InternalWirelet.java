@@ -42,7 +42,7 @@ public abstract class InternalWirelet extends Wirelet {
      *             if the specified component is not the root component of an application
      * @return the application of the component (for method chaining)
      */
-    protected final ApplicationSetup checkIsApplication(ContainerSetup component) {
+    protected final ApplicationSetup checkIsApplication(BundleSetup component) {
         ApplicationSetup application = component.application;
         if (application.container != component) {
             throw new IllegalArgumentException("This wirelet can only be specified when wiring an application, wirelet = " + this);
@@ -61,9 +61,9 @@ public abstract class InternalWirelet extends Wirelet {
      * @param component
      *            the component that is being wired
      */
-    protected abstract void onBuild(ContainerSetup component);
+    protected abstract void onBuild(BundleSetup component);
 
-    public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext context) {
+    public void onImageInstantiation(BundleSetup component, ApplicationLaunchContext context) {
         throw new IllegalArgumentException(
                 "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when instantiating an image");
     }
@@ -92,7 +92,7 @@ public abstract class InternalWirelet extends Wirelet {
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected void onBuild(ContainerSetup component) {
+        protected void onBuild(BundleSetup component) {
             // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
             Consumer<? super ComponentMirror> existing = component.onWire;
             if (existing == null) {
@@ -121,13 +121,13 @@ public abstract class InternalWirelet extends Wirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void onBuild(ContainerSetup c) {
+        protected void onBuild(BundleSetup c) {
             c.nameInitializedWithWirelet = true;
             c.name = name;
         }
 
         @Override
-        public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
+        public void onImageInstantiation(BundleSetup c, ApplicationLaunchContext ic) {
             ic.name = name;
         }
     }

@@ -4,7 +4,6 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Map;
 
-import app.packed.bean.BeanExtension2.Sub;
 import app.packed.extension.Extension;
 
 public class ZestExtension extends Extension {
@@ -12,7 +11,7 @@ public class ZestExtension extends Extension {
     private ArrayList<MethodHandle> handles = new ArrayList<>();
 
     public <T> ManagedBeanConfiguration<T> install(Class<T> stuff) {
-        Sub b = use(BeanExtension2.Sub.class);
+        BeanExtensionSupport2 b = use(BeanExtensionSupport2.class);
         ManagedBeanConfiguration<T> conf = b.register(null, BeanDriver.builder().build(), new ManagedBeanConfiguration<>(), stuff);
         
         handles.add(b.processor(conf)); 
@@ -22,7 +21,7 @@ public class ZestExtension extends Extension {
 
     @Override
     protected void onComplete() {
-        use(BeanExtension2.Sub.class).install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
+        use(BeanExtensionSupport2.class).install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
         handles = null;
     }
 

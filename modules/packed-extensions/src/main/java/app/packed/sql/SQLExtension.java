@@ -1,6 +1,6 @@
 package app.packed.sql;
 
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanExtensionSupport;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.RootedExtension;
@@ -20,7 +20,7 @@ import app.packed.extension.RootedExtension;
 // JDBCExtension
 public class SQLExtension extends RootedExtension {
     
-    ApplicationBeanConfiguration<InnerBean> abc;
+    ContainerBeanConfiguration<InnerBean> abc;
 
     SQLExtension() {}
 
@@ -36,7 +36,7 @@ public class SQLExtension extends RootedExtension {
     public class Sub extends ExtensionSupport {
 
         // en ting er med start, noget andet er med slut
-        public void extendPool(ApplicationBeanConfiguration<? extends SQLPoolExtensionPoint> bean) {
+        public void extendPool(ContainerBeanConfiguration<? extends SQLPoolExtensionPoint> bean) {
             use(BeanExtensionSupport.class).extensionPoint(abc, (a, b) -> a.point = b, bean);
         }
     }

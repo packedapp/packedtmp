@@ -49,14 +49,7 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
-    // Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
-    // vi har processeret alle wirelets
-    // Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
-    // eller selvstaendig metode -> Er nok den bedste
-    @Deprecated
-    static Wirelet reusableImage() {
-        throw new UnsupportedOperationException();
-    }
+
 
     // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
     static Wirelet delayToRuntime(Function<InstantiationContext, app.packed.bundle.Wirelet> wireletSupplier) {
@@ -175,6 +168,13 @@ class SandboxBuild {
 
     // Disable Host <--- Nej, det er et ruleset....
 }
-
+//// Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
+//// vi har processeret alle wirelets
+//// Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
+//// eller selvstaendig metode -> Er nok den bedste
+//@Deprecated
+//static Wirelet reusableImage() {
+//  throw new UnsupportedOperationException();
+//}
 //Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
 /// Interface with only static methods are

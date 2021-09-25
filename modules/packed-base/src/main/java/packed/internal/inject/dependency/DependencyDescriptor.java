@@ -19,11 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -202,28 +198,28 @@ public final class DependencyDescriptor implements OldVariable {
         return key;
     }
 
-    /**
-     * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
-     * dependency was not created from a member.
-     * <p>
-     * If this dependency was created from a member this method will an optional containing either a {@link Field} in case
-     * of field injection, A {@link Method} in case of method injection or a {@link Constructor} in case of constructor
-     * injection.
-     * 
-     * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
-     *         member.
-     */
-    public Optional<Member> member() {
-        // MemberDescriptor???
-        return Optional.empty();
-//        if (variable instanceof PackedFieldDescriptor) {
-//            return Optional.of(((PackedFieldDescriptor) variable).copyField());
-//        } else if (variable instanceof PackedParameterDescriptor) {
-//            return Optional.of(((PackedExecutableDescriptor) ((PackedParameterDescriptor) variable).getDeclaringExecutable()).copyExecutable());
-//        } else {
-//            return Optional.empty();
-//        }
-    }
+//    /**
+//     * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
+//     * dependency was not created from a member.
+//     * <p>
+//     * If this dependency was created from a member this method will an optional containing either a {@link Field} in case
+//     * of field injection, A {@link Method} in case of method injection or a {@link Constructor} in case of constructor
+//     * injection.
+//     * 
+//     * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
+//     *         member.
+//     */
+//    public Optional<Member> member() {
+//        // MemberDescriptor???
+//        return Optional.empty();
+////        if (variable instanceof PackedFieldDescriptor) {
+////            return Optional.of(((PackedFieldDescriptor) variable).copyField());
+////        } else if (variable instanceof PackedParameterDescriptor) {
+////            return Optional.of(((PackedExecutableDescriptor) ((PackedParameterDescriptor) variable).getDeclaringExecutable()).copyExecutable());
+////        } else {
+////            return Optional.empty();
+////        }
+//    }
 
     /** {@inheritDoc} */
     @Override

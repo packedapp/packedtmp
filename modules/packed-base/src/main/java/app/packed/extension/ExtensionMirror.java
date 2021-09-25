@@ -12,7 +12,7 @@ import app.packed.service.ServiceExtensionMirror;
 import packed.internal.bundle.ExtensionSetup;
 
 /**
- * Provides generic information about an extension used by a {@link #container}.
+ * Provides generic information about an extension used by a {@link #bundle}.
  * <p>
  * This class can be extended by an extension to provide more detailed information about itself. For example,
  * {@link app.packed.service.ServiceExtension} extends this class via {@link app.packed.service.ServiceExtensionMirror}.
@@ -53,7 +53,7 @@ public class ExtensionMirror {
 
     /** {@return the container the extension is used in.} */
     public final BundleMirror container() {
-        return setup().container.mirror();
+        return setup().bundle.mirror();
     }
 
     /** {@inheritDoc} */

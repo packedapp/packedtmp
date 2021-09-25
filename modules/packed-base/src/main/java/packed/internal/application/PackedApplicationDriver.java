@@ -137,10 +137,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
-        // Extract the component driver from the field Assembly#driver
+        // Extract the driver from the field Bundle#driver
         PackedBundleDriver<?> componentDriver = PackedBundleDriver.getDriver(assembly);
 
-        // Create the initial realm realm, typically we will have a realm per container
+        // Create the initial realm, typically we will have a realm per bundle
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
 
         // Create a new component configuration instance which are passed along to assembly that
@@ -148,8 +148,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // protected final methods such as ContainerAssembly#use(Class)
         ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        // This will recursively call down through any sub-assemblies that are linked
+        // Invoke Bundle::doBuild which in turn will invoke Bundle::build
+        // This will recursively call down through any sub-bundles that are linked
         try {
             RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {

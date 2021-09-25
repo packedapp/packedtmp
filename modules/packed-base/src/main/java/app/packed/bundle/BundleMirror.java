@@ -35,11 +35,11 @@ public non-sealed interface BundleMirror extends ComponentMirror {
     <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType); // maybe just find
 
     /**
-     * Returns whether or not an extension of the specified type is used by the container.
+     * Returns whether or not an extension of the specified type is in use by the bundle.
      * 
      * @param extensionType
      *            the type of extension to test
-     * @return {@code true} if this container uses an extension of the specified type, otherwise {@code false}
+     * @return {@code true} if the bundle uses an extension of the specified type, otherwise {@code false}
      * @see BundleConfiguration#isExtensionUsed(Class)
      */
     boolean isExtensionUsed(Class<? extends Extension> extensionType);

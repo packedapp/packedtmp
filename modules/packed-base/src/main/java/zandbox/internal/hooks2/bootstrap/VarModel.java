@@ -133,6 +133,10 @@ public final class VarModel {
 
     }
 
+    // IGNORE_NULLABLE
+    // IGNORE_OPTIONAL
+    // public static final int IGNORE_ALL
+
     public static final class Settings {
 
         boolean checkNullable = true;

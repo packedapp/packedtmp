@@ -5,10 +5,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
-import app.packed.bean.hooks.usage.OldBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
@@ -36,15 +35,15 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
         this.constructor = constructor;
     }
 
-    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofSingleton(Class<T> implementation) {
+    public static <T> PackedBeanDriver<ContainerBeanConfiguration<T>> ofSingleton(Class<T> implementation) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
     }
 
-    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofSingleton(Factory<?> factory) {
+    public static <T> PackedBeanDriver<ContainerBeanConfiguration<T>> ofSingleton(Factory<?> factory) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(factory);
     }
 
-    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofSingletonInstance(Object instance) {
+    public static <T> PackedBeanDriver<ContainerBeanConfiguration<T>> ofSingletonInstance(Object instance) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
     }
 

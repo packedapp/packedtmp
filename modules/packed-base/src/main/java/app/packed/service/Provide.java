@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
+import app.packed.extension.ExtensionMember;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
@@ -75,12 +76,10 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@ExtensionMember(ServiceExtension.class)
 @OldFieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
-@MethodHook(matchesAnnotation = Provide.class, extension = ServiceExtension.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+@MethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 
-// @Provide(Constant) , @Provide(Lazy), @Provide(EVERYTIME) -> Constant early, Lazy (volatile storage) <-- kan jo godt skrive laese volatile i et object array
-// serviceProvide? provideServicee
-// ProvideService
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
@@ -101,8 +100,15 @@ public @interface Provide {
      * 
      * @return whether or not the provided value is a constant
      */
-    // Rename to prototype
     boolean constant() default false;
+
+
+    /**
+     * @return the provision mode being used
+     * 
+     * @implNote
+     */
+    ProvisionMode mode() default ProvisionMode.ON_DEMAND;
 }
 
 

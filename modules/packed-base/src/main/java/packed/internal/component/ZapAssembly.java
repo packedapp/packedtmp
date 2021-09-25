@@ -18,12 +18,12 @@ public class ZapAssembly extends BaseBundle {
     public static void main(String[] args) {
         SomeApp.run(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
 
-        Daemon.mirror(new ZapAssembly());
+        Daemon.mirrorOf(new ZapAssembly());
 
         // Det gode ved mirror er at
         //Daemon.introspect(new ZapAssembly());
         //Daemon.reflect(new ZapAssembly());
-        Daemon.mirror(new ZapAssembly());
+        Daemon.mirrorOf(new ZapAssembly());
 
         SomeApp.driver().print(new ZapAssembly());
     }

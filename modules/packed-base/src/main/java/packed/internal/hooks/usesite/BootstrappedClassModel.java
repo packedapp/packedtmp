@@ -29,8 +29,8 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
+import app.packed.hooks.BeanMethodBootstrap;
 import app.packed.hooks.ClassHook;
-import app.packed.hooks.MethodHook;
 import packed.internal.bundle.ExtensionModel;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.hooks.ClassHookModel;
@@ -187,7 +187,7 @@ public final class BootstrappedClassModel {
                     }
                     UseSiteMethodHookModel.Builder builder = new UseSiteMethodHookModel.Builder(model, shared);
 
-                    MethodHook.Bootstrap bootstrap = model.bootstrap(builder);
+                    BeanMethodBootstrap bootstrap = model.bootstrap(builder);
                     if (builder.managedBy == null) {
                         model.clearBuilder(bootstrap);
                     }

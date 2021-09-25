@@ -1,4 +1,4 @@
-package app.packed.bean.hooks;
+package app.packed.bean.hooks.mirror;
 
 public enum BeanHookKind {
 

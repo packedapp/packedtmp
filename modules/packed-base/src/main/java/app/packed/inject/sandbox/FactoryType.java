@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 // Factory kender ikke noget til keys
 // withKey() er i virkeligheden bare en transformation
 // InjectionType, FunctionType, ...
+// FNType with variables
 public final class FactoryType {
 
 //    public Variable variable(int index) {

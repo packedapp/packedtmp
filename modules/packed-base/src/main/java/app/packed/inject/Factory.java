@@ -37,7 +37,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.InaccessibleMemberException;
-import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
@@ -74,7 +73,6 @@ import packed.internal.util.MethodHandleUtil;
  */
 
 // Det er vigtigt at vi binder og ikke injecter. Altsaa goer klar at vi udelukkene binder noget til den ene parameter.
-
 
 // Its friend the abstract class Procedure... like Factory but no return..
 // Then move it to base...
@@ -124,9 +122,6 @@ public abstract class Factory<T> {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 
-
-    private final Key<T> key;
-
     /**
      * The factory's method handle. Is initial null for factories that need access to a {@link Lookup} object.
      * <p>
@@ -154,7 +149,6 @@ public abstract class Factory<T> {
     @SuppressWarnings("unchecked")
     Factory() {
         this.typeLiteral = (TypeToken<T>) CACHE.get(getClass());
-        this.key = Key.convertTypeLiteral(typeLiteral);
         this.methodHandle = null;
     }
 
@@ -172,7 +166,6 @@ public abstract class Factory<T> {
     protected Factory(Supplier<? extends T> supplier) {
         requireNonNull(supplier, "supplier is null");
         this.typeLiteral = (TypeToken<T>) CACHE.get(getClass());
-        this.key = Key.convertTypeLiteral(typeLiteral);
         MethodHandle mh = CREATE.bindTo(supplier).bindTo(rawType()); // (Supplier, Class)Object -> ()Object
         this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // ()Object -> ()R
     }
@@ -180,7 +173,6 @@ public abstract class Factory<T> {
     private Factory(TypeToken<T> typeLiteralOrKey) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
-        this.key = Key.convertTypeLiteral(typeLiteral);
         this.methodHandle = null;
     }
 
@@ -262,17 +254,17 @@ public abstract class Factory<T> {
         return List.of();
     }
 
-    /**
-     * The key under which If this factory is registered as a service. This method returns the (default) key that will be
-     * used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
-     * factory is used to register a service.
-     *
-     * @return the key under which this factory will be registered unless
-     * @see #withKey(Key)
-     */
-    public final Key<T> key() {
-        return key;
-    }
+//    /**
+//     * The key under which If this factory is registered as a service. This method returns the (default) key that will be
+//     * used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
+//     * factory is used to register a service.
+//     *
+//     * @return the key under which this factory will be registered unless
+//     * @see #withKey(Key)
+//     */
+//    public final Key<T> key() {
+//        return key;
+//    }
 
     final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
 
@@ -361,6 +353,7 @@ public abstract class Factory<T> {
         return typeLiteral().rawType();
     }
 
+    // needsRealm???
     boolean needsLookup() {
         return false;
     }
@@ -411,7 +404,7 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return The number of variables for the factory} */
+    /** {@return The number of variables this factory takes.} */
     public final int variableCount() {
         return dependencies().size();
     }
@@ -423,7 +416,7 @@ public abstract class Factory<T> {
      * The list returned by this method is affected by any previous bindings to specific variables. For example, via
      * {@link #bind(int, Object, Object...)}.
      * <p>
-     * Factories created via {@link #ofInstance(Object)} always return an empty list.
+     * Factories created via {@link #ofConstant(Object)} always return an empty list.
      * 
      * @return any variables that was used to construct the factory
      */
@@ -431,25 +424,6 @@ public abstract class Factory<T> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public final List<OldVariable> variables() {
         return (List) dependencies();
-    }
-
-    /**
-     * Returns a new factory retaining all of the existing properties of this factory. Except that the key returned by
-     * {@link #key()} will be changed to the specified key.
-     * 
-     * @param key
-     *            the key under which to bind the factory
-     * @return the new factory
-     * @throws ClassCastException
-     *             if the type of the key does not match the type of instances this factory provides
-     * @see #key()
-     */
-
-    final Factory<T> withKey(Key<?> key) {
-        // Just make a new KeyedFactory
-        // Hvor kun noeglen er aendret....
-        // Must be compatible with key in some way
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -486,7 +460,7 @@ public abstract class Factory<T> {
     // Giver ikke mening andet...
 
     // open(Lookup)
-    // openResult(Lookup) <---- maaske er den baa en 
+    // openResult(Lookup) <---- maaske er den baa en
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (this instanceof ExecutableFactory || this instanceof FieldFactory) {
@@ -561,8 +535,10 @@ public abstract class Factory<T> {
     // Rename of()... syntes det er fint den hedder of()... og saa er det en fejl situation
     // Eneste er vi generalt returnere en optional for find metoder...
     // Har droppet at kalde den find... Fordi find generelt returnere en Optional...
+
+    // InjectSupport.defaultInjectable()
     @SuppressWarnings("unchecked")
-    public static <T> Factory<T> of(Class<T> implementation) {
+    public static <T> /* ReflectionFactory<T> */ Factory<T> of(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) CLASS_CACHE.get(implementation);
     }
@@ -593,6 +569,7 @@ public abstract class Factory<T> {
         }
     }
 
+    // ReflectionFactory.of
     public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
         requireNonNull(type, "type is null");
         return ofConstructor(constructor, TypeToken.of(type));
@@ -645,7 +622,7 @@ public abstract class Factory<T> {
     }
 
     /**
-     * Returns a factory that returns the specified instance every time the factory most provide a value.
+     * Returns a factory that returns the specified instance every time the factory must provide a value.
      * <p>
      * If the specified instance makes use of field or method injection the returned factory should not be used more than
      * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
@@ -653,13 +630,15 @@ public abstract class Factory<T> {
      * 
      * @param <T>
      *            the type of value returned by the factory
-     * @param instance
+     * @param constant
      *            the instance to return on every request
      * @return the factory
      */
-    public static <T> Factory<T> ofInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        return new InstanceFactory<T>(instance);
+    // What about annotations and type variables
+    // ofConstant(List<int> l)
+    public static <T> Factory<T> ofConstant(T constant) {
+        requireNonNull(constant, "constant is null");
+        return new ConstantFactory<T>(constant);
     }
 
     // Hvad goer vi med en klasse der er mere restri
@@ -678,7 +657,7 @@ public abstract class Factory<T> {
     /**
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
-     * first variable. Use {@link #bind(Object)} to bind an instance of the declaring class.
+     * first variable. Use {@link #provide(Object)} to bind an instance of the declaring class.
      * 
      * @param <T>
      *            the type of value returned by the method
@@ -704,11 +683,11 @@ public abstract class Factory<T> {
         // Map.of(), new MethodMirror(method)));
         throw new UnsupportedOperationException();
     }
-    
+
     public static <T> Factory<T> ofStaticFactory(Class<?> clazz, TypeToken<T> returnType) {
         throw new UnsupportedOperationException();
     }
-    
+
     /** A special factory created via {@link #withLookup(Lookup)}. */
     // A simple version of Binding... Maybe just only have one
     private static final class BindingFactory<T> extends Factory<T> {
@@ -850,14 +829,14 @@ public abstract class Factory<T> {
         }
     }
 
-    /** A factory that provides the same value every time, used by {@link Factory#ofInstance(Object)}. */
-    private static final class InstanceFactory<T> extends Factory<T> {
+    /** A factory that provides the same value every time, used by {@link Factory#ofConstant(Object)}. */
+    private static final class ConstantFactory<T> extends Factory<T> {
 
         /** The value that is returned every time. */
         private final T instance;
 
         @SuppressWarnings("unchecked")
-        private InstanceFactory(T instance) {
+        private ConstantFactory(T instance) {
             super((TypeToken<T>) TypeToken.of(instance.getClass()));
             this.instance = instance;
         }

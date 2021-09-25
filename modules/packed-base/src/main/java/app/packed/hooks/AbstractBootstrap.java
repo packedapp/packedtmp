@@ -3,7 +3,7 @@ package app.packed.hooks;
 import java.util.Optional;
 
 import app.packed.extension.Extension;
-import app.packed.hooks.v2.ServiceHook;
+import app.packed.hooks.sandbox.ServiceHook;
 
 // What we got so far.
 // This all for hooks that relates to some kind of Java language concept

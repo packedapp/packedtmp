@@ -17,7 +17,7 @@ package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import packed.internal.bundle.CompositeWirelet;
 import packed.internal.bundle.WireletModel;
 import packed.internal.bundle.InternalWirelet.OverrideNameWirelet;
@@ -206,7 +206,7 @@ public abstract class Wirelet {
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * This wirelet override any name that might previously have been set, for example, via
-     * {@link ApplicationBeanConfiguration#named(String)}.
+     * {@link ContainerBeanConfiguration#named(String)}.
      * 
      * @param name
      *            the name of the component

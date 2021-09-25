@@ -1,6 +1,6 @@
 package app.packed.lifecycleold;
 
-import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 
@@ -12,7 +12,7 @@ import app.packed.extension.ExtensionSupport;
 // De kan ikke bestemme at der skal installeres en extension
 public class EntryPointExtension extends Extension {
 
-    public <T extends Runnable> ApplicationBeanConfiguration<?> mainBeanInstance(T runnable) {
+    public <T extends Runnable> ContainerBeanConfiguration<?> mainBeanInstance(T runnable) {
         // Hehe, tag den, hvad goer vi her, den ene er en bean
         // Den anden er en function.
         // Tror ikke vi skal have begge dele

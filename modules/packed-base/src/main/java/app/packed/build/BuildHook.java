@@ -1,8 +1,6 @@
 package app.packed.build;
 
-import app.packed.bean.hooks.BeanBuildHook;
-import app.packed.bundle.sandbox.AssemblyBuildHook;
+import app.packed.bean.hooks.sandbox.BeanBuildHook;
+import app.packed.bundle.sandbox.BundleHook;
 
-public sealed interface BuildHook permits AssemblyBuildHook,BeanBuildHook {
-
-}
+public sealed interface BuildHook permits BundleHook,BeanBuildHook {}

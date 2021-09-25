@@ -7,7 +7,6 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
-import app.packed.bean.hooks.usage.OldBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;

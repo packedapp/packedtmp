@@ -7,7 +7,7 @@ import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
@@ -21,7 +21,7 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
 public class BeanExtension extends Extension {
 
     /** The service manager. */
-    final ContainerSetup container;
+    final BundleSetup container;
 
     final ExtensionSetup extension;
 
@@ -33,7 +33,7 @@ public class BeanExtension extends Extension {
      */
     /* package-private */ BeanExtension(ExtensionSetup extension) {
         this.extension = extension;
-        this.container = extension.container;
+        this.container = extension.bundle;
     }
 
     /**
@@ -47,8 +47,8 @@ public class BeanExtension extends Extension {
      * @return the configuration of the bean
      * @see BaseBundle#install(Class)
      */
-    public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
+    public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
+        PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
         return wire(driver, container, container.realm);
     }
 
@@ -60,8 +60,8 @@ public class BeanExtension extends Extension {
      * @return the configuration of the bean
      * @see CommonContainerAssembly#install(Factory)
      */
-    public <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(factory);
+    public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
+        PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(factory);
         return wire(driver, container, container.realm);
     }
 
@@ -77,8 +77,8 @@ public class BeanExtension extends Extension {
      *            the component instance to install
      * @return this configuration
      */
-    public <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
+    public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
+        PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
         return wire(driver, container, container.realm);
     }
 

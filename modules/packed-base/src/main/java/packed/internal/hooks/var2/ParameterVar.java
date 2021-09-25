@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
+/** An implementation of Var by wrapping a parameter.  */
 public record ParameterVar(Parameter parameter) implements Var {
 
     @Override
