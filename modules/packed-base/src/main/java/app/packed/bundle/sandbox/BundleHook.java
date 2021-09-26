@@ -20,6 +20,8 @@ import app.packed.bundle.BundleMirror;
 // Tror kun den kan bruges paa bundles
 // Paa composeren har vi nogle callbacks hvor man kan saette ting op
 // Strengt tager kan vi have <T extends ContainerConfiguration> og saa fejler man bare med BuildException hvis det ikke passer
+
+/// BundleProcessor???
 public non-sealed interface BundleHook extends BuildHook {
 
     /**

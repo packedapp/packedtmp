@@ -20,6 +20,7 @@ import app.packed.hooks.ContextualProvide;
 import app.packed.inject.Variable;
 import app.packed.inject.variable.HookBootstrap;
 import app.packed.inject.variable.InjectableVariableHook;
+import app.packed.inject.variable.VariableHook;
 import app.packed.inject.variable.VariableInjector;
 import app.packed.lifecycle.OnInitialize;
 
@@ -28,12 +29,20 @@ import app.packed.lifecycle.OnInitialize;
  */
 public class ConstantExpresUsage {
 
-    abstract class Impl1 {
+    abstract class Impl0 extends VariableHook {
+
+        @BuildWith
+        static void foo(Plus p, VariableInjector binder) {
+            binder.injectConstant(p.arg1() + p.arg2());
+        }
+    }
+
+    abstract class Impl1 extends VariableHook {
 
         @BuildWith
         static void foo(Variable v, VariableInjector binder) {
             Plus p = v.getAnnotation(Plus.class);
-            binder.provideConstant(p.arg1() + p.arg2());
+            binder.injectConstant(p.arg1() + p.arg2());
         }
     }
 
@@ -42,7 +51,7 @@ public class ConstantExpresUsage {
         @BuildWith // replace with @BootstrapWith...
         public void foo(Variable v, VariableInjector binder) {
             Plus p = v.getAnnotation(Plus.class);
-            binder.provideConstant(p.arg1() + p.arg2());
+            binder.injectConstant(p.arg1() + p.arg2());
         }
     }
 
@@ -90,3 +99,12 @@ public class ConstantExpresUsage {
         int arg2();
     }
 }
+
+// Vi har leget lidt med tanken omkring variables...
+//interface Impl00 {
+//
+//  @BuildWith
+//  static void foo(Plus p, VariableInjector binder) {
+//      binder.injectConstant(p.arg1() + p.arg2());
+//  }
+//}

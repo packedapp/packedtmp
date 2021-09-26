@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
 import app.packed.extension.ExtensionMember;
-import app.packed.hooks.MethodHook;
+import app.packed.hooks.BeanMethod;
 import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
@@ -78,8 +78,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 @Documented
 @ExtensionMember(ServiceExtension.class)
 @OldFieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
-@MethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
-
+@BeanMethod.Hook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);

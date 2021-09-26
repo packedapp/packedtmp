@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.hooks.accessors.HookProvide;
+import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.service.ServiceExtension;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
 
@@ -84,7 +84,7 @@ public class Fff {
 
         }
 
-        @HookProvide
+        @ScopedProvide
         public String create() {
             return System.getProperty(val);
         }
@@ -98,7 +98,7 @@ public class Fff {
 
     static class MyMethodBootstrap extends AccessibleMethodHook.Bootstrap {
 
-        @HookProvide
+        @ScopedProvide
         public String create() {
             return "COOL";
         }

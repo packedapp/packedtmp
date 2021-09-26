@@ -15,9 +15,14 @@
  */
 package app.packed.hooks;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.AnnotatedElement;
@@ -35,13 +40,35 @@ import packed.internal.util.StackWalkerUtil;
  * <p>
  * Implementations must have a no-args constructor.
  */
-public abstract class BeanMethodBootstrap {
+public abstract class BeanMethod {
 
+    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface Hook {
+
+        /**
+         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+         * <p>
+         * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+         * the value of this attribute is {@code true}.
+         * 
+         * @return whether or not the implementation is allowed to invoke the target method
+         * 
+         * @see BeanMethod#methodHandle()
+         */
+        boolean allowInvoke() default false; // allowIntercept...
+
+        /** Bootstrap classes for this hook. */
+        Class<? extends BeanMethod> bootstrap();
+    }
+    
+    
     /** The builder used for bootstrapping. Updated by {@link UseSiteMethodHookModel}. */
     private UseSiteMethodHookModel.@Nullable Builder builder;
 
     /** Create a new bootstrap instance. */
-    protected BeanMethodBootstrap() {}
+    protected BeanMethod() {}
 
     /** Bootstrap the hook for a matching method. */
     protected void bootstrap() {}

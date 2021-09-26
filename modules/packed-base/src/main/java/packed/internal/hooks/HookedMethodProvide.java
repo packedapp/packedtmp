@@ -23,13 +23,13 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.hooks.accessors.HookProvide;
+import app.packed.hooks.accessors.ScopedProvide;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.lifetime.LifetimePool;
 
 /**
- * Represents a method on a hook class annotated with {@link HookProvide}.
+ * Represents a method on a hook class annotated with {@link ScopedProvide}.
  */
 public final class HookedMethodProvide implements DependencyProducer {
 

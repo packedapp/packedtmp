@@ -62,43 +62,22 @@ import app.packed.lifecycle.OnInitialize;
 @Documented
 // Tag noget tekst fra den nederste comment
 // https://stackoverflow.com/questions/4797465/difference-between-hooks-and-abstract-methods-in-java
-public @interface MethodHook {
+@interface MethodHook {
 
     /**
      * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
      * <p>
-     * Methods such as {@link BeanMethodBootstrap#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+     * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
      * the value of this attribute is {@code true}.
      * 
      * @return whether or not the implementation is allowed to invoke the target method
      * 
-     * @see BeanMethodBootstrap#methodHandle()
+     * @see BeanMethod#methodHandle()
      */
     boolean allowInvoke() default false; // allowIntercept...
 
     /** Bootstrap classes for this hook. */
-    Class<? extends BeanMethodBootstrap> bootstrap();
-
-//    /** Any extension this hook is part of. */
-//    // I think it is okay to require that. We could have an InternalExtension.class for our own special hooks
-//    // And then have Extension.class for users... Which would then be the default for our own non-extension hooks. fx @Main
-//    // Maaske kan man bare ikke have invoking user method hooks...
-//    Class<? extends Extension> extension(); // maybe just have it as an array with defaults...
-
-//    /**
-//     * An annotation that allows for placing multiple {@linkplain MethodHook @MethodHook} annotations on a single target. Is
-//     * typically used to define meta annotations with multiple method hook annotations.
-//     */
-//    @Retention(RetentionPolicy.RUNTIME)
-//    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-//    @Inherited
-//    @Documented
-//    @interface All {
-//
-//        /** An array of {@linkplain MethodHook @MethodHook} declarations. */
-//        MethodHook[] value();
-//    }
-
+    Class<? extends BeanMethod> bootstrap();
 }
 
 class RBadIdeas {
@@ -124,7 +103,7 @@ class RBadIdeas {
     /**
      * Whether or not the extension method is allowed to invoke the method.
      * 
-     * @see BeanMethodBootstrap#methodHandle()
+     * @see BeanMethod#methodHandle()
      */
 
     // activatedByPrefix = "get"
@@ -151,7 +130,7 @@ class SandboxBootstrap {
     // maybe annotation() instead. Sounds better if we, for example, adds
     // nameStartsWith()
     // Taenker den ogsaa kan vaere paa ExtensionClass... Problemet er bare den ikke angiver en annotation
-    public final Set<MethodHook> activatedBy() {
+    public final Set<? /*MethodHook*/> activatedBy() {
 
         // @ScheduleAtFixedRate + @ScheduledAtVariableRate paa samme metode hvis de har samme bootstrap
         // Saa er det aktiveret af to hooks
@@ -203,7 +182,7 @@ class SandboxBootstrap {
 //@Doo(extension = Rooddd(23, 234))
 
 @ZuperSupport // same
-@MethodHook(bootstrap = Zester.Scan.class)
+@BeanMethod.Hook(bootstrap = Zester.Scan.class)
 class Zester extends BaseBundle {
 
     /** {@inheritDoc} */
@@ -212,7 +191,7 @@ class Zester extends BaseBundle {
     @Override
     protected void build() {}
 
-    class Scan extends BeanMethodBootstrap {
+    class Scan extends BeanMethod {
 
         @OnInitialize
         public void doo(InstanceHandle<Runnable> ih) {
@@ -233,7 +212,7 @@ class Zester extends BaseBundle {
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@MethodHook(bootstrap = Zester.Scan.class)
+@BeanMethod.Hook(bootstrap = Zester.Scan.class)
 @interface ZuperSupport {}
 
 // Man kan ogsaa have en BuildContext som man kan faa injected...

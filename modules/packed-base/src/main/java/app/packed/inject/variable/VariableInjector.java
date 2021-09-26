@@ -28,6 +28,10 @@ import app.packed.inject.Variable;
  * <p>
  * 
  */
+
+// Does not support lifecycle annotations...
+// only @ScopedProvide
+
 // VariableBinder, VariableProvider
 //// ContextualizedProvisional
 
@@ -38,36 +42,48 @@ import app.packed.inject.Variable;
 public interface VariableInjector {
 
     /**
-     * @param factory
-     * 
-     * @throws IllegalStateException
-     *             if a bind method has already been called on this binder instance (I think it is fine to allow it to be
-     *             overriden by itself)
-     */
-    void provide(Factory<?> factory);
-
-    // Det return type of the method handle must match (be assignable to) variable.getType();
-    void provide(MethodHandle methodHandle);
-
-    /**
-     * Provides the same nullable constant at all time to the variable.
+     * Provides the same nullable constant to the variable at runtime.
      * 
      * @param constant
      *            the constant to provide to the variable
      * @throws ClassCastException
      *             if the type of the constant does not match the type of the variable
      */
-    default void provideConstant(@Nullable Object constant) {
-        provide(MethodHandles.constant(variable().getType(), constant));
+    default void injectConstant(@Nullable Object constant) {
+        injectVia(MethodHandles.constant(variable().getType(), constant));
     }
 
-    void provideVia(Class<?> implementation);
+    /**
+     * @param factory
+     * 
+     * @throws IllegalStateException
+     *             if a bind method has already been called on this binder instance (I think it is fine to allow it to be
+     *             overriden by itself)
+     */
+    void injectVia(Factory<?> factory);
+
+    // Det return type of the method handle must match (be assignable to) variable.getType();
+    void injectVia(MethodHandle methodHandle);
+
+    void nextStep(VariableHook instance);
+
+    void nextStepSpawn(Class<? extends VariableHook> implementation);
 
     // ------- Must have a single method annotated with @Provide, whose return type must match variable.getType()
-    void provideVia(Factory<?> factory); // Den laver et objekt som kan bruge... IDK hvor spaendende det er
-
-    void provideVia(Object instance);
+    void nextStepSpawn(Factory<? extends VariableHook> factory); // Den laver et objekt som kan bruge... IDK hvor spaendende det er
 
     /** {@return the variable that should be bound.} */
     Variable variable(); // IDK know about this
+}
+
+// Alle hooks kan bruge den
+interface ZookReplacer {
+
+    void nextStep(Object instance);
+
+    void nextStepSpawn(Class<?> implementation);
+
+    // ------- Must have a single method annotated with @Provide, whose return type must match variable.getType()
+    void nextStepSpawn(Factory<?> factory); // Den laver et objekt som kan bruge... IDK hvor spaendende det er
+
 }

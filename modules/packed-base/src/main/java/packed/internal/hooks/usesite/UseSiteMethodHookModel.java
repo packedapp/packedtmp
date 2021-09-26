@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.hooks.BeanMethodBootstrap;
+import app.packed.hooks.BeanMethod;
 import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
@@ -40,12 +40,12 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link BeanMethodBootstrap#bootstrap}. */
-    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethodBootstrap.class,
+    /** A MethodHandle that can invoke {@link BeanMethod#bootstrap}. */
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethod.class,
             "bootstrap", void.class);
 
-    /** A VarHandle that can access {@link BeanMethodBootstrap#processor}. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethodBootstrap.class,
+    /** A VarHandle that can access {@link BeanMethod#processor}. */
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethod.class,
             "builder", UseSiteMethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
@@ -192,7 +192,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             provideAsKey = key;
         }
 
-        public static void registerProcessor(BeanMethodBootstrap sidecar, Consumer<? super ComponentSetup> processor) {
+        public static void registerProcessor(BeanMethod sidecar, Consumer<? super ComponentSetup> processor) {
             Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
             b.processor = processor;
         }

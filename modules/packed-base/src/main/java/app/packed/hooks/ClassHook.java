@@ -145,7 +145,7 @@ public @interface ClassHook {
         }
 
         // b.setBuild();
-        protected final List<BeanMethodBootstrap> methods() {
+        protected final List<BeanMethod> methods() {
             return methods(false, false, Object.class);
         }
 
@@ -159,7 +159,7 @@ public @interface ClassHook {
          *            classes to skip when processing
          * @return a list of method bootstraps
          */
-        protected final List<BeanMethodBootstrap> methods(boolean declaredMethodsOnly, boolean ignoreDefaultMethods, Class<?>... skipClasses) {
+        protected final List<BeanMethod> methods(boolean declaredMethodsOnly, boolean ignoreDefaultMethods, Class<?>... skipClasses) {
             return builder().methods(declaredMethodsOnly, skipClasses);
         }
         

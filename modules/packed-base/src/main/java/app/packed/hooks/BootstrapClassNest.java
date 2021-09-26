@@ -21,13 +21,13 @@ public abstract class BootstrapClassNest {
      * 
      * @return a list of all methods in this nest
      * @see OldFieldHook.Bootstrap#manageBy(Class)
-     * @see BeanMethodBootstrap#nestWith(Class)
+     * @see BeanMethod#nestWith(Class)
      */
-    public final List<BeanMethodBootstrap> methods() {
-        return methods(BeanMethodBootstrap.class);
+    public final List<BeanMethod> methods() {
+        return methods(BeanMethod.class);
     }
 
-    public final <T extends BeanMethodBootstrap> List<T> methods(Class<T> type) {
+    public final <T extends BeanMethod> List<T> methods(Class<T> type) {
         throw new UnsupportedOperationException();
     }
     

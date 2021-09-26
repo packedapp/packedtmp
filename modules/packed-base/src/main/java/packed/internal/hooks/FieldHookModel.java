@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.extension.InternalExtensionException;
 import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.OldFieldHook.Bootstrap;
-import app.packed.hooks.accessors.HookProvide;
+import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.lifecycle.OnInitialize;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
@@ -78,7 +78,7 @@ public final class FieldHookModel extends AbstractHookModel<OldFieldHook.Bootstr
 
         @Override
         protected void onMethod(Method method) {
-            HookProvide ap = method.getAnnotation(HookProvide.class);
+            ScopedProvide ap = method.getAnnotation(ScopedProvide.class);
             if (ap != null) {
                 MethodHandle mh = oc.unreflect(method);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);

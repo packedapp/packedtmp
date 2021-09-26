@@ -8,8 +8,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.hooks.MethodHook;
-
 /**
  * Can be applied on a subclass of
  * 

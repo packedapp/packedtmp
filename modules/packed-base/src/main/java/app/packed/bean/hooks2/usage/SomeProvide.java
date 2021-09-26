@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.variable;
+package app.packed.bean.hooks2.usage;
 
 /**
  *
  */
-// VariablsActivatableHook
-public @interface InjectableVariableHook {
-    
-    Class<? extends VariableHook>[] annotated() default {}; // on annotations
+//@BeanMethod.Hook(using = MyHook.class)
+public @interface SomeProvide {
 
-    Class<? extends VariableHook>[] typed() default {}; // on the type
 }
-// Maaske vi kun supportere Typed
-
-//// Eller maaske har vi to typer
-
-/// Kunne vaere interessant mht til Wirelets... boo(FooWirelet w)
-// Men saa inject boo(Stuff<FooWirelet>) istedet for
-// String[] subClassOf() default {};
-// String[] exactType() default {};
+//
+//class MyHook extends BeanMethod {
+//
+//}

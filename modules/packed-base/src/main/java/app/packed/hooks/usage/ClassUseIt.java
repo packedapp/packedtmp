@@ -15,7 +15,7 @@
  */
 package app.packed.hooks.usage;
 
-import app.packed.hooks.BeanMethodBootstrap;
+import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.lifecycle.OnInitialize;
 
@@ -24,7 +24,7 @@ import app.packed.lifecycle.OnInitialize;
  */
 public class ClassUseIt {
 
-    class Startup extends BeanMethodBootstrap {
+    class Startup extends BeanMethod {
         
         // Maaske er invoker<?> bare en default invoker()
         // Som er tilgaengelig...

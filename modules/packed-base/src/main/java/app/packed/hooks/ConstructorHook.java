@@ -51,11 +51,11 @@ public @interface ConstructorHook {
          * 
          * @return a direct method handle to the matching method
          * @see Lookup#unreflect(Method)
-         * @see MethodHook#allowInvoke()
+         * @see BeanMethod.Hook#allowInvoke()
          * @see ClassHook#allowAllAccess()
          * 
          * @throws UnsupportedOperationException
-         *             if invocation access has not been granted via {@link MethodHook#allowInvoke()}
+         *             if invocation access has not been granted via {@link BeanMethod.Hook#allowInvoke()}
          */
         public final MethodHandle methodHandle() {
             throw new UnsupportedOperationException();

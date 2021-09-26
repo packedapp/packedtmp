@@ -18,18 +18,4 @@ package app.packed.inject.variable;
 /**
  *
  */
-// VariablsActivatableHook
-public @interface InjectableVariableHook {
-    
-    Class<? extends VariableHook>[] annotated() default {}; // on annotations
-
-    Class<? extends VariableHook>[] typed() default {}; // on the type
-}
-// Maaske vi kun supportere Typed
-
-//// Eller maaske har vi to typer
-
-/// Kunne vaere interessant mht til Wirelets... boo(FooWirelet w)
-// Men saa inject boo(Stuff<FooWirelet>) istedet for
-// String[] subClassOf() default {};
-// String[] exactType() default {};
+public abstract class VariableHook {}

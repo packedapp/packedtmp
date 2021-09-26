@@ -127,10 +127,10 @@ public @interface AccessibleMethodHook {
 
 @interface AccessibleMethodHook2 {
 
-    /** The {@link BeanMethodBootstrap} class for this hook. */
+    /** The {@link BeanMethod} class for this hook. */
     Class<? extends AccessibleMethodHook.Bootstrap>[] bootstrap();
 
-    /** The {@link BeanMethodBootstrap} class for this hook. */
+    /** The {@link BeanMethod} class for this hook. */
     BootstrapType[] bootstrapTypes();
 
     /** The extension this hook is a part of. */

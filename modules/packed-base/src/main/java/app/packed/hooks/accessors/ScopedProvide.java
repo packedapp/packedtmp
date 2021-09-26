@@ -15,7 +15,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 //@AccessibleMethodHook(onAnnotation = Fooo.class, extension = ServiceExtension.class, bootstrap = MyBootstrap.class)
-public @interface HookProvide {
+/// Hooked PRovide
+public @interface ScopedProvide {
 
 }
 

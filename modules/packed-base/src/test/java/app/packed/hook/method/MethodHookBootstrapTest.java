@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.SomeApp;
 import app.packed.bundle.BaseBundle;
-import app.packed.hooks.BeanMethodBootstrap;
-import app.packed.hooks.MethodHook;
+import app.packed.hooks.BeanMethod;
 
 public class MethodHookBootstrapTest {
 
@@ -43,12 +42,12 @@ public class MethodHookBootstrapTest {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @MethodHook(bootstrap = HookTestBootstrap.class)
+    @BeanMethod.Hook(bootstrap = HookTestBootstrap.class)
     static @interface HookTest {
         String value();
     }
 
-    static class HookTestBootstrap extends BeanMethodBootstrap {
+    static class HookTestBootstrap extends BeanMethod {
         HookTestBootstrap() {
             TL.get().onBootstrapConstruction(this);
         }

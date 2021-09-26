@@ -24,25 +24,24 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanMethodBootstrap;
-import app.packed.hooks.MethodHook;
-import app.packed.hooks.accessors.HookProvide;
+import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
+import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.lifecycle.OnInitialize;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** A model of a {@link BeanMethodBootstrap} class. */
+/** A model of a {@link BeanMethod} class. */
 public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
-    /** A MethodHandle that can invoke {@link BeanMethodBootstrap#bootstrap}. */
-    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethodBootstrap.class,
+    /** A MethodHandle that can invoke {@link BeanMethod#bootstrap}. */
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethod.class,
             "bootstrap", void.class);
 
-    /** A VarHandle that can access {@link BeanMethodBootstrap#processor}. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethodBootstrap.class,
+    /** A VarHandle that can access {@link BeanMethod#processor}. */
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethod.class,
             "builder", UseSiteMethodHookModel.Builder.class);
 
     public final Map<Key<?>, HookedMethodProvide> keys;
@@ -64,8 +63,8 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
 
-    public BeanMethodBootstrap bootstrap(UseSiteMethodHookModel.Builder builder) {
-        BeanMethodBootstrap instance = (BeanMethodBootstrap) newInstance();
+    public BeanMethod bootstrap(UseSiteMethodHookModel.Builder builder) {
+        BeanMethod instance = (BeanMethod) newInstance();
 
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, builder);
         try {
@@ -80,7 +79,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
     }
 
-    public static MethodHookBootstrapModel getModelForFake(Class<? extends BeanMethodBootstrap> c) {
+    public static MethodHookBootstrapModel getModelForFake(Class<? extends BeanMethod> c) {
         return new Builder(c).build();
     }
 
@@ -97,7 +96,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
             super(c);
         }
 
-        public Builder(MethodHook ams) {
+        public Builder(BeanMethod.Hook ams) {
             super(ams.bootstrap());
         }
 
@@ -105,14 +104,14 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         @Override
         public MethodHookBootstrapModel build() {
 
-            scan(false, BeanMethodBootstrap.class);
+            scan(false, BeanMethod.class);
 
             return new MethodHookBootstrapModel(this);
         }
 
         @Override
         protected void onMethod(Method method) {
-            HookProvide ap = method.getAnnotation(HookProvide.class);
+            ScopedProvide ap = method.getAnnotation(ScopedProvide.class);
             if (ap != null) {
                 MethodHandle mh = oc.unreflect(method);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);

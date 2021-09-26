@@ -18,14 +18,6 @@ public @interface BeanHook {
 
     Class<? extends BeanClass>[] classAnnotatedAllAccess() default {};
 
-    Class<? extends BeanClass>[] classSubclass() default {}; // Interfaces not supported
-
-    Class<? extends BeanClass>[] classSubclassAllAccess() default {}; // Interfaces not supported
-
-    Class<? extends BeanField>[] constructorAnnotated() default {};
-
-    Class<? extends BeanField>[] constructorAnnotatedAccessible() default {};
-
     Class<? extends BeanField>[] fieldAnnotated() default {};
 
     Class<? extends BeanField>[] fieldAnnotatedAccessible() default {};
@@ -33,8 +25,6 @@ public @interface BeanHook {
     Class<? extends BeanField>[] fieldAnnotatedGettable() default {};
 
     Class<? extends BeanField>[] fieldAnnotatedSettable() default {};
-
-    boolean metaAnnotationsEnabled() default true;
 
     Class<? extends BeanMethod>[] methodAnnotated() default {};
 
@@ -59,10 +49,23 @@ enum BeanHookType {
 //mapAnnotatedMethodToAccesibleMethod(Class<? extends Annotation>, SomeHook);
 ///mapAnnotatedMethodToMethod(Class<? extends Annotation>, SomeHook);
 
-class Zarchive {
+@interface Zandbox {
+
+    boolean metaAnnotationsEnabled() default true; // @MetaAnnotationTarget
+
+}
+
+@interface Zarchive {
+
+    // Det er jo nok primaert i forbindelse med injection de interessante
+    // Tror faktisk ikke vi vil bruge dem her... Istedet for skal man bare bruge en extension
+    // FooExtension.installSuperBean(Class<? extends MySuper> implementation);
+    Class<? extends BeanClass>[] classSubclass() default {}; // Interfaces not supported
+
+    Class<? extends BeanClass>[] classSubclassAllAccess() default {}; // Interfaces not supported
 
     // I sidste ende gav parameter ikke rigtig mening udover hvad InjectableVariable daekker over
-    
+
 //  Class<? extends BeanInjectableParameter>[] parameterAnnotatedInjectable() default {};
 //
 //  Class<? extends BeanInjectableParameter>[] parameterExactTypeInjectable() default {};
