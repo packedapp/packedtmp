@@ -14,7 +14,7 @@
   
   <!-- ==================================================================== -->
   <modules>
-    <module>packed-base</module>
+    <module>packed</module>
     <!--
     <module>packed-base-micro</module>
     <module>packed-base-devtools</module>
@@ -41,7 +41,13 @@
       <!-- Packed -->
       <dependency>
         <groupId>app.packed</groupId>
-        <artifactId>packed-base</artifactId>
+        <artifactId>packed</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>app.packed</groupId>
+        <artifactId>packed-devtools</artifactId>
         <version>${project.version}</version>
       </dependency>
     
