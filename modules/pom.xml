@@ -27,9 +27,9 @@
     <root.dir>${project.basedir}/..</root.dir>
     
     <!-- Test Dependencies Versions -->
-    <version.test.assertj>3.20.2</version.test.assertj>
-    <version.test.junit>5.7.2</version.test.junit>
-    <version.test.jmh>1.32</version.test.jmh>
+    <version.test.assertj>3.21.0</version.test.assertj>
+    <version.test.junit>5.8.1</version.test.junit>
+    <version.test.jmh>1.33</version.test.jmh>
     
     <!-- Pluging Versions -->
     <version.plugin.jacoco>0.8.7</version.plugin.jacoco>
@@ -152,7 +152,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
         <configuration>
           <excludePackageNames>packed.*:*.internals.*:*.test.*:*.examples.*:</excludePackageNames>
           <additionalOptions>-tag "apiNote:a:API Note:" -tag "implSpec:a:Implementation Requirements:" -tag "implNote:a:Implementation Note:"</additionalOptions>
