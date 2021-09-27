@@ -30,7 +30,7 @@ import app.packed.base.TypeToken;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
-import app.packed.hooks.sandbox2.OldAutoService;
+import app.packed.hooks.InjectableVariable;
 import app.packed.inject.Provider;
 import packed.internal.service.build.PackedServiceComposer;
 import packed.internal.service.runtime.PackedInjector;
@@ -40,7 +40,7 @@ import packed.internal.service.runtime.PackedInjector;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@OldAutoService
+@InjectableVariable.Hook
 public interface ServiceLocator extends ServiceRegistry {
 
     /**

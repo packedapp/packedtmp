@@ -5,7 +5,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
 import app.packed.extension.Extension;
-import app.packed.hooks.sandbox2.OldAutoService;
+import app.packed.hooks.InjectableVariable;
 import app.packed.inject.InjectionContext;
 import app.packed.service.Provide;
 import packed.internal.util.LookupUtil;
@@ -54,9 +54,11 @@ public class InfuserTester {
         }
     }
 
-    @OldAutoService
+    @InjectableVariable.Hook
     interface XX {
 
+        // Det er super smart at man ikke skal lave en ny klasse...
+        // Men maaske lidt for smart
         @Provide
         private static XX provide() {
             return new XX() {};

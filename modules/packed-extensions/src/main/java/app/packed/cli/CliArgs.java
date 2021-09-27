@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.hooks.sandbox2.OldAutoService;
+import app.packed.hooks.InjectableVariable;
 
 /**
  * Represents the arguments to a method main.
  */
-@OldAutoService
+@InjectableVariable.Hook
 // CliArgs??? Jaa, was MainArgs
 // Maaske MainArgs kun kan bruges med @Main og friends...
 public final class CliArgs {

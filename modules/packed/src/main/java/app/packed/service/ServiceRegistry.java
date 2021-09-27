@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.hooks.sandbox2.OldAutoService;
+import app.packed.hooks.InjectableVariable;
 import packed.internal.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
@@ -55,7 +55,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * If this interface is used as an auto service. The registry will contain all services that available to a given
  * component instance. It will not include auto services.
  */
-@OldAutoService
+@InjectableVariable.Hook
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**

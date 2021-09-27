@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.variable.usage;
+package app.packed.hooks.usage;
 
 import app.packed.build.BuildWith;
 import app.packed.hooks.ContextualProvide;
 import app.packed.hooks.InjectableVariable;
 import app.packed.hooks.InjectableVariable.VariableInjector;
 import app.packed.inject.Variable;
-import app.packed.inject.variable.HookBootstrap;
+import app.packed.inject.sandbox.HookBootstrap;
 import app.packed.lifecycle.OnInitialize;
 
 /**

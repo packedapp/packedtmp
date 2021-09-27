@@ -35,8 +35,9 @@ import app.packed.inject.Variable;
 /**
  *
  */
+// AutoVariable, AutoVar
+// AutoService (Hvis service bliver lidt mere bredt)
 public abstract class InjectableVariable {
-
     
     // This one is nice... maybe it is $debug Or maybe its like packed.extension.devmode=true
     // Yeah I think we should put this in devtools
@@ -239,3 +240,34 @@ class Zandbox {
         // String/String[]
     }
 }
+//Dynamic variables are dependencies that cannot statically be expressed as a key..
+//F.eks. if you want to inject a system property @SystemProperty("doobar") has infinite many possibilities
+//DynamicVariable to the rescue
+
+//Can either be used with a sidecar 
+//Or without a sidecar in which the context in which it is used must provide it.
+
+//@SomePAnnotation cannot be used in this context.
+//Throw new ProvisionException
+//Look at the annotation to see which contexts it can be used in.
+
+/// Optional...
+//@DynamicVariable(supportOptional = true)
+
+////Old Names
+//Dom, DynVar, Prime, @ProvideDynamically...
+//Produce instead of provide...
+//ProvideSingle
+//ProvidePrototype
+//ProvideViaPrime() <--- is protoype
+//-- Explicitly defined via a sidecar...
+//-- Overriden in the some internals
+//WildcardVariable <- Nah det har jo ikke noget med Generics at goere....
+
+//>=2 Dynamic variable anntoations fail
+//= 1 Dynamic variable ok
+//= 0 ordinary service
+
+//@DynVar(positional = 0, -1)
+
+//@DynVar(@HtttpParamGet)
