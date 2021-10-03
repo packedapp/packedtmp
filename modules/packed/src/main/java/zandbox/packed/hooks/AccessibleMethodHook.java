@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;

@@ -2,7 +2,7 @@ package app.packed.bundle.host;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.various.UseCases.Guest;
-import app.packed.service.ServiceConfiguration;
+import app.packed.inject.service.ServiceConfiguration;
 
 public interface InstalledApplicationConfiguration<T> {
     

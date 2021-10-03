@@ -27,7 +27,7 @@ import app.packed.base.Key;
 import app.packed.bundle.BaseBundle;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets;
 

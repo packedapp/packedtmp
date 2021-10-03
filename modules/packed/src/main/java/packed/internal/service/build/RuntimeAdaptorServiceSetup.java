@@ -18,8 +18,8 @@ package packed.internal.service.build;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.service.runtime.DelegatingRuntimeService;
 import packed.internal.service.runtime.RuntimeService;

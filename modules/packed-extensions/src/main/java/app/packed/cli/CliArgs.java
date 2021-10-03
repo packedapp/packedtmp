@@ -24,7 +24,7 @@ import app.packed.hooks.InjectableVariable;
 /**
  * Represents the arguments to a method main.
  */
-@InjectableVariable.Hook
+@InjectableVariable.Hook(bootstrap = InjectableVariable.class)
 // CliArgs??? Jaa, was MainArgs
 // Maaske MainArgs kun kan bruges med @Main og friends...
 public final class CliArgs {

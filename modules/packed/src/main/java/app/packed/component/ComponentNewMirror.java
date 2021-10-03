@@ -9,8 +9,8 @@ import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.InternalExtensionException;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceExtensionMirror;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 
@@ -18,7 +18,7 @@ import packed.internal.component.ComponentSetup;
  * A mirror of an extension that is in use by a {@link #bundle}.
  * <p>
  * This class can be overridden to provide a specialized mirror for an extension. For example,
- * {@link app.packed.service.ServiceExtension} provides {@link app.packed.service.ServiceExtensionMirror}.
+ * {@link app.packed.inject.service.ServiceExtension} provides {@link app.packed.inject.service.ServiceExtensionMirror}.
  * <p>
  * Extensions mirrors are typically obtained in one of the following ways:
  * <ul>

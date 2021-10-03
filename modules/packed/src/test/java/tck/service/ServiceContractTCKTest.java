@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.BaseBundle;
 import app.packed.bundle.Bundle;
-import app.packed.service.ServiceContract;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceContract;
+import app.packed.inject.service.ServiceExtension;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;

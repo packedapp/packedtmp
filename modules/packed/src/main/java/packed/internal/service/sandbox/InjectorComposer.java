@@ -28,9 +28,9 @@ import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.component.ComponentMirror;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceBeanConfiguration;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceLocator;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via

@@ -16,7 +16,7 @@
 package packed.internal.util;
 
 import app.packed.bundle.BaseBundle;
-import app.packed.service.ServiceContract;
+import app.packed.inject.service.ServiceContract;
 
 /**
  *

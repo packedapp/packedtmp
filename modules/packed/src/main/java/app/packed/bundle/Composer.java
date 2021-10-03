@@ -24,8 +24,8 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceComposer;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceComposer;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.util.LookupUtil;
 

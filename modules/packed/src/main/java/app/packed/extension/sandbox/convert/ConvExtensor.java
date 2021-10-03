@@ -4,8 +4,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.extension.ExtensionBean;
+import app.packed.extension.ExtensionMember;
 
-final class ConvExtensor extends ExtensionBean<ConvExtension> implements ConvDiscovable {
+@ExtensionMember(ConvExtension.class)
+final class ConvExtensor extends ExtensionBean implements ConvDiscovable {
 
     final Map<Class<?>, Function<?, ?>> m;
 

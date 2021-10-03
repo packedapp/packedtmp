@@ -18,7 +18,7 @@ package app.packed.extension;
  * <li>Referenciable by bean hooks</li>
  * </ul>
  */
-public abstract class ExtensionBean<E extends Extension> {
+public abstract class ExtensionBean {
     // wirelets
 }
 

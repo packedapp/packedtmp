@@ -18,8 +18,8 @@ package packed.internal.service;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.service.Service;
-import app.packed.service.ServiceRegistry;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceRegistry;
 import packed.internal.service.build.ServiceSetup;
 import packed.internal.util.CollectionUtil;
 

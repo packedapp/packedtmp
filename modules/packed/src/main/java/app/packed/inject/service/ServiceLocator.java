@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,6 +31,7 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.hooks.InjectableVariable;
+import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.inject.Provider;
 import packed.internal.service.build.PackedServiceComposer;
 import packed.internal.service.runtime.PackedInjector;
@@ -59,7 +60,7 @@ public interface ServiceLocator extends ServiceRegistry {
     default <T> Optional<T> findInstance(Class<T> key) {
         return findInstance(Key.of(key));
     }
-
+    
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional.
      * <p>
@@ -280,6 +281,12 @@ public interface ServiceLocator extends ServiceRegistry {
         return PackedServiceComposer.of(action);
     }
 
+    @ScopedProvide
+    private static ServiceLocator provide() {
+        // I think we need to mark somewhere that we need to create a ServiceLocator
+        return ServiceLocator.of();
+    }
+
     @Reflectable
     static ApplicationImage<ServiceLocator> reusableImageOf(Bundle<?> assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
@@ -291,7 +298,7 @@ interface ServiceLocatorZandbox extends ServiceLocator {
     // Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
     // og saa faa den specificeret key.
 
-    // Kunne godt taenke mig at finde et godt navn.
+    // Kunne godt taenke mig at finde et godt navn.x
     // Naar en noegle er en super noegle???
 
     // may define any qualifiers

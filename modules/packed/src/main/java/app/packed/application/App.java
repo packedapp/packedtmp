@@ -3,7 +3,7 @@ package app.packed.application;
 import app.packed.build.BuildWirelets;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 
 /**
  * An entry point for all the various types of applications that are available in Packed.

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
-import app.packed.service.Provide;
+import app.packed.inject.service.Provide;
 import packed.internal.service.sandbox.Injector;
 import packed.internal.service.sandbox.InjectorComposer;
 

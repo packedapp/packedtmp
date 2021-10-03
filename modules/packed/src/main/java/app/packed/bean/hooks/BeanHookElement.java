@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
+import app.packed.extension.ExtensionBean;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor.AbstractAnnotatedElementProcessor;
 
 public sealed abstract class BeanHookElement permits BeanClass,BeanField,BeanMethod,BeanMethodInterceptor {
@@ -50,6 +51,8 @@ public sealed abstract class BeanHookElement permits BeanClass,BeanField,BeanMet
     }
 
     abstract AbstractAnnotatedElementProcessor processor();
+
+    public static void $registerExtensionBean(Class<? extends ExtensionBean> cl) {}
 }
 
 /**
@@ -61,26 +64,26 @@ public sealed abstract class BeanHookElement permits BeanClass,BeanField,BeanMet
 // Men det kan man vel sige paa
 abstract class BeanInjectableParameter {
 
-   /** {@return the index of the parameter.} */
-   public final int getIndex() {
-       throw new UnsupportedOperationException();
-   }
+    /** {@return the index of the parameter.} */
+    public final int getIndex() {
+        throw new UnsupportedOperationException();
+    }
 
-   /** {@return the underlying parameter} */
-   public final Parameter getParameter() {
-       throw new UnsupportedOperationException();
-   }
+    /** {@return the underlying parameter} */
+    public final Parameter getParameter() {
+        throw new UnsupportedOperationException();
+    }
 
-   /** {@return the underlying parameter} */
-   public final Executable getDeclaringExecutable() {
-       return getParameter().getDeclaringExecutable();
-   }
+    /** {@return the underlying parameter} */
+    public final Executable getDeclaringExecutable() {
+        return getParameter().getDeclaringExecutable();
+    }
 
-   public final Type parameterizedType() {
-       return getParameter().getParameterizedType();
-   }
+    public final Type parameterizedType() {
+        return getParameter().getParameterizedType();
+    }
 
-   protected static final void $supportVarArgs() {
-       throw new UnsupportedOperationException();
-   }
+    protected static final void $supportVarArgs() {
+        throw new UnsupportedOperationException();
+    }
 }

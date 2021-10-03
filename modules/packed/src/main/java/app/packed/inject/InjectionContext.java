@@ -16,7 +16,7 @@
 package app.packed.inject;
 
 import app.packed.base.Key;
-import app.packed.service.ServiceRegistry;
+import app.packed.inject.service.ServiceRegistry;
 
 /**
  * An injection context object can be injected into any injection site (typically a method or constructor) to query
@@ -31,6 +31,7 @@ import app.packed.service.ServiceRegistry;
  * <strong>Note:</strong> This interface should only be used doing development. As the runtime needs to retain detailed
  * information about the dependency graph. Information which is normally only available at build time.
  */
+// DependencyTrace<T>
 public /* /* sealed */ interface InjectionContext extends ServiceRegistry {
 
     // 3 Variables types

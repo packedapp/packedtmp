@@ -1,4 +1,4 @@
-package app.packed.service;
+package app.packed.inject.service;
 
 import java.util.Set;
 

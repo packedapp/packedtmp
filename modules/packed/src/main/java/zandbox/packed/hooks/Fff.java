@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.hooks.accessors.ScopedProvide;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
 
 public class Fff {

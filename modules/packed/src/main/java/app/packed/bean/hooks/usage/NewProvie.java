@@ -10,7 +10,7 @@ import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanHook;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.ExtensionMember;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)

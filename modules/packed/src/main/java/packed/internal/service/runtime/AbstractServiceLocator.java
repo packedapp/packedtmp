@@ -29,10 +29,10 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.bundle.ComposerAction;
 import app.packed.inject.Provider;
-import app.packed.service.Service;
-import app.packed.service.ServiceComposer;
-import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceSelection;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceComposer;
+import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.ServiceSelection;
 import packed.internal.service.AbstractServiceRegistry;
 import packed.internal.service.build.PackedServiceComposer;
 

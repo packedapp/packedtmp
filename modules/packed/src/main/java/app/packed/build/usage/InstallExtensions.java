@@ -11,7 +11,7 @@ import app.packed.bundle.BaseBundle;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.sandbox.BundleHook;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 
 @ApplyBuildHook(InstallExtensionsX.class)
 @Target({ ElementType.TYPE })

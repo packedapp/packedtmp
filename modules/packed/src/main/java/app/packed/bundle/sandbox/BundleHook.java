@@ -21,7 +21,9 @@ import app.packed.bundle.BundleMirror;
 // Paa composeren har vi nogle callbacks hvor man kan saette ting op
 // Strengt tager kan vi have <T extends ContainerConfiguration> og saa fejler man bare med BuildException hvis det ikke passer
 
-/// BundleProcessor???
+/// BundleProcessor??? 
+/// Skal bare direct paa assemblien...
+// @Assembly.Hook(HookBuild)
 public non-sealed interface BundleHook extends BuildHook {
 
     /**

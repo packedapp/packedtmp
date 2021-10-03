@@ -1,4 +1,4 @@
-package app.packed.service;
+package app.packed.inject.service;
 
 import app.packed.attribute.AttributedElement;
 import app.packed.base.Key;
@@ -30,16 +30,11 @@ public /* sealed */ interface Service extends AttributedElement {
     // Hmm Saa lad sige jeg vil lave Logger..
     // Saa er den jo constant for mit scope...
     // Den returnere den samme logger hver gang...
+    // 21-10-03: Men en logger ville jo aldrig vaere en service
     // Altsaa mere en description...
     boolean isConstant();
 
-    /**
-     * Returns the key of the service.
-     * <p>
-     * Every service in a single {@link ServiceRegistry} has a unique key.
-     *
-     * @return the key of the service
-     */
+    /** {@return the key of the service.} */
     Key<?> key();
 }
 

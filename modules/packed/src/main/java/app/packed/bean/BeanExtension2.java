@@ -6,7 +6,7 @@ import app.packed.bundle.BaseBundle;
 import app.packed.component.Operator;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionSetup;
 
@@ -50,7 +50,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return wire(new ContainerBeanConfiguration<>(), Operator.user(), implementation);
+        return wire(new ContainerBeanConfiguration<>(), Operator.application(), implementation);
     }
 
     /**
@@ -63,7 +63,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return wire(new ContainerBeanConfiguration<>(), Operator.user(), factory);
+        return wire(new ContainerBeanConfiguration<>(), Operator.application(), factory);
     }
 
     /**
@@ -80,7 +80,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
         checkIsProperInstance(instance);
-        return wire(new ContainerBeanConfiguration<>(), Operator.user(), instance);
+        return wire(new ContainerBeanConfiguration<>(), Operator.application(), instance);
     }
 
     <B extends BeanConfiguration<?>> B wire(B configuration, Operator owner, Object source) {

@@ -4,7 +4,7 @@ import app.packed.bean.hooks.BeanHook;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.hooks.customization.BeanHookMapper;
 import app.packed.bundle.BaseBundle;
-import app.packed.service.Provide;
+import app.packed.inject.service.Provide;
 
 
 // Her har vi specifikt ingen extension...

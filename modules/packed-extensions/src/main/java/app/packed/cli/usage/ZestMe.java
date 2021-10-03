@@ -18,7 +18,7 @@ package app.packed.cli.usage;
 import app.packed.application.programs.Program;
 import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 
 /**
  *

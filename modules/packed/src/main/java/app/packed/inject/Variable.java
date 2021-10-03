@@ -18,10 +18,14 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.List;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
@@ -44,7 +48,6 @@ import packed.internal.hooks.variable.ParameterVariable;
 // asKey();
 
 // Concrete class extending TypeToken????
-
 // tror vi bliver noedt til at have specielle metoder for repeatable annotations
 
 // Syntes vi navngiver den som .
@@ -61,14 +64,51 @@ public interface Variable extends AnnotatedElement {
      * 
      * @return the raw type of the variable
      * 
+     * @see Field#getGenericType()
+     * @see Parameter#getParameterizedType()
+     */
+    default Type getPa() {
+        return getType();
+    }
+
+    /**
+     * Returns the raw type (Class) of the variable.
+     * 
+     * @return the raw type of the variable
+     * 
      * @see Field#getType()
      * @see Parameter#getType()
-     * @see TypeVariable#get
+     * @see Method#getReturnType()
+     * @see ParameterizedType#getRawType()
      */
     Class<?> getType();
 
+    
+    default Object getDeclaringElement() {
+        // return Field
+        // return Parameter
+        // return Method
+        // return FunctionType??? Ideen er jo lidt man kan kravle tilbage til "hele" functionen...
+        // return parameterizedType
+        throw new UnsupportedOperationException();
+    }
+    
     TypeToken<?> typeToken();
 
+    // expandMetaAnnotations(); -> Declared kept. Annotations -> Meta annotations
+    
+    static List<Variable> ofExecutable(Executable executable) {
+        requireNonNull(executable, "executable is null");
+        Parameter[] parameters = executable.getParameters();
+        if (parameters.length == 0) {
+            return List.of();
+        }
+        Variable[] vars = new Variable[parameters.length];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = ofParameter(parameters[i]);
+        }
+        return List.of(vars);
+    }
 
     /**
      * Returns a variable from the specified field.
@@ -114,7 +154,6 @@ public interface Variable extends AnnotatedElement {
         throw new UnsupportedOperationException();
     }
 }
-
 
 interface VariableRejected {
 

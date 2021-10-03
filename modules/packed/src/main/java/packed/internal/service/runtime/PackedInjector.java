@@ -18,8 +18,8 @@ package packed.internal.service.runtime;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.service.Service;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.service.sandbox.Injector;
 
 /** The default implementation of {@link Injector}. */

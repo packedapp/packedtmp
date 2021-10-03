@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.bundle.BundleSetup;
 import packed.internal.service.ServiceManagerSetup;
 

@@ -31,11 +31,11 @@ import app.packed.bundle.Wirelet;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
 import app.packed.extension.UnavailableExtensionException;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
 import app.packed.lifecycle.InitializationException;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
@@ -184,6 +184,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     // Andre image optimizations
     //// Don't cache beans info
+    /// Nu bliver jeg i tvivl igen... Fx med Tester 
     ApplicationImage<A> reusableImageOf(Bundle<?> assembly, Wirelet... wirelets);
 
     /** {@return the type (typically an interface) of the application instances created by this driver.} */

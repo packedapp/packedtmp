@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject.service;
 
 // ? Why is ProvisionMode not part of ServiceContract
 // A Because it should not be part of how services are used

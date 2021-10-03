@@ -21,7 +21,7 @@ import app.packed.base.Tag;
 import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.test.FooBar.NeedsString;
 
 /**

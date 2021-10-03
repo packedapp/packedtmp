@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.bundle.BaseBundle;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.service.sandbox.Injector;
 
 /**

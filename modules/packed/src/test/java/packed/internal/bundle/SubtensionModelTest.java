@@ -10,7 +10,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.bundle.SubtensionModelTest.TestExtension.SubStatic;
 import packed.internal.bundle.SubtensionModelTest.TestExtension.TestExtensionSupport;
 import testutil.stubs.Throwables;

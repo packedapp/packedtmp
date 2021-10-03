@@ -34,7 +34,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
-import app.packed.service.Service;
+import app.packed.inject.service.Service;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;

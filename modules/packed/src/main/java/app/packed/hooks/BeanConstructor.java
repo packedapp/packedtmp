@@ -21,10 +21,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import app.packed.hooks.BeanClass.ClassHook;
+
 /**
  *
  */
-
 public abstract class BeanConstructor {
 
     /** Disables any further processing of the Constructor. */

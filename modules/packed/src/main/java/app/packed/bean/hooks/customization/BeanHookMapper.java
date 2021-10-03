@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import app.packed.bean.hooks.BeanHook;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bundle.BaseBundle;
-import app.packed.service.Provide;
+import app.packed.inject.service.Provide;
 
 /**
  *

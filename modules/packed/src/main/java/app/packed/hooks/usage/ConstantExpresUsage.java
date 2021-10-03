@@ -91,7 +91,7 @@ public class ConstantExpresUsage {
 
     }
 
-    @InjectableVariable.Hook(annotated = Impl1.class)
+    @InjectableVariable.Hook(bootstrap = Impl1.class)
     @interface Plus {
         int arg1();
 

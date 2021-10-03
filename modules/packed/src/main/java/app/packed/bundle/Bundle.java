@@ -42,9 +42,9 @@ import packed.internal.util.LookupUtil;
  * Assemblies are composable via linking.
  * 
  * <p>
- * Packed will never attempt to member scan the subclasses.
+ * Packed never performs any kind of reflection based introspection of bundle implementations.
  * <p>
- * An assembly can only be used a single time. Trying to use it more than once will fail with
+ * Instances of this class can only be used a single time. Trying to use it more than once will fail with
  * {@link IllegalStateException}.
  * 
  * 

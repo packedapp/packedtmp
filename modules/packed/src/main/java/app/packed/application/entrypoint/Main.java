@@ -29,7 +29,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
 import packed.internal.component.bean.BeanSetup;

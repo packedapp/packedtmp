@@ -187,7 +187,7 @@ public interface ApplicationMirror {
     }
 
     default Operator owner() {
-        return Operator.user();
+        return Operator.application();
     }
 
     default void print() {

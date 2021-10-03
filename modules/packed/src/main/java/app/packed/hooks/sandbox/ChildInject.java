@@ -4,7 +4,7 @@ import app.packed.application.programs.SomeApp;
 import app.packed.base.Nullable;
 import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 
 public class ChildInject extends BaseBundle {
 

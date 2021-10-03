@@ -42,31 +42,9 @@ import packed.internal.util.StackWalkerUtil;
  */
 public abstract class BeanMethod {
 
-    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    public @interface Hook {
-
-        /**
-         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
-         * <p>
-         * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
-         * the value of this attribute is {@code true}.
-         * 
-         * @return whether or not the implementation is allowed to invoke the target method
-         * 
-         * @see BeanMethod#methodHandle()
-         */
-        boolean allowInvoke() default false; // allowIntercept...
-
-        /** Bootstrap classes for this hook. */
-        Class<? extends BeanMethod> bootstrap();
-    }
-    
-    
     /** The builder used for bootstrapping. Updated by {@link UseSiteMethodHookModel}. */
     private UseSiteMethodHookModel.@Nullable Builder builder;
-
+    
     /** Create a new bootstrap instance. */
     protected BeanMethod() {}
 
@@ -94,14 +72,6 @@ public abstract class BeanMethod {
         return b;
     }
 
-    //// Invoker.. <- first runtime
-    // replaces the sidecar with another class that can be used
-    // Vi kan jo faktisk generere kode her..
-    // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
-    // Method (No) because then people would assume it was also present at runtime
-    // Which would it must be present at build-time because we can exchange the runtime
-    // object at build time
-
     /**
      * Replaces this bootstrap with the specified instance at build-time (and run-time).
      * 
@@ -117,6 +87,14 @@ public abstract class BeanMethod {
     public final void buildWith(Object instance) {
         builder().buildWith(instance);
     }
+
+    //// Invoker.. <- first runtime
+    // replaces the sidecar with another class that can be used
+    // Vi kan jo faktisk generere kode her..
+    // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
+    // Method (No) because then people would assume it was also present at runtime
+    // Which would it must be present at build-time because we can exchange the runtime
+    // object at build time
 
     public final void buildWithPrototype(Class<?> implementation, Object buildData) {
         // alternativ en store metode.. Saa kan man bruge det hvor man vil
@@ -191,11 +169,6 @@ public abstract class BeanMethod {
         return builder().manageBy(classBootstrap);
     }
 
-    public final <T extends BootstrapClassNest> T nestWith(Class<T> classBootstrap) {
-        // Must be in the same module as...
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns the matching method.
      * 
@@ -221,6 +194,17 @@ public abstract class BeanMethod {
         return builder().methodHandle();
     }
 
+    public final <T extends BootstrapClassNest> T nestWith(Class<T> classBootstrap) {
+        // Must be in the same module as...
+        throw new UnsupportedOperationException();
+    }
+
+    // Eneste skulle vaere hvis har en common klasse.
+    // som andre vil tage som argument
+    public final void runWithInstance(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
     // A new instanceof of implementation will be created at build-time
     // for every matching method
 
@@ -229,12 +213,6 @@ public abstract class BeanMethod {
     // BuildContext
     // Extension
     // ExtensionContext
-
-    // Eneste skulle vaere hvis har en common klasse.
-    // som andre vil tage som argument
-    public final void runWithInstance(Object instance) {
-        throw new UnsupportedOperationException();
-    }
 
     public final void runWithPrototype(Class<?> implementation) {
         throw new UnsupportedOperationException();
@@ -259,8 +237,6 @@ public abstract class BeanMethod {
      */
     protected static final void $failOnStaticMethods() {}
 
-    protected static final void $requireRunnableApplication() {}
-
     /**
      * Ignore default methods. No bootstrap instance will be created for default methods.
      * 
@@ -276,24 +252,10 @@ public abstract class BeanMethod {
     // Maybe input it default, and you need to call output
     protected static final void $outputMethod() {}
 
-//        // Hmmm skal det vaere paa annoteringen istedet for...
-//        protected static final void $supportApplicationShell(Class<? extends Bootstrap> bootstrap) {
-//            // hook.isApplicationShell
-//
-//            // Det er her den er grim...
-//            // Vi er i samme container...
-//            // Men saa alligevel ikke
-//            // Maa vaere en special case...
-//
-//            // Hvis comp is parent and wirelet
-//        }
+    protected static final void $requireRunnableApplication() {}
 
-    // Do we need a new bootstrap??? I'm mostly worried about injection...
-    // Can always handle a few if/elses/...
-    // @Path("${component.id}/")
-    // Altsaa vi kan jo altid bare kalde WebSubextension.add...
-    // protected static final void $supportMetaHook(Class<? extends Bootstrap> bootstrap) {}
     
+    protected static final void $nestWithClass(Class<? extends BeanClass> methodType) {}
 
     /**
     *
@@ -336,5 +298,45 @@ public abstract class BeanMethod {
 //         * @see Bootstrap#manageBy(Class)
 //         */
 //        Optional<Class<?>> managedBy();
+    }
+
+//        // Hmmm skal det vaere paa annoteringen istedet for...
+//        protected static final void $supportApplicationShell(Class<? extends Bootstrap> bootstrap) {
+//            // hook.isApplicationShell
+//
+//            // Det er her den er grim...
+//            // Vi er i samme container...
+//            // Men saa alligevel ikke
+//            // Maa vaere en special case...
+//
+//            // Hvis comp is parent and wirelet
+//        }
+
+    // Do we need a new bootstrap??? I'm mostly worried about injection...
+    // Can always handle a few if/elses/...
+    // @Path("${component.id}/")
+    // Altsaa vi kan jo altid bare kalde WebSubextension.add...
+    // protected static final void $supportMetaHook(Class<? extends Bootstrap> bootstrap) {}
+    
+
+    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface Hook {
+
+        /**
+         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+         * <p>
+         * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+         * the value of this attribute is {@code true}.
+         * 
+         * @return whether or not the implementation is allowed to invoke the target method
+         * 
+         * @see BeanMethod#methodHandle()
+         */
+        boolean allowInvoke() default false; // allowIntercept...
+
+        /** Bootstrap classes for this hook. */
+        Class<? extends BeanMethod> bootstrap();
     }
 }

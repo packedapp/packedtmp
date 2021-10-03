@@ -6,7 +6,7 @@ import app.packed.bundle.BaseBundle;
 import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.bundle.BundleSetup;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;

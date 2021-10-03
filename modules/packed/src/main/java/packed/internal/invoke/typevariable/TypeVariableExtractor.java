@@ -181,6 +181,12 @@ public final class TypeVariableExtractor {
     }
 
     // If no indexes specified, choose all..
+    // Maaske returnere TypeVE<? extends Type> 
+    // TypeVE<Class<? extends Doo>> = of(Class<?> baseType, Class<Doo>, int index)
+    // TypeVE<Class<?>[]> = of(Class<?> baseType, int... indexes)
+    
+    // Det er jo faktisk en Variable vi extracter fra...
+    
     public static <T> TypeVariableExtractor of(Class<?> baseType, int... indexes) {
         requireNonNull(baseType, "baseType is null");
         requireNonNull(indexes, "indexes is null");

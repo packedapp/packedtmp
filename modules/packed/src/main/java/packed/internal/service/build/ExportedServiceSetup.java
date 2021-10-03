@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.service.runtime.DelegatingRuntimeService;
 import packed.internal.service.runtime.RuntimeService;

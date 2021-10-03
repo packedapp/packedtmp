@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -55,7 +55,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * If this interface is used as an auto service. The registry will contain all services that available to a given
  * component instance. It will not include auto services.
  */
-@InjectableVariable.Hook
+@InjectableVariable.Hook(bootstrap = InjectableVariable.class)
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**

@@ -22,7 +22,7 @@ import app.packed.application.entrypoint.Main;
 import app.packed.application.programs.SomeApp;
 import app.packed.build.BuildWirelets;
 import app.packed.bundle.BaseBundle;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 
 /**
  *

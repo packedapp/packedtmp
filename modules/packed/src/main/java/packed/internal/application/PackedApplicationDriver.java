@@ -41,7 +41,7 @@ import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.bundle.CompositeWirelet;
 import packed.internal.bundle.PackedBundleDriver;

@@ -7,15 +7,15 @@ import app.packed.base.Nullable;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceExtensionMirror;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.bundle.ExtensionSetup;
 
 /**
  * Provides generic information about an extension used by a {@link #bundle}.
  * <p>
  * This class can be extended by an extension to provide more detailed information about itself. For example,
- * {@link app.packed.service.ServiceExtension} extends this class via {@link app.packed.service.ServiceExtensionMirror}.
+ * {@link app.packed.inject.service.ServiceExtension} extends this class via {@link app.packed.inject.service.ServiceExtensionMirror}.
  * <p>
  * Extension mirror instances are typically obtained in one of the following ways:
  * <ul>

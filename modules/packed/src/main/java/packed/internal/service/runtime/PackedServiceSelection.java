@@ -25,8 +25,8 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.inject.Provider;
-import app.packed.service.Service;
-import app.packed.service.ServiceSelection;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceSelection;
 
 /** Implementation of {@link ServiceSelection}. */
 final class PackedServiceSelection<S> extends AbstractServiceLocator implements ServiceSelection<S> {

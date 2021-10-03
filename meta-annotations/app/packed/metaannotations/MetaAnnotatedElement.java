@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 /**
  *
  */
-// maaske extends AnnotatedElement og
+// maaske extende AnnotatedElement og
 public interface MetaAnnotatedElement {
 
     /**

@@ -24,11 +24,11 @@ import app.packed.bean.BeanExtension;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import app.packed.inject.service.Provide;
+import app.packed.inject.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.OnStart;
-import app.packed.service.Provide;
-import app.packed.service.ServiceBeanConfiguration;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceLocator;
 
 /**
  * Extends {@link Bundle} with shortcuts for some commonly used extensions.

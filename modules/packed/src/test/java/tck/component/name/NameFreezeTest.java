@@ -26,7 +26,7 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleExtension;
 import app.packed.bundle.Wirelet;
-import app.packed.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServiceBeanConfiguration;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 

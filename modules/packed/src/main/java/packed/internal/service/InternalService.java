@@ -18,7 +18,7 @@ package packed.internal.service;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.service.Service;
+import app.packed.inject.service.Service;
 
 /**
  *

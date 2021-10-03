@@ -24,7 +24,7 @@ import app.packed.application.programs.Program;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.util.LookupUtil;
 

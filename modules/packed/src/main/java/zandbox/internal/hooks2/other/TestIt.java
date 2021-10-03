@@ -1,7 +1,7 @@
 package zandbox.internal.hooks2.other;
 
-import app.packed.service.Provide;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.Provide;
+import app.packed.inject.service.ServiceExtension;
 import zandbox.packed.hooks.AccessibleFieldHook;
 import zandbox.packed.hooks.ExtendWith;
 

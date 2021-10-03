@@ -10,7 +10,7 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
-import app.packed.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 

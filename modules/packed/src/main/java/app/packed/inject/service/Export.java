@@ -1,4 +1,4 @@
-package app.packed.service;
+package app.packed.inject.service;
 
 public @interface Export {
     Class<?> as() default FromMethodSignature.class;

@@ -7,7 +7,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.Wirelet;
-import app.packed.service.ServiceConfiguration;
+import app.packed.inject.service.ServiceConfiguration;
 import packed.internal.util.NativeImage;
 
 /**

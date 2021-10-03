@@ -2,6 +2,6 @@ package app.packed.extension.sandbox.connect;
 
 import app.packed.extension.ExtensionBean;
 
-public class MyExtBean extends ExtensionBean<MyExt> {
+public class MyExtBean extends ExtensionBean {
 
 }

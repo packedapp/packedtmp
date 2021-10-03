@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.test;
 
-import app.packed.service.ServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 
 /**
  *

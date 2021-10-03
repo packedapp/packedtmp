@@ -14,8 +14,8 @@ import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.sandbox.BundleHook;
 import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
-import app.packed.service.ServiceContract;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.service.ServiceContract;
+import app.packed.inject.service.ServiceExtension;
 
 class UsageLogging {
 

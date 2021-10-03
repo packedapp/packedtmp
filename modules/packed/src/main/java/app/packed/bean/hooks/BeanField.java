@@ -27,5 +27,4 @@ public abstract non-sealed class BeanField extends BeanHookElement {
     AbstractAnnotatedElementProcessor processor() {
         return null;
     }
-
 }

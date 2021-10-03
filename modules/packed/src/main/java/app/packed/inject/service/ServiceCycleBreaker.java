@@ -1,4 +1,4 @@
-package app.packed.service;
+package app.packed.inject.service;
 
 // Virker kun internt i en container
 // Virker kun paa constructuren/factoriet

@@ -241,7 +241,7 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
         @Override
         public final Operator registrant() {
             Class<? extends Extension> extensionType = realm.extensionType;
-            return extensionType == null ? Operator.user() : Operator.extension(extensionType);
+            return extensionType == null ? Operator.application() : Operator.extension(extensionType);
         }
 
         /** {@inheritDoc} */

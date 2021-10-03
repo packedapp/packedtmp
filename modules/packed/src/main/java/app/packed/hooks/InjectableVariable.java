@@ -15,13 +15,8 @@
  */
 package app.packed.hooks;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -38,20 +33,22 @@ import app.packed.inject.Variable;
 // AutoVariable, AutoVar
 // AutoService (Hvis service bliver lidt mere bredt)
 public abstract class InjectableVariable {
-    
-    // This one is nice... maybe it is $debug Or maybe its like packed.extension.devmode=true
-    // Yeah I think we should put this in devtools
-    protected final void $debug() {
-        //configuration().debug();
-        // ExtensionDev.test();
-    }
-    
- // VariablsActivatableHook
-    public @interface Hook {
-        
-        Class<? extends InjectableVariable>[] annotated() default {}; // on annotations
 
-        Class<? extends InjectableVariable>[] typed() default {}; // on the type
+    static void $nestWithClass(Class<? extends BeanClass> methodType) {}
+
+    static void $nestWithMethod(Class<? extends BeanMethod> methodType) {}
+
+    static void $nestWithField(Class<? extends BeanField> methodType) {}
+
+    static void $nestWithConstructor(Class<? extends BeanConstructor> methodType) {}
+
+    // VariablsActivatableHook
+
+    // On Annotation Type ->
+    // On Non-annotation Type -> Typed (raw)
+    public @interface Hook {
+        // Bootstrap kan vaere optional... Saa skal det vaere en statisk @ScopedProvide paa selve annoteringen...
+        Class<? extends InjectableVariable> bootstrap() default InjectableVariable.class;
     }
     // Maaske vi kun supportere Typed
 
@@ -123,80 +120,6 @@ public abstract class InjectableVariable {
 }
 
 class Zandbox {
-    public @interface InjectableVariableHook {
-
-        Class<? extends Annotation>[] annotation() default {};
-
-        Class<?>[] exactClass() default {};
-
-        // Altsaa taenker lidt det giver sig selv om typen er parameterized
-        // Hvis den er parameterizered er man jo interesset i at extract den praecise type
-        Class<?>[] rawType() default {};
-
-        abstract class Bootstrap {
-
-            // Unwrapped...
-            public final Class<?> getType() {
-                throw new UnsupportedOperationException();
-            }
-
-            /**
-             * @return the actual type of the underlying variable
-             * @see Field#getType()
-             * @see Parameter#getType()
-             * @see ParameterizedType#getRawType()
-             */
-            public final Class<?> getActualType() {
-                throw new UnsupportedOperationException();
-            }
-
-            public final Type getParameterizedType() {
-                throw new UnsupportedOperationException();
-            }
-
-            public final Type getActualParameterizedType() {
-                throw new UnsupportedOperationException();
-            }
-        }
-
-        interface Stuff {
-
-            /**
-             * @return whether or not there is fallback mechanism for providing a value, for example, a default value
-             */
-            boolean hasFallback();
-
-            /** {@return whether or not a Nullable annotation is present on the variable} */
-            boolean isNullable();
-
-            boolean hasDefaultValue();
-
-            Object getDefaultValue();
-
-            /**
-             * @return whether or the variable is wrapped in an optional type
-             * @see Optional
-             * @see OptionalDouble
-             * @see OptionalLong
-             * @see OptionalInt
-             */
-            boolean isOptional();
-
-            default boolean isRequired() {
-                return !isNullable() && !isOptional() && !hasFallback();
-            }
-
-            /** {@return whether or not the variable is wrapped in a Provider type} */
-            boolean isProvider();
-        }
-
-        enum TransformerSupport {
-            NULLABLE, // Any annotation that is called Nullable...
-            OPTIONAL, PROVIDER, DEFAULTS, VALIDATATION,
-
-            CONVERSION, LAZY, COMPOSITE
-        }
-    }
 
     public interface InjectableVariableDescription {
 
@@ -208,6 +131,11 @@ class Zandbox {
          * @return
          */
         Optional<Class<?>> getOptionalClass();
+
+        // cannot both be nullable and have a default value
+        // cannot both be optional and have a default value
+        // if default value it is not required...
+        boolean hasDefaultValue(); // maybe we can have a boostrap#setDefaultValue() (extract the string)
 
         boolean isNullable();
 
@@ -228,18 +156,59 @@ class Zandbox {
          * @see #hasDefaultValue()
          */
         boolean isRequired();
-
-        // cannot both be nullable and have a default value
-        // cannot both be optional and have a default value
-        // if default value it is not required...
-        boolean hasDefaultValue(); // maybe we can have a boostrap#setDefaultValue() (extract the string)
     }
 
-    class DefaultValue {
-        // ??
-        // String/String[]
+    public @interface InjectableVariableHook {
+
+        interface Stuff {
+
+            Object getDefaultValue();
+
+            boolean hasDefaultValue();
+
+            /**
+             * @return whether or not there is fallback mechanism for providing a value, for example, a default value
+             */
+            boolean hasFallback();
+
+            /** {@return whether or not a Nullable annotation is present on the variable} */
+            boolean isNullable();
+
+            /**
+             * @return whether or the variable is wrapped in an optional type
+             * @see Optional
+             * @see OptionalDouble
+             * @see OptionalLong
+             * @see OptionalInt
+             */
+            boolean isOptional();
+
+            /** {@return whether or not the variable is wrapped in a Provider type} */
+            boolean isProvider();
+
+            default boolean isRequired() {
+                return !isNullable() && !isOptional() && !hasFallback();
+            }
+        }
+
+        enum TransformerSupport {
+            COMPOSITE, // Any annotation that is called Nullable...
+            CONVERSION, DEFAULTS, LAZY, NULLABLE,
+
+            OPTIONAL, PROVIDER, VALIDATATION
+        }
     }
 }
+
+//class Zarchive {
+//
+//    // This one is nice... maybe it is $debug Or maybe its like packed.extension.devmode=true
+//    // Yeah I think we should put this in devtools
+//    protected final void $debug() {
+//        // configuration().debug();
+//        // ExtensionDev.test();
+//    }
+//}
 //Dynamic variables are dependencies that cannot statically be expressed as a key..
 //F.eks. if you want to inject a system property @SystemProperty("doobar") has infinite many possibilities
 //DynamicVariable to the rescue
