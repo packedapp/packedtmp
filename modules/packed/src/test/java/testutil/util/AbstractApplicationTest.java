@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
 
@@ -27,8 +27,8 @@ import app.packed.bundle.Wirelet;
 public abstract class AbstractApplicationTest {
 
     /** An assembly with no operations. */
-    public static BaseBundle emptyAssembly() {
-        return new BaseBundle() {
+    public static BaseAssembly emptyAssembly() {
+        return new BaseAssembly() {
             @Override
             protected void build() {}
         };
@@ -42,11 +42,11 @@ public abstract class AbstractApplicationTest {
         return new AppTester(new AbstractConsumableAssembly(source) {}, wirelets);
     }
 
-    public static ImageTester imageOf(BaseBundle source, Wirelet... wirelets) {
+    public static ImageTester imageOf(BaseAssembly source, Wirelet... wirelets) {
         return new ImageTester(source, wirelets);
     }
 
-    protected static abstract class AbstractConsumableAssembly extends BaseBundle {
+    protected static abstract class AbstractConsumableAssembly extends BaseAssembly {
         final Consumer<? super ContainerConfigurationTester> ca;
 
         protected AbstractConsumableAssembly(Consumer<? super ContainerConfigurationTester> ca) {

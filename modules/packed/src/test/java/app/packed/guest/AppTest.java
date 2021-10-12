@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.Program;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleConfiguration;
 
 /** Tests {@link Program} (PackedApp). */
@@ -33,7 +33,7 @@ public class AppTest {
     @Test
     public void emptyApp() {
         AtomicReference<BundleConfiguration> ar = new AtomicReference<>();
-        Program app = Program.start(new BaseBundle() {
+        Program app = Program.start(new BaseAssembly() {
             @Override
             public void build() {
                 ar.set(configuration());

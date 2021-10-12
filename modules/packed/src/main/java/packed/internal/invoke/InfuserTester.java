@@ -5,9 +5,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
 import app.packed.extension.Extension;
-import app.packed.hooks.InjectableVariable;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Provide;
+import app.packed.inject.variable.InjectableVariable;
 import packed.internal.util.LookupUtil;
 
 public class InfuserTester {

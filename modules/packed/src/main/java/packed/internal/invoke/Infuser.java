@@ -16,23 +16,24 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 
+// MemberInjector
 public final class Infuser {
 
-    /** The entries of this infuser */
-    final Map<Key<?>, Entry> entries;
+    /** The services provided by this infuser. */
+    final Map<Key<?>, Entry> services;
 
     private final Lookup lookup;
 
     private final List<Class<?>> parameterTypes;
 
     private Infuser(Builder builder) {
-        this.entries = Map.copyOf(builder.entries);
+        this.services = Map.copyOf(builder.services);
         this.parameterTypes = requireNonNull(builder.parameterTypes);
         this.lookup = builder.lookup;
     }
 
     public Set<Key<?>> keys() {
-        return entries.keySet();
+        return services.keySet();
     }
 
     public int parameterCount() {
@@ -61,9 +62,9 @@ public final class Infuser {
     }
 
     public static class Builder {
-        private final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
-        private final Lookup lookup;
         private final Class<?> clazz;
+        private final LinkedHashMap<Key<?>, Entry> services = new LinkedHashMap<>();
+        private final Lookup lookup;
         private final List<Class<?>> parameterTypes;
 
         Builder(Lookup caller, Class<?> clazz, Class<?>... parameterTypes) {
@@ -72,8 +73,8 @@ public final class Infuser {
             this.parameterTypes = List.of(parameterTypes);
         }
 
-        private void add(EntryBuilder builder, Entry entry) {
-            entries.put(builder.key, entry);
+        private void add(ServiceEntry builder, Entry entry) {
+            services.put(builder.key, entry);
         }
 
         public MethodHandle findConstructor(Class<?> returnType, Function<String, RuntimeException> errorMaker) {
@@ -81,84 +82,77 @@ public final class Infuser {
             return infuser.singleConstructor(clazz, returnType, errorMaker);
         }
 
-        // Ville vaere dejligt med en forklaring paa hvornaar den er tilgaengelig
-        public EntryBuilder optional(Class<?> key) {
-            return optional(Key.of(key));
-        }
-
-        public EntryBuilder optional(Key<?> key) {
-            return new EntryBuilder(this, key, false, true);
-        }
-
-        public EntryBuilder provide(Class<?> key) {
+        public ServiceEntry provide(Class<?> key) {
             return provide(Key.of(key));
         }
 
-        public EntryBuilder provide(Key<?> key) {
-            return new EntryBuilder(this, key, false, false);
+        public ServiceEntry provide(Key<?> key) {
+            return new ServiceEntry(this, key, false);
         }
 
-        public EntryBuilder provideHidden(Class<?> key) {
+        // Altsaa vi goer det jo lidt pga classpath'en
+        public ServiceEntry provideHidden(Class<?> key) {
             return provideHidden(Key.of(key));
         }
 
-        public EntryBuilder provideHidden(Key<?> key) {
-            return new EntryBuilder(this, key, true, false);
+        public ServiceEntry provideHidden(Key<?> key) {
+            return new ServiceEntry(this, key, true);
+        }
+        
+        /** A builder for key based entry in the infuser. */
+        public static class ServiceEntry {
+            private final Builder builder;
+            private final boolean hidden;
+            private final Key<?> key;
+
+            ServiceEntry(Builder builder, Key<?> key, boolean hide) {
+                this.builder = builder;
+                this.key = requireNonNull(key, "key is null");
+                this.hidden = hide;
+            }
+
+            /**
+             * The service will be provided by adapting the infuser's indexed parameter to the raw type of the key.
+             * <p>
+             * It does so by automatically inserting casts when needed
+             * 
+             * @param index
+             *            the index of the argument to adapt
+             * @throws IndexOutOfBoundsException
+             *             if the the infuser has no parameters
+             */
+            public void adaptArgument(int index) {
+                builder.add(this, new Entry(this, null, checkIndex(index)));
+            }
+
+            private int checkIndex(int index) {
+                return Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
+            }
+
+            public ServiceEntry description(String description) {
+                // Ideen er vi propper lidt descriptions paa igen, IDK
+                // Ikke i foerst omgang taenker jeg
+                return this;
+            }
+
+            public void invokeExact(MethodHandle methodHandle, int index) {
+                requireNonNull(methodHandle, "methodHandle is null");
+                Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
+                // Don't currently use it, we can add it again if we need it
+//                for (int i = 0; i < additionalIndexes.length; i++) {
+//                    Objects.checkFromIndexSize(additionalIndexes[i], 0, builder.parameterTypes.size());
+//                }
+                // System.out.println("Adding transfoer " + transformer);
+                builder.add(this, new Entry(this, methodHandle, index));
+            }
         }
     }
 
-    /** A builder for key based entry in the infuser. */
-    public static class EntryBuilder {
-        private final Builder builder;
-        private final boolean hide;
-        private final Key<?> key;
-        private final boolean optional;
 
-        EntryBuilder(Builder builder, Key<?> key, boolean hide, boolean isOptional) {
-            this.builder = builder;
-            this.key = requireNonNull(key, "key is null");
-            this.hide = hide;
-            this.optional = isOptional;
-        }
 
-        /**
-         * The service will be provided by adapting the infuser's indexed parameter to the raw type of the key.
-         * <p>
-         * It does so by automatically inserting casts when needed
-         * 
-         * @param index
-         *            the index of the argument to adapt
-         * @throws IndexOutOfBoundsException
-         *             if the the infuser has no parameters
-         */
-        public void adaptArgument(int index) {
-            builder.add(this, new Entry(this, null, checkIndex(index)));
-        }
-
-        private int checkIndex(int index) {
-            return Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
-        }
-
-        public EntryBuilder description(String description) {
-            // Ideen er vi propper lidt descriptions paa igen, IDK
-            return this;
-        }
-
-        public void invokeExact(MethodHandle methodHandle, int index) {
-            requireNonNull(methodHandle, "methodHandle is null");
-            Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
-            // Don't currently use it, we can add it again if we need it
-//            for (int i = 0; i < additionalIndexes.length; i++) {
-//                Objects.checkFromIndexSize(additionalIndexes[i], 0, builder.parameterTypes.size());
-//            }
-            // System.out.println("Adding transfoer " + transformer);
-            builder.add(this, new Entry(this, methodHandle, index));
-        }
-    }
-
-    record Entry(@Nullable MethodHandle transformer, boolean isHidden, boolean isOptional, int... indexes) {
-        Entry(EntryBuilder b, @Nullable MethodHandle transformer, int... indexes) {
-            this(transformer, b.hide, b.optional, indexes);
+    record Entry(@Nullable MethodHandle transformer, boolean isHidden, int... indexes) {
+        Entry(Builder.ServiceEntry b, @Nullable MethodHandle transformer, int... indexes) {
+            this(transformer, b.hidden,  indexes);
         }
     }
 }

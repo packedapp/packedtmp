@@ -22,8 +22,8 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import packed.internal.bundle.BundleSetup;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
-import packed.internal.service.ServiceManagerSetup;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link ServiceManagerSetup service composers} that are

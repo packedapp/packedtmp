@@ -2,13 +2,13 @@ package app.packed.mirror;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.programs.SomeApp;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.host.ApplicationHostConfiguration;
 import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceExtensionMirror;
 
-public class Tester extends BaseBundle {
+public class Tester extends BaseAssembly {
 
     public static void main(String[] args) {
 

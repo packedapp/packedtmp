@@ -25,7 +25,7 @@ public interface InjectableValueMirror {
 
     Object injectionScope();
 
-    InjectionType injectionType();
+    InjectionResolveType injectionType();
     
     Operator operator(); // services = application
 }

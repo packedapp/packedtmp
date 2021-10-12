@@ -21,7 +21,7 @@ import java.lang.invoke.MethodType;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
 import app.packed.state.sandbox.InstanceState;
@@ -122,7 +122,7 @@ class MainTester {
     // Altsaa tit vil man jo ogsaa gerne starte noget...
 
     public static void main(String[] args) {
-        SomeApp.run(new BaseBundle() {
+        SomeApp.run(new BaseAssembly() {
             @Override
             protected void build() {
                 link(null);

@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.Program;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import testutil.util.AbstractApplicationTest;
 
 /** Various Assembly tests. */
@@ -29,7 +29,7 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
     /** Tests that a assembly cannot be reused. */
     @Test
     public void notReusable() {
-        BaseBundle empty = new BaseBundle() {
+        BaseAssembly empty = new BaseAssembly() {
             @Override
             protected void build() {}
         };
@@ -41,7 +41,7 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
     /** Tests that a assembly cannot be reused. */
     @Test
     public void cannotLinkSelf() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
                 link(this);

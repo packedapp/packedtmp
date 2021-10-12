@@ -36,7 +36,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Service;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.service.build.ServiceSetup;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 
 /**
@@ -132,7 +132,7 @@ class MethodHandleBuilderHelper {
                     }
 
                     PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Map.copyOf(services));
-                    Infuser.Entry e = new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false, false, new int[0]);
+                    Infuser.Entry e = new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false, new int[0]);
                     aa.keys.putIfAbsent(kk, e);
                 }
 

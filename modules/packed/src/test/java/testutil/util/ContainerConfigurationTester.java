@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleExtension;
 import app.packed.bundle.Wirelet;
@@ -71,7 +71,7 @@ public class ContainerConfigurationTester {
         return conf;
     }
 
-    public ContainerConfigurationTester link(BaseBundle child, Wirelet... wirelets) {
+    public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
         cc.use(BundleExtension.class).link(child, wirelets);
         return this;
     }

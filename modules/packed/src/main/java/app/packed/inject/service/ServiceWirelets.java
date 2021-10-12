@@ -25,11 +25,11 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bundle.Wirelet;
-import packed.internal.service.Service1stPassWirelet;
-import packed.internal.service.Service2ndPassWirelet;
-import packed.internal.service.ServiceManagerSetup;
-import packed.internal.service.build.PackedServiceComposer;
-import packed.internal.service.build.ServiceSetup;
+import packed.internal.inject.service.Service1stPassWirelet;
+import packed.internal.inject.service.Service2ndPassWirelet;
+import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.

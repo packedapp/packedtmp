@@ -33,7 +33,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.extension.Extension;
 
 /**
@@ -49,7 +49,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ApplicationImage<Program> empty() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
         };
@@ -58,7 +58,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ApplicationImage<Program> useExtension() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 use(MyExtension.class);
@@ -69,7 +69,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ApplicationImage<Program> install() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance("foo");
@@ -80,7 +80,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ApplicationImage<Program> newExtensionUseInstall() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 use(MyExtension.class);
@@ -92,7 +92,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ApplicationImage<Program> newExtensionAutoActivate() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance(new MyStuff());

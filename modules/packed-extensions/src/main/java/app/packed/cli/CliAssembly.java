@@ -3,7 +3,7 @@ package app.packed.cli;
 import java.util.function.Consumer;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.Factory;
@@ -12,7 +12,7 @@ import app.packed.inject.Factory;
 
 // Ideen er det mere er en bootstrapper...
 
-abstract class CliAssembly extends BaseBundle {
+abstract class CliAssembly extends BaseAssembly {
 
     // Provides a result... men det goer main jo ikke...
     @SuppressWarnings("unused")

@@ -37,7 +37,7 @@ import packed.internal.util.LookupUtil;
  * functionality of Packed.
  * <p>
  * An assembly is a thin wrapper that encapsulates a {@link BundleDriver} and the configuration of a component provided
- * by the driver. This class is mainly used through one of its subclasses such as {@link BaseBundle}.
+ * by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * Assemblies are composable via linking.
  * 
@@ -50,7 +50,7 @@ import packed.internal.util.LookupUtil;
  * 
  * @param <C>
  *            the underlying configuration this bundle wraps
- * @see BaseBundle
+ * @see BaseAssembly
  */
 public abstract class Bundle<C extends BundleConfiguration> {
 

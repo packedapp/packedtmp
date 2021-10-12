@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.module.Configuration;
 
-import packed.internal.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.Injector;
 
 /**
  *

@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.inject.Factory;
-import packed.internal.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.Injector;
 
 /**
  *
@@ -47,7 +47,7 @@ public class TetIt {
         NeedsString(String s) {}
     }
 
-    public static class MyContainer extends BaseBundle {
+    public static class MyContainer extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override

@@ -26,9 +26,9 @@ import app.packed.bundle.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.bundle.InternalWirelet;
 import packed.internal.bundle.WireletWrapper;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolWriteable;
-import packed.internal.service.ServiceManagerSetup;
 import packed.internal.util.ThrowableUtil;
 
 /**

@@ -17,8 +17,8 @@ package app.packed.component;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.Wirelet;
 import packed.internal.component.ComponentSetup;
@@ -35,7 +35,7 @@ import packed.internal.component.ComponentSetup;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,BundleConfiguration,FunctionConfiguration {
 
-    /** The component we are wrapping. Is initially null until initialize by someone. */
+    /** The component we are wrapping. Is initially null until initialized by someone. */
     @Nullable
     private ComponentSetup component;
 

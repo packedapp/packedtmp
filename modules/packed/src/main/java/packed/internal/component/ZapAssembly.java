@@ -3,11 +3,11 @@ package packed.internal.component;
 import app.packed.application.Daemon;
 import app.packed.application.programs.SomeApp;
 import app.packed.build.BuildWirelets;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 
-public class ZapAssembly extends BaseBundle {
+public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
@@ -28,7 +28,7 @@ public class ZapAssembly extends BaseBundle {
         SomeApp.driver().print(new ZapAssembly());
     }
 
-    static class LinkMe extends BaseBundle {
+    static class LinkMe extends BaseAssembly {
 
         @Override
         protected void build() {

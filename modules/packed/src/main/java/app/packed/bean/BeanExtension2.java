@@ -2,9 +2,10 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.Operator;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.bundle.BundleSetup;
@@ -26,11 +27,11 @@ public class BeanExtension2 extends Extension {
     /**
      * Create a new bean extension.
      * 
-     * @param setup
-     *            an extension setup object (only available for extensions in packed.base).
+     * @param configuration
+     *            an extension configuration object.
      */
-    /* package-private */ BeanExtension2(ExtensionSetup extension) {
-        this.bundle = extension.bundle;
+    /* package-private */ BeanExtension2(ExtensionConfiguration configuration) {
+        this.bundle = ((ExtensionSetup) configuration).bundle;
     }
 
     /**
@@ -46,7 +47,7 @@ public class BeanExtension2 extends Extension {
      * @param implementation
      *            the type of bean that will be installed
      * @return the configuration of the bean
-     * @see BaseBundle#install(Class)
+     * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");

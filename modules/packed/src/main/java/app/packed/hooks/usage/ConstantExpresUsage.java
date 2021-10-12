@@ -17,10 +17,10 @@ package app.packed.hooks.usage;
 
 import app.packed.build.BuildWith;
 import app.packed.hooks.ContextualProvide;
-import app.packed.hooks.InjectableVariable;
-import app.packed.hooks.InjectableVariable.VariableInjector;
-import app.packed.inject.Variable;
 import app.packed.inject.sandbox.HookBootstrap;
+import app.packed.inject.variable.InjectableVariable;
+import app.packed.inject.variable.InjectableVariable.VariableInjector;
+import app.packed.inject.variable.Variable;
 import app.packed.lifecycle.OnInitialize;
 
 /**
@@ -28,19 +28,11 @@ import app.packed.lifecycle.OnInitialize;
  */
 public class ConstantExpresUsage {
 
-    abstract class Impl0 extends InjectableVariable {
-
-        @BuildWith
-        static void foo(Plus p, VariableInjector binder) {
-            binder.injectConstant(p.arg1() + p.arg2());
-        }
-    }
-
     abstract class Impl1 extends InjectableVariable {
 
         @BuildWith
         static void foo(Variable v, VariableInjector binder) {
-            Plus p = v.getAnnotation(Plus.class);
+            Plus p = v.getAnnotation(Plus.class); // getMetaAnnotation
             binder.injectConstant(p.arg1() + p.arg2());
         }
     }
@@ -106,4 +98,14 @@ public class ConstantExpresUsage {
 //  static void foo(Plus p, VariableInjector binder) {
 //      binder.injectConstant(p.arg1() + p.arg2());
 //  }
+//}
+
+// Saves one line of code but...
+// Nej syntes, 1'eren er altsaa bedre
+//abstract class Impl0 extends InjectableVariable {
+//
+//    @BuildWith
+//    static void foo(Plus p, VariableInjector binder) {
+//        binder.injectConstant(p.arg1() + p.arg2());
+//    }
 //}

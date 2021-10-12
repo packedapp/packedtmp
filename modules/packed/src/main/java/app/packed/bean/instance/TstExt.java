@@ -3,12 +3,12 @@ package app.packed.bean.instance;
 import java.util.Optional;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.old.ExtensionBeanConnection;
 
-public class TstExt extends BaseBundle {
+public class TstExt extends BaseAssembly {
 
     @Override
     protected void build() {
@@ -41,7 +41,7 @@ public class TstExt extends BaseBundle {
         }
     }
 
-    class Subbb extends BaseBundle {
+    class Subbb extends BaseAssembly {
 
         @Override
         protected void build() {

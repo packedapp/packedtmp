@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanExtensionSupport;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
@@ -41,11 +41,11 @@ import app.packed.validate.Validator;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.bean.BeanSetup;
-import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.component.bean.OldBeanDriver.OtherBeanDriver;
-import packed.internal.service.ServiceManagerSetup;
-import packed.internal.service.runtime.AbstractServiceLocator;
-import packed.internal.service.sandbox.InjectorComposer;
+import packed.internal.component.bean.PackedBeanDriverBinder;
+import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -85,6 +85,7 @@ import packed.internal.util.ThrowableUtil;
 // Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
+
 public class ServiceExtension extends Extension {
 
     /** A binder for prototype service beans. */
@@ -103,11 +104,11 @@ public class ServiceExtension extends Extension {
     /**
      * Create a new service extension.
      * 
-     * @param setup
-     *            an extension setup object (hidden).
+     * @param configuration
+     *            an extension configuration object.
      */
-    /* package-private */ ServiceExtension(ExtensionSetup setup) {
-        this.services = setup.bundle.injection.newServiceManagerFromServiceExtension();
+    /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
+        this.services = ((ExtensionSetup) configuration).bundle.injection.newServiceManagerFromServiceExtension();
     }
 
     // Validates the outward facing contract
@@ -172,7 +173,7 @@ public class ServiceExtension extends Extension {
         checkIsPreCompletion();
         return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
-    
+
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
@@ -189,10 +190,10 @@ public class ServiceExtension extends Extension {
 
     // Her kan en extension faktisk exporte ting...
     public <T> ExportedServiceConfiguration<T> export(ContainerBeanConfiguration<T> bean) {
-        // Taenker det ogsaa er maaden vi kam exportere 
+        // Taenker det ogsaa er maaden vi kam exportere
         return bean(bean).sourceExport();
     }
-    
+
     // Altsaa skal vi hellere have noget services().filter().exportall();
 
     // Alternativ this export all er noget med services()..
@@ -248,7 +249,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
      * constructor or method to instantiate the service instance once the injector is created.
@@ -339,7 +340,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         @SuppressWarnings("unchecked")
         ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanExtensionSupport.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, factory);
-        
+
         return c;
     }
 
@@ -586,9 +587,9 @@ class ZExtraFunc {
         // keyProducer will have a Consumer<U> injected in its constructor.
         // Skal vel snare være Function<S, U>
         // a.la. u = func.apply(this);
-        
+
         // Der skal vaere en snyder
-        
+
         // In which case it must call it exactly once with a valid instance of U.
         // U will then be field/method inject, initialization und so weither as normally.
         // But to the outside it will not that S depends on U.

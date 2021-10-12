@@ -19,7 +19,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.base.Completion;
 import app.packed.build.BuildException;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
 
@@ -102,7 +102,7 @@ public /* primitive */ final class SomeAppImage {
     }
 }
 
-class MyAppMain extends BaseBundle {
+class MyAppMain extends BaseAssembly {
 
     private static final SomeAppImage MAIN = SomeAppImage.of(new MyAppMain());
 

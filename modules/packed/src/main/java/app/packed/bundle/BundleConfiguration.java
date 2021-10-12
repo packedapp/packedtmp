@@ -52,7 +52,7 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
      * {@return an unmodifiable view of the extensions that are currently used.}
      * 
      * @see #use(Class)
-     * @see BaseBundle#extensionsTypes()
+     * @see BaseAssembly#extensionsTypes()
      * @see BundleMirror#extensionsTypes()
      */
     public Set<Class<? extends Extension>> extensionsTypes() {

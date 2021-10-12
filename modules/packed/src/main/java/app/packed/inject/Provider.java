@@ -21,27 +21,12 @@ import java.util.stream.Stream;
 
 /**
  * A provider of values.
- * <p>
- *  
+ * 
  * @param <T>
  *            the type of instances that are provided
  */
 @FunctionalInterface
 public interface Provider<T> {
-
-    /**
-     * Returns whether or not this provider is guaranteed to return the same instance on every invocation.
-     * <p>
-     * This method is always allowed to return false.
-     * <p>
-     * The default value is false.
-     * 
-     * @return true if this provider is guaranteed to return the same instance on every invocation. Otherwise false.
-     */
-    // I'm not sure if we want this...
-    default boolean isConstant() {
-        return false;
-    }
 
     /**
      * Provides an instance of type {@code T}.
@@ -60,10 +45,10 @@ public interface Provider<T> {
     }
 
     /**
-     * Returns a provider that will be provide the provided constant on every invocation of {@link #provide()}.
+     * Returns a provider that will be provide the specified constant for every invocation of {@link #provide()}.
      * 
      * @param <T>
-     *            the type of the specified instance
+     *            the type of the provider
      * @param constant
      *            the constant
      * @return a new provider that provides the specified constant
@@ -85,16 +70,25 @@ public interface Provider<T> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public T provide() {
         return constant;
     }
 }
+
+///**
+// * Returns whether or not this provider is guaranteed to return the same instance on every invocation.
+// * <p>
+// * This method is always allowed to return false.
+// * <p>
+// * The default value is false.
+// * 
+// * @return true if this provider is guaranteed to return the same instance on every invocation. Otherwise false.
+// */
+//// I'm not sure if we want this...
+//default boolean isConstant() {
+//    return false;
+//}
+
 
 //Previously this interface also contained information about where
 //the instances came from. However, this information is now only

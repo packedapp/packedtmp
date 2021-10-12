@@ -15,14 +15,14 @@
  */
 package packed.internal.util;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.inject.service.ServiceContract;
 
 /**
  *
  */
 // @Validate(Req.class)
-public abstract class Plugin extends BaseBundle {
+public abstract class Plugin extends BaseAssembly {
 
     static final ServiceContract CONTRACT = ServiceContract.build(b -> b.provides(String.class).requires(Long.class));
 

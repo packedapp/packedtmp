@@ -1,8 +1,8 @@
 package app.packed.file.usage;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 
-abstract class Plugin extends BaseBundle {
+abstract class Plugin extends BaseAssembly {
 
     /** The plugin container driver. Disables all file system access. */
 //    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().disableExtension(FileExtension.class).buildInstanceless(Void.class)

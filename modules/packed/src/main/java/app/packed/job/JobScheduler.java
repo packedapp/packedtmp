@@ -15,7 +15,7 @@
  */
 package app.packed.job;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 
 /**
@@ -28,7 +28,7 @@ interface JobScheduler {
 
 }
 
-class Test extends BaseBundle implements ResultBearing<String> {
+class Test extends BaseAssembly implements ResultBearing<String> {
 
     @Override
     protected void build() {}

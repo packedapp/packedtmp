@@ -17,14 +17,12 @@ package app.packed.inject.variable;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.Variable;
-
 /**
  *
  */
 final class PackedFunctionType {
     static final Variable[] NO_VARS = {};
-    // The rtype and ptypes fields define the structural identity of the method type:
+
     private final Variable returnType;
 
     private final Variable[] variables;
@@ -54,11 +52,7 @@ final class PackedFunctionType {
         return new PackedFunctionType(returnVar, NO_VARS);
     }
 
-    /**
-     * Returns the return type of this method type.
-     * 
-     * @return the return type
-     */
+    /** {@return the return variable.} */
     public Variable returnVar() {
         return returnType;
     }

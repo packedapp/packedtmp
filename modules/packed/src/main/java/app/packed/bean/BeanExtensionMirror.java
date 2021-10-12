@@ -11,18 +11,15 @@ import app.packed.extension.ExtensionMirror;
 @ExtensionMember(BeanExtension.class)
 public final class BeanExtensionMirror extends ExtensionMirror {
 
-    /** The service manager */
-    // ved ikke om vi skal have en <E> extension() fra ExtensionMirror?
-    // Saa vi ikke behoever at gemme extensionen hver gang, men bare kan kalde
-    // extension().
-    // Det virker kun hvis vi dropper mirrors'ene paa runtime
+    /** The bean extension we are mirroring.*/
     private final BeanExtension extension;
 
     BeanExtensionMirror(BeanExtension extension) {
         this.extension = requireNonNull(extension);
     }
 
-    public int foo() {
+    /** {@return the total number of configured beans in the bundle.} */
+    public int beanCount() {
         return extension.extension.hashCode();
     }
 }

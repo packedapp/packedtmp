@@ -61,5 +61,4 @@ interface ZBootstrap {
     // Invoked exactly once
 
     // altsaa vi kunne jo godt banne extensions, og force enable her... Men i praksis har det jo ingen betydning
-
 }

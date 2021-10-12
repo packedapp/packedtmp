@@ -14,9 +14,10 @@ module app.packed {
     exports app.packed.extension;
     exports app.packed.inject;
     exports app.packed.inject.sandbox;
+    exports app.packed.inject.service;
+    exports app.packed.inject.variable;
     exports app.packed.hooks;
     exports app.packed.mirror;
-    exports app.packed.inject.service;
     exports app.packed.state.sandbox;
     exports app.packed.validate;
     exports app.packed.request;

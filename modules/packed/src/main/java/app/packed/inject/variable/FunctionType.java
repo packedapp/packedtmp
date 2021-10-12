@@ -19,8 +19,6 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Executable;
 import java.util.List;
 
-import app.packed.inject.Variable;
-
 /**
  * This class is modelled to {@link MethodType}
  *

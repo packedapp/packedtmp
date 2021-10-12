@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.build.ApplyBuildHook;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.sandbox.BundleHook;
 import app.packed.extension.Extension;
@@ -32,4 +32,4 @@ record InstallExtensionsX(InstallExtensions pc) implements BundleHook {
 }
 
 @InstallExtensions(ServiceExtension.class)
-abstract class MyB extends BaseBundle {}
+abstract class MyB extends BaseAssembly {}

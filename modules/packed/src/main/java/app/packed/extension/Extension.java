@@ -28,7 +28,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleExtension;
@@ -55,7 +55,7 @@ import packed.internal.util.ThrowableUtil;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseBundle#use(Class)} or {@link BundleConfiguration#use(Class)}.
+ * example, {@link BaseAssembly#use(Class)} or {@link BundleConfiguration#use(Class)}.
  * 
  * <p>
  * Step1 // package private constructor // open to app.packed.base // exported to other users to use
@@ -104,8 +104,8 @@ public abstract class Extension {
     /**
      * The extension's configuration that most methods delegate to.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#newExtension(BundleSetup, Class)} via a var handle. The field
-     * is _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
+     * This field is initialized in {@link ExtensionSetup#newExtension(BundleSetup, Class)} via a var handle. The field is
+     * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
@@ -113,6 +113,18 @@ public abstract class Extension {
     @Nullable
     private ExtensionConfiguration configuration;
 
+
+    /**
+     *
+     */
+    public @interface DependsOn {
+        Class<? extends Extension>[] extensions() default {};
+
+        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
+        // Den kraever bare at den allerede har vaeret listet som optionally
+        String[] optionally() default {};
+    }
+    
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
@@ -587,6 +599,7 @@ class Zarchive {
     static void $dependsOnAlways(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
     }
+
 
 }
 //// Ved ikke praecis hvad vi skal bruge den til...

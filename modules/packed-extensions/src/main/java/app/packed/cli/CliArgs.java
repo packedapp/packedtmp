@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.hooks.InjectableVariable;
+import app.packed.inject.variable.InjectableVariable;
 
 /**
  * Represents the arguments to a method main.

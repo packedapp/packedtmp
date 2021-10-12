@@ -13,7 +13,7 @@ import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
-import packed.internal.service.ServiceManagerSetup;
+import packed.internal.inject.service.ServiceManagerSetup;
 
 /**
  * A specialized extension mirror for {@link ServiceExtension}.

@@ -30,7 +30,7 @@ import java.lang.reflect.Field;
 
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
-import app.packed.hooks.InjectableVariable;
+import app.packed.inject.variable.InjectableVariable;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;

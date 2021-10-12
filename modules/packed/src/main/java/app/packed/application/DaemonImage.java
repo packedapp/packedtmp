@@ -1,13 +1,13 @@
 package app.packed.application;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 
 // Nahhh
 public interface DaemonImage {
 
 }
 
-class Nice extends BaseBundle {
+class Nice extends BaseAssembly {
 
     @Override
     protected void build() {}

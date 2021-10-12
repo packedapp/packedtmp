@@ -1,9 +1,9 @@
 package app.packed.lifecycle;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 
-public class Tester extends BaseBundle {
+public class Tester extends BaseAssembly {
 
     @Override
     protected void build() {
@@ -14,7 +14,7 @@ public class Tester extends BaseBundle {
         SomeApp.run(new Tester());
     }
     
-    static class MyM extends BaseBundle {
+    static class MyM extends BaseAssembly {
 
         @Override
         protected void build() {

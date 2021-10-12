@@ -89,5 +89,4 @@ public abstract class AbstractHookModel<T> {
          */
         protected abstract AbstractHookModel<T> build();
     }
-
 }

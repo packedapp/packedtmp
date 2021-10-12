@@ -2,11 +2,11 @@ package app.packed.hooks.sandbox;
 
 import app.packed.application.programs.SomeApp;
 import app.packed.base.Nullable;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceExtension;
 
-public class ChildInject extends BaseBundle {
+public class ChildInject extends BaseAssembly {
 
     @Override
     protected void build() {
@@ -18,7 +18,7 @@ public class ChildInject extends BaseBundle {
         SomeApp.run(new ChildInject());
     }
 
-    static class Fff extends BaseBundle {
+    static class Fff extends BaseAssembly {
 
         static int i = 4;
 

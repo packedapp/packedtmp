@@ -30,11 +30,11 @@ import app.packed.base.TypeToken;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
-import app.packed.hooks.InjectableVariable;
 import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.inject.Provider;
-import packed.internal.service.build.PackedServiceComposer;
-import packed.internal.service.runtime.PackedInjector;
+import app.packed.inject.variable.InjectableVariable;
+import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.

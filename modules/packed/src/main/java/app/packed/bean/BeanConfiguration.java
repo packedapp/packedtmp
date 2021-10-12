@@ -16,11 +16,18 @@ import app.packed.state.sandbox.InstanceState;
 public abstract sealed class BeanConfiguration<T>
         extends ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration {
 
+    // Hmm, vi dekorere ikke fx ServiceLocator...
+    // Maaske er det bedre at dekorere typer???
+    //// InjectableVarSelector<T> 
+    // InjectableVarSelector.keyedOf()
     public <E> BeanConfiguration<T> decorate(Key<E> key, Function<E, E> mapper) {
         /// Mnahhh
         throw new UnsupportedOperationException();
     }
 
+    // Hmm det er jo mere provide end inject..
+    // men provide(FooClass.class).provide(ddd.Class);
+    // maybe provideTo()
     public <E> BeanConfiguration<T> inject(Class<E> key, E instance) {
         return inject(Key.of(key), instance);
     }

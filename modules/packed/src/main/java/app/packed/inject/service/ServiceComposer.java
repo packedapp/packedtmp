@@ -31,7 +31,7 @@ import app.packed.base.Qualifier;
 import app.packed.bundle.Composer;
 import app.packed.component.ComponentMirror;
 import app.packed.inject.Factory;
-import packed.internal.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.

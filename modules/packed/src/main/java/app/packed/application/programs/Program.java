@@ -24,7 +24,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.service.ServiceLocator;
@@ -199,7 +199,7 @@ record ProgramImplementation(String name, ServiceLocator services, ApplicationRu
     }
 }
 
-class ZDdd extends BaseBundle {
+class ZDdd extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override

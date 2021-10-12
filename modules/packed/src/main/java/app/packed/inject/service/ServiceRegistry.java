@@ -27,21 +27,18 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.hooks.InjectableVariable;
-import packed.internal.service.AbstractServiceRegistry;
+import app.packed.inject.variable.InjectableVariable;
+import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
  * A collection of {@link Service services}, with each service having a unique {@link Service#key() key}.
  * <p>
- * This interface does not directly support any way to acquire actual service instances. However, this functionality is
- * available via some of its subinterfaces.
- * <p>
  * Packed provides a number of subinterfaces and abstract implementations of this interface:
  * <ul>
  * <li>{@link ServiceLocator}, extends this interface with various method for obtaining service instances and service
  * providers.</li>
- * <li>{@link ServiceSelection}, a specialization of service locator, where every service shares a common super type. Is
+ * <li>{@link ServiceSelection}, a specialization of service locator, where each service shares a common super type. Is
  * commonly used for creating plugin-based systems.</li>
  * <li>{@link ServiceComposer}, an abstract implementation of this interface that is used for configuring the service
  * registry. Unlike service locator and service selection this is mutable</li>

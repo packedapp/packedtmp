@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.Composer;
 import app.packed.extension.Extension;
@@ -184,7 +184,7 @@ class SandboxBootstrap {
 
 @ZuperSupport // same
 @BeanMethod.Hook(bootstrap = Zester.Scan.class)
-class Zester extends BaseBundle {
+class Zester extends BaseAssembly {
 
     /** {@inheritDoc} */
     // build vs assemble... Vi har jo ogsaa composer. Compose??

@@ -9,11 +9,10 @@ import app.packed.mirror.Mirror;
 
 // extends ComponentFeatureMirror???
 /** A mirror of a service. */
+// ServicePointMirror <- place where a
 public interface ServiceMirror extends Mirror {
 
-    /** {@return the component the service belongs to.} */
-    ComponentMirror component();
-
+    // annotation, config method
     Object configSite(); // or ConfigMirror...
 
     Set<ServiceMirror> dependencies();
@@ -24,7 +23,11 @@ public interface ServiceMirror extends Mirror {
     /** {@return the key of the service.} */
     Key<?> key();
 
+    /** {@return the component that provides the service.} */
+    ComponentMirror providedBy();
+
     // Taenker
+    // Set<ProvidedService> providedTo();
     Set<InjectionSiteMirror> usedBy();
 
     Set<ComponentMirror> usedByComponents();

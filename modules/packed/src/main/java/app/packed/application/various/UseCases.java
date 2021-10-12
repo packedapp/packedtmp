@@ -6,7 +6,7 @@ import app.packed.application.ApplicationRuntime;
 import app.packed.application.Daemon;
 import app.packed.application.programs.SomeApp;
 import app.packed.base.Completion;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.host.ApplicationHostConfiguration;
 import app.packed.bundle.host.ApplicationHostExtension;
@@ -54,7 +54,7 @@ public class UseCases {
 
 }
 
-class HostAsExtension extends BaseBundle {
+class HostAsExtension extends BaseAssembly {
 
     @Override
     protected void build() {
@@ -73,13 +73,13 @@ class AppLauncher {
     }
 }
 
-class AA extends BaseBundle {
+class AA extends BaseAssembly {
 
     @Override
     protected void build() {}
 }
 
-class BB extends BaseBundle {
+class BB extends BaseAssembly {
 
     @Override
     protected void build() {}

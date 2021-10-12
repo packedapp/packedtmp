@@ -22,7 +22,7 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import app.packed.inject.Variable;
+import app.packed.inject.variable.Variable;
 
 /**
  *

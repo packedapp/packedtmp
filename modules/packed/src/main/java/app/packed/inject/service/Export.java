@@ -8,6 +8,7 @@ public @interface Export {
     // If empty it takes the value of @Provide
     // Used standalone either this single value or defaults to Prototype
     // Doo<int, String>
+    // Nahhh. Hvor tit eksportere man parameterized typer???
     Class<?>[] parameters() default {};
 }
 

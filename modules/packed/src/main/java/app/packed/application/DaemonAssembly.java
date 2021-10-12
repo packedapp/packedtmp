@@ -1,10 +1,10 @@
 package app.packed.application;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Wirelet;
 
-public abstract class DaemonAssembly extends BaseBundle {
+public abstract class DaemonAssembly extends BaseAssembly {
 
     protected final void restartOnAnyException() {
         //Must be a fcking extension...

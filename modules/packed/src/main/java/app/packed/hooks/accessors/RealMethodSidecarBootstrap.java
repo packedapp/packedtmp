@@ -27,8 +27,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.BeanMethod;
 import app.packed.inject.Factory;
-import app.packed.inject.Variable;
 import app.packed.inject.sandbox.FactoryType;
+import app.packed.inject.variable.Variable;
 
 /**
  * Packed creates a single instance of a subclass per method and runs the {@link #bootstrap()} method.

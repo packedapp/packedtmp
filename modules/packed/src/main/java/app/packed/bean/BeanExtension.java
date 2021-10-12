@@ -2,9 +2,10 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.bundle.BundleSetup;
@@ -23,6 +24,7 @@ public class BeanExtension extends Extension {
     /** The service manager. */
     final BundleSetup container;
 
+    /** The */
     final ExtensionSetup extension;
 
     /**
@@ -31,8 +33,8 @@ public class BeanExtension extends Extension {
      * @param setup
      *            an extension setup object (hidden).
      */
-    /* package-private */ BeanExtension(ExtensionSetup extension) {
-        this.extension = extension;
+    /* package-private */ BeanExtension(ExtensionConfiguration configuration) {
+        this.extension = ((ExtensionSetup) configuration);
         this.container = extension.bundle;
     }
 
@@ -45,7 +47,7 @@ public class BeanExtension extends Extension {
      * @param implementation
      *            the type of bean to install
      * @return the configuration of the bean
-     * @see BaseBundle#install(Class)
+     * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
@@ -87,7 +89,7 @@ public class BeanExtension extends Extension {
     protected BeanExtensionMirror mirror() {
         return mirrorInitialize(new BeanExtensionMirror(this));
     }
-    
+
     static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
         // Prepare to wire the component (make sure the realm is still open)
