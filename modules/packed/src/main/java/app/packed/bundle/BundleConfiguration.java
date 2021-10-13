@@ -65,7 +65,7 @@ public final class BundleConfiguration extends ComponentConfiguration {
         return bundle().isExtensionUsed(extensionType);
     }
 
-    public BundleMirror link(BundleAssembly assembly, Wirelet... wirelets) {
+    public BundleMirror link(Assembly assembly, Wirelet... wirelets) {
         return bundle().link(assembly, wirelets);
     }
 

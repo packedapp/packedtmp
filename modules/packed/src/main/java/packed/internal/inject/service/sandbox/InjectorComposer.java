@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleDriver;
 import app.packed.bundle.Composer;
@@ -70,7 +70,7 @@ public final class InjectorComposer extends Composer {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public ComponentMirror link(BundleAssembly  assembly, Wirelet... wirelets) {
+    public ComponentMirror link(Assembly  assembly, Wirelet... wirelets) {
         return configuration.link(assembly, wirelets);
     }
 

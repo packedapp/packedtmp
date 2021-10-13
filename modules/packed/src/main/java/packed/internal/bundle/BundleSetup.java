@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
@@ -167,7 +167,7 @@ public final class BundleSetup extends ComponentSetup {
             String n = null;
 
             Class<?> source = realm.realmType();
-            if (BundleAssembly.class.isAssignableFrom(source)) {
+            if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
                     nnn = nnn.substring(0, nnn.length() - 8);
@@ -235,7 +235,7 @@ public final class BundleSetup extends ComponentSetup {
      *            optional wirelets
      * @return the component that was linked
      */
-    public final BundleMirror link(BundleAssembly assembly, Wirelet... wirelets) {
+    public final BundleMirror link(Assembly assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedBundleDriver driver = PackedBundleDriver.getDriver(assembly);
 
@@ -471,8 +471,8 @@ public final class BundleSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        public Class<? extends BundleAssembly> type() {
-            return (Class) BundleAssembly.class;
+        public Class<? extends Assembly> type() {
+            return (Class) Assembly.class;
         }
     }
 }

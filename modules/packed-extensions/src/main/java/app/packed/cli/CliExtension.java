@@ -16,7 +16,7 @@
 package app.packed.cli;
 
 import app.packed.application.entrypoint.Main;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.extension.Extension;
 
 /**
@@ -44,7 +44,7 @@ public final class CliExtension extends Extension {
     }
 
     // Vi mangler en slags Assembly + Driver (Launcher...)
-    void launchOn(String parameter, BundleAssembly  a) {
+    void launchOn(String parameter, Assembly  a) {
 
     }
 
@@ -60,7 +60,7 @@ class MyCompTest {
     // Og lazy bygge normalt... ingen grund til jeg laver en hel app...
     // Hvis man bare koere -version
     @Main
-    public BundleAssembly  main() {
+    public Assembly  main() {
         throw new UnsupportedOperationException();
     }
 }

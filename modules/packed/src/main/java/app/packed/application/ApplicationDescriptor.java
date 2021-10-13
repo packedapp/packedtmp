@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.Wirelet;
 import packed.internal.application.PackedApplicationDescriptor;
 
@@ -23,7 +23,7 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 //    void checkHasRunnable(String message);
 //
     /** {@return the type of the root bundle.} */
-    Class<? extends BundleAssembly > bundleType();
+    Class<? extends Assembly > bundleType();
 //    // defaultLaunchMode() -> Lazy
 //
 //    // Ved ikke om vi skal have den her...

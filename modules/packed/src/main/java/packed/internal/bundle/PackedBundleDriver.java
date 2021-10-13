@@ -6,7 +6,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleDriver;
 import app.packed.component.ComponentConfiguration;
@@ -21,7 +21,7 @@ public final class PackedBundleDriver implements BundleDriver {
     public static final PackedBundleDriver DRIVER = new PackedBundleDriver();
 
     /** A handle that can access Assembly#driver. */
-    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BundleAssembly.class, "driver",
+    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
             PackedBundleDriver.class);
 
     /** A handle that can access ComponentConfiguration#component. */
@@ -49,7 +49,7 @@ public final class PackedBundleDriver implements BundleDriver {
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static PackedBundleDriver getDriver(BundleAssembly assembly) {
+    public static PackedBundleDriver getDriver(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
         return (PackedBundleDriver) VH_ASSEMBLY_DRIVER.get(assembly);
     }

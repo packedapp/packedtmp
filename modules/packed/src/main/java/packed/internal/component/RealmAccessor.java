@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.inject.Factory;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.BootstrappedSourcedClassModel;
@@ -33,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 
 /**
  * This class exists because we have two ways to access the members of a component instance. One where the users provide
- * a {@link Lookup} object, for example, via {@link BundleAssembly#lookup(Lookup)}. And another where users use a module
+ * a {@link Lookup} object, for example, via {@link Assembly#lookup(Lookup)}. And another where users use a module
  * descriptor to provide access.
  */
 public abstract class RealmAccessor {
@@ -153,7 +153,7 @@ public abstract class RealmAccessor {
             }
         };
 
-        /** The realm type, typically a subclass of {@link BundleAssembly}. */
+        /** The realm type, typically a subclass of {@link Assembly}. */
         final Class<?> type;
 
         /**

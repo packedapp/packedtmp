@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.Wirelet;
 
 /**
@@ -34,7 +34,7 @@ public class AppTester {
         this.app = requireNonNull(app);
     }
 
-    public AppTester(BundleAssembly  source, Wirelet... wirelets) {
+    public AppTester(Assembly  source, Wirelet... wirelets) {
         this(Program.start(source, wirelets));
     }
 

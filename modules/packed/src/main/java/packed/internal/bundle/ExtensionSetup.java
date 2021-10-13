@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Composer;
 import app.packed.bundle.ComposerAction;
@@ -329,7 +329,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public BundleMirror link(Realm realm, BundleAssembly assembly, Wirelet... wirelets) {
+    public BundleMirror link(Realm realm, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 }

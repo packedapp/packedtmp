@@ -27,7 +27,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.hooks.accessors.ScopedProvide;
@@ -220,9 +220,9 @@ public interface ServiceLocator extends ServiceRegistry {
      * Returns an application driver that can be used to create standalone service locator instances.
      * 
      * @return an application driver
-     * @see #imageOf(BundleAssembly, Wirelet...)
+     * @see #imageOf(Assembly, Wirelet...)
      * @see #of(Consumer)
-     * @see #of(BundleAssembly, Wirelet...)
+     * @see #of(Assembly, Wirelet...)
      */
     static ApplicationDriver<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
@@ -239,12 +239,12 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     @Reflectable
-    static ApplicationImage<ServiceLocator> imageOf(BundleAssembly  assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> imageOf(Assembly  assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
     @Reflectable
-    static ApplicationMirror mirrorOf(BundleAssembly  assembly, Wirelet... wirelets) {
+    static ApplicationMirror mirrorOf(Assembly  assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 
@@ -264,7 +264,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     @Reflectable
-    static ServiceLocator of(BundleAssembly  assembly, Wirelet... wirelets) {
+    static ServiceLocator of(Assembly  assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 
@@ -288,7 +288,7 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     @Reflectable
-    static ApplicationImage<ServiceLocator> reusableImageOf(BundleAssembly  assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> reusableImageOf(Assembly  assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }
 }

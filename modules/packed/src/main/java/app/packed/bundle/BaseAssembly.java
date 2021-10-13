@@ -85,7 +85,7 @@ import app.packed.lifecycle.OnStart;
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
-public abstract class BaseAssembly extends BundleAssembly {
+public abstract class BaseAssembly extends Assembly {
 
     /** Creates a new assembly using {@link BundleDriver#defaultDriver()}. */
     protected BaseAssembly() {
@@ -247,10 +247,10 @@ public abstract class BaseAssembly extends BundleAssembly {
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the container that was linked
-     * @see BundleConfiguration#link(BundleAssembly, Wirelet...)
+     * @see BundleConfiguration#link(Assembly, Wirelet...)
      */
     // Why not wire + wirelets???
-    protected final BundleMirror link(BundleAssembly assembly, Wirelet... wirelets) {
+    protected final BundleMirror link(Assembly assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);
     }
 

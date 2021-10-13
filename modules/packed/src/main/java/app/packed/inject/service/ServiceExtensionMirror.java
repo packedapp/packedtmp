@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.extension.ExtensionMember;
@@ -69,7 +69,7 @@ public final class ServiceExtensionMirror extends ExtensionMirror {
 
     // ifPresent(), tryFind
     // Syntes find maaske er et lidt daarligt navn
-    public static Optional<ServiceExtensionMirror> find(BundleAssembly  assembly, Wirelet... wirelets) {
+    public static Optional<ServiceExtensionMirror> find(Assembly  assembly, Wirelet... wirelets) {
         return ExtensionMirror.find(ServiceExtensionMirror.class, assembly, wirelets);
     }
 
@@ -79,9 +79,9 @@ public final class ServiceExtensionMirror extends ExtensionMirror {
      * @return
      * @throws NoSuchElementException
      *             if an
-     * @see ExtensionMirror#of(Class, BundleAssembly, Wirelet...)
+     * @see ExtensionMirror#of(Class, Assembly, Wirelet...)
      */
-    public static ServiceExtensionMirror of(BundleAssembly  assembly, Wirelet... wirelets) {
+    public static ServiceExtensionMirror of(Assembly  assembly, Wirelet... wirelets) {
         return ExtensionMirror.of(ServiceExtensionMirror.class, assembly, wirelets);
     }
 }

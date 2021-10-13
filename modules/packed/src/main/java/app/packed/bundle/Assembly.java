@@ -47,14 +47,11 @@ import packed.internal.util.LookupUtil;
  * Instances of this class can only be used a single time. Trying to use it more than once will fail with
  * {@link IllegalStateException}.
  * 
- * 
- * @param <C>
- *            the underlying configuration this bundle wraps
  * @see BaseAssembly
  */
-public abstract class BundleAssembly {
+public abstract class Assembly {
 
-    /** A marker configuration object, indicating that a bundle instance has been used for building something. */
+    /** A marker configuration object, indicating that an assembly has already been used. */
     private static final BundleConfiguration USED = new BundleConfiguration();
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
@@ -77,22 +74,20 @@ public abstract class BundleAssembly {
     private BundleConfiguration configuration;
 
     /**
-     * This assembly's container driver.
+     * The driver of this assembly.
      * <p>
-     * This field is read by {@link PackedBundleDriver#getDriver(Assembly)} via a varhandle.
+     * This field is read by {@link PackedBundleDriver#getDriver(Assembly)} via a var handle.
      */
     @SuppressWarnings("unused")
     private final PackedBundleDriver driver;
 
     /**
-     * Creates a new assembly using the specified component driver.
+     * Creates a new assembly using the specified bundle driver.
      * 
      * @param driver
-     *            the component driver
+     *            the driver to used to create the bundle
      */
-    // Could we allow to override the driver when linking?
-    // I think we need to define the exact usecases
-    protected BundleAssembly(BundleDriver driver) {
+    protected Assembly(BundleDriver driver) {
         this.driver = requireNonNull((PackedBundleDriver) driver, "driver is null");
     }
 

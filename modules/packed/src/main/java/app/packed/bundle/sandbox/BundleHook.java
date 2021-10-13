@@ -3,7 +3,7 @@ package app.packed.bundle.sandbox;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.build.BuildHook;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleMirror;
 
@@ -14,7 +14,7 @@ import app.packed.bundle.BundleMirror;
  * For the methods on this interface taking a {@link BundleConfiguration} the following applies:
  * 
  * The realm of the container configuration will be this class. Any value specified to
- * {@link BundleAssembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
+ * {@link Assembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
  * 
  */
 // Tror kun den kan bruges paa bundles
@@ -27,7 +27,7 @@ import app.packed.bundle.BundleMirror;
 public non-sealed interface BundleHook extends BuildHook {
 
     /**
-     * Invoked immediately after the runtime calls {@link BundleAssembly#build()}
+     * Invoked immediately after the runtime calls {@link Assembly#build()}
      * 
      * @param configuration
      *            the configuration of the container
@@ -35,7 +35,7 @@ public non-sealed interface BundleHook extends BuildHook {
     default void afterBuild(BundleConfiguration configuration) {};
 
     /**
-     * Invoked immediately before the runtime calls {@link BundleAssembly#build()}
+     * Invoked immediately before the runtime calls {@link Assembly#build()}
      * 
      * @param configuration
      *            the configuration of the container

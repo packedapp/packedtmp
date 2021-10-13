@@ -3,7 +3,7 @@ package app.packed.component;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanNewMirror;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
@@ -26,7 +26,7 @@ import packed.internal.component.ComponentSetup;
  * {@link BundleMirror#findExtension(Class)}.</li>
  * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror itself, for example,
- * {@link ServiceExtensionMirror#use(BundleAssembly, app.packed.bundle.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Assembly, app.packed.bundle.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: If overriding this class, subclasses:
@@ -34,7 +34,7 @@ import packed.internal.component.ComponentSetup;
  * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the runtime.</li>
  * <li>Must be located in the same module as the extension itself.</li>
- * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#use(BundleAssembly, Wirelet...)}.
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#use(Assembly, Wirelet...)}.
  * </ul>
  */
 public sealed class ComponentNewMirror permits BeanNewMirror {

@@ -1,7 +1,7 @@
 package app.packed.schedule;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.component.FunctionConfiguration;
@@ -31,7 +31,7 @@ public class ScheduleExtension extends Extension {
     // Skal returne noget LinkedContainer
     // Maaske kan man specificere en Wirelet...
     // Spawn as Application...
-    public BundleMirror schedule(BundleAssembly  bundle, Wirelet... wirelets) {
+    public BundleMirror schedule(Assembly  bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 }

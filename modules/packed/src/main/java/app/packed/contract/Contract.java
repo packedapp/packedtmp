@@ -22,7 +22,7 @@ import java.util.Set;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
 
@@ -54,7 +54,7 @@ public abstract class Contract {
      *            optional wirelets
      * @return all contracts of the application
      */
-    static Set<Contract> allOf(BundleAssembly  assembly, Wirelet... wirelets) {
+    static Set<Contract> allOf(Assembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
         // DAEMON.analyze(assembly, wirelets).
     }

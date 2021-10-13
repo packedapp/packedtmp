@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import app.packed.application.various.TaskListMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.host.ApplicationHost;
@@ -26,7 +26,7 @@ import packed.internal.application.PackedApplicationDriver;
 /**
  * A mirror of an application.
  * <p>
- * An instance of this class is typically obtained by calling {@link #of(BundleAssembly, Wirelet...)} on this class.
+ * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
  */
 // En application kan
 //// Vaere ejet af bruger
@@ -43,7 +43,7 @@ public interface ApplicationMirror {
     BundleMirror bundle();
 
     /** {@return the type of the root bundle.} */ // IDK bundle().type() might be fine
-    default Class<? extends BundleAssembly > bundleType() {
+    default Class<? extends Assembly > bundleType() {
         return bundle().type();
     }
 
@@ -179,7 +179,7 @@ public interface ApplicationMirror {
      * The name of an application is always identical to the name of the root bundle.
      * 
      * @return the name of the application
-     * @see BundleAssembly#named(String)
+     * @see Assembly#named(String)
      * @see Wirelet#named(String)
      */
     default String name() {
@@ -252,7 +252,7 @@ public interface ApplicationMirror {
      * @return an application mirror
      */
     // IDK om vi bare altid bruger en Application Launcher class...
-    public static ApplicationMirror of(BundleAssembly  assembly, Wirelet... wirelets) {
+    public static ApplicationMirror of(Assembly  assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
 

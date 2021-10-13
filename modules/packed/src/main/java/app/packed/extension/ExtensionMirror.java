@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.service.ServiceExtension;
@@ -23,7 +23,7 @@ import packed.internal.bundle.ExtensionSetup;
  * {@link BundleMirror#findExtension(Class)}.</li>
  * <li>By calling {@link Extension#mirror()}, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror class, for example,
- * {@link ServiceExtensionMirror#use(BundleAssembly, app.packed.bundle.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Assembly, app.packed.bundle.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: Subclasses of this class:
@@ -31,7 +31,7 @@ import packed.internal.bundle.ExtensionSetup;
  * <li>Must be annotated with {@link ExtensionMember} indicating what extension that is being mirrored.</li>
  * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
- * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(BundleAssembly, Wirelet...)}.
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.
  * </ul>
  */
 public class ExtensionMirror {
@@ -134,9 +134,9 @@ public class ExtensionMirror {
      *            optional wirelets
      * @return stuff
      * @see BundleMirror#findExtension(Class)
-     * @see #of(Class, BundleAssembly, Wirelet...)
+     * @see #of(Class, Assembly, Wirelet...)
      */
-    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, BundleAssembly  assembly, Wirelet... wirelets) {
+    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Assembly  assembly, Wirelet... wirelets) {
         return BundleMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
@@ -154,12 +154,12 @@ public class ExtensionMirror {
      *            optional wirelets
      * @return stuff
      * @see BundleMirror#useExtension(Class)
-     * @see #find(Class, BundleAssembly, Wirelet...)
+     * @see #find(Class, Assembly, Wirelet...)
      * @throws NoSuchElementException
      *             if the root container in the mirrored application does not use the extension that the specified mirror is
      *             a part of
      */
-    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, BundleAssembly  assembly, Wirelet... wirelets) {
+    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly  assembly, Wirelet... wirelets) {
         return BundleMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
     }
 }

@@ -3,7 +3,7 @@ package app.packed.application.various;
 import java.io.IOException;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Assembly;
 
 // Jeg taenker man vil typisk wrappe den i et andet image
 
@@ -28,7 +28,7 @@ class IOApplicationImage<A> {
         return image.launch();
     }
 
-    public IOApplicationImage<A> of(ApplicationDriver<A> driver, BundleAssembly  assembly) {
+    public IOApplicationImage<A> of(ApplicationDriver<A> driver, Assembly  assembly) {
         // driver.mapExceptions().imageOf();
         throw new UnsupportedOperationException();
     }
