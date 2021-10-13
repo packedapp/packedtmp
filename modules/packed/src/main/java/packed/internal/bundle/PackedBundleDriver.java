@@ -7,7 +7,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleDriver;
 import app.packed.component.ComponentConfiguration;
@@ -16,13 +16,13 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
-public final class PackedBundleDriver<C extends BundleConfiguration> implements BundleDriver<C> {
+public final class PackedBundleDriver implements BundleDriver {
 
     /** A driver for configuring containers. */
-    public static final PackedBundleDriver<BundleConfiguration> DRIVER = new PackedBundleDriver<>();
+    public static final PackedBundleDriver DRIVER = new PackedBundleDriver();
 
     /** A handle that can access Assembly#driver. */
-    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Bundle.class, "driver",
+    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BundleAssembly.class, "driver",
             PackedBundleDriver.class);
 
     /** A handle that can access ComponentConfiguration#component. */
@@ -39,15 +39,13 @@ public final class PackedBundleDriver<C extends BundleConfiguration> implements 
         throw new UnsupportedOperationException();
     }
 
-    public final C toConfiguration(ComponentSetup cs) {
-        C c = toConfiguration0(cs);
+    public final BundleConfiguration toConfiguration(ComponentSetup cs) {
+        BundleConfiguration c = toConfiguration0(cs);
         VH_COMPONENT_CONFIGURATION_COMPONENT.set(c, cs);
         return c;
     }
-
-    @SuppressWarnings("unchecked")
-    public C toConfiguration0(ComponentSetup context) {
-        return (C) new BundleConfiguration();
+    public BundleConfiguration toConfiguration0(ComponentSetup context) {
+        return new BundleConfiguration();
     }
 
     /**
@@ -57,8 +55,8 @@ public final class PackedBundleDriver<C extends BundleConfiguration> implements 
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static PackedBundleDriver<?> getDriver(Bundle<?> assembly) {
+    public static PackedBundleDriver getDriver(BundleAssembly assembly) {
         requireNonNull(assembly, "assembly is null");
-        return (PackedBundleDriver<?>) VH_ASSEMBLY_DRIVER.get(assembly);
+        return (PackedBundleDriver) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 }

@@ -22,7 +22,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets;
@@ -101,7 +101,7 @@ public final class SomeApp {
      * @throws RuntimeException
      *             if the application failed to run properly
      */
-    public static void run(Bundle<?> assembly, Wirelet... wirelets) {
+    public static void run(BundleAssembly  assembly, Wirelet... wirelets) {
         driver().launch(assembly, wirelets);
     }
 }
@@ -130,7 +130,7 @@ class MainTester {
         });
     }
 
-    static MainTester of(Bundle<?> assembly, Wirelet... wirelets) {
+    static MainTester of(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 }

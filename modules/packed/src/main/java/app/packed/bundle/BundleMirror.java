@@ -53,7 +53,7 @@ public non-sealed interface BundleMirror extends ComponentMirror {
      * 
      * @return the bundle type
      */
-    Class<? extends Bundle<?>> type();
+    Class<? extends BundleAssembly > type();
 
     /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws
@@ -75,7 +75,7 @@ public non-sealed interface BundleMirror extends ComponentMirror {
         return findExtension(extensionMirrorType).orElseThrow();
     }
 
-    public static BundleMirror of(Bundle<?> assembly, Wirelet... wirelets) {
+    public static BundleMirror of(BundleAssembly  assembly, Wirelet... wirelets) {
         return ApplicationMirror.of(assembly, wirelets).bundle();
     }
 }

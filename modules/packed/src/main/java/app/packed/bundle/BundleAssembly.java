@@ -52,7 +52,7 @@ import packed.internal.util.LookupUtil;
  *            the underlying configuration this bundle wraps
  * @see BaseAssembly
  */
-public abstract class Bundle<C extends BundleConfiguration> {
+public abstract class BundleAssembly {
 
     /** A marker configuration object, indicating that a bundle instance has been used for building something. */
     private static final BundleConfiguration USED = new BundleConfiguration();
@@ -82,7 +82,7 @@ public abstract class Bundle<C extends BundleConfiguration> {
      * This field is read by {@link PackedBundleDriver#getDriver(Assembly)} via a varhandle.
      */
     @SuppressWarnings("unused")
-    private final PackedBundleDriver<? extends C> driver;
+    private final PackedBundleDriver driver;
 
     /**
      * Creates a new assembly using the specified component driver.
@@ -92,8 +92,8 @@ public abstract class Bundle<C extends BundleConfiguration> {
      */
     // Could we allow to override the driver when linking?
     // I think we need to define the exact usecases
-    protected Bundle(BundleDriver<? extends C> driver) {
-        this.driver = requireNonNull((PackedBundleDriver<? extends C>) driver, "driver is null");
+    protected BundleAssembly(BundleDriver driver) {
+        this.driver = requireNonNull((PackedBundleDriver) driver, "driver is null");
     }
 
     /** {@return a descriptor for the application being built.} */
@@ -136,23 +136,22 @@ public abstract class Bundle<C extends BundleConfiguration> {
     }
 
     /**
-     * Returns this configuration of the container.
+     * Returns the configuration object for this assembly.
      * <p>
      * This method must only be called from within the {@link #build()} method.
      * 
-     * @return thie configuration of the container
+     * @return the wrapped configuration object
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
-    @SuppressWarnings("unchecked")
-    protected final C configuration() {
+    protected final BundleConfiguration configuration() {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
         } else if (c == USED) {
             throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
-        return (C) c;
+        return (BundleConfiguration) c;
     }
 
     /**
@@ -163,7 +162,7 @@ public abstract class Bundle<C extends BundleConfiguration> {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(C configuration) {
+    private void doBuild(BundleConfiguration configuration) {
         // I'm not we need volatile here
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {

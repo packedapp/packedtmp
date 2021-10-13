@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.service.ServiceLocator;
@@ -134,7 +134,7 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    static ApplicationImage<Injector> imageOf(Bundle<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Injector> imageOf(BundleAssembly  assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -169,7 +169,7 @@ public interface Injector extends ServiceLocator {
      *             that requires a lifecycle
      */
     // Of er maaske fin. Saa understreger vi ligesom
-    static Injector of(Bundle<?> assembly, Wirelet... wirelets) {
+    static Injector of(BundleAssembly  assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }

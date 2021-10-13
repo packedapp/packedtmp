@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
@@ -94,7 +94,7 @@ public final class BundleSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public BundleSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver<?> driver,
+    public BundleSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
@@ -166,7 +166,7 @@ public final class BundleSetup extends ComponentSetup {
             String n = null;
 
             Class<?> source = realm.realmType();
-            if (Bundle.class.isAssignableFrom(source)) {
+            if (BundleAssembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
                     nnn = nnn.substring(0, nnn.length() - 8);
@@ -436,8 +436,8 @@ public final class BundleSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        public Class<? extends Bundle<?>> type() {
-            return (Class) Bundle.class;
+        public Class<? extends BundleAssembly > type() {
+            return (Class) BundleAssembly.class;
         }
     }
 }

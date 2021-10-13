@@ -42,7 +42,7 @@ public class BundleExtension extends Extension {
     // Jeg ved dog ikke hvad eftersom det er stateless
     
     // LinkedBundle
-    public BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
+    public BundleMirror link(BundleAssembly  assembly, Wirelet... wirelets) {
         return link(assembly, container, container.realm, wirelets);
     }
 
@@ -53,7 +53,7 @@ public class BundleExtension extends Extension {
     }
 
     //// Ikke sikker på vi tager wirelets her...
-    public BundleConfiguration add(BundleDriver<?> driver, Wirelet... wirelets) {
+    public BundleConfiguration add(BundleDriver driver, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -68,9 +68,9 @@ public class BundleExtension extends Extension {
      *            optional wirelets
      * @return the component that was linked
      */
-    static final BundleMirror link(Bundle<?> assembly, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
+    static final BundleMirror link(BundleAssembly  assembly, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        PackedBundleDriver<?> driver = PackedBundleDriver.getDriver(assembly);
+        PackedBundleDriver driver = PackedBundleDriver.getDriver(assembly);
 
         // Create the new realm that should be used for linking
         RealmSetup newRealm = realm.link(driver, parent, assembly, wirelets);

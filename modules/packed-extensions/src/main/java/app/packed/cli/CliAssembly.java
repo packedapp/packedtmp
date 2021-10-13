@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import app.packed.application.programs.SomeApp;
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.Factory;
 
@@ -28,11 +28,11 @@ abstract class CliAssembly extends BaseAssembly {
         throw new UnsupportedOperationException();
     }
 
-    public static void main(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
+    public static void main(BundleAssembly  assembly, String[] args, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
 
-    public static void main(Bundle<?> assembly, Wirelet... wirelets) {
+    public static void main(BundleAssembly  assembly, Wirelet... wirelets) {
         SomeApp.run(assembly, wirelets);
     }
 

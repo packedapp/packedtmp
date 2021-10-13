@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
@@ -266,7 +266,7 @@ public final class ServiceContract extends Contract {
     // Vil mene kontrakter primaert er en composition/build ting
 
     // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
-    public static ServiceContract of(Bundle<?> assembly, Wirelet... wirelets) {
+    public static ServiceContract of(BundleAssembly  assembly, Wirelet... wirelets) {
         return ServiceExtensionMirror.find(assembly, wirelets).map(e -> e.contract()).orElse(ServiceContract.EMPTY);
     }
 

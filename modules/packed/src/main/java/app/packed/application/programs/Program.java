@@ -25,7 +25,7 @@ import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
@@ -125,9 +125,9 @@ public interface Program extends AutoCloseable {
      *            optional wirelets
      * @return a new app image
      * @see ApplicationImageWirelets
-     * @see ApplicationDriver#imageOf(Bundle, Wirelet...)
+     * @see ApplicationDriver#imageOf(BundleAssembly, Wirelet...)
      */
-    static ApplicationImage<Program> imageOf(Bundle<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(BundleAssembly  assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -149,14 +149,14 @@ public interface Program extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static Program start(Bundle<?> assembly, Wirelet... wirelets) {
+    static Program start(BundleAssembly  assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }
 
 interface Zapp extends Program {
 
-    static Program lazyStart(Bundle<?> assembly, Wirelet... wirelets) {
+    static Program lazyStart(BundleAssembly  assembly, Wirelet... wirelets) {
         // Altsaa der er vel disse interessant
 
         // initialized - lazy start
@@ -180,7 +180,7 @@ interface Zapp extends Program {
      *            optional wirelets
      * @return the new image
      */
-    static ApplicationImage<Program> imageOf(Bundle<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(BundleAssembly  assembly, Wirelet... wirelets) {
         return Program.driver().imageOf(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }

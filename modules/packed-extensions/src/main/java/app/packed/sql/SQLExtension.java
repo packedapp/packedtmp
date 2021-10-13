@@ -1,7 +1,7 @@
 package app.packed.sql;
 
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanExtensionSupport;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.RootedExtension;
 

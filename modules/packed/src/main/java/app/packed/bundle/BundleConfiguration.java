@@ -22,12 +22,9 @@ import packed.internal.util.ThrowableUtil;
  * Currently only a single concrete implementation exists.
  * 
  * but users are free to create other implementations that restrict the functionality of the default container
- * configuration by overridding this class.
+ * configuration by overriding this class.
  */
-
-// Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
-// Eller man maa gerne kunne overskrive den, men taenker ikke Assembly kan tage andet end ContainerConfiguration...
-public non-sealed class BundleConfiguration extends ComponentConfiguration {
+public final class BundleConfiguration extends ComponentConfiguration {
 
     /** A method handle that can access superclass ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
@@ -80,15 +77,12 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
      * @param lookup
      *            the lookup object
      */
-    // Hvorfor er det her ikke paa ContainerConfiguration????
-    // fx hooks ville gerne bruge den
-    // Hvis vi bare declare det final
-    public final void lookup(Lookup lookup) {
+    public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         container().realm.setLookup(lookup);
     }
 
-    /** {@return a mirror for the container.} */
+    /** {@return a mirror for the bundle.} */
     @Override
     public BundleMirror mirror() {
         return container().mirror();
@@ -126,5 +120,4 @@ public non-sealed class BundleConfiguration extends ComponentConfiguration {
     public <E extends Extension> E use(Class<E> extensionType) {
         return container().useExtension(extensionType);
     }
-
 }

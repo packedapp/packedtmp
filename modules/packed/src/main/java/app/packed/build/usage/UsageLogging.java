@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import app.packed.application.programs.SomeApp;
 import app.packed.bean.BeanMirror;
 import app.packed.build.ApplyBuildHook;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.sandbox.BundleHook;
 import app.packed.component.ComponentMirror;
@@ -25,7 +25,7 @@ class UsageLogging {
     @Inherited
     public @interface EnableLogging {}
 
-    record MyProc(Class<? extends Bundle<?>> assemblyType) implements BundleHook {
+    record MyProc(Class<? extends BundleAssembly > assemblyType) implements BundleHook {
 
         @Override
         public void beforeBuild(BundleConfiguration configuration) {

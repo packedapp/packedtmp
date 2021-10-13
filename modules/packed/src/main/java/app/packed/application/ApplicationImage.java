@@ -16,7 +16,7 @@
 package app.packed.application;
 
 import app.packed.application.programs.Program;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 import packed.internal.application.PackedApplicationDriver.PackedApplicationImage;
 
@@ -46,7 +46,7 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
  * An image can be used to create new instances of {@link app.packed.application.programs.Program} or other
  * applications. Artifact images can not be used as a part of other containers, for example, via
  * 
- * @see Program#imageOf(Bundle, Wirelet...)
+ * @see Program#imageOf(BundleAssembly, Wirelet...)
  */
 
 // Det er som default mange gange...
@@ -92,12 +92,12 @@ public sealed interface ApplicationImage<A> permits PackedApplicationImage {
      * Launches an instance of the application that this image represents.
      * <p>
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
-     * The behavior of this method is identical to {@link ApplicationDriver#launch(Bundle, Wirelet...)}.
+     * The behavior of this method is identical to {@link ApplicationDriver#launch(BundleAssembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets
      * @return an application instance
-     * @see {@link ApplicationDriver#launch(Bundle, Wirelet...)}
+     * @see {@link ApplicationDriver#launch(BundleAssembly, Wirelet...)}
      */
     A use(Wirelet... wirelets);
 }

@@ -16,11 +16,11 @@
 package app.packed.state.sandbox;
 
 import app.packed.application.programs.Program;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link Program#start(Bundle, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link Program#start(BundleAssembly, Wirelet...)}.
  * <p>
  */
 

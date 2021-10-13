@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.Wirelet;
 import app.packed.inject.service.ServiceConfiguration;
@@ -26,25 +26,25 @@ import packed.internal.util.NativeImage;
 // Har vi en AbstractApplicationHostConfiguration???
 public class ApplicationHostConfiguration<T> {
 
-    public InstalledApplicationConfiguration<T> install(Bundle<?> assembly, Wirelet... wirelets) {
+    public InstalledApplicationConfiguration<T> install(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceConfiguration<ApplicationImage<T>> installLaunchable(Bundle<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> installLaunchable(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     // Can fail, what if never started
     // Maybe CompletaableFuture istedet for...
-    public Supplier<T> lazy(Bundle<?> assembly, Wirelet... wirelets) {
+    public Supplier<T> lazy(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    ServiceConfiguration<InstanceManager> managedInstall(Bundle<?> assembly, Wirelet... wirelets) {
+    ServiceConfiguration<InstanceManager> managedInstall(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceConfiguration<ApplicationImage<T>> multiLauncher(Bundle<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> multiLauncher(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -91,7 +91,7 @@ public class ApplicationHostConfiguration<T> {
     }
 
     // A new application that can be launched exactly once... It is a failure to
-    public ServiceConfiguration<ApplicationImage<T>> singleLauncher(Bundle<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> singleLauncher(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -128,7 +128,7 @@ class OldStuff<T> extends ApplicationHostConfiguration<T> {
     // Vi vil gerne have launchmode i mirrors...
     // Men det kan vi ikke naar det bare er en wirelet..
     // onBuild(), onInitialize()
-    public void lazy2(Bundle<?> assembly, Wirelet... wirelets) {
+    public void lazy2(BundleAssembly  assembly, Wirelet... wirelets) {
       //  install(assembly, ExecutionWirelets.launchMode(ApplicationLaunchMode.RUNNING).beforeThis(wirelets));
     }
 }

@@ -13,15 +13,15 @@ import app.packed.extension.Extension;
 
 // Hvem ejer en component
 // Hvem provider en injectable value
-public /* primitive */ final class Operator {
+public /* primitive */ final class Realm {
 
     // Application???? As in the application owns it, whoever that application is.
-    private static final Operator APPLICATION = new Operator(null);
+    private static final Realm APPLICATION = new Realm(null);
 
     @Nullable
     private final Class<? extends Extension> extension;
 
-    private Operator(Class<? extends Extension> extension) {
+    private Realm(Class<? extends Extension> extension) {
         this.extension = extension;
     }
 
@@ -40,12 +40,12 @@ public /* primitive */ final class Operator {
         return this != APPLICATION;
     }
 
-    public static Operator application() {
+    public static Realm application() {
         return APPLICATION;
     }
 
-    public static Operator extension(Class<? extends Extension> extensionType) {
+    public static Realm extension(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return new Operator(extensionType);
+        return new Realm(extensionType);
     }
 }

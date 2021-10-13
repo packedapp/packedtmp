@@ -3,7 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.BaseAssembly;
-import app.packed.component.Operator;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
@@ -51,7 +51,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return wire(new ContainerBeanConfiguration<>(), Operator.application(), implementation);
+        return wire(new ContainerBeanConfiguration<>(), Realm.application(), implementation);
     }
 
     /**
@@ -64,7 +64,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return wire(new ContainerBeanConfiguration<>(), Operator.application(), factory);
+        return wire(new ContainerBeanConfiguration<>(), Realm.application(), factory);
     }
 
     /**
@@ -81,10 +81,10 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
         checkIsProperInstance(instance);
-        return wire(new ContainerBeanConfiguration<>(), Operator.application(), instance);
+        return wire(new ContainerBeanConfiguration<>(), Realm.application(), instance);
     }
 
-    <B extends BeanConfiguration<?>> B wire(B configuration, Operator owner, Object source) {
+    <B extends BeanConfiguration<?>> B wire(B configuration, Realm owner, Object source) {
 
         return configuration;
     }

@@ -1,7 +1,7 @@
 package app.packed.application;
 
 import app.packed.application.ApplicationRuntime.StopOption;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 
 // Ideen er lige at vi laver en deamon..
@@ -76,42 +76,42 @@ public interface Daemon extends AutoCloseable {
      *            optional wirelets
      * @return an application mirror for the daemon
      */
-    static ApplicationMirror mirrorOf(Bundle<?> assembly, Wirelet... wirelets) {
+    static ApplicationMirror mirrorOf(BundleAssembly  assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 
     // When do want to run a daemon???
     // Isn't it main...
-    static Daemon run(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
+    static Daemon run(BundleAssembly  assembly, String[] args, Wirelet... wirelets) {
         return run(assembly, wirelets);
     }
 
-    static Daemon run(Bundle<?> assembly, Wirelet... wirelets) {
+    static Daemon run(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     // Starts async... Builds/initializes sync
-    static Daemon runAsync(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
+    static Daemon runAsync(BundleAssembly  assembly, String[] args, Wirelet... wirelets) {
         return run(assembly, wirelets);
     }
 
-    static Daemon runAsync(Bundle<?> assembly, Wirelet... wirelets) {
+    static Daemon runAsync(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static Daemon start(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
+    static Daemon start(BundleAssembly  assembly, String[] args, Wirelet... wirelets) {
         return start(assembly, wirelets);
     }
 
-    static Daemon start(Bundle<?> assembly, Wirelet... wirelets) {
+    static Daemon start(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static Daemon startAsync(Bundle<?> assembly, String[] args, Wirelet... wirelets) {
+    static Daemon startAsync(BundleAssembly  assembly, String[] args, Wirelet... wirelets) {
         return startAsync(assembly, wirelets);
     }
 
-    static Daemon startAsync(Bundle<?> assembly, Wirelet... wirelets) {
+    static Daemon startAsync(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -122,14 +122,14 @@ public interface Daemon extends AutoCloseable {
 
         Launcher neverRestart();
 
-        DaemonImage newImage(Bundle<?> assembly);
+        DaemonImage newImage(BundleAssembly  assembly);
 
-        DaemonImage newImage(Bundle<?> assembly, Wirelet... wirelets);
+        DaemonImage newImage(BundleAssembly  assembly, Wirelet... wirelets);
 
         Launcher restartPolicy(Object somePolicy);
 
-        Daemon start(Bundle<?> assembly);
+        Daemon start(BundleAssembly  assembly);
 
-        Daemon start(Bundle<?> assembly, Wirelet... wirelets);
+        Daemon start(BundleAssembly  assembly, Wirelet... wirelets);
     }
 }

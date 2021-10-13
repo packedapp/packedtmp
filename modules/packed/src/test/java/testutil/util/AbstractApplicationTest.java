@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 
 /** An abstract test for testing artifacts. */
@@ -34,7 +34,7 @@ public abstract class AbstractApplicationTest {
         };
     }
 
-    public static AppTester appOf(Bundle<?> source, Wirelet... wirelets) {
+    public static AppTester appOf(BundleAssembly  source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
     }
 

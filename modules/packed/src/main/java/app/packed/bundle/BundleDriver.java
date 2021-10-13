@@ -19,8 +19,7 @@ import packed.internal.bundle.PackedBundleDriver;
 // ContainerConfiguration newContainer(ContainerDriver<?> driver);
 //  T newContainer(ContainerDriver<T> driver);
 
-@SuppressWarnings("rawtypes")
-public sealed interface BundleDriver<C extends BundleConfiguration> permits PackedBundleDriver {
+public sealed interface BundleDriver permits PackedBundleDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -36,12 +35,12 @@ public sealed interface BundleDriver<C extends BundleConfiguration> permits Pack
     Optional<Class<? extends Extension>> extension(); // igen Packed, Extension, user,
 
     /** {@return the default driver that is used to configure containers.} */
-    public static BundleDriver<BundleConfiguration> defaultDriver() {
+    public static BundleDriver defaultDriver() {
         return PackedBundleDriver.DRIVER;
     }
 
     interface Builder {
-        BundleDriver<BundleConfiguration> build();
+        BundleDriver build();
     }
 }
 

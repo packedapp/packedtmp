@@ -21,8 +21,8 @@ import java.lang.invoke.MethodType;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bundle.BaseAssembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;

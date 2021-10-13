@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.Daemon;
 import app.packed.bean.instance.TstExt;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 
 // Ideen er lidt at du er pisse genial
@@ -32,7 +32,7 @@ interface BuildProcessor<T> {
         System.out.println(px);
     }
     
-    static <T> BuildProcessor<T> of(BiFunction<Bundle<?>, Wirelet[], T> action, Bundle<?> assembly, Wirelet... wirelets) {
+    static <T> BuildProcessor<T> of(BiFunction<BundleAssembly , Wirelet[], T> action, BundleAssembly  assembly, Wirelet... wirelets) {
         // Vi smider maaske en special BuildException som vi kan catche
         throw new UnsupportedOperationException();
     }

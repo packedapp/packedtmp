@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -85,7 +85,7 @@ import app.packed.lifecycle.OnStart;
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
-public abstract class BaseAssembly extends Bundle<BundleConfiguration> {
+public abstract class BaseAssembly extends BundleAssembly {
 
     /** Creates a new assembly using {@link BundleDriver#defaultDriver()}. */
     protected BaseAssembly() {
@@ -98,7 +98,7 @@ public abstract class BaseAssembly extends Bundle<BundleConfiguration> {
      * @param driver
      *            the driver to wrap
      */
-    protected BaseAssembly(BundleDriver<?> driver) {
+    protected BaseAssembly(BundleDriver driver) {
         super(driver);
     }
 
@@ -251,9 +251,9 @@ public abstract class BaseAssembly extends Bundle<BundleConfiguration> {
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the container that was linked
-     * @see BundleExtension#link(Bundle, Wirelet...)
+     * @see BundleExtension#link(BundleAssembly, Wirelet...)
      */
-    protected final BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
+    protected final BundleMirror link(BundleAssembly  assembly, Wirelet... wirelets) {
         return bundle().link(assembly, wirelets);
     }
 

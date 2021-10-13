@@ -121,7 +121,7 @@ public sealed interface ComponentMirror extends Mirror permits BundleMirror,Bean
      * 
      * @return the owner of the component
      */
-    Operator registrant();
+    Realm registrant();
 
     /**
      * Computes the relation from this component to the specified component.

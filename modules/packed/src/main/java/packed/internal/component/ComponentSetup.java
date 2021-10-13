@@ -33,7 +33,7 @@ import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.Operator;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -239,9 +239,9 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final Operator registrant() {
+        public final Realm registrant() {
             Class<? extends Extension> extensionType = realm.extensionType;
-            return extensionType == null ? Operator.application() : Operator.extension(extensionType);
+            return extensionType == null ? Realm.application() : Realm.extension(extensionType);
         }
 
         /** {@inheritDoc} */

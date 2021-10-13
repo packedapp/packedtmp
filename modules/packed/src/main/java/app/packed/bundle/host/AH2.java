@@ -24,7 +24,10 @@ class Foo extends JobAssembly<String> implements ApplicationProducer<Job<?>> {
     public void foo(JobHost h) {
         h.installGuest(new Foo());
     }
+    
+    
 }
+
 
 interface JobHost extends AH2<Job<?>> {
 

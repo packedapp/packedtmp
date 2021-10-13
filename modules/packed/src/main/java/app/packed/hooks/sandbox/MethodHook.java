@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Composer;
 import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass;
@@ -41,7 +41,7 @@ import app.packed.lifecycle.OnInitialize;
  * 
  * On an annotation with target Method... The annotation must declare itself in {@link #matchesAnnotation()}
  * 
- * On a subclass of {@link Bundle} (will not match components that part of an extension (different realm))
+ * On a subclass of {@link BundleAssembly} (will not match components that part of an extension (different realm))
  * 
  * On a subclass of {@link Composer}
  * 

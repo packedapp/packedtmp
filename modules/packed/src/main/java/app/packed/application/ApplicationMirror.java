@@ -11,13 +11,13 @@ import java.util.stream.Stream;
 import app.packed.application.various.TaskListMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildMirror;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.host.ApplicationHost;
 import app.packed.bundle.host.ApplicationHostMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.Operator;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
@@ -26,7 +26,7 @@ import packed.internal.application.PackedApplicationDriver;
 /**
  * A mirror of an application.
  * <p>
- * An instance of this class is typically obtained by calling {@link #of(Bundle, Wirelet...)} on this class.
+ * An instance of this class is typically obtained by calling {@link #of(BundleAssembly, Wirelet...)} on this class.
  */
 // En application kan
 //// Vaere ejet af bruger
@@ -43,7 +43,7 @@ public interface ApplicationMirror {
     BundleMirror bundle();
 
     /** {@return the type of the root bundle.} */ // IDK bundle().type() might be fine
-    default Class<? extends Bundle<?>> bundleType() {
+    default Class<? extends BundleAssembly > bundleType() {
         return bundle().type();
     }
 
@@ -179,15 +179,15 @@ public interface ApplicationMirror {
      * The name of an application is always identical to the name of the root bundle.
      * 
      * @return the name of the application
-     * @see Bundle#named(String)
+     * @see BundleAssembly#named(String)
      * @see Wirelet#named(String)
      */
     default String name() {
         return bundle().name();
     }
 
-    default Operator owner() {
-        return Operator.application();
+    default Realm owner() {
+        return Realm.application();
     }
 
     default void print() {
@@ -252,7 +252,7 @@ public interface ApplicationMirror {
      * @return an application mirror
      */
     // IDK om vi bare altid bruger en Application Launcher class...
-    public static ApplicationMirror of(Bundle<?> assembly, Wirelet... wirelets) {
+    public static ApplicationMirror of(BundleAssembly  assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
 

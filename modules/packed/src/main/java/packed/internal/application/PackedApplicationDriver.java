@@ -33,7 +33,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleDriver;
 import app.packed.bundle.Composer;
@@ -133,12 +133,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            optional wirelets
      * @return a build setup
      */
-    private BuildSetup build(ApplicationDescriptorOutput buildTarget, Bundle<?> assembly, Wirelet[] wirelets) {
+    private BuildSetup build(ApplicationDescriptorOutput buildTarget, BundleAssembly  assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
         // Extract the driver from the field Bundle#driver
-        PackedBundleDriver<?> componentDriver = PackedBundleDriver.getDriver(assembly);
+        PackedBundleDriver componentDriver = PackedBundleDriver.getDriver(assembly);
 
         // Create the initial realm, typically we will have a realm per bundle
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
@@ -162,13 +162,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return realm.build;
     }
 
-    public <C extends Composer> A compose(BundleDriver<BundleConfiguration> containerDriver, Function<BundleConfiguration, C> composer,
+    public <C extends Composer> A compose(BundleDriver containerDriver, Function<BundleConfiguration, C> composer,
             ComposerAction<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
         // Extract the component driver from the composer
-        PackedBundleDriver<?> componentDriver = (PackedBundleDriver<?>) containerDriver;
+        PackedBundleDriver componentDriver = (PackedBundleDriver) containerDriver;
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, consumer, wirelets);
@@ -193,7 +193,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> imageOf(Bundle<?> assembly, Wirelet... wirelets) {
+    public ApplicationImage<A> imageOf(BundleAssembly  assembly, Wirelet... wirelets) {
         BuildSetup build = build(ApplicationDescriptorOutput.IMAGE, assembly, wirelets);
         return new PackedApplicationImage<>(this, build.application);
     }
@@ -206,7 +206,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public A launch(Bundle<?> assembly, Wirelet... wirelets) {
+    public A launch(BundleAssembly  assembly, Wirelet... wirelets) {
         BuildSetup build = build(ApplicationDescriptorOutput.INSTANCE, assembly, wirelets);
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
@@ -219,7 +219,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationMirror mirrorOf(Bundle<?> assembly, Wirelet... wirelets) {
+    public ApplicationMirror mirrorOf(BundleAssembly  assembly, Wirelet... wirelets) {
         return build(ApplicationDescriptorOutput.MIRROR, assembly, wirelets).application.mirror();
     }
 
@@ -243,7 +243,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> reusableImageOf(Bundle<?> assembly, Wirelet... wirelets) {
+    public ApplicationImage<A> reusableImageOf(BundleAssembly  assembly, Wirelet... wirelets) {
         BuildSetup build = build(ApplicationDescriptorOutput.REUSABLE_IMAGE, assembly, wirelets);
         return new PackedApplicationImage<>(this, build.application);
     }
@@ -375,7 +375,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#imageOf(Bundle, Wirelet...)}. */
+    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#imageOf(BundleAssembly, Wirelet...)}. */
     public final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
             implements ApplicationImage<A> {
 

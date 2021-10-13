@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleExtension;

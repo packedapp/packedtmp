@@ -1,7 +1,7 @@
 package app.packed.bundle.host;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 
@@ -22,7 +22,7 @@ public class ApplicationHostExtension extends Extension {
 
     ApplicationHostExtension() {}
 
-    public ApplicationMirror delayedInitialization(Bundle<?> assembly, Wirelet... wirelets) {
+    public ApplicationMirror delayedInitialization(BundleAssembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
     

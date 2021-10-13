@@ -16,13 +16,13 @@
 package app.packed.job;
 
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 
 /**
  *
  */
 interface JobScheduler {
-    <S, T extends Bundle<?> & ResultBearing<S>> Job<S> schedule(T assembly);
+    <S, T extends BundleAssembly  & ResultBearing<S>> Job<S> schedule(T assembly);
 
     <T> Job<T> schedule(JobAssembly<T> assembly);
 

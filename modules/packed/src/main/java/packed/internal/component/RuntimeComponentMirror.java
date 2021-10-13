@@ -32,7 +32,7 @@ import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.Operator;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.lifetime.LifetimePool;
@@ -296,7 +296,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     @Override
-    public Operator registrant() {
+    public Realm registrant() {
         throw new UnsupportedOperationException();
     }
 }

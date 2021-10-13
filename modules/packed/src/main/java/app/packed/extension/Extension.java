@@ -29,7 +29,7 @@ import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
 import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleExtension;
 import app.packed.bundle.BundleMirror;
@@ -277,7 +277,7 @@ public abstract class Extension {
      * example, by installing a bean that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link BundleExtension.BeanExtensionSupport2#link(Bundle, Wirelet...)}
+     * {@link BundleExtension.BeanExtensionSupport2#link(BundleAssembly, Wirelet...)}
      */
     protected void onComplete() {
         // Time

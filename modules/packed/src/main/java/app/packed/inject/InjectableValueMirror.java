@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-import app.packed.component.Operator;
+import app.packed.component.Realm;
 
 /**
  *
@@ -27,5 +27,5 @@ public interface InjectableValueMirror {
 
     InjectionResolveType injectionType();
     
-    Operator operator(); // services = application
+    Realm operator(); // services = application
 }

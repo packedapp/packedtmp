@@ -1,5 +1,6 @@
 package app.packed.bundle;
 
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
@@ -32,7 +33,7 @@ public /* primitive */ class BundleExtensionSupport extends ExtensionSupport {
      */
     // self link... There should be no reason why users would link a container via an extension. As the container driver is
     // already fixed, so the extension can provide no additional functionality
-    BundleMirror selfLink(Bundle<?> assembly, Wirelet... wirelets) {
+    BundleMirror selfLink(BundleAssembly assembly, Wirelet... wirelets) {
         return BundleExtension.link(assembly, extension.container, extension.extension.realm(), wirelets);
     }
 
@@ -56,8 +57,11 @@ public /* primitive */ class BundleExtensionSupport extends ExtensionSupport {
     // Container.Owner = Operator.Extension
     // I am beginning to think that all components installed from the assembly belongs to the extension
     // And then extension is not allowed to use other extensions that its dependencies.
-    public BundleMirror link(Bundle<?> assembly, Wirelet... wirelets) {
+    public BundleMirror link(BundleAssembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
+    public BundleMirror link(Realm realm, BundleAssembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 }
