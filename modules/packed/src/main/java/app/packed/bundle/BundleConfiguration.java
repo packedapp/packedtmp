@@ -12,7 +12,9 @@ import app.packed.application.ApplicationDescriptor;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.RealmSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -100,6 +102,11 @@ public final class BundleConfiguration extends ComponentConfiguration {
         return container().selectWirelets(wireletClass);
     }
 
+    public BundleMirror link(BundleAssembly  assembly, Wirelet... wirelets) {
+        BundleSetup s = container();
+        return link(assembly, s, s.realm, wirelets);
+    }
+    
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -119,5 +126,39 @@ public final class BundleConfiguration extends ComponentConfiguration {
      */
     public <E extends Extension> E use(Class<E> extensionType) {
         return container().useExtension(extensionType);
+    }
+    
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
+    static final BundleMirror link(BundleAssembly  assembly, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
+        // Extract the component driver from the assembly
+        PackedBundleDriver driver = PackedBundleDriver.getDriver(assembly);
+
+        // Create the new realm that should be used for linking
+        RealmSetup newRealm = realm.link(driver, parent, assembly, wirelets);
+
+        // Create the component configuration that is needed by the assembly
+        BundleConfiguration configuration = driver.toConfiguration(newRealm.root);
+
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        try {
+            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        // Close the new realm again after the assembly has been successfully linked
+        newRealm.close();
+
+        return (BundleMirror) newRealm.root.mirror();
     }
 }

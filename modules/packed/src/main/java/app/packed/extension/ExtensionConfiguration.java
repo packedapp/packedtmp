@@ -19,11 +19,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
+import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Composer;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.WireletSelection;
+import app.packed.component.Realm;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.bundle.ExtensionSetup;
 
@@ -64,6 +67,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkIsPreCompletion();
 
+    BundleMirror link(Realm realm, BundleAssembly assembly, Wirelet... wirelets);
+    
     /**
      * Checks that Checks that child containers has been aded
      */

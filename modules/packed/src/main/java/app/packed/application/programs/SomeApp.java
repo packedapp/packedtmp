@@ -125,7 +125,7 @@ class MainTester {
         SomeApp.run(new BaseAssembly() {
             @Override
             protected void build() {
-                link(null);
+                link((BundleAssembly) null);
             }
         });
     }

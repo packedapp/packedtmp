@@ -22,7 +22,6 @@ import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.bundle.BundleDriver;
-import app.packed.bundle.BundleExtension;
 import app.packed.bundle.Composer;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
@@ -72,7 +71,7 @@ public final class InjectorComposer extends Composer {
      *            optional import/export wirelets
      */
     public ComponentMirror link(BundleAssembly  assembly, Wirelet... wirelets) {
-        return configuration.use(BundleExtension.class).link(assembly, wirelets);
+        return configuration.link(assembly, wirelets);
     }
 
     /**

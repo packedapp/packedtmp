@@ -80,6 +80,8 @@ import packed.internal.util.StackWalkerUtil;
 
 // Det der taeller for at have en RuntimeWirelet classe... Er at det er meget lettere at teste.
 // Istedet for at skulle slaa en WireletModel op, som man ville skulle for $buildtimeOnly
+
+// Linklet
 public abstract class Wirelet {
 
     /**
@@ -157,9 +159,9 @@ public abstract class Wirelet {
     }
 
     /**
-//     * Attempting to wire a non-container component or a container component that is not the root with this wirelet will
-//     * fail.
-//     */
+     * // * Attempting to wire a non-container component or a container component that is not the root with this wirelet
+     * will // * fail. //
+     */
 //    protected static final void $requireContainerNonRoot() {}
 //
 //    /** The wirelet can only be used on the root container in a namespace. */
@@ -181,13 +183,12 @@ public abstract class Wirelet {
         // Nej vi er ligeglade. En unprocessed extension wirelet...
         // Er automatisk en extension der ikke er registreret
         // Alle extensions skal processere alle deres wirelets
-        
+
         // Either the extension is not registered or some other
-        
+
         // Tror vi tester om den er overskrevet
     }
 
-    
     /**
      * Combines multiple wirelets into a single wirelet that behaves, in sequence, as each of the specified wirelets.
      * 
@@ -217,8 +218,6 @@ public abstract class Wirelet {
         return new OverrideNameWirelet(name);
     }
 }
-
-
 
 /**
  * A container wirelet is a type of wirelet that can be specified when wiring a container.

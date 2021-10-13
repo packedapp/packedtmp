@@ -114,10 +114,6 @@ public abstract class BaseAssembly extends BundleAssembly {
         return use(BeanExtension.class);
     }
 
-    protected final BundleExtension bundle() {
-        return use(BundleExtension.class);
-    }
-
     /**
      * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
      * use case if having a single
@@ -244,17 +240,26 @@ public abstract class BaseAssembly extends BundleAssembly {
     }
 
     /**
-     * Links the specified assembly as part of the same application.
+     * Links the specified assembly as part of the same application and container that this bundle is part of.
      * 
      * @param assembly
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the container that was linked
-     * @see BundleExtension#link(BundleAssembly, Wirelet...)
+     * @see BundleConfiguration#link(BundleAssembly, Wirelet...)
      */
-    protected final BundleMirror link(BundleAssembly  assembly, Wirelet... wirelets) {
-        return bundle().link(assembly, wirelets);
+    // Why not wire + wirelets???
+    protected final BundleMirror link(BundleAssembly assembly, Wirelet... wirelets) {
+        return configuration().link(assembly, wirelets);
+    }
+
+    protected final BundleConfiguration link(BundleDriver driver, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final BundleConfiguration link(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     /**

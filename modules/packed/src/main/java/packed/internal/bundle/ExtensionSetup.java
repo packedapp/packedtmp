@@ -10,10 +10,13 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
+import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Composer;
 import app.packed.bundle.ComposerAction;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.WireletSelection;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
@@ -322,5 +325,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         return extension;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BundleMirror link(Realm realm, BundleAssembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -31,7 +31,6 @@ import app.packed.base.Nullable;
 import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleAssembly;
 import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.BundleExtension;
 import app.packed.bundle.BundleMirror;
 import app.packed.bundle.Wirelet;
 import app.packed.bundle.WireletSelection;
