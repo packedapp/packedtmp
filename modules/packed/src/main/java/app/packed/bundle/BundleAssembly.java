@@ -132,7 +132,7 @@ public abstract class BundleAssembly {
         // Why not just test configuration == null????
 
         // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
-        configuration().container().realm.checkOpen();
+        configuration().bundle().realm.checkOpen();
     }
 
     /**
@@ -145,13 +145,13 @@ public abstract class BundleAssembly {
      *             if called from outside of the {@link #build()} method
      */
     protected final BundleConfiguration configuration() {
-        Object c = configuration;
+        BundleConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
         } else if (c == USED) {
             throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
-        return (BundleConfiguration) c;
+        return c;
     }
 
     /**
@@ -166,7 +166,7 @@ public abstract class BundleAssembly {
         // I'm not we need volatile here
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
-            BundleSetup cs = configuration.container();
+            BundleSetup cs = configuration.bundle();
 
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present

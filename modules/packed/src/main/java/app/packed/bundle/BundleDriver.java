@@ -1,15 +1,12 @@
 package app.packed.bundle;
 
-import java.util.Optional;
 import java.util.Set;
 
 import app.packed.extension.Extension;
 import packed.internal.bundle.PackedBundleDriver;
 
-//2 valgmuligheder
-
-// 1. som nu 
-// 2. Lade brugere overskrive den
+// Skal end users kunne lave dem her??? Tanker det umiddelbart ikke...
+// Lidt som de heller ikke skal lave bean drivers...
 
 // Altsaa hvordan er det lige praecis ContainerConfiguration skal faa ekstra information?
 // Vi er vist enige om at vi ikke gider kunne overskrive den, bare for at 
@@ -31,9 +28,6 @@ public sealed interface BundleDriver permits PackedBundleDriver {
      */
     Set<Class<? extends Extension>> bannedExtensions();
 
-    /** {@return any extension this driver is a part of.} */
-    Optional<Class<? extends Extension>> extension(); // igen Packed, Extension, user,
-
     /** {@return the default driver that is used to configure containers.} */
     public static BundleDriver defaultDriver() {
         return PackedBundleDriver.DRIVER;
@@ -45,4 +39,9 @@ public sealed interface BundleDriver permits PackedBundleDriver {
 }
 
 // manglende funktionalitet. Muligheden for at returnere et specifikt ContainerMirror
-// Tror det kraever en builder. Hmm usecases??? 
+// Tror det kraever en builder. Hmm usecases???
+
+//2 valgmuligheder
+
+//1. som nu 
+//2. Lade brugere overskrive den

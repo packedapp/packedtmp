@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bundle.BundleAssembly;
@@ -31,11 +30,6 @@ public final class PackedBundleDriver implements BundleDriver {
 
     @Override
     public Set<Class<? extends Extension>> bannedExtensions() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Optional<Class<? extends Extension>> extension() {
         throw new UnsupportedOperationException();
     }
 

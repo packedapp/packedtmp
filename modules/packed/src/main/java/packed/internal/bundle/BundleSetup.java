@@ -42,6 +42,7 @@ import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
+import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of a container. */
 public final class BundleSetup extends ComponentSetup {
@@ -94,8 +95,8 @@ public final class BundleSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public BundleSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver driver,
-            @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public BundleSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver driver, @Nullable ComponentSetup parent,
+            Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
         this.assemblyModel = BundleModel.of(realm.realmType());
@@ -221,6 +222,40 @@ public final class BundleSetup extends ComponentSetup {
         }
 
         injection.resolve();
+    }
+
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
+    public final BundleMirror link(BundleAssembly assembly, Wirelet... wirelets) {
+        // Extract the component driver from the assembly
+        PackedBundleDriver driver = PackedBundleDriver.getDriver(assembly);
+
+        // Create the new realm that should be used for linking
+        RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
+
+        // Create the component configuration that is needed by the assembly
+        BundleConfiguration configuration = driver.toConfiguration(newRealm.root);
+
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        try {
+            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        // Close the new realm again after the assembly has been successfully linked
+        newRealm.close();
+
+        return (BundleMirror) newRealm.root.mirror();
     }
 
     /** {@return a unmodifiable view of all extension types that are in use.} */
@@ -357,7 +392,7 @@ public final class BundleSetup extends ComponentSetup {
 
                 ExtensionMember em = implementation.getAnnotation(ExtensionMember.class);
                 if (em == null) {
-                    throw new InternalExtensionException(implementation +  " must be annotated with @ExtensionMember");
+                    throw new InternalExtensionException(implementation + " must be annotated with @ExtensionMember");
                 }
                 Class<? extends Extension> extensionType = em.value();
                 ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
@@ -436,7 +471,7 @@ public final class BundleSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        public Class<? extends BundleAssembly > type() {
+        public Class<? extends BundleAssembly> type() {
             return (Class) BundleAssembly.class;
         }
     }
