@@ -16,9 +16,8 @@
 package app.packed.application;
 
 import app.packed.application.programs.Program;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
-import packed.internal.application.PackedApplicationDriver.PackedApplicationImage;
+import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
@@ -54,8 +53,10 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
 
 /// ApplicationImage<String> i; String numberOfFoos = i.launch();
 
-@SuppressWarnings("rawtypes")
-public sealed interface ApplicationImage<A> permits PackedApplicationImage {
+//// Jeg tror ikke man kan mirror et application image...
+//// Med mindre man bruger en speciel wirelet
+
+public /*sealed*/ interface ApplicationImage<A> /*permits PackedApplicationImage*/ {
 
     /**
      * Returns the launch mode of application(s) created by this image.

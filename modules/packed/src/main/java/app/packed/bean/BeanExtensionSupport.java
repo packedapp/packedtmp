@@ -6,7 +6,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
-import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.component.bean.OldBeanDriver.OtherBeanDriver;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 
@@ -81,13 +81,13 @@ public final class BeanExtensionSupport extends ExtensionSupport {
     public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
 
-        BundleSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.bundle;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
     }
 
     public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Factory<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        BundleSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.bundle;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
     }
 
@@ -96,14 +96,14 @@ public final class BeanExtensionSupport extends ExtensionSupport {
     // 2. Specifie ComponentConfiguration must have been installed by the same extension
     public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        BundleSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.bundle;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
 
     }
 
     public <T, C extends BeanConfiguration<T>> C wireInstance(OtherBeanDriver<T, C> binder, T instance) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        BundleSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.bundle;
         return BeanExtension.wire(b.bindInstance(instance), container, container.realm);
 
     }

@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.ServiceManagerSetup;

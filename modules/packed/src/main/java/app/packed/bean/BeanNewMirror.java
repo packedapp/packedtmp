@@ -11,7 +11,7 @@ import packed.internal.component.bean.BeanSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-public non-sealed class BeanNewMirror extends ComponentNewMirror {
+public /*non-sealed*/ class BeanNewMirror extends ComponentNewMirror {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(

@@ -3,8 +3,8 @@ package app.packed.extension;
 import java.util.ArrayList;
 
 /**
- * Extension support classes are the primary way that extensions interact without other extensions. Developers that are
- * not developing their own extensions will likely deal with these type of classes.
+ * Extension support classes are the main way that extensions interact without other extensions. Developers that are not
+ * creating their own extensions will likely deal with these type of classes.
  * <p>
  * 
  * <p>

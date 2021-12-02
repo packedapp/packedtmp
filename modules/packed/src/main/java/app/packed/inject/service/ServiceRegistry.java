@@ -27,9 +27,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.inject.variable.InjectableVariable;
+import app.packed.inject.variable.BeanDependency;
 import packed.internal.inject.service.AbstractServiceRegistry;
-import packed.internal.util.PackedAttributeHolderStream;
 
 /**
  * A collection of {@link Service services}, with each service having a unique {@link Service#key() key}.
@@ -52,7 +51,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * If this interface is used as an auto service. The registry will contain all services that available to a given
  * component instance. It will not include auto services.
  */
-@InjectableVariable.Hook(bootstrap = InjectableVariable.class)
+@BeanDependency.Hook(bootstrap = BeanDependency.class)
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
@@ -153,7 +152,7 @@ public interface ServiceRegistry extends Iterable<Service> {
 
     /** {@return a unordered {@code Stream} of all services in this registry} */
     default Stream<Service> services() {
-        return new PackedAttributeHolderStream<>(asMap().values().stream());
+        return asMap().values().stream();
     }
 
     /** { @return the number of services in this registry} */

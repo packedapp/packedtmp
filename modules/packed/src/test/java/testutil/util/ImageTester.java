@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 
 /**
  *

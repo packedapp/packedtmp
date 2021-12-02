@@ -28,7 +28,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bundle.ComposerAction;
+import app.packed.container.ComposerAction;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceComposer;

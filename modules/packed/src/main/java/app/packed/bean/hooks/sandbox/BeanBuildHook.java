@@ -2,11 +2,10 @@ package app.packed.bean.hooks.sandbox;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildHook;
 
 
 // Hmmmmm hvad er usecases
-public non-sealed interface BeanBuildHook extends BuildHook {
+public interface BeanBuildHook {
     
     void afterBuild(BeanConfiguration<?> configuration);
 

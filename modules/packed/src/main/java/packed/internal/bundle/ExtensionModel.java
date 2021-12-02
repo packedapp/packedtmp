@@ -34,9 +34,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.invoke.Infuser;
-import packed.internal.invoke.OpenClass;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
 
@@ -58,9 +56,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     };
 
-    /** A model of any attributes defined on the extension class. */
-    @Nullable
-    final PackedAttributeModel attributes;
+//    /** A model of any attributes defined on the extension class. */
+//    @Nullable
+//    final PackedAttributeModel attributes;
 
     /** The direct dependencies of the extension. */
     private final ExtensionDependencySet dependencies;
@@ -104,7 +102,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.nameComponent = "." + nameSimple;
 
         this.extensionLinkedDirectChildrenOnly = builder.connectParentOnly;
-        this.attributes = builder.pam;
+        // this.attributes = builder.pam;
     }
 
     /**
@@ -253,9 +251,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A handle for creating new extension instances. */
         private MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
-        /** A model of all methods that provide attributes. */
-        @Nullable
-        private PackedAttributeModel pam;
+//        /** A model of all methods that provide attributes. */
+//        @Nullable
+//        private PackedAttributeModel pam;
 
         /**
          * Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency. Skal lige gennemtaenkes,
@@ -292,10 +290,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
 
             // So far we scan for constructors
-            OpenClass oc = OpenClass.of(MethodHandles.lookup(), extensionClass);
+            // OpenClass oc = OpenClass.of(MethodHandles.lookup(), extensionClass);
 
             // Okay maybe we need to scan for contracts...
-            this.pam = PackedAttributeModel.analyse(oc);
+            // this.pam = PackedAttributeModel.analyse(oc);
 
             return new ExtensionModel(this);
         }

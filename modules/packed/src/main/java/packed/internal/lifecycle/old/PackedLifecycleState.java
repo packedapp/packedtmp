@@ -17,30 +17,30 @@ package packed.internal.lifecycle.old;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.state.sandbox.InstanceState;
+import app.packed.lifecycle.RunState;
 
 /**
  *
  */
 public abstract class PackedLifecycleState {
 
-    public static final PackedLifecycleState CONSTRUCT_INITALIZING = new ConstructLifecycleState(InstanceState.UNINITIALIZED);
+    public static final PackedLifecycleState CONSTRUCT_INITALIZING = new ConstructLifecycleState(RunState.UNINITIALIZED);
 
-    public static final PackedLifecycleState CONSTRUCT_INITIALIZED = new ConstructLifecycleState(InstanceState.INITIALIZED);
+    public static final PackedLifecycleState CONSTRUCT_INITIALIZED = new ConstructLifecycleState(RunState.INITIALIZED);
 
-    public abstract InstanceState state();
+    public abstract RunState state();
 
     private static class ConstructLifecycleState extends PackedLifecycleState {
 
-        private final InstanceState state;
+        private final RunState state;
 
-        private ConstructLifecycleState(InstanceState state) {
+        private ConstructLifecycleState(RunState state) {
             this.state = requireNonNull(state);
         }
 
         /** {@inheritDoc} */
         @Override
-        public InstanceState state() {
+        public RunState state() {
             return state;
         }
     }

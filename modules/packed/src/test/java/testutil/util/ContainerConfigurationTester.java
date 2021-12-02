@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.Wirelet;
+import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 
 /**
@@ -34,21 +34,21 @@ import app.packed.extension.Extension;
  */
 public class ContainerConfigurationTester {
 
-    private final BundleConfiguration cc;
+    private final ContainerConfiguration cc;
 
-    public ContainerConfigurationTester(BundleConfiguration cc) {
+    public ContainerConfigurationTester(ContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
     /**
      * @return the cc
      */
-    public BundleConfiguration configuration() {
+    public ContainerConfiguration configuration() {
         return cc;
     }
 
     public Set<Class<? extends Extension>> extensions() {
-        return cc.extensionsTypes();
+        return cc.extensionTypes();
     }
 
     public ContainerConfigurationTester getNameIs(String expected) {

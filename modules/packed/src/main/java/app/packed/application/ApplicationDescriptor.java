@@ -1,8 +1,7 @@
 package app.packed.application;
 
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
-import packed.internal.application.PackedApplicationDescriptor;
+import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 
 // Input DAW (Application) Driver Assembly Wirelets
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.
@@ -12,7 +11,7 @@ import packed.internal.application.PackedApplicationDescriptor;
 /**
  * An immutable descriptor of an application.
  */
-public sealed interface ApplicationDescriptor permits PackedApplicationDescriptor {
+public /*sealed*/ interface ApplicationDescriptor /*permits PackedApplicationDescriptor*/ {
 //
 //    boolean isMirror();
 //    
@@ -54,7 +53,7 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
     // Altsaa det er jo primaert extensions der skal bruge det.
     // Tror aldrig man kommer til at switche paa den
     // Saa er maaske ikke super brugbart
-    public enum ApplicationDescriptorOutput {
+    public enum ApplicationBuildType {
 
         /**
          * An application image will build the application. But delay the actual launch of the application to a later point.

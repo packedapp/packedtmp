@@ -26,9 +26,9 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Composer;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Composer;
 import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass;
 import app.packed.hooks.BeanMethod;

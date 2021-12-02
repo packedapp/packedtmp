@@ -1,6 +1,6 @@
 package app.packed.application.entrypoint;
 
-import app.packed.application.ApplicationMirror;
+import app.packed.bean.member.operation.RuntimeOperationMirror;
 import app.packed.component.ComponentMirror;
 
 // Spoergsmaalet er om hver extension boer have hver deres mirrors
@@ -10,14 +10,10 @@ import app.packed.component.ComponentMirror;
 
 // Hvordan kan man se forskel på om den booter applikationen eller bean'en componenent
 
-public interface EntryPointMirror {
-
-    /** {@return the application the entry point is a part of.} */
-    ApplicationMirror application();
+public interface EntryPointMirror extends RuntimeOperationMirror {
 
     /** {@return the component the entry point is a part of.} */
     ComponentMirror component();
 
     // MethodFunctionOrField apipoint(); fixture???
 }
-

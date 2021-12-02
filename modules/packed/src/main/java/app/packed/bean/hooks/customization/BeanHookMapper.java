@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.hooks.BeanHook;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bundle.BaseAssembly;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.service.Provide;
 
 /**

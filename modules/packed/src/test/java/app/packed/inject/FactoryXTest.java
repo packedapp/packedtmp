@@ -31,7 +31,7 @@ public class FactoryXTest {
     /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
     @Test
     public void integerFactory0() {
-        Factory<Integer> f = new Factory<>(() -> 1) {};
+        Factory<Integer> f = new Factory0<>(() -> 1) {};
         checkThat(f).is(Integer.class);
         checkThat(f).hasNoDependencies();
 
@@ -43,7 +43,7 @@ public class FactoryXTest {
     /** Tests that we can capture information about a simple factory producing lists of integers instances. */
     @Test
     public void listIntegerFactory0() {
-        Factory<List<Integer>> f = new Factory<>(() -> List.of(1)) {};
+        Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
         checkThat(f).is(new TypeToken<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
 
@@ -60,11 +60,11 @@ public class FactoryXTest {
     @Test
     public void typeParameterIndeterminable() {
         // TODO change to Factory instead of BaseFactory
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.");
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
+                .withMessageStartingWith("Cannot determine type variable <R> for Factory<R> on class app.packed.inject.");
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory");
+                .withMessageStartingWith("Cannot determine type variable <T> for Factory<R> on class app.packed.inject.Factory");
     }
 
     @Test
@@ -72,14 +72,14 @@ public class FactoryXTest {
         @SuppressWarnings("rawtypes")
         Supplier s = () -> 23;
         @SuppressWarnings("unchecked")
-        Factory<?> f = new Factory<String>(s) {};
+        Factory<?> f = new Factory0<String>(s) {};
         try {
             f.toMethodHandle(null).invoke();
         } catch (FactoryException ok) {}
     }
 
     /** Check that we can have an intermediate abstract class. */
-    static abstract class Intermediate<S, T, R> extends Factory<T> {
+    static abstract class Intermediate<S, T, R> extends Factory0<T> {
         protected Intermediate(Supplier<T> supplier) {
             super(supplier);
         }

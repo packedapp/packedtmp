@@ -17,14 +17,12 @@ package app.packed.request;
 
 import java.util.Optional;
 
-import app.packed.attribute.AttributedElement;
-
 /**
  *
  */
 // Structured concurrency all the way.
 // I'm not sure we want this
-public interface Request extends AttributedElement {
+public interface Request {
 
     // Ideen er vi er recursive...
     Optional<Request> parent();

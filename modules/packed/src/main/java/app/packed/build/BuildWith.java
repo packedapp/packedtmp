@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-
-//maybe @HookInto(bootstrap =true)
+// BuildHook??? Saa bruger folk den heller ikke paa bundles osv
 public @interface BuildWith {}
 // Det der er lidt nederen ved @OnBuild er at det
-// er det forslag der dukker foerst op
+// er det forslag der dukker foerst op naa man code completer
+// @On + vi vil jo ikke hav at brugere skal bruge den.

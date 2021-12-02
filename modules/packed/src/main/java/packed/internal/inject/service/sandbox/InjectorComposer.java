@@ -18,14 +18,14 @@ package packed.internal.inject.service.sandbox;
 import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.BundleDriver;
-import app.packed.bundle.Composer;
-import app.packed.bundle.ComposerAction;
-import app.packed.bundle.Wirelet;
 import app.packed.component.ComponentMirror;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDriver;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import app.packed.inject.service.ServiceExtension;
@@ -44,9 +44,9 @@ import app.packed.inject.service.ServiceLocator;
 public final class InjectorComposer extends Composer {
 
     private boolean initialized;
-    final BundleConfiguration configuration;
+    final ContainerConfiguration configuration;
 
-    public InjectorComposer(BundleConfiguration cc) {
+    public InjectorComposer(ContainerConfiguration cc) {
         this.configuration = cc;
     }
 
@@ -195,7 +195,7 @@ public final class InjectorComposer extends Composer {
     }
 
     static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(Injector.driver(), BundleDriver.defaultDriver(), InjectorComposer::new, configurator, wirelets);
+        return compose(Injector.driver(), ContainerDriver.defaultDriver(), InjectorComposer::new, configurator, wirelets);
     }
 
 }

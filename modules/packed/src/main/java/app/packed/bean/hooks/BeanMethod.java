@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.inject.variable.Variable;
+import app.packed.inject.Variable;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
@@ -21,7 +21,7 @@ import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
  * hooks that each have A single bootstrap Hvad goer vi med abstract klasser her??? Det er maaske ikke kun performance
  * at vi skal cache dem. Ellers kan vi ligesom ikke holder kontrakten om kun at aktivere det en gang...
  */
-public abstract non-sealed class BeanMethod extends BeanHookElement {
+public abstract /*non-sealed */ class BeanMethod extends BeanHookElement {
 
     /**
      * A bootstrap object using by this class. Should only be read via {@link #context()}. Updated via

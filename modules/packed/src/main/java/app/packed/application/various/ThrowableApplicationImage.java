@@ -3,7 +3,7 @@ package app.packed.application.various;
 import java.io.IOException;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.bundle.Assembly;
+import app.packed.container.Assembly;
 
 // Jeg taenker man vil typisk wrappe den i et andet image
 

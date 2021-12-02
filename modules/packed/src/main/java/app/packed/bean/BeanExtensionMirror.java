@@ -18,7 +18,7 @@ public final class BeanExtensionMirror extends ExtensionMirror {
         this.extension = requireNonNull(extension);
     }
 
-    /** {@return the total number of configured beans in the bundle.} */
+    /** {@return the total number of configured beans.} */
     public int beanCount() {
         return extension.extension.hashCode();
     }

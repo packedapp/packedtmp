@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.Assembly;
+import app.packed.container.Assembly;
 import app.packed.inject.Factory;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.BootstrappedSourcedClassModel;

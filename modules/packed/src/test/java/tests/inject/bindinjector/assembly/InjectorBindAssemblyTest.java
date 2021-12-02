@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Wirelet;
-import app.packed.inject.Factory;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
+import app.packed.inject.Factory0;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.assertj.Assertions;
 
@@ -87,7 +87,7 @@ public class InjectorBindAssemblyTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                providePrototype(new Factory<>(al::incrementAndGet) {});
+                providePrototype(new Factory0<>(al::incrementAndGet) {});
                 export(Long.class);
             }
         };

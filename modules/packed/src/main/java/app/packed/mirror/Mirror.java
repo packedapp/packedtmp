@@ -1,5 +1,9 @@
 package app.packed.mirror;
 
+
+// Tror maaske jeg er frisk paa et common mirror interface...
+// Om ikke andet for at goere det klart for alle at man refererer et mirror....
+
 /**
  * Doing program analysis.
  * 

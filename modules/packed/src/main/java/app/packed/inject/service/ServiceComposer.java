@@ -28,10 +28,10 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.bundle.Composer;
 import app.packed.component.ComponentMirror;
+import app.packed.container.Composer;
 import app.packed.inject.Factory;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import app.packed.inject.ReflectionFactory;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -77,7 +77,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
 // Den configuration vi skal kalde er jo ikke helt ContainerConfiguration
 // F.eks. hvis vi bruger den i forbindelse med filterExports eller wirelets
 // Det er jo mere en slags tilretning, hvor vi gerne vil registrere nogle componenter...
-public abstract sealed class ServiceComposer extends Composer implements ServiceRegistry permits PackedServiceComposer {
+public abstract /* sealed */ class ServiceComposer extends Composer implements ServiceRegistry /* permits PackedServiceComposer */ {
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
@@ -123,7 +123,7 @@ public abstract sealed class ServiceComposer extends Composer implements Service
     // will decorate a service injected as itself
 
     public void map(Class<?> implementation) {
-        map(Factory.of(implementation));
+        map(ReflectionFactory.of(implementation));
     }
 
     /**
@@ -150,13 +150,13 @@ public abstract sealed class ServiceComposer extends Composer implements Service
     public abstract void map(Factory<?> factory);
 
     public void prototype(Class<?> implementation) {
-        prototype(Factory.of(implementation));
+        prototype(ReflectionFactory.of(implementation));
     }
 
     public abstract void prototype(Factory<?> factory);
 
     public void provide(Class<?> implementation) {
-        provide(Factory.of(implementation));
+        provide(ReflectionFactory.of(implementation));
     }
 
     public abstract void provide(Factory<?> factory);
@@ -392,7 +392,7 @@ public abstract sealed class ServiceComposer extends Composer implements Service
     }
 
     public void replace(Class<?> implementation) {
-        replace(Factory.of(implementation));
+        replace(ReflectionFactory.of(implementation));
     }
 
     /**

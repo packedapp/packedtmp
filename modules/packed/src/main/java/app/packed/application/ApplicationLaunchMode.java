@@ -1,6 +1,7 @@
 package app.packed.application;
 
 // Maybe ditch it and call it Application Usage Mode...
+// Or ApplicationLaunchTarget
 public enum ApplicationLaunchMode {
 
     /** Returns an application that is in an initialized state. */

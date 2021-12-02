@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentConfiguration;
-import app.packed.state.sandbox.InstanceState;
+import app.packed.lifecycle.RunState;
 
 /**
  * 
@@ -13,12 +13,12 @@ import app.packed.state.sandbox.InstanceState;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract sealed class BeanConfiguration<T>
-        extends ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration {
+public abstract /* sealed */ class BeanConfiguration<T>
+        extends ComponentConfiguration /* permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration */ {
 
     // Hmm, vi dekorere ikke fx ServiceLocator...
     // Maaske er det bedre at dekorere typer???
-    //// InjectableVarSelector<T> 
+    //// InjectableVarSelector<T>
     // InjectableVarSelector.keyedOf()
     public <E> BeanConfiguration<T> decorate(Key<E> key, Function<E, E> mapper) {
         /// Mnahhh
@@ -77,11 +77,13 @@ public abstract sealed class BeanConfiguration<T>
      * @return this configuration
      * @throws IllegalArgumentException
      *             if terminated and bean does not support it
+     * @throws UnsupportedOperationException
+     *             if the bean is stateless
      */
     // Ved ikke om det kan vaere problematisk, hvis instanserne ikke er styret af packed
     // Det der er farligt her er at vi capture Assemblien. Som capture extensionen
     // Som capture alt andet
-    public BeanConfiguration<T> on(InstanceState state, Consumer<T> action) {
+    public BeanConfiguration<T> on(RunState state, Consumer<T> action) {
         // Maybe throw UOE instead of IAE
         return this;
     }

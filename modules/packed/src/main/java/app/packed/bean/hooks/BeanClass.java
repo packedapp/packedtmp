@@ -20,7 +20,7 @@ import java.util.List;
 /**
  *
  */
-public abstract non-sealed class BeanClass extends BeanHookElement {
+public abstract /*non-sealed*/ class BeanClass extends BeanHookElement {
     
     protected final List<BeanField> fields() {
         return fields(false, Object.class);

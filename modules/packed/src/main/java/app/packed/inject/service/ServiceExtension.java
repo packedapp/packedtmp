@@ -86,7 +86,7 @@ import packed.internal.util.ThrowableUtil;
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
-public class ServiceExtension extends Extension {
+public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseExtension */ {
 
     /** A binder for prototype service beans. */
     @SuppressWarnings("rawtypes")
@@ -246,6 +246,7 @@ public class ServiceExtension extends Extension {
         return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
+    // Fungere ikke rigtig med mi
     public <T> ServiceConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
         throw new UnsupportedOperationException();
     }

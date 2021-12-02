@@ -27,12 +27,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.ComposerAction;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.ComposerAction;
+import app.packed.container.Wirelet;
 import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.inject.Provider;
-import app.packed.inject.variable.InjectableVariable;
+import app.packed.inject.variable.BeanDependency;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
@@ -41,7 +41,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@InjectableVariable.Hook
+@BeanDependency.Hook
 public interface ServiceLocator extends ServiceRegistry {
 
     /**

@@ -22,13 +22,10 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
-import app.packed.bean.BeanMirror;
-import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirrorStream.Option;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
-import packed.internal.component.ComponentSetup.AbstractBuildTimeComponentMirror;
-import packed.internal.component.RuntimeComponentMirror;
 
 /**
  * A mirror of a component.
@@ -37,18 +34,18 @@ import packed.internal.component.RuntimeComponentMirror;
  * derivatives. In packed everything is a component.
  */
 // Skal laves til klasse syntes jeg
-public sealed interface ComponentMirror extends Mirror permits BundleMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
+public /*sealed*/ interface ComponentMirror extends Mirror /*permits ContainerMirror,BeanMirror*/ {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
+
+    /** {@return the bundle this component is a part of. If this mirror represents a bundle, returns this.} */
+    ContainerMirror bundle(); // in application / in build??
 
     /** {@return an unmodifiable view of all of the children of this component.} */
     Collection<ComponentMirror> children();
 
     Stream<ComponentMirror> components();
-
-    /** {@return the bundle this component is a part of. If this component represents a bundle, returns this.} */
-    BundleMirror bundle(); // in application / in build??
 
     /** {@return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();
@@ -93,7 +90,8 @@ public sealed interface ComponentMirror extends Mirror permits BundleMirror,Bean
     // Hvor det ikke er extension'en der soerger for instantiering
 
     // RegisteredWith
-    Optional<Class<? extends Extension>> managedByExtension();
+    // DeclaredBy 
+    /* UserOrExtension */ Optional<Class<? extends Extension>> declaredByExtension();
 
     /**
      * Returns the name of this component.
@@ -121,7 +119,7 @@ public sealed interface ComponentMirror extends Mirror permits BundleMirror,Bean
      * 
      * @return the owner of the component
      */
-    Realm registrant();
+    Realm realm();
 
     /**
      * Computes the relation from this component to the specified component.

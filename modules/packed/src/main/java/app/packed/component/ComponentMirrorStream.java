@@ -73,6 +73,11 @@ import packed.internal.component.PackedComponentStreamOption;
 // Altsaa Stream er sgu ikke et saerlig godt interface...
 // distinct(), sorted, max, min... hvad skal vi bruge dem til
 // skip giver ogsaa lidt mening..
+
+
+// Ved ikke om 
+// stream().members();
+
 public interface ComponentMirrorStream extends Stream<ComponentMirror> {
 
 //    /**

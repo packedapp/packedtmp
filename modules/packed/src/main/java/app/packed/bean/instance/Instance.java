@@ -17,9 +17,8 @@ package app.packed.bean.instance;
 
 import java.util.Collection;
 
-import app.packed.attribute.AttributedElement;
 import app.packed.base.NamespacePath;
-import app.packed.state.sandbox.InstanceState;
+import app.packed.lifecycle.RunState;
 
 /**
  *
@@ -37,7 +36,7 @@ import app.packed.state.sandbox.InstanceState;
 
 /// MHT til restart.. Taenker jeg lidt det betyder
 /// forskellige navne
-public interface Instance extends AttributedElement {
+public interface Instance {
 
     /**
      * Returns an unmodifiable view of all of this component's children.
@@ -95,7 +94,7 @@ interface ZInstance {
     // Not sure we should capture state like that
     // Also, fx syntes maaske ikke det giver mening at en
     // function har en state...
-    InstanceState runState();
+    RunState runState();
 
     Object sourceInstances();
 }

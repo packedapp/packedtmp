@@ -23,12 +23,10 @@ import java.lang.annotation.Target;
 import app.packed.application.programs.Program;
 import app.packed.application.various.ManagedInstance;
 import app.packed.inject.InjectionContext;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.OnStop;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link InstanceState#STARTING} state.
+ * {@link RunState#STARTING} state.
  *
  * <p>
  * A simple usage example:

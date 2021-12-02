@@ -3,8 +3,9 @@ package app.packed.extension;
 // Auto injectable by any other bean...
 // Singleton
 // Install-on-Demand
+
 /**
- * An extension bean is special type of application bean that can only be installed by extensions.
+ * An extension bean is special type of bean that can only be installed by extensions.
  * <p>
  * Extension beans are the main way for cross container communication at runtime.
  * 

@@ -20,24 +20,20 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.attribute.Attribute;
-import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.BundleMirror;
-import app.packed.bundle.Wirelet;
-import app.packed.bundle.WireletSelection;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
-import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.bundle.ExtensionModel;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.invoke.Infuser;
@@ -54,7 +50,7 @@ import packed.internal.util.ThrowableUtil;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseAssembly#use(Class)} or {@link BundleConfiguration#use(Class)}.
+ * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Step1 // package private constructor // open to app.packed.base // exported to other users to use
@@ -103,8 +99,8 @@ public abstract class Extension {
     /**
      * The extension's configuration that most methods delegate to.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#newExtension(BundleSetup, Class)} via a var handle. The field is
-     * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
+     * This field is initialized in {@link ExtensionSetup#newExtension(ContainerSetup, Class)} via a var handle. The field
+     * is _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
@@ -112,18 +108,6 @@ public abstract class Extension {
     @Nullable
     private ExtensionConfiguration configuration;
 
-
-    /**
-     *
-     */
-    public @interface DependsOn {
-        Class<? extends Extension>[] extensions() default {};
-
-        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
-        // Den kraever bare at den allerede har vaeret listet som optionally
-        String[] optionally() default {};
-    }
-    
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
@@ -143,7 +127,7 @@ public abstract class Extension {
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
      * 
-     * @see #onPreChildren()
+     * @see #onPostSetUp()
      */
     // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
     // af brugeren med mindre XYZ...
@@ -153,12 +137,12 @@ public abstract class Extension {
     }
 
     /**
-     * Returns the configuration object that this extension wraps. The configuration object can be used standalone in
-     * situations where the extension needs to delegate responsibility to classes that cannot invoke the protected methods
-     * on {@code Extension} due to class-member visibility rules.
+     * Returns a configuration object for this extension. The configuration object can be used standalone in situations
+     * where the extension needs to delegate responsibility to classes that cannot invoke the protected methods on
+     * {@code Extension}, for example, due to class-member visibility rules.
      * <p>
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
-     * need to use the configuration object in the constructor. You can declare {@code ExtensionConfiguration} as a
+     * need to use an extension configuration in the constructor. You can declare {@code ExtensionConfiguration} as a
      * parameter in the extension's constructor and the let the runtime dependency inject it into the extension instance.
      * Another alternative is to override {@link #onNew()} to perform post initialization.
      * 
@@ -244,7 +228,7 @@ public abstract class Extension {
      * This method should never return null.
      * 
      * @return a mirror for the extension
-     * @see BundleMirror#extensions()
+     * @see ContainerMirror#extensions()
      */
     protected ExtensionMirror mirror() {
         return mirrorInitialize(new ExtensionMirror());
@@ -282,11 +266,11 @@ public abstract class Extension {
         // Time
         // ──────────────────────────►
         // ┌────────────┐
-        // │ Extendable │
+        // │ Setup time │
         // └────────────┘
-        // ┌──────────────────────┐
-        // │Configuration │
-        // └──────────────────────┘
+        // ┌─────────────┐
+        // │ Wiring time │
+        // └─────────────┘
     }
 
     /**
@@ -296,10 +280,10 @@ public abstract class Extension {
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
-     * The next lifecycle method that will be called is {@link #onPreChildren()}, which is called immediately before any
-     * child containers are added.
+     * The next "lifecycle" method that will be called is {@link #onPostSetUp()}, which is called after the bundle has been
+     * setup and before any linkage of child containers has started.
      * 
-     * @see #onPreChildren()
+     * @see #onPostSetUp()
      * @see #onComplete()
      */
     protected void onNew() {}
@@ -318,7 +302,7 @@ public abstract class Extension {
     // onPreembleComplete
     // onPreLinkage
     // onPreWiring????
-    protected void onPreChildren() {
+    protected void onPostSetUp() {
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
 
@@ -337,8 +321,8 @@ public abstract class Extension {
     /**
      * Returns a selection of all wirelets of the specified type that have not already been processed.
      * <p>
-     * If this extension has runtime wirelet you must remember to check if there are any unprocessed wirelets at runtime. As
-     * this may happen when creating an image
+     * If this extension defines any runtime wirelet. A check must also be made at runtime, you must remember to check if
+     * there are any unprocessed wirelets at runtime. As this may happen when creating an image
      * 
      * @param <T>
      *            the type of wirelets to select
@@ -346,8 +330,9 @@ public abstract class Extension {
      *            the type of wirelets to select
      * @return a selection of all container wirelets of the specified type that have not already been processed
      * @throws IllegalArgumentException
-     *             if the specified class is not located in the same module as the extension itself. Or if specified wirelet
-     *             class is not a proper subclass of ContainerWirelet.
+     *             if the specified class is not located in the same module as the extension itself. Or if the specified
+     *             wirelet class is not a proper subclass of ContainerWirelet.
+     * @see ExtensionConfiguration#selectWirelets(Class)
      */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return configuration().selectWirelets(wireletClass);
@@ -381,9 +366,13 @@ public abstract class Extension {
         return configuration().use(subtensionClass);
     }
 
-    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
-        throw new Error();
-    }
+//    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
+//        throw new Error();
+//    }
+//
+//    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
+//        throw new Error();
+//    }
 
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
     // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
@@ -393,17 +382,9 @@ public abstract class Extension {
     // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
     // onFinish cannot add new extensions...
 
-    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
-        throw new Error();
-    }
-
-    protected static <T extends Extension, A> void $attributeAdd(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
-
-    protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
-
-    // An instance of extensorType will automatically be installed whenever the extensor is used
-    // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
-    // extensorType) {}
+//    protected static <T extends Extension, A> void $attributeAdd(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+//
+//    protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
     /**
      * Only parent extensions will be linked
@@ -412,6 +393,10 @@ public abstract class Extension {
     protected static void $connectParentOnly() {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
     }
+
+    // An instance of extensorType will automatically be installed whenever the extensor is used
+    // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
+    // extensorType) {}
 
     // Hmm, er det overhoved interessant at faa en Subtension???
     // Vil vi ikke hellere have extensionen.
@@ -572,6 +557,20 @@ public abstract class Extension {
 //    protected interface ClassComponentDriverBuilder {
 //        BeanDriver.Binder<Object, BaseBeanConfiguration> build();
 //    }
+
+    /**
+     *
+     */
+    // Vi goer det her fordi vi ikke vil class initialize alle extensions.
+    public @interface DependsOn {
+
+        /** {@return other extensions the annotated extension depends on} */
+        Class<? extends Extension>[] extensions() default {};
+
+        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
+        // Den kraever bare at den allerede har vaeret listet som optionally
+        String[] optionally() default {};
+    }
 }
 
 class Zarchive {
@@ -598,7 +597,6 @@ class Zarchive {
     static void $dependsOnAlways(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
     }
-
 
 }
 //// Ved ikke praecis hvad vi skal bruge den til...

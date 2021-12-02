@@ -22,17 +22,17 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
-import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
+import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.base.Nullable;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.Composer;
-import app.packed.bundle.ComposerAction;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.util.LookupUtil;
@@ -45,11 +45,11 @@ public final class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            BundleConfiguration.class);
+            ContainerConfiguration.class);
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
-            BundleConfiguration.class, ComposerAction.class);
+            ContainerConfiguration.class, ComposerAction.class);
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
@@ -78,7 +78,7 @@ public final class RealmSetup {
      * When we close the realm we then run through this list and recursively close each container.
      */
     // Hmm burde kunne bruge traet istedet for
-    private ArrayList<BundleSetup> rootContainers = new ArrayList<>(1);
+    private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
     /**
      * Creates a new realm for an extension.
@@ -94,7 +94,7 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationDescriptorOutput buildTarget, Assembly  assembly, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly  assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, buildTarget, this, wirelets);
         this.root = build.application.container;
@@ -104,7 +104,7 @@ public final class RealmSetup {
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, ApplicationDescriptorOutput.INSTANCE, this, wirelets);
+        this.build = new BuildSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
         this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
@@ -120,7 +120,7 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
-        this.root = new BundleSetup(build.application, this, build.application.container.lifetime, driver, linkTo, wirelets);
+        this.root = new ContainerSetup(build.application, this, build.application.container.lifetime, driver, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {
@@ -144,7 +144,7 @@ public final class RealmSetup {
             current = null;
         }
         isClosed = true;
-        for (BundleSetup c : rootContainers) {
+        for (ContainerSetup c : rootContainers) {
             c.closeRealm();
         }
         assert root.name != null;
@@ -193,7 +193,7 @@ public final class RealmSetup {
         current = component;
 
         // TODO: Move to class I think
-        if (component instanceof BundleSetup container) {
+        if (component instanceof ContainerSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {
                 rootContainers.add(container);
             }

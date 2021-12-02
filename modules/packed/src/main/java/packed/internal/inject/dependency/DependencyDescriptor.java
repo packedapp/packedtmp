@@ -33,7 +33,6 @@ import java.util.OptionalLong;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
 import app.packed.build.BuildException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
@@ -88,7 +87,7 @@ import packed.internal.util.ReflectionUtil;
 //Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
 // Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
 
-public final class DependencyDescriptor implements OldVariable {
+public final class DependencyDescriptor {
 
     /** A cache of service dependencies. */
     private static final ClassValue<DependencyDescriptor> CLASS_CACHE = new ClassValue<>() {
@@ -481,8 +480,6 @@ public final class DependencyDescriptor implements OldVariable {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?> rawType() {
         return (Class<?>) type;
     }

@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationRuntime.StopOption;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 import app.packed.extension.UnavailableExtensionException;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.LifecycleWirelets.ShutdownHookWirelet;
 
 /**
  * Application runtime wirelet that can be specified when building or launching an application that includes the
@@ -124,7 +124,7 @@ public final class ExecutionWirelets {
     }
 
     /**
-     * As measured from once the application reaches the {@link InstanceState#RUNNING} phase.
+     * As measured from once the application reaches the {@link RunState#RUNNING} phase.
      * 
      * @param timeout
      * @param unit

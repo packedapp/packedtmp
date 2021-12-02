@@ -17,7 +17,7 @@ package app.packed.job;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.TypeToken;
-import app.packed.bundle.Assembly;
+import app.packed.container.Assembly;
 
 /**
  *

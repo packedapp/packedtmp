@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import app.packed.extension.ExtensionBean;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor.AbstractAnnotatedElementProcessor;
 
-public sealed abstract class BeanHookElement permits BeanClass,BeanField,BeanMethod,BeanMethodInterceptor {
+public /*sealed*/ abstract class BeanHookElement /*permits BeanClass,BeanField,BeanMethod,BeanMethodInterceptor*/ {
 
     /** Only visible to the various hook subclasses in this package. */
     BeanHookElement() {}

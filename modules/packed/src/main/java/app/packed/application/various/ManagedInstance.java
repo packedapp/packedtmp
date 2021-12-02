@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.application.various.ManagedInstance.Mode;
 import app.packed.lifecycle.OnStart;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.OnStop;
+import app.packed.lifecycle.OnStop;
+import app.packed.lifecycle.RunState;
 
 // Atomic State + Failure
 public interface ManagedInstance {
@@ -19,24 +19,24 @@ public interface ManagedInstance {
      * whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link InstanceState#RUNNING} state and the component has already been successfully
+     * attempting to wait on the {@link RunState#RUNNING} state and the component has already been successfully
      * terminated. This method will return immediately.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(InstanceState, long, TimeUnit)
+     * @see #await(RunState, long, TimeUnit)
      * @see #state()
      */
-    void await(InstanceState state) throws InterruptedException;
+    void await(RunState state) throws InterruptedException;
 
     /**
      * Blocks until the component has reached the requested state, or the timeout occurs, or the current thread is
      * interrupted, whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link InstanceState#RUNNING} state and the object has already been stopped. This method
+     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param state
@@ -49,10 +49,10 @@ public interface ManagedInstance {
      *         timeout elapsed before reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(InstanceState)
+     * @see #await(RunState)
      * @see #state()
      */
-    boolean await(InstanceState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     Optional<Throwable> failure();
 
@@ -84,7 +84,7 @@ public interface ManagedInstance {
      * 
      * @return the current state of the component
      */
-    InstanceState state();
+    RunState state();
 
     /**
      * Stops the component.

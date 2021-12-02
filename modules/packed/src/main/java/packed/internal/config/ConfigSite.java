@@ -19,14 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.attribute.Attribute;
 import app.packed.base.Nullable;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a
@@ -64,7 +62,7 @@ import app.packed.bundle.Wirelet;
 // Maybe a/* sealed */interface???
 public interface ConfigSite {
 
-    Attribute<ConfigSite> ATTRIBUTE = Attribute.of(MethodHandles.lookup(), "configSite", ConfigSite.class);
+//    Attribute<ConfigSite> ATTRIBUTE = Attribute.of(MethodHandles.lookup(), "configSite", ConfigSite.class);
 
     /** A special configuration site indicating that the actual configuration site could not be determined. */
     ConfigSite UNKNOWN = ConfigSiteSupport.UnknownConfigSite.INSTANCE;

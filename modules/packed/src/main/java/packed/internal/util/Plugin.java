@@ -15,7 +15,7 @@
  */
 package packed.internal.util;
 
-import app.packed.bundle.BaseAssembly;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceContract;
 
 /**

@@ -1,17 +1,19 @@
 package app.packed.application;
 
 import app.packed.build.BuildWirelets;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 
 /**
  * An entry point for all the various types of applications that are available in Packed.
- * 
+ * <p>
+ * This class does not prov
  * For creating application -instances -mirrors and -images.
  */
 // Ved ikke om vi vil have den i endelig version.
-// Maaske er den bare god i forbindelse med udvikling.
+// Men den er bare god i forbindelse med udvikling.
+// Det der taler for den i den endelige version er som api explorer
 public final class App {
 
     /** Appless */
@@ -25,13 +27,7 @@ public final class App {
         throw new UnsupportedOperationException();
     }
 
-    public static void mainImage(Assembly  assembly, Wirelet... wirelets) {
-        // Som cli. Men optimeret for lavt hukommelse
-        // Vi clear'er altid vores bean cache faetre naar vi laver images
-        throw new UnsupportedOperationException();
-    }
-
-    public static void cli(Assembly  assembly, Wirelet... wirelets) {
+    public static void cli(Assembly assembly, Wirelet... wirelets) {
         ServiceLocator.of(assembly, wirelets);
     }
 
@@ -39,7 +35,13 @@ public final class App {
         throw new UnsupportedOperationException();
     }
 
-    public static ServiceLocator serviceLocator(Assembly  assembly, Wirelet... wirelets) {
+    public static void mainImage(Assembly assembly, Wirelet... wirelets) {
+        // Som cli. Men optimeret for lavt hukommelse
+        // Vi clear'er altid vores bean cache faetre naar vi laver images
+        throw new UnsupportedOperationException();
+    }
+
+    public static ServiceLocator serviceLocator(Assembly assembly, Wirelet... wirelets) {
         return ServiceLocator.of(assembly, wirelets);
     }
 
@@ -51,11 +53,11 @@ public final class App {
      * @see BuildWirelets#reusableImage()
      */
     // Det vi taenker er at det er sjaeldent at et rod image skal genbruges.
-    public static ApplicationImage<ServiceLocator> serviceLocatorImage(Assembly  assembly, Wirelet... wirelets) {
+    public static ApplicationImage<ServiceLocator> serviceLocatorImage(Assembly assembly, Wirelet... wirelets) {
         return ServiceLocator.imageOf(assembly, wirelets);
     }
 
-    public static ApplicationMirror serviceLocatorMirror(Assembly  assembly, Wirelet... wirelets) {
+    public static ApplicationMirror serviceLocatorMirror(Assembly assembly, Wirelet... wirelets) {
         return ServiceLocator.mirrorOf(assembly, wirelets);
     }
 

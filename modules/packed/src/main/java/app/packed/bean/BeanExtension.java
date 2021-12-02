@@ -2,13 +2,13 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
-import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
@@ -22,7 +22,7 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
 public class BeanExtension extends Extension {
 
     /** The service manager. */
-    final BundleSetup container;
+    final ContainerSetup container;
 
     /** The */
     final ExtensionSetup extension;

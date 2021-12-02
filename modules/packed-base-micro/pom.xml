@@ -24,6 +24,7 @@
     <dependency>
       <groupId>app.packed</groupId>
       <artifactId>packed-base</artifactId>
+          <version>0.1-SNAPSHOT</version>
     </dependency>
   
     <dependency>

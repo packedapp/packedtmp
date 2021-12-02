@@ -16,7 +16,6 @@
 package packed.internal.component;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 
 import app.packed.component.ComponentMirror;
@@ -29,11 +28,11 @@ import app.packed.component.ComponentScope;
 
     private final int distance;
 
-    private final RuntimeComponentMirror from;
+    final RuntimeComponentMirror from;
 
-    private final RuntimeComponentMirror lcd;
+final RuntimeComponentMirror lcd;
 
-    private final RuntimeComponentMirror to;
+    final RuntimeComponentMirror to;
 
     public PackedComponentInstanceRelation(RuntimeComponentMirror from, RuntimeComponentMirror to, int distance, RuntimeComponentMirror lcd) {
         this.from = from;
@@ -51,7 +50,8 @@ import app.packed.component.ComponentScope;
     /** {@inheritDoc} */
     @Override
     public ComponentMirror source() {
-        return from;
+        throw new UnsupportedOperationException();
+        // return from;
     }
 
     /** {@inheritDoc} */
@@ -63,40 +63,43 @@ import app.packed.component.ComponentScope;
     /** {@inheritDoc} */
     @Override
     public Iterator<ComponentMirror> iterator() {
-        if (distance == 0) {
-            return List.of((ComponentMirror) from).iterator();
-        } else if (distance == 1) {
-            return List.of((ComponentMirror) from, (ComponentMirror) to).iterator();
-        } else {
-            ComponentMirror[] components = new ComponentMirror[distance];
-
-            int i = 0;
-            RuntimeComponentMirror pc = from;
-            while (pc != lcd) {
-                components[i++] = pc;
-            }
-
-            components[i++] = lcd;
-
-            i = components.length - 1;
-            pc = to;
-            while (pc != lcd) {
-                components[i++] = pc;
-            }
-            return List.of(components).iterator();
-        }
+        throw new UnsupportedOperationException();
+//        if (distance == 0) {
+//            return List.of((ComponentMirror) from).iterator();
+//        } else if (distance == 1) {
+//            return List.of((ComponentMirror) from, (ComponentMirror) to).iterator();
+//        } else {
+//            ComponentMirror[] components = new ComponentMirror[distance];
+//
+//            int i = 0;
+//            RuntimeComponentMirror pc = from;
+//            while (pc != lcd) {
+//                components[i++] = pc;
+//            }
+//
+//            components[i++] = lcd;
+//
+//            i = components.length - 1;
+//            pc = to;
+//            while (pc != lcd) {
+//                components[i++] = pc;
+//            }
+//            return List.of(components).iterator();
+//        }
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<ComponentMirror> findLowestCommonAncestor() {
-        return Optional.ofNullable(lcd);
+        throw new UnsupportedOperationException();
+      //  return Optional.ofNullable(lcd);
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentMirror target() {
-        return to;
+        throw new UnsupportedOperationException();
+        //return to;
     }
 
     static Relation relation(RuntimeComponentMirror from, RuntimeComponentMirror to) {

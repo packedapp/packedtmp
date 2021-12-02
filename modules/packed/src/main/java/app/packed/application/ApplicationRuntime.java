@@ -20,10 +20,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.RunStateInfo;
+import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.RunStateSnapshot;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -62,24 +62,24 @@ public interface ApplicationRuntime {
      * whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link InstanceState#RUNNING} state and the component has already been successfully
+     * attempting to wait on the {@link RunState#RUNNING} state and the component has already been successfully
      * terminated. This method will return immediately.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(InstanceState, long, TimeUnit)
+     * @see #await(RunState, long, TimeUnit)
      * @see #state()
      */
-    void await(InstanceState state) throws InterruptedException;
+    void await(RunState state) throws InterruptedException;
 
     /**
      * Blocks until the component has reached the requested state, or the timeout occurs, or the current thread is
      * interrupted, whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link InstanceState#RUNNING} state and the object has already been stopped. This method
+     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param state
@@ -92,17 +92,17 @@ public interface ApplicationRuntime {
      *         timeout elapsed before reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(InstanceState)
+     * @see #await(RunState)
      * @see #state()
      */
-    boolean await(InstanceState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Returns an immutable snapshot of the component's current status.
      * 
      * @return an immutable snapshot of the component's current status
      */
-    RunStateInfo info();
+    RunStateSnapshot info();
 
     /**
      * Starts and awaits the component if it has not already been started.
@@ -128,7 +128,7 @@ public interface ApplicationRuntime {
      * 
      * @return the current state of the component
      */
-    InstanceState state();
+    RunState state();
 
     /**
      * Stops the component.

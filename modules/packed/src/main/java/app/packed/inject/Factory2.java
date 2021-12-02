@@ -35,7 +35,7 @@ import packed.internal.util.LookupUtil;
  * @see Factory
  * @see Factory1
  */
-public abstract class Factory2<T, U, R> extends Factory<R> {
+public abstract class Factory2<T, U, R> extends CapturingFactory<R> {
 
     /** A method handle for invoking {@link #create(BiFunction, Class, Object, Object)}. */
     private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, BiFunction.class, Class.class,
@@ -69,7 +69,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
      *             {@link Optional}
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
-        requireNonNull(function, "function is null");
+        super(requireNonNull(function, "function is null"));
         this.dependencies = DEPENDENCY_CACHE.get(getClass());
 
         Class<?> ret = rawType();

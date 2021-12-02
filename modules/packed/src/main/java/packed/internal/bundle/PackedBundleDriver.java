@@ -6,16 +6,16 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.BundleDriver;
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.Assembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDriver;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
-public final class PackedBundleDriver implements BundleDriver {
+public final class PackedBundleDriver extends ContainerDriver {
 
     /** A driver for configuring containers. */
     public static final PackedBundleDriver DRIVER = new PackedBundleDriver();
@@ -33,15 +33,13 @@ public final class PackedBundleDriver implements BundleDriver {
         throw new UnsupportedOperationException();
     }
 
-    public final BundleConfiguration toConfiguration(ComponentSetup cs) {
-        BundleConfiguration c = toConfiguration0(cs);
+    public final ContainerConfiguration toConfiguration(ComponentSetup cs) {
+        ContainerConfiguration c = newConfiguration();
         VH_COMPONENT_CONFIGURATION_COMPONENT.set(c, cs);
         return c;
     }
-    public BundleConfiguration toConfiguration0(ComponentSetup context) {
-        return new BundleConfiguration();
-    }
-
+    
+    
     /**
      * Extracts the component driver from the specified assembly.
      * 

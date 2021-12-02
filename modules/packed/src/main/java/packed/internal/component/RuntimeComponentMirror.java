@@ -28,8 +28,9 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirror.Relation;
+import app.packed.container.ContainerMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Realm;
@@ -38,7 +39,7 @@ import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.lifetime.LifetimePool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
-public final class RuntimeComponentMirror implements ComponentMirror {
+public final class RuntimeComponentMirror {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
@@ -125,14 +126,14 @@ public final class RuntimeComponentMirror implements ComponentMirror {
         }
     }
 
-    @Override
+
     public ApplicationMirror application() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Collection<ComponentMirror> children() {
+
+    public Collection<RuntimeComponentMirror> children() {
         Map<String, RuntimeComponentMirror> c = children;
         if (c == null) {
             return Collections.emptySet();
@@ -142,12 +143,12 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     /** {@inheritDoc} */
-    @Override
+
     public int depth() {
         return model.depth;
     }
 
-    public ComponentMirror findComponent(CharSequence path) {
+    public RuntimeComponentMirror findComponent(CharSequence path) {
         return findComponent(path.toString());
     }
 
@@ -186,7 +187,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
         return c;
     }
 
-    @Override
+
     public boolean isInSame(ComponentScope scope, ComponentMirror other) {
         throw new UnsupportedOperationException();
     }
@@ -208,36 +209,37 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     /** {@inheritDoc} */
-    @Override
+
     public String name() {
         return name;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Optional<ComponentMirror> parent() {
+
+    public Optional<RuntimeComponentMirror> parent() {
         return Optional.ofNullable(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
+
     public NamespacePath path() {
         return PackedTreePath.of(this);
     }
 
     /** {@inheritDoc} */
-    @Override
+
     public Relation relationTo(ComponentMirror other) {
         requireNonNull(other, "other is null");
-        return PackedComponentInstanceRelation.relation(this, (RuntimeComponentMirror) other);
+        throw new UnsupportedOperationException();
+      //  return PackedComponentInstanceRelation.relation(this, (RuntimeComponentMirror) other);
     }
 
     /**
      * @param path
      */
-    @Override
-    public ComponentMirror resolve(CharSequence path) {
-        ComponentMirror c = findComponent(path);
+
+    public RuntimeComponentMirror resolve(CharSequence path) {
+        RuntimeComponentMirror c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)
             List<?> list = stream().map(e -> e.path()).toList();
@@ -247,8 +249,8 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public ComponentMirror root() {
+
+    public RuntimeComponentMirror root() {
         RuntimeComponentMirror c = this;
         RuntimeComponentMirror p = parent;
         while (p != null) {
@@ -259,17 +261,19 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     /** {@inheritDoc} */
-    @Override
+
     public ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
-        return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
+        throw new UnsupportedOperationException();
+//        return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
 
-    private Stream<ComponentMirror> stream0(RuntimeComponentMirror origin, boolean isRoot, PackedComponentStreamOption option) {
+    @SuppressWarnings("unused")
+    private Stream<RuntimeComponentMirror> stream0(RuntimeComponentMirror origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
         Map<String, RuntimeComponentMirror> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, this)) {
-                Stream<ComponentMirror> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
+                Stream<RuntimeComponentMirror> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
                 return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
             }
             return Stream.empty();
@@ -278,25 +282,25 @@ public final class RuntimeComponentMirror implements ComponentMirror {
         }
     }
 
-    @Override
-    public BundleMirror bundle() {
+
+    public ContainerMirror bundle() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
+
     public Stream<ComponentMirror> components() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
+
     public Optional<Class<? extends Extension>> managedByExtension() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Realm registrant() {
+
+    public Realm realm() {
         throw new UnsupportedOperationException();
     }
 }

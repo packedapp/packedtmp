@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.bundle.Wirelet;
-import app.packed.bundle.WireletSelection;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 
 // Lige nu bliver den brugt 3 steder fra.
 // WireletHandle.of <- mainly for test

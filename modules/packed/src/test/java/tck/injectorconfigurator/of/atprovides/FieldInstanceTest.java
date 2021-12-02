@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
 import app.packed.build.BuildException;
-import app.packed.inject.Factory;
+import app.packed.inject.ReflectionFactory;
 import app.packed.inject.service.Provide;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
@@ -40,8 +40,8 @@ public class FieldInstanceTest {
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
-        MixedFields.test(c -> c.provide(Factory.of(MixedFields.class)));
-        MixedFields.test(c -> c.provide(Factory.of(new TypeToken<MixedFields>() {})));
+        MixedFields.test(c -> c.provide(ReflectionFactory.of(MixedFields.class)));
+        MixedFields.test(c -> c.provide(ReflectionFactory.of(new TypeToken<MixedFields>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */

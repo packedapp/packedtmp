@@ -26,8 +26,8 @@ import app.packed.application.programs.SomeApp;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildException;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
 import app.packed.extension.UnavailableExtensionException;
@@ -36,7 +36,7 @@ import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
 import app.packed.lifecycle.InitializationException;
-import app.packed.state.sandbox.InstanceState;
+import app.packed.lifecycle.RunState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
 
@@ -64,8 +64,7 @@ import packed.internal.application.PackedApplicationDriver;
  * @see ServiceLocator#driver()
  */
 // Environment + Application Interface + Result
-@SuppressWarnings("rawtypes")
-public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
+public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriver*/ {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -136,14 +135,14 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     /**
      * Returns the launch mode of applications's created by this driver.
      * <p>
-     * The launch mode can be overridden by using {@link ExecutionWirelets#launchMode(InstanceState)}.
+     * The launch mode can be overridden by using {@link ExecutionWirelets#launchMode(RunState)}.
      * <p>
-     * Drivers for applications without a runtime will always return {@link InstanceState#INITIALIZED}.
+     * Drivers for applications without a runtime will always return {@link RunState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
      * @see #imageOf(Assembly, Wirelet...)
-     * @see ExecutionWirelets#launchMode(InstanceState)
+     * @see ExecutionWirelets#launchMode(RunState)
      */
     ApplicationLaunchMode launchMode();
 
@@ -242,7 +241,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * A builder for an application driver. An instance of this interface is normally acquired via
      * {@link ApplicationDriver#builder()}.
      */
-    sealed interface Builder permits PackedApplicationDriver.Builder {
+    /*sealed*/ interface Builder /*permits PackedApplicationDriver.Builder*/ {
 
         /**
          * Creates a new artifact driver.

@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import app.packed.extension.Extension;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Provide;
-import app.packed.inject.variable.InjectableVariable;
+import app.packed.inject.variable.BeanDependency;
 import packed.internal.util.LookupUtil;
 
 public class InfuserTester {
@@ -54,7 +54,7 @@ public class InfuserTester {
         }
     }
 
-    @InjectableVariable.Hook(bootstrap = InjectableVariable.class)
+    @BeanDependency.Hook(bootstrap = BeanDependency.class)
     interface XX {
 
         // Det er super smart at man ikke skal lave en ny klasse...

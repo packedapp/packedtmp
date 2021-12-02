@@ -19,16 +19,15 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.BundleMirror;
-import app.packed.bundle.Composer;
-import app.packed.bundle.ComposerAction;
-import app.packed.bundle.Wirelet;
-import app.packed.bundle.WireletSelection;
 import app.packed.component.Realm;
+import app.packed.container.Assembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
-import packed.internal.bundle.ExtensionSetup;
 
 /**
  * A configuration of an {@link Extension}.
@@ -52,11 +51,13 @@ import packed.internal.bundle.ExtensionSetup;
 // * find ancestors
 // * Get extension support
 // * Get wirelets
-public sealed interface ExtensionConfiguration permits ExtensionSetup {
+public /*sealed*/ interface ExtensionConfiguration /*permits ExtensionSetup*/ {
 
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationDescriptor application();
 
+    ContainerMirror bundle();
+    
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -67,7 +68,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkIsPreCompletion();
 
-    BundleMirror link(Realm realm, Assembly assembly, Wirelet... wirelets);
+    ContainerMirror link(Realm realm, Assembly assembly, Wirelet... wirelets);
     
     /**
      * Checks that Checks that child containers has been aded
@@ -159,7 +160,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * <p>
      * The specified support class's extension must be among this extension's declared dependencies.
      * <p>
-     * This method works similar to {@link BundleConfiguration#use(Class)} except it does not return the extension but
+     * This method works similar to {@link ContainerConfiguration#use(Class)} except it does not return the extension but
      * its support class instead.
      * 
      * @param <E>
@@ -175,7 +176,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *             extension
      * 
      * @see Extension#use(Class)
-     * @see BundleConfiguration#use(Class)
+     * @see ContainerConfiguration#use(Class)
      * @see #isExtensionUsed(Class)
      */
     <E extends ExtensionSupport> E use(Class<E> supportClass);
@@ -208,6 +209,8 @@ interface Zandbox {
     // Taenker det er en cleanup action der bliver koert til allersidst
     // af hele buildet eller assemblien???
     // Stjael wording fra Cleaner
+    // https://cr.openjdk.java.net/~mcimadamore/panama/foreign-finalize-javadoc/javadoc/jdk/incubator/foreign/ResourceScope.html
+    // They use addCloseAction
     default void registerBuildCleaner(Runnable runnable /* , boolean onlyRunOnFailure */ ) {
         throw new UnsupportedOperationException();
     }

@@ -23,8 +23,8 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bundle.BaseAssembly;
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.bean.BeanSetup;
@@ -95,16 +95,9 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
         provideAsService(null);
         return this;
     }
-
-    // Her kan en extension faktisk exporte ting...
-    public ExportedServiceConfiguration<T> exportAsService() {
-        return bean().sourceExport();
-    }
     
-    /** {@inheritDoc} */
     public ExportedServiceConfiguration<T> export() {
-        
-        return exportAsService();
+        return bean().sourceExport();
     }
 
     // Overvejer at smide... istedet for optional

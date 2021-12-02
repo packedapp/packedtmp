@@ -15,6 +15,8 @@
  */
 package packed.internal.hooks.variable;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.reflect.Field;
 import java.util.Optional;
 
@@ -23,13 +25,14 @@ import app.packed.base.TypeToken;
 /**
  *
  */
+// Ditch AbstractVariable I think
 public final class FieldVariable extends AbstractVariable<Field> {
 
     /**
-     * @param e
+     * @param field
      */
-    public FieldVariable(Field e) {
-        super(e);
+    public FieldVariable(Field field) {
+        super(requireNonNull(field, "field is null"));
     }
 
     /** {@inheritDoc} */

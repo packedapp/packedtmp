@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 
 /** An abstract test for testing artifacts. */
 public abstract class AbstractApplicationTest {

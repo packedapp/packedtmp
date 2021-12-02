@@ -29,7 +29,7 @@ import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.bundle.PackedWireletSelection;
 import packed.internal.bundle.WireletWrapper;
 import packed.internal.component.bean.BeanSetup;
@@ -101,7 +101,7 @@ public final class ServiceManagerSetup {
         // We should make sure some stuff is no longer configurable...
     }
 
-    public void close(BundleSetup container, LifetimePoolSetup pool) {
+    public void close(ContainerSetup container, LifetimePoolSetup pool) {
         if (parent == null) {
             tree.finish(pool, container);
         }
@@ -185,7 +185,7 @@ public final class ServiceManagerSetup {
         }
     }
 
-    public void prepareDependants(BundleSetup container) {
+    public void prepareDependants(ContainerSetup container) {
         // First we take all locally defined services
         for (ServiceSetup entry : localServices) {
             resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
@@ -203,7 +203,7 @@ public final class ServiceManagerSetup {
 
         // Process exports from any children
         if (container.containerChildren != null) {
-            for (BundleSetup c : container.containerChildren) {
+            for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup child = c.injection.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
@@ -234,7 +234,7 @@ public final class ServiceManagerSetup {
 
         // Process child requirements to children
         if (container.containerChildren != null) {
-            for (BundleSetup c : container.containerChildren) {
+            for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup m = c.injection.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);
@@ -243,7 +243,7 @@ public final class ServiceManagerSetup {
         }
     }
 
-    private void processWirelets(BundleSetup container) {
+    private void processWirelets(ContainerSetup container) {
         LinkedHashMap<Key<?>, ServiceSetup> map = new LinkedHashMap<>();
 
         if (parent != null) {

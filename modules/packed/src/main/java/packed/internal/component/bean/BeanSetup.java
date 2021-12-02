@@ -14,6 +14,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
+import app.packed.inject.ReflectionFactory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
@@ -63,7 +64,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
             boolean isStaticClassSource = false; // TODO fix
-            this.factory = isStaticClassSource ? null : Factory.of(cl);
+            this.factory = isStaticClassSource ? null : ReflectionFactory.of(cl);
         } else if (source instanceof Factory<?> fac) {
             this.factory = fac;
         } else {
@@ -79,7 +80,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             MethodHandle mh = realm.accessor().toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
-            List<DependencyDescriptor> dependencies = (List) factory.variables();
+            List<DependencyDescriptor> dependencies = (List) factory.dependenciesOld();
             this.injectionNode = new InjectionNode(this, dependencies, mh);
             container.injection.addNode(injectionNode);
         }
@@ -103,7 +104,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
-            this.factory = Factory.of(cl);
+            this.factory = ReflectionFactory.of(cl);
         } else if (source instanceof Factory<?> fac) {
             this.factory = fac;
         } else {
@@ -119,7 +120,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             MethodHandle mh = realm.accessor().toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
-            List<DependencyDescriptor> dependencies = (List) factory.variables();
+            List<DependencyDescriptor> dependencies = (List) factory.dependenciesOld();
             this.injectionNode = new InjectionNode(this, dependencies, mh);
             container.injection.addNode(injectionNode);
         }
@@ -206,7 +207,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Class<? extends Extension>> managedByExtension() {
+        public Optional<Class<? extends Extension>> declaredByExtension() {
             throw new UnsupportedOperationException();
         }
 

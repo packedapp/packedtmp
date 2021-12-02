@@ -2,7 +2,7 @@ package app.packed.application.various;
 
 import java.util.function.Consumer;
 
-import app.packed.state.sandbox.InstanceState;
+import app.packed.lifecycle.RunState;
 
 // root application
 // will automatically have a shutdown hook installed
@@ -25,7 +25,7 @@ public interface PlatformApplication {
      */
     String name();
 
-    InstanceState state(); // the current state
+    RunState state(); // the current state
 
     public static void forEach(Consumer<? super PlatformApplication> action) {
 

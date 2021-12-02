@@ -25,8 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.application.ApplicationRuntime;
 import app.packed.extension.Extension;
 import app.packed.extension.old.ApplicationExtensionBean;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.RunStateInfo;
+import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.RunStateSnapshot;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
 import packed.internal.lifetime.PoolAccessor;
 import packed.internal.util.ThrowableUtil;
@@ -42,7 +42,7 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedApplicationRuntimeExtensor extends ApplicationExtensionBean<Extension> implements ApplicationRuntime {
 
     // Sagtens encode det i sync ogsaa
-    InstanceState desiredState = InstanceState.UNINITIALIZED;
+    RunState desiredState = RunState.UNINITIALIZED;
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -50,14 +50,14 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
      */
     final ReentrantLock lock = new ReentrantLock();
 
-    /** A condition used for waiting on state changes from {@link #await(InstanceState, long, TimeUnit)}. */
+    /** A condition used for waiting on state changes from {@link #await(RunState, long, TimeUnit)}. */
     final Condition lockAwaitState = lock.newCondition();
 
     // Taenker vi maaske gaar tilbage til det design hvor vi havde en abstract state klasse... med
     // en implementering per state... Er jo mest brugbart i forbindelse med start/stop hvor vi har noget
     // midlertidigt state
     // Paa den anden side kan vi maaske have lidt mindre state?
-    volatile InstanceState state = InstanceState.UNINITIALIZED;
+    volatile RunState state = RunState.UNINITIALIZED;
 
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
@@ -69,7 +69,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 //    final PackedContainer parent;
     /** {@inheritDoc} */
     @Override
-    public void await(InstanceState state) throws InterruptedException {
+    public void await(RunState state) throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -86,7 +86,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 
     /** {@inheritDoc} */
     @Override
-    public boolean await(InstanceState state, long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -106,7 +106,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 
     /** {@inheritDoc} */
     @Override
-    public RunStateInfo info() {
+    public RunStateSnapshot info() {
         return null;
     }
 
@@ -118,12 +118,12 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
         lock.lock();
         try {
             if (!start) {
-                this.state = InstanceState.INITIALIZED;
-                this.desiredState = InstanceState.INITIALIZED;
+                this.state = RunState.INITIALIZED;
+                this.desiredState = RunState.INITIALIZED;
                 return;
             } else {
-                this.state = InstanceState.STARTING;
-                this.desiredState = InstanceState.RUNNING;
+                this.state = RunState.STARTING;
+                this.desiredState = RunState.RUNNING;
             }
         } finally {
             lock.unlock();
@@ -133,8 +133,8 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 
         lock.lock();
         try {
-            this.state = InstanceState.RUNNING;
-            this.desiredState = InstanceState.RUNNING;
+            this.state = RunState.RUNNING;
+            this.desiredState = RunState.RUNNING;
             if (!isMain) {
                 return;
             }
@@ -173,7 +173,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            if (state == InstanceState.UNINITIALIZED) {
+            if (state == RunState.UNINITIALIZED) {
                 throw new IllegalStateException("Cannot call this method now");
             }
             throw new UnsupportedOperationException();
@@ -193,7 +193,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 
     /** {@inheritDoc} */
     @Override
-    public InstanceState state() {
+    public RunState state() {
         return state;
     }
 
@@ -208,7 +208,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
     }
 
     // Tag T istedet for container...
-    public <T> CompletionStage<T> whenAt(InstanceState state, T object) {
+    public <T> CompletionStage<T> whenAt(RunState state, T object) {
         if (state().ordinal() >= state.ordinal()) {
             return CompletableFuture.completedFuture(object);
         }

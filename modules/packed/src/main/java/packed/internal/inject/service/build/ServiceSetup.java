@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.attribute.AttributeMap;
 import app.packed.base.Key;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.Service;
@@ -115,12 +114,6 @@ public abstract class ServiceSetup implements InternalService, DependencyProduce
     
     /** An implementation of {@link Service} because {@link ServiceSetup} is mutable. */
     private static final record ServiceWrapper(Key<?> key, boolean isConstant) implements Service {
-
-        /** {@inheritDoc} */
-        @Override
-        public AttributeMap attributes() {
-            return AttributeMap.of();
-        }
 
         /** {@inheritDoc} */
         @Override

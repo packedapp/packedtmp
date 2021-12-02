@@ -4,23 +4,19 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Set;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
+import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
-import app.packed.build.BuildMirror;
-import app.packed.bundle.BundleMirror;
-import app.packed.bundle.Wirelet;
-import app.packed.bundle.host.ApplicationHostMirror;
-import app.packed.component.ComponentMirror;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import app.packed.state.sandbox.InstanceState;
-import packed.internal.bundle.BundleSetup;
+import app.packed.lifecycle.RunState;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.bundle.PackedBundleDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
@@ -39,17 +35,17 @@ public final class ApplicationSetup {
     public final BuildSetup build;
 
     /** What we are building. */
-    public final ApplicationDescriptorOutput buildKind;
+    public final ApplicationBuildType buildKind;
 
     /** The root container of the application. Created in the constructor of this class. */
-    public final BundleSetup container;
+    public final ContainerSetup container;
 
     public final boolean hasRuntime;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
-     * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(InstanceState)}
+     * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(RunState)}
      * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
     final ApplicationLaunchMode launchMode;
@@ -68,7 +64,7 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, ApplicationDescriptorOutput buildKind, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
+    ApplicationSetup(BuildSetup build, ApplicationBuildType buildKind, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
         this.build = requireNonNull(build);
         this.buildKind = buildKind;
         this.applicationDriver = driver;
@@ -80,7 +76,7 @@ public final class ApplicationSetup {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.container = new BundleSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedBundleDriver.DRIVER, null, wirelets);
+        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedBundleDriver.DRIVER, null, wirelets);
         this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 
@@ -104,20 +100,8 @@ public final class ApplicationSetup {
     /** An application mirror adaptor. */
     private final class BuildTimeApplicationMirror implements ApplicationMirror {
 
-        /** {@inheritDoc} */
         @Override
-        public BuildMirror build() {
-            return ApplicationSetup.this.build.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentMirror component(CharSequence path) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public BundleMirror bundle() {
+        public ContainerMirror container() {
             return ApplicationSetup.this.container.mirror();
         }
 
@@ -132,17 +116,6 @@ public final class ApplicationSetup {
         @Override
         public boolean hasRuntime() {
             return ApplicationSetup.this.hasRuntime;
-        }
-
-        @Override
-        public Optional<ApplicationHostMirror> host() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isStronglyWired() {
-            return false;
         }
 
         /** {@inheritDoc} */

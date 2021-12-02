@@ -1,5 +1,6 @@
 package app.packed.lifecycle;
 
+// An exception thrown while transitioning from one stable runstate to another stable runstate
 public class LifecycleException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

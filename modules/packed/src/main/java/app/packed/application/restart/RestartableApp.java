@@ -2,8 +2,8 @@ package app.packed.application.restart;
 
 import java.util.function.BiFunction;
 
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 
 public interface RestartableApp<T> {
 

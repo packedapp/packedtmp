@@ -20,7 +20,7 @@ import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor.AbstractAnnotat
 /**
  *
  */
-public abstract non-sealed class BeanField extends BeanHookElement {
+public abstract /*non-sealed*/ class BeanField extends BeanHookElement {
 
     /** {@inheritDoc} */
     @Override

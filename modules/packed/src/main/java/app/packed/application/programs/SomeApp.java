@@ -21,11 +21,11 @@ import java.lang.invoke.MethodType;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.StateWirelets;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
+import app.packed.lifecycle.LifecycleWirelets;
+import app.packed.lifecycle.RunState;
 import packed.internal.application.ApplicationLaunchContext;
 
 /**
@@ -87,12 +87,12 @@ public final class SomeApp {
 
     /**
      * This method will create and start an {@link Program application} from the specified source. Blocking until the run
-     * state of the application is {@link InstanceState#TERMINATED}.
+     * state of the application is {@link RunState#TERMINATED}.
      * <p>
      * Entry point or run to termination
      * <p>
      * This method will automatically install a shutdown hook wirelet using
-     * {@link StateWirelets#shutdownHook(app.packed.state.Host.StopOption...)}.
+     * {@link LifecycleWirelets#shutdownHook(app.packed.state.Host.StopOption...)}.
      * 
      * @param assembly
      *            the assembly to execute

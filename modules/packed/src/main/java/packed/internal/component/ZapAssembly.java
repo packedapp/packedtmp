@@ -1,11 +1,11 @@
 package packed.internal.component;
 
-import app.packed.application.Daemon;
+import app.packed.application.programs.Daemon;
 import app.packed.application.programs.SomeApp;
 import app.packed.build.BuildWirelets;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Wirelet;
-import app.packed.state.sandbox.InstanceState;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
+import app.packed.lifecycle.RunState;
 
 public class ZapAssembly extends BaseAssembly {
 
@@ -35,7 +35,7 @@ public class ZapAssembly extends BaseAssembly {
             installInstance("SDADs");
             install(My.class);
 
-            install(My.class).on(InstanceState.RUNNING, e -> System.out.println(e + "OK"));
+            install(My.class).on(RunState.RUNNING, e -> System.out.println(e + "OK"));
             installInstance("adasd");
             installInstance("asdasd");
 

@@ -15,10 +15,6 @@
  */
 package packed.internal.component;
 
-import java.lang.invoke.MethodHandles;
-
-import app.packed.attribute.Attribute;
-import app.packed.base.NamespacePath;
 import app.packed.base.TypeToken;
 
 /**
@@ -63,7 +59,7 @@ final class ComponentAttributes {
     // What Aboun generation?? MAYBE an IMAGE_GENERATION as well?? Or maybe Image names are never reused???
     // A root image will have "/" or /.system.image if restartable...
     // Maybe on GuestImage instead???
-    public static final Attribute<NamespacePath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", NamespacePath.class);
+    //public static final Attribute<NamespacePath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", NamespacePath.class);
 
 //    /** An attribute that is available on any component with the {@link ComponentModifier#BUILD} modifier. */
 //    // Ved ikke praecis

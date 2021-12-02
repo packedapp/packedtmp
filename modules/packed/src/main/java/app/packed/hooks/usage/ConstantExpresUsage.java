@@ -17,10 +17,10 @@ package app.packed.hooks.usage;
 
 import app.packed.build.BuildWith;
 import app.packed.hooks.ContextualProvide;
+import app.packed.inject.Variable;
 import app.packed.inject.sandbox.HookBootstrap;
-import app.packed.inject.variable.InjectableVariable;
-import app.packed.inject.variable.InjectableVariable.VariableInjector;
-import app.packed.inject.variable.Variable;
+import app.packed.inject.variable.BeanDependency;
+import app.packed.inject.variable.BeanDependency.VariableInjector;
 import app.packed.lifecycle.OnInitialize;
 
 /**
@@ -28,7 +28,7 @@ import app.packed.lifecycle.OnInitialize;
  */
 public class ConstantExpresUsage {
 
-    abstract class Impl1 extends InjectableVariable {
+    abstract class Impl1 extends BeanDependency {
 
         @BuildWith
         static void foo(Variable v, VariableInjector binder) {
@@ -83,7 +83,7 @@ public class ConstantExpresUsage {
 
     }
 
-    @InjectableVariable.Hook(bootstrap = Impl1.class)
+    @BeanDependency.Hook(bootstrap = Impl1.class)
     @interface Plus {
         int arg1();
 

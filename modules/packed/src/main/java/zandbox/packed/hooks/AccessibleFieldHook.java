@@ -30,7 +30,7 @@ import java.lang.reflect.Field;
 
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
-import app.packed.inject.variable.InjectableVariable;
+import app.packed.inject.variable.BeanDependency;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
@@ -39,7 +39,7 @@ import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
  * A hook that allows to read and write the contents of a single field. The hook is triggered by an annotation.
  * <p>
  * Field hooks are mainly used if you need to repeatable read or write a field. If you are simply looking to inject a
- * value into a field, {@link InjectableVariable} is usually a better option.
+ * value into a field, {@link BeanDependency} is usually a better option.
  */
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RUNTIME)

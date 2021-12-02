@@ -24,12 +24,12 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.StateWirelets;
+import app.packed.lifecycle.LifecycleWirelets;
+import app.packed.lifecycle.RunState;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -117,7 +117,7 @@ public interface Program extends AutoCloseable {
      * Creates a new app image from the specified assembly.
      * <p>
      * The state of the applications returned by {@link ApplicationImage#use(Wirelet...)} will be
-     * {@link InstanceState#RUNNING}. unless GuestWirelet.delayStart
+     * {@link RunState#RUNNING}. unless GuestWirelet.delayStart
      * 
      * @param assembly
      *            the assembly to use for creating the image
@@ -133,13 +133,13 @@ public interface Program extends AutoCloseable {
 
     /**
      * Build and start a new application using the specified assembly. The state of the returned application is
-     * {@link InstanceState#RUNNING}.
+     * {@link RunState#RUNNING}.
      * <p>
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use {@link StateWirelets#lazyStart()}. Which will return an application in the
-     * {@link InstanceState#INITIALIZED} phase instead.
+     * process you can use {@link LifecycleWirelets#lazyStart()}. Which will return an application in the
+     * {@link RunState#INITIALIZED} phase instead.
      * 
      * @param assembly
      *            the assembly to use for creating the application
@@ -163,7 +163,7 @@ interface Zapp extends Program {
         // initialized - require explicit start
         // Starting
         // Started
-        return Program.driver().launch(assembly, StateWirelets.lazyStart().andThen(wirelets));
+        return Program.driver().launch(assembly, LifecycleWirelets.lazyStart().andThen(wirelets));
     }
 
     // An image that can be used exactly, will drop any memory references...

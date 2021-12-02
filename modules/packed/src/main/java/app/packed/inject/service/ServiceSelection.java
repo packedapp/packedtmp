@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 import app.packed.inject.Provider;
 
@@ -121,7 +120,7 @@ interface ServiceSelectionZandbox<S> extends ServiceSelection<S> {
     // stream().toList()...
     List<Provider<S>> toProviderList();
 
-    <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);
+//    <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);
 
     <T extends Annotation> ServiceSelection<S> withQualifier(Class<? extends T> qualifier, Predicate<? super T> filter);
 }

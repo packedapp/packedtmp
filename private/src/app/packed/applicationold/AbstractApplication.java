@@ -1,6 +1,6 @@
 package app.packed.applicationold;
 
-import app.packed.bundle.Assembly;
+import app.packed.container.Assembly;
 
 // Den er ikke mandatory...
 // Men kan maaske 

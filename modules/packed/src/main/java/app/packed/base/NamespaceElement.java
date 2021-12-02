@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.attribute.AttributedElement;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentMirrorStream.Option;
 
@@ -34,7 +33,7 @@ import app.packed.component.ComponentMirrorStream.Option;
 // Maaske har man ikke lokalt adgang til fx at liste alle actors.
 // Maaske bliver ting lave virtuelt hvis de ikke eksistere?
 
-public interface NamespaceElement extends AttributedElement {
+public interface NamespaceElement {
 
     /**
      * Returns an unmodifiable view of all of this component's children.

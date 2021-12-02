@@ -10,21 +10,19 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleMirror;
-import app.packed.bundle.Composer;
-import app.packed.bundle.ComposerAction;
-import app.packed.bundle.Wirelet;
-import app.packed.bundle.WireletSelection;
 import app.packed.component.Realm;
+import app.packed.container.Assembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
-import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.component.RealmSetup;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
@@ -44,21 +42,21 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
-    /** A handle for invoking the protected method {@link Extension#onPreChildren()}. */
+    /** A handle for invoking the protected method {@link Extension#onPostSetUp()}. */
     private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onPreChildren", void.class);
+            "onPostSetUp", void.class);
 
     /** A handle for setting the private field Extension#context. */
     private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** The container where the extension is used. */
-    public final BundleSetup bundle;
+    public final ContainerSetup bundle;
 
     /** The type of extension that is being configured. */
     public final Class<? extends Extension> extensionType;
 
-    /** The extension instance, instantiated and set in {@link #newExtension(BundleSetup, Class)}. */
+    /** The extension instance, instantiated and set in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -87,7 +85,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @param model
      *            the model of the extension
      */
-    private ExtensionSetup(BundleSetup container, ExtensionModel model) {
+    private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
         this.bundle = requireNonNull(container);
         this.model = requireNonNull(model);
         this.extensionType = model.type();
@@ -99,11 +97,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return bundle.application.descriptor;
     }
 
-    protected void attributesAdd(DefaultAttributeMap dam) {
-        PackedAttributeModel pam = model.attributes;
-        if (pam != null) {
-            pam.set(dam, instance);
-        }
+//    protected void attributesAdd(DefaultAttributeMap dam) {
+//        PackedAttributeModel pam = model.attributes;
+//        if (pam != null) {
+//            pam.set(dam, instance);
+//        }
+//    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerMirror bundle() {
+        return bundle.mirror();
     }
 
     /** {@inheritDoc} */
@@ -137,7 +141,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
-        BundleSetup parent = bundle.containerParent;
+        ContainerSetup parent = bundle.containerParent;
         while (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
@@ -153,7 +157,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
         requireNonNull(type, "type is null");
-        BundleSetup parent = bundle.containerParent;
+        ContainerSetup parent = bundle.containerParent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
@@ -191,6 +195,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public boolean isExtensionUsed(Class<? extends Extension> extensionClass) {
         return bundle.isExtensionUsed(extensionClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerMirror link(Realm realm, Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
@@ -301,7 +311,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      *            the extension to create
      * @return the new extension
      */
-    static ExtensionSetup newExtension(BundleSetup container, Class<? extends Extension> extensionClass) {
+    static ExtensionSetup newExtension(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);
@@ -325,11 +335,5 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         return extension;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BundleMirror link(Realm realm, Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
     }
 }

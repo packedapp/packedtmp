@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.bundle.BundleSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 public class ContainerInjectorSetup {
@@ -14,13 +14,13 @@ public class ContainerInjectorSetup {
     /** All dependants that needs to be resolved. */
     public final ArrayList<InjectionNode> nodes = new ArrayList<>();
 
-    private final BundleSetup container;
+    private final ContainerSetup container;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
     private ServiceManagerSetup sm;
 
-    public ContainerInjectorSetup(BundleSetup container) {
+    public ContainerInjectorSetup(ContainerSetup container) {
         this.container = requireNonNull(container);
     }
 

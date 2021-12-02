@@ -17,10 +17,8 @@ package app.packed.component;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -32,8 +30,7 @@ import packed.internal.component.ComponentSetup;
  * 
  * Instead of extending this class directly, you typically want to extend {@link ContainerBeanConfiguration} instead.
  */
-@SuppressWarnings("rawtypes")
-public abstract sealed class ComponentConfiguration permits BeanConfiguration,BundleConfiguration,FunctionConfiguration {
+public abstract /*sealed*/ class ComponentConfiguration /*permits BeanConfiguration,BundleConfiguration,FunctionConfiguration */{
 
     /** The component we are wrapping. Is initially null until initialized by someone. */
     @Nullable

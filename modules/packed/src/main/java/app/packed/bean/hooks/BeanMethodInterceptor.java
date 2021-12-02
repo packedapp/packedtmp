@@ -19,7 +19,7 @@ package app.packed.bean.hooks;
  *
  */
 // Jer er bare ikke en fan...
-public abstract non-sealed class BeanMethodInterceptor extends BeanHookElement {
+public abstract /*non-sealed*/ class BeanMethodInterceptor extends BeanHookElement {
 
 }
 //// Maaske har vi som udgangspunkt extension order interceptors???

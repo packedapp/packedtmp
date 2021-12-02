@@ -15,10 +15,8 @@
  */
 package packed.internal.application;
 
-import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
-import app.packed.application.ApplicationMirror;
-import app.packed.build.BuildMirror;
-import app.packed.bundle.Wirelet;
+import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
+import app.packed.container.Wirelet;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.RealmSetup;
 
@@ -44,22 +42,10 @@ public final class BuildSetup {
      * @param wirelets
      *            wirelets specified by the user. Prefixed with any wirelets from the application driver
      */
-    public BuildSetup(PackedApplicationDriver<?> driver, ApplicationDescriptorOutput kind, RealmSetup realm, Wirelet[] wirelets) {
+    public BuildSetup(PackedApplicationDriver<?> driver, ApplicationBuildType kind, RealmSetup realm, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(this, kind, realm, driver, wirelets);
     }
 
-    public BuildMirror mirror() {
-        return new PackedBuildMirror();
-    }
-
-    /** Implementation of BuildMirror, exposed via {@link BuildSetup#mirror()}. */
-    private class PackedBuildMirror implements BuildMirror {
-
-        @Override
-        public ApplicationMirror application() {
-            return application.mirror();
-        }
-    }
 }
 //
 //public boolean isDone() {

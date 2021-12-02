@@ -46,6 +46,10 @@ import packed.internal.util.TypeUtil;
  */
 //https://www.reddit.com/r/java/comments/6b9zvl/do_you_think_we_should_have_a_typetoken_class/
 //http://mail.openjdk.java.net/pipermail/valhalla-dev/2017-January/002150.html
+
+// Take a look at helidons
+// https://helidon.io/docs/v2/apidocs/io.helidon.common/io/helidon/common/GenericType.html
+// I like the cast method
 public abstract class TypeToken<T> {
 
     /** A cache of factories used by. */
@@ -121,6 +125,7 @@ public abstract class TypeToken<T> {
      * 
      * @return the type token
      */
+    // Not sure we want this public
     public final CanonicalizedTypeToken<T> canonicalize() {
         if (getClass() == CanonicalizedTypeToken.class) {
             return (CanonicalizedTypeToken<T>) this;
@@ -153,7 +158,7 @@ public abstract class TypeToken<T> {
      *
      * @return the raw (non-generic) type
      */
-    public final Class<? super T> rawType() {
+    public final Class<?> rawType() {
         return rawType;
     }
 

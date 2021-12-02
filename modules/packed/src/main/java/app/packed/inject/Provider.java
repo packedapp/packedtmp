@@ -89,6 +89,7 @@ public interface Provider<T> {
 //    return false;
 //}
 
+// Provider's can also be obtained for non-services.
 
 //Previously this interface also contained information about where
 //the instances came from. However, this information is now only

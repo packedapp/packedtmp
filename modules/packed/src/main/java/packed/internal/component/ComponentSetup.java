@@ -25,25 +25,22 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.attribute.Attribute;
-import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirror.Relation;
+import app.packed.container.ContainerMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.bundle.BundleSetup;
-import packed.internal.component.bean.BeanSetup;
+import packed.internal.bundle.ContainerSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
 
 /** Abstract build-time setup of a component. */
-public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
+public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup */{
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -53,7 +50,7 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
     LinkedHashMap<String, ComponentSetup> children;
 
     /** The container this component is a part of. A container is a part of it self. */
-    public final BundleSetup container;
+    public final ContainerSetup container;
 
     /** The depth of the component in the tree. */
     protected final int depth;
@@ -99,19 +96,19 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
         this.application = requireNonNull(application);
-        this.container = this instanceof BundleSetup container ? container : parent.container;
+        this.container = this instanceof ContainerSetup container ? container : parent.container;
     }
-
-    final AttributeMap attributes() {
-        // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
-        // Maaske er det simpelthen et view...
-        // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
-        DefaultAttributeMap dam = new DefaultAttributeMap();
-        attributesAdd(dam);
-        return dam;
-    }
-
-    protected void attributesAdd(DefaultAttributeMap dam) {}
+//
+//    final AttributeMap attributes() {
+//        // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
+//        // Maaske er det simpelthen et view...
+//        // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
+//        DefaultAttributeMap dam = new DefaultAttributeMap();
+//        attributesAdd(dam);
+//        return dam;
+//    }
+//
+//    protected void attributesAdd(DefaultAttributeMap dam) {}
 
     public final void checkIsWiring() {
         if (realm.current() != this) {
@@ -179,7 +176,7 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
         checkIsWiring();
 
         // If a name has been set using a wirelet it cannot be overridden
-        if (this instanceof BundleSetup cs && cs.nameInitializedWithWirelet) {
+        if (this instanceof ContainerSetup cs && cs.nameInitializedWithWirelet) {
             return;
         } else if (name.equals(this.name)) {
             return;
@@ -207,11 +204,11 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
         return PackedTreePath.of(this);
     }
 
-    public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
-        requireNonNull(attribute, "attribute is null");
-        requireNonNull(value, "value is null");
-        // check realm.open + attribute.write
-    }
+//    public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
+//        requireNonNull(attribute, "attribute is null");
+//        requireNonNull(value, "value is null");
+//        // check realm.open + attribute.write
+//    }
 
     /**
      * Checks the name of the component.
@@ -229,54 +226,46 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    public non-sealed abstract class AbstractBuildTimeComponentMirror implements ComponentMirror {
+    public abstract class AbstractBuildTimeComponentMirror {
 
         /** {@inheritDoc} */
-        @Override
         public final ApplicationMirror application() {
             return application.mirror();
         }
 
         /** {@inheritDoc} */
-        @Override
-        public final Realm registrant() {
+        public final Realm realm() {
             Class<? extends Extension> extensionType = realm.extensionType;
             return extensionType == null ? Realm.application() : Realm.extension(extensionType);
         }
 
         /** {@inheritDoc} */
-        @Override
         public final Collection<ComponentMirror> children() {
             LinkedHashMap<String, ComponentSetup> m = children;
             return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
         }
 
-        @Override
         public Stream<ComponentMirror> components() {
             return stream();
         }
 
         /** {@inheritDoc} */
-        @Override
-        public final BundleMirror bundle() {
+        public final ContainerMirror bundle() {
             return container.mirror();
         }
 
         /** {@inheritDoc} */
-        @Override
         public final int depth() {
             return depth;
         }
 
         /** {@inheritDoc} */
-        @Override
         public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetup.this.isInSame(scope, ((AbstractBuildTimeComponentMirror) other).outer());
         }
 
         /** {@inheritDoc} */
-        @Override
         public final String name() {
             return name;
         }
@@ -286,27 +275,23 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
         }
 
         /** {@inheritDoc} */
-        @Override
         public final Optional<ComponentMirror> parent() {
             ComponentSetup parent = ComponentSetup.this.parent;
             return parent == null ? Optional.empty() : Optional.of(parent.mirror());
         }
 
         /** {@inheritDoc} */
-        @Override
         public final NamespacePath path() {
             return ComponentSetup.this.path();
         }
 
         /** {@inheritDoc} */
-        @Override
         public final Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetupRelation.of(ComponentSetup.this, ((AbstractBuildTimeComponentMirror) other).outer());
         }
 
         /** {@inheritDoc} */
-        @Override
         public final ComponentMirror resolve(CharSequence path) {
             LinkedHashMap<String, ComponentSetup> map = children;
             if (map != null) {
@@ -319,17 +304,19 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
         }
 
         /** {@inheritDoc} */
-        @Override
         public final ComponentMirror root() {
             ComponentSetup c = ComponentSetup.this;
             while (c.parent != null) {
                 c = c.parent;
             }
-            return c == ComponentSetup.this ? this : c.mirror();
+            return c == ComponentSetup.this ? thisMirror() : c.mirror();
         }
 
+        private ComponentMirror thisMirror() {
+            return (ComponentMirror) this;
+        }
+        
         /** {@inheritDoc} */
-        @Override
         public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
             return new PackedComponentStream(stream0(ComponentSetup.this, true, PackedComponentStreamOption.of(options)));
         }
@@ -341,11 +328,11 @@ public abstract sealed class ComponentSetup permits BundleSetup,BeanSetup {
             if (c != null && !c.isEmpty()) {
                 if (option.processThisDeeper(origin, ComponentSetup.this)) {
                     Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
-                    return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
+                    return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(thisMirror()), s);
                 }
                 return Stream.empty();
             } else {
-                return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
+                return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(thisMirror());
             }
         }
     }

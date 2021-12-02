@@ -1,6 +1,5 @@
 package app.packed.inject.service;
 
-import app.packed.attribute.AttributedElement;
 import app.packed.base.Key;
 
 /**
@@ -13,7 +12,7 @@ import app.packed.base.Key;
 // ServiceModel...
 //// Maaske har vi en ServiceModel et sted...
 //// SM.getUsages() ->
-public /* sealed */ interface Service extends AttributedElement {
+public /* sealed */ interface Service {
 
     /**
      * Returns whether or not the instance that service provides is a constant.

@@ -17,9 +17,8 @@ package tests.injector;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.BaseAssembly;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.service.Service;
-import packed.internal.config.ConfigSite;
 import packed.internal.inject.service.sandbox.Injector;
 
 /**
@@ -30,7 +29,6 @@ public class BTest {
     public static void main(String[] args) {
         Injector i = Injector.of(new MyAssembly());
 
-        i.find(PrivateImplementation.class).get().attribute(ConfigSite.ATTRIBUTE).print();
 
         System.out.println(String.class.getModule().getDescriptor());
 

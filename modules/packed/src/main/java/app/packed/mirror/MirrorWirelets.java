@@ -1,6 +1,6 @@
 package app.packed.mirror;
 
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 
 // Wirelet retainModelsAtRuntime();
 // Wirelet allDetails();

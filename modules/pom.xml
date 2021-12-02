@@ -15,8 +15,8 @@
   <!-- ==================================================================== -->
   <modules>
     <module>packed</module>
-    <!--
     <module>packed-base-micro</module>
+    <!--
     <module>packed-base-devtools</module>
     -->
   </modules>

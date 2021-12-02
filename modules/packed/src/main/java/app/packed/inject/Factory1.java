@@ -81,7 +81,7 @@ import packed.internal.util.LookupUtil;
  */
 // Maybe define a CustomFactory we can override...
 // I think so... And maybe install a MethodHand use $toConcract... Nahh kan ikke bruge $ fordi vi overskriver...
-public abstract class Factory1<T, R> extends Factory<R> {
+public abstract class Factory1<T, R> extends CapturingFactory<R> {
 
     /** A method handle for invoking {@link #create(Function, Class, Object)}. */
     private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Function.class, Class.class,
@@ -115,7 +115,7 @@ public abstract class Factory1<T, R> extends Factory<R> {
      *             {@link Optional}
      */
     protected Factory1(Function<? super T, ? extends R> function) {
-        requireNonNull(function, "function is null");
+        super(requireNonNull(function, "function is null"));
         this.dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
 
         Class<?> ret = rawType();

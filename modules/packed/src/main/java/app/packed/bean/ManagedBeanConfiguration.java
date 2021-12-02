@@ -1,6 +1,7 @@
 package app.packed.bean;
 
-public non-sealed class ManagedBeanConfiguration<T> extends BeanConfiguration<T> {
+// ExtensionManagedBean?
+public /*non-sealed*/ class ManagedBeanConfiguration<T> extends BeanConfiguration<T> {
 
     public ManagedBeanConfiguration() {}
     /** {@inheritDoc} */

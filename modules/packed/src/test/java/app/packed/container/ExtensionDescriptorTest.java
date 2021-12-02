@@ -17,19 +17,14 @@ package app.packed.container;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.lang.invoke.MethodHandles;
-
 import org.junit.jupiter.api.Test;
 
-import app.packed.attribute.Attribute;
-import app.packed.attribute.ExposeAttribute;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionDescriptor;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
 
-    public static final Attribute<String> DESC = Attribute.of(MethodHandles.lookup(), "description", String.class);
 
     @Test
     public void empty() {
@@ -51,7 +46,7 @@ public class ExtensionDescriptorTest {
             $dependsOn(EmptyExtension.class);
         }
 
-        @ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
+        //@ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
             return new SomeContract();
         }

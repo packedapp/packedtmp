@@ -4,37 +4,39 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.Assembly;
-import app.packed.bundle.BundleMirror;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
+import app.packed.mirror.Mirror;
 import packed.internal.bundle.ExtensionSetup;
 
 /**
- * Provides generic information about an extension used by a {@link #bundle}.
+ * Provides generic information about an extension used by a {@link #container}.
  * <p>
  * This class can be extended by an extension to provide more detailed information about itself. For example,
- * {@link app.packed.inject.service.ServiceExtension} extends this class via {@link app.packed.inject.service.ServiceExtensionMirror}.
+ * {@link app.packed.inject.service.ServiceExtension} extends this class via
+ * {@link app.packed.inject.service.ServiceExtensionMirror}.
  * <p>
  * Extension mirror instances are typically obtained in one of the following ways:
  * <ul>
- * <li>By calling methods on other mirrors, for example, {@link BundleMirror#extensions()} or
- * {@link BundleMirror#findExtension(Class)}.</li>
+ * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
+ * {@link ContainerMirror#findExtension(Class)}.</li>
  * <li>By calling {@link Extension#mirror()}, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror class, for example,
- * {@link ServiceExtensionMirror#use(Assembly, app.packed.bundle.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Assembly, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
- * <li>Must be annotated with {@link ExtensionMember} indicating what extension that is being mirrored.</li>
+ * <li>Must be annotated with {@link ExtensionMember} indicating the type of extension that is being mirrored.</li>
  * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
  * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.
  * </ul>
  */
-public class ExtensionMirror {
+public class ExtensionMirror implements Mirror {
 
     /**
      * The internal configuration of the extension we are mirrored. Is initially null but populated via
@@ -51,10 +53,15 @@ public class ExtensionMirror {
      */
     protected ExtensionMirror() {}
 
-    /** {@return the container the extension is used in.} */
-    public final BundleMirror container() {
-        return setup().bundle.mirror();
-    }
+//    /** {@return the application the extension is used in.} */
+//    public final ApplicationMirror application() {
+//        return extension().bundle.application.mirror();
+//    }
+
+//    /** {@return the container the extension is used in.} */
+//    public final ContainerMirror container() {
+//        return extension().bundle.mirror();
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -66,7 +73,23 @@ public class ExtensionMirror {
         // If we find a valid use case we can always remove final
 
         // Check other.getType()==getType()????
-        return this == other || other instanceof ExtensionMirror m && setup() == m.setup();
+        return this == other || other instanceof ExtensionMirror m && extension() == m.extension();
+    }
+
+    /**
+     * {@return the mirrored extension's internal configuration.}
+     * 
+     * @throws InternalExtensionException
+     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
+     */
+    private ExtensionSetup extension() {
+        ExtensionSetup e = extension;
+        if (e == null) {
+            throw new InternalExtensionException(
+                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
+        }
+        return e;
     }
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
@@ -76,13 +99,13 @@ public class ExtensionMirror {
 
     /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension> extensionType() { // extensionType() instead of type() because subclasses might want to use type()
-        return setup().extensionType;
+        return extension().extensionType;
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return setup().hashCode();
+        return extension().hashCode();
     }
 
     /**
@@ -96,22 +119,6 @@ public class ExtensionMirror {
             throw new IllegalStateException("The specified mirror has already been initialized.");
         }
         this.extension = extension;
-    }
-
-    /**
-     * {@return the mirrored extension's internal configuration.}
-     * 
-     * @throws InternalExtensionException
-     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
-     */
-    private ExtensionSetup setup() {
-        ExtensionSetup e = extension;
-        if (e == null) {
-            throw new InternalExtensionException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
-        }
-        return e;
     }
 
     /** {@inheritDoc} */
@@ -133,11 +140,11 @@ public class ExtensionMirror {
      * @param wirelets
      *            optional wirelets
      * @return stuff
-     * @see BundleMirror#findExtension(Class)
+     * @see ContainerMirror#findExtension(Class)
      * @see #of(Class, Assembly, Wirelet...)
      */
-    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Assembly  assembly, Wirelet... wirelets) {
-        return BundleMirror.of(assembly, wirelets).findExtension(mirrorType);
+    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Assembly assembly, Wirelet... wirelets) {
+        return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
     /**
@@ -153,13 +160,13 @@ public class ExtensionMirror {
      * @param wirelets
      *            optional wirelets
      * @return stuff
-     * @see BundleMirror#useExtension(Class)
+     * @see ContainerMirror#useExtension(Class)
      * @see #find(Class, Assembly, Wirelet...)
      * @throws NoSuchElementException
      *             if the root container in the mirrored application does not use the extension that the specified mirror is
      *             a part of
      */
-    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly  assembly, Wirelet... wirelets) {
-        return BundleMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
+    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly assembly, Wirelet... wirelets) {
+        return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
     }
 }

@@ -6,9 +6,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.various.TaskListMirror;
-import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
 
@@ -34,12 +34,12 @@ public interface OldBaseMirror extends Mirror {
     ComponentMirrorStream components();
 
     /** {@return the root container of the build}. */
-    BundleMirror container();
+    ContainerMirror container();
 
-    BundleMirror container(CharSequence path);
+    ContainerMirror container(CharSequence path);
 
     /** {@return a component stream that includes every component in this build}. */
-    Stream<BundleMirror> containers();
+    Stream<ContainerMirror> containers();
 
     default void forEachComponent(Consumer<? super ComponentMirror> action) {
         components().forEach(action);

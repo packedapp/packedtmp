@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import testutil.util.AbstractApplicationTest;
 
@@ -64,11 +64,11 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
      */
     @Test
     public void unconfigurable() {
-        AtomicReference<BundleConfiguration> r = new AtomicReference<>();
+        AtomicReference<ContainerConfiguration> r = new AtomicReference<>();
 
         // Test empty
         appOf(e -> r.set(e.configuration()));
-        assertThat(r.get().extensionsTypes()).isEmpty();
+        assertThat(r.get().extensionTypes()).isEmpty();
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension1.class));
 
         AtomicReference<TestExtension1> t1 = new AtomicReference<>();
@@ -77,7 +77,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
             t1.set(e.use(TestExtension1.class));
             r.set(e.configuration());
         });
-        assertThat(r.get().extensionsTypes()).contains(TestExtension1.class);
+        assertThat(r.get().extensionTypes()).contains(TestExtension1.class);
         assertThat(r.get().use(TestExtension1.class)).isSameAs(t1.get());
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }

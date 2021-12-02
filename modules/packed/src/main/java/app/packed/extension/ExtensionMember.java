@@ -8,18 +8,26 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * {@link ExtensionSupport} implementations
- * 
- * {@link ExtensionMirror} implementations
+ * An annotation used to indicate that the annotated type belongs to a particular {@link Extension}.
+ * <p>
+ * The following types must use this annotation to indicate what extension they are part of:
+ * <ul>
+ * <li>{@link ExtensionMirror} subclasses. Packed uses this information to figure out what extension to call
+ * {@link Extension#mirror()} on in order to get an instance of the particular extension mirror.</li>
+ * <li>{@link ExtensionSupport} subclasses. Packed uses this information to instantiate the support class with the right
+ * type of extension.</li>
+ * </ul>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
 public @interface ExtensionMember {
-    
-    /** {@return the extension the annotated class is a member of.} */
+
+    /**
+     * Returns the extension the annotated class is a member of. The annotated class must be located in the same module as
+     * the extension defined in this value. Otherwise an {@link InternalExtensionException} will be thrown at runtime.
+     */
     Class<? extends Extension> value();
 }
 

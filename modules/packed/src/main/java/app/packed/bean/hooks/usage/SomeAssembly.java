@@ -3,7 +3,7 @@ package app.packed.bean.hooks.usage;
 import app.packed.bean.hooks.BeanHook;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.hooks.customization.BeanHookMapper;
-import app.packed.bundle.BaseAssembly;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.service.Provide;
 
 

@@ -23,7 +23,7 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.util.ClassUtil;
 
