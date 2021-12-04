@@ -6,10 +6,11 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.container.Wirelet;
 import app.packed.extension.UnavailableExtensionException;
+import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.LifecycleApplicationController.StopOption;
 import app.packed.lifecycle.LifecycleWirelets.ShutdownHookWirelet;
 
 /**
@@ -78,13 +79,13 @@ public final class ExecutionWirelets {
      * <p>
      * 
      * @return a shutdown hook wirelet
-     * @see #shutdownHook(Function, app.packed.application.ApplicationRuntime.StopOption...)
+     * @see #shutdownHook(Function, app.packed.lifecycle.LifecycleApplicationController.StopOption...)
      * @see Runtime#addShutdownHook(Thread)
      */
     // cannot specify it on ServiceLocator
     // Ogsaa skrive noget om hvad der sker hvis vi stopper
     // Skriv noget om der bliver lavet en traad, og man kan bruge den anden metode hvis man selv skal lave en
-    public static Wirelet shutdownHook(ApplicationRuntime.StopOption... options) {
+    public static Wirelet shutdownHook(LifecycleApplicationController.StopOption... options) {
         // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);
     }
@@ -99,7 +100,7 @@ public final class ExecutionWirelets {
      * @return a shutdown hook wirelet
      * @see Runtime#addShutdownHook(Thread)
      */
-    public static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, ApplicationRuntime.StopOption... options) {
+    public static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, LifecycleApplicationController.StopOption... options) {
         return new ShutdownHookWirelet();
     }
 
@@ -118,7 +119,7 @@ public final class ExecutionWirelets {
      * @param options
      * @return
      */
-    public static Wirelet timeToRun(Duration duration, ApplicationRuntime.StopOption... options) {
+    public static Wirelet timeToRun(Duration duration, LifecycleApplicationController.StopOption... options) {
         // can make a timeToLive() <-- which includes start
         throw new UnsupportedOperationException();
     }
@@ -132,7 +133,7 @@ public final class ExecutionWirelets {
      *            stop options that will applied when stopping the runtime
      * @return the new wirelet
      */
-    public static Wirelet timeToRun(long timeout, TimeUnit unit, ApplicationRuntime.StopOption... options) {
+    public static Wirelet timeToRun(long timeout, TimeUnit unit, LifecycleApplicationController.StopOption... options) {
         return timeToRun(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 }

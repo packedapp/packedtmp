@@ -60,7 +60,7 @@ public interface ServiceLocator extends ServiceRegistry {
     default <T> Optional<T> findInstance(Class<T> key) {
         return findInstance(Key.of(key));
     }
-    
+
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional.
      * <p>
@@ -239,12 +239,13 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     @Reflectable
-    static ApplicationImage<ServiceLocator> imageOf(Assembly  assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
+    // maaske har vi launcher og Image...
     @Reflectable
-    static ApplicationMirror mirrorOf(Assembly  assembly, Wirelet... wirelets) {
+    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 
@@ -264,7 +265,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     @Reflectable
-    static ServiceLocator of(Assembly  assembly, Wirelet... wirelets) {
+    static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 
@@ -288,7 +289,7 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     @Reflectable
-    static ApplicationImage<ServiceLocator> reusableImageOf(Assembly  assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }
 }

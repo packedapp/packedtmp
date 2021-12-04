@@ -15,10 +15,8 @@
  */
 package app.packed.lifecycle;
 
-import app.packed.application.ApplicationRuntime;
-
 /**
- * An enum containing all valid states of a {@link ApplicationRuntime}.
+ * An enum containing all valid states of a {@link LifecycleApplicationController}.
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
@@ -115,6 +113,10 @@ public enum RunState {
         return false;
     }
 
+    public boolean isStableState() {
+        return !isTransitionalState();
+    }
+    
     public boolean isTransitionalState() {
         return this == INITIALIZING || this == STARTING || this == STOPPING;
     }

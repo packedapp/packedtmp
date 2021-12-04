@@ -23,7 +23,6 @@ module app.packed {
     exports app.packed.request;
     exports app.packed.application.entrypoint;
     exports app.packed.application.programs;
-    exports spp.packed.extension;
 }
 
 // requires static org.graalvm.sdk;

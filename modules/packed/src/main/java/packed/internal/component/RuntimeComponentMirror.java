@@ -30,10 +30,10 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
-import app.packed.container.ContainerMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Realm;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.lifetime.LifetimePool;
@@ -106,7 +106,7 @@ public final class RuntimeComponentMirror {
         // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
 
         // Vi create a new region is its the root, or if the component is a guest
-        if (parent == null || component.application.hasRuntime) {
+        if (parent == null /*|| component.application.hasRuntime */ ) {
 //            this.pool = component.pool.newPool(launch);
 //
 //            // Run all initializers
@@ -118,11 +118,9 @@ public final class RuntimeComponentMirror {
 //                }
 //            }
             this.pool = null;
+            throw new UnsupportedOperationException();
         } else {
             this.pool = parent.pool;
-        }
-        if (parent == null) {
-            // launch.pool = this.pool;
         }
     }
 

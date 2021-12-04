@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.lifecycle;
 
-import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.container.Assembly;
-import app.packed.container.Wirelet;
-import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.RunStateSnapshot;
+import app.packed.application.ApplicationController;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -53,7 +49,7 @@ import app.packed.lifecycle.RunStateSnapshot;
 // ExecutionHost
 // ExecutionManager
 // Application Container
-public interface ApplicationRuntime {
+public interface LifecycleApplicationController extends ApplicationController {
 
     // Optional<Throwable> getFailure();
 
@@ -62,8 +58,8 @@ public interface ApplicationRuntime {
      * whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the component has already been successfully
-     * terminated. This method will return immediately.
+     * attempting to wait on the {@link RunState#RUNNING} state and the component has already been successfully terminated.
+     * This method will return immediately.
      *
      * @param state
      *            the state to wait on
@@ -79,8 +75,8 @@ public interface ApplicationRuntime {
      * interrupted, whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
-     * will return immediately with true.
+     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method will
+     * return immediately with true.
      *
      * @param state
      *            the state to wait on
@@ -164,23 +160,23 @@ public interface ApplicationRuntime {
     // Tror main er bl.a. propper det ind som et system image...
 
     // Den er cool men sgu ikke super smart for forstaelsen
-    static void run(Assembly  assembly, Wirelet... wirelets) {
-        ApplicationRuntimeImplementation.DRIVER.launch(assembly, wirelets);
-    }
+//    static void run(Assembly  assembly, Wirelet... wirelets) {
+//        ApplicationRuntimeImplementation.DRIVER.launch(assembly, wirelets);
+//    }
 
     // altsaa problemet her jo i virkeligheden image...
     // Vi gider ikke have flere maader at launche et image paa...
-    static <A> A launch(ApplicationDriver<A> driver, Assembly  assembly, Wirelet... wirelets) {
-        return driver.launch(assembly, wirelets);
-    }
+//    static <A> A launch(ApplicationDriver<A> driver, Assembly  assembly, Wirelet... wirelets) {
+//        return driver.launch(assembly, wirelets);
+//    }
 
-    // TODO return Image<Host>?
-    static ApplicationImage<?> newImage(Assembly  assembly, Wirelet... wirelets) {
-        return ApplicationRuntimeImplementation.DRIVER.imageOf(assembly, wirelets);
-//
-//        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
-//        return new ExecutingImage(build);
-    }
+//    // TODO return Image<Host>?
+//    static ApplicationImage<?> newImage(Assembly  assembly, Wirelet... wirelets) {
+//        return ApplicationRuntimeImplementation.DRIVER.imageOf(assembly, wirelets);
+////
+////        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
+////        return new ExecutingImage(build);
+//    }
 
 //    static Image<Void> imageOfMain(Assembly<?> assembly, Wirelet... wirelets) {
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
@@ -230,6 +226,7 @@ public interface ApplicationRuntime {
     //// Er kun aktuelt naar shutdown ikke foreloeber korrect...
     // Den burde ikke have semantics indvirkning paa hvad der sker efter stop
 
+    // Move to top level cß
     public interface StopOption {
 
         static StopOption fail(Supplier<Throwable> cause) {
@@ -292,16 +289,12 @@ public interface ApplicationRuntime {
     // shutdown in 10 minutes and then restart... (altsaa kan man ikke s)
 }
 
-/**
-*
-*/
-final class ApplicationRuntimeImplementation {
-    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.EXECUTE_UNTIL_TERMINATED).build(MethodHandles.lookup(), Void.class);
-}
-
-enum ApplicationRuntimeState {
-
-}
+///**
+//*
+//*/
+//final class ApplicationRuntimeImplementation {
+//    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.EXECUTE_UNTIL_TERMINATED).build(MethodHandles.lookup(), Void.class);
+//}
 
 //10 seconds is from start.. Otherwise people must use an exact deadline
 //start(new SomeAssembly(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));

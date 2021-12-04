@@ -22,12 +22,12 @@ import java.util.NoSuchElementException;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationLaunchMode;
-import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifecycleWirelets;
 import app.packed.lifecycle.RunState;
 
@@ -42,7 +42,7 @@ public interface Program extends AutoCloseable {
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see ApplicationRuntime#stop(ApplicationRuntime.StopOption...)
+     * @see LifecycleApplicationController#stop(LifecycleApplicationController.StopOption...)
      **/
     @Override
     default void close() {
@@ -57,7 +57,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    ApplicationRuntime runtime();
+    LifecycleApplicationController runtime();
 
     /**
      * Returns this app's service locator.
@@ -186,7 +186,7 @@ interface Zapp extends Program {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(String name, ServiceLocator services, ApplicationRuntime runtime) implements Program {
+record ProgramImplementation(String name, ServiceLocator services, LifecycleApplicationController runtime) implements Program {
 
     /** An driver for creating App instances. */
     static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.RUNNING).build(MethodHandles.lookup(),

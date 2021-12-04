@@ -1,8 +1,8 @@
 package app.packed.application.restart;
 
-import app.packed.application.ApplicationRuntime;
+import app.packed.lifecycle.LifecycleApplicationController;
 
 public interface RestartableApplicationRuntime {
 
-    ApplicationRuntime current();
+    LifecycleApplicationController current();
 }

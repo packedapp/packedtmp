@@ -39,6 +39,9 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
  * Trying to build an application with more than a single method annotated with this annotation will fail with
  * {@link BuildException}.
  * <p>
+ * Method annotated with Main must have a void return type. In line with how
+ * <code>public static void main(String[] args)</code> works.
+ * <p>
  * If the application fails either at initialization time or startup time the annotated will not be invoked.
  * <p>
  * When the annotated method returns the container will automatically be stopped. If the annotated method fails with an

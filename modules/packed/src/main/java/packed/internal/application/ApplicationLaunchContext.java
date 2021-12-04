@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.ApplicationLaunchMode;
-import app.packed.application.ApplicationRuntime;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.lifecycle.LifecycleApplicationController;
 import packed.internal.bundle.InternalWirelet;
 import packed.internal.bundle.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -73,7 +73,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
         return pool;
     }
 
-    ApplicationRuntime runtime() {
+    LifecycleApplicationController runtime() {
         if (runtime != null) {
             return runtime;
         }

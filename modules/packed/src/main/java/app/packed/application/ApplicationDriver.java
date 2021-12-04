@@ -36,6 +36,7 @@ import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
 import app.packed.lifecycle.InitializationException;
+import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
@@ -92,7 +93,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
     ApplicationImage<A> imageOf(Assembly  assembly, Wirelet... wirelets);
 
     /**
-     * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.
+     * Returns whether or not applications produced by this driver have an {@link LifecycleApplicationController}.
      * <p>
      * Applications that are not runnable will always be launched in the Initial state.
      * 
@@ -243,12 +244,18 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      */
     /*sealed*/ interface Builder /*permits PackedApplicationDriver.Builder*/ {
 
+        // Maaske konfigure man dem direkte paa extension support klassen
+        //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks. ServiceApplicationController.alwaysWrap();
+        default Builder addController(@SuppressWarnings("unchecked") Class<? extends ApplicationController>... controllers) {
+            return this;
+        }
+        
         /**
          * Creates a new artifact driver.
          * <p>
          * The specified implementation can have the following types injected.
          * 
-         * If the specified implementation implements {@link AutoCloseable} a {@link ApplicationRuntime} can also be injected.
+         * If the specified implementation implements {@link AutoCloseable} a {@link LifecycleApplicationController} can also be injected.
          * <p>
          * Fields and methods are not processed.
          * 
@@ -329,7 +336,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
          * @return this builder
          */
         // https://en.wikipedia.org/wiki/Runtime_system
-        // noRuntimeEnvironment
+        // noRuntimeEnvironment appénwerwer  wer
 
         // Add ApplicationRuntimeExtension to list of unsupported extensions
         // noApplicationRuntime

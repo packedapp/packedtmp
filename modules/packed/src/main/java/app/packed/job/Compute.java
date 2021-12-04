@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation;
-
-import app.packed.mirror.Mirror;
+package app.packed.job;
 
 /**
  *
  */
-public interface RuntimeOperationErrorHandlingMirror extends Mirror {
+// Som main men kan returnere et resultat.
+// Aktivere JobExtensionen
+// Dette betyder ogsaa at main skal vaere void
+public @interface Compute {
 
-    default void print() {
-        
-    }
 }

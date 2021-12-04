@@ -1,5 +1,7 @@
-package app.packed.application;
+package app.packed.application.programs2;
 
+import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationMirror;
 import app.packed.build.BuildWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -27,7 +29,11 @@ public final class App {
         throw new UnsupportedOperationException();
     }
 
-    public static void cli(Assembly assembly, Wirelet... wirelets) {
+    public static void run(Assembly assembly, Wirelet... wirelets) {
+        ServiceLocator.of(assembly, wirelets);
+    }
+
+    public static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
         ServiceLocator.of(assembly, wirelets);
     }
 

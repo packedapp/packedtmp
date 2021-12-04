@@ -22,9 +22,9 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.application.ApplicationRuntime;
 import app.packed.extension.Extension;
 import app.packed.extension.old.ApplicationExtensionBean;
+import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.RunStateSnapshot;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
@@ -39,7 +39,7 @@ import packed.internal.util.ThrowableUtil;
 /// Error bit (data = 
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedApplicationRuntimeExtensor extends ApplicationExtensionBean<Extension> implements ApplicationRuntime {
+public final class PackedApplicationRuntimeExtensor extends ApplicationExtensionBean<Extension> implements LifecycleApplicationController {
 
     // Sagtens encode det i sync ogsaa
     RunState desiredState = RunState.UNINITIALIZED;

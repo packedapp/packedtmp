@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation;
-
-import app.packed.mirror.Mirror;
+package app.packed.application;
 
 /**
  *
  */
-public interface RuntimeOperationErrorHandlingMirror extends Mirror {
+// Advanced Marker interface
+public interface ApplicationController {
 
-    default void print() {
-        
-    }
 }

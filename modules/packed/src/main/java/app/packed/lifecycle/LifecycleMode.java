@@ -18,6 +18,6 @@ package app.packed.lifecycle;
 /**
  *
  */
-public enum LifecycleMode {
+enum LifecycleMode {
     INITIALIZE_ONLY, FULL;
 }

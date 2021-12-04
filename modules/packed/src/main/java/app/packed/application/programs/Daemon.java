@@ -2,10 +2,10 @@ package app.packed.application.programs;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationRuntime;
-import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.LifecycleApplicationController;
+import app.packed.lifecycle.LifecycleApplicationController.StopOption;
 
 // Ideen er lige at vi laver en deamon..
 
@@ -26,7 +26,7 @@ public interface Daemon extends AutoCloseable {
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see ApplicationRuntime#stop(ApplicationRuntime.StopOption...)
+     * @see LifecycleApplicationController#stop(LifecycleApplicationController.StopOption...)
      **/
     @Override
     default void close() {
@@ -38,7 +38,7 @@ public interface Daemon extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    ApplicationRuntime runtime(); // giver ikke mening
+    LifecycleApplicationController runtime(); // giver ikke mening
 
     default void stop(StopOption... options) {
         runtime().stop(options);

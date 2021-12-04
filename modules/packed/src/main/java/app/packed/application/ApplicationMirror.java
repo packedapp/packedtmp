@@ -50,14 +50,6 @@ public interface ApplicationMirror extends Mirror {
      */
     Set<Class<? extends Extension>> disabledExtensions();
 
-    /**
-     * Returns whether or the application is runnable. The value is always determined by
-     * {@link ApplicationDriver#isExecutable()}.
-     * 
-     * @return whether or the application is runnable
-     */
-    boolean hasRuntime();
-
     default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
     }

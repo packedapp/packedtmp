@@ -114,12 +114,6 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean hasRuntime() {
-            return ApplicationSetup.this.hasRuntime;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public Module module() {
             return ApplicationSetup.this.container.realm.realmType().getModule();
         }

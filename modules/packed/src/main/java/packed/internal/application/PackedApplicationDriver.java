@@ -30,7 +30,6 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationRuntime;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
@@ -42,6 +41,7 @@ import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import packed.internal.bundle.CompositeWirelet;
 import packed.internal.bundle.PackedBundleDriver;
@@ -295,7 +295,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** A MethodHandle for invoking {@link ApplicationLaunchContext#runtime()}. */
         private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "runtime",
-                ApplicationRuntime.class);
+                LifecycleApplicationController.class);
 
         /** A MethodHandle for invoking {@link ApplicationLaunchContext#services()}. */
         private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "services",
@@ -323,7 +323,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
             if (isExecutable) { // Conditional add ApplicationRuntime
-                builder.provide(ApplicationRuntime.class).invokeExact(MH_RUNTIME, 0);
+                builder.provide(LifecycleApplicationController.class).invokeExact(MH_RUNTIME, 0);
             }
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
 

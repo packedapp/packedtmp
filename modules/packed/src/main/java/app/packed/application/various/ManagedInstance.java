@@ -5,11 +5,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.application.various.ManagedInstance.Mode;
 import app.packed.lifecycle.OnStart;
 import app.packed.lifecycle.OnStop;
 import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.LifecycleApplicationController.StopOption;
 
 // Atomic State + Failure
 public interface ManagedInstance {
