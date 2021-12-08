@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
+import app.packed.lifecycle.RunState;
 import packed.internal.bundle.InternalWirelet;
 import packed.internal.bundle.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -40,7 +40,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
     public final ApplicationSetup application;
 
     /** The launch mode of the application. */
-    final ApplicationLaunchMode launchMode;
+    final RunState launchMode;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;

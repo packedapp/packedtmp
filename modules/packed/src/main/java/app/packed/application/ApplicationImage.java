@@ -18,6 +18,7 @@ package app.packed.application;
 import app.packed.application.programs.Program;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.RunState;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
@@ -65,7 +66,7 @@ public /*sealed*/ interface ApplicationImage<A> /*permits PackedApplicationImage
      * 
      * @see ApplicationDriver#launchMode()
      */
-    ApplicationLaunchMode launchMode(); // usageMode??
+    RunState launchMode(); // usageMode??
 
     /**
      * Launches an instance of the application that this image represents.

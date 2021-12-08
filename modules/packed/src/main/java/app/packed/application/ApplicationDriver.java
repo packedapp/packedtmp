@@ -144,7 +144,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      * @see #imageOf(Assembly, Wirelet...)
      * @see ExecutionWirelets#launchMode(RunState)
      */
-    ApplicationLaunchMode launchMode();
+    RunState launchMode();
 
     // Foer var den som wirelet.
     // Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
@@ -224,9 +224,9 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      * @return
      * @throws UnsupportedOperationException
      *             if the driver was not built as executable.
-     * @see Builder#executable(ApplicationLaunchMode)
+     * @see Builder#executable(RunState)
      */
-    ApplicationDriver<A> withLaunchMode(ApplicationLaunchMode launchMode);
+    ApplicationDriver<A> withLaunchMode(RunState launchMode);
 
     /**
      * Returns a new {@code ApplicationDriver} builder.
@@ -245,6 +245,9 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
 
         // Maaske konfigure man dem direkte paa extension support klassen
         //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks. ServiceApplicationController.alwaysWrap();
+       
+        // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
+        // Hvilket ikke er muligt
         default Builder addController(@SuppressWarnings("unchecked") Class<? extends ApplicationController>... controllers) {
             return this;
         }
@@ -287,13 +290,15 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
+         * <p>
+         * The default launchState can be overridden at later point by using XYZ
          * 
-         * @param launchMode
+         * @param launchState
          *            the launch mode of the application
          * @return this builder
-         * @see ApplicationDriver#withLaunchMode(ApplicationLaunchMode)
+         * @see ApplicationDriver#withLaunchMode(RunState)
          */
-        Builder executable(ApplicationLaunchMode launchMode);
+        Builder executable(RunState launchState);
 
         default Builder restartable() {
             return this;

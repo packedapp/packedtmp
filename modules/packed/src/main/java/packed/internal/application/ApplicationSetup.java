@@ -8,7 +8,6 @@ import java.util.Set;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
-import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
@@ -46,7 +45,7 @@ public final class ApplicationSetup {
      * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(RunState)}
      * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
-    final ApplicationLaunchMode launchMode;
+    final RunState launchMode;
 
     // sync entrypoint
     @Nullable

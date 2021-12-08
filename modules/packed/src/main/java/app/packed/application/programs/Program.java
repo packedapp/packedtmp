@@ -21,7 +21,6 @@ import java.util.NoSuchElementException;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -189,7 +188,7 @@ interface Zapp extends Program {
 record ProgramImplementation(String name, ServiceLocator services, LifecycleApplicationController runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.RUNNING).build(MethodHandles.lookup(),
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(RunState.RUNNING).build(MethodHandles.lookup(),
             ProgramImplementation.class);
 
     /** {@inheritDoc} */

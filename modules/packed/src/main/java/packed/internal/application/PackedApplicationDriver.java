@@ -28,7 +28,6 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
@@ -58,15 +57,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The driver used for creating mirrors daemon driver. */
     // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
     // vil sikre sig af en application goere x...
-    public static final PackedApplicationDriver<?> MIRROR_DRIVER = new Builder()
-            .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
+    public static final PackedApplicationDriver<Void> MIRROR_DRIVER = new Builder().buildVoid();
 
     final Set<Class<? extends Extension>> disabledExtensions;
 
     private final boolean isExecutable;
 
     /** The default launch mode, may be overridden via {@link ExecutionWirelets#launchMode(RunState)}. */
-    private final ApplicationLaunchMode launchMode;
+    private final RunState launchMode;
 
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
@@ -213,7 +211,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLaunchMode launchMode() {
+    public RunState launchMode() {
         return launchMode;
     }
 
@@ -276,7 +274,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     @Override
-    public ApplicationDriver<A> withLaunchMode(ApplicationLaunchMode launchMode) {
+    public ApplicationDriver<A> withLaunchMode(RunState launchMode) {
         if (!isExecutable()) {
             throw new UnsupportedOperationException("This method is only supported if the application is executable");
         }
@@ -307,7 +305,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private boolean isExecutable;
 
         /** The default launch mode of the application. */
-        private ApplicationLaunchMode launchMode = ApplicationLaunchMode.INITIALIZED;
+        private RunState launchMode = RunState.INITIALIZED;
 
         MethodHandle mhConstructor;
 
@@ -367,7 +365,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder executable(ApplicationLaunchMode launchMode) {
+        public Builder executable(RunState launchMode) {
             requireNonNull(launchMode, "launchMode is null");
             this.isExecutable = true;
             this.launchMode = launchMode;
@@ -376,7 +374,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationDriver<Void> buildVoid(Wirelet... wirelets) {
+        public PackedA£pplicationDriver<Void> buildVoid(Wirelet... wirelets) {
             return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
         }
     }
@@ -401,7 +399,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationLaunchMode launchMode() {
+        public RunState launchMode() {
             return application.launchMode;
         }
     }
