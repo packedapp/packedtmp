@@ -98,7 +98,7 @@ public interface LifecycleApplicationController extends ApplicationController {
      * 
      * @return an immutable snapshot of the component's current status
      */
-    RunStateSnapshot info();
+    LifetimeRegionState info();
 
     /**
      * Starts and awaits the component if it has not already been started.

@@ -21,7 +21,6 @@ module app.packed {
     exports app.packed.state.sandbox;
     exports app.packed.validate;
     exports app.packed.request;
-    exports app.packed.application.entrypoint;
     exports app.packed.application.programs;
 }
 

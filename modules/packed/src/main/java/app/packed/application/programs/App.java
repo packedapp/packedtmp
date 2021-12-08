@@ -1,7 +1,8 @@
-package app.packed.application.programs2;
+package app.packed.application.programs;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
+import app.packed.build.BuildException;
 import app.packed.build.BuildWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -10,8 +11,7 @@ import app.packed.inject.service.ServiceLocator;
 /**
  * An entry point for all the various types of applications that are available in Packed.
  * <p>
- * This class does not prov
- * For creating application -instances -mirrors and -images.
+ * This class does not prov For creating application -instances -mirrors and -images.
  */
 // Ved ikke om vi vil have den i endelig version.
 // Men den er bare god i forbindelse med udvikling.
@@ -29,14 +29,6 @@ public final class App {
         throw new UnsupportedOperationException();
     }
 
-    public static void run(Assembly assembly, Wirelet... wirelets) {
-        ServiceLocator.of(assembly, wirelets);
-    }
-
-    public static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
-        ServiceLocator.of(assembly, wirelets);
-    }
-
     public static JobBuilder job() {
         throw new UnsupportedOperationException();
     }
@@ -45,6 +37,25 @@ public final class App {
         // Som cli. Men optimeret for lavt hukommelse
         // Vi clear'er altid vores bean cache faetre naar vi laver images
         throw new UnsupportedOperationException();
+    }
+
+    public static void run(Assembly assembly, String[] args, Wirelet... wirelets) {
+        ServiceLocator.of(assembly, wirelets);
+    }
+
+    /**
+     * Builds an application from the specified assembly. After which a single instance is created that runs until
+     * termination.
+     * 
+     * @param assembly
+     *            the assembly representing the application
+     * @param wirelets
+     *            optional wirelets
+     * @throws BuildException
+     *             if the specified application could not be build
+     */
+    public static void run(Assembly assembly, Wirelet... wirelets) {
+        ServiceLocator.of(assembly, wirelets);
     }
 
     public static ServiceLocator serviceLocator(Assembly assembly, Wirelet... wirelets) {

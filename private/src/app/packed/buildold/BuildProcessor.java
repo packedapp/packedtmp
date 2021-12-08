@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.programs.Daemon;
+import app.packed.application.AsyncApp;
 import app.packed.bean.instance.TstExt;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -24,12 +24,12 @@ interface BuildProcessor<T> {
     T get();
     
     public static void main(String[] args) {
-        BuildProcessor<ApplicationMirror> p = BuildProcessor.of(Daemon::mirrorOf, new TstExt(), Wirelet.named("qweqwe"));
+        BuildProcessor<ApplicationMirror> p = BuildProcessor.of(AsyncApp::mirrorOf, new TstExt(), Wirelet.named("qweqwe"));
         
-        BuildProcessor<Daemon> px = BuildProcessor.of(Daemon::run, new TstExt(), Wirelet.named("qweqwe"));
+     //   BuildProcessor<Void> px = BuildProcessor.of(App::run, new TstExt(), Wirelet.named("qweqwe"));
         
         System.out.println(p);
-        System.out.println(px);
+       // System.out.println(px);
     }
     
     static <T> BuildProcessor<T> of(BiFunction<Assembly , Wirelet[], T> action, Assembly  assembly, Wirelet... wirelets) {

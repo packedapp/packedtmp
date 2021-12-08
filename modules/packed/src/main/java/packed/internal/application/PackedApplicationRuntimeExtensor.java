@@ -26,7 +26,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.old.ApplicationExtensionBean;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.RunStateSnapshot;
+import app.packed.lifecycle.LifetimeRegionState;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
 import packed.internal.lifetime.PoolAccessor;
 import packed.internal.util.ThrowableUtil;
@@ -106,7 +106,7 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 
     /** {@inheritDoc} */
     @Override
-    public RunStateSnapshot info() {
+    public LifetimeRegionState info() {
         return null;
     }
 

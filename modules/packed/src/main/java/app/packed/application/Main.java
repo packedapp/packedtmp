@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.entrypoint;
+package app.packed.application;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -39,8 +39,7 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
  * Trying to build an application with more than a single method annotated with this annotation will fail with
  * {@link BuildException}.
  * <p>
- * Method annotated with Main must have a void return type. In line with how
- * <code>public static void main(String[] args)</code> works.
+ * Methods annotated with {@code @Main} must have a void return type.
  * <p>
  * If the application fails either at initialization time or startup time the annotated will not be invoked.
  * <p>

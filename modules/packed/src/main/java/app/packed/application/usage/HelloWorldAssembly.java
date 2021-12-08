@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.entrypoint.usage;
+package app.packed.application.usage;
 
-import app.packed.application.entrypoint.EntryPointExtension;
-import app.packed.application.entrypoint.Main;
-import app.packed.application.programs.SomeApp;
+import app.packed.application.App;
+import app.packed.application.AsyncApp;
+import app.packed.application.EntryPointExtension;
+import app.packed.application.Main;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 
@@ -31,13 +32,12 @@ public class HelloWorldAssembly extends BaseAssembly {
         install(SomeBean.class);
     }
 
-    public static void main(String[] args) {
-        // SomeApp.driver().mirrorOf(new HelloWorldAssembly());
-        // EntryPointExtensionMirror m = SomeApp.driver().mirrorOf(new
-        // HelloWorldAssembly()).use(EntryPointExtensionMirror.class);
-        // System.out.println(m);
-        // M should have exactly 1 entry point which contains the Main annotated method
-        SomeApp.run(new HelloWorldAssembly());
+    public static void main(String[] args) throws InterruptedException {
+        App.run(new HelloWorldAssembly());
+
+        try (AsyncApp app = AsyncApp.start(new HelloWorldAssembly())) {
+            Thread.sleep(1000);
+        }
     }
 
     public static class SomeBean {
@@ -45,12 +45,18 @@ public class HelloWorldAssembly extends BaseAssembly {
         @Main
         public void runMeAndExit() {
             System.out.println("HelloWorld");
-            // new Exception().printStackTrace();
         }
     }
 }
 
 class MyExt extends Extension {
+
+    // SomeApp.driver().mirrorOf(new HelloWorldAssembly());
+    // EntryPointExtensionMirror m = SomeApp.driver().mirrorOf(new
+    // HelloWorldAssembly()).use(EntryPointExtensionMirror.class);
+    // System.out.println(m);
+    // M should have exactly 1 entry point which contains the Main annotated method
+
 
     public void foo() {
         use(EntryPointExtension.Support.class).manage();

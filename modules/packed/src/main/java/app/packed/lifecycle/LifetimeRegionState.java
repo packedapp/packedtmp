@@ -18,11 +18,19 @@ package app.packed.lifecycle;
 import java.util.Optional;
 
 /**
- * An immutable snapshot of the state of a container.
+ * The state immutable snapshot of the state of a container.
  */
 // Generic StateInfo immutable class...
 //  HostInfo?
-public interface RunStateSnapshot {
+
+// Lifetime
+
+// Det er ikke application state. Det kunne ogsaa vaere en Session
+
+// Ved ikke om den bare skal hedde RunStateSnapshot.
+// Ved ikke hvad metoderne skal hedde hvis man har begge dele paa et App interface.
+
+public interface LifetimeRegionState {
 
     /** {@return the actual state of the entity.} */
     RunState actual();
@@ -52,9 +60,9 @@ public interface RunStateSnapshot {
     }
 
     /**
-     * If the current state is because a failure of some kind. Returns the failure
+     * If the current state is a failure state. Returns the actual failure.
      * 
-     * @return stuff
+     * @return the state failure (optional)
      */
     // Maybe Exception??? Not sure an error
     Optional<Throwable> throwable();

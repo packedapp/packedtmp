@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.entrypoint;
+package app.packed.application;
 
 import java.util.Iterator;
 import java.util.Optional;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;

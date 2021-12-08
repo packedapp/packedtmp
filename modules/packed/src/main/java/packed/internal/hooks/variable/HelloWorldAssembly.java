@@ -16,7 +16,7 @@
 package packed.internal.hooks.variable;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.entrypoint.Main;
+import app.packed.application.Main;
 import app.packed.application.programs.SomeApp;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;

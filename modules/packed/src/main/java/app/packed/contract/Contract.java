@@ -15,16 +15,10 @@
  */
 package app.packed.contract;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.Set;
 
-import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLaunchMode;
-import app.packed.base.Completion;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import packed.internal.application.ApplicationLaunchContext;
 
 /**
  * This class is the base class for contracts in Packed.
@@ -32,10 +26,6 @@ import packed.internal.application.ApplicationLaunchContext;
 // Det er end slags beskrivelse. Og 
 // implements AttributeHolder???
 public abstract class Contract {
-
-    /** A daemon driver. */
-    private static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder().executable(ApplicationLaunchMode.EXECUTE_UNTIL_TERMINATED)
-            .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** {@inheritDoc} */
     @Override
@@ -57,18 +47,5 @@ public abstract class Contract {
     static Set<Contract> allOf(Assembly  assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
         // DAEMON.analyze(assembly, wirelets).
-    }
-
-    /**
-     * Returns an artifact driver that can be used for analysis. Statefull
-     * 
-     * @return the default artifact driver for analysis
-     */
-    // maybe just analyzer
-    // I think it should fail if used to create images/instantiate anything
-    // contractAnalyzer paa Con
-    // defaultIntrospector
-    protected static ApplicationDriver<?> defaultAnalyzer() {
-        return DAEMON;
     }
 }

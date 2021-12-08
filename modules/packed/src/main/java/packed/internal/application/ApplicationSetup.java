@@ -40,8 +40,6 @@ public final class ApplicationSetup {
     /** The root container of the application. Created in the constructor of this class. */
     public final ContainerSetup container;
 
-    public final boolean hasRuntime;
-
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
@@ -69,8 +67,6 @@ public final class ApplicationSetup {
         this.buildKind = buildKind;
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
-
-        this.hasRuntime = driver.isExecutable();
 
         this.descriptor = new PackedApplicationDescriptor();
 

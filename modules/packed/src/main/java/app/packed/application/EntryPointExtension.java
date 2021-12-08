@@ -1,4 +1,4 @@
-package app.packed.application.entrypoint;
+package app.packed.application;
 
 import java.util.function.Supplier;
 

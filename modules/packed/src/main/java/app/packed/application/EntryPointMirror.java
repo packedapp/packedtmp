@@ -1,4 +1,4 @@
-package app.packed.application.entrypoint;
+package app.packed.application;
 
 import app.packed.bean.member.operation.RuntimeOperationMirror;
 import app.packed.component.ComponentMirror;

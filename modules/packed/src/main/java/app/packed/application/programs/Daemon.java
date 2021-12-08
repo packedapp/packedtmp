@@ -1,6 +1,7 @@
 package app.packed.application.programs;
 
 import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -79,42 +80,42 @@ public interface Daemon extends AutoCloseable {
      *            optional wirelets
      * @return an application mirror for the daemon
      */
-    static ApplicationMirror mirrorOf(Assembly  assembly, Wirelet... wirelets) {
+    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 
     // When do want to run a daemon???
     // Isn't it main...
-    static Daemon run(Assembly  assembly, String[] args, Wirelet... wirelets) {
+    static Daemon run(Assembly assembly, String[] args, Wirelet... wirelets) {
         return run(assembly, wirelets);
     }
 
-    static Daemon run(Assembly  assembly, Wirelet... wirelets) {
+    static Daemon run(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     // Starts async... Builds/initializes sync
-    static Daemon runAsync(Assembly  assembly, String[] args, Wirelet... wirelets) {
+    static Daemon runAsync(Assembly assembly, String[] args, Wirelet... wirelets) {
         return run(assembly, wirelets);
     }
 
-    static Daemon runAsync(Assembly  assembly, Wirelet... wirelets) {
+    static Daemon runAsync(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static Daemon start(Assembly  assembly, String[] args, Wirelet... wirelets) {
+    static Daemon start(Assembly assembly, String[] args, Wirelet... wirelets) {
         return start(assembly, wirelets);
     }
 
-    static Daemon start(Assembly  assembly, Wirelet... wirelets) {
+    static Daemon start(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static Daemon startAsync(Assembly  assembly, String[] args, Wirelet... wirelets) {
+    static Daemon startAsync(Assembly assembly, String[] args, Wirelet... wirelets) {
         return startAsync(assembly, wirelets);
     }
 
-    static Daemon startAsync(Assembly  assembly, Wirelet... wirelets) {
+    static Daemon startAsync(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -125,14 +126,20 @@ public interface Daemon extends AutoCloseable {
 
         Launcher neverRestart();
 
-        DaemonImage newImage(Assembly  assembly);
+        ApplicationImage<Daemon> newImage(Assembly assembly);
 
-        DaemonImage newImage(Assembly  assembly, Wirelet... wirelets);
+        ApplicationImage<Daemon> newImage(Assembly assembly, Wirelet... wirelets);
 
         Launcher restartPolicy(Object somePolicy);
 
-        Daemon start(Assembly  assembly);
+        Daemon start(Assembly assembly);
 
-        Daemon start(Assembly  assembly, Wirelet... wirelets);
+        Daemon start(Assembly assembly, Wirelet... wirelets);
+    }
+}
+
+class Doo {
+    public static void main(String[] args) {
+        //Daemon.launcher().args(args).start(new Nice());
     }
 }
