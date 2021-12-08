@@ -479,10 +479,6 @@ interface ApplicationDriverSandbox<A> {
         throw new UnsupportedOperationException();
     }
 
-    // Tog den faktisk ud igen
-    default ApplicationMirror mirror(Assembly  assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
 
     default void printContracts(Assembly  assembly, Wirelet... wirelets) {
 
