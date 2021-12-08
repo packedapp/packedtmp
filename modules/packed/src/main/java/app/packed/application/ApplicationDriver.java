@@ -133,7 +133,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
     // JobExtension.execute()
 
     /**
-     * Returns the launch mode of applications's created by this driver.
+     * Returns the launch mode of applications created by this driver.
      * <p>
      * The launch mode can be overridden by using {@link ExecutionWirelets#launchMode(RunState)}.
      * <p>
@@ -273,8 +273,6 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
 
         // Hvorfor har vi en caller her???
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
-
-        <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
 
         ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
         

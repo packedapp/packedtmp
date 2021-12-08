@@ -338,9 +338,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public <A> PackedApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
+        private <A> PackedApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
             mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             return new PackedApplicationDriver<>(this);
         }
@@ -374,7 +372,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public PackedA£pplicationDriver<Void> buildVoid(Wirelet... wirelets) {
+        public PackedApplicationDriver<Void> buildVoid(Wirelet... wirelets) {
             return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
         }
     }
