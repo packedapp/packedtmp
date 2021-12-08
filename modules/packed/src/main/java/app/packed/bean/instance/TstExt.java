@@ -2,7 +2,7 @@ package app.packed.bean.instance;
 
 import java.util.Optional;
 
-import app.packed.application.programs.SomeApp;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
@@ -19,7 +19,7 @@ public class TstExt extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        SomeApp.run(new TstExt());
+        App.run(new TstExt());
     }
 
     static class MyExt extends Extension {

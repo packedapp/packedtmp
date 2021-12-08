@@ -16,10 +16,10 @@ import app.packed.inject.service.ServiceLocator;
 // Ved ikke om vi vil have den i endelig version.
 // Men den er bare god i forbindelse med udvikling.
 // Det der taler for den i den endelige version er som api explorer
-public final class App {
+public final class OldApp {
 
     /** Appless */
-    private App() {}
+    private OldApp() {}
 
     // App.daemon().restartable(RestartablePolicy.IMMEDIATLY).start(new Assembly());
     // App.cli().execute()

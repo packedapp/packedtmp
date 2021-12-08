@@ -19,7 +19,9 @@ package app.packed.application;
  *
  */
 public class ApplicationConfiguration {
-
+    
+    // Restart
+    // Lifecycle
 }
 // Ideen er lidt at kunne kalde 
 // assembly.application().

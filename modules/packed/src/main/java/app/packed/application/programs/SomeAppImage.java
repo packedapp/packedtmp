@@ -15,9 +15,9 @@
  */
 package app.packed.application.programs;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.base.Completion;
 import app.packed.build.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -27,7 +27,7 @@ import app.packed.container.Wirelet;
  * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is
  * typically used for running GraalVM native image.
  * 
- * @see SomeApp
+ * @see App
  */
 // Optimized for running once
 
@@ -41,7 +41,7 @@ import app.packed.container.Wirelet;
 public /* primitive */ final class SomeAppImage {
 
     /** The image we are wrapping. */
-    private final ApplicationImage<Completion> image;
+    private final ApplicationImage<Void> image;
 
     /**
      * Creates a new main image.
@@ -51,8 +51,8 @@ public /* primitive */ final class SomeAppImage {
      * @param wirelets
      *            optional wirelets
      */
-    private SomeAppImage(Assembly  assembly, Wirelet... wirelets) {
-        this.image = SomeApp.driver().imageOf(assembly, wirelets);
+    private SomeAppImage(Assembly assembly, Wirelet... wirelets) {
+        this.image = App.driver().imageOf(assembly, wirelets);
     }
 
     /**
@@ -97,7 +97,7 @@ public /* primitive */ final class SomeAppImage {
      *             if the image could not be build
      * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
-    public static SomeAppImage of(Assembly  assembly, Wirelet... wirelets) {
+    public static SomeAppImage of(Assembly assembly, Wirelet... wirelets) {
         return new SomeAppImage(assembly, wirelets);
     }
 }

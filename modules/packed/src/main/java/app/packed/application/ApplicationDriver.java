@@ -22,7 +22,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.application.programs.Program;
-import app.packed.application.programs.SomeApp;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildException;
@@ -61,7 +60,7 @@ import packed.internal.application.PackedApplicationDriver;
  * @param <A>
  *            the type of application interface this driver creates.
  * @see Program#driver()
- * @see SomeApp#driver()
+ * @see App#driver()
  * @see ServiceLocator#driver()
  */
 // Environment + Application Interface + Result
@@ -105,7 +104,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link SomeApp#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the main assembly of the application
@@ -119,7 +118,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      * @throws PanicException
      *             if the application had an executing phase and it fails
      * @see Program#start(Assembly, Wirelet...)
-     * @see SomeApp#run(Assembly, Wirelet...)
+     * @see App#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */
     A launch(Assembly  assembly, Wirelet... wirelets); // newInstance
@@ -274,6 +273,8 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
 
         <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
 
+        ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
+        
         /**
          * Disables 1 or more extensions. Attempting to use a disabled extension will result in an
          * {@link UnavailableExtensionException} being thrown
@@ -297,7 +298,6 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
         default Builder restartable() {
             return this;
         }
-        // cannot be instantiated, typically used if you just want to analyze
 
         /**
          * 
@@ -307,11 +307,6 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
          * @see ApplicationDriver#type()
          */
         default Builder resultType(Class<?> applicationType) {
-            throw new UnsupportedOperationException();
-        }
-
-        default Builder nameable() {
-            // add a string with the name of the application
             throw new UnsupportedOperationException();
         }
 

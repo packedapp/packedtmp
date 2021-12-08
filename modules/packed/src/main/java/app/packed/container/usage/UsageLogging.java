@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.application.programs.SomeApp;
+import app.packed.application.App;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
@@ -53,7 +53,7 @@ class UsageLogging {
     public static void main(String[] args) {
         ServiceContract.of(new MyOtherAss()).print();
         System.out.println("");
-        SomeApp.run(new MyOtherAss());
+        App.run(new MyOtherAss());
     }
 
     @AssemblySetup(MyProc.class)
