@@ -15,13 +15,13 @@
  */
 package app.packed.bean.member.operation.examples;
 
-import app.packed.bean.member.operation.RuntimeOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirror;
 
 /**
  *
  */
 // A lifecycle operation
-public interface LifecycleActionMirror extends RuntimeOperationMirror {
+public interface LifecycleActionMirror extends BeanOperationMirror {
 
     // Er en del af en liste eller en graf.
     

@@ -131,7 +131,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            optional wirelets
      * @return a build setup
      */
-    private BuildSetup build(ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    private ApplicationSetup build(ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
@@ -157,7 +157,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Close the realm if the application has been built successfully
         realm.close();
 
-        return realm.build;
+        return realm.build.application;
     }
 
     public <C extends Composer> A compose(ContainerDriver containerDriver, Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer,
@@ -192,8 +192,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        BuildSetup build = build(ApplicationBuildType.IMAGE, assembly, wirelets);
-        return new PackedApplicationImage<>(this, build.application);
+        ApplicationSetup application = build(ApplicationBuildType.IMAGE, assembly, wirelets);
+        return new PackedApplicationImage<>(this, application);
     }
 
     /** {@inheritDoc} */
@@ -205,8 +205,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        BuildSetup build = build(ApplicationBuildType.INSTANCE, assembly, wirelets);
-        return ApplicationLaunchContext.launch(this, build.application, null);
+        ApplicationSetup application = build(ApplicationBuildType.INSTANCE, assembly, wirelets);
+        return ApplicationLaunchContext.launch(this, application, null);
     }
 
     /** {@inheritDoc} */
@@ -218,7 +218,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return build(ApplicationBuildType.MIRROR, assembly, wirelets).application.mirror();
+        ApplicationSetup application = build(ApplicationBuildType.MIRROR, assembly, wirelets);
+        return application.mirror();
     }
 
     /**
@@ -242,8 +243,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        BuildSetup build = build(ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
-        return new PackedApplicationImage<>(this, build.application);
+        ApplicationSetup application = build(ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
+        return new PackedApplicationImage<>(this, application);
     }
 
     @Override

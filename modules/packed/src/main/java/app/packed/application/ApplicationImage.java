@@ -15,7 +15,6 @@
  */
 package app.packed.application;
 
-import app.packed.application.programs.Program;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
@@ -43,10 +42,10 @@ import app.packed.lifecycle.RunState;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.application.programs.Program} or other
+ * An image can be used to create new instances of {@link app.packed.application.Program} or other
  * applications. Artifact images can not be used as a part of other containers, for example, via
  * 
- * @see Program#imageOf(Assembly, Wirelet...)
+ * @see App#imageOf(Assembly, Wirelet...)
  */
 
 // Det er som default mange gange...

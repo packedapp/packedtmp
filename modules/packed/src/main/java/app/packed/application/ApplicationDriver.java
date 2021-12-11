@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.application.programs.Program;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildException;
@@ -51,15 +50,14 @@ import packed.internal.application.PackedApplicationDriver;
  * 
  * Which is probably your best bet is to look at the source code of them to create your own.
  * <p>
- * This class can be used to create custom artifact types if the built-in artifact types such as {@link Program} and
- * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link Program} and
+ * This class can be used to create custom artifact types if the built-in artifact types such as {@link App} and
+ * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link App} and
  * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
  * Normally, you never create more than a single instance of an application driver.
  * 
  * @param <A>
  *            the type of application interface this driver creates.
- * @see Program#driver()
  * @see App#driver()
  * @see ServiceLocator#driver()
  */
@@ -86,7 +84,6 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see Program#imageOf(Assembly, Wirelet...)
      * @see ServiceLocator#imageOf(Assembly, Wirelet...)
      */
     ApplicationImage<A> imageOf(Assembly  assembly, Wirelet... wirelets);
@@ -104,7 +101,7 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * {@link App#run(Assembly, Wirelet...)} .
      * 
      * @param assembly
      *            the main assembly of the application
@@ -117,7 +114,6 @@ public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriv
      *             if the application failed to initializing
      * @throws PanicException
      *             if the application had an executing phase and it fails
-     * @see Program#start(Assembly, Wirelet...)
      * @see App#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */

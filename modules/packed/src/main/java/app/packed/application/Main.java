@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.build.BuildException;
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
@@ -52,23 +51,13 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 // and then shutdown container down again
 // Panic if it fails???? or do we not wrap exception??? I think we wrap...
 // We always wrap in container panic exception
-// @EntryPoint
-// What happens with CLI
-// We can have multiple entry points
-// Some of them deamons and some of them not...
-// Det er maaske mere noget med state end kun container...
 
 //I think this creates a job...
-
-//Den skal vaere i app.packed.application fremover
-//Det er entry points for en application
-
-//Maaske skal de vaere "manuelle" paa en eller anden maade dem der bruger Extension
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionMember(Extension.class)
+@ExtensionMember(EntryPointExtension.class)
 @BeanMethod.Hook(bootstrap = MySidecar.class)
 public @interface Main {}
 
@@ -109,11 +98,3 @@ class MySidecar extends RealMethodSidecarBootstrap {
 // We will gerne kunne foresporge om en Container har en Computer
 // Det har en semantics betydning. Det har et request
 // boolean stopOnSucces() default true;
-
-// ExecutionResult<T>... Maaske bare CompletableFuture
-
-// Vi skal have en maade hvorpaa en shell driver skal kunne faa et resultat.
-
-// CLI vs Execute
-
-// Cli must be void...

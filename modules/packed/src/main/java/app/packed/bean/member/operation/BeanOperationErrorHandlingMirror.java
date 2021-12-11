@@ -20,7 +20,7 @@ import app.packed.mirror.Mirror;
 /**
  *
  */
-public interface RuntimeOperationErrorHandlingMirror extends Mirror {
+public interface BeanOperationErrorHandlingMirror extends Mirror {
 
     default void print() {
         

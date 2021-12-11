@@ -18,14 +18,14 @@ package app.packed.bean.member.operation.examples;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.member.operation.RuntimeOperationMirror;
-import app.packed.bean.member.operation.RuntimeOperationMirrorSelection;
+import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirrorSelection;
 import app.packed.container.Assembly;
 
 /**
  *
  */
-public interface ServiceExportMirror extends RuntimeOperationMirror {
+public interface ServiceExportMirror extends BeanOperationMirror {
 
     /** {@return the key that the service is exported with.} */
     Key<?> key();
@@ -36,7 +36,7 @@ public interface ServiceExportMirror extends RuntimeOperationMirror {
 
     // find usage of the exported service
     
-    public static RuntimeOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
+    public static BeanOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
         throw new UnsupportedOperationException();
     }
 }

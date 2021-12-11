@@ -17,7 +17,6 @@ package packed.internal.util;
 
 import java.util.ServiceLoader;
 
-import app.packed.application.programs.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceWirelets;
 
@@ -40,9 +39,9 @@ public class PluginTester extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        try (Program app = Program.start(new PluginTester())) {
-            app.services().selectWithAnyQualifiers(Runnable.class).forEachInstance(Runnable::run);
-        }
+//        try (ServiceLocator app = ServiceLocator.of(new PluginTester())) {
+//            app.services().selectWithAnyQualifiers(Runnable.class).forEachInstance(Runnable::run);
+//        }
     }
 }
 // Normally a container will only retain those service that any

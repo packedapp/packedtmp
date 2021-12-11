@@ -17,13 +17,13 @@ package app.packed.bean.member.operation.examples;
 
 import java.util.function.Predicate;
 
-import app.packed.bean.member.operation.RuntimeOperationMirror;
-import app.packed.bean.member.operation.RuntimeOperationMirrorSelection;
+import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirrorSelection;
 
 /**
  *
  */
-public interface EventBusSubscribeMirror extends RuntimeOperationMirror {
+public interface EventBusSubscribeMirror extends BeanOperationMirror {
 
     Class<?> eventType();
     
@@ -40,7 +40,7 @@ public interface EventBusSubscribeMirror extends RuntimeOperationMirror {
     }
     
     // Tror nu ikke det er noget jeg ender med at lave.. Men interessant
-    interface SubscribeEventMirrorStream extends RuntimeOperationMirrorSelection<EventBusSubscribeMirror> {
+    interface SubscribeEventMirrorStream extends BeanOperationMirrorSelection<EventBusSubscribeMirror> {
         default SubscribeEventMirrorStream receivesEventOfType(Class<?> x) {
             return this;
         }

@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.member.operation.RuntimeOperationMirror;
-import app.packed.bean.member.operation.RuntimeOperationMirrorSelection;
+import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirrorSelection;
 
 /**
  *
@@ -39,9 +39,9 @@ public interface BeanClassMirror extends BeanElementMirror {
 
     List<BeanMethodMirror> methods();
     
-    RuntimeOperationMirrorSelection<RuntimeOperationMirror> operations();
+    BeanOperationMirrorSelection<BeanOperationMirror> operations();
     
-    <T extends RuntimeOperationMirror> RuntimeOperationMirrorSelection<T> operations(Class<T> operationType);
+    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> operationType);
 
     /**
      * @return

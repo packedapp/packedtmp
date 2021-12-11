@@ -7,13 +7,9 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 
 // Cannot use both @app.packed.application.Main and the CLI extension at the same time.
-
-// Taenker vi godt vil have en extension...
-
-// Engang ville vi vil gerne droppe den. Hoved grunden er at applikationen godt vil bestemme om entry points'ene.
-// Altsaa vi skal jo ikke goere noget specifikt fra assemblien.
-// Det er jo dem der deployer/mapper applikationen som siger hvad der skal ske. Dvs. 
-// De kan ikke bestemme at der skal installeres en extension
+/**
+ * An extension that controls any entry points of the an application.
+ */
 public class EntryPointExtension extends Extension {
 
     public void setShutdownStrategy(Supplier<Throwable> maker) {
@@ -58,3 +54,7 @@ public class EntryPointExtension extends Extension {
 //        }
     }
 }
+//Engang ville vi vil gerne droppe den. Hoved grunden er at applikationen godt vil bestemme om entry points'ene.
+//Altsaa vi skal jo ikke goere noget specifikt fra assemblien.
+//Det er jo dem der deployer/mapper applikationen som siger hvad der skal ske. Dvs. 
+//De kan ikke bestemme at der skal installeres en extension

@@ -15,7 +15,7 @@
  */
 package zandbox.packed.hooks;
 
-import app.packed.application.programs.Program;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceExtension;
@@ -35,7 +35,7 @@ public class ZestMe extends BaseAssembly {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
 //        ExtensionDescriptor ed = ExtensionDescriptor.of(rMyExt.class);
-        Program.start(new ZestMe() /* , BuildWirelets.printDebug().all() */);
+        App.run(new ZestMe() /* , BuildWirelets.printDebug().all() */);
         // System.out.println(ed.dependencies());
         System.out.println(System.currentTimeMillis() - start);
 

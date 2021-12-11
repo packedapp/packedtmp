@@ -21,13 +21,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.application.programs.Program;
 import app.packed.extension.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link ComponentMirror components}. An
- * instance of this class is normally acquired by {@link Program#stream(Option...)}.
+ * instance of this class is normally acquired by.
  *
  * <pre>
  * App app  = ...
@@ -219,7 +218,6 @@ public interface ComponentMirrorStream extends Stream<ComponentMirror> {
      * The order in which children should be processed
      * 
      * @see ComponentMirror#stream(Option...)
-     * @see Program#stream(Option...)
      */
     // I virkeligheden er det system view options.
     // Noget af det vil jeg mene..

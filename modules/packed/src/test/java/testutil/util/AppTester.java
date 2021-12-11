@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.programs.Program;
+import app.packed.application.Program;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 

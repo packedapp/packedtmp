@@ -15,12 +15,12 @@
  */
 package app.packed.lifecycle;
 
-import app.packed.application.programs.Program;
+import app.packed.application.App;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link Program#start(Assembly, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link App#run(Assembly, Wirelet...)}.
  * <p>
  */
 

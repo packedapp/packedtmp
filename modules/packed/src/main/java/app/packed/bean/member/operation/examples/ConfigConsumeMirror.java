@@ -15,13 +15,13 @@
  */
 package app.packed.bean.member.operation.examples;
 
-import app.packed.bean.member.operation.RuntimeOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirror;
 
 /**
  *
  */
 // Er det en speciel usesite mirror???
-public interface ConfigConsumeMirror extends RuntimeOperationMirror {
+public interface ConfigConsumeMirror extends BeanOperationMirror {
 
     Object scope();
 }

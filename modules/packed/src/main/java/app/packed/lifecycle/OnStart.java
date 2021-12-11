@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.application.programs.Program;
 import app.packed.application.various.ManagedInstance;
 import app.packed.inject.InjectionContext;
 
@@ -78,7 +77,7 @@ import app.packed.inject.InjectionContext;
  * application failing to start. After which the application will automatically move to the shutdown phase.
  * <p>
  *
- * Normally services are not available from {@link Program#use(Class)} until all services have been successfully
+ * Normally services are not available from xx until all services have been successfully
  * started. However, by using this annotation. Services that not yet completed startup can be injected. It is up to the
  * user to make sure that invoking method on instances that injected this does not cause any problems. For example,
  * calling a method on another service that only works when the container is in the running phase.

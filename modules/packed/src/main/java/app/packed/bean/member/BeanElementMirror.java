@@ -15,8 +15,8 @@
  */
 package app.packed.bean.member;
 
-import app.packed.bean.member.operation.RuntimeOperationMirror;
-import app.packed.bean.member.operation.RuntimeOperationMirrorSelection;
+import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirrorSelection;
 import app.packed.mirror.Mirror;
 
 /**
@@ -24,7 +24,7 @@ import app.packed.mirror.Mirror;
  */
 public interface BeanElementMirror extends Mirror {
     
-    RuntimeOperationMirrorSelection<RuntimeOperationMirror> operations();
+    BeanOperationMirrorSelection<BeanOperationMirror> operations();
     
     boolean isSynthetic();
 }

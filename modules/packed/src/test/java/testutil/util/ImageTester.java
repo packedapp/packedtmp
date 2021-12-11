@@ -18,7 +18,7 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.programs.Program;
+import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 

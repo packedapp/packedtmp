@@ -160,7 +160,7 @@ public abstract class Assembly {
      */
     @SuppressWarnings("unused")
     private void doBuild(ContainerConfiguration configuration) {
-        // I'm not we need volatile here
+        // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             ContainerSetup cs = configuration.bundle();

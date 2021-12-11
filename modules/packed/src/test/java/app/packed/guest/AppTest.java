@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.programs.Program;
+import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 

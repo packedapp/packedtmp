@@ -18,7 +18,8 @@ package app.packed.application;
 /**
  *
  */
-// Advanced Marker interface
+// Advanced Marker interface. Eller ikke IDK
+// Problemet er at nogle fx 
 public interface ApplicationController {
 
 }

@@ -17,8 +17,8 @@ package app.packed.bean.member.operation.examples;
 
 import java.util.List;
 
-import app.packed.bean.member.operation.RuntimeOperationMirror;
-import app.packed.bean.member.operation.RuntimeOperationMirrorSelection;
+import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.bean.member.operation.BeanOperationMirrorSelection;
 import app.packed.container.Assembly;
 
 /**
@@ -27,7 +27,7 @@ import app.packed.container.Assembly;
 
 // Hvis vi har noget dataflow aktie ting... Fungere den maaske ikke
 
-public interface ScheduleTaskMirror extends RuntimeOperationMirror {
+public interface ScheduleTaskMirror extends BeanOperationMirror {
 
     /** {@return the key that the service is exported with.} */
     Object schedule();
@@ -35,7 +35,7 @@ public interface ScheduleTaskMirror extends RuntimeOperationMirror {
     /// Hmm, Hmm, Hmm. Det er jo det her graf ting...
     List<ScheduleTaskMirror> subtasks();
 
-    public static RuntimeOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
+    public static BeanOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
         throw new UnsupportedOperationException();
     }
 }

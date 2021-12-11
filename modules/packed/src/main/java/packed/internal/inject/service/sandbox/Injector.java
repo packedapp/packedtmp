@@ -18,9 +18,9 @@ package packed.internal.inject.service.sandbox;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.programs.Program;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
@@ -174,7 +174,7 @@ public interface Injector extends ServiceLocator {
     }
 }
 
-/** An artifact driver for creating {@link Program} instances. */
+/** An artifact driver for creating {@link App} instances. */
 final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);

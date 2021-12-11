@@ -21,6 +21,6 @@ package app.packed.bean.member.operation;
 
 // Maaske er view et bedre ord... Taenker vi lazy evaluater
 // It is kind of like a ComponentStream. But then again ComponentStream is hierachical
-public interface RuntimeOperationMirrorSelection<T extends RuntimeOperationMirror> extends Iterable<T> {
+public interface BeanOperationMirrorSelection<T extends BeanOperationMirror> extends Iterable<T> {
 
 }

@@ -24,7 +24,8 @@ import app.packed.mirror.Mirror;
 /**
  *
  */
-public interface RuntimeOperationMirror extends Mirror {
+// A bean function or bean method
+public interface BeanOperationMirror extends Mirror {
 
     default ApplicationMirror application() {
         return bean().application();
@@ -38,7 +39,7 @@ public interface RuntimeOperationMirror extends Mirror {
 
     BeanElementMirror element(); // Altsaa det er vel naermest aldrig en constructor???
 
-    RuntimeOperationErrorHandlingMirror errorHandling(); // What happens if the operation fails
+    BeanOperationErrorHandlingMirror errorHandling(); // What happens if the operation fails
     
     
     // Might not match the signature of the method.
