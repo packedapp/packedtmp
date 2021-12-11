@@ -16,7 +16,6 @@
 package app.packed.application.usage;
 
 import app.packed.application.App;
-import app.packed.application.AsyncApp;
 import app.packed.application.EntryPointExtension;
 import app.packed.application.Main;
 import app.packed.container.BaseAssembly;
@@ -35,9 +34,9 @@ public class HelloWorldAssembly extends BaseAssembly {
     public static void main(String[] args) throws InterruptedException {
         App.run(new HelloWorldAssembly());
 
-        try (AsyncApp app = AsyncApp.start(new HelloWorldAssembly())) {
-            Thread.sleep(1000);
-        }
+//        try (AsyncApp app = AsyncApp.start(new HelloWorldAssembly())) {
+//            Thread.sleep(1000);
+//        }
     }
 
     public static class SomeBean {

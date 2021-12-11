@@ -303,10 +303,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
 
         /** Whether or not the applications that will be produced are executable. */
-        private boolean isExecutable;
+        private boolean isExecutable = true;
 
         /** The default launch mode of the application. */
-        private RunState launchMode = RunState.INITIALIZED;
+        private RunState launchMode = RunState.TERMINATED;
 
         MethodHandle mhConstructor;
 
