@@ -38,11 +38,11 @@ public final class App {
     private App() {}
 
     public static ApplicationImage<Void> build(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return DRIVER.imageOf(assembly, wirelets);
     }
 
     public static ApplicationImage<Void> buildImage(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return DRIVER.imageOf(assembly, wirelets);
     }
 
     /** {@return the application driver used by this class.} */

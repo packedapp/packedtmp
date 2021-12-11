@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package micro.inject;
+package app.packed.micro.base;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Map;
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -30,7 +28,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.base.Key;
+import app.packed.container.BaseAssembly;
+import app.packed.inject.service.ServiceExtension;
+import packed.internal.inject.service.sandbox.Injector;
 
 /**
  *
@@ -41,49 +41,48 @@ import app.packed.base.Key;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class KeyMicro {
-
-    static final Map<String, Integer> MAP_STRING_INTEGER = Map.of();
-
-    static final Field MAP_STRING_INTEGER$ = Arrays.stream(KeyMicro.class.getDeclaredFields()).filter(e -> e.getName().equals("MAP_STRING_INTEGER")).findFirst()
-            .get();
-
-    static final String STRING = "";
-
-    static final String STRING_QUALIFIED = "";
-
-    static final Field STRING_QUALIFIED$ = Arrays.stream(KeyMicro.class.getDeclaredFields()).filter(e -> e.getName().equals("STRING_QUALIFIED")).findFirst()
-            .get();
-
-    static final Field STRING$ = Arrays.stream(KeyMicro.class.getDeclaredFields()).filter(e -> e.getName().equals("STRING")).findFirst().get();
+public class InjectorMicro {
 
     @Benchmark
-    public Key<?> keyFromFieldMapStringInteger() {
-        return Key.convertField(MAP_STRING_INTEGER$);
+    public Injector emptyInjector() {
+        return Injector.configure(c -> {});
     }
 
     @Benchmark
-    public Key<?> keyFromFieldString() {
-        return Key.convertField(STRING$);
+    public Injector injectorStringInstance() {
+        return Injector.configure(c -> c.provideInstance("foo"));
     }
 
     @Benchmark
-    public Key<?> keyFromFieldStringQualified() {
-        return Key.convertField(STRING_QUALIFIED$);
+    public Injector injectorStringExportedInstance() {
+        return Injector.of(new SimpleInjectorAssembly());
     }
 
     @Benchmark
-    public Key<String> KeyOfString() {
-        return Key.of(String.class);
+    public String injectorStringInstanceUse() {
+        return Injector.of(new SimpleInjectorAssembly()).use(String.class);
     }
 
     @Benchmark
-    public Key<String> newKeyString() {
-        return new Key<String>() {};
+    public Injector injectorServiceNeedingString() {
+        return Injector.configure(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.provideInstance("foo");
+            c.provide(NeedsString.class);
+        });
     }
 
-    @Benchmark
-    public Key<String> newKeyStringQualified() {
-        return new Key<@StringQualifier("foo") String>() {};
+    public static class NeedsString {
+        NeedsString(String s) {}
+    }
+
+    static class SimpleInjectorAssembly extends BaseAssembly {
+
+        @Override
+        public void build() {
+            ServiceExtension e = use(ServiceExtension.class);
+            provideInstance("Hey");
+            e.export(String.class);
+        }
     }
 }

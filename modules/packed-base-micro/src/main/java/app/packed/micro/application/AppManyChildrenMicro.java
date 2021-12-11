@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package micro.inject;
+package app.packed.micro.application;
 
-import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -24,13 +23,13 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceExtension;
-import packed.internal.inject.service.sandbox.Injector;
 
 /**
  *
@@ -41,48 +40,34 @@ import packed.internal.inject.service.sandbox.Injector;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class InjectorMicro {
+public class AppManyChildrenMicro {
+
+    @Param({ "0", "1", "10", "100", "1000", "10000", "100000", "1000000" })
+    static long size;
 
     @Benchmark
-    public Injector emptyInjector() {
-        return Injector.configure(c -> {});
-    }
-
-    @Benchmark
-    public Injector injectorStringInstance() {
-        return Injector.configure(c -> c.provideInstance("foo"));
-    }
-
-    @Benchmark
-    public Injector injectorStringExportedInstance() {
-        return Injector.of(new SimpleInjectorAssembly());
-    }
-
-    @Benchmark
-    public String injectorStringInstanceUse() {
-        return Injector.of(new SimpleInjectorAssembly()).use(String.class);
-    }
-
-    @Benchmark
-    public Injector injectorServiceNeedingString() {
-        return Injector.configure(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.provideInstance("foo");
-            c.provide(NeedsString.class);
+    public void manyChildren() {
+        App.run(new BaseAssembly() {
+            @Override
+            protected void build() {
+                for (int i = 0; i < size; i++) {
+                    link(new TAssembly(Integer.toString(i)));
+                }
+            }
         });
     }
 
-    public static class NeedsString {
-        NeedsString(String s) {}
-    }
+    static class TAssembly extends BaseAssembly {
 
-    static class SimpleInjectorAssembly extends BaseAssembly {
+        final String name;
+
+        TAssembly(String name) {
+            this.name = name;
+        }
 
         @Override
-        public void build() {
-            ServiceExtension e = use(ServiceExtension.class);
-            provideInstance("Hey");
-            e.export(String.class);
+        protected void build() {
+            named(name);
         }
     }
 }

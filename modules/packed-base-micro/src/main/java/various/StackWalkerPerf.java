@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package micro.app;
+package various;
 
+import java.lang.StackWalker.Option;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -23,51 +26,35 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
-
-import app.packed.application.Program;
-import app.packed.container.BaseAssembly;
 
 /**
  *
  */
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 10, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(1)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class AppManyChildrenMicro {
+public class StackWalkerPerf {
 
-    @Param({ "0", "1", "10", "100", "1000", "10000", "100000", "1000000" })
-    static long size;
+    static final StackWalker sw = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     @Benchmark
-    public Program manyChildren() {
-        return Program.start(new BaseAssembly() {
-            @Override
-            protected void build() {
-                for (int i = 0; i < size; i++) {
-                    link(new TAssembly(Integer.toString(i)));
-                }
-            }
-        });
+    public StackWalker stackWalkerSetup() {
+        return StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
     }
 
-    static class TAssembly extends BaseAssembly {
+    @Benchmark
+    public Class<?> stackWalkerCallerClass() {
+        return sw.getCallerClass();
+    }
 
-        final String name;
-
-        TAssembly(String name) {
-            this.name = name;
-        }
-
-        @Override
-        protected void build() {
-            named(name);
-        }
+    @Benchmark
+    public Lookup reflectionCallerClass() {
+        return MethodHandles.lookup();
     }
 }

@@ -31,8 +31,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 
@@ -48,38 +48,38 @@ import app.packed.extension.Extension;
 public class ExtensionActivation {
 
     @Benchmark
-    public ApplicationImage<Program> empty() {
+    public ApplicationImage<Void> empty() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
         };
-        return Program.imageOf(b);
+        return App.buildImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Program> useExtension() {
+    public ApplicationImage<Void> useExtension() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 use(MyExtension.class);
             }
         };
-        return Program.imageOf(b);
+        return App.buildImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Program> install() {
+    public ApplicationImage<Void> install() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance("foo");
             }
         };
-        return Program.imageOf(b);
+        return App.buildImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Program> newExtensionUseInstall() {
+    public ApplicationImage<Void> newExtensionUseInstall() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -87,18 +87,18 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return Program.imageOf(b);
+        return App.buildImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Program> newExtensionAutoActivate() {
+    public ApplicationImage<Void> newExtensionAutoActivate() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance(new MyStuff());
             }
         };
-        return Program.imageOf(b);
+        return App.buildImage(b);
     }
 
     static class MyStuff {

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package micro.app;
+package app.packed.micro.application;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -24,10 +24,10 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationImage<Program> EMPTY_IMAGE = Program.imageOf(empty());
-    public static final ApplicationImage<Program> ONE_COMPONENT_IMAGE = Program.imageOf(oneComponent());
-    public static final ApplicationImage<Program> FIVE_CONTAINER_IMAGE = Program.imageOf(fiveComponents());
-    public static final ApplicationImage<Program> ONE_CONTAINER_IMAGE = Program.imageOf(oneContainer());
+    public static final ApplicationImage<Void> EMPTY_IMAGE = App.buildImage(empty());
+    public static final ApplicationImage<Void> ONE_COMPONENT_IMAGE = App.buildImage(oneComponent());
+    public static final ApplicationImage<Void> FIVE_CONTAINER_IMAGE = App.buildImage(fiveComponents());
+    public static final ApplicationImage<Void> ONE_CONTAINER_IMAGE = App.buildImage(oneContainer());
 
     public static BaseAssembly empty() {
         return new BaseAssembly() {

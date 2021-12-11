@@ -16,12 +16,10 @@
 package app.packed.application;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
 import app.packed.container.Assembly;
-import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
@@ -151,37 +149,6 @@ public interface Program extends AutoCloseable {
     }
 }
 
-interface Zapp extends Program {
-
-    static Program lazyStart(Assembly  assembly, Wirelet... wirelets) {
-        // Altsaa der er vel disse interessant
-
-        // initialized - lazy start
-        // initialized - require explicit start
-        // Starting
-        // Started
-        return Program.driver().launch(assembly, LifecycleWirelets.lazyStart().andThen(wirelets));
-    }
-
-    // An image that can be used exactly, will drop any memory references...
-    // Maybe make a more generic low-memory profile
-    // Which drops this. And keeps
-    // It is is more like single instantiable..
-    // Because we can analyze it as many times as we want..
-    // singleImageOf
-    /**
-     * 
-     * @param assembly
-     *            the assembly to use for creating the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     */
-    static ApplicationImage<Program> imageOf(Assembly  assembly, Wirelet... wirelets) {
-        return Program.driver().imageOf(assembly, wirelets/* , ImageWirelet.single() */);
-    }
-}
-
 /** The default implementation of {@link Program}. */
 record ProgramImplementation(String name, ServiceLocator services, LifecycleApplicationController runtime) implements Program {
 
@@ -193,18 +160,5 @@ record ProgramImplementation(String name, ServiceLocator services, LifecycleAppl
     @Override
     public String toString() {
         return "App[name = " + name() + ", state = " + runtime.state() + "] ";
-    }
-}
-
-class ZDdd extends BaseAssembly {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {}
-
-    public static void main(String[] args) {
-        try (Program app = Program.start(new ZDdd())) {
-            app.use(Map.class).isEmpty();
-        }
     }
 }

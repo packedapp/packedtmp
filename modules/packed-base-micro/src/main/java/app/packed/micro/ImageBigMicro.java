@@ -28,8 +28,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
@@ -42,7 +42,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final ApplicationImage<Program> INSTALL31 = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> INSTALL31 = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -61,7 +61,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final ApplicationImage<Program> INSTALL253 = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> INSTALL253 = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -97,7 +97,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final ApplicationImage<Program> INSTALL253_NOS = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> INSTALL253_NOS = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -135,17 +135,17 @@ public class ImageBigMicro {
     });
 
     @Benchmark
-    public Program install31() {
+    public Void install31() {
         return INSTALL31.use();
     }
 
     @Benchmark
-    public Program install253() {
+    public Void install253() {
         return INSTALL253.use();
     }
 
     @Benchmark
-    public Program install253NOS() {
+    public Void install253NOS() {
         return INSTALL253_NOS.use();
     }
 }

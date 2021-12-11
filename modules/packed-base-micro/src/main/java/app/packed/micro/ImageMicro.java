@@ -27,8 +27,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 
@@ -43,24 +43,24 @@ import app.packed.extension.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final ApplicationImage<Program> EMPTY = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> EMPTY = App.buildImage(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final ApplicationImage<Program> USE_EXTENSION = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> USE_EXTENSION = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final ApplicationImage<Program> INSTALL = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> INSTALL = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final ApplicationImage<Program> INSTALL_AUTO_ACTIVATE = Program.imageOf(new BaseAssembly() {
+    static final ApplicationImage<Void> INSTALL_AUTO_ACTIVATE = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());
@@ -68,22 +68,22 @@ public class ImageMicro {
     });
 
     @Benchmark
-    public Program empty() {
+    public Void empty() {
         return EMPTY.use();
     }
 
     @Benchmark
-    public Program useExtension() {
+    public Void useExtension() {
         return USE_EXTENSION.use();
     }
 
     @Benchmark
-    public Program install() {
+    public Void install() {
         return INSTALL.use();
     }
 
     @Benchmark
-    public Program newExtensionAutoActivate() {
+    public Void newExtensionAutoActivate() {
         return INSTALL_AUTO_ACTIVATE.use();
     }
 

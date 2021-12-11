@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package micro.app;
+package app.packed.micro.application;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +27,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.application.Program;
+import app.packed.application.App;
 
 /**
  *
@@ -41,40 +41,50 @@ import app.packed.application.Program;
 public class AppConstructionMicro {
 
     @Benchmark
-    public Program emptyApp() {
-        return Program.start(VariousImages.empty());
+    public void emptyApp() {
+        App.run(VariousImages.empty());
     }
 
     @Benchmark
-    public Program oneComponent() {
-        return Program.start(VariousImages.oneComponent());
+    public void oneComponent() {
+        App.run(VariousImages.oneComponent());
     }
 
     @Benchmark
-    public Program fiveComponents() {
-        return Program.start(VariousImages.fiveComponents());
+    public void fiveComponents() {
+        App.run(VariousImages.fiveComponents());
     }
 
     @Benchmark
-    public Program oneContainer() {
-        return Program.start(VariousImages.oneContainer());
+    public void oneContainer() {
+        App.run(VariousImages.oneContainer());
     }
 
     @Benchmark
-    public Program emptyAppFromImage() {
+    public Void emptyAppFromImage() {
         return VariousImages.EMPTY_IMAGE.use();
     }
 
     @Benchmark
-    public Program oneComponentFromImage() {
+    public Void oneComponentFromImage() {
         return VariousImages.ONE_COMPONENT_IMAGE.use();
     }
 
     @Benchmark
-    public Program fiveComponentsFromImage() {
+    public Void fiveComponentsFromImage() {
         return VariousImages.FIVE_CONTAINER_IMAGE.use();
     }
 }
+
+// 11 Dec 2021 - M1
+//AppConstructionMicro.emptyApp                 avgt    5   78.152 ± 0.325  ns/op
+//AppConstructionMicro.emptyAppFromImage        avgt    5    9.958 ± 0.117  ns/op
+//AppConstructionMicro.fiveComponents           avgt    5  373.286 ± 1.811  ns/op
+//AppConstructionMicro.fiveComponentsFromImage  avgt    5   29.120 ± 0.045  ns/op
+//AppConstructionMicro.oneComponent             avgt    5  159.516 ± 0.851  ns/op
+//AppConstructionMicro.oneComponentFromImage    avgt    5   15.450 ± 0.085  ns/op
+//AppConstructionMicro.oneContainer             avgt    5  133.578 ± 0.890  ns/op
+
 // 18 may 2020
 //AppConstructionMicro.emptyApp                 avgt    5   398.362 ±  7.269  ns/op
 //AppConstructionMicro.emptyAppFromImage        avgt    5   175.729 ±  2.586  ns/op

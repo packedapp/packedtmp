@@ -62,3 +62,7 @@ public class ExtensionMicro {
 
     public static class MyExtension extends Extension {}
 }
+// packed.internal.bundle.ExtensionMicro.newExtension                          N/A  avgt    5     2.945 ±  0.043  ns/op
+// packed.internal.bundle.ExtensionMicro.newExtensionCachedLambdaFactory       N/A  avgt    5     5.064 ±  0.044  ns/op
+// packed.internal.bundle.ExtensionMicro.newExtensionCachedMethodHandle        N/A  avgt    5     6.961 ±  0.030  ns/op
+// packed.internal.bundle.ExtensionMicro.newExtensionSupplierCachedWrapped     N/A  avgt    5     5.062 ±  0.035  ns/op
