@@ -13,40 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.entrypoint;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
+import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 
 /**
  *
  */
+@ExtensionMember(EntryPointExtension.class)
 public class EntryPointExtensionMirror extends ExtensionMirror implements Iterable<EntryPointMirror> {
+
+    final EntryPointExtension e;
+    final boolean isApplication;
+
+    EntryPointExtensionMirror(EntryPointExtension e, boolean isApplication) {
+        this.e = e;
+        this.isApplication = isApplication;
+    }
+
+    public boolean isMain() {
+        return e.hasMain;
+    }
 
     /** {@inheritDoc} */
     @Override
     public Iterator<EntryPointMirror> iterator() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Class<? extends Extension> invokedBy() {
-        // There is always a single extension that manages all entry points in a single application
-        // Fx
-        //// CLI
-        //// Serverless
-        return EntryPointExtension.class;
+        return List.<EntryPointMirror>of().iterator();
     }
 
     public Optional<EntryPointMirror> main() {
         return Optional.empty();
     }
 
-    public boolean hasMain() {
-        return invokedBy() == EntryPointExtension.class;
+    public Class<? extends Extension> managedBy() {
+        // There is always a single extension that manages all entry points in a single application
+        // Fx
+        //// CLI
+        //// Serverless
+        return EntryPointExtension.class;
     }
 
     public void overview() {}
@@ -58,16 +71,29 @@ public class EntryPointExtensionMirror extends ExtensionMirror implements Iterab
     }
 
     public static void main(String[] args) {
-        for (EntryPointMirror m : ApplicationMirror.of(new MyAss()).use(EntryPointExtensionMirror.class)) {
+        for (EntryPointMirror m : App.mirrorOf(new MyAss()).use(EntryPointExtensionMirror.class)) {
             System.out.println(m);
         }
         ApplicationMirror.of(new MyAss()).use(EntryPointExtensionMirror.class).print();
+
+        App.run(new MyAss());
     }
 
-    static class MyAss extends BaseAssembly {
+    public static class MyAss extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
-        protected void build() {}
+        protected void build() {
+            install(MyBean.class);
+        }
+
+        public static class MyBean {
+
+            @Main
+            public void foo() {
+                System.out.println("XXX");
+            }
+        }
     }
+
 }

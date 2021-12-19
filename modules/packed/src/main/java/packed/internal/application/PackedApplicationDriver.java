@@ -186,7 +186,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         realm.close();
 
         // Return the launched application
-        return ApplicationLaunchContext.launch(this, realm.build.application, null);
+        return ApplicationInitializationContext.launch(this, realm.build.application, null);
     }
 
     /** {@inheritDoc} */
@@ -206,7 +206,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
         ApplicationSetup application = build(ApplicationBuildType.INSTANCE, assembly, wirelets);
-        return ApplicationLaunchContext.launch(this, application, null);
+        return ApplicationInitializationContext.launch(this, application, null);
     }
 
     /** {@inheritDoc} */
@@ -230,7 +230,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return the new application instance
      */
     @SuppressWarnings("unchecked")
-    A newInstance(ApplicationLaunchContext context) {
+    A newInstance(ApplicationInitializationContext context) {
         Object result;
         try {
             result = mhConstructor.invoke(context);
@@ -288,16 +288,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Single implementation of {@link ApplicationDriver.Builder}. */
     public static final class Builder implements ApplicationDriver.Builder {
 
-        /** A MethodHandle for invoking {@link ApplicationLaunchContext#name()}. */
-        private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "name",
+        /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
+        private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "name",
                 String.class);
 
-        /** A MethodHandle for invoking {@link ApplicationLaunchContext#runtime()}. */
-        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "runtime",
+        /** A MethodHandle for invoking {@link ApplicationInitializationContext#runtime()}. */
+        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "runtime",
                 LifecycleApplicationController.class);
 
-        /** A MethodHandle for invoking {@link ApplicationLaunchContext#services()}. */
-        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "services",
+        /** A MethodHandle for invoking {@link ApplicationInitializationContext#services()}. */
+        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "services",
                 ServiceLocator.class);
 
         private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
@@ -317,7 +317,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
 
             // Find a method handle for the application shell's constructor
-            Infuser.Builder builder = Infuser.builder(caller, implementation, ApplicationLaunchContext.class);
+            Infuser.Builder builder = Infuser.builder(caller, implementation, ApplicationInitializationContext.class);
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
@@ -340,7 +340,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         private <A> PackedApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
             return new PackedApplicationDriver<>(this);
         }
 
@@ -374,7 +374,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public PackedApplicationDriver<Void> buildVoid(Wirelet... wirelets) {
-            return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
+            return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationInitializationContext.class)));
         }
     }
 
@@ -393,7 +393,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
                 wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
             }
 
-            return ApplicationLaunchContext.launch(driver, application, wrapper);
+            return ApplicationInitializationContext.launch(driver, application, wrapper);
         }
 
         /** {@inheritDoc} */

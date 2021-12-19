@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
+package app.packed.bean.operation.examples;
 
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.member.operation.BeanOperationMirror;
-import app.packed.bean.member.operation.BeanOperationMirrorSelection;
+import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.operation.BeanOperationMirrorSelection;
 import app.packed.container.Assembly;
 
 /**
  *
  */
-public interface ServiceExportMirror extends BeanOperationMirror {
+public abstract class ServiceExportMirror extends BeanOperationMirror {
 
     /** {@return the key that the service is exported with.} */
-    Key<?> key();
+    public abstract Key<?> key();
 
     // Hvad goer vi omvendt??? Returnere en liste??
     // Kun allower en? IDK
-    Optional<ServiceProvideMirror> service(); // Kan ikke fange alle dog
+    public abstract Optional<ServiceProvideMirror> service(); // Kan ikke fange alle dog
 
     // find usage of the exported service
-    
+
     public static BeanOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
         throw new UnsupportedOperationException();
     }

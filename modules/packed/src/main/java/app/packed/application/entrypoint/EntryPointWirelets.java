@@ -13,29 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
+package app.packed.application.entrypoint;
 
-import java.util.List;
-
-import app.packed.bean.member.operation.BeanOperationMirror;
-import app.packed.bean.member.operation.BeanOperationMirrorSelection;
-import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
+public final class EntryPointWirelets {
+    
+    /** No entry for you. */
+    private EntryPointWirelets() {}
 
-// Hvis vi har noget dataflow aktie ting... Fungere den maaske ikke
-
-public interface ScheduleTaskMirror extends BeanOperationMirror {
-
-    /** {@return the key that the service is exported with.} */
-    Object schedule();
-
-    /// Hmm, Hmm, Hmm. Det er jo det her graf ting...
-    List<ScheduleTaskMirror> subtasks();
-
-    public static BeanOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
+    public static Wirelet args(String... args) {
         throw new UnsupportedOperationException();
     }
 }

@@ -230,7 +230,13 @@ public abstract class Extension {
      * @return a mirror for the extension
      * @see ContainerMirror#extensions()
      */
+    // boolean isApplication... Kan ikke have to metoder
+    // med mindre
     protected ExtensionMirror mirror() {
+        return mirrorInitialize(new ExtensionMirror());
+    }
+    
+    protected ExtensionMirror applicationMirror() {
         return mirrorInitialize(new ExtensionMirror());
     }
 

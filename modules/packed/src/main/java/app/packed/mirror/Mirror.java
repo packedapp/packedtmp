@@ -1,27 +1,27 @@
 package app.packed.mirror;
 
-
 // Tror maaske jeg er frisk paa et common mirror interface...
 // Om ikke andet for at goere det klart for alle at man refererer et mirror....
+// Altsaa det ville ogsaa goere det let at filtrere
 
 /**
  * Doing program analysis.
  * 
- * Models are typically not retained doing runtime. However
- * use wirelets. and then you can have them injected into components...
- * as any other service
+ * Models are typically not retained doing runtime. However use wirelets. and then you can have them injected into
+ * components... as any other service
  */
 
 // http://bracha.org/mirrors.pdf
 
-// It's fucking mirrors...
+// BaseMirror??? Mirror er meget generelt.
+// Der er formentlig aldrig nogen der kommer til direkte at referere den klasse
 public interface Mirror {
 
     // Giver det ikke mening at have module paa alt...
     // Application.module = Assembly (or composer)
     // Container.module = the same
-    // Component.module ????... Hvad hvis det er en 
-    // Module module(); 
+    // Component.module ????... Hvad hvis det er en
+    // Module module();
 }
 
 // Packed contains a mirror API for program analysis

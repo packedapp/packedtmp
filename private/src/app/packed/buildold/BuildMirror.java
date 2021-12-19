@@ -1,12 +1,11 @@
 package app.packed.buildold;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.mirror.Mirror;
 
 /**
  * A mirror of a single build.
  */
-public interface BuildMirror extends Mirror {
+public interface BuildMirror {
 
     /** {@return the root application of the build}. */
     ApplicationMirror application();

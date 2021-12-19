@@ -186,7 +186,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                             mh2 = mh2.bindTo(mh1);
 
-                            source.application.initializers.add(mh2);
+                            source.application.lifetime.initializers.add(mh2);
                         }
                     }
                 }

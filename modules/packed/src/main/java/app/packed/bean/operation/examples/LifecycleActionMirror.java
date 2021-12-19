@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.operation.examples;
 
-import app.packed.bean.operation.BeanOperationMirrorSelection;
-import app.packed.mirror.Mirror;
+import app.packed.bean.member.BeanOperationMirror;
 
 /**
  *
  */
-public interface BeanElementMirror extends Mirror {
-    
-    BeanOperationMirrorSelection<BeanOperationMirror> operations();
-    
-    boolean isSynthetic();
+// A lifecycle operation
+public abstract class LifecycleActionMirror extends BeanOperationMirror {
+
+    // Er en del af en liste eller en graf.
+
+    // Well should be optional... But probably not the right place to model it.
+    public abstract LifecycleActionMirror previous();
+
+    public abstract LifecycleActionMirror next();
 }
+
+// Har vi en speciel BeanOperationSelection ting som kan definere en task graph???
+// Taenker altsaa det er noget generisk noget

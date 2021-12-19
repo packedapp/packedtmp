@@ -34,7 +34,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-public final class ApplicationLaunchContext implements LifetimePoolWriteable {
+public final class ApplicationInitializationContext implements LifetimePoolWriteable {
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
@@ -50,18 +50,18 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
-    final PackedApplicationRuntimeExtensor runtime;
+    final PackedApplicationRuntime runtime;
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
     private final WireletWrapper wirelets;
 
-    private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
+    private ApplicationInitializationContext(ApplicationSetup application, WireletWrapper wirelets) {
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.getName());
         this.launchMode = requireNonNull(application.launchMode);
-        this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntimeExtensor(this);
+        this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntime(this);
     }
 
     /** {@return the name of the application} */
@@ -115,7 +115,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
         assert driver == application.applicationDriver; // it is just here because of <A>
 
         // Create a launch context
-        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
+        ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);
 
         // Apply all internal wirelets
         if (wirelets != null) {
@@ -129,13 +129,15 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
         LifetimePool pool = context.pool = application.container.lifetime.pool.newPool(context);
 
         // Run all initializers
-        for (MethodHandle mh : application.initializers) {
+        for (MethodHandle mh : application.lifetime.initializers) {
             try {
                 mh.invoke(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
         }
+        
+        // INITIALIZATION IS DONE
 
         if (context.runtime != null) {
             context.runtime.launch(application, context);

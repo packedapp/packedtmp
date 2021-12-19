@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
+import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -34,7 +35,7 @@ import app.packed.mirror.Mirror;
  * derivatives. In packed everything is a component.
  */
 // Skal laves til klasse syntes jeg
-public /*sealed*/ interface ComponentMirror extends Mirror /*permits ContainerMirror,BeanMirror*/ {
+public sealed interface ComponentMirror extends Mirror permits ContainerMirror,BeanMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();

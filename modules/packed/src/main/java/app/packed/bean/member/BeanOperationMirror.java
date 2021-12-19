@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation;
+package app.packed.bean.member;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.member.BeanClassMirror;
-import app.packed.bean.member.BeanElementMirror;
+import app.packed.bean.operation.BeanOperationErrorHandlingMirror;
 import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
 
@@ -25,27 +24,44 @@ import app.packed.mirror.Mirror;
  *
  */
 // A bean function or bean method
-public interface BeanOperationMirror extends Mirror {
+// A bean constructor or a bean field get/set/compute
+public abstract class BeanOperationMirror implements Mirror {
 
-    default ApplicationMirror application() {
+    /** {@return the application the operation is a part of.} */
+    public final ApplicationMirror application() {
         return bean().application();
     }
-    
-    // Den her slags functionalitet ligger altid hos Extensions
-    Class<? extends Extension> manager();
 
     /** {@return the bean that declares the operation.} */
-    BeanClassMirror bean();
+    public final BeanClassMirror bean() {
+        throw new UnsupportedOperationException();
+    }
 
-    BeanElementMirror element(); // Altsaa det er vel naermest aldrig en constructor???
 
-    BeanOperationErrorHandlingMirror errorHandling(); // What happens if the operation fails
-    
-    
     // Might not match the signature of the method.
     // For example, a @Schdule method might have a non-void signature.
     // But we don't use the result
-    boolean computesResult();
+   public final boolean computesResult() {
+       return false;
+   }
+
+    public final BeanElementMirror element() {
+        //// Altsaa det er vel naermest aldrig en constructor???
+        throw new UnsupportedOperationException();
+    }
+
+    public final BeanOperationErrorHandlingMirror errorHandling() {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Class<? extends Extension> extension() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Den her slags functionalitet ligger altid hos Extensions
+    public Class<? extends Extension> manager() {
+        throw new UnsupportedOperationException();
+    }
 }
 //ExportServiceMirror vs ExportedServiceMirror
 //ProvideServiceMirror vs ProvidedServiceMirror

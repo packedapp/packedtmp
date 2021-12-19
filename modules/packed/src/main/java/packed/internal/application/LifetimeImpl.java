@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation;
+package packed.internal.application;
+
+import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
 
 /**
  *
  */
+public class LifetimeImpl {
 
-// Maaske er view et bedre ord... Taenker vi lazy evaluater
-// It is kind of like a ComponentStream. But then again ComponentStream is hierachical
-public interface BeanOperationMirrorSelection<T extends BeanOperationMirror> extends Iterable<T> {
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
 }

@@ -1,7 +1,5 @@
 package app.packed.extension;
 
-import java.util.ArrayList;
-
 /**
  * Extension support classes are the main way that extensions interact without other extensions. Developers that are not
  * creating their own extensions will likely deal with these type of classes.
@@ -34,21 +32,10 @@ import java.util.ArrayList;
  * @see Extension#use(Class)
  * @see ExtensionConfiguration#use(Class)
  */
+
+// Syntes altid det skal vaere en seperat klasse
+// Fordi saa kan den klasse declare en masse interfaces som inner classes
+// Se fx EntryPointSupport
+
 public abstract class ExtensionSupport {}
 //Kalder vi den bare ExtensionSupport, og Saa FileSupport, ServiceSupport
-
-class Zxtension extends Extension {
-    final ArrayList<String> list = new ArrayList<>();
-}
-
-class Zample {
-    final Zxtension extension;
-
-    Zample(Zxtension extension) {
-        this.extension = extension;
-    }
-
-    public void foobar(String x) {
-        extension.list.add(x);
-    }
-}

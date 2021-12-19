@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
-
-import app.packed.container.BaseAssembly;
+package app.packed.bean.operation.nonruntime;
 
 /**
  *
  */
-public class Usage extends BaseAssembly {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        provide(Usage.class).export();
-    }
-
-    public static void main(String[] args) {
-        for (ServiceExportMirror m : ServiceExportMirror.selectAll(new Usage())) {
-            System.out.println(m.bean());
-        }
-    }
+public class AopExtension {
+    
 }
+
+class AopExtensionMirror {
+
+    // Det er vel altid beans man "dekorere...
+    // IDK maaske man kan dekoere andre klasser
+}
+
+// Generere en klasse...

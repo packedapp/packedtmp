@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
-
-import app.packed.bean.operation.BeanOperationMirrorSelection;
-import app.packed.mirror.Mirror;
+package packed.internal.application;
 
 /**
  *
  */
-public interface BeanElementMirror extends Mirror {
-    
-    BeanOperationMirrorSelection<BeanOperationMirror> operations();
-    
-    boolean isSynthetic();
+public class ApplicationStartupContext {
+
 }

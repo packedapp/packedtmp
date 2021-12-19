@@ -1,4 +1,4 @@
-package packed.internal.application;
+package packed.internal.lifecycle.old;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -10,12 +10,11 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.mirror.Mirror;
 
 /**
  * A model of a (successful) build.
  */
-public interface OldBaseMirror extends Mirror {
+public interface OldBaseMirror /* extends Mirror */ {
 
     /** {@return the root application of the build}. */
     ApplicationMirror application();

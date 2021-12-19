@@ -28,6 +28,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
+import packed.internal.bundle.ExtensionSetup;
 
 /**
  * A configuration of an {@link Extension}.
@@ -51,7 +52,7 @@ import app.packed.extension.old.ExtensionBeanConnection;
 // * find ancestors
 // * Get extension support
 // * Get wirelets
-public /*sealed*/ interface ExtensionConfiguration /*permits ExtensionSetup*/ {
+public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationDescriptor application();

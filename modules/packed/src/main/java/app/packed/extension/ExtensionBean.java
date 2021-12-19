@@ -19,9 +19,7 @@ package app.packed.extension;
  * <li>Referenciable by bean hooks</li>
  * </ul>
  */
-public abstract class ExtensionBean {
-    // wirelets
-}
+public abstract class ExtensionBean {}
 
 // automatically installable if readable
 // Skal have ExtensionMember ellers indgaar den jo ikke i extensionen's life cycle

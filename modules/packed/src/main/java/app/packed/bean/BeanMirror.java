@@ -7,7 +7,7 @@ import app.packed.component.ComponentMirror;
 /**
  * A mirror of a bean (component).
  */
-public /*non-sealed*/ interface BeanMirror extends ComponentMirror {
+public non-sealed interface BeanMirror extends ComponentMirror {
 
     /** {@return the type (class) of the bean.} */
     Class<?> beanType();

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationController;
+import app.packed.base.Nullable;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -115,7 +116,7 @@ public interface LifecycleApplicationController extends ApplicationController {
         return startAsync(null);
     }
 
-    <T> CompletableFuture<T> startAsync(T result);
+    <@Nullable T> CompletableFuture<T> startAsync(T result);
 
     /**
      * Returns the current state of the component.

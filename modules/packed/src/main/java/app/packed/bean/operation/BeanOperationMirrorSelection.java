@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.operation;
 
-import app.packed.bean.operation.BeanOperationMirrorSelection;
-import app.packed.mirror.Mirror;
+import app.packed.bean.member.BeanOperationMirror;
 
 /**
  *
  */
-public interface BeanElementMirror extends Mirror {
-    
-    BeanOperationMirrorSelection<BeanOperationMirror> operations();
-    
-    boolean isSynthetic();
+
+// Maaske er view et bedre ord... Taenker vi lazy evaluater
+// It is kind of like a ComponentStream. But then again ComponentStream is hierachical
+public interface BeanOperationMirrorSelection<T extends BeanOperationMirror> extends Iterable<T> {
+
 }

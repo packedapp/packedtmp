@@ -18,7 +18,7 @@ import app.packed.inject.service.ServiceLocator;
  * An instance of this class is typically opb
  */
 // Tror vi skal have en liste af banned extensions, Maaske baade dem inheriter, og dem vi ikke inheriter
-public /* non-sealed */ interface ContainerMirror extends ComponentMirror {
+public non-sealed interface ContainerMirror extends ComponentMirror {
 
     /**
      * Returns the assembly class from which the bundle was build.

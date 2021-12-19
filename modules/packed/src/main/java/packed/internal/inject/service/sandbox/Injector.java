@@ -25,7 +25,7 @@ import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.application.ApplicationLaunchContext;
+import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -177,12 +177,12 @@ public interface Injector extends ServiceLocator {
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorApplicationHelper {
 
-    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);
+    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationInitializationContext.class);
 
     static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(),
             Injector.class, CONV);
 
-    static Injector convert(ApplicationLaunchContext container) {
+    static Injector convert(ApplicationInitializationContext container) {
         return (Injector) container.services();
     }
 }

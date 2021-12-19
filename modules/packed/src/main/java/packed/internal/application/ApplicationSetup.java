@@ -3,7 +3,6 @@ package packed.internal.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.ArrayList;
 import java.util.Set;
 
 import app.packed.application.ApplicationDescriptor;
@@ -14,6 +13,7 @@ import app.packed.base.Nullable;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
 import packed.internal.bundle.ContainerSetup;
 import packed.internal.bundle.PackedBundleDriver;
@@ -27,7 +27,7 @@ public final class ApplicationSetup {
 
     public final ApplicationDescriptor descriptor;
 
-    /** */
+    /** The driver responsible for building the application. */
     public final PackedApplicationDriver<?> applicationDriver;
 
     /** The build the application is a part of. */
@@ -36,21 +36,20 @@ public final class ApplicationSetup {
     /** What we are building. */
     public final ApplicationBuildType buildKind;
 
-    /** The root container of the application. Created in the constructor of this class. */
+    /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
-    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+    public final LifetimeImpl lifetime = new LifetimeImpl();
 
     /**
-     * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(RunState)}
-     * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
+     * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(RunState)} at
+     * build-time. If used from an image {@link ApplicationInitializationContext#launchMode} is updated instead.
      */
     final RunState launchMode;
 
-    // sync entrypoint
     @Nullable
-    private MainThreadOfControl mainThread;
-
+    public EntryPointSetup entryPoint = new EntryPointSetup();
+    
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
     final PoolAccessor runtimeAccessor;
@@ -72,19 +71,7 @@ public final class ApplicationSetup {
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
         this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedBundleDriver.DRIVER, null, wirelets);
-        this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
-    }
-
-    public boolean hasMain() {
-        return mainThread != null;
-    }
-
-    public MainThreadOfControl mainThread() {
-        MainThreadOfControl m = mainThread;
-        if (m == null) {
-            m = mainThread = new MainThreadOfControl();
-        }
-        return m;
+        this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
     }
 
     /** {@return a build-time application mirror that can be exposed to end-users} */
@@ -117,9 +104,15 @@ public final class ApplicationSetup {
         public ApplicationDescriptor descriptor() {
             return ApplicationSetup.this.descriptor;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T extends ExtensionMirror> T use(Class<T> type) {
+            return ApplicationSetup.this.container.mirror().useExtension(type);
+        }
     }
 
-    public class MainThreadOfControl {
+    public static class MainThreadOfControl {
         public BeanSetup cs;
 
         public boolean isStatic;

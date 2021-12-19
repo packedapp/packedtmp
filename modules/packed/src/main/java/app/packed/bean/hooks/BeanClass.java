@@ -30,3 +30,8 @@ public abstract /*non-sealed*/ class BeanClass extends BeanHookElement {
         throw new UnsupportedOperationException();
     }
 }
+
+// config.readClasspath(); <--- enables one application-wide Config - Extensions will auto register
+// config.readFile();
+// config.readXYZ();
+// config.newScope()

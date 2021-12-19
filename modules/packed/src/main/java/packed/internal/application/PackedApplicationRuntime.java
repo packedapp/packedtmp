@@ -22,14 +22,9 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.extension.Extension;
-import app.packed.extension.old.ApplicationExtensionBean;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifetimeRegionState;
 import app.packed.lifecycle.RunState;
-import packed.internal.application.ApplicationSetup.MainThreadOfControl;
-import packed.internal.lifetime.PoolAccessor;
-import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -39,7 +34,7 @@ import packed.internal.util.ThrowableUtil;
 /// Error bit (data = 
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedApplicationRuntimeExtensor extends ApplicationExtensionBean<Extension> implements LifecycleApplicationController {
+public final class PackedApplicationRuntime implements LifecycleApplicationController {
 
     // Sagtens encode det i sync ogsaa
     RunState desiredState = RunState.UNINITIALIZED;
@@ -55,14 +50,13 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
 
     // Taenker vi maaske gaar tilbage til det design hvor vi havde en abstract state klasse... med
     // en implementering per state... Er jo mest brugbart i forbindelse med start/stop hvor vi har noget
-    // midlertidigt state
-    // Paa den anden side kan vi maaske have lidt mindre state?
+    // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
-    public PackedApplicationRuntimeExtensor(ApplicationLaunchContext launchContext) {}
+    public PackedApplicationRuntime(ApplicationInitializationContext launchContext) {}
 
     // Hmm, maybe not
 //    @Nullable
@@ -110,8 +104,8 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
         return null;
     }
 
-    public void launch(ApplicationSetup application, ApplicationLaunchContext launchContext) {
-        boolean isMain = application.hasMain();
+    public void launch(ApplicationSetup application, ApplicationInitializationContext launchContext) {
+        boolean isMain = application.entryPoint.hasMain();
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
 
@@ -142,25 +136,11 @@ public final class PackedApplicationRuntimeExtensor extends ApplicationExtension
             lock.unlock();
         }
 
-        if (application.hasMain()) {
-            MainThreadOfControl l = application.mainThread();
-            if (!l.hasExecutionBlock()) {
-                return; // runnint as deamon
-            }
-
-            try {
-                PoolAccessor sa = l.cs.singletonAccessor;
-                if (sa != null && !l.isStatic) {
-                    Object o = sa.read(launchContext.pool());
-                    l.methodHandle.invoke(o);
-                } else {
-                    l.methodHandle.invoke();
-                }
-
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+        EntryPointSetup ep = application.entryPoint;
+        if (ep != null) {
+            ep.enter(launchContext);
         }
+
         // todo run execution block
 
         // shutdown

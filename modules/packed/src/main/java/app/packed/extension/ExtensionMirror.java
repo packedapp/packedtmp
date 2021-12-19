@@ -133,7 +133,7 @@ public class ExtensionMirror implements Mirror {
      * 
      * @param <E>
      *            the type of extension mirror
-     * @param mirrorType
+     * @param extensionMirrorType
      *            the type of extension mirror to return
      * @param assembly
      *            the assembly
@@ -143,13 +143,13 @@ public class ExtensionMirror implements Mirror {
      * @see ContainerMirror#findExtension(Class)
      * @see #of(Class, Assembly, Wirelet...)
      */
-    public static <E extends ExtensionMirror> Optional<E> find(Class<E> mirrorType, Assembly assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
+    public static <E extends ExtensionMirror> Optional<E> find(Class<E> extensionMirrorType, Assembly assembly, Wirelet... wirelets) {
+        return ContainerMirror.of(assembly, wirelets).findExtension(extensionMirrorType);
     }
 
     /**
-     * Builds an application. Throws {@link NoSuchElementException} if the root container does not use the mirror's
-     * extension type.
+     * Builds an application. Throws {@link NoSuchElementException} if the root container does not use the extension that
+     * the mirror represents.
      * 
      * @param <E>
      *            the type of extension mirror
@@ -159,7 +159,7 @@ public class ExtensionMirror implements Mirror {
      *            the assembly
      * @param wirelets
      *            optional wirelets
-     * @return stuff
+     * @return an extension mirror
      * @see ContainerMirror#useExtension(Class)
      * @see #find(Class, Assembly, Wirelet...)
      * @throws NoSuchElementException

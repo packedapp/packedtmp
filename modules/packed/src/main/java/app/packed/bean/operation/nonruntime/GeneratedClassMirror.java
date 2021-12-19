@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.nonruntime;
+package app.packed.bean.operation.nonruntime;
 
 import java.util.Collection;
 

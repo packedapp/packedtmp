@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import app.packed.container.Wirelet;
-import packed.internal.application.ApplicationLaunchContext;
+import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.ComponentSetup;
@@ -63,7 +63,7 @@ public abstract class InternalWirelet extends Wirelet {
      */
     protected abstract void onBuild(ContainerSetup component);
 
-    public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext context) {
+    public void onImageInstantiation(ContainerSetup component, ApplicationInitializationContext context) {
         throw new IllegalArgumentException(
                 "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when instantiating an image");
     }
@@ -127,7 +127,7 @@ public abstract class InternalWirelet extends Wirelet {
         }
 
         @Override
-        public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
+        public void onImageInstantiation(ContainerSetup c, ApplicationInitializationContext ic) {
             ic.name = name;
         }
     }

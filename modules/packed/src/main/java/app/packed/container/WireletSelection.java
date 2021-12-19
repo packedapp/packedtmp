@@ -67,7 +67,8 @@ import packed.internal.bundle.PackedWireletSelection;
 // Problemet med at have en onX on wireletten..
 // Er at vi ikke kan finalize noget i constructeren... fordi den vil tage en constructed Extensor i onExtensor()
 // Vi vil rigtig gerne have wireletten i constructoren paa extensoren...
-public /* sealed */ interface WireletSelection<W extends Wirelet> /* permits PackedWireletSelection */ {
+@SuppressWarnings("rawtypes")
+public sealed interface WireletSelection<W extends Wirelet> permits PackedWireletSelection {
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
     /**
@@ -87,8 +88,8 @@ public /* sealed */ interface WireletSelection<W extends Wirelet> /* permits Pac
     }
 
     /**
-     * Performs the given action for each wirelet in the selection. Unlike {@link #processEach(Consumer)} this method
-     * does not remove the wirelet from this selection or any other selection.
+     * Performs the given action for each wirelet in the selection. Unlike {@link #processEach(Consumer)} this method does
+     * not remove the wirelet from this selection or any other selection.
      * 
      * @param action
      *            the action to perform

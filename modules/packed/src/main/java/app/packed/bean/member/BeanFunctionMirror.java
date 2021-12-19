@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.nonruntime;
+package app.packed.bean.member;
 
 /**
  *
  */
-public class AopExtension {
-    
+public class BeanFunctionMirror {
+
 }
-
-class AopExtensionMirror {
-
-    // Det er vel altid beans man "dekorere...
-    // IDK maaske man kan dekoere andre klasser
-}
-
-// Generere en klasse...

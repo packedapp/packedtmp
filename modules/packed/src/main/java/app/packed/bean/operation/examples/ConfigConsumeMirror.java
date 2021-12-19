@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation;
+package app.packed.bean.operation.examples;
 
-import app.packed.mirror.Mirror;
+import app.packed.bean.member.BeanOperationMirror;
 
 /**
  *
  */
-public interface BeanOperationErrorHandlingMirror extends Mirror {
+// Er det en speciel usesite mirror???
+public abstract class ConfigConsumeMirror extends BeanOperationMirror {
 
-    default void print() {
-        
-    }
+    public abstract Object scope();
 }

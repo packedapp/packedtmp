@@ -12,6 +12,7 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
@@ -151,7 +152,5 @@ public interface ApplicationMirror extends Mirror {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
 
-    default <T extends Mirror> T use(Class<T> type) {
-        throw new UnsupportedOperationException();
-    }
+    <T extends ExtensionMirror> T use(Class<T> type);
 }

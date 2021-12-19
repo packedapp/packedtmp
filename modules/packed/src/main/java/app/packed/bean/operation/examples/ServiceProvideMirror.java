@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
+package app.packed.bean.operation.examples;
 
-import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.base.Key;
+import app.packed.bean.member.BeanOperationMirror;
 
 /**
  *
  */
-// Er det en speciel usesite mirror???
-public interface ConfigConsumeMirror extends BeanOperationMirror {
+public abstract class ServiceProvideMirror extends BeanOperationMirror {
 
-    Object scope();
+    /** {@return the key of the service.} */
+    public abstract Key<?> key();
 }
+
+// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
+// provide(Doo.class) -> BeanOperation.element = BeanClass

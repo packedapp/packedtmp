@@ -24,8 +24,13 @@ import app.packed.application.ApplicationDriver;
 
 // UnavailableExtensionException (Ja lyder lidt bedre)
 
+// DisabledExtensionException
+// Prohibited
+// Restricted
+// Excluded (IDK does this means extensions are include?)
+
 // ==== Alternativt === 
-// ExtensionDisabledException for general use
+// DisabledExtensionException for general use
 // InternalExtensionException for using undeclared dependency
 
 // was disabled, but this sort of implies the extension otherwise would be enabled

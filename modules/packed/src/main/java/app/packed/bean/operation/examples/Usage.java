@@ -13,37 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.usage;
+package app.packed.bean.operation.examples;
 
-import app.packed.application.App;
-import app.packed.application.entrypoint.EntryPointExtensionMirror;
-import app.packed.application.entrypoint.Main;
 import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-public class HelloWorldAssembly extends BaseAssembly {
+public class Usage extends BaseAssembly {
 
+    /** {@inheritDoc} */
     @Override
     protected void build() {
-        install(ExampleBean.class);
+        provide(Usage.class).export();
     }
 
     public static void main(String[] args) {
-        App.run(new HelloWorldAssembly());
-        
-        EntryPointExtensionMirror m = App.mirrorOf(new HelloWorldAssembly()).use(EntryPointExtensionMirror.class);
-        System.out.println(m.isMain());
-        
-    }
-
-    public static class ExampleBean {
-
-        @Main
-        public void runMeAndExit() {
-            new Exception().printStackTrace();
-            System.out.println("HelloWorld");
+        for (ServiceExportMirror m : ServiceExportMirror.selectAll(new Usage())) {
+            System.out.println(m.bean());
         }
     }
 }

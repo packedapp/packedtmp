@@ -18,6 +18,7 @@ package app.packed.application;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
+import packed.internal.application.PackedApplicationDriver.PackedApplicationImage;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
@@ -56,7 +57,8 @@ import app.packed.lifecycle.RunState;
 //// Jeg tror ikke man kan mirror et application image...
 //// Med mindre man bruger en speciel wirelet
 
-public /*sealed*/ interface ApplicationImage<A> /*permits PackedApplicationImage*/ {
+@SuppressWarnings("rawtypes")
+public sealed interface ApplicationImage<A> permits PackedApplicationImage {
 
     /**
      * Returns the launch mode of application(s) created by this image.

@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
+package app.packed.bean.operation.examples;
 
 import java.util.function.Predicate;
 
-import app.packed.bean.member.operation.BeanOperationMirror;
-import app.packed.bean.member.operation.BeanOperationMirrorSelection;
+import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.operation.BeanOperationMirrorSelection;
 
 /**
  *
  */
-public interface EventBusSubscribeMirror extends BeanOperationMirror {
+public abstract class EventBusSubscribeMirror extends BeanOperationMirror {
 
-    Class<?> eventType();
-    
+    public abstract Class<?> eventType();
+
     // Redelivery... Eller er det error handling???
-    
+
     // Alternativt
-    
+
     static Predicate<? extends EventBusSubscribeMirror> willReceiveInstance(Object o) {
-        
+
         // ideen er at man kan koere
         // selectAll(SubscribeEventMirror.class).filter(SubscribeEventMirror.willReceiveInstance(x));
-        
+
         throw new UnsupportedOperationException();
     }
-    
+
     // Tror nu ikke det er noget jeg ender med at lave.. Men interessant
     interface SubscribeEventMirrorStream extends BeanOperationMirrorSelection<EventBusSubscribeMirror> {
         default SubscribeEventMirrorStream receivesEventOfType(Class<?> x) {

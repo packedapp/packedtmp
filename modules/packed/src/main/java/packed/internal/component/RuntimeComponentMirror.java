@@ -35,7 +35,7 @@ import app.packed.component.ComponentScope;
 import app.packed.component.Realm;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import packed.internal.application.ApplicationLaunchContext;
+import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.lifetime.LifetimePool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
@@ -68,7 +68,7 @@ public final class RuntimeComponentMirror {
      * @param launch
      *            initialization context
      */
-    public RuntimeComponentMirror(@Nullable RuntimeComponentMirror parent, ComponentSetup component, ApplicationLaunchContext launch) {
+    public RuntimeComponentMirror(@Nullable RuntimeComponentMirror parent, ComponentSetup component, ApplicationInitializationContext launch) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(component);
         if (parent == null) {

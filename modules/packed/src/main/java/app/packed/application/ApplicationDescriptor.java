@@ -2,6 +2,7 @@ package app.packed.application;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import packed.internal.application.PackedApplicationDescriptor;
 
 // Input DAW (Application) Driver Assembly Wirelets
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.
@@ -11,7 +12,7 @@ import app.packed.container.Wirelet;
 /**
  * An immutable descriptor of an application.
  */
-public /*sealed*/ interface ApplicationDescriptor /*permits PackedApplicationDescriptor*/ {
+public sealed interface ApplicationDescriptor permits PackedApplicationDescriptor {
 //
 //    boolean isMirror();
 //    

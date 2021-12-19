@@ -444,6 +444,9 @@ public final class ContainerSetup extends ComponentSetup {
                 ExtensionMirror mirror = extension.mirror();
                 // Fail if the type of mirror returned by the extension does not match the specified mirror type
                 if (!mirrorType.isInstance(mirror)) {
+                    // Kan maaske smide en specific fejlmeddelse hvis man ikke har overskrevet metoden
+                    // if isMethodOvreriden()
+                    /// throw new (.mirror must be overridden and return an instance of Fooo
                     throw new InternalExtensionException(cl.getSimpleName() + ".mirror() was expected to return an instance of " + mirrorType
                             + ", but returned an instance of " + mirror.getClass());
                 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.entrypoint;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -58,10 +58,10 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(EntryPointExtension.class)
-@BeanMethod.Hook(bootstrap = MySidecar.class)
+@BeanMethod.Hook(bootstrap = MainBootstrap.class)
 public @interface Main {}
 
-class MySidecar extends RealMethodSidecarBootstrap {
+class MainBootstrap extends RealMethodSidecarBootstrap {
 
     /** {@inheritDoc} */
     @Override
@@ -72,8 +72,11 @@ class MySidecar extends RealMethodSidecarBootstrap {
             // Okay we do not automatically
             // Der er noget constant pool thingeling der ikke bliver kaldt
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
+
+            EntryPointExtension e = c.container.useExtension(EntryPointExtension.class);
+            e.hasMain = true;
             c.container.useExtension(ServiceExtension.class);
-            MainThreadOfControl mc = c.application.mainThread();
+            MainThreadOfControl mc = c.application.entryPoint.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
             mc.cs = (BeanSetup) c;
             mc.methodHandle = mh;

@@ -7,8 +7,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.member.operation.examples.ServiceExportMirror;
-import app.packed.bean.member.operation.examples.ServiceProvideMirror;
+import app.packed.bean.operation.examples.ServiceExportMirror;
+import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;

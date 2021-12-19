@@ -2,31 +2,31 @@ package app.packed.inject.service;
 
 import java.util.Set;
 
-import app.packed.bean.member.operation.examples.ServiceProvideMirror;
+import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.inject.mirror.InjectionSite;
 
 // extends ComponentFeatureMirror???
 /** A mirror of a service. */
 // ServicePointMirror <- place where a
-public interface ServiceProvideOldMirror extends ServiceProvideMirror {
+public abstract class ServiceProvideOldMirror extends ServiceProvideMirror {
 
     // annotation, config method
-    Object configSite(); // or ConfigMirror...
+    public abstract Object configSite(); // or ConfigMirror...
 
-    Set<ServiceProvideOldMirror> dependencies();
+    public abstract Set<ServiceProvideOldMirror> dependencies();
 
     // export()
-    int id(); // Ideen var at kunne sammenligne services, der blot var exporteret...
+    public abstract int id(); // Ideen var at kunne sammenligne services, der blot var exporteret...
 
     /** {@return the component that provides the service.} */
-    ComponentMirror providedBy();
+    public abstract ComponentMirror providedBy();
 
     // Taenker
     // Set<ProvidedService> providedTo();
-    Set<InjectionSite> usedBy();
+    public abstract Set<InjectionSite> usedBy();
 
-    Set<ComponentMirror> usedByComponents();
+    public abstract Set<ComponentMirror> usedByComponents();
 }
 // Skal vi have et id???
 

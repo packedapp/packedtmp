@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
-
-import app.packed.base.Key;
-import app.packed.bean.member.operation.BeanOperationMirror;
+package app.packed.application.entrypoint;
 
 /**
  *
  */
-public interface ServiceProvideMirror extends BeanOperationMirror {
-    
-    /** {@return the key of the service.} */
-    Key<?> key();
-}
+//En wrapper omkring et String arrays
+//Alle skal kunne faa den injected.
+//Paanaer non- entrypoint controlling extensions.
+//Som jeg vil mene ikke har adgang til den
+public /* primitive */ class StringArgs {
+    private final String[] args;
 
-// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
-// provide(Doo.class) -> BeanOperation.element = BeanClass
+    StringArgs(String[] args) {
+        this.args = args;
+    }
+
+    public int argumentCount() {
+        return args.length;
+    }
+}

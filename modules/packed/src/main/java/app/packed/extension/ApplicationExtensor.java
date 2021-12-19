@@ -13,23 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.operation.examples;
+package app.packed.extension;
 
-import app.packed.bean.member.operation.BeanOperationMirror;
+import app.packed.inject.service.ServiceExtension;
 
 /**
  *
  */
-// A lifecycle operation
-public interface LifecycleActionMirror extends BeanOperationMirror {
+public abstract class ApplicationExtensor<T extends Extension> {
 
-    // Er en del af en liste eller en graf.
-    
-    // Well should be optional... But probably not the right place to model it.
-    LifecycleActionMirror previous();
+    protected void onFirst(T extension) {}
 
-    LifecycleActionMirror next();
+    protected void onComplete() {}
 }
 
-// Har vi en speciel BeanOperationSelection ting som kan definere en task graph???
-// Taenker altsaa det er noget generisk noget
+/// If config is supported I can do some stuff
+/// -> Implies that
+
+
+
+// Alternativ
+
+
+
+// Man bliver noedt til at
+
+class Usage extends ApplicationExtensor<ServiceExtension> {
+
+}
+
+// None - Supported(but not enabled) - Enabled
+
+
+// 
+
+// Ting man ikke kan svare paa...
+// Det her bliver din sidste container...
+// Det ved vi foerst til sidst

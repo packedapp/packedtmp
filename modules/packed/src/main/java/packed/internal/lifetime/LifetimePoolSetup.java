@@ -17,7 +17,7 @@ package packed.internal.lifetime;
 
 import java.util.ArrayList;
 
-import packed.internal.application.ApplicationLaunchContext;
+import packed.internal.application.ApplicationInitializationContext;
 
 /**
  *
@@ -43,7 +43,7 @@ public final class LifetimePoolSetup {
         entries.add(c);
     }
 
-    public LifetimePool newPool(ApplicationLaunchContext launchContext) {
+    public LifetimePool newPool(ApplicationInitializationContext launchContext) {
         LifetimePool pool = new LifetimePool(size);
 
         launchContext.writeToPool(pool);

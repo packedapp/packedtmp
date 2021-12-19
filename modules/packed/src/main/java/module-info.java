@@ -1,5 +1,6 @@
 module app.packed {
     exports app.packed.application;
+    exports app.packed.application.entrypoint;
     exports app.packed.application.various;
     exports app.packed.base;
     exports app.packed.bean;

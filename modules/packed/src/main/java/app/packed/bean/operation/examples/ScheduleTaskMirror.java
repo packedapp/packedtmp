@@ -13,17 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.operation.examples;
 
+import java.util.List;
+
+import app.packed.bean.member.BeanOperationMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
-import app.packed.mirror.Mirror;
+import app.packed.container.Assembly;
 
 /**
  *
  */
-public interface BeanElementMirror extends Mirror {
-    
-    BeanOperationMirrorSelection<BeanOperationMirror> operations();
-    
-    boolean isSynthetic();
+
+// Hvis vi har noget dataflow aktie ting... Fungere den maaske ikke
+
+public abstract class ScheduleTaskMirror extends BeanOperationMirror {
+
+    /** {@return the key that the service is exported with.} */
+    public abstract Object schedule();
+
+    /// Hmm, Hmm, Hmm. Det er jo det her graf ting...
+    public abstract List<ScheduleTaskMirror> subtasks();
+
+    public static BeanOperationMirrorSelection<ScheduleTaskMirror> selectAll(Assembly assembly) {
+        throw new UnsupportedOperationException();
+    }
 }

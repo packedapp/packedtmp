@@ -62,7 +62,8 @@ import packed.internal.application.PackedApplicationDriver;
  * @see ServiceLocator#driver()
  */
 // Environment + Application Interface + Result
-public /*sealed*/ interface ApplicationDriver<A> /*permits PackedApplicationDriver*/ {
+@SuppressWarnings("rawtypes")
+public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
