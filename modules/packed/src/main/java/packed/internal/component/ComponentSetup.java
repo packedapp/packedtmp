@@ -29,25 +29,26 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
-import app.packed.container.ContainerMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Realm;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.component.bean.BeanSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
 
 /** Abstract build-time setup of a component. */
-public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup */{
+public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
 
     /** Children of this node (lazily initialized) in insertion order. */
     @Nullable
-    LinkedHashMap<String, ComponentSetup> children;
+    public LinkedHashMap<String, ComponentSetup> children; // Skal vel flyttes til Container setup saa...
 
     /** The container this component is a part of. A container is a part of it self. */
     public final ContainerSetup container;
@@ -55,7 +56,7 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
     /** The depth of the component in the tree. */
     protected final int depth;
 
-    /** The lifetime of this component. */
+    /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
     /** The name of this component. */
@@ -65,9 +66,9 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
     @Nullable
     public Consumer<? super ComponentMirror> onWire;
 
-    /** The parent of this component, or null for a root component. */
+    /** The parent of this component, or null for a root container. */
     @Nullable
-    protected final ComponentSetup parent;
+    protected final ContainerSetup parent;
 
     /** The realm this component is a part of. */
     public final RealmSetup realm;
@@ -84,7 +85,7 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
      * @param parent
      *            any parent component this component might have
      */
-    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent) {
+    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ContainerSetup parent) {
         this.parent = parent;
         if (parent == null) {
             this.depth = 0;
@@ -159,8 +160,8 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
         requireNonNull(scope, "scope is null");
         requireNonNull(other, "other is null");
         return switch (scope) {
-        case CONTAINER -> application == other.application;
-        case APPLICATION -> application.build == other.application.build;
+        case CONTAINER -> container == other.container;
+        case APPLICATION -> application == other.application;
         case COMPONENT -> this == other;
         case BUNDLE -> container == other.container;
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
@@ -250,7 +251,7 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
         }
 
         /** {@inheritDoc} */
-        public final ContainerMirror bundle() {
+        public final ContainerMirror container() {
             return container.mirror();
         }
 
@@ -275,8 +276,8 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
         }
 
         /** {@inheritDoc} */
-        public final Optional<ComponentMirror> parent() {
-            ComponentSetup parent = ComponentSetup.this.parent;
+        public final Optional<ContainerMirror> parent() {
+            ContainerSetup parent = ComponentSetup.this.parent;
             return parent == null ? Optional.empty() : Optional.of(parent.mirror());
         }
 
@@ -304,18 +305,18 @@ public abstract /*sealed*/ class ComponentSetup /*permits BundleSetup,BeanSetup 
         }
 
         /** {@inheritDoc} */
-        public final ComponentMirror root() {
+        public final ContainerMirror root() {
             ComponentSetup c = ComponentSetup.this;
             while (c.parent != null) {
                 c = c.parent;
             }
-            return c == ComponentSetup.this ? thisMirror() : c.mirror();
+            return (ContainerMirror) (c == ComponentSetup.this ? thisMirror() : c.mirror());
         }
 
         private ComponentMirror thisMirror() {
             return (ComponentMirror) this;
         }
-        
+
         /** {@inheritDoc} */
         public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
             return new PackedComponentStream(stream0(ComponentSetup.this, true, PackedComponentStreamOption.of(options)));

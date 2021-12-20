@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.container.ContainerSetup;
 
 /** The default implementation of {@link NamespacePath}. */
 public final class PackedTreePath implements NamespacePath {

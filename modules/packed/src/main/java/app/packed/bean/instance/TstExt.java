@@ -47,7 +47,7 @@ public class TstExt extends BaseAssembly {
         protected void build() {
             System.out.println(use(MyExt.class).count);
             try {
-                Thread.sleep(100);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

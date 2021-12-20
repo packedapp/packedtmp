@@ -19,20 +19,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.application.App;
-import app.packed.application.ApplicationMirror;
-import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 
 /**
- *
+ * A mirror for the {@link EntryPointExtension}.
  */
 @ExtensionMember(EntryPointExtension.class)
 public class EntryPointExtensionMirror extends ExtensionMirror implements Iterable<EntryPointMirror> {
 
     final EntryPointExtension e;
+
     final boolean isApplication;
 
     EntryPointExtensionMirror(EntryPointExtension e, boolean isApplication) {
@@ -69,31 +67,4 @@ public class EntryPointExtensionMirror extends ExtensionMirror implements Iterab
         // EntryPoints
         /// --- DododoApppx
     }
-
-    public static void main(String[] args) {
-        for (EntryPointMirror m : App.mirrorOf(new MyAss()).use(EntryPointExtensionMirror.class)) {
-            System.out.println(m);
-        }
-        ApplicationMirror.of(new MyAss()).use(EntryPointExtensionMirror.class).print();
-
-        App.run(new MyAss());
-    }
-
-    public static class MyAss extends BaseAssembly {
-
-        /** {@inheritDoc} */
-        @Override
-        protected void build() {
-            install(MyBean.class);
-        }
-
-        public static class MyBean {
-
-            @Main
-            public void foo() {
-                System.out.println("XXX");
-            }
-        }
-    }
-
 }

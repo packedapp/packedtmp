@@ -105,7 +105,7 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
     }
 
     public void launch(ApplicationSetup application, ApplicationInitializationContext launchContext) {
-        boolean isMain = application.entryPoint.hasMain();
+        boolean isMain = application.entryPoints.hasMain();
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
 
@@ -136,7 +136,7 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
             lock.unlock();
         }
 
-        EntryPointSetup ep = application.entryPoint;
+        EntryPointSetup ep = application.entryPoints;
         if (ep != null) {
             ep.enter(launchContext);
         }

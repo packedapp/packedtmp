@@ -30,7 +30,7 @@ import app.packed.component.ComponentScope;
 
     final RuntimeComponentMirror from;
 
-final RuntimeComponentMirror lcd;
+    final RuntimeComponentMirror lcd;
 
     final RuntimeComponentMirror to;
 
@@ -92,14 +92,14 @@ final RuntimeComponentMirror lcd;
     @Override
     public Optional<ComponentMirror> findLowestCommonAncestor() {
         throw new UnsupportedOperationException();
-      //  return Optional.ofNullable(lcd);
+        // return Optional.ofNullable(lcd);
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentMirror target() {
         throw new UnsupportedOperationException();
-        //return to;
+        // return to;
     }
 
     static Relation relation(RuntimeComponentMirror from, RuntimeComponentMirror to) {

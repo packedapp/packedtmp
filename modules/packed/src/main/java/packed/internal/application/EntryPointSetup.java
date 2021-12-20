@@ -15,8 +15,10 @@
  */
 package packed.internal.application;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.base.Nullable;
-import packed.internal.application.ApplicationSetup.MainThreadOfControl;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.lifetime.PoolAccessor;
 import packed.internal.util.ThrowableUtil;
 
@@ -69,4 +71,15 @@ public class EntryPointSetup {
 
     }
 
+    public static class MainThreadOfControl {
+        public BeanSetup cs;
+
+        public boolean isStatic;
+
+        public MethodHandle methodHandle;
+
+        public boolean hasExecutionBlock() {
+            return methodHandle != null;
+        }
+    }
 }

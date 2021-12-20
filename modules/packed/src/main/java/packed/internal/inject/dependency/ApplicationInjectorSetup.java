@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
-import packed.internal.bundle.ContainerSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
 

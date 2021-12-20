@@ -1,6 +1,6 @@
 package app.packed.extension.old;
 
-import packed.internal.bundle.PackedExtensionAncestor;
+import packed.internal.container.PackedExtensionAncestor;
 
 // Extension <same app-parent> Extension
 // Extension <same build-parent> Extension

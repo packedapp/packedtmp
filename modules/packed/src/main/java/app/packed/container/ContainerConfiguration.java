@@ -11,13 +11,13 @@ import java.util.Set;
 import app.packed.application.ApplicationDescriptor;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import packed.internal.bundle.ContainerSetup;
 import packed.internal.component.ComponentSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * The configuration of a bundle.
+ * The configuration of a container.
  */
 public final class ContainerConfiguration extends ComponentConfiguration {
 
@@ -32,11 +32,11 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     /** {@return a descriptor for the application the container is a part of.} */
     // Why not just an application mirror???
     public ApplicationDescriptor application() {
-        return bundle().application.descriptor;
+        return container().application.descriptor;
     }
 
     /** {@return the wrapped configuration instance.} */
-    ContainerSetup bundle() {
+    ContainerSetup container() {
         try {
             return (ContainerSetup) MH_COMPONENT_CONFIGURATION_SETUP.invokeExact(this);
         } catch (Throwable e) {
@@ -52,7 +52,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see ContainerMirror#extensionsTypes()
      */
     public Set<Class<? extends Extension>> extensionTypes() {
-        return bundle().extensionTypes();
+        return container().extensionTypes();
     }
 
     /**
@@ -66,11 +66,11 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      *           cannot give a more detailed answer about who is using a particular extension
      */
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-        return bundle().isExtensionUsed(extensionType);
+        return container().isExtensionUsed(extensionType);
     }
 
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return bundle().link(assembly, wirelets);
+        return container().link(assembly, wirelets);
     }
 
     /**
@@ -84,15 +84,16 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     // Maaske skal den bare paa bean extension????
     // !!! Maaske er det en del af assemblien
     // Men saa kan man ikke bruge BundleConfiguration???
+    // Ellers syntes jeg bare det skal vaere paa ComponentConfiguration...
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        bundle().realm.setLookup(lookup);
+        container().realm.setLookup(lookup);
     }
 
     /** {@return a mirror for the bundle.} */
     @Override
     public ContainerMirror mirror() {
-        return bundle().mirror();
+        return container().mirror();
     }
 
     /** {@inheritDoc} */
@@ -103,7 +104,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     }
 
     public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return bundle().selectWirelets(wireletClass);
+        return container().selectWirelets(wireletClass);
     }
 
     /**
@@ -124,6 +125,6 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see #extensionsTypes()
      */
     public <E extends Extension> E use(Class<E> extensionType) {
-        return bundle().useExtension(extensionType);
+        return container().useExtension(extensionType);
     }
 }

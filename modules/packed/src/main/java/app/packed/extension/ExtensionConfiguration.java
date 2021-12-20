@@ -28,7 +28,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
-import packed.internal.bundle.ExtensionSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
  * A configuration of an {@link Extension}.

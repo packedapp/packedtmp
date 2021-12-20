@@ -8,8 +8,8 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
-import packed.internal.bundle.ContainerSetup;
-import packed.internal.bundle.ExtensionSetup;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
  * An extension used for installing beans. Two main types of functionality

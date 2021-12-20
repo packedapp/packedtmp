@@ -18,6 +18,7 @@ import app.packed.inject.ReflectionFactory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
@@ -54,7 +55,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public final BeanType beanType;
 
-    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent, Object source) {
+    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ContainerSetup parent, Object source) {
         super(parent.application, realm, lifetime, parent);
         this.beanType = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
@@ -95,7 +96,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         }
     }
 
-    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent, Object source, boolean ignore) {
+    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ContainerSetup parent, Object source, boolean ignore) {
         super(parent.application, realm, lifetime, parent);
         this.beanType = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton

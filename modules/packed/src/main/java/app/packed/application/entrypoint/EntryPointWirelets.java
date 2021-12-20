@@ -17,11 +17,9 @@ package app.packed.application.entrypoint;
 
 import app.packed.container.Wirelet;
 
-/**
- *
- */
+/** Various wirelets that can be used together with the {@link EntryPointExtension}. */
 public final class EntryPointWirelets {
-    
+
     /** No entry for you. */
     private EntryPointWirelets() {}
 

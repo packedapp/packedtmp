@@ -26,8 +26,8 @@ import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
-import packed.internal.bundle.ContainerSetup;
-import packed.internal.bundle.PackedBundleDriver;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.PackedBundleDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -129,7 +129,7 @@ public abstract class Assembly {
         // Why not just test configuration == null????
 
         // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
-        configuration().bundle().realm.checkOpen();
+        configuration().container().realm.checkOpen();
     }
 
     /**
@@ -163,7 +163,7 @@ public abstract class Assembly {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
-            ContainerSetup cs = configuration.bundle();
+            ContainerSetup cs = configuration.container();
 
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present

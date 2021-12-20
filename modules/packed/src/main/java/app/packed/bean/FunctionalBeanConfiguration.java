@@ -18,7 +18,7 @@ package app.packed.bean;
 /**
  *
  */
-public class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
+public non-sealed class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
 
     /** {@inheritDoc} */
     @Override

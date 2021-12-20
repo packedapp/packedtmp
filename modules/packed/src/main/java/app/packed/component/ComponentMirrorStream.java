@@ -277,11 +277,11 @@ public interface ComponentMirrorStream extends Stream<ComponentMirror> {
         public static ComponentMirrorStream.Option maxDepth(int depth) {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
-
-        // Not sure we are ready for this...
-        static ComponentMirrorStream.Option parallel() {
-            throw new UnsupportedOperationException();
-        }
+//
+//        // Not sure we are ready for this...
+//        static ComponentMirrorStream.Option parallel() {
+//            throw new UnsupportedOperationException();
+//        }
 
         // Fail if not??
         public static ComponentMirrorStream.Option partOfSame(ComponentScope boundaryType) {

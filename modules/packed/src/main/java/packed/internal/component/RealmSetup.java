@@ -32,9 +32,9 @@ import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.bundle.ContainerSetup;
-import packed.internal.bundle.ExtensionSetup;
-import packed.internal.bundle.PackedBundleDriver;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
+import packed.internal.container.PackedBundleDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -116,7 +116,7 @@ public final class RealmSetup {
      * @param assembly
      *            the assembly to create a realm for
      */
-    private RealmSetup(RealmSetup existing, PackedBundleDriver driver, ComponentSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
+    private RealmSetup(RealmSetup existing, PackedBundleDriver driver, ContainerSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
@@ -154,7 +154,7 @@ public final class RealmSetup {
         return current;
     }
 
-    public RealmSetup link(PackedBundleDriver driver, ComponentSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
+    public RealmSetup link(PackedBundleDriver driver, ContainerSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
         // Check that the realm this component is a part of is still open
         wirePrepare();
         // Create the new realm that should be used for linking

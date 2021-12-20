@@ -18,6 +18,10 @@ package app.packed.component;
 /**
  *
  */
-public interface ComponentMirrorTree extends Iterable<ComponentMirror> {
+// Do we ever return empty trees?
 
+// Fx en Lifetime er jo altid et component tree...
+public interface ComponentMirrorTree extends ComponentMirrorSet {
+    ComponentMirror root();  // Optional<CM> if we have empty trees.
 }
+// interface ComponentMirrorSet

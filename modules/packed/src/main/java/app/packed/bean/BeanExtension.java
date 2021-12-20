@@ -8,13 +8,12 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
-import packed.internal.bundle.ContainerSetup;
-import packed.internal.bundle.ExtensionSetup;
-import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.component.bean.PackedBeanDriver;
 import packed.internal.component.bean.PackedBeanDriverBinder;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
  * An extension used for installing beans.
@@ -90,7 +89,7 @@ public class BeanExtension extends Extension {
         return mirrorInitialize(new BeanExtensionMirror(this));
     }
 
-    static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
+    static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ContainerSetup parent, RealmSetup realm, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
         // Prepare to wire the component (make sure the realm is still open)
         realm.wirePrepare();

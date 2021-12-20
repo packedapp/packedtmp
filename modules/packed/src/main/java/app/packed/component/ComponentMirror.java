@@ -40,33 +40,16 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
-    /** {@return the bundle this component is a part of. If this mirror represents a bundle, returns this.} */
-    ContainerMirror bundle(); // in application / in build??
-
-    /** {@return an unmodifiable view of all of the children of this component.} */
+    /**
+     * {@return an unmodifiable view of all of the children of this component. A bean mirror will always return an empty
+     * collection.}
+     */
     Collection<ComponentMirror> children();
 
     Stream<ComponentMirror> components();
 
-    /** {@return the distance to the root component, the root component having depth {@code 0}.} */
-    int depth();
-
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        components().forEach(action);
-    }
-
-    default ComponentMirror in(ComponentScope boundary) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @param scope
-     *            the scope to check
-     * @param other
-     *            the other component to check
-     * @return true if this component and the specified component is in the same specified scope, otherwise false
-     */
-    boolean isInSame(ComponentScope scope, ComponentMirror other);
+    /** {@return the container this component is a part of. If this mirror represents a container, returns this.} */
+    ContainerMirror container();
 
     /**
      * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
@@ -91,8 +74,28 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // Hvor det ikke er extension'en der soerger for instantiering
 
     // RegisteredWith
-    // DeclaredBy 
+    // DeclaredBy
     /* UserOrExtension */ Optional<Class<? extends Extension>> declaredByExtension();
+
+    /** {@return the distance to the root component, the root component having depth {@code 0}.} */
+    int depth();
+
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        components().forEach(action);
+    }
+
+    default ComponentMirror in(ComponentScope boundary) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param scope
+     *            the scope to check
+     * @param other
+     *            the other component to check
+     * @return true if this component and the specified component is in the same specified scope, otherwise false
+     */
+    boolean isInSame(ComponentScope scope, ComponentMirror other);
 
     /**
      * Returns the name of this component.
@@ -105,7 +108,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     String name();
 
     /** {@return the parent component of this component. Or empty if a root component.} */
-    Optional<ComponentMirror> parent();
+    Optional<ContainerMirror> parent(); // ContainerMirror????
 
     /** {@return the path of this component} */
     NamespacePath path();
@@ -136,8 +139,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // Syntes ikke vi skal have baade tryResolve or resolve...
     ComponentMirror resolve(CharSequence path);
 
-    /** {@return the root component} */
-    ComponentMirror root();
+    /** {@return the root component (always a container).} */
+    ContainerMirror root();
 
     /**
      * Returns a stream consisting of this component and all of its descendants in any order.

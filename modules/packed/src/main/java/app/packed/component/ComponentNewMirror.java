@@ -10,8 +10,8 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.InternalExtensionException;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
-import packed.internal.bundle.ExtensionSetup;
 import packed.internal.component.ComponentSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
  * A mirror of an extension that is in use by a {@link #bundle}.

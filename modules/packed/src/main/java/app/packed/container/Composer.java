@@ -68,7 +68,7 @@ public abstract class Composer {
      * 
      */
     protected final void checkPreBuild() {
-        configuration().bundle().realm.checkOpen();
+        configuration().container().realm.checkOpen();
     }
 
     private ContainerConfiguration configuration() {
@@ -130,7 +130,7 @@ public abstract class Composer {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        configuration().bundle().realm.setLookup(lookup);
+        configuration().container().realm.setLookup(lookup);
     }
 
     /**

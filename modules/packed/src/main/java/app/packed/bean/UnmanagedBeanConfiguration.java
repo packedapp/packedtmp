@@ -1,6 +1,6 @@
 package app.packed.bean;
 
-public /* non-sealed */ class UnmanagedBeanConfiguration<T> extends BeanConfiguration<T> {
+public non-sealed class UnmanagedBeanConfiguration<T> extends BeanConfiguration<T> {
 
     public UnmanagedBeanConfiguration() {}
     

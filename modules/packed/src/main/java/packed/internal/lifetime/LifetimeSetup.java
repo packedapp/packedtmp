@@ -1,5 +1,8 @@
 package packed.internal.lifetime;
 
+import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
+
 import app.packed.base.Nullable;
 
 // Der er faktisk 2 strategier her...
@@ -15,6 +18,9 @@ public final class LifetimeSetup {
     @Nullable
     LifetimeSetup parent;
 
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+    
+    
     public LifetimeSetup(@Nullable LifetimeSetup parent) {
         this.parent = parent;
     }

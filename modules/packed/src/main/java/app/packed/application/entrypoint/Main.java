@@ -30,7 +30,7 @@ import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.ApplicationSetup.MainThreadOfControl;
+import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 
@@ -51,9 +51,6 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 // and then shutdown container down again
 // Panic if it fails???? or do we not wrap exception??? I think we wrap...
 // We always wrap in container panic exception
-
-//I think this creates a job...
-
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -76,7 +73,7 @@ class MainBootstrap extends RealMethodSidecarBootstrap {
             EntryPointExtension e = c.container.useExtension(EntryPointExtension.class);
             e.hasMain = true;
             c.container.useExtension(ServiceExtension.class);
-            MainThreadOfControl mc = c.application.entryPoint.mainThread();
+            MainThreadOfControl mc = c.application.entryPoints.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
             mc.cs = (BeanSetup) c;
             mc.methodHandle = mh;
@@ -92,12 +89,3 @@ class MainBootstrap extends RealMethodSidecarBootstrap {
 //
 //    }
 }
-
-// Skal det styres paa shell niveau?? Eller wirelet niveau..
-// Tror det bliver styres paa runtime niveau
-// boolean spawnThread() default false;
-
-// remainRunning, nej det er sgu en anden annotering
-// We will gerne kunne foresporge om en Container har en Computer
-// Det har en semantics betydning. Det har et request
-// boolean stopOnSucces() default true;

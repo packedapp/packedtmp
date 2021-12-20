@@ -3,7 +3,7 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.extension.Extension;
-import packed.internal.bundle.PackedBundleDriver;
+import packed.internal.container.PackedBundleDriver;
 
 // Altsaa hvordan er det lige praecis ContainerConfiguration skal faa ekstra information?
 // Vi er vist enige om at vi ikke gider kunne overskrive den, bare for at 

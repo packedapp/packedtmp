@@ -24,8 +24,8 @@ import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
-import packed.internal.bundle.InternalWirelet;
-import packed.internal.bundle.WireletWrapper;
+import packed.internal.container.InternalWirelet;
+import packed.internal.container.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolWriteable;
@@ -129,7 +129,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
         LifetimePool pool = context.pool = application.container.lifetime.pool.newPool(context);
 
         // Run all initializers
-        for (MethodHandle mh : application.lifetime.initializers) {
+        for (MethodHandle mh : application.container.lifetime.initializers) {
             try {
                 mh.invoke(pool);
             } catch (Throwable e) {

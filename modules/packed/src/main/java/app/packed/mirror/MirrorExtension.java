@@ -17,8 +17,8 @@ package app.packed.mirror;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
-import packed.internal.bundle.ContainerSetup;
-import packed.internal.bundle.ExtensionSetup;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
  *

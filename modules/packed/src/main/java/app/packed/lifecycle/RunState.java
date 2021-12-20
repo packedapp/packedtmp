@@ -18,7 +18,7 @@ package app.packed.lifecycle;
 /**
  * An enum containing all valid states of a {@link LifecycleApplicationController}.
  *
- * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
+ * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
  * There are 3 <b>intermediate</b> states: {@link #UNINITIALIZED}, {@link #STARTING} and {@link #STOPPING}.
  *

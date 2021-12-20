@@ -39,6 +39,13 @@ import packed.internal.component.PackedTreePath;
 // TreePath....
 
 // Element? instead of resource. Only because resources have a specific meaning in Java
+// IDK ComponentPath... 
+
+// component:FooApp:/
+// lifetime:FooApp:dfdf/444
+// FooExtension.service:DFDFDF:List<String>
+// EntryPointExtension.entrypoint:FooApp:124
+
 public interface NamespacePath extends Comparable<NamespacePath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A path representing the root resource of a namespace. */

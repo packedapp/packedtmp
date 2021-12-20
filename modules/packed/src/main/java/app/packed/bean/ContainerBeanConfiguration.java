@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public /*non-sealed*/ class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
+public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
 
     public <X extends Runnable & Callable<String>> X foo() {
         return null;

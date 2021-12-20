@@ -6,8 +6,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
-import packed.internal.bundle.ContainerSetup;
 import packed.internal.component.bean.OldBeanDriver.OtherBeanDriver;
+import packed.internal.container.ContainerSetup;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 
 /**
