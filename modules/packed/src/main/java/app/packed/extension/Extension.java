@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanSupport2;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -266,7 +267,7 @@ public abstract class Extension {
      * example, by installing a bean that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link BundleExtension.BeanExtensionSupport2#link(Assembly, Wirelet...)}
+     * {@link BeanSupport2.BeanExtensionSupport2#link(Assembly, Wirelet...)}
      */
     protected void onComplete() {
         // Time
@@ -286,7 +287,7 @@ public abstract class Extension {
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
-     * The next "lifecycle" method that will be called is {@link #onPostSetUp()}, which is called after the bundle has been
+     * The next "lifecycle" method that will be called is {@link #onPostSetUp()}, which is called after the container has been
      * setup and before any linkage of child containers has started.
      * 
      * @see #onPostSetUp()

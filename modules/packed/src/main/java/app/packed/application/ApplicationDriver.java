@@ -438,7 +438,7 @@ interface ApplicationDriverSandbox<A> {
 
         ApplicationDriverSandbox.builder().enableExtension(JobExtension.class, (b, e) -> {
             @SuppressWarnings("unchecked")
-            Class<? extends JobAssembly<?>> cl = (Class<? extends JobAssembly<?>>) b.bundleType();
+            Class<? extends JobAssembly<?>> cl = (Class<? extends JobAssembly<?>>) b.containerType();
             System.out.println(cl);
             // e.setResultType(<T>.extract);
             // extract <T> from Jo

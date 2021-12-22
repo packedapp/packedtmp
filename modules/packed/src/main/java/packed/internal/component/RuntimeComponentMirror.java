@@ -81,16 +81,16 @@ public final class RuntimeComponentMirror {
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
         Map<String, RuntimeComponentMirror> children = null;
-        LinkedHashMap<String, ComponentSetup> childComponents = component.children;
+        LinkedHashMap<String, ComponentSetup> childComponents = new LinkedHashMap<>();// component.children;
         if (childComponents != null) {
             // Maybe ordered is the default...
             LinkedHashMap<String, RuntimeComponentMirror> result = new LinkedHashMap<>(childComponents.size());
 
-            for (ComponentSetup cc : component.children.values()) {
-                // We never carry over extensions into the runtime
-                RuntimeComponentMirror ac = new RuntimeComponentMirror(this, cc, launch);
-                result.put(ac.name(), ac);
-            }
+//            for (ComponentSetup cc : component.children.values()) {
+//                // We never carry over extensions into the runtime
+//                RuntimeComponentMirror ac = new RuntimeComponentMirror(this, cc, launch);
+//                result.put(ac.name(), ac);
+//            }
 
             children = Map.copyOf(result);
         }
@@ -281,7 +281,7 @@ public final class RuntimeComponentMirror {
     }
 
 
-    public ContainerMirror bundle() {
+    public ContainerMirror container() {
         // TODO Auto-generated method stub
         return null;
     }

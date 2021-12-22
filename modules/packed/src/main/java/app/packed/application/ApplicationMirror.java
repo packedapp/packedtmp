@@ -31,7 +31,7 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror extends Mirror {
 
-    /** {@return the assembly type of the root container. Returns Assembly.class} */ // IDK bundle().type() might be fine
+    /** {@return the assembly type of the root container. Returns Assembly.class} */ // IDK container().type() might be fine
     default Class<? extends Assembly> assemblyType() {
         return container().assemblyType();
     }
@@ -67,7 +67,7 @@ public interface ApplicationMirror extends Mirror {
     /**
      * Returns the name of the application.
      * <p>
-     * The name of an application is always identical to the name of the root bundle.
+     * The name of an application is always identical to the name of the root container.
      * 
      * @return the name of the application
      * @see Assembly#named(String)

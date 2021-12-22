@@ -27,13 +27,13 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedBundleDriver;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
 /**
  * An assembly is Packed's main way to configure applications and their parts.
  * <p>
- * The assembly defines 1 or more bundles
+ * The assembly configures 1 or more containers.
  * <p>
  * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
  * functionality of Packed.
@@ -44,7 +44,7 @@ import packed.internal.util.LookupUtil;
  * Assemblies are composable via linking.
  * 
  * <p>
- * Packed never performs any kind of reflection based introspection of bundle implementations.
+ * Packed never performs any kind of reflection based introspection of container implementations.
  * <p>
  * Instances of this class can only be used a single time. Trying to use it more than once will fail with
  * {@link IllegalStateException}.
@@ -65,8 +65,8 @@ public abstract class Assembly {
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the bundle instance has not yet been used to build anything.</li>
-     * <li>Then, as a part of the build process, it is initialized with the actual bundle configuration object.</li>
+     * <li>Initially, this field is null, indicating that the container instance has not yet been used to build anything.</li>
+     * <li>Then, as a part of the build process, it is initialized with the actual container configuration object.</li>
      * <li>Finally, {@link #USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
@@ -78,19 +78,19 @@ public abstract class Assembly {
     /**
      * The driver of this assembly.
      * <p>
-     * This field is read by {@link PackedBundleDriver#getDriver(Assembly)} via a var handle.
+     * This field is read by {@link PackedcontainerDriver#getDriver(Assembly)} via a var handle.
      */
     @SuppressWarnings("unused")
-    private final PackedBundleDriver driver;
+    private final PackedContainerDriver driver;
 
     /**
-     * Creates a new assembly using the specified bundle driver.
+     * Creates a new assembly using the specified container driver.
      * 
      * @param driver
-     *            the driver to used to create the bundle
+     *            the driver to used to create the container
      */
     protected Assembly(ContainerDriver driver) {
-        this.driver = requireNonNull((PackedBundleDriver) driver, "driver is null");
+        this.driver = requireNonNull((PackedContainerDriver) driver, "driver is null");
     }
 
     /** {@return a descriptor for the application being built.} */
@@ -101,7 +101,7 @@ public abstract class Assembly {
     /**
      * Invoked by the runtime as part of the build process. This is where you should compose the application
      * <p>
-     * This method will never be invoked more than once on a bundle instance.
+     * This method will never be invoked more than once on a container instance.
      * <p>
      * Note: This method should never be invoked directly by the user.
      */
@@ -214,16 +214,16 @@ public abstract class Assembly {
     }
 
     /**
-     * Sets the name of the bundle. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
+     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
      * case sensitive.
      * <p>
-     * This method should be called as the first thing when configuring a bundle.
+     * This method should be called as the first thing when configuring a container.
      * <p>
-     * If no name is set using this method. The framework will automatically assign a name to the bundle, in such a way that
+     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way that
      * it will have a unique name among other sibling container.
      *
      * @param name
-     *            the name of the bundle
+     *            the name of the container
      * @see ContainerConfiguration#named(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
@@ -269,15 +269,15 @@ public abstract class Assembly {
      *            the type of extension to return
      * @return an extension instance of the requested type
      * @throws IllegalStateException
-     *             if called after the bundle is no longer configurable
+     *             if called after the container is no longer configurable
      * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
     
-    // On bundle or assembly???
-    // Not bundle I think...
+    // On container or assembly???
+    // Not container I think...
     // Assembly + Extension
     final void addCloseAction(Runnable action) {
         throw new UnsupportedOperationException();

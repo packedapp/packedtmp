@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -38,17 +37,12 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.lifetime.LifetimeSetup;
-import packed.internal.util.CollectionUtil;
 
 /** Abstract build-time setup of a component. */
 public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
-
-    /** Children of this node (lazily initialized) in insertion order. */
-    @Nullable
-    public LinkedHashMap<String, ComponentSetup> children; // Skal vel flyttes til Container setup saa...
 
     /** The container this component is a part of. A container is a part of it self. */
     public final ContainerSetup container;
@@ -62,13 +56,17 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /** The name of this component. */
     public String name;
 
-    /** An action that, if present, must be called whenever the component has been completely wired. */
+    /**
+     * An action that, if present, must be called whenever the component has been completely wired.
+     * <p>
+     * This field is not final as it may be updated later via wirelets.
+     */
     @Nullable
     public Consumer<? super ComponentMirror> onWire;
 
     /** The parent of this component, or null for a root container. */
     @Nullable
-    protected final ContainerSetup parent;
+    public final ContainerSetup parent;
 
     /** The realm this component is a part of. */
     public final RealmSetup realm;
@@ -99,17 +97,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.application = requireNonNull(application);
         this.container = this instanceof ContainerSetup container ? container : parent.container;
     }
-//
-//    final AttributeMap attributes() {
-//        // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
-//        // Maaske er det simpelthen et view...
-//        // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
-//        DefaultAttributeMap dam = new DefaultAttributeMap();
-//        attributesAdd(dam);
-//        return dam;
-//    }
-//
-//    protected void attributesAdd(DefaultAttributeMap dam) {}
 
     public final void checkIsWiring() {
         if (realm.current() != this) {
@@ -133,8 +120,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         String n = name;
         if (parent != null) {
             LinkedHashMap<String, ComponentSetup> c = parent.children;
-            if (c == null) {
-                c = parent.children = new LinkedHashMap<>();
+            if (c.size() == 0) {
                 c.put(name, this);
             } else {
                 int counter = 1;
@@ -163,7 +149,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         case CONTAINER -> container == other.container;
         case APPLICATION -> application == other.application;
         case COMPONENT -> this == other;
-        case BUNDLE -> container == other.container;
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
         };
     }
@@ -205,12 +190,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         return PackedTreePath.of(this);
     }
 
-//    public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
-//        requireNonNull(attribute, "attribute is null");
-//        requireNonNull(value, "value is null");
-//        // check realm.open + attribute.write
-//    }
-
     /**
      * Checks the name of the component.
      * 
@@ -234,17 +213,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             return application.mirror();
         }
 
-        /** {@inheritDoc} */
-        public final Realm realm() {
-            Class<? extends Extension> extensionType = realm.extensionType;
-            return extensionType == null ? Realm.application() : Realm.extension(extensionType);
-        }
-
-        /** {@inheritDoc} */
-        public final Collection<ComponentMirror> children() {
-            LinkedHashMap<String, ComponentSetup> m = children;
-            return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
-        }
+        protected abstract Collection<ComponentMirror> children();
 
         public Stream<ComponentMirror> components() {
             return stream();
@@ -287,6 +256,12 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
 
         /** {@inheritDoc} */
+        public final Realm realm() {
+            Class<? extends Extension> extensionType = realm.extensionType;
+            return extensionType == null ? Realm.application() : Realm.extension(extensionType);
+        }
+
+        /** {@inheritDoc} */
         public final Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetupRelation.of(ComponentSetup.this, ((AbstractBuildTimeComponentMirror) other).outer());
@@ -294,7 +269,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final ComponentMirror resolve(CharSequence path) {
-            LinkedHashMap<String, ComponentSetup> map = children;
+            LinkedHashMap<String, ComponentSetup> map = ((ContainerSetup) ComponentSetup.this).children;
             if (map != null) {
                 ComponentSetup cs = map.get(path.toString());
                 if (cs != null) {
@@ -311,10 +286,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
                 c = c.parent;
             }
             return (ContainerMirror) (c == ComponentSetup.this ? thisMirror() : c.mirror());
-        }
-
-        private ComponentMirror thisMirror() {
-            return (ComponentMirror) this;
         }
 
         /** {@inheritDoc} */
@@ -336,5 +307,25 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(thisMirror());
             }
         }
+
+        private ComponentMirror thisMirror() {
+            return (ComponentMirror) this;
+        }
     }
 }
+
+//public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
+//  requireNonNull(attribute, "attribute is null");
+//  requireNonNull(value, "value is null");
+//  // check realm.open + attribute.write
+//}
+//final AttributeMap attributes() {
+//  // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
+//  // Maaske er det simpelthen et view...
+//  // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
+//  DefaultAttributeMap dam = new DefaultAttributeMap();
+//  attributesAdd(dam);
+//  return dam;
+//}
+//
+//protected void attributesAdd(DefaultAttributeMap dam) {}

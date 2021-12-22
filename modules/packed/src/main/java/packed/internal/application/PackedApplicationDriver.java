@@ -44,7 +44,7 @@ import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.CompositeWirelet;
-import packed.internal.container.PackedBundleDriver;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.WireletWrapper;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
@@ -135,10 +135,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
-        // Extract the driver from the field Bundle#driver
-        PackedBundleDriver componentDriver = PackedBundleDriver.getDriver(assembly);
+        // Extract the driver from the field Assembly#driver
+        PackedContainerDriver componentDriver = PackedContainerDriver.getDriver(assembly);
 
-        // Create the initial realm, typically we will have a realm per bundle
+        // Create the initial realm, typically we will have a realm per container
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
 
         // Create a new component configuration instance which are passed along to assembly that
@@ -146,8 +146,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // protected final methods such as ContainerAssembly#use(Class)
         ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
-        // Invoke Bundle::doBuild which in turn will invoke Bundle::build
-        // This will recursively call down through any sub-bundles that are linked
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        // This will recursively call down through any sub-containers that are linked
         try {
             RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {
@@ -166,7 +166,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(composer, "composer is null");
 
         // Extract the component driver from the composer
-        PackedBundleDriver componentDriver = (PackedBundleDriver) containerDriver;
+        PackedContainerDriver componentDriver = (PackedContainerDriver) containerDriver;
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, consumer, wirelets);

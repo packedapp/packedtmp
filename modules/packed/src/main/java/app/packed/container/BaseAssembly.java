@@ -31,7 +31,7 @@ import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.OnStart;
 
 /**
- * Extends {@link Bundle} with shortcuts for some commonly used extensions.
+ * Extends {@link Assembly} with shortcuts for some commonly used extensions.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -93,7 +93,7 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
-     * Creates a new bundle using the specified driver.
+     * Creates a new container using the specified driver.
      * 
      * @param driver
      *            the driver to wrap
@@ -240,7 +240,7 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
-     * Links the specified assembly as part of the same application and container that this bundle is part of.
+     * Links the specified assembly as part of the same application and container that this container is part of.
      * 
      * @param assembly
      *            the assembly to link

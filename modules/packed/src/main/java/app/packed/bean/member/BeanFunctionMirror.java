@@ -18,6 +18,9 @@ package app.packed.bean.member;
 /**
  *
  */
+// Det er jo taenkt paa et Functional Interface...
+
+// Men kan vi slaa den sammen med noget interface/whoareyou mirror
 public class BeanFunctionMirror {
 
 }

@@ -3,7 +3,7 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.extension.Extension;
-import packed.internal.container.PackedBundleDriver;
+import packed.internal.container.PackedContainerDriver;
 
 // Altsaa hvordan er det lige praecis ContainerConfiguration skal faa ekstra information?
 // Vi er vist enige om at vi ikke gider kunne overskrive den, bare for at 
@@ -25,14 +25,14 @@ public abstract /* sealed */ class ContainerDriver{
      */
     public abstract Set<Class<? extends Extension>> bannedExtensions();
 
-    /** {@return creates a new configuration object, only used by the PackedBundleDriver.} */
+    /** {@return creates a new configuration object, only used by the PackedContainerDriver.} */
     protected ContainerConfiguration newConfiguration() {
         return new ContainerConfiguration();
     }
 
     /** {@return the default driver that is used to configure containers.} */
     public static ContainerDriver defaultDriver() {
-        return PackedBundleDriver.DRIVER;
+        return PackedContainerDriver.DRIVER;
     }
 
     interface Builder {

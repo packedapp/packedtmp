@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.component.ComponentMirrorSet;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -55,12 +56,12 @@ public class ExtensionMirror implements Mirror {
 
 //    /** {@return the application the extension is used in.} */
 //    public final ApplicationMirror application() {
-//        return extension().bundle.application.mirror();
+//        return extension().container.application.mirror();
 //    }
 
 //    /** {@return the container the extension is used in.} */
 //    public final ContainerMirror container() {
-//        return extension().bundle.mirror();
+//        return extension().container.mirror();
 //    }
 
     /** {@inheritDoc} */
@@ -95,6 +96,12 @@ public class ExtensionMirror implements Mirror {
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() { // extensionDescriptor() instead of descriptor() because subclasses might want to use descriptor()
         return ExtensionDescriptor.of(extensionType());
+    }
+
+    /** {@return a set of all beans that are registered explicitly by the extension.} */
+    public ComponentMirrorSet extensionMemberBeans() {
+        // All installed beans that are owned by this extension
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the type of extension this mirror is a part of.} */

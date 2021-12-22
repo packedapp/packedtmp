@@ -13,43 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
-
-import app.packed.inject.service.ServiceExtension;
+package app.packed.bean.member.old;
 
 /**
- *
+ * Beans don't have constructors because a bean may be constructed in other ways
+ * 
+ * <p>
+ * Shis is no ordinary constructor
  */
 
-// ExtensionShare
-// ApplicationExtensionShare
-public abstract class ApplicationExtensor<T extends Extension> {
+// Maaske kalder vi det en constructor alligevel.. For det construere jo en bean!!!
 
-    protected void onFirst(T extension) {}
+// Ligesom en BeanMethod ikke
 
-    protected void onComplete() {}
+// Lad os se hvor valhalla ender
+// Was BeanInitializer but renamed to BeanConstructor
+public interface BeanConstructorMirror extends BeanExecutableMirror {
+
+    // constructor/factory
 }
 
-/// If config is supported I can do some stuff
-/// -> Implies that
+class X {
 
-
-
-// Alternativ
-
-
-
-// Man bliver noedt til at
-
-class Usage extends ApplicationExtensor<ServiceExtension> {
-
+    public static void main(String[] args) {
+        // VarHandle.AccessMode.
+    }
 }
-
-// None - Supported(but not enabled) - Enabled
-
-
-// 
-
-// Ting man ikke kan svare paa...
-// Det her bliver din sidste container...
-// Det ved vi foerst til sidst

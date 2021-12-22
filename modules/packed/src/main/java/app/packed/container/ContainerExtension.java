@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.container;
+
+import app.packed.extension.Extension;
 
 /**
  *
  */
-public interface BeanExecutableMirror extends BeanMemberMirror {
+// Tror den er tilbage...
+public class ContainerExtension extends Extension {
 
 }

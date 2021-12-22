@@ -30,7 +30,7 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
     /** {@inheritDoc} */
     @Override
     public boolean inSameContainer() {
-        return from.container == to.container;
+        return from.parent == to.parent;
     }
 
     /** {@inheritDoc} */

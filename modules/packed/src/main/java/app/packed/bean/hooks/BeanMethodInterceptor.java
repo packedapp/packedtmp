@@ -24,4 +24,4 @@ public abstract /*non-sealed*/ class BeanMethodInterceptor extends BeanHookEleme
 }
 //// Maaske har vi som udgangspunkt extension order interceptors???
 
-// Og ellers kan man annotere en bundle/bean med custom interception order
+// Og ellers kan man annotere en container/bean med custom interception order

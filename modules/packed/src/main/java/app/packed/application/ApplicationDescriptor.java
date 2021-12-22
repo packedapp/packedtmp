@@ -22,8 +22,8 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
 //
 //    void checkHasRunnable(String message);
 //
-    /** {@return the type of the root bundle.} */
-    Class<? extends Assembly > bundleType();
+    /** {@return the type of the root container.} */
+    Class<? extends Assembly > containerType();
 //    // defaultLaunchMode() -> Lazy
 //
 //    // Ved ikke om vi skal have den her...
@@ -61,21 +61,21 @@ public sealed interface ApplicationDescriptor permits PackedApplicationDescripto
          * <p>
          * A typical use case is native images
          * 
-         * @see ApplicationDriver#imageOf(Bundle, Wirelet...)
+         * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
          */
         IMAGE,
 
         /**
          * Build and instantiate an application.
          * 
-         * @see ApplicationDriver#launch(Bundle, Wirelet...)
+         * @see ApplicationDriver#launch(Assembly, Wirelet...)
          */
         INSTANCE, // LAUNCH
 
         /**
          * Build a mirror of some kind, for example, an {@link ApplicationMirror}.
          *
-         * @see ApplicationMirror#of(Bundle, Wirelet...)
+         * @see ApplicationMirror#of(Assembly, Wirelet...)
          */
         MIRROR,
 

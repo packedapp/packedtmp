@@ -23,7 +23,9 @@ import app.packed.mirror.Mirror;
  */
 public interface BeanElementMirror extends Mirror {
     
+    boolean isSynthetic();
+    
     BeanOperationMirrorSelection<BeanOperationMirror> operations();
     
-    boolean isSynthetic();
+    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> mirrorType);
 }

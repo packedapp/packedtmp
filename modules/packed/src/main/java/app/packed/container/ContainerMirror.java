@@ -13,7 +13,7 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.inject.service.ServiceLocator;
 
 /**
- * A mirror of a bundle (component).
+ * A mirror of a container (component).
  * <p>
  * An instance of this class is typically opb
  */
@@ -21,12 +21,12 @@ import app.packed.inject.service.ServiceLocator;
 public non-sealed interface ContainerMirror extends ComponentMirror {
 
     /**
-     * Returns the assembly class from which the bundle was build.
+     * Returns the assembly class from which the container was build.
      * <p>
-     * Returns {@code Bundle.class} if the bundle outside an assembly, for example, via
+     * Returns {@code container.class} if the container outside an assembly, for example, via
      * {@link ServiceLocator#of(ComposerAction)}
      * 
-     * @return the assembly class from which the bundle was build
+     * @return the assembly class from which the container was build
      */
     Class<? extends Assembly> assemblyType();
 
@@ -46,13 +46,15 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
     <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType); // maybe just find
 
     /**
-     * Returns whether or not an extension of the specified type is in use by the bundle.
+     * Returns whether or not an extension of the specified type is in use by the container.
      * 
      * @param extensionType
      *            the type of extension to test
-     * @return {@code true} if the bundle uses an extension of the specified type, otherwise {@code false}
+     * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
+    // maybe skip it, if we have runtimeExtensions()
+    // because we would also need isExtensionUsedAtRuntime
     boolean isExtensionUsed(Class<? extends Extension> extensionType);
 
     /**

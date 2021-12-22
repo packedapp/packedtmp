@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-// BuildHook??? Saa bruger folk den heller ikke paa bundles osv
+// BuildHook??? Saa bruger folk den heller ikke paa containers osv
 public @interface BuildWith {}
 // Det der er lidt nederen ved @OnBuild er at det
 // er det forslag der dukker foerst op naa man code completer

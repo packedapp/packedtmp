@@ -15,14 +15,14 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
-public final class PackedBundleDriver extends ContainerDriver {
+public final class PackedContainerDriver extends ContainerDriver {
 
     /** A driver for configuring containers. */
-    public static final PackedBundleDriver DRIVER = new PackedBundleDriver();
+    public static final PackedContainerDriver DRIVER = new PackedContainerDriver();
 
     /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            PackedBundleDriver.class);
+            PackedContainerDriver.class);
 
     /** A handle that can access ComponentConfiguration#component. */
     private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
@@ -47,8 +47,8 @@ public final class PackedBundleDriver extends ContainerDriver {
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static PackedBundleDriver getDriver(Assembly assembly) {
+    public static PackedContainerDriver getDriver(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
-        return (PackedBundleDriver) VH_ASSEMBLY_DRIVER.get(assembly);
+        return (PackedContainerDriver) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 }

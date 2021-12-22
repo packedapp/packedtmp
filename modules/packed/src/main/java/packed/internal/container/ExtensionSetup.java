@@ -51,7 +51,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             ExtensionConfiguration.class);
 
     /** The container where the extension is used. */
-    public final ContainerSetup bundle;
+    public final ContainerSetup container;
 
     /** The type of extension that is being configured. */
     public final Class<? extends Extension> extensionType;
@@ -86,7 +86,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      *            the model of the extension
      */
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
-        this.bundle = requireNonNull(container);
+        this.container = requireNonNull(container);
         this.model = requireNonNull(model);
         this.extensionType = model.type();
     }
@@ -94,7 +94,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public ApplicationDescriptor application() {
-        return bundle.application.descriptor;
+        return container.application.descriptor;
     }
 
 //    protected void attributesAdd(DefaultAttributeMap dam) {
@@ -106,8 +106,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerMirror bundle() {
-        return bundle.mirror();
+    public ContainerMirror container() {
+        return container.mirror();
     }
 
     /** {@inheritDoc} */
@@ -141,7 +141,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
-        ContainerSetup parent = bundle.containerParent;
+        ContainerSetup parent = container.containerParent;
         while (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
@@ -157,7 +157,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
         requireNonNull(type, "type is null");
-        ContainerSetup parent = bundle.containerParent;
+        ContainerSetup parent = container.containerParent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
@@ -194,7 +194,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public boolean isExtensionUsed(Class<? extends Extension> extensionClass) {
-        return bundle.isExtensionUsed(extensionClass);
+        return container.isExtensionUsed(extensionClass);
     }
 
     /** {@inheritDoc} */
@@ -266,7 +266,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
         // been consumed
-        WireletWrapper wirelets = bundle.wirelets;
+        WireletWrapper wirelets = container.wirelets;
         if (wirelets == null || wirelets.unconsumed() == 0) {
             return WireletSelection.of();
         }
@@ -296,7 +296,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = bundle.useExtension(supportExtensionType, this).instance;
+        Extension instance = container.useExtension(supportExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) supportModel.newInstance(instance, extensionType);

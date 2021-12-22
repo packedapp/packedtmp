@@ -57,7 +57,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationDescriptor application();
 
-    ContainerMirror bundle();
+    ContainerMirror container();
     
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

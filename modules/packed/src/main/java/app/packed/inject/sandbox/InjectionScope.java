@@ -22,7 +22,7 @@ import java.lang.reflect.Member;
  */
 public enum InjectionScope {
 
-    BUNDLE,
+    CONTAINER,
 
     CLASS,
 

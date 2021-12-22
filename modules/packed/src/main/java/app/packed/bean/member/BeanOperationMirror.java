@@ -15,16 +15,24 @@
  */
 package app.packed.bean.member;
 
+import java.util.Optional;
+
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.operation.BeanOperationErrorHandlingMirror;
 import app.packed.extension.Extension;
+import app.packed.lifetime.Lifetime;
 import app.packed.mirror.Mirror;
 
 /**
  *
  */
-// A bean function or bean method
-// A bean constructor or a bean field get/set/compute
+// Is invoked by an extension
+
+// A bean function
+// A bean method
+// A bean field get/set/compute
+
+// A bean constructor is _not_ an operation...
 public abstract class BeanOperationMirror implements Mirror {
 
     /** {@return the application the operation is a part of.} */
@@ -33,10 +41,19 @@ public abstract class BeanOperationMirror implements Mirror {
     }
 
     /** {@return the bean that declares the operation.} */
-    public final BeanClassMirror bean() {
+    public final Bean2Mirror bean() {
         throw new UnsupportedOperationException();
     }
 
+    public Optional<Lifetime> lifetime() {
+        throw new UnsupportedOperationException();
+    }
+    
+    public Optional<Lifetime> requiresNewLifetime() {
+        // @Get may be both
+        // @OnInitialize never requires new Lifetime
+        throw new UnsupportedOperationException();
+    }
 
     // Might not match the signature of the method.
     // For example, a @Schdule method might have a non-void signature.
@@ -45,8 +62,7 @@ public abstract class BeanOperationMirror implements Mirror {
        return false;
    }
 
-    public final BeanElementMirror element() {
-        //// Altsaa det er vel naermest aldrig en constructor???
+    public final BeanMemberMirror member() {
         throw new UnsupportedOperationException();
     }
 

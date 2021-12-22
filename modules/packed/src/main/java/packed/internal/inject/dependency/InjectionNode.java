@@ -89,7 +89,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
             if (!Modifier.isStatic(smm.getModifiers()) && source.singletonAccessor == null) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManagerSetup sbm = source.container.injection.getServiceManagerOrCreate();
+            ServiceManagerSetup sbm = source.parent.injection.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, source, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {

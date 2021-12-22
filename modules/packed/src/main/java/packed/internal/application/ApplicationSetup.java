@@ -16,7 +16,7 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedBundleDriver;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
 
@@ -64,7 +64,7 @@ public final class ApplicationSetup {
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
         
-        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedBundleDriver.DRIVER, null, wirelets);
+        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DRIVER, null, wirelets);
         this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
     }
 
@@ -74,34 +74,35 @@ public final class ApplicationSetup {
     }
     
     /** An application mirror adaptor. */
-    private record BuildTimeApplicationMirror(ApplicationSetup s) implements ApplicationMirror {
+    private record BuildTimeApplicationMirror(ApplicationSetup application) implements ApplicationMirror {
 
         @Override
         public ContainerMirror container() {
-            return s.container.mirror();
+            return application.container.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension>> disabledExtensions() {
             // TODO add additional dsiabled extensions
-            return s.applicationDriver.bannedExtensions();
+            return application.applicationDriver.bannedExtensions();
         }
 
         /** {@inheritDoc} */
         @Override
         public Module module() {
-            return s.container.realm.realmType().getModule();
+            return application.container.realm.realmType().getModule();
         }
 
         @Override
         public ApplicationDescriptor descriptor() {
-            return s.descriptor;
+            return application.descriptor;
         }
 
         /** {@inheritDoc} */
         @Override
         public <T extends ExtensionMirror> T use(Class<T> type) {
+            // TODO fix, is application extension mirror
             return container().useExtension(type);
         }
     }

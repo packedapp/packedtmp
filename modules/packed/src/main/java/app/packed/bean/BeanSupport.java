@@ -7,8 +7,8 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
 import packed.internal.component.bean.OldBeanDriver.OtherBeanDriver;
-import packed.internal.container.ContainerSetup;
 import packed.internal.component.bean.PackedBeanDriverBinder;
+import packed.internal.container.ContainerSetup;
 
 /**
  * A bean extension support class.
@@ -16,7 +16,8 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
  * Like other extension support classes this class is mainly used developers of extensions and not application developers.
  */
 @ExtensionMember(BeanExtension.class)
-public final class BeanExtensionSupport extends ExtensionSupport {
+// Maybe just BeanSupport, EntryPointSupport, WebSupport
+public final class BeanSupport extends ExtensionSupport {
 
     /** The bean extension we are wrapping. */
     private final BeanExtension extension;
@@ -24,7 +25,7 @@ public final class BeanExtensionSupport extends ExtensionSupport {
     /**
      * @param beanExtension
      */
-    BeanExtensionSupport(BeanExtension beanExtension) {
+    BeanSupport(BeanExtension beanExtension) {
         extension = beanExtension;
     }
 
@@ -81,13 +82,13 @@ public final class BeanExtensionSupport extends ExtensionSupport {
     public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
 
-        ContainerSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.container;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
     }
 
     public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Factory<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.container;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
     }
 
@@ -96,14 +97,14 @@ public final class BeanExtensionSupport extends ExtensionSupport {
     // 2. Specifie ComponentConfiguration must have been installed by the same extension
     public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.container;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
 
     }
 
     public <T, C extends BeanConfiguration<T>> C wireInstance(OtherBeanDriver<T, C> binder, T instance) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.extension.bundle;
+        ContainerSetup container = extension.extension.container;
         return BeanExtension.wire(b.bindInstance(instance), container, container.realm);
 
     }

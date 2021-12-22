@@ -23,6 +23,11 @@ import app.packed.mirror.Mirror;
 // What happens if an operation fails
 
 // passthrough
+
+
+// Could be a inner interface on BeanOperationMirror
+
+
 public interface BeanOperationErrorHandlingMirror extends Mirror {
 
     default void print() {

@@ -10,7 +10,7 @@ public final class PackedApplicationDescriptor implements ApplicationDescriptor 
     }
 
     @Override
-    public Class<? extends Assembly > bundleType() {
+    public Class<? extends Assembly > containerType() {
         // TODO Auto-generated method stub
         return null;
     }

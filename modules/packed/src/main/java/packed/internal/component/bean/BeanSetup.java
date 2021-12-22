@@ -3,6 +3,7 @@ package packed.internal.component.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -12,6 +13,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
+import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.ReflectionFactory;
@@ -83,7 +85,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.dependenciesOld();
             this.injectionNode = new InjectionNode(this, dependencies, mh);
-            container.injection.addNode(injectionNode);
+            parent.injection.addNode(injectionNode);
         }
 
         // Find a hook model for the bean type and wire it
@@ -123,7 +125,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.dependenciesOld();
             this.injectionNode = new InjectionNode(this, dependencies, mh);
-            container.injection.addNode(injectionNode);
+            parent.injection.addNode(injectionNode);
         }
 
         // Find a hook model for the bean type and wire it
@@ -171,7 +173,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             } else {
                 key = Key.of(hookModel.clazz); // Move to model?? What if instance has Qualifier???
             }
-            s = service = container.injection.getServiceManagerOrCreate().provideSource(this, key);
+            s = service = parent.injection.getServiceManagerOrCreate().provideSource(this, key);
         }
         return s;
     }
@@ -179,7 +181,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @SuppressWarnings("unchecked")
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) container.injection.getServiceManagerOrCreate().exports().export(service);
+        return (ExportedServiceConfiguration<T>) parent.injection.getServiceManagerOrCreate().exports().export(service);
     }
 
     public void sourceProvide() {
@@ -227,6 +229,12 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         @Override
         public BeanKind kind() {
             throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<ComponentMirror> children() {
+            return List.of();
         }
     }
 }

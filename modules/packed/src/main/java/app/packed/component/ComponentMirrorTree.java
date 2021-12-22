@@ -18,7 +18,8 @@ package app.packed.component;
 /**
  *
  */
-// Do we ever return empty trees?
+// Do we ever return empty trees? Det tror jeg ikke.
+
 
 // Fx en Lifetime er jo altid et component tree...
 public interface ComponentMirrorTree extends ComponentMirrorSet {

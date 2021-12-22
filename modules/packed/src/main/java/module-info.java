@@ -4,6 +4,7 @@ module app.packed {
     exports app.packed.application.various;
     exports app.packed.base;
     exports app.packed.bean;
+    exports app.packed.bean.operation;
     exports app.packed.build;
     exports app.packed.component;
     exports app.packed.contract;
@@ -16,6 +17,7 @@ module app.packed {
     exports app.packed.inject.service;
     exports app.packed.inject.variable;
     exports app.packed.lifecycle;
+    exports app.packed.lifetime;
     exports app.packed.hooks;
     exports app.packed.mirror;
     exports app.packed.state;

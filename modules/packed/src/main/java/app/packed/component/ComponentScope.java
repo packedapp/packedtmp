@@ -44,9 +44,6 @@ public enum ComponentScope {
     /** A scope that indicates any component within the same application. */
     CONTAINER, // -> Container
 
-    /** A scope that indicates any component within the same bundle. */
-    BUNDLE, // -> Bundle
-
     // Der hvor denne her giver mening, er fx naar man siger install(..., spyOnWire(Scope.COMPONENT))
     // will never be inherited
     /** A scope that indicates the single component. */
@@ -94,7 +91,7 @@ enum ComponentScope2 {
 
 @Qualifier
 @interface Scoped {
-    ComponentScope value() default ComponentScope.BUNDLE;
+    ComponentScope value() default ComponentScope.CONTAINER;
 }
 
 // interessant at

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import app.packed.bean.BeanExtensionSupport;
+import app.packed.bean.BeanSupport;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.old.ExtensionBeanDoubly;
@@ -69,7 +69,7 @@ public class ConvExtension extends Extension implements ConvDiscovable {
             converters = Map.copyOf(map); // make immutable copy
         }
         // We only install an extensor if we are the root container or we have changes to the converters
-        use(BeanExtensionSupport.class).install(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
+        use(BeanSupport.class).install(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
     }
 
     public class Sub extends ExtensionSupport {

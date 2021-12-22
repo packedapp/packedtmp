@@ -16,7 +16,9 @@
 package app.packed.bean.operation.nonruntime;
 
 import java.util.Collection;
+import java.util.Optional;
 
+import app.packed.bean.BeanMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 
@@ -30,6 +32,9 @@ import app.packed.extension.ExtensionSupport;
 
 // Spoergsmaal om det er mirror eller event...
 // Nej vi vil godt kunne sige
+
+// ER JO EN SLAGS JFR EVENT... implements JFRable...
+/// Nah er det ikke bare at kunne sige .postJFREventOnClassGenerate
 public interface GeneratedClassMirror {
 
     // Eller ExtensionMirror extension(); .....
@@ -38,6 +43,8 @@ public interface GeneratedClassMirror {
     /** {@return the class that was generated.} */
     Class<?> generatedClass();
 
+    Optional<BeanMirror> bean(); // if the generated class is a bean
+    
     /** {@return whether or not the generated class is hidden.} */
     default boolean isHidden() {
         return generatedClass().isHidden();

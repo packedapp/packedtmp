@@ -83,6 +83,7 @@ public abstract sealed class BeanConfiguration<T>
     // Ved ikke om det kan vaere problematisk, hvis instanserne ikke er styret af packed
     // Det der er farligt her er at vi capture Assemblien. Som capture extensionen
     // Som capture alt andet
+    ///// fx Validator beans vil ikke virke her...
     public BeanConfiguration<T> on(RunState state, Consumer<T> action) {
         // Maybe throw UOE instead of IAE
         return this;

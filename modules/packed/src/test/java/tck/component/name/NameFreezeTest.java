@@ -123,7 +123,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
 
     /**
      * Test that we cannot call {@link ContainerConfiguration#named(String)} after having linked another container via
-     * {@link ContainerConfiguration#link(app.packed.bundle.Bundle, Wirelet...)}.
+     * {@link ContainerConfiguration#link(app.packed.container.Container, Wirelet...)}.
      * <p>
      * We could actually allow this as long as the assembly we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to

@@ -26,6 +26,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
 
 /**
@@ -87,7 +88,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
     }
-
+    
+    default Optional<LifetimeMirror> lifetime() {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * @param scope
      *            the scope to check

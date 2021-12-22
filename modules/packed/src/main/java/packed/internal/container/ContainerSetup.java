@@ -18,13 +18,16 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
+import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblySetup;
 import app.packed.container.ContainerConfiguration;
@@ -42,6 +45,7 @@ import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
+import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of a container. */
@@ -49,6 +53,10 @@ public final class ContainerSetup extends ComponentSetup {
 
     public final AssemblyModel assemblyModel;
 
+    /** Children of this node (lazily initialized) in insertion order. */
+    @Nullable
+    public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>(1); // Skal vel flyttes til Container setup saa...
+    
     /** Child containers, lazy initialized. */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
@@ -95,7 +103,7 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedBundleDriver driver, @Nullable ContainerSetup parent,
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver driver, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
@@ -237,7 +245,7 @@ public final class ContainerSetup extends ComponentSetup {
      */
     public final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        PackedBundleDriver driver = PackedBundleDriver.getDriver(assembly);
+        PackedContainerDriver driver = PackedContainerDriver.getDriver(assembly);
 
         // Create the new realm that should be used for linking
         RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
@@ -380,7 +388,7 @@ public final class ContainerSetup extends ComponentSetup {
         return (E) extension.instance(); // extract the extension instance
     }
 
-    /** A build-time bundle mirror. */
+    /** A build-time container mirror. */
     private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
         /** Extracts the extension that */
@@ -410,6 +418,11 @@ public final class ContainerSetup extends ComponentSetup {
             }
         };
 
+        /** {@inheritDoc} */
+        public final Collection<ComponentMirror> children() {
+            return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
+        }
+        
         /** {@inheritDoc} */
         @Override
         public Set<ExtensionMirror> extensions() {

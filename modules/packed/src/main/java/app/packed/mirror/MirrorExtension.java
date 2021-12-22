@@ -30,16 +30,16 @@ import packed.internal.container.ExtensionSetup;
 // Understreger endda maaske lidt mere at det ikke er normalt brug...
 // Syntes maaske ikke der er grund til at vi har 2 extensions for det IDK
 
-// BundleMirror <--- Er en Type Injection Service med MirrorExtension som ejer
+// ContainerMirror <--- Er en Type Injection Service med MirrorExtension som ejer
 // ApplicationMirror
 // BeanMirror
 
 // Hvis ParamTraceren ogsaa er en del af MirrorExtensionen...
-// Betyder det vi ikke kan bruge den uden for en bundle...
+// Betyder det vi ikke kan bruge den uden for en container...
 public class MirrorExtension extends Extension {
 
-    /** The bundle setup. */
-    final ContainerSetup bundle;
+    /** The container setup. */
+    final ContainerSetup container;
 
     /**
      * Create a new mirror extension.
@@ -48,6 +48,6 @@ public class MirrorExtension extends Extension {
      *            an extension configuration object.
      */
     /* package-private */ MirrorExtension(ExtensionConfiguration configuration) {
-        this.bundle = ((ExtensionSetup) configuration).bundle;
+        this.container = ((ExtensionSetup) configuration).container;
     }
 }

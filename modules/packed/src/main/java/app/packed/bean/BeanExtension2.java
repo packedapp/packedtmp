@@ -21,8 +21,8 @@ import packed.internal.container.ExtensionSetup;
  */
 public class BeanExtension2 extends Extension {
 
-    /** The bundle we are registering the beans in. */
-    final ContainerSetup bundle;
+    /** The container we are registering the beans in. */
+    final ContainerSetup container;
 
     /**
      * Create a new bean extension.
@@ -31,12 +31,12 @@ public class BeanExtension2 extends Extension {
      *            an extension configuration object.
      */
     /* package-private */ BeanExtension2(ExtensionConfiguration configuration) {
-        this.bundle = ((ExtensionSetup) configuration).bundle;
+        this.container = ((ExtensionSetup) configuration).container;
     }
 
     /**
-     * Installs a new bean of the specified type with this extension's bundle as the parent component. A single instance of
-     * the specified class will be instantiated together with the container this extension's bundle is a part of
+     * Installs a new bean of the specified type with this extension's container as the parent component. A single instance of
+     * the specified class will be instantiated together with the container this extension's container is a part of
      * 
      * that will instantiate and a instance of the specified {@link Class} when the container is initialized.
      * <p>

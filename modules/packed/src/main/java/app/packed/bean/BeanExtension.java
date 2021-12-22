@@ -34,7 +34,7 @@ public class BeanExtension extends Extension {
      */
     /* package-private */ BeanExtension(ExtensionConfiguration configuration) {
         this.extension = ((ExtensionSetup) configuration);
-        this.container = extension.bundle;
+        this.container = extension.container;
     }
 
     /**

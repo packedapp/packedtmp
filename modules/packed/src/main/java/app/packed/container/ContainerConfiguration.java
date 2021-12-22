@@ -26,7 +26,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
-    /** Must be created through Assembly, BundleDriver or Composer. */
+    /** Must be created through Assembly, ContainerDriver or Composer. */
     ContainerConfiguration() {}
 
     /** {@return a descriptor for the application the container is a part of.} */
@@ -35,7 +35,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         return container().application.descriptor;
     }
 
-    /** {@return the wrapped configuration instance.} */
+    /** {@return the wrapped container.} */
     ContainerSetup container() {
         try {
             return (ContainerSetup) MH_COMPONENT_CONFIGURATION_SETUP.invokeExact(this);
@@ -45,7 +45,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     }
 
     /**
-     * {@return an unmodifiable view of the extensions that are currently used.}
+     * {@return an unmodifiable view of the extensions that are currently used by this container.}
      * 
      * @see #use(Class)
      * @see BaseAssembly#extensionsTypes()
@@ -83,14 +83,14 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     // Used by beans/functions??? We actually need it functions as well, Or hmmm....... tror ikke vi vil
     // Maaske skal den bare paa bean extension????
     // !!! Maaske er det en del af assemblien
-    // Men saa kan man ikke bruge BundleConfiguration???
+    // Men saa kan man ikke bruge ContainerConfiguration???
     // Ellers syntes jeg bare det skal vaere paa ComponentConfiguration...
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         container().realm.setLookup(lookup);
     }
 
-    /** {@return a mirror for the bundle.} */
+    /** {@return a mirror for the container.} */
     @Override
     public ContainerMirror mirror() {
         return container().mirror();

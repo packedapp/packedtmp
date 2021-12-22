@@ -11,7 +11,7 @@ public class ZestExtension extends Extension {
     private ArrayList<MethodHandle> handles = new ArrayList<>();
 
     public <T> ManagedBeanConfiguration<T> install(Class<T> stuff) {
-        BeanExtensionSupport2 b = use(BeanExtensionSupport2.class);
+        BeanSupport2 b = use(BeanSupport2.class);
         ManagedBeanConfiguration<T> conf = b.register(null, BeanDriver.builder().build(), new ManagedBeanConfiguration<>(), stuff);
         
         handles.add(b.processor(conf)); 
@@ -21,7 +21,7 @@ public class ZestExtension extends Extension {
 
     @Override
     protected void onComplete() {
-        use(BeanExtensionSupport2.class).install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
+        use(BeanSupport2.class).install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
         handles = null;
     }
 

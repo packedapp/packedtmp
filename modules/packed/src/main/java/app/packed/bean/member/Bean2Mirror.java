@@ -19,15 +19,26 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.member.old.BeanConstructorMirror;
+import app.packed.bean.operation.BeanFactoryMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
 
 /**
  *
  */
-public interface BeanClassMirror extends BeanElementMirror {
+public interface Bean2Mirror extends BeanElementMirror {
+
+    /**
+     * @return
+     */
+    ApplicationMirror application();
+
+    // Er ikke sikker paa det skal vaere optional...
+    // Vil fx godt vide om vi er blevet givet en instans fra start
+    Optional<BeanFactoryMirror> factory();
 
     List<BeanFieldMirror> fields();
-    
+
     Optional<BeanConstructorMirror> initializer(); // A bean never has mm
 
     boolean isSynthetic(); // Maybe it is modifiers like real Member
@@ -37,13 +48,8 @@ public interface BeanClassMirror extends BeanElementMirror {
     List<BeanMemberMirror> members();
 
     List<BeanMethodMirror> methods();
-    
-    BeanOperationMirrorSelection<BeanOperationMirror> operations();
-    
-    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> operationType);
 
-    /**
-     * @return
-     */
-    ApplicationMirror application();
+    BeanOperationMirrorSelection<BeanOperationMirror> operations();
+
+    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> operationType);
 }

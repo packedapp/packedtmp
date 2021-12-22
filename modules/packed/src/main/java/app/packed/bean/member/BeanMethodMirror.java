@@ -18,6 +18,6 @@ package app.packed.bean.member;
 /**
  *
  */
-public interface BeanMethodMirror extends BeanExecutableMirror {
+public interface BeanMethodMirror extends BeanMemberMirror {
 
 }

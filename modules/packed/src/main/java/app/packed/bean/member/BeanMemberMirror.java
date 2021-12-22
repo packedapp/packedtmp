@@ -15,6 +15,10 @@
  */
 package app.packed.bean.member;
 
+import java.util.List;
+
+import app.packed.inject.mirror.Dependency;
+
 /**
  *
  */
@@ -26,10 +30,9 @@ public interface BeanMemberMirror extends BeanElementMirror {
      *
      * @return an object representing the declaring class of the underlying member
      */
-    public BeanClassMirror declaringBean();
+    public Bean2Mirror declaringBean(); // bean()
 
-    /** {@return the simple name of the underlying member.} */
-    public String name();
+    List<Dependency> dependencies(); // What are we having injected... Giver det mening for functions????
 
     /**
      * Returns {@code true} if this member was introduced by the Packed; returns {@code false} otherwise.
@@ -37,4 +40,7 @@ public interface BeanMemberMirror extends BeanElementMirror {
      * @return true if and only if this member was introduced by the Packed.
      */
     public boolean isSynthetic();
+    
+    /** {@return the simple name of the underlying member.} */
+    public String name();
 }

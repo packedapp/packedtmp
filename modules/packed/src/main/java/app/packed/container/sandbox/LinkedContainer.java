@@ -19,6 +19,6 @@ package app.packed.container.sandbox;
  *
  */
 // Returneres after link()...
-interface LinkedBundle {
+interface LinkedContainer {
 
 }

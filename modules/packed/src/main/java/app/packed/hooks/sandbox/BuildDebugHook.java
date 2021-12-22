@@ -20,7 +20,7 @@ package app.packed.hooks.sandbox;
  */
 
 // Paa Extension...
-// Paa Bundle  (ALT)
+// Paa Container  (ALT)
 // Paa Bean [Class|Method|xxx]
 // Paa Variable??
 
@@ -36,5 +36,5 @@ public @interface BuildDebugHook {
     
     boolean buildTime() default true;
     boolean runTime() default true; /// Tror ikke vi har runtime med...
-    // Fx hvad vil det sige at debugge en bundle paa runtime???
+    // Fx hvad vil det sige at debugge en container paa runtime???
 }

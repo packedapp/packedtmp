@@ -13,43 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
-
-import app.packed.inject.service.ServiceExtension;
+package app.packed.bean.member.old;
 
 /**
  *
  */
-
-// ExtensionShare
-// ApplicationExtensionShare
-public abstract class ApplicationExtensor<T extends Extension> {
-
-    protected void onFirst(T extension) {}
-
-    protected void onComplete() {}
-}
-
-/// If config is supported I can do some stuff
-/// -> Implies that
-
-
-
-// Alternativ
-
-
-
-// Man bliver noedt til at
-
-class Usage extends ApplicationExtensor<ServiceExtension> {
+public interface BeanExecutableMirror /* extends BeanMemberMirror*/ {
 
 }
-
-// None - Supported(but not enabled) - Enabled
-
-
-// 
-
-// Ting man ikke kan svare paa...
-// Det her bliver din sidste container...
-// Det ved vi foerst til sidst

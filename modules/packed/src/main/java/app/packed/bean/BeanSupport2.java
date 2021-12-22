@@ -23,11 +23,11 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Realm;
 import app.packed.extension.ExtensionSupport;
 
-public class BeanExtensionSupport2 extends ExtensionSupport {
+public class BeanSupport2 extends ExtensionSupport {
     final Realm agent;
     final BeanExtension2 extension;
 
-    BeanExtensionSupport2(BeanExtension2 extension, Realm agent) {
+    BeanSupport2(BeanExtension2 extension, Realm agent) {
         this.extension = extension;
         this.agent = agent;
     }
