@@ -41,6 +41,7 @@ import packed.internal.util.LookupUtil;
  * The internal configuration of realm.
  * <p>
  */
+// BuildRealm???? Is this runtime at all???
 public final class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
@@ -54,7 +55,6 @@ public final class RealmSetup {
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
-    /** The build this realm is a part of. */
     public final BuildSetup build;
 
     /** The current active component in the realm. */
@@ -71,7 +71,7 @@ public final class RealmSetup {
     private final Class<?> realmType;
 
     /** The root component of this realm. */
-    public final ComponentSetup root;
+    public final ContainerSetup root;
 
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
@@ -194,7 +194,7 @@ public final class RealmSetup {
 
         // TODO: Move to class I think
         if (component instanceof ContainerSetup container) {
-            if (container.containerParent == null || container.containerParent.realm != this) {
+            if (container.parent == null || container.parent.realm != this) {
                 rootContainers.add(container);
             }
         }

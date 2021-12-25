@@ -1,13 +1,11 @@
 package packed.internal.lifecycle.old;
 
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.various.TaskListMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentMirrorStream;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 
@@ -30,7 +28,7 @@ public interface OldBaseMirror /* extends Mirror */ {
     ApplicationMirror component(CharSequence path);
 
     /** {@return a component stream that includes every component in this build}. */
-    ComponentMirrorStream components();
+    //ComponentMirrorStream components();
 
     /** {@return the root container of the build}. */
     ContainerMirror container();
@@ -40,10 +38,6 @@ public interface OldBaseMirror /* extends Mirror */ {
     /** {@return a component stream that includes every component in this build}. */
     Stream<ContainerMirror> containers();
 
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        components().forEach(action);
-    }
-    
     default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
     }

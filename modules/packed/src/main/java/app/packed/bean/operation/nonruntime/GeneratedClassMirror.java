@@ -38,13 +38,14 @@ import app.packed.extension.ExtensionSupport;
 public interface GeneratedClassMirror {
 
     // Eller ExtensionMirror extension(); .....
-    Class<? extends Extension> extension(); // Eller kan en bruger generere en klasse
+    /* UserOrExtension */ Class<? extends Extension> extension(); // Eller kan en bruger generere en klasse
 
     /** {@return the class that was generated.} */
     Class<?> generatedClass();
 
+    /** {@return if the generated class represent a bean, returns the bean.} */
     Optional<BeanMirror> bean(); // if the generated class is a bean
-    
+
     /** {@return whether or not the generated class is hidden.} */
     default boolean isHidden() {
         return generatedClass().isHidden();
@@ -52,9 +53,9 @@ public interface GeneratedClassMirror {
 }
 
 class ClassGeneratorExtension extends Extension {
-    
+
     static class ClassGeneratorExtensionSupport extends ExtensionSupport {
-        
+
     }
 }
 
@@ -63,7 +64,7 @@ interface ClassGenExtensionMirror {
     // Returns a collection of all classes that was generated as part of the build
     /** {@return a collection of all classes that was generated as part of building the container.} */
     Collection<GeneratedClassMirror> generatedClasses();
-    
+
     // Har vi andre interessant ting????
 }
 

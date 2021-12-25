@@ -46,23 +46,6 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
 
-    /** {@return the container setup instance that we are wrapping.} */
-    private BeanSetup bean() {
-        try {
-            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact((BeanConfiguration<?>) this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
-    protected void provideAsService(Key<?> key) {
-        bean().sourceProvideAs(key);
-    }
-
-    protected Optional<Key<?>> sourceProvideAsKey() {
-        return bean().sourceProvideAsKey();
-    }
-    
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -89,6 +72,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
         provideAsService(key);
         return this;
     }
+
     public ServiceBeanConfiguration<T> asNone() {
         // Ideen er vi f.eks. kan
         // asNone().exportAs(Doo.class);
@@ -96,17 +80,23 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
         return this;
     }
     
+    /** {@return the container setup instance that we are wrapping.} */
+    private BeanSetup bean() {
+        try {
+            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact((BeanConfiguration<?>) this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
     public ExportedServiceConfiguration<T> export() {
         return bean().sourceExport();
     }
-
     // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
         return sourceProvideAsKey();
     }
-
-    // The key unless asNone()
-
+    
     /** {@inheritDoc} */
     @Override
     public ServiceBeanConfiguration<T> named(String name) {
@@ -117,5 +107,15 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
     public ServiceBeanConfiguration<T> provide() {
         bean().sourceProvide();
         return this;
+    }
+
+    // The key unless asNone()
+
+    protected void provideAsService(Key<?> key) {
+        bean().sourceProvideAs(key);
+    }
+
+    protected Optional<Key<?>> sourceProvideAsKey() {
+        return bean().sourceProvideAsKey();
     }
 }

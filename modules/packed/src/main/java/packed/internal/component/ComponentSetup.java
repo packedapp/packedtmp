@@ -44,10 +44,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /** The application this component is a part of. */
     public final ApplicationSetup application;
 
-    /** The container this component is a part of. A container is a part of it self. */
-    public final ContainerSetup container;
-
-    /** The depth of the component in the tree. */
+    /** The depth of the component in the application. */
     protected final int depth;
 
     /** The lifetime the component is a part of. */
@@ -95,7 +92,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
         this.application = requireNonNull(application);
-        this.container = this instanceof ContainerSetup container ? container : parent.container;
     }
 
     public final void checkIsWiring() {
@@ -146,7 +142,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         requireNonNull(scope, "scope is null");
         requireNonNull(other, "other is null");
         return switch (scope) {
-        case CONTAINER -> container == other.container;
+        // Need to check namespace as well fx for
+        case CONTAINER -> parent == other.parent; // does not work for root
         case APPLICATION -> application == other.application;
         case COMPONENT -> this == other;
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
@@ -217,11 +214,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         public Stream<ComponentMirror> components() {
             return stream();
-        }
-
-        /** {@inheritDoc} */
-        public final ContainerMirror container() {
-            return container.mirror();
         }
 
         /** {@inheritDoc} */

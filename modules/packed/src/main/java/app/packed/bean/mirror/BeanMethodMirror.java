@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import java.util.stream.Stream;
+package app.packed.bean.mirror;
 
 /**
- * A set of components.
+ *
  */
-public interface ComponentMirrorSet extends Iterable<ComponentMirror> {
+public interface BeanMethodMirror extends BeanMemberMirror {
 
-    /** {@return {@code true} if this set contains no mirrors.} */
-    boolean isEmpty();
-
-    /** {@return the number of mirrors in this set.} */
-    int size();
-
-    Stream<ComponentMirrorSet> stream();
 }
-// Alternativt er jo at have noget.
-// ComponentsMirrors.lowestCommonComponent(Collection<? extends ComponentMirror> mirrors);

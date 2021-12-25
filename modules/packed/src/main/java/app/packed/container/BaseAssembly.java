@@ -115,6 +115,18 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
+     * Returns a {@link ContainerExtension} instance.
+     * <p>
+     * Calling this method is short for {@code use(ContainerExtension.class)}
+     * 
+     * @return a container extension instance
+     * @see #use(Class)
+     */
+    protected final ContainerExtension container() {
+        return use(ContainerExtension.class);
+    }
+
+    /**
      * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
      * use case if having a single
      * 

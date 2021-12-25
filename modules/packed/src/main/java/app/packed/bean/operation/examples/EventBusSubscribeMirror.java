@@ -17,7 +17,7 @@ package app.packed.bean.operation.examples;
 
 import java.util.function.Predicate;
 
-import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
 
 /**

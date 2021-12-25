@@ -4,6 +4,7 @@ module app.packed {
     exports app.packed.application.various;
     exports app.packed.base;
     exports app.packed.bean;
+    exports app.packed.bean.mirror;
     exports app.packed.bean.operation;
     exports app.packed.build;
     exports app.packed.component;

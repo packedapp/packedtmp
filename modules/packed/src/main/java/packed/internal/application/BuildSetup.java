@@ -45,17 +45,4 @@ public final class BuildSetup {
     public BuildSetup(PackedApplicationDriver<?> driver, ApplicationBuildType kind, RealmSetup realm, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(this, kind, realm, driver, wirelets);
     }
-
 }
-//
-//public boolean isDone() {
-//  throw new UnsupportedOperationException();
-//}
-//
-//public boolean isFailed() {
-//  throw new UnsupportedOperationException();
-//}
-//
-//public boolean isSuccess() {
-//  throw new UnsupportedOperationException();
-//}

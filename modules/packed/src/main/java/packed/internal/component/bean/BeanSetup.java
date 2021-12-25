@@ -13,7 +13,9 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
+import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.ReflectionFactory;
@@ -209,20 +211,13 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         }
 
         /** {@inheritDoc} */
+        public final ContainerMirror container() {
+            return parent.mirror();
+        }
+        
+        /** {@inheritDoc} */
         @Override
         public Optional<Class<? extends Extension>> declaredByExtension() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<?> hooks() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T> Set<?> hooks(Class<T> hookType) {
             throw new UnsupportedOperationException();
         }
 
@@ -235,6 +230,18 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         @Override
         public Collection<ComponentMirror> children() {
             return List.of();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<BeanElementMirror> hooks() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T extends BeanElementMirror> Set<?> hooks(Class<T> hookType) {
+            return null;
         }
     }
 }

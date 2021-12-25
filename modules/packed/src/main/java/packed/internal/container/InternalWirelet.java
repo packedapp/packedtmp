@@ -29,7 +29,7 @@ import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.ComponentSetup;
 
 /**
- * A special wirelet for internal usage where the wirelets logic is embedded directly into the wirelet.
+ * A special wirelet for internal usage where the logic of the wirelet is embedded directly into the wirelet.
  */
 public abstract class InternalWirelet extends Wirelet {
 
@@ -126,6 +126,7 @@ public abstract class InternalWirelet extends Wirelet {
             c.name = name;
         }
 
+        /** {@inheritDoc} */
         @Override
         public void onImageInstantiation(ContainerSetup c, ApplicationInitializationContext ic) {
             ic.name = name;

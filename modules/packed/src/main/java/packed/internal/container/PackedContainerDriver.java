@@ -47,7 +47,7 @@ public final class PackedContainerDriver extends ContainerDriver {
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static PackedContainerDriver getDriver(Assembly assembly) {
+    public static PackedContainerDriver extractDriver(Assembly assembly) {
         requireNonNull(assembly, "assembly is null");
         return (PackedContainerDriver) VH_ASSEMBLY_DRIVER.get(assembly);
     }

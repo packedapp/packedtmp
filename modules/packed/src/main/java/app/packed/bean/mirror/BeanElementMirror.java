@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.mirror;
 
-import java.lang.reflect.Field;
+import app.packed.bean.operation.BeanOperationMirrorSelection;
+import app.packed.mirror.Mirror;
 
 /**
  *
  */
-public interface BeanFieldMirror extends BeanMemberMirror {
-
-    /**
-     * @return
-     * 
-     * @throws UnsupportedOperationException
-     *             if invoked at runtime
-     */
-    Field field();
+public interface BeanElementMirror extends Mirror {
+    
+    boolean isSynthetic();
+    
+    BeanOperationMirrorSelection<BeanOperationMirror> operations();
+    
+    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> mirrorType);
 }

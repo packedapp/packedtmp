@@ -20,6 +20,8 @@ import app.packed.inject.service.ServiceLocator;
 // Tror vi skal have en liste af banned extensions, Maaske baade dem inheriter, og dem vi ikke inheriter
 public non-sealed interface ContainerMirror extends ComponentMirror {
 
+    // Set<BeanMirror> beans(), or maybe just BeanExtensionMirror
+
     /**
      * Returns the assembly class from which the container was build.
      * <p>
@@ -30,10 +32,11 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      */
     Class<? extends Assembly> assemblyType();
 
-    /** {@return a {@link Set} view of every extension that is in use.} */
+    /** {@return a {@link Set} view of every extension that is used when building the container.} */
+    // This may differ from runtime usage...
     Set<ExtensionMirror> extensions();
 
-    /** {@return a {@link Set} view of every extension type that is in use.} */
+    /** {@return a {@link Set} view of every extension type that is used when building the container.} */
     Set<Class<? extends Extension>> extensionTypes();
 
     /**

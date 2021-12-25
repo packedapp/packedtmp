@@ -18,7 +18,7 @@ package app.packed.bean.operation.examples;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
 import app.packed.container.Assembly;
 

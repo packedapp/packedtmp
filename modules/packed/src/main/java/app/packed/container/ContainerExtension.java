@@ -18,9 +18,8 @@ package app.packed.container;
 import app.packed.extension.Extension;
 
 /**
- *
+ * An extension for creating new containers.
  */
-// Tror den er tilbage...
 public class ContainerExtension extends Extension {
 
 }

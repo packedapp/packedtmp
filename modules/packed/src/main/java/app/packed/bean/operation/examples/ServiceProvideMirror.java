@@ -16,7 +16,7 @@
 package app.packed.bean.operation.examples;
 
 import app.packed.base.Key;
-import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 
 /**
  *

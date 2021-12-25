@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package packed.internal.container;
 
 /**
  *
  */
-public interface BeanMethodMirror extends BeanMemberMirror {
+public final class ExtensionApplicationSetup {
 
+    ExtensionSetup first; // ExtensionSetup har et field ExtensionSetup next;
 }
+
+// Altsaa det vi gerne vil slippe for er
+// Det med at holde styr paa om vi har tilfoejet 
+// WebExtensionBean hver eneste gang vi møder en @Get method...
+
+// Men maaske saetter man bare et flag...
+// og installere den til allersidst
+
+/// OnlyUseIfUsedByApplication

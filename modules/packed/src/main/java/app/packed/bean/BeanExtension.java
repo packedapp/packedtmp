@@ -16,25 +16,21 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * An extension used for installing beans.
+ * An extension for creating new beans.
  */
 public class BeanExtension extends Extension {
 
-    /** The service manager. */
-    final ContainerSetup container;
-
-    /** The */
-    final ExtensionSetup extension;
+    /** The container we installing beans into. */
+    final ContainerSetup parent;
 
     /**
      * Create a new bean extension.
      * 
-     * @param setup
-     *            an extension setup object (hidden).
+     * @param configuration
+     *            an extension configuration object
      */
     /* package-private */ BeanExtension(ExtensionConfiguration configuration) {
-        this.extension = ((ExtensionSetup) configuration);
-        this.container = extension.container;
+        this.parent = ((ExtensionSetup) configuration).container;
     }
 
     /**
@@ -49,8 +45,11 @@ public class BeanExtension extends Extension {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
+        //// Maaske har vi noget install(BeanDriver bd, Class), installInstance(BeanDriver, Object)
+        //// IDK maaske kun paa support
+
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
-        return wire(driver, container, container.realm);
+        return wire(driver, parent, parent.realm);
     }
 
     /**
@@ -63,7 +62,7 @@ public class BeanExtension extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(factory);
-        return wire(driver, container, container.realm);
+        return wire(driver, parent, parent.realm);
     }
 
     /**
@@ -80,7 +79,7 @@ public class BeanExtension extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
-        return wire(driver, container, container.realm);
+        return wire(driver, parent, parent.realm);
     }
 
     /** {@inheritDoc} */

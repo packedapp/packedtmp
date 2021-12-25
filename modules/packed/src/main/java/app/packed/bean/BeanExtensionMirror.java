@@ -12,7 +12,7 @@ import app.packed.extension.ExtensionMirror;
 public final class BeanExtensionMirror extends ExtensionMirror {
 
     /** The bean extension we are mirroring.*/
-    private final BeanExtension extension;
+    final BeanExtension extension;
 
     BeanExtensionMirror(BeanExtension extension) {
         this.extension = requireNonNull(extension);
@@ -20,6 +20,6 @@ public final class BeanExtensionMirror extends ExtensionMirror {
 
     /** {@return the total number of installed beans.} */
     public int beanCount() {
-        return extension.extension.hashCode();
+        return 123;
     }
 }

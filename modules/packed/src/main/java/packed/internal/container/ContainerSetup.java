@@ -54,19 +54,12 @@ public final class ContainerSetup extends ComponentSetup {
     public final AssemblyModel assemblyModel;
 
     /** Children of this node (lazily initialized) in insertion order. */
-    @Nullable
-    public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>(1); // Skal vel flyttes til Container setup saa...
-    
+    public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>(1);
+
     /** Child containers, lazy initialized. */
+    /// Hmm just iterate through all?? except for benchmarks it shouldnt really be a problem
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
-
-    /** The depth of this container in relation to other containers. */
-    public final int containerDepth;
-
-    /** This container's parent (if non-root). */
-    @Nullable
-    public final ContainerSetup containerParent;
 
     /** All extensions in use, in no particular order. */
     final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
@@ -153,18 +146,12 @@ public final class ContainerSetup extends ComponentSetup {
             }
         }
         // Various container tree-node management
-        if (parent == null) {
-            this.containerParent = null;
-            this.containerDepth = 0;
-        } else {
-            this.containerParent = parent.container;
-            this.containerDepth = containerParent.depth + 1;
-
+        if (parent != null) {
             // Add this container to the children of the parent
-            this.containerParent.runPredContainerChildren();
-            ArrayList<ContainerSetup> c = containerParent.containerChildren;
+            this.parent.runPredContainerChildren();
+            ArrayList<ContainerSetup> c = parent.containerChildren;
             if (c == null) {
-                c = containerParent.containerChildren = new ArrayList<>(5);
+                c = parent.containerChildren = new ArrayList<>(5);
             }
             c.add(this);
         }
@@ -232,40 +219,6 @@ public final class ContainerSetup extends ComponentSetup {
         injection.resolve();
     }
 
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param realm
-     *            realm
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     */
-    public final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        // Extract the component driver from the assembly
-        PackedContainerDriver driver = PackedContainerDriver.getDriver(assembly);
-
-        // Create the new realm that should be used for linking
-        RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
-
-        // Create the component configuration that is needed by the assembly
-        ContainerConfiguration configuration = driver.toConfiguration(newRealm.root);
-
-        // Invoke Assembly::doBuild which in turn will invoke user-implemented Assembly::build
-        try {
-            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
-        // Close the new realm again after the assembly has been successfully linked
-        newRealm.close();
-
-        return (ContainerMirror) newRealm.root.mirror();
-    }
-
     /** {@return a unmodifiable view of all extension types that are in use.} */
     public Set<Class<? extends Extension>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -284,6 +237,40 @@ public final class ContainerSetup extends ComponentSetup {
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.containsKey(extensionType);
+    }
+
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
+    public final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
+        // Extract the component driver from the assembly
+        PackedContainerDriver driver = PackedContainerDriver.extractDriver(assembly);
+
+        // Create the new realm that should be used for linking
+        RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
+
+        // Create the component configuration that is needed by the assembly
+        ContainerConfiguration configuration = driver.toConfiguration(newRealm.root);
+
+        // Invoke Assembly::doBuild which in turn will invoke user-implemented Assembly::build
+        try {
+            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        // Close the new realm again after the assembly has been successfully linked
+        newRealm.close();
+
+        return (ContainerMirror) newRealm.root.mirror();
     }
 
     /** {@return a container mirror.} */
@@ -419,10 +406,22 @@ public final class ContainerSetup extends ComponentSetup {
         };
 
         /** {@inheritDoc} */
+        @Override
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        public Class<? extends Assembly> assemblyType() {
+            return (Class) Assembly.class;
+        }
+
+        /** {@inheritDoc} */
         public final Collection<ComponentMirror> children() {
             return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
         }
-        
+
+        @Override
+        public Optional<Class<? extends Extension>> declaredByExtension() {
+            throw new UnsupportedOperationException();
+        }
+
         /** {@inheritDoc} */
         @Override
         public Set<ExtensionMirror> extensions() {
@@ -473,22 +472,10 @@ public final class ContainerSetup extends ComponentSetup {
             return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 
-        @Override
-        public Optional<Class<? extends Extension>> declaredByExtension() {
-            throw new UnsupportedOperationException();
-        }
-
         /** {@inheritDoc} */
         @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public Class<? extends Assembly> assemblyType() {
-            return (Class) Assembly.class;
         }
     }
 }

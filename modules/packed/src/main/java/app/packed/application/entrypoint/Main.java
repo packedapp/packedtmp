@@ -70,9 +70,9 @@ class MainBootstrap extends RealMethodSidecarBootstrap {
             // Der er noget constant pool thingeling der ikke bliver kaldt
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
 
-            EntryPointExtension e = c.container.useExtension(EntryPointExtension.class);
+            EntryPointExtension e = c.parent.useExtension(EntryPointExtension.class);
             e.hasMain = true;
-            c.container.useExtension(ServiceExtension.class);
+            c.parent.useExtension(ServiceExtension.class);
             MainThreadOfControl mc = c.application.entryPoints.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
             mc.cs = (BeanSetup) c;

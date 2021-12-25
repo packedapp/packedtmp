@@ -2,28 +2,34 @@ package app.packed.bean;
 
 import java.util.Set;
 
+import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.container.ContainerMirror;
 
 /**
  * A mirror of a bean (component).
  */
 public non-sealed interface BeanMirror extends ComponentMirror {
 
+    // The container t
+    /** {@return the container the bean belongs to. Is identical to #parent() which is never empty for beans.} */
+    ContainerMirror container();
+
     /** {@return the type (class) of the bean.} */
     Class<?> beanType();
 
     /** {@return all hooks that have been applied on the bean.} */
-    Set<?> hooks();
+    Set<BeanElementMirror> hooks();
 
-    <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
+    <T extends BeanElementMirror> Set<?> hooks(Class<T> hookType);
 
     /** {@return the kind of the bean.} */
     BeanKind kind();
 
     // boolean isInstantiated
-    
-    // Scope-> BuildConstant, RuntimeConstant, Prototype... 
-    
+
+    // Scope-> BuildConstant, RuntimeConstant, Prototype...
+
     // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
 }
 

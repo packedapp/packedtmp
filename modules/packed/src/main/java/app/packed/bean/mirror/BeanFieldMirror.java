@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.mirror;
+
+import java.lang.reflect.Field;
 
 /**
  *
  */
-// Det er jo taenkt paa et Functional Interface...
+public interface BeanFieldMirror extends BeanMemberMirror {
 
-// Men kan vi slaa den sammen med noget interface/whoareyou mirror
-public class BeanFunctionMirror {
-
+    /**
+     * @return
+     * 
+     * @throws UnsupportedOperationException
+     *             if invoked at runtime
+     */
+    Field field();
 }

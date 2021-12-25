@@ -1,6 +1,6 @@
 package app.packed.bean.operation;
 
-import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.lifecycle.RunState;
 
 // Lad os proeve bare at have en enkelt

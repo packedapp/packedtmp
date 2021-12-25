@@ -17,7 +17,6 @@ package packed.internal.lifecycle.old;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentMirrorStream;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -66,7 +65,7 @@ public interface BuildProcessMirror {
     ComponentMirror component();
 
     /** {@return a component stream that includes every component in this build}. */
-    ComponentMirrorStream components();
+    //ComponentMirrorStream components();
 
     // Whether or not we are building????
     boolean isDone();

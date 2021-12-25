@@ -75,9 +75,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** A method handle for creating instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
-    /** The default component name of the extension. */
-    public final String nameComponent;
-
     /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
 
@@ -99,7 +96,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // Cache some frequently used strings.
         this.nameFull = extensionClass.getCanonicalName();
         this.nameSimple = extensionClass.getSimpleName();
-        this.nameComponent = "." + nameSimple;
 
         this.extensionLinkedDirectChildrenOnly = builder.connectParentOnly;
         // this.attributes = builder.pam;

@@ -42,15 +42,14 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     ApplicationMirror application();
 
     /**
-     * {@return an unmodifiable view of all of the children of this component. A bean mirror will always return an empty
-     * collection.}
+     * {@return an unmodifiable view of all of the children of this component.}
+     * <p>
+     * If this component mirror represents a container. A set with at least one element is returned. If this component
+     * mirror represents a bean. An empty set is returned.
      */
     Collection<ComponentMirror> children();
 
     Stream<ComponentMirror> components();
-
-    /** {@return the container this component is a part of. If this mirror represents a container, returns this.} */
-    ContainerMirror container();
 
     /**
      * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
@@ -88,11 +87,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
     }
-    
-    default Optional<LifetimeMirror> lifetime() {
-        throw new UnsupportedOperationException();
-    }
-    
+
     /**
      * @param scope
      *            the scope to check
@@ -101,6 +96,10 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
      * @return true if this component and the specified component is in the same specified scope, otherwise false
      */
     boolean isInSame(ComponentScope scope, ComponentMirror other);
+
+    default Optional<LifetimeMirror> lifetime() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the name of this component.
@@ -145,6 +144,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     ComponentMirror resolve(CharSequence path);
 
     /** {@return the root component (always a container).} */
+    // application root? Maaske bare droppe den? Vi skal ihvertfald udspecificere det.
     ContainerMirror root();
 
     /**

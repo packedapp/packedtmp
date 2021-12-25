@@ -13,7 +13,7 @@ import packed.internal.container.PackedContainerDriver;
 // ContainerConfiguration newContainer(ContainerDriver<?> driver);
 //  T newContainer(ContainerDriver<T> driver);
 
-public abstract /* sealed */ class ContainerDriver{
+public abstract sealed class ContainerDriver permits PackedContainerDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.

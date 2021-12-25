@@ -18,7 +18,6 @@ package app.packed.component;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import packed.internal.component.ComponentSetup;
@@ -26,16 +25,13 @@ import packed.internal.component.ComponentSetup;
 /**
  * The base class for all component configuration classes.
  * <p>
- * This class cannot be extended directly.
- * <p>
- * All component configuration classes must extend, directly or indirectly, from this class.
- * 
- * Instead of extending this class directly, you typically want to extend {@link ContainerBeanConfiguration} instead.
+ * This class can only be extended through one of its subclasses {@link BeanConfiguration} or
+ * {@link ContainerConfiguration}.
  */
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration {
 
-    /** The component we are wrapping. Is initially null until initialized by someone. */
+    /** The component we are configuring. Is initially null until initialized by someone. */
     @Nullable
     private ComponentSetup component;
 

@@ -179,7 +179,7 @@ public final class PackedTreePath implements NamespacePath {
     }
 
     public static NamespacePath of(ContainerSetup cc) {
-        int depth = cc.containerDepth;
+        int depth = cc.depth;
         return switch (depth) {
         case 0 -> ROOT;
         case 1 -> new PackedTreePath(cc.name);
@@ -188,7 +188,7 @@ public final class PackedTreePath implements NamespacePath {
             ContainerSetup acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
-                acc = acc.containerParent;
+                acc = acc.parent;
             }
             yield new PackedTreePath(paths);
         }

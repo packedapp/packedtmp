@@ -141,14 +141,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
-        ContainerSetup parent = container.containerParent;
+        ContainerSetup parent = container.parent;
         while (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
                 return PackedExtensionAncestor.sameApplication(extensionContext.instance);
             }
             // if (parentOnly) break;
-            parent = parent.containerParent;
+            parent = parent.parent;
         }
         return ExtensionBeanConnection.empty();
     }
@@ -157,7 +157,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
         requireNonNull(type, "type is null");
-        ContainerSetup parent = container.containerParent;
+        ContainerSetup parent = container.parent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {

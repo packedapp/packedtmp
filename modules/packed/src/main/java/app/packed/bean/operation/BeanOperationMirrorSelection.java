@@ -15,7 +15,7 @@
  */
 package app.packed.bean.operation;
 
-import app.packed.bean.member.BeanOperationMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 
 /**
  *

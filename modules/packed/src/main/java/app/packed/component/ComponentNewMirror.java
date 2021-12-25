@@ -14,7 +14,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A mirror of an extension that is in use by a {@link #container}.
+ * A mirror of an extension that is in use by a {@link #parent}.
  * <p>
  * This class can be overridden to provide a specialized mirror for an extension. For example,
  * {@link app.packed.inject.service.ServiceExtension} provides {@link app.packed.inject.service.ServiceExtensionMirror}.
@@ -76,7 +76,7 @@ public /*sealed*/ class ComponentNewMirror /*permits BeanNewMirror*/ {
 
     /** {@return the container the extension is used in.} */
     public final ContainerMirror container() {
-        return component().container.mirror();
+        return component().parent.mirror();
     }
 
     /** {@inheritDoc} */

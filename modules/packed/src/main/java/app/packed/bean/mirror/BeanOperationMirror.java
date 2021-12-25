@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.mirror;
 
 import java.util.Optional;
 

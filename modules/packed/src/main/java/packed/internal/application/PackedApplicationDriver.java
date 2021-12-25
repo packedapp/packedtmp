@@ -136,7 +136,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Both here and linking... We could call it from within build
 
         // Extract the driver from the field Assembly#driver
-        PackedContainerDriver componentDriver = PackedContainerDriver.getDriver(assembly);
+        PackedContainerDriver componentDriver = PackedContainerDriver.extractDriver(assembly);
 
         // Create the initial realm, typically we will have a realm per container
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);

@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member;
+package app.packed.bean.mirror;
 
 import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.member.old.BeanConstructorMirror;
 import app.packed.bean.operation.BeanFactoryMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
 
@@ -38,8 +37,8 @@ public interface Bean2Mirror extends BeanElementMirror {
     Optional<BeanFactoryMirror> factory();
 
     List<BeanFieldMirror> fields();
-
-    Optional<BeanConstructorMirror> initializer(); // A bean never has mm
+    
+//    Optional<BeanConstructorMirror> initializer(); // A bean never has mm
 
     boolean isSynthetic(); // Maybe it is modifiers like real Member
 
