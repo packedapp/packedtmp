@@ -30,7 +30,7 @@ import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import packed.internal.application.BuildSetup;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -55,7 +55,7 @@ public final class RealmSetup {
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
-    public final BuildSetup build;
+    public final ApplicationSetup application;
 
     /** The current active component in the realm. */
     private ComponentSetup current;
@@ -89,23 +89,23 @@ public final class RealmSetup {
      */
     public RealmSetup(ExtensionSetup extension) {
         this.realmType = this.extensionType = extension.extensionType;
-        this.build = extension.container.application.build;
+        this.application = extension.container.application;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly  assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
-        this.build = new BuildSetup(applicationDriver, buildTarget, this, wirelets);
-        this.root = build.application.container;
+        this.application = new ApplicationSetup(buildTarget, this, applicationDriver, wirelets);// new BuildSetup(applicationDriver, buildTarget, this, wirelets);
+        this.root = application.container;
         this.extensionType = null;
         wireCommit(root);
     }
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
-        this.root = build.application.container;
+        this.application = new ApplicationSetup(ApplicationBuildType.INSTANCE, this, applicationDriver, wirelets);
+        this.root = application.container;
         this.extensionType = null;
         wireCommit(root);
     }
@@ -118,9 +118,9 @@ public final class RealmSetup {
      */
     private RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
-        this.build = existing.build;
+        this.application = existing.application;
         this.extensionType = null;
-        this.root = new ContainerSetup(build.application, this, build.application.container.lifetime, driver, linkTo, wirelets);
+        this.root = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {

@@ -88,7 +88,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
      */
     public ServiceLocator services() {
         ServiceManagerSetup sm = application.container.injection.getServiceManager();
-        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.applicationDriver, pool);
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
     }
 
     @Override
@@ -112,7 +112,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
      * @return the application instance
      */
     static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
-        assert driver == application.applicationDriver; // it is just here because of <A>
+        assert driver == application.driver; // it is just here because of <A>
 
         // Create a launch context
         ApplicationInitializationContext context = new ApplicationInitializationContext(application, wirelets);

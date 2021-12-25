@@ -157,7 +157,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Close the realm if the application has been built successfully
         realm.close();
 
-        return realm.build.application;
+        return realm.application;
     }
 
     public <C extends Composer> A compose(ContainerDriver containerDriver, Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer,
@@ -186,7 +186,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         realm.close();
 
         // Return the launched application
-        return ApplicationInitializationContext.launch(this, realm.build.application, null);
+        return ApplicationInitializationContext.launch(this, realm.application, null);
     }
 
     /** {@inheritDoc} */
@@ -356,6 +356,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
+        public PackedApplicationDriver<Void> buildVoid(Wirelet... wirelets) {
+            return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationInitializationContext.class)));
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public Builder disableExtension(Class<? extends Extension> extensionType) {
             requireNonNull(extensionType, "extensionType is null");
             disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, extensionType));
@@ -369,12 +375,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             this.isExecutable = true;
             this.launchMode = launchMode;
             return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public PackedApplicationDriver<Void> buildVoid(Wirelet... wirelets) {
-            return buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationInitializationContext.class)));
         }
     }
 

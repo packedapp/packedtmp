@@ -23,16 +23,13 @@ import packed.internal.lifetime.PoolAccessor;
 /** Build-time configuration of an application. */
 public final class ApplicationSetup {
 
-    /** The driver responsible for building the application. */
-    public final PackedApplicationDriver<?> applicationDriver;
-
-    /** The build the application is a part of. */
-    public final BuildSetup build;
-
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
     public final ApplicationDescriptor descriptor;
+
+    /** The driver responsible for building the application. */
+    public final PackedApplicationDriver<?> driver;
 
     /** Entry points in the application, is null if there are none. */
     @Nullable
@@ -54,9 +51,8 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, ApplicationBuildType buildKind, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
-        this.build = requireNonNull(build);
-        this.applicationDriver = driver;
+    public ApplicationSetup(ApplicationBuildType buildKind, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
+        this.driver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 
         this.descriptor = new PackedApplicationDescriptor(buildKind);
@@ -85,7 +81,7 @@ public final class ApplicationSetup {
         @Override
         public Set<Class<? extends Extension>> disabledExtensions() {
             // TODO add additional dsiabled extensions
-            return application.applicationDriver.bannedExtensions();
+            return application.driver.bannedExtensions();
         }
 
         /** {@inheritDoc} */

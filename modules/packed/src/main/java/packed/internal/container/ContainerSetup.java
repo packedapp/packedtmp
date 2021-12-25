@@ -108,7 +108,7 @@ public final class ContainerSetup extends ComponentSetup {
         requireNonNull(wirelets, "wirelets is null");
         Wirelet prefix = null;
         if (application.container == null) {
-            prefix = application.applicationDriver.wirelet;
+            prefix = application.driver.wirelet;
         }
 
         if (wirelets.length == 0 && prefix == null) {
