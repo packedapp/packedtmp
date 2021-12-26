@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.extension.Extension;
-import packed.internal.component.PackedComponentStreamOption;
+import packed.internal.component.old.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link ComponentMirror components}. An

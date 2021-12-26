@@ -17,7 +17,7 @@ package app.packed.base;
 
 import java.nio.file.Path;
 
-import packed.internal.component.PackedTreePath;
+import packed.internal.component.PackedNamespacePath;
 
 /**
  * A component path points to a single component in namespace (tree of named components) expressed as a string
@@ -49,7 +49,7 @@ import packed.internal.component.PackedTreePath;
 public interface NamespacePath extends Comparable<NamespacePath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A path representing the root resource of a namespace. */
-    static final NamespacePath ROOT = PackedTreePath.ROOT;
+    static final NamespacePath ROOT = PackedNamespacePath.ROOT;
 
     NamespacePath add(NamespacePath other);
 

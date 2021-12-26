@@ -1,4 +1,4 @@
-package packed.internal.component.bean;
+package packed.internal.bean;
 
 import java.util.function.Function;
 

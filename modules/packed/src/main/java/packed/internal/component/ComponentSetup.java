@@ -33,7 +33,9 @@ import app.packed.component.ComponentScope;
 import app.packed.component.RealmMirror;
 import app.packed.container.ContainerMirror;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.component.bean.BeanSetup;
+import packed.internal.bean.BeanSetup;
+import packed.internal.component.old.PackedComponentStream;
+import packed.internal.component.old.PackedComponentStreamOption;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
@@ -46,7 +48,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     public final ApplicationSetup application;
 
     /** The depth of the component in the application. */
-    protected final int depth;
+    public final int depth;
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
@@ -98,11 +100,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     public final void checkIsWiring() {
         if (realm.current() != this) {
             String errorMsg;
-            //if (realm.container == this) {
-                errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            //} else {
-            //    errorMsg = "This operation must be called immediately after the component has been wired";
-            //}
+            // if (realm.container == this) {
+            errorMsg = "This operation must be called as the first thing in Assembly#build()";
+            // } else {
+            // errorMsg = "This operation must be called immediately after the component has been wired";
+            // }
             throw new IllegalStateException(errorMsg);
         }
     }
@@ -147,7 +149,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         case CONTAINER -> parent == other.parent; // does not work for root
         case APPLICATION -> application == other.application;
         case COMPONENT -> this == other;
-        case NAMESPACE -> application /*.build.namespace*/ == other.application /*.build.namespace*/;
+        case NAMESPACE -> application /* .build.namespace */ == other.application /* .build.namespace */;
         };
     }
 
@@ -185,7 +187,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
     /** {@return the path of this component} */
     public final NamespacePath path() {
-        return PackedTreePath.of(this);
+        return PackedNamespacePath.of(this);
     }
 
     /**
@@ -250,10 +252,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final RealmMirror realm() {
-            if (realm instanceof ExtensionRealmSetup s) { 
+            if (realm instanceof ExtensionRealmSetup s) {
                 return RealmMirror.extension(s.extensionModel.type());
             }
-            return RealmMirror.application(); 
+            return RealmMirror.application();
         }
 
         /** {@inheritDoc} */
@@ -276,11 +278,15 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final ContainerMirror root() {
-            ComponentSetup c = ComponentSetup.this;
-            while (c.parent != null) {
-                c = c.parent;
+            ContainerSetup c = parent;
+            if (c == null) {
+                return (ContainerMirror) this;
+            } else {
+                while (c.parent != null) {
+                    c = c.parent;
+                }
+                return c.mirror();
             }
-            return (ContainerMirror) (c == ComponentSetup.this ? thisMirror() : c.mirror());
         }
 
         /** {@inheritDoc} */

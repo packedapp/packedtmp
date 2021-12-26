@@ -29,7 +29,7 @@ import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.bean.BeanSetup;
+import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;

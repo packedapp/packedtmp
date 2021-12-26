@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.old;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,6 +36,8 @@ import app.packed.component.RealmMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationInitializationContext;
+import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedNamespacePath;
 import packed.internal.lifetime.LifetimePool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
@@ -53,7 +55,7 @@ public final class RuntimeComponentMirror {
 
     /** The parent component, or null if root. */
     @Nullable
-    final RuntimeComponentMirror parent;
+    public final RuntimeComponentMirror parent;
 
     /** The region this component is part of. */
     public final LifetimePool pool;
@@ -202,10 +204,6 @@ public final class RuntimeComponentMirror {
         return c;
     }
 
-    public RuntimeComponentModel model() {
-        return model;
-    }
-
     /** {@inheritDoc} */
 
     public String name() {
@@ -221,7 +219,7 @@ public final class RuntimeComponentMirror {
     /** {@inheritDoc} */
 
     public NamespacePath path() {
-        return PackedTreePath.of(this);
+        return PackedNamespacePath.of(this);
     }
 
     /** {@inheritDoc} */

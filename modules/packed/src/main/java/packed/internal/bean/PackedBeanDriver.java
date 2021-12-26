@@ -1,4 +1,4 @@
-package packed.internal.component.bean;
+package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 

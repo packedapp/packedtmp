@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.old;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.extension.Extension;
+import packed.internal.component.ComponentSetup;
 
 /**
  *
@@ -99,7 +100,7 @@ public final class PackedComponentStreamOption implements ComponentMirrorStream.
         return new PackedComponentStreamOption(s, includeExtensions);
     }
 
-    boolean excludeOrigin() {
+    public boolean excludeOrigin() {
         return (s & EXCLUDE_ORIGIN) == 1;
     }
 

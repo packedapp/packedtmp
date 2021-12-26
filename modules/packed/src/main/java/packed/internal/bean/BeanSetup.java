@@ -1,4 +1,4 @@
-package packed.internal.component.bean;
+package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
@@ -95,9 +95,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         hookModel.onWire(this);
 
         // Set the name of the component if it have not already been set using a wirelet
-        if (name == null) {
-            initializeNameWithPrefix(hookModel.simpleName());
-        }
+        initializeNameWithPrefix(hookModel.simpleName());
     }
 
     public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ContainerSetup parent, Object source, boolean ignore) {
@@ -135,9 +133,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         hookModel.onWire(this);
 
         // Set the name of the component if it have not already been set using a wirelet
-        if (name == null) {
-            initializeNameWithPrefix(hookModel.simpleName());
-        }
+        initializeNameWithPrefix(hookModel.simpleName());
     }
 
     /** {@inheritDoc} */
@@ -214,7 +210,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         public final ContainerMirror container() {
             return parent.mirror();
         }
-        
+
         /** {@inheritDoc} */
         @Override
         public Optional<Class<? extends Extension>> declaredByExtension() {

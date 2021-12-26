@@ -23,13 +23,14 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import packed.internal.component.old.RuntimeComponentMirror;
 import packed.internal.container.ContainerSetup;
 
 /** The default implementation of {@link NamespacePath}. */
-public final class PackedTreePath implements NamespacePath {
+public final class PackedNamespacePath implements NamespacePath {
 
     /** A component path representing the root of a hierarchy. */
-    public static final NamespacePath ROOT = new PackedTreePath();
+    public static final NamespacePath ROOT = new PackedNamespacePath();
 
     private final String[] elements;
 
@@ -39,7 +40,7 @@ public final class PackedTreePath implements NamespacePath {
     /** String representation, created lazily */
     private volatile String string;
 
-    PackedTreePath(String... elements) {
+    PackedNamespacePath(String... elements) {
         this.elements = requireNonNull(elements);
     }
 
@@ -64,7 +65,7 @@ public final class PackedTreePath implements NamespacePath {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PackedTreePath pcp) {
+        if (obj instanceof PackedNamespacePath pcp) {
             if (pcp.elements.length != elements.length) {
                 return false;
             }
@@ -119,7 +120,7 @@ public final class PackedTreePath implements NamespacePath {
         if (isRoot()) {
             return null;
         }
-        return new PackedTreePath(Arrays.copyOf(elements, elements.length - 1));
+        return new PackedNamespacePath(Arrays.copyOf(elements, elements.length - 1));
     }
 
     /** {@inheritDoc} */
@@ -144,11 +145,11 @@ public final class PackedTreePath implements NamespacePath {
 
     }
 
-    static NamespacePath of(RuntimeComponentMirror component) {
+    public static NamespacePath of(RuntimeComponentMirror component) {
         int depth = component.depth();
         return switch (depth) {
         case 0 -> ROOT;
-        case 1 -> new PackedTreePath(component.name());
+        case 1 -> new PackedNamespacePath(component.name());
         default -> {
             String[] paths = new String[depth];
             RuntimeComponentMirror acc = component;
@@ -156,7 +157,7 @@ public final class PackedTreePath implements NamespacePath {
                 paths[i] = acc.name();
                 acc = acc.parent;
             }
-            yield new PackedTreePath(paths);
+            yield new PackedNamespacePath(paths);
         }
         };
     }
@@ -165,7 +166,7 @@ public final class PackedTreePath implements NamespacePath {
         int depth = cc.depth;
         return switch (depth) {
         case 0 -> ROOT;
-        case 1 -> new PackedTreePath(cc.name);
+        case 1 -> new PackedNamespacePath(cc.name);
         default -> {
             String[] paths = new String[depth];
             ComponentSetup acc = cc;
@@ -173,7 +174,7 @@ public final class PackedTreePath implements NamespacePath {
                 paths[i] = acc.name;
                 acc = acc.parent;
             }
-            yield new PackedTreePath(paths);
+            yield new PackedNamespacePath(paths);
         }
         };
     }
@@ -182,7 +183,7 @@ public final class PackedTreePath implements NamespacePath {
         int depth = cc.depth;
         return switch (depth) {
         case 0 -> ROOT;
-        case 1 -> new PackedTreePath(cc.name);
+        case 1 -> new PackedNamespacePath(cc.name);
         default -> {
             String[] paths = new String[depth];
             ContainerSetup acc = cc;
@@ -190,7 +191,7 @@ public final class PackedTreePath implements NamespacePath {
                 paths[i] = acc.name;
                 acc = acc.parent;
             }
-            yield new PackedTreePath(paths);
+            yield new PackedNamespacePath(paths);
         }
         };
     }
@@ -198,8 +199,8 @@ public final class PackedTreePath implements NamespacePath {
     /** {@inheritDoc} */
     @Override
     public NamespacePath add(NamespacePath other) {
-        PackedTreePath pcp = (PackedTreePath) other;
-        return new PackedTreePath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
+        PackedNamespacePath pcp = (PackedNamespacePath) other;
+        return new PackedNamespacePath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
     }
 }
 /// ** {@inheritDoc} */

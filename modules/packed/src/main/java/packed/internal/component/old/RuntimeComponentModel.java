@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.old;
+
+import packed.internal.component.ComponentSetup;
 
 /**
  * The different types of components that are supported in Packed.

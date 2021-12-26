@@ -31,7 +31,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
-import packed.internal.component.bean.BeanSetup;
+import packed.internal.bean.BeanSetup;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 
 /**

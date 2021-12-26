@@ -6,8 +6,8 @@ import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.component.ComponentNewMirror;
+import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.bean.BeanSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

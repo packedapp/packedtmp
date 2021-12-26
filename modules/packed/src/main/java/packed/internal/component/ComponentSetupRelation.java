@@ -25,7 +25,7 @@ import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
 
 /** Implementation of {@link Relation}. */
-record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements Relation {
+public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements Relation {
 
     /** {@inheritDoc} */
     @Override

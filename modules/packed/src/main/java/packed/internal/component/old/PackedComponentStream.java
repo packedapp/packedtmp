@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.old;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ import app.packed.component.ComponentMirrorStream;
 import packed.internal.util.AbstractDelegatingStream;
 
 /** Implementation of {@link ComponentMirrorStream}. */
-final class PackedComponentStream extends AbstractDelegatingStream<ComponentMirror> implements ComponentMirrorStream {
+public final class PackedComponentStream extends AbstractDelegatingStream<ComponentMirror> implements ComponentMirrorStream {
 
     /**
      * Creates a new component stream.
@@ -33,7 +33,7 @@ final class PackedComponentStream extends AbstractDelegatingStream<ComponentMirr
      * @param stream
      *            the stream that we wrap.
      */
-    PackedComponentStream(Stream<ComponentMirror> stream) {
+    public PackedComponentStream(Stream<ComponentMirror> stream) {
         super(stream);
     }
 

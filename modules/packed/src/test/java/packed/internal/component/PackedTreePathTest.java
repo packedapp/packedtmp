@@ -29,9 +29,9 @@ public class PackedTreePathTest {
 
     @Test
     public void root() {
-        checkPath(PackedTreePath.ROOT, "/");
-        checkPath(new PackedTreePath("Foo"), "/Foo");
-        checkPath(new PackedTreePath("Foo", "Boo"), "/Foo/Boo");
+        checkPath(PackedNamespacePath.ROOT, "/");
+        checkPath(new PackedNamespacePath("Foo"), "/Foo");
+        checkPath(new PackedNamespacePath("Foo", "Boo"), "/Foo/Boo");
     }
 
     private static void checkPath(NamespacePath p, String expected) {

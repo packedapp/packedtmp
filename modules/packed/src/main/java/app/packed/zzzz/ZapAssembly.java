@@ -1,4 +1,4 @@
-package packed.internal.component;
+package app.packed.zzzz;
 
 import app.packed.application.App;
 import app.packed.application.AsyncApp;
@@ -21,14 +21,14 @@ public class ZapAssembly extends BaseAssembly {
         AsyncApp.mirrorOf(new ZapAssembly());
 
         // Det gode ved mirror er at
-        //Daemon.introspect(new ZapAssembly());
-        //Daemon.reflect(new ZapAssembly());
+        // Daemon.introspect(new ZapAssembly());
+        // Daemon.reflect(new ZapAssembly());
         AsyncApp.mirrorOf(new ZapAssembly());
 
         App.driver().print(new ZapAssembly());
     }
 
-    static class LinkMe extends BaseAssembly {
+    public static class LinkMe extends BaseAssembly {
 
         @Override
         protected void build() {
@@ -45,5 +45,5 @@ public class ZapAssembly extends BaseAssembly {
 
     }
 
-    static class My {}
+    public static class My {}
 }

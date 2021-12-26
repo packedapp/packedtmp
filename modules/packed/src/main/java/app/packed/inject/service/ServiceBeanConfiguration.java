@@ -26,8 +26,8 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.bean.BeanSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
