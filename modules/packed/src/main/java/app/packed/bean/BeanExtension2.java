@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
@@ -51,7 +51,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return wire(new ContainerBeanConfiguration<>(), Realm.application(), implementation);
+        return wire(new ContainerBeanConfiguration<>(), RealmMirror.application(), implementation);
     }
 
     /**
@@ -64,7 +64,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return wire(new ContainerBeanConfiguration<>(), Realm.application(), factory);
+        return wire(new ContainerBeanConfiguration<>(), RealmMirror.application(), factory);
     }
 
     /**
@@ -81,10 +81,10 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
         checkIsProperInstance(instance);
-        return wire(new ContainerBeanConfiguration<>(), Realm.application(), instance);
+        return wire(new ContainerBeanConfiguration<>(), RealmMirror.application(), instance);
     }
 
-    <B extends BeanConfiguration<?>> B wire(B configuration, Realm owner, Object source) {
+    <B extends BeanConfiguration<?>> B wire(B configuration, RealmMirror owner, Object source) {
 
         return configuration;
     }

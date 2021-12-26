@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
+import app.packed.extension.Extension;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.component.RealmSetup;
 
 /**
@@ -24,12 +24,22 @@ import packed.internal.component.RealmSetup;
  */
 public final class ExtensionRealmSetup extends RealmSetup {
 
+    public final ExtensionModel extensionModel;
+
     ExtensionSetup first;
 
     ExtensionSetup last;
 
-    public ExtensionRealmSetup(ExtensionSetup extension) {
-        super(extension);
-        this.first = this.last = requireNonNull(extension);
+    public ExtensionRealmSetup(ApplicationSetup application, Class<? extends Extension> extensionType) {
+        super(application, extensionType);
+        this.extensionModel = ExtensionModel.of(extensionType);
+    }
+
+    public void add(ExtensionSetup extension) {
+        if (first == null) {
+            first = last = extension;
+        } else {
+            last = last.next = extension;
+        }
     }
 }

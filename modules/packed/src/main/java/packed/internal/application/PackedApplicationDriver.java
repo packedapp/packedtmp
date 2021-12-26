@@ -67,8 +67,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
-    private final PackedContainerDriver containerDriver = PackedContainerDriver.DRIVER;
-    
+    private final PackedContainerDriver containerDriver = PackedContainerDriver.DEFAULT;
+
     /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
     public final Wirelet wirelet;
@@ -133,12 +133,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private ApplicationSetup build(ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
-        // Both here and linking... We could call it from within build
+        // Both here and linking... We could call it from within build. Maybe the realm can check it
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
-
-        // Extract the container driver from the assembly (Assembly#driver)
 
         // Create a new container configuration from the container driver
         ContainerConfiguration configuration = containerDriver.toConfiguration(realm.root);
@@ -151,17 +149,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        // Close the realm if the application has been built successfully
+        // Close the realm, if the application has been built successfully (no exception was thrown)
         realm.close();
 
         return realm.application;
     }
 
-    public <C extends Composer> A compose(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer,
-            Wirelet... wirelets) {
+    public <C extends Composer> A compose(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
-
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, consumer, wirelets);

@@ -29,10 +29,15 @@ public abstract sealed class ContainerDriver permits PackedContainerDriver {
     protected ContainerConfiguration newConfiguration() {
         return new ContainerConfiguration();
     }
-
+    
     /** {@return the default driver that is used to configure containers.} */
     public static ContainerDriver defaultDriver() {
-        return PackedContainerDriver.DRIVER;
+        return PackedContainerDriver.DEFAULT;
+    }
+    
+    /** {@return a special driver that is used to configure containers.} */
+    public static ContainerDriver embed() {
+        return PackedContainerDriver.DEFAULT;
     }
 
     interface Builder {

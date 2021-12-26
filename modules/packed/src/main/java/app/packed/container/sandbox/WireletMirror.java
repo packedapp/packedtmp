@@ -2,7 +2,7 @@ package app.packed.container.sandbox;
 
 import java.util.Optional;
 
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 
 // Tjahhh... Hmmm.. Mhmmmm.... IDK about this....
 
@@ -23,7 +23,7 @@ interface WireletMirror {
     // Der har vi issuen omkring Packed, Extension or user..
     // Maaske er der bare ikke mirrors paa wirelets.
     // Eller maaske er der bare ikke mirrors paa internal wirelets
-    Optional<Realm> registrant(); //operator
+    Optional<RealmMirror> registrant(); //operator
 
     boolean isUserWirelet();
 }

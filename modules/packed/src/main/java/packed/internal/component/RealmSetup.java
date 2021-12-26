@@ -33,7 +33,6 @@ import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
@@ -60,9 +59,6 @@ public class RealmSetup {
     /** The current active component in the realm. */
     private ComponentSetup current;
 
-    @Nullable
-    public final Class<? extends Extension> extensionType;
-
     /** Whether or not this realm is closed. */
     private boolean isClosed;
 
@@ -87,9 +83,9 @@ public class RealmSetup {
      *            the extension model to create a realm for
      * @parem extension the extension setup
      */
-    protected RealmSetup(ExtensionSetup extension) {
-        this.realmType = this.extensionType = extension.extensionType;
-        this.application = extension.container.application;
+    protected RealmSetup(ApplicationSetup application, Class<?> extensionType) {
+        this.realmType = extensionType;
+        this.application = application;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
@@ -98,7 +94,6 @@ public class RealmSetup {
         this.realmType = assembly.getClass();
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.root = application.container;
-        this.extensionType = null;
         wireCommit(root);
     }
 
@@ -106,7 +101,6 @@ public class RealmSetup {
         this.realmType = composer.getClass();
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
         this.root = application.container;
-        this.extensionType = null;
         wireCommit(root);
     }
 
@@ -119,7 +113,6 @@ public class RealmSetup {
     private RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.application = existing.application;
-        this.extensionType = null;
         this.root = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
     }
 

@@ -15,7 +15,7 @@ import packed.internal.util.LookupUtil;
 public final class PackedContainerDriver extends ContainerDriver {
 
     /** A driver for configuring containers. */
-    public static final PackedContainerDriver DRIVER = new PackedContainerDriver();
+    public static final PackedContainerDriver DEFAULT = new PackedContainerDriver();
 
     /** A handle that can access ComponentConfiguration#component. */
     private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),

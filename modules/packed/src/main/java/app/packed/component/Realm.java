@@ -1,51 +1,33 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.NoSuchElementException;
-
-import app.packed.base.Nullable;
+import app.packed.container.Assembly;
+import app.packed.container.ComposerAction;
 import app.packed.extension.Extension;
 
-// Registrant
-// Operator, Contractor
-// ComponentOwner
+/**
+ *
+ */
+@SuppressWarnings("rawtypes")
+public sealed interface Realm permits Assembly, Extension, ComposerAction {
 
-// Hvem ejer en component
-// Hvem provider en injectable value
-public /* primitive */ final class Realm {
-
-    // Application???? As in the application owns it, whoever that application is.
-    private static final Realm APPLICATION = new Realm(null);
-
-    @Nullable
-    private final Class<? extends Extension> extension;
-
-    private Realm(Class<? extends Extension> extension) {
-        this.extension = extension;
-    }
-
-    public Class<? extends Extension> extension() {
-        if (extension == null) {
-            throw new NoSuchElementException("No extension present");
-        }
-        return extension;
-    }
-
-    public boolean isApplication() {
-        return this == APPLICATION;
-    }
-
-    public boolean isExtension() {
-        return this != APPLICATION;
-    }
-
-    public static Realm application() {
-        return APPLICATION;
-    }
-
-    public static Realm extension(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return new Realm(extensionType);
-    }
 }
+// A realm can be closed...
+
+// Assembly realm -> when build returns
+// Extension realm -> when the application is in the last phase
+// Composer action realm -> when build returns

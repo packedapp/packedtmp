@@ -80,7 +80,7 @@ public final class ApplicationSetup {
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
 
-        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DRIVER, null, wirelets);
+        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DEFAULT, null, wirelets);
         this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
     }
 

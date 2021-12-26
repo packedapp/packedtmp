@@ -30,12 +30,12 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
@@ -248,9 +248,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
 
         /** {@inheritDoc} */
-        public final Realm realm() {
-            Class<? extends Extension> extensionType = realm.extensionType;
-            return extensionType == null ? Realm.application() : Realm.extension(extensionType);
+        public final RealmMirror realm() {
+            if (realm instanceof ExtensionRealmSetup s) { 
+                return RealmMirror.extension(s.extensionModel.type());
+            }
+            return RealmMirror.application(); 
         }
 
         /** {@inheritDoc} */

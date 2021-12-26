@@ -127,7 +127,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
      * 
      * @return the owner of the component
      */
-    Realm realm();
+    RealmMirror realm();
 
     /**
      * Computes the relation from this component to the specified component.

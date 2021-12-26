@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
@@ -23,7 +23,6 @@ import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
-import packed.internal.component.RealmSetup;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -56,7 +55,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The type of extension that is being configured. */
     public final Class<? extends Extension> extensionType;
 
-    /** The extension instance, instantiated and set in {@link #newExtension(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated and set in {@link #initialize()}. */
     @Nullable
     private Extension instance;
 
@@ -69,13 +68,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The static model of the extension. */
     final ExtensionModel model;
 
+    ExtensionSetup next;
     /**
      * The realm this extension belongs to, lazily initialized if needed, for example, if the extension installs its own
      * beans.
      */
-    // Taenker ogsaa hooks maa tilhoere den...
-    @Nullable
-    private ExtensionRealmSetup realm;
+    private final ExtensionRealmSetup realm;
 
     /**
      * Creates a new extension setup.
@@ -85,9 +83,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @param model
      *            the model of the extension
      */
-    private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
+    ExtensionSetup(ContainerSetup container, Class<? extends Extension> extensionClass) {
         this.container = requireNonNull(container);
-        this.model = requireNonNull(model);
+
+        // Find (or create) the extension realm for the application
+        realm = container.application.extensions.computeIfAbsent(extensionClass, ec -> new ExtensionRealmSetup(container.application, ec));
+        this.model = requireNonNull(realm.extensionModel);
         this.extensionType = model.type();
     }
 
@@ -199,7 +200,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerMirror link(Realm realm, Assembly assembly, Wirelet... wirelets) {
+    public ContainerMirror link(RealmMirror realm, Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -240,12 +241,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
-    public RealmSetup realm() {
-        ExtensionRealmSetup r = realm;
-        if (r == null) {
-            r = realm = new ExtensionRealmSetup(this);
-        }
-        return r;
+    public ExtensionRealmSetup realm() {
+        return realm;
     }
 
     /** {@inheritDoc} */
@@ -302,32 +299,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return (E) supportModel.newInstance(instance, extensionType);
     }
 
-    /**
-     * Create a new extension.
-     * 
-     * @param container
-     *            the container to which the extension should be added
-     * @param extensionClass
-     *            the extension to create
-     * @return the new extension
-     */
-    static ExtensionSetup newExtension(ContainerSetup container, Class<? extends Extension> extensionClass) {
-        ExtensionRealmSetup ers = container.application.extensions.get(extensionClass);
-
-        // See if this is first time we use the extension in the application;
-        if (ers == null) {
-
-        }
-        // Find extension model and create extension setup.
-        ExtensionModel model = ExtensionModel.of(extensionClass);
-        ExtensionSetup extension = new ExtensionSetup(container, model);
-
+    void initialize() {
         // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
-        Extension instance = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONTEXT.set(instance, extension);
+        instance = model.newInstance(this);
+        VH_EXTENSION_CONTEXT.set(instance, this);
 
-        // Add the extension to the container's extension map
-        container.extensions.put(extensionClass, extension);
+        // Add the extension to the container's extension map as well as the (application-scoped) extension realm
+        container.extensions.put(extensionType, this);
+        realm.add(this);
 
         // The extension has been now been fully wired, run any notifications
         // extension.onWired();
@@ -339,7 +318,5 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-
-        return extension;
     }
 }

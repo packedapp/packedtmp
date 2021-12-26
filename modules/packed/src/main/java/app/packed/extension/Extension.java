@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport2;
+import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -34,7 +35,6 @@ import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
-import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.Infuser;
@@ -95,13 +95,13 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public abstract class Extension {
+public abstract non-sealed class Extension implements Realm {
 
     /**
      * The extension's configuration that most methods delegate to.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#newExtension(ContainerSetup, Class)} via a var handle. The field
-     * is _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
+     * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
+     * after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
@@ -236,7 +236,7 @@ public abstract class Extension {
     protected ExtensionMirror mirror() {
         return mirrorInitialize(new ExtensionMirror());
     }
-    
+
     protected ExtensionMirror applicationMirror() {
         return mirrorInitialize(new ExtensionMirror());
     }
@@ -287,8 +287,8 @@ public abstract class Extension {
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
-     * The next "lifecycle" method that will be called is {@link #onPostSetUp()}, which is called after the container has been
-     * setup and before any linkage of child containers has started.
+     * The next "lifecycle" method that will be called is {@link #onPostSetUp()}, which is called after the container has
+     * been setup and before any linkage of child containers has started.
      * 
      * @see #onPostSetUp()
      * @see #onComplete()

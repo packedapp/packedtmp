@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
@@ -69,7 +69,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkIsPreCompletion();
 
-    ContainerMirror link(Realm realm, Assembly assembly, Wirelet... wirelets);
+    ContainerMirror link(RealmMirror realm, Assembly assembly, Wirelet... wirelets);
     
     /**
      * Checks that Checks that child containers has been aded

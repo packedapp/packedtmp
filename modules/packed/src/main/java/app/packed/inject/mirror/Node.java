@@ -18,7 +18,7 @@ package app.packed.inject.mirror;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 
 /**
  *
@@ -31,5 +31,5 @@ public interface Node {
     
     Object providedBy();
     
-    Realm realm();
+    RealmMirror realm();
 }

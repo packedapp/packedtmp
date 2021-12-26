@@ -252,14 +252,12 @@ public final class ContainerSetup extends ComponentSetup {
      */
     public final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         requireNonNull(assembly, "assembly is null");
-        // Extract the component driver from the assembly
-        PackedContainerDriver driver = PackedContainerDriver.DRIVER;
-
+        
         // Create the new realm that should be used for linking
-        RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
+        RealmSetup newRealm = realm.link(PackedContainerDriver.DEFAULT, this, assembly, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ContainerConfiguration configuration = driver.toConfiguration(newRealm.root);
+        ContainerConfiguration configuration = PackedContainerDriver.DEFAULT.toConfiguration(newRealm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke user-implemented Assembly::build
         try {
@@ -355,8 +353,9 @@ public final class ContainerSetup extends ComponentSetup {
                 requestedBy.checkIsPreCompletion();
             }
 
-            // Create the new extension and adds into the map of extensions
-            extension = ExtensionSetup.newExtension(this, extensionClass);
+            // Create the extension setup.
+            extension = new ExtensionSetup(this, extensionClass);
+            extension.initialize();
 
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;

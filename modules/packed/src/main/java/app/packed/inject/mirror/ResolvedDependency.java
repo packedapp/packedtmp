@@ -18,7 +18,7 @@ package app.packed.inject.mirror;
 import java.lang.annotation.Annotation;
 
 import app.packed.base.Key;
-import app.packed.component.Realm;
+import app.packed.component.RealmMirror;
 
 /**
  *
@@ -34,7 +34,7 @@ public /*sealed*/ interface ResolvedDependency extends Dependency {
         return producerSite() instanceof ProducerSite.ConstantProducerSite;
     }
 
-    default Realm producer() {
+    default RealmMirror producer() {
         return producerSite().producer();
     }
 
