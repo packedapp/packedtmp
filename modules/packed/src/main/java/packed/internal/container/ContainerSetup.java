@@ -40,13 +40,13 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.component.AssemblyRealmSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
-import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
@@ -254,22 +254,14 @@ public final class ContainerSetup extends ComponentSetup {
         requireNonNull(assembly, "assembly is null");
         
         // Create the new realm that should be used for linking
-        RealmSetup newRealm = realm.link(PackedContainerDriver.DEFAULT, this, assembly, wirelets);
-
-        // Create the component configuration that is needed by the assembly
-        ContainerConfiguration configuration = PackedContainerDriver.DEFAULT.toConfiguration(newRealm.root);
-
-        // Invoke Assembly::doBuild which in turn will invoke user-implemented Assembly::build
-        try {
-            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(realm, PackedContainerDriver.DEFAULT, this, assembly, wirelets); 
+        
+        realm.wirePrepare();
 
         // Close the new realm again after the assembly has been successfully linked
-        newRealm.close();
+        newRealm.build();
 
-        return (ContainerMirror) newRealm.root.mirror();
+        return (ContainerMirror) newRealm.container.mirror();
     }
 
     /** {@return a container mirror.} */
@@ -353,7 +345,7 @@ public final class ContainerSetup extends ComponentSetup {
                 requestedBy.checkIsPreCompletion();
             }
 
-            // Create the extension setup.
+            // Create a extension and initialize it.
             extension = new ExtensionSetup(this, extensionClass);
             extension.initialize();
 

@@ -111,7 +111,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
      *            optional wirelets is always null if not launched from an image
      * @return the application instance
      */
-    static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+    public static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
         assert driver == application.driver; // it is just here because of <A>
 
         // Create a launch context

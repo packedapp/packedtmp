@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -26,7 +28,9 @@ import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
+import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.component.ComposerRealmSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -155,7 +159,7 @@ public abstract class Composer {
      *            the type of composer that is exposed to the end-user
      * @param composer
      *            the composer
-     * @param configurator
+     * @param consumer
      *            the configurator specified by the end-user for configuring the composer
      * @param wirelets
      *            optional wirelets
@@ -171,9 +175,21 @@ public abstract class Composer {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, 
-            Function<ContainerConfiguration, C> composer, ComposerAction<? super C> configurator, Wirelet... wirelets) {
-        return ((PackedApplicationDriver<A>) driver).compose( composer, configurator, wirelets);
+    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, Function<ContainerConfiguration, C> composer,
+            ComposerAction<? super C> consumer, Wirelet... wirelets) {
+       // return ((PackedApplicationDriver<A>) driver).compose(composer, consumer, wirelets);
+        
+        
+        requireNonNull(consumer, "consumer is null");
+        requireNonNull(composer, "composer is null");
+
+        // Create a new application realm
+        ComposerRealmSetup realm = new ComposerRealmSetup(((PackedApplicationDriver<A>) driver), consumer, wirelets);
+
+        realm.build(composer, consumer);
+
+        // Return the launched application
+        return ApplicationInitializationContext.launch(((PackedApplicationDriver<A>) driver), realm.application, null);
     }
 }
 //Application Composer.. Nej vi bruger dem ogsaa andet steds fra

@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.application.ApplicationDriver;
@@ -32,15 +31,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import app.packed.container.Composer;
-import app.packed.container.ComposerAction;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
-import packed.internal.component.RealmSetup;
+import packed.internal.component.AssemblyRealmSetup;
 import packed.internal.container.CompositeWirelet;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.WireletWrapper;
@@ -57,6 +53,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     // vil sikre sig af en application goere x...
     public static final PackedApplicationDriver<Void> MIRROR_DRIVER = new Builder().buildVoid();
 
+    public final PackedContainerDriver containerDriver = PackedContainerDriver.DEFAULT;
+
     final Set<Class<? extends Extension>> disabledExtensions;
 
     private final boolean isExecutable;
@@ -66,8 +64,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
-
-    private final PackedContainerDriver containerDriver = PackedContainerDriver.DEFAULT;
 
     /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
@@ -120,71 +116,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return disabledExtensions;
     }
 
-    /**
-     * Builds an application using the specified assembly and optional wirelets.
-     * 
-     * @param buildTarget
-     *            the build target
-     * @param assembly
-     *            the assembly of the application
-     * @param wirelets
-     *            optional wirelets
-     * @return the application
-     */
-    private ApplicationSetup build(ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
-        // TODO we need to check that the assembly is not in the process of being built..
-        // Both here and linking... We could call it from within build. Maybe the realm can check it
-
-        // Create a new application realm
-        RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
-
-        // Create a new container configuration from the container driver
-        ContainerConfiguration configuration = containerDriver.toConfiguration(realm.root);
-
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        // This will recursively call down through any sub-containers that are linked
-        try {
-            RealmSetup.MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
-        // Close the realm, if the application has been built successfully (no exception was thrown)
-        realm.close();
-
-        return realm.application;
-    }
-
-    public <C extends Composer> A compose(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer, Wirelet... wirelets) {
-        requireNonNull(consumer, "consumer is null");
-        requireNonNull(composer, "composer is null");
-
-        // Create a new application realm
-        RealmSetup realm = new RealmSetup(this, consumer, wirelets);
-
-        // Create the component configuration that is needed by the composer
-        ContainerConfiguration componentConfiguration = containerDriver.toConfiguration(realm.root);
-
-        Composer comp = composer.apply(componentConfiguration);
-        // Invoke Composer#doCompose which in turn will invoke consumer.accept
-        try {
-            RealmSetup.MH_COMPOSER_DO_COMPOSE.invoke(comp, componentConfiguration, consumer);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
-        // Close the realm if the application has been built successfully
-        realm.close();
-
-        // Return the launched application
-        return ApplicationInitializationContext.launch(this, realm.application, null);
-    }
-
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationSetup application = build(ApplicationBuildType.IMAGE, assembly, wirelets);
-        return new PackedApplicationImage<>(this, application);
+        AssemblyRealmSetup realm = new AssemblyRealmSetup(this, ApplicationBuildType.IMAGE, assembly, wirelets);
+        realm.build();
+        return new PackedApplicationImage<>(this, realm.application);
     }
 
     /** {@inheritDoc} */
@@ -196,8 +133,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        ApplicationSetup application = build(ApplicationBuildType.INSTANCE, assembly, wirelets);
-        return ApplicationInitializationContext.launch(this, application, null);
+        AssemblyRealmSetup realm = new AssemblyRealmSetup(this, ApplicationBuildType.INSTANCE, assembly, wirelets);
+        realm.build();
+        return ApplicationInitializationContext.launch(this, realm.application, null);
     }
 
     /** {@inheritDoc} */
@@ -209,8 +147,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationSetup application = build(ApplicationBuildType.MIRROR, assembly, wirelets);
-        return application.mirror();
+        AssemblyRealmSetup realm = new AssemblyRealmSetup(this, ApplicationBuildType.MIRROR, assembly, wirelets);
+        realm.build();
+        return realm.application.mirror();
     }
 
     /**
@@ -234,8 +173,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        ApplicationSetup application = build(ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
-        return new PackedApplicationImage<>(this, application);
+        AssemblyRealmSetup realm = new AssemblyRealmSetup(this, ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
+        realm.build();
+        return new PackedApplicationImage<>(this, realm.application);
     }
 
     @Override

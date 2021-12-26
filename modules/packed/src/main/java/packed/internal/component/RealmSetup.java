@@ -17,8 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
@@ -27,34 +25,29 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.PackedContainerDriver;
-import packed.internal.util.LookupUtil;
 
 /**
  * The internal configuration of realm.
  * <p>
  */
 // BuildRealm???? Is this runtime at all???
-public class RealmSetup {
-
-    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            ContainerConfiguration.class);
-
-    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
-            ContainerConfiguration.class, ComposerAction.class);
+public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerRealmSetup, ExtensionRealmSetup {
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
     public final ApplicationSetup application;
+
+    // Den giver kun mening for assemblies...
+    /** The root component of this realm. */
+    public final ContainerSetup container;
 
     /** The current active component in the realm. */
     private ComponentSetup current;
@@ -65,9 +58,6 @@ public class RealmSetup {
     // Hmm. Realm er en ting. Men naar vi laeser extra hooks saa er det jo ikke paa denne type
     // Vi har faktisk 2 som jeg ser det.
     private final Class<?> realmType;
-
-    /** The root component of this realm. */
-    public final ContainerSetup root;
 
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
@@ -86,22 +76,22 @@ public class RealmSetup {
     protected RealmSetup(ApplicationSetup application, Class<?> extensionType) {
         this.realmType = extensionType;
         this.application = application;
-        this.root = null; // ??????
+        this.container = null; // ??????
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    protected RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
-        this.root = application.container;
-        wireCommit(root);
+        this.container = application.container;
+        wireCommit(container);
     }
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
-        this.root = application.container;
-        wireCommit(root);
+        this.container = application.container;
+        wireCommit(container);
     }
 
     /**
@@ -110,10 +100,10 @@ public class RealmSetup {
      * @param assembly
      *            the assembly to create a realm for
      */
-    private RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    protected RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.application = existing.application;
-        this.root = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
+        this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {
@@ -140,18 +130,11 @@ public class RealmSetup {
         for (ContainerSetup c : rootContainers) {
             c.closeRealm();
         }
-        assert root.name != null;
+        assert container.name != null;
     }
 
     ComponentSetup current() {
         return current;
-    }
-
-    public RealmSetup link(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
-        // Check that the realm this component is a part of is still open
-        wirePrepare();
-        // Create the new realm that should be used for linking
-        return new RealmSetup(this, driver, linkTo, assembly, wirelets);
     }
 
     public void newOperation() {

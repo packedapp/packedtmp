@@ -26,20 +26,26 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     public final ExtensionModel extensionModel;
 
-    ExtensionSetup first;
+    /** The first extension that was added to the realm. */
+    private ExtensionSetup first;
 
-    ExtensionSetup last;
+    /** The latest extension that was added to the realm. */
+    private ExtensionSetup last;
 
-    public ExtensionRealmSetup(ApplicationSetup application, Class<? extends Extension> extensionType) {
+    ExtensionRealmSetup(ApplicationSetup application, Class<? extends Extension> extensionType) {
         super(application, extensionType);
         this.extensionModel = ExtensionModel.of(extensionType);
     }
 
-    public void add(ExtensionSetup extension) {
+    void add(ExtensionSetup extension) {
         if (first == null) {
             first = last = extension;
         } else {
             last = last.next = extension;
         }
+    }
+    
+    public void close() {
+        super.close();
     }
 }
