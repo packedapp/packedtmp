@@ -11,12 +11,12 @@ import app.packed.container.ContainerMirror;
  */
 public non-sealed interface BeanMirror extends ComponentMirror {
 
-    // The container t
-    /** {@return the container the bean belongs to. Is identical to #parent() which is never empty for beans.} */
-    ContainerMirror container();
-
     /** {@return the type (class) of the bean.} */
-    Class<?> beanType();
+    Class<?> beanType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
+
+    // The container t
+    /** {@return the container the bean belongs to. Is identical to #parent() which is never empty for a bean.} */
+    ContainerMirror container();
 
     /** {@return all hooks that have been applied on the bean.} */
     Set<BeanElementMirror> hooks();

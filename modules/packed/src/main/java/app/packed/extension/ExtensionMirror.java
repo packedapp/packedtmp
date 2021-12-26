@@ -1,8 +1,5 @@
 package app.packed.extension;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirrorSet;
 import app.packed.container.Assembly;
@@ -134,46 +131,48 @@ public class ExtensionMirror implements Mirror {
         return extensionType().getCanonicalName();
     }
 
-    /**
-     * Builds an application, and returns a mirror for an extension in the root container if it is present. Otherwise
-     * {@link Optional#empty()}.
-     * 
-     * @param <E>
-     *            the type of extension mirror
-     * @param extensionMirrorType
-     *            the type of extension mirror to return
-     * @param assembly
-     *            the assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return stuff
-     * @see ContainerMirror#findExtension(Class)
-     * @see #of(Class, Assembly, Wirelet...)
-     */
-    public static <E extends ExtensionMirror> Optional<E> find(Class<E> extensionMirrorType, Assembly assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).findExtension(extensionMirrorType);
-    }
-
-    /**
-     * Builds an application. Throws {@link NoSuchElementException} if the root container does not use the extension that
-     * the mirror represents.
-     * 
-     * @param <E>
-     *            the type of extension mirror
-     * @param mirrorType
-     *            the type of extension mirror to return
-     * @param assembly
-     *            the assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return an extension mirror
-     * @see ContainerMirror#useExtension(Class)
-     * @see #find(Class, Assembly, Wirelet...)
-     * @throws NoSuchElementException
-     *             if the root container in the mirrored application does not use the extension that the specified mirror is
-     *             a part of
-     */
-    public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
-    }
 }
+
+//// Disse blev fjernet da vi begyndte at share extension mirrors mellem containere og applikationer.
+///**
+//* Builds an application, and returns a mirror for an extension in the root container if it is present. Otherwise
+//* {@link Optional#empty()}.
+//* 
+//* @param <E>
+//*            the type of extension mirror
+//* @param extensionMirrorType
+//*            the type of extension mirror to return
+//* @param assembly
+//*            the assembly
+//* @param wirelets
+//*            optional wirelets
+//* @return stuff
+//* @see ContainerMirror#findExtension(Class)
+//*/
+//@Deprecated
+//public static <E extends ExtensionMirror> Optional<E> find(Class<E> extensionMirrorType, Assembly assembly, Wirelet... wirelets) {
+//  return ContainerMirror.of(assembly, wirelets).findExtension(extensionMirrorType);
+//}
+
+///**
+//* Builds an application. Throws {@link NoSuchElementException} if the root container does not use the extension that
+//* the mirror represents.
+//* 
+//* @param <E>
+//*            the type of extension mirror
+//* @param mirrorType
+//*            the type of extension mirror to return
+//* @param assembly
+//*            the assembly
+//* @param wirelets
+//*            optional wirelets
+//* @return an extension mirror
+//* @see ContainerMirror#useExtension(Class)
+//* @throws NoSuchElementException
+//*             if the root container in the mirrored application does not use the extension that the specified mirror is
+//*             a part of
+//*/
+//@Deprecated
+//public static <E extends ExtensionMirror> E of(Class<E> extensionMirrorType, Assembly assembly, Wirelet... wirelets) {
+//  return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
+//}

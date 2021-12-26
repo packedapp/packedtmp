@@ -275,19 +275,19 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             }
             throw new UnsupportedOperationException();
         }
-
-        /** {@inheritDoc} */
-        public final ContainerMirror root() {
-            ContainerSetup c = parent;
-            if (c == null) {
-                return (ContainerMirror) this;
-            } else {
-                while (c.parent != null) {
-                    c = c.parent;
-                }
-                return c.mirror();
-            }
-        }
+//
+//        /** {@inheritDoc} */
+//        public final ContainerMirror root() {
+//            ContainerSetup c = parent;
+//            if (c == null) {
+//                return (ContainerMirror) this;
+//            } else {
+//                while (c.parent != null) {
+//                    c = c.parent;
+//                }
+//                return c.mirror();
+//            }
+//        }
 
         /** {@inheritDoc} */
         public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {

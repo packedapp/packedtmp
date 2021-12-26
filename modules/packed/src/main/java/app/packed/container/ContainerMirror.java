@@ -10,33 +10,21 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
-import app.packed.inject.service.ServiceLocator;
 
 /**
  * A mirror of a container (component).
  * <p>
- * An instance of this class is typically opb
+ * An instance of this class is typically obtained from an {@link ApplicationMirror}.
  */
-// Tror vi skal have en liste af banned extensions, Maaske baade dem inheriter, og dem vi ikke inheriter
 public non-sealed interface ContainerMirror extends ComponentMirror {
 
     // Set<BeanMirror> beans(), or maybe just BeanExtensionMirror
+    // Nahh vi har maaske kun containere som boern
 
-    /**
-     * Returns the assembly class from which the container was build.
-     * <p>
-     * Returns {@code container.class} if the container outside an assembly, for example, via
-     * {@link ServiceLocator#of(ComposerAction)}
-     * 
-     * @return the assembly class from which the container was build
-     */
-    Class<? extends Assembly> assemblyType();
+    /** {@return a {@link Set} view of every extension that has been used in the container.} */
+    Set<ExtensionMirror> extensions(); // return Map<Type, Mirror> instead???
 
-    /** {@return a {@link Set} view of every extension that is used when building the container.} */
-    // This may differ from runtime usage...
-    Set<ExtensionMirror> extensions();
-
-    /** {@return a {@link Set} view of every extension type that is used when building the container.} */
+    /** {@return a {@link Set} view of every extension type that has been used in the container.} */
     Set<Class<? extends Extension>> extensionTypes();
 
     /**
@@ -44,9 +32,9 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      *            the type of mirror
      * @param extensionMirrorType
      *            the mirror type
-     * @return a mirror of the specified type, or empty if mirror of the requested type exists
+     * @return a mirror of the specified type, or empty if the extension the mirror represents is not used in the container
      */
-    <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType); // maybe just find
+    <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType);
 
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
@@ -56,8 +44,6 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
-    // maybe skip it, if we have runtimeExtensions()
-    // because we would also need isExtensionUsedAtRuntime
     boolean isExtensionUsed(Class<? extends Extension> extensionType);
 
     /**
@@ -79,8 +65,6 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
     default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
     }
-
-    public static ContainerMirror of(Assembly assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(assembly, wirelets).container();
-    }
 }
+// TODO
+// * List of banned extensions? Maaske baade dem inheriter, og dem vi ikke inheriter

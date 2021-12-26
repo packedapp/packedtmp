@@ -16,6 +16,7 @@
 package packed.internal.container;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import packed.internal.application.ApplicationSetup;
 
 /**
@@ -51,5 +52,11 @@ public final class ExtensionRealmSetup extends RealmSetup {
     @Override
     public Class<?> realmType() {
         return extensionModel.type();
+    }
+
+    /** {@inheritDoc} */
+    public <T extends ExtensionMirror> T use(Class<T> type) {
+        throw new UnsupportedOperationException();
+        //return first.container.useExtension(type)
     }
 }

@@ -23,11 +23,12 @@ import app.packed.extension.Extension;
  *
  */
 @SuppressWarnings("rawtypes")
-public sealed interface Realm permits Assembly, Extension, ComposerAction {
-
-}
+public sealed interface Realm permits Assembly,Extension,ComposerAction {}
 // A realm can be closed...
 
 // Assembly realm -> when build returns
 // Extension realm -> when the application is in the last phase
 // Composer action realm -> when build returns
+
+// Nu naar vi faar Application beans med application scope...
+// Giver det jo ikke rigtig mening at sige den er installeret via denne Assembly.

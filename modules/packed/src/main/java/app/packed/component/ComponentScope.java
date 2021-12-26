@@ -42,15 +42,15 @@ public enum ComponentScope {
     NAMESPACE, // -> Family
 
     /** A scope that indicates any component within the same application. */
-    CONTAINER, // -> Container
+    APPLICATION,
+    
+    /** A scope that indicates any component within the same application. */
+    CONTAINER,
 
     // Der hvor denne her giver mening, er fx naar man siger install(..., spyOnWire(Scope.COMPONENT))
     // will never be inherited
     /** A scope that indicates the single component. */
-    COMPONENT,
-
-    /** A scope that indicates any component within the same application. */
-    APPLICATION;
+    COMPONENT;
 
     /**
      * A system where all components are part of the same build. Being part of the same build means that...

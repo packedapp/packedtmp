@@ -41,13 +41,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
-    /**
-     * {@return an unmodifiable view of all of the children of this component.}
-     * <p>
-     * If this component mirror represents a container. A set with at least one element is returned. If this component
-     * mirror represents a bean. An empty set is returned.
-     */
-    Collection<ComponentMirror> children();
+    /** {@return an unmodifiable view of all of the children of this component.} */
+    Collection<ComponentMirror> children(); // ComponentMirrorSet?
 
     Stream<ComponentMirror> components();
 
@@ -75,14 +70,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
 
     // RegisteredWith
     // DeclaredBy
+    // Det er jo mere eller Realmen her
     /* UserOrExtension */ Optional<Class<? extends Extension>> declaredByExtension();
 
     /** {@return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();
-
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        components().forEach(action);
-    }
 
     default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
@@ -112,7 +104,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     String name();
 
     /** {@return the parent component of this component. Or empty if a root component.} */
-    Optional<ContainerMirror> parent(); // ContainerMirror????
+    Optional<ContainerMirror> parent();
 
     /** {@return the path of this component} */
     NamespacePath path();
@@ -142,10 +134,6 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // add Optional<Component> tryResolve(CharSequence path);
     // Syntes ikke vi skal have baade tryResolve or resolve...
     ComponentMirror resolve(CharSequence path);
-
-    /** {@return the root component (always a container).} */
-    // application root? Maaske bare droppe den? Vi skal ihvertfald udspecificere det.
-    ContainerMirror root();
 
     /**
      * Returns a stream consisting of this component and all of its descendants in any order.
@@ -321,6 +309,14 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // }
 }
 
+interface ZoldMirror {
+
+    // Er uklart om det er boernene eller deep down
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        // components().forEach(action);
+    }
+
+}
 ///**
 // * <p>
 // * This operation does not allocate any objects internally.

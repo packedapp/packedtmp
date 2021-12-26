@@ -31,9 +31,13 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror extends Mirror {
 
-    /** {@return the assembly type of the root container. Returns Assembly.class} */ // IDK container().type() might be fine
-    default Class<? extends Assembly> assemblyType() {
-        return container().assemblyType();
+    default Stream<ComponentMirror> components() {
+        return container().components();
+    }
+
+    /** {@return the component in the application}. */
+    default <T extends ComponentMirror> SetView<T> components(Class<T> componentType) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the root container in the application.} */
@@ -50,6 +54,31 @@ public interface ApplicationMirror extends Mirror {
      * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     Set<Class<? extends Extension>> disabledExtensions();
+
+    default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Skal vi have baade en der finder alle mirrors og alle extensions.
+    /** { @return a set view of all extensions that are in use by the application.} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    default Set<Class<? super Extension>> findAllExtensions(boolean includeChildApplications) {
+        Set<Class<? super Extension>> result = new HashSet<>();
+        components(ContainerMirror.class).forEach(c -> result.addAll((Set) c.extensions()));
+        return Set.copyOf(result);
+    }
+
+    // Er det kun componenter i den application??? Ja ville jeg mene...
+    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
+    // app.rootContainer.children() <-- does this only include children in the same
+    // application?? or any children...
+
+    // teanker det kun er containere i samme application...
+    // ellers maa man bruge container.resolve("....")
+
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        container().components().forEach(action);
+    }
 
     default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
@@ -81,40 +110,6 @@ public interface ApplicationMirror extends Mirror {
         container().print();
     }
 
-    // Er det kun componenter i den application??? Ja ville jeg mene...
-    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
-    // app.rootContainer.children() <-- does this only include children in the same
-    // application?? or any children...
-
-    // teanker det kun er containere i samme application...
-    // ellers maa man bruge container.resolve("....")
-
-    // Skal vi have baade en der finder alle mirrors og alle extensions.
-    /** { @return a set view of all extensions that are in use by the application.} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    default Set<Class<? super Extension>> findAllExtensions(boolean includeChildApplications) {
-        Set<Class<? super Extension>> result = new HashSet<>();
-        components(ContainerMirror.class).forEach(c -> result.addAll((Set) c.extensions()));
-        return Set.copyOf(result);
-    }
-
-    default Stream<ComponentMirror> components() {
-        return container().components();
-    }
-
-    /** {@return the component in the application}. */
-    default <T extends ComponentMirror> SetView<T> components(Class<T> componentType) {
-        throw new UnsupportedOperationException();
-    }
-
-    default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        container().components().forEach(action);
-    }
-
     default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
         throw new UnsupportedOperationException();
     }
@@ -124,6 +119,14 @@ public interface ApplicationMirror extends Mirror {
         return select(BeanMirror.class);
     }
 
+    <T extends ExtensionMirror> T use(Class<T> type);
+
+    // Relations between to different applications
+    // Ret meget som ComponentRelation
+
+    /// Maaske flyt til ApplicationMirror.relation...
+    /// Der er ingen der kommer til at lave dem selv...
+
     default TreeWalker<ApplicationMirror> walker() {
         throw new UnsupportedOperationException();
         // app.components() <-- all component in the application
@@ -131,12 +134,6 @@ public interface ApplicationMirror extends Mirror {
 
         // someComponent.walker().filter(c->c.application == SomeApp)...
     }
-
-    // Relations between to different applications
-    // Ret meget som ComponentRelation
-
-    /// Maaske flyt til ApplicationMirror.relation...
-    /// Der er ingen der kommer til at lave dem selv...
 
     /**
      * Create
@@ -151,6 +148,4 @@ public interface ApplicationMirror extends Mirror {
     public static ApplicationMirror of(Assembly assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
-
-    <T extends ExtensionMirror> T use(Class<T> type);
 }

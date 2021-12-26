@@ -1,10 +1,7 @@
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
@@ -22,7 +19,7 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class ContainerConfiguration extends ComponentConfiguration {
 
-    /** A method handle that can access superclass ComponentConfiguration#component(). */
+    /** A method handle that can access ComponentConfiguration#component() from superclass. */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_SETUP = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
@@ -79,27 +76,6 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         return container().link(PackedContainerDriver.DEFAULT, assembly, wirelets);
     }
 
-    /**
-     * The lookup object passed to this method is never made available through the public API. It is only used internally.
-     * Unless your private
-     * 
-     * @param lookup
-     *            the lookup object
-     */
-    // Used by beans/functions??? We actually need it functions as well, Or hmmm....... tror ikke vi vil
-    // Maaske skal den bare paa bean extension????
-    // !!! Maaske er det en del af assemblien
-    // Men saa kan man ikke bruge ContainerConfiguration???
-    // Ellers syntes jeg bare det skal vaere paa ComponentConfiguration...
-
-    // Alle ComponentConfiguration har en lookup function... Hmm
-    // Passer ikke saa godt med Beans vi vil gerne have lookup funktionen inden vi installere boennen
-
-    public void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        container().realm.setLookup(lookup);
-    }
-
     /** {@return a mirror for the container.} */
     @Override
     public ContainerMirror mirror() {
@@ -138,3 +114,25 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         return container().useExtension(extensionType);
     }
 }
+
+// Altsaa vi har den kun paa assembly, men maaske
+/**
+ * The lookup object passed to this method is never made available through the public API. It is only used internally.
+ * Unless your private
+ * 
+ * @param lookup
+ *            the lookup object
+ */
+// Used by beans/functions??? We actually need it functions as well, Or hmmm....... tror ikke vi vil
+// Maaske skal den bare paa bean extension????
+// !!! Maaske er det en del af assemblien
+// Men saa kan man ikke bruge ContainerConfiguration???
+// Ellers syntes jeg bare det skal vaere paa ComponentConfiguration...
+
+// Alle ComponentConfiguration har en lookup function... Hmm
+// Passer ikke saa godt med Beans vi vil gerne have lookup funktionen inden vi installere boennen
+//void lookup(Lookup lookup) {
+//    requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+//    container().realm.lookup(lookup);
+//}
+

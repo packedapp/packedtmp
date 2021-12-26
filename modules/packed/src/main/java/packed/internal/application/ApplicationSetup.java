@@ -83,7 +83,7 @@ public final class ApplicationSetup {
         this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
     }
 
-    /** {@return a build-time application mirror that can be exposed to end-users} */
+    /** {@return an application mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
         return new BuildTimeApplicationMirror(this);
     }
@@ -91,6 +91,7 @@ public final class ApplicationSetup {
     /** An application mirror adaptor. */
     private record BuildTimeApplicationMirror(ApplicationSetup application) implements ApplicationMirror {
 
+        /** {@inheritDoc} */
         @Override
         public ContainerMirror container() {
             return application.container.mirror();
@@ -99,7 +100,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension>> disabledExtensions() {
-            // TODO add additional dsiabled extensions
+            // TODO add additional disabled extensions
             return application.driver.bannedExtensions();
         }
 
@@ -109,6 +110,7 @@ public final class ApplicationSetup {
             return application.container.realm.realmType().getModule();
         }
 
+        /** {@inheritDoc} */
         @Override
         public ApplicationDescriptor descriptor() {
             return application.descriptor;
@@ -117,7 +119,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public <T extends ExtensionMirror> T use(Class<T> type) {
-            // TODO fix, is application extension mirror
+            // 
             return container().useExtension(type);
         }
     }

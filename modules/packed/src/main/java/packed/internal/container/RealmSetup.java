@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
-import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -32,7 +31,7 @@ import packed.internal.component.ComponentSetup;
 // BuildRealm???? Is this runtime at all???
 public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerRealmSetup, ExtensionRealmSetup {
 
-    /** The current module accessor, updated via {@link #setLookup(Lookup)} */
+    /** The current module accessor, updated via {@link #lookup(Lookup)} */
     private RealmAccessor accessor;
 
     /** The current active component in the realm. */
@@ -48,6 +47,8 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
     // Hmm burde kunne bruge traet istedet for
     private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
+    // Maaske vi flytter vi den til ContainerRealmSetup
+    // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
     public RealmAccessor accessor() {
         RealmAccessor r = accessor;
         if (r == null) {
@@ -96,11 +97,10 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
     /**
      * @param lookup
      *            the lookup to use
-     * @see Extension#lookup(Lookup)
      * @see Assembly#lookup(Lookup)
      * @see Composer#lookup(Lookup)
      */
-    public void setLookup(@Nullable Lookup lookup) {
+    public void lookup(@Nullable Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         this.accessor = accessor().withLookup(lookup);
     }

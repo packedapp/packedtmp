@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -60,7 +59,7 @@ public final class ContainerSetup extends ComponentSetup {
     public ArrayList<ContainerSetup> containerChildren;
 
     /** All extensions in use, in no particular order. */
-    final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
+    final LinkedHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     private boolean hasRunPreContainerChildren;
 
@@ -189,34 +188,6 @@ public final class ContainerSetup extends ComponentSetup {
 
     }
 
-    public void onRealmClose() {
-        // We recursively close all children in the same realm first
-        // We do not close individual components
-        if (containerChildren != null) {
-            for (ContainerSetup c : containerChildren) {
-                if (c.realm == realm) {
-                    c.onRealmClose();
-                }
-            }
-        }
-
-        if (!hasRunPreContainerChildren) {
-            runPredContainerChildren();
-        }
-        // Complete all extensions in order
-        // Vil faktisk mene det skal vaere den modsatte order...
-        // Tror vi skal have vendt comparatoren
-        ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
-        Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model.compareTo(c2.model));
-
-        // Close every extension
-        for (ExtensionSetup extension : extensionsOrdered) {
-            extension.onComplete();
-        }
-
-        injection.resolve();
-    }
-
     /** {@return a unmodifiable view of all extension types that are in use.} */
     public Set<Class<? extends Extension>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -248,11 +219,11 @@ public final class ContainerSetup extends ComponentSetup {
      *            optional wirelets
      * @return the component that was linked
      */
-    public final ContainerMirror link(PackedContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
+    public ContainerMirror link(PackedContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
 
         // Create a new realm for the assembly
-        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(driver, this, assembly, wirelets); 
-        
+        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(driver, this, assembly, wirelets);
+
         realm.wirePrepare(); // check that the container is open for business
 
         // Close the new realm again after the assembly has been successfully linked
@@ -265,6 +236,34 @@ public final class ContainerSetup extends ComponentSetup {
     @Override
     public ContainerMirror mirror() {
         return new BuildTimeContainerMirror();
+    }
+
+    public void onRealmClose() {
+        // We recursively close all children in the same realm first
+        // We do not close individual components
+        if (containerChildren != null) {
+            for (ContainerSetup c : containerChildren) {
+                if (c.realm == realm) {
+                    c.onRealmClose();
+                }
+            }
+        }
+
+        if (!hasRunPreContainerChildren) {
+            runPredContainerChildren();
+        }
+        // Complete all extensions in order
+        // Vil faktisk mene det skal vaere den modsatte order...
+        // Tror vi skal have vendt comparatoren
+        ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
+        Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model.compareTo(c2.model));
+
+        // Close every extension
+        for (ExtensionSetup extension : extensionsOrdered) {
+            extension.onComplete();
+        }
+
+        injection.resolve();
     }
 
     public void postBuild(ContainerConfiguration configuration) {
@@ -393,13 +392,6 @@ public final class ContainerSetup extends ComponentSetup {
                 return extensionType;
             }
         };
-
-        /** {@inheritDoc} */
-        @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public Class<? extends Assembly> assemblyType() {
-            return (Class) Assembly.class;
-        }
 
         /** {@inheritDoc} */
         public final Collection<ComponentMirror> children() {

@@ -134,7 +134,7 @@ public abstract class Composer {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        configuration().container().realm.setLookup(lookup);
+        configuration().container().realm.lookup(lookup);
     }
 
     /**

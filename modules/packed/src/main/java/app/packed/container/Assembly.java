@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -190,7 +192,8 @@ public abstract non-sealed class Assembly implements Realm {
     // Hvor vi tager reflection (a.la. Factory.ofMethod) saa
     // skal vi jo ogsaa bruge den der. IDK
     protected final void lookup(Lookup lookup) {
-        configuration().lookup(lookup);
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        configuration().container().realm.lookup(lookup);
     }
 
     /**

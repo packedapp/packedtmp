@@ -3,15 +3,11 @@ package app.packed.inject.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.operation.examples.ServiceExportMirror;
 import app.packed.bean.operation.examples.ServiceProvideMirror;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -70,23 +66,5 @@ public final class ServiceExtensionMirror extends ExtensionMirror {
     @SuppressWarnings("exports")
     public Map<Key<?>, ServiceProvideMirror> provisions() {
         throw new UnsupportedOperationException();
-    }
-    
-    // ifPresent(), tryFind
-    // Syntes find maaske er et lidt daarligt navn
-    public static Optional<ServiceExtensionMirror> find(Assembly assembly, Wirelet... wirelets) {
-        return ExtensionMirror.find(ServiceExtensionMirror.class, assembly, wirelets);
-    }
-
-    /**
-     * @param assembly
-     * @param wirelets
-     * @return
-     * @throws NoSuchElementException
-     *             if an
-     * @see ExtensionMirror#of(Class, Assembly, Wirelet...)
-     */
-    public static ServiceExtensionMirror of(Assembly assembly, Wirelet... wirelets) {
-        return ExtensionMirror.of(ServiceExtensionMirror.class, assembly, wirelets);
     }
 }

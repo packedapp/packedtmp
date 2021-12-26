@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
@@ -229,11 +227,7 @@ public abstract class BaseAssembly extends Assembly {
      *             if the specified extension type is {@link Extension}
      */
     protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        if (extensionType == Extension.class) {
-            throw new IllegalArgumentException("Cannot specify Extension.class");
-        }
-        return configuration().extensionTypes().contains(extensionType);
+        return configuration().isExtensionUsed(extensionType);
     }
 
     /**

@@ -20,7 +20,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.entrypoint.Main;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerMirror;
 
 /**
  *
@@ -39,9 +38,6 @@ public class HelloWorldAssembly extends BaseAssembly {
 
         ApplicationMirror.of(new HelloWorldAssembly()).components().forEach(c -> System.out.println(c.path()));
 
-        ApplicationMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
-
-        ContainerMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
 
         System.out.println();
         App.driver().print(new HelloWorldAssembly());

@@ -18,7 +18,7 @@ package app.packed.container;
 import app.packed.extension.Extension;
 
 /**
- * An extension for creating new containers.
+ * An extension for adding contain new containers.
  */
 public class ContainerExtension extends Extension {
 
