@@ -75,7 +75,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      */
     // Taenker ogsaa hooks maa tilhoere den...
     @Nullable
-    private RealmSetup realm;
+    private ExtensionRealmSetup realm;
 
     /**
      * Creates a new extension setup.
@@ -241,9 +241,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
     public RealmSetup realm() {
-        RealmSetup r = realm;
+        ExtensionRealmSetup r = realm;
         if (r == null) {
-            r = realm = new RealmSetup(this);
+            r = realm = new ExtensionRealmSetup(this);
         }
         return r;
     }
@@ -312,6 +312,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @return the new extension
      */
     static ExtensionSetup newExtension(ContainerSetup container, Class<? extends Extension> extensionClass) {
+        ExtensionRealmSetup ers = container.application.extensions.get(extensionClass);
+
+        // See if this is first time we use the extension in the application;
+        if (ers == null) {
+
+        }
         // Find extension model and create extension setup.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);

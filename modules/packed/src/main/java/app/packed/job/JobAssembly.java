@@ -9,9 +9,6 @@ import app.packed.inject.service.ServiceConfiguration;
 
 public abstract class JobAssembly<T> extends BaseAssembly {
 
-    protected JobAssembly() {
-        super(null);
-    }
 
     protected final void simpleComputable(Callable<T> calculation) {}
 

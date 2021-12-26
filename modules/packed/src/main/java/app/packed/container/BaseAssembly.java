@@ -87,21 +87,6 @@ import app.packed.lifecycle.OnStart;
 // TODO tror vi sortere metoderne efter extension og saa efter navn
 public abstract class BaseAssembly extends Assembly {
 
-    /** Creates a new assembly using {@link ContainerDriver#defaultDriver()}. */
-    protected BaseAssembly() {
-        super(ContainerDriver.defaultDriver());
-    }
-
-    /**
-     * Creates a new container using the specified driver.
-     * 
-     * @param driver
-     *            the driver to wrap
-     */
-    protected BaseAssembly(ContainerDriver driver) {
-        super(driver);
-    }
-
     /**
      * Returns a {@link BeanExtension} instance.
      * <p>

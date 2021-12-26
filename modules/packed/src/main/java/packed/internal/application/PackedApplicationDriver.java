@@ -31,12 +31,10 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceLocator;
@@ -69,6 +67,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
+    private final PackedContainerDriver containerDriver = PackedContainerDriver.DRIVER;
+    
     /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
     public final Wirelet wirelet;
@@ -129,27 +129,24 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the assembly of the application
      * @param wirelets
      *            optional wirelets
-     * @return a build setup
+     * @return the application
      */
     private ApplicationSetup build(ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
-        // Extract the driver from the field Assembly#driver
-        PackedContainerDriver componentDriver = PackedContainerDriver.extractDriver(assembly);
-
-        // Create the initial realm, typically we will have a realm per container
+        // Create a new application realm
         RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
 
-        // Create a new component configuration instance which are passed along to assembly that
-        // then exposes the various methods on the configuration objects through
-        // protected final methods such as ContainerAssembly#use(Class)
-        ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
+        // Extract the container driver from the assembly (Assembly#driver)
+
+        // Create a new container configuration from the container driver
+        ContainerConfiguration configuration = containerDriver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         // This will recursively call down through any sub-containers that are linked
         try {
-            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+            RealmSetup.MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -160,19 +157,17 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return realm.application;
     }
 
-    public <C extends Composer> A compose(ContainerDriver containerDriver, Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer,
+    public <C extends Composer> A compose(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer,
             Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
-        // Extract the component driver from the composer
-        PackedContainerDriver componentDriver = (PackedContainerDriver) containerDriver;
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, consumer, wirelets);
 
         // Create the component configuration that is needed by the composer
-        ContainerConfiguration componentConfiguration = componentDriver.toConfiguration(realm.root);
+        ContainerConfiguration componentConfiguration = containerDriver.toConfiguration(realm.root);
 
         Composer comp = composer.apply(componentConfiguration);
         // Invoke Composer#doCompose which in turn will invoke consumer.accept
@@ -293,12 +288,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
                 String.class);
 
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#runtime()}. */
-        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "runtime",
-                LifecycleApplicationController.class);
+        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
+                "runtime", LifecycleApplicationController.class);
 
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#services()}. */
-        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "services",
-                ServiceLocator.class);
+        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
+                "services", ServiceLocator.class);
 
         private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
 

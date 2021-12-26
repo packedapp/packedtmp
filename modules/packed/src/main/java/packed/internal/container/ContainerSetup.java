@@ -251,8 +251,9 @@ public final class ContainerSetup extends ComponentSetup {
      * @return the component that was linked
      */
     public final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
+        requireNonNull(assembly, "assembly is null");
         // Extract the component driver from the assembly
-        PackedContainerDriver driver = PackedContainerDriver.extractDriver(assembly);
+        PackedContainerDriver driver = PackedContainerDriver.DRIVER;
 
         // Create the new realm that should be used for linking
         RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);

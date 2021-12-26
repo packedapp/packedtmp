@@ -42,7 +42,7 @@ import packed.internal.util.LookupUtil;
  * <p>
  */
 // BuildRealm???? Is this runtime at all???
-public final class RealmSetup {
+public class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
@@ -87,16 +87,16 @@ public final class RealmSetup {
      *            the extension model to create a realm for
      * @parem extension the extension setup
      */
-    public RealmSetup(ExtensionSetup extension) {
+    protected RealmSetup(ExtensionSetup extension) {
         this.realmType = this.extensionType = extension.extensionType;
         this.application = extension.container.application;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly  assembly, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
-        this.application = new ApplicationSetup(buildTarget, this, applicationDriver, wirelets);// new BuildSetup(applicationDriver, buildTarget, this, wirelets);
+        this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.root = application.container;
         this.extensionType = null;
         wireCommit(root);
@@ -104,7 +104,7 @@ public final class RealmSetup {
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.application = new ApplicationSetup(ApplicationBuildType.INSTANCE, this, applicationDriver, wirelets);
+        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
         this.root = application.container;
         this.extensionType = null;
         wireCommit(root);
@@ -116,7 +116,7 @@ public final class RealmSetup {
      * @param assembly
      *            the assembly to create a realm for
      */
-    private RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
+    private RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.application = existing.application;
         this.extensionType = null;
@@ -154,7 +154,7 @@ public final class RealmSetup {
         return current;
     }
 
-    public RealmSetup link(PackedContainerDriver driver, ContainerSetup linkTo, Assembly  assembly, Wirelet[] wirelets) {
+    public RealmSetup link(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         // Check that the realm this component is a part of is still open
         wirePrepare();
         // Create the new realm that should be used for linking

@@ -171,9 +171,9 @@ public abstract class Composer {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, ContainerDriver containerDriver,
+    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, 
             Function<ContainerConfiguration, C> composer, ComposerAction<? super C> configurator, Wirelet... wirelets) {
-        return ((PackedApplicationDriver<A>) driver).compose(containerDriver, composer, configurator, wirelets);
+        return ((PackedApplicationDriver<A>) driver).compose( composer, configurator, wirelets);
     }
 }
 //Application Composer.. Nej vi bruger dem ogsaa andet steds fra

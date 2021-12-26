@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -27,7 +25,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -74,24 +71,6 @@ public abstract class Assembly {
      */
     @Nullable
     private ContainerConfiguration configuration;
-
-    /**
-     * The driver of this assembly.
-     * <p>
-     * This field is read by {@link PackedcontainerDriver#getDriver(Assembly)} via a var handle.
-     */
-    @SuppressWarnings("unused")
-    private final PackedContainerDriver driver;
-
-    /**
-     * Creates a new assembly using the specified container driver.
-     * 
-     * @param driver
-     *            the driver to used to create the container
-     */
-    protected Assembly(ContainerDriver driver) {
-        this.driver = requireNonNull((PackedContainerDriver) driver, "driver is null");
-    }
 
     /** {@return a descriptor for the application being built.} */
     protected final ApplicationDescriptor application() {

@@ -85,6 +85,10 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     // !!! Maaske er det en del af assemblien
     // Men saa kan man ikke bruge ContainerConfiguration???
     // Ellers syntes jeg bare det skal vaere paa ComponentConfiguration...
+
+    // Alle ComponentConfiguration har en lookup function... Hmm
+    // Passer ikke saa godt med Beans vi vil gerne have lookup funktionen inden vi installere boennen
+
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         container().realm.setLookup(lookup);

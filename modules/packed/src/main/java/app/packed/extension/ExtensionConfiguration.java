@@ -55,7 +55,7 @@ import packed.internal.container.ExtensionSetup;
 public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /** {@return a descriptor for the application the extension is a part of.} */
-    ApplicationDescriptor application();
+    ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
     ContainerMirror container();
     

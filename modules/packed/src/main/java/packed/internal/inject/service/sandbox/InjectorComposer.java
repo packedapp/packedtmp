@@ -24,7 +24,6 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
@@ -195,7 +194,7 @@ public final class InjectorComposer extends Composer {
     }
 
     static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(Injector.driver(), ContainerDriver.defaultDriver(), InjectorComposer::new, configurator, wirelets);
+        return compose(Injector.driver(), InjectorComposer::new, configurator, wirelets);
     }
 
 }

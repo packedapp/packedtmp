@@ -31,10 +31,6 @@ public /*non-sealed*/ class BeanNewMirror extends ComponentNewMirror {
         }
     }
     
-    public static void main(String[] args) {
-        new BeanNewMirror().beanType();
-    }
-
     /** {@return the type (class) of the bean.} */
     public final Class<?> beanType() {
         return bean().hookModel.clazz;
@@ -52,5 +48,9 @@ public /*non-sealed*/ class BeanNewMirror extends ComponentNewMirror {
     /** {@return the kind of the bean.} */
     public BeanKind kind() {
         throw new UnsupportedOperationException();
+    }
+
+    public static void main(String[] args) {
+        new BeanNewMirror().beanType();
     }
 }
