@@ -40,9 +40,7 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.component.AssemblyRealmSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
@@ -191,13 +189,13 @@ public final class ContainerSetup extends ComponentSetup {
 
     }
 
-    public void closeRealm() {
+    public void onRealmClose() {
         // We recursively close all children in the same realm first
         // We do not close individual components
         if (containerChildren != null) {
             for (ContainerSetup c : containerChildren) {
                 if (c.realm == realm) {
-                    c.closeRealm();
+                    c.onRealmClose();
                 }
             }
         }
@@ -251,10 +249,11 @@ public final class ContainerSetup extends ComponentSetup {
      * @return the component that was linked
      */
     public final ContainerMirror link(PackedContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
-        // Create the new realm that should be used for linking
-        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(realm, driver, this, assembly, wirelets); 
+
+        // Create a new realm for the assembly
+        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(driver, this, assembly, wirelets); 
         
-        realm.wirePrepare();
+        realm.wirePrepare(); // check that the container is open for business
 
         // Close the new realm again after the assembly has been successfully linked
         newRealm.build();

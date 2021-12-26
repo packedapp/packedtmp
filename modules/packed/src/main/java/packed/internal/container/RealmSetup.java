@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,19 +24,16 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.extension.Extension;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionRealmSetup;
+import packed.internal.component.ComponentSetup;
 
 /**
  * The internal configuration of realm.
- * <p>
  */
 // BuildRealm???? Is this runtime at all???
 public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerRealmSetup, ExtensionRealmSetup {
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
-
 
     /** The current active component in the realm. */
     private ComponentSetup current;
@@ -66,19 +63,19 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
         }
     }
 
-    public void close() {
+    protected void close() {
         if (current != null) {
             current.onWired();
             current = null;
         }
         isClosed = true;
         for (ContainerSetup c : rootContainers) {
-            c.closeRealm();
+            c.onRealmClose();
         }
         //assert container.name != null;
     }
 
-    ComponentSetup current() {
+    public ComponentSetup current() {
         return current;
     }
 

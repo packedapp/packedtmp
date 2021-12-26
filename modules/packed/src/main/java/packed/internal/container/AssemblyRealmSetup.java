@@ -13,36 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.container;
+
+import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Function;
 
 import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.container.Assembly;
-import app.packed.container.Composer;
-import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
-public final class ComposerRealmSetup extends RealmSetup {
+public final class AssemblyRealmSetup extends RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
-            ContainerConfiguration.class, ComposerAction.class);
+    private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
+            ContainerConfiguration.class);
 
-    final ContainerConfiguration componentConfiguration;
+    final Assembly assembly;
 
-    final ComposerAction<?> composer;
+    private final ContainerConfiguration configuration;
 
     public final ApplicationSetup application;
 
@@ -50,22 +48,39 @@ public final class ComposerRealmSetup extends RealmSetup {
     /** The root component of this realm. */
     public final ContainerSetup container;
     
-    public ComposerRealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> composer, Wirelet[] wirelets) {
-        this.composer = composer;
-        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
+    /**
+     * Builds an application using the specified assembly and optional wirelets.
+     * 
+     * @param buildTarget
+     *            the build target
+     * @param assembly
+     *            the assembly of the application
+     * @param wirelets
+     *            optional wirelets
+     * @return the application
+     */
+    public AssemblyRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.container = application.container;
-        componentConfiguration = applicationDriver.containerDriver.toConfiguration(container);
+        this.configuration = applicationDriver.containerDriver.toConfiguration(container);
         wireCommit(container);
     }
 
-    public <C extends Composer> void build(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer) {
+    public AssemblyRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+        this.application = linkTo.application;
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        // if embed do xxx
+        // else create new container
+        this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
+        this.configuration = driver.toConfiguration(container);
+    }
+
+    public void build() {
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         // This will recursively call down through any sub-containers that are linked
-
-        Composer comp = composer.apply(componentConfiguration);
-        // Invoke Composer#doCompose which in turn will invoke consumer.accept
         try {
-            MH_COMPOSER_DO_COMPOSE.invoke(comp, componentConfiguration, consumer);
+            MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -77,6 +92,6 @@ public final class ComposerRealmSetup extends RealmSetup {
     /** {@inheritDoc} */
     @Override
     public Class<?> realmType() {
-        return composer.getClass();
+        return assembly.getClass();
     }
 }

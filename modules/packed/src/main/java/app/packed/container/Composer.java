@@ -30,7 +30,7 @@ import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.ComposerRealmSetup;
+import packed.internal.container.ComposerRealmSetup;
 import packed.internal.util.LookupUtil;
 
 /**

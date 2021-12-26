@@ -36,7 +36,7 @@ import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
-import packed.internal.component.AssemblyRealmSetup;
+import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.container.CompositeWirelet;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.WireletWrapper;

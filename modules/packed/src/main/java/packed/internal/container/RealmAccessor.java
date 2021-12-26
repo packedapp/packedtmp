@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -86,7 +86,7 @@ public abstract class RealmAccessor {
      *            the lookup to use
      * @return the new accessor
      */
-    abstract RealmAccessor withLookup(Lookup lookup);
+    public abstract RealmAccessor withLookup(Lookup lookup);
 
     /**
      * Returns a container source model for the specified type
@@ -95,7 +95,7 @@ public abstract class RealmAccessor {
      *            the container source type
      * @return a container source model for the specified type
      */
-    static RealmAccessor defaultFor(Class<?> sourceType) {
+    public static RealmAccessor defaultFor(Class<?> sourceType) {
         return ModuleOpenedAccessor.MODELS.get(sourceType);
     }
 
@@ -117,6 +117,7 @@ public abstract class RealmAccessor {
         }
 
         @Override
+        public
         RealmAccessor withLookup(Lookup lookup) {
             return defaultAccessor.withLookup(lookup);
         }
@@ -195,6 +196,7 @@ public abstract class RealmAccessor {
          * @return the new realm
          */
         @Override
+        public
         RealmAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 

@@ -8,12 +8,12 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
-import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.component.bean.PackedBeanDriver;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.container.RealmSetup;
 
 /**
  * An extension for creating new beans.

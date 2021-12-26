@@ -45,6 +45,11 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         }
     }
 
+    public void embed(Assembly assembly) {
+        // You cannot specify wirelets when embedding
+        container().link(PackedContainerDriver.DEFAULT, assembly);
+    }
+
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
      * 
@@ -68,10 +73,6 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      */
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         return container().isExtensionUsed(extensionType);
-    }
-
-    public void embed(Assembly assembly, Wirelet... wirelets) {
-        container().link(PackedContainerDriver.DEFAULT, assembly, wirelets);
     }
 
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {

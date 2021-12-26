@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.component.RealmSetup;
 
 /**
  *

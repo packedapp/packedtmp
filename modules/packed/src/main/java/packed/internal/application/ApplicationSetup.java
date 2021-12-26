@@ -30,9 +30,9 @@ import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
-import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
+import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
 

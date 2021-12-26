@@ -36,6 +36,7 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
+import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
@@ -81,6 +82,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
      *            any parent component this component might have
      */
     protected ComponentSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ContainerSetup parent) {
+        this.application = requireNonNull(application);
+        this.realm = requireNonNull(realm);
+        this.lifetime = requireNonNull(lifetime);
+
         this.parent = parent;
         if (parent == null) {
             this.depth = 0;
@@ -88,10 +93,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             this.depth = parent.depth + 1;
             this.onWire = parent.onWire;
         }
-
-        this.realm = requireNonNull(realm);
-        this.lifetime = requireNonNull(lifetime);
-        this.application = requireNonNull(application);
     }
 
     public final void checkIsWiring() {
@@ -176,7 +177,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.name = name;
     }
 
-    final void onWired() {
+    public final void onWired() {
         if (onWire != null) {
             onWire.accept(mirror());
         }
