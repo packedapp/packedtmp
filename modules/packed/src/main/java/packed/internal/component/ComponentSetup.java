@@ -97,11 +97,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     public final void checkIsWiring() {
         if (realm.current() != this) {
             String errorMsg;
-            if (realm.container == this) {
+            //if (realm.container == this) {
                 errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            } else {
-                errorMsg = "This operation must be called immediately after the component has been wired";
-            }
+            //} else {
+            //    errorMsg = "This operation must be called immediately after the component has been wired";
+            //}
             throw new IllegalStateException(errorMsg);
         }
     }

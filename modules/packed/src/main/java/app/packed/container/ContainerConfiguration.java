@@ -13,6 +13,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -44,7 +45,6 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         }
     }
 
-
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
      * 
@@ -71,11 +71,11 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     }
 
     public void embed(Assembly assembly, Wirelet... wirelets) {
-        container().link(assembly, wirelets);
+        container().link(PackedContainerDriver.DEFAULT, assembly, wirelets);
     }
-    
+
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return container().link(assembly, wirelets);
+        return container().link(PackedContainerDriver.DEFAULT, assembly, wirelets);
     }
 
     /**

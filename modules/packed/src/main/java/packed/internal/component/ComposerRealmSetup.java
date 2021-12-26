@@ -19,12 +19,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -36,12 +39,23 @@ public final class ComposerRealmSetup extends RealmSetup {
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
             ContainerConfiguration.class, ComposerAction.class);
-    
+
     final ContainerConfiguration componentConfiguration;
 
+    final ComposerAction<?> composer;
+
+    public final ApplicationSetup application;
+
+    // Den giver kun mening for assemblies...
+    /** The root component of this realm. */
+    public final ContainerSetup container;
+    
     public ComposerRealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> composer, Wirelet[] wirelets) {
-        super(applicationDriver, composer, wirelets);
+        this.composer = composer;
+        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
+        this.container = application.container;
         componentConfiguration = applicationDriver.containerDriver.toConfiguration(container);
+        wireCommit(container);
     }
 
     public <C extends Composer> void build(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer) {
@@ -58,5 +72,11 @@ public final class ComposerRealmSetup extends RealmSetup {
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
         close();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> realmType() {
+        return composer.getClass();
     }
 }

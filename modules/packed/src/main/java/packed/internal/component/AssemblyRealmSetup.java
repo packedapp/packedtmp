@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
@@ -22,6 +24,7 @@ import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
@@ -41,6 +44,11 @@ public final class AssemblyRealmSetup extends RealmSetup {
 
     private final ContainerConfiguration configuration;
 
+    public final ApplicationSetup application;
+
+    // Den giver kun mening for assemblies...
+    /** The root component of this realm. */
+    public final ContainerSetup container;
     /**
      * Builds an application using the specified assembly and optional wirelets.
      * 
@@ -53,14 +61,18 @@ public final class AssemblyRealmSetup extends RealmSetup {
      * @return the application
      */
     public AssemblyRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
-        super(applicationDriver, buildTarget, assembly, wirelets);
-        this.assembly = assembly;
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
+        this.container = application.container;
         this.configuration = applicationDriver.containerDriver.toConfiguration(container);
+        wireCommit(container);
+
     }
 
     public AssemblyRealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
-        super(existing, driver, linkTo, assembly, wirelets);
-        this.assembly = assembly;
+        this.application = linkTo.application;
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
         this.configuration = driver.toConfiguration(container);
     }
 
@@ -75,5 +87,11 @@ public final class AssemblyRealmSetup extends RealmSetup {
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
         close();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> realmType() {
+        return assembly.getClass();
     }
 }

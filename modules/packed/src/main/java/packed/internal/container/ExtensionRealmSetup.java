@@ -33,7 +33,6 @@ public final class ExtensionRealmSetup extends RealmSetup {
     private ExtensionSetup last;
 
     ExtensionRealmSetup(ApplicationSetup application, Class<? extends Extension> extensionType) {
-        super(application, extensionType);
         this.extensionModel = ExtensionModel.of(extensionType);
     }
 
@@ -47,5 +46,11 @@ public final class ExtensionRealmSetup extends RealmSetup {
     
     public void close() {
         super.close();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> realmType() {
+        return extensionModel.type();
     }
 }

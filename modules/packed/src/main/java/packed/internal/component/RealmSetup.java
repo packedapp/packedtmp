@@ -20,18 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
-import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
-import app.packed.container.ComposerAction;
-import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import packed.internal.application.ApplicationSetup;
-import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
-import packed.internal.container.PackedContainerDriver;
 
 /**
  * The internal configuration of realm.
@@ -43,21 +37,12 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
-    public final ApplicationSetup application;
-
-    // Den giver kun mening for assemblies...
-    /** The root component of this realm. */
-    public final ContainerSetup container;
 
     /** The current active component in the realm. */
     private ComponentSetup current;
 
     /** Whether or not this realm is closed. */
     private boolean isClosed;
-
-    // Hmm. Realm er en ting. Men naar vi laeser extra hooks saa er det jo ikke paa denne type
-    // Vi har faktisk 2 som jeg ser det.
-    private final Class<?> realmType;
 
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
@@ -66,50 +51,10 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
     // Hmm burde kunne bruge traet istedet for
     private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
-    /**
-     * Creates a new realm for an extension.
-     * 
-     * @param model
-     *            the extension model to create a realm for
-     * @parem extension the extension setup
-     */
-    protected RealmSetup(ApplicationSetup application, Class<?> extensionType) {
-        this.realmType = extensionType;
-        this.application = application;
-        this.container = null; // ??????
-        // this.current = requireNonNull(extension);
-    }
-
-    protected RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
-        this.realmType = assembly.getClass();
-        this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
-        this.container = application.container;
-        wireCommit(container);
-    }
-
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
-        this.realmType = composer.getClass();
-        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
-        this.container = application.container;
-        wireCommit(container);
-    }
-
-    /**
-     * Creates a new realm for an assembly.
-     * 
-     * @param assembly
-     *            the assembly to create a realm for
-     */
-    protected RealmSetup(RealmSetup existing, PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
-        this.realmType = assembly.getClass();
-        this.application = existing.application;
-        this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
-    }
-
     public RealmAccessor accessor() {
         RealmAccessor r = accessor;
         if (r == null) {
-            this.accessor = r = RealmAccessor.defaultFor(realmType);
+            this.accessor = r = RealmAccessor.defaultFor(realmType());
         }
         return r;
     }
@@ -130,7 +75,7 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
         for (ContainerSetup c : rootContainers) {
             c.closeRealm();
         }
-        assert container.name != null;
+        //assert container.name != null;
     }
 
     ComponentSetup current() {
@@ -149,9 +94,7 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
      * 
      * @return the type that was used to create this realm.
      */
-    public Class<?> realmType() {
-        return realmType;
-    }
+    public abstract Class<?> realmType();
 
     /**
      * @param lookup
