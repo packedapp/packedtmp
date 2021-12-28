@@ -69,14 +69,9 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void checkConfigurableForUser();
+    void checkUserConfigurable();
 
     ContainerMirror link(RealmMirror realm, Assembly assembly, Wirelet... wirelets);
-
-    /**
-     * Checks that Checks that child containers has been aded
-     */
-    void checkIsPreLinkage();
 
     /**
      * @param <C>

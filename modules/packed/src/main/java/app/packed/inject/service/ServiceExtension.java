@@ -170,7 +170,7 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
     // Is used to export @Provide method and fields.
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
-        checkConfigurableForUser();
+        checkUserConfigurable();
         return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
@@ -236,7 +236,7 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
 
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
-        checkConfigurableForUser();
+        checkUserConfigurable();
         services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
@@ -305,7 +305,7 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
-        checkConfigurableForUser();
+        checkUserConfigurable();
         services.provideAll(l);
     }
 
@@ -370,7 +370,7 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
      */
     public void require(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkConfigurableForUser();
+        checkUserConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
             services.dependencies().require(key, false /* , cs */);
@@ -395,7 +395,7 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
     // They will be consumed
     public void requireOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkConfigurableForUser();
+        checkUserConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
             services.dependencies().require(key, true /* , cs */);

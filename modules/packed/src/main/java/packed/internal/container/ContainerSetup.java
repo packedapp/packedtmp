@@ -59,7 +59,7 @@ public final class ContainerSetup extends ComponentSetup {
     public ArrayList<ContainerSetup> containerChildren;
 
     /** All extensions in use, in no particular order. */
-    final LinkedHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new LinkedHashMap<>();
+    public final LinkedHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     private boolean hasRunPreContainerChildren;
 
@@ -334,7 +334,7 @@ public final class ContainerSetup extends ComponentSetup {
             if (requestedBy == null) {
                 realm.checkOpen();
             } else {
-                requestedBy.checkConfigurableForUser();
+                requestedBy.checkUserConfigurable();
             }
 
             // make sure it is recursively installed into the root container

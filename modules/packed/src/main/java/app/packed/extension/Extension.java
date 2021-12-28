@@ -18,6 +18,7 @@ package app.packed.extension;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -34,6 +35,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
+import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.Infuser;
@@ -101,12 +103,12 @@ public abstract non-sealed class Extension implements RealmSource {
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
-     * {@link #checkConfigurableForUser()} at any time.
+     * {@link #checkUserConfigurable()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      */
     @Nullable
-    private ExtensionConfiguration configuration;
+    private ExtensionSetup configuration;
 
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
@@ -114,13 +116,13 @@ public abstract non-sealed class Extension implements RealmSource {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegates to {@link ExtensionConfiguration#checkConfigurableForUser()}.
+     * This method delegates to {@link ExtensionConfiguration#checkUserConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    protected final void checkConfigurableForUser() {
-        configuration().checkConfigurableForUser();
+    protected final void checkUserConfigurable() {
+        configuration().checkUserConfigurable();
     }
 
     // checkExtendable...
@@ -132,8 +134,8 @@ public abstract non-sealed class Extension implements RealmSource {
     // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
     // af brugeren med mindre XYZ...
     // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
-    protected final void checkIsPreLinkage() {
-        configuration().checkIsPreLinkage();
+    protected final void checkConfigurableFor(Class<? extends Extension> extensionType) {
+        configuration().checkConfigurableFor(extensionType);
     }
 
     /**
@@ -150,8 +152,8 @@ public abstract non-sealed class Extension implements RealmSource {
      *             if invoked from the constructor of the extension.
      * @return a configuration object for this extension
      */
-    protected final ExtensionConfiguration configuration() {
-        ExtensionConfiguration c = configuration;
+    protected final ExtensionSetup configuration() {
+        ExtensionSetup c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
@@ -266,6 +268,16 @@ public abstract non-sealed class Extension implements RealmSource {
         // ┌─────────────┐
         // │ Wiring time │
         // └─────────────┘
+        ExtensionSetup s = configuration();
+        ArrayList<ContainerSetup> list = s.container.containerChildren;
+        if (list != null) {
+            for (ContainerSetup c : list) {
+                ExtensionSetup child = c.extensions.get(s.extensionType);
+                if (child != null) {
+                    child.instance().onClose();
+                }
+            }
+        }
     }
 
     /**
@@ -298,10 +310,20 @@ public abstract non-sealed class Extension implements RealmSource {
     // onPreLinkage
     // onPreWiring????
     // onUserRealmClose
-    
+
     // onUserClose
     // onClose
     protected void onUserClose() {
+        ExtensionSetup s = configuration();
+        ArrayList<ContainerSetup> list = s.container.containerChildren;
+        if (list != null) {
+            for (ContainerSetup c : list) {
+                ExtensionSetup child = c.extensions.get(s.extensionType);
+                if (child != null) {
+                    child.instance().onUserClose();
+                }
+            }
+        }
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
 

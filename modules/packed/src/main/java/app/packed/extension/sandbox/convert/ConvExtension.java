@@ -37,7 +37,7 @@ public class ConvExtension extends Extension implements ConvDiscovable {
     ConvExtension() {}
 
     public void add(Class<?> from, Function<?, ?> f) {
-        checkIsPreLinkage();
+        checkUserConfigurable();
         converters.put(from, f);
     }
 

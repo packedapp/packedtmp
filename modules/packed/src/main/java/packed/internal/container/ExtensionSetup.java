@@ -46,7 +46,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A handle for setting the private field Extension#context. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
-            ExtensionConfiguration.class);
+            ExtensionSetup.class);
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -104,20 +104,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 //        }
 //    }
 
-
     /** {@inheritDoc} */
     @Override
-    public void checkIsPreLinkage() {
-//        // Ja og saa alligevel ikke. Hvis vi lige saa stille taeller ned...
-//        // Og disable hver extension loebende
-//        if (container.containerChildren != null) {
-//            
-//        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void checkConfigurableForUser() {
+    public void checkUserConfigurable() {
         container.realm.checkOpen();
     }
 
@@ -199,7 +188,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     // tree info, otherwise we should be able to ditch the method, as useExtension() always makes the extension instance
     // has been properly initialized
     // I'm not sure we want to ever expose it via ExtensionContext... Users would need to insert a cast
-    Extension instance() {
+    public Extension instance() {
         Extension e = instance;
         if (e == null) {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
