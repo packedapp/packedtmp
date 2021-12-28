@@ -10,11 +10,8 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
-import app.packed.component.RealmMirror;
-import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
@@ -45,7 +42,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             void.class);
 
     /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
+    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
             ExtensionSetup.class);
 
     /** The container where the extension is used. */
@@ -99,7 +96,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void checkConfigurableFor(Class<? extends Extension> extensionType) {}
+    public void checkExtensionConfigurable(Class<? extends Extension> extensionType) {}
 
     /** {@inheritDoc} */
     @Override
@@ -115,31 +112,25 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerMirror container() {
-        return container.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int depth() {
+    public int extensionDepth() {
         return container.depth;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
-        requireNonNull(type, "type is null");
-        ContainerSetup parent = container.parent;
-        while (parent != null) {
-            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
-            if (extensionContext != null) {
-                return PackedExtensionAncestor.sameApplication(extensionContext.instance);
-            }
-            // if (parentOnly) break;
-            parent = parent.parent;
-        }
-        return ExtensionBeanConnection.empty();
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
+//        requireNonNull(type, "type is null");
+//        ContainerSetup parent = container.parent;
+//        while (parent != null) {
+//            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
+//            if (extensionContext != null) {
+//                return PackedExtensionAncestor.sameApplication(extensionContext.instance);
+//            }
+//            // if (parentOnly) break;
+//            parent = parent.parent;
+//        }
+//        return ExtensionBeanConnection.empty();
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -209,12 +200,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public boolean isExtensionUsed(Class<? extends Extension> extensionClass) {
         return container.isExtensionUsed(extensionClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContainerMirror link(RealmMirror realm, Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */

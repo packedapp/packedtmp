@@ -19,12 +19,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.component.RealmMirror;
-import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
@@ -57,9 +54,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
-    ContainerMirror container();
-
-    void checkConfigurableFor(Class<? extends Extension> extensionType);
+    void checkExtensionConfigurable(Class<? extends Extension> extensionType);
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -70,8 +65,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkUserConfigurable();
-
-    ContainerMirror link(RealmMirror realm, Assembly assembly, Wirelet... wirelets);
 
     /**
      * @param <C>
@@ -86,14 +79,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Taenker det stadig ser ud som om vi kommer fra samme assembly
     <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 
-    /**
-     * @param <E>
-     *            the type of ancestor to find
-     * @param ancestorType
-     *            the type of ancestor to find
-     * @return
-     */
-    <E> ExtensionBeanConnection<E> findAncestor(Class<E> ancestorType);
+    int extensionDepth();
+
 
     /**
      * Attempts to find a parent of the specified type.
@@ -109,8 +96,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Ja det goer det jo saadan set...
     <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
-    int depth();
-    
     boolean isApplicationRoot();
     
     /**
@@ -123,7 +108,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     default boolean isExtensionBanned(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
-
+    
     /**
      * Returns whether or not the specified extension is used (in the same container) by this extension, other extensions,
      * or application code.

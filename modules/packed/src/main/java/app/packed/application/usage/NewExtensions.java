@@ -16,6 +16,8 @@
 package app.packed.application.usage;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanExtensionMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 
@@ -33,7 +35,10 @@ public class NewExtensions extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.mirrorOf(new NewExtensions());
+        ApplicationMirror mirror = App.mirrorOf(new NewExtensions());
+        System.out.println("Used Extensions " + mirror.extensionTypes());
+        System.out.println("Number of beans " + mirror.container().useExtension(BeanExtensionMirror.class).beanCount());
+        System.out.println();
     }
 
     public static class FooAss extends BaseAssembly {
@@ -51,19 +56,19 @@ public class NewExtensions extends BaseAssembly {
         @Override
         protected void onClose() {
             super.onClose();
-            System.out.println("OnClose " + configuration().depth());
+            System.out.println("OnClose " + configuration().extensionDepth());
         }
 
         @Override
         protected void onNew() {
             super.onNew();
-            System.out.println("OnNew " + configuration().depth());
+            System.out.println("OnNew " + configuration().extensionDepth());
         }
 
         @Override
         protected void onUserClose() {
             super.onUserClose();
-            System.out.println("OnUserClose " + configuration().depth());
+            System.out.println("OnUserClose " + configuration().extensionDepth());
         }
     }
 }

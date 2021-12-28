@@ -109,10 +109,23 @@ public abstract non-sealed class Extension implements RealmSource {
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      */
     @Nullable
-    private ExtensionSetup configuration;
+    private ExtensionSetup setup;
 
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
+
+    // checkExtendable...
+    /**
+     * Checks that the new extensions can be added to the container in which this extension is registered.
+     * 
+     * @see #onUserClose()
+     */
+    // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
+    // af brugeren med mindre XYZ...
+    // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
+    protected final void checkExtensionConfigurable(Class<? extends Extension> extensionType) {
+        configuration().checkExtensionConfigurable(extensionType);
+    }
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -124,19 +137,6 @@ public abstract non-sealed class Extension implements RealmSource {
      */
     protected final void checkUserConfigurable() {
         configuration().checkUserConfigurable();
-    }
-
-    // checkExtendable...
-    /**
-     * Checks that the new extensions can be added to the container in which this extension is registered.
-     * 
-     * @see #onUserClose()
-     */
-    // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
-    // af brugeren med mindre XYZ...
-    // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
-    protected final void checkConfigurableFor(Class<? extends Extension> extensionType) {
-        configuration().checkConfigurableFor(extensionType);
     }
 
     /**
@@ -153,8 +153,12 @@ public abstract non-sealed class Extension implements RealmSource {
      *             if invoked from the constructor of the extension.
      * @return a configuration object for this extension
      */
-    protected final ExtensionSetup configuration() {
-        ExtensionSetup c = configuration;
+    protected final ExtensionConfiguration configuration() {
+        return setup();
+    }
+
+    protected final ExtensionSetup setup() {
+        ExtensionSetup c = setup;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
@@ -228,6 +232,7 @@ public abstract non-sealed class Extension implements RealmSource {
      */
     // boolean isApplication... Kan ikke have to metoder
     // med mindre
+    //
     protected ExtensionMirror mirror() {
         return mirrorInitialize(new ExtensionMirror());
     }
@@ -254,12 +259,17 @@ public abstract non-sealed class Extension implements RealmSource {
      * Invoked by the runtime when the configuration of the container is completed.
      * <p>
      * <strong>NOTE:</strong> At this stage the set of extensions used by the container are fixed. It is not possible to
-     * start using extension that are not already used, for example, via calls to {@link #use(Class)}. Or indirectly, for
-     * example, by installing a bean that uses extensions that have not already been used.
+     * start using extension that have not already been used, for example, via calls to {@link #use(Class)}. Or indirectly,
+     * for example, by installing a bean that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
      * {@link BeanSupport2.BeanExtensionSupport2#link(Assembly, Wirelet...)}
      */
+
+    // Hvorfor kan vi egentlig ikke det...
+    // Det kan vi jo godt... Det er udelukkede taenkt som et
+    // Feature flag test.... UseConfig()...
+
     protected void onClose() {
         // Time
         // ──────────────────────────►
@@ -269,7 +279,7 @@ public abstract non-sealed class Extension implements RealmSource {
         // ┌─────────────┐
         // │ Wiring time │
         // └─────────────┘
-        ExtensionSetup s = configuration();
+        ExtensionSetup s = setup();
         ArrayList<ContainerSetup> list = s.container.containerChildren;
         if (list != null) {
             for (ContainerSetup c : list) {
@@ -307,15 +317,8 @@ public abstract non-sealed class Extension implements RealmSource {
      * 
      * @see #checkIsPreLinkage()
      */
-    // onPreembleComplete
-    // onPreLinkage
-    // onPreWiring????
-    // onUserRealmClose
-
-    // onUserClose
-    // onClose
     protected void onUserClose() {
-        ExtensionSetup s = configuration();
+        ExtensionSetup s = setup();
         RealmSetup realm = s.container.realm;
         ArrayList<ContainerSetup> list = s.container.containerChildren;
         if (list != null) {
@@ -328,19 +331,6 @@ public abstract non-sealed class Extension implements RealmSource {
                 }
             }
         }
-        // if you need information from users to determind what steps to do here.
-        // You should guard setting this information with checkExtendable()
-
-        // A lot of shit goes on before linking the first container
-
-        // Must add missing extensions
-        // Must not add additional containers
-
-        // So
-
-        // Container wiring must only be done from onComplete
-
-        // lazy operations should be idempotent
     }
 
     /**
@@ -411,13 +401,13 @@ public abstract non-sealed class Extension implements RealmSource {
 //
 //    protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
-    /**
-     * Only parent extensions will be linked
-     */
-    // Maaske skal vi have det for begge to
-    protected static void $connectParentOnly() {
-        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
-    }
+//    /**
+//     * Only parent extensions will be linked
+//     */
+//    // Maaske skal vi have det for begge to
+//    protected static void $connectParentOnly() {
+//        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
+//    }
 
     // An instance of extensorType will automatically be installed whenever the extensor is used
     // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
@@ -432,7 +422,7 @@ public abstract non-sealed class Extension implements RealmSource {
         // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
 
         // Specified extension must have a dependency on this extension
-        // And must be in same package
+        // And must be in same module
         throw new UnsupportedOperationException();
     }
 

@@ -263,23 +263,7 @@ public final class ContainerSetup extends ComponentSetup {
 
         injection.resolve();
     }
-    public void onRealmCloseNew() {
-        // We recursively close all children in the same realm first
-        // We do not close individual components
-        if (containerChildren != null) {
-            for (ContainerSetup c : containerChildren) {
-                if (c.realm == realm) {
-                    c.onRealmClose();
-                }
-            }
-        }
 
-        if (!hasRunPreContainerChildren) {
-            runPredContainerChildren();
-        }
-
-        injection.resolve();
-    }
     public void postBuild(ContainerConfiguration configuration) {
         assemblyModel.postBuild(configuration);
     }

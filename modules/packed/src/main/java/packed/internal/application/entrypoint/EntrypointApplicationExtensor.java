@@ -16,7 +16,7 @@
 package packed.internal.application.entrypoint;
 
 import app.packed.application.entrypoint.EntryPointExtension;
-import app.packed.extension.ApplicationExtensor;
+import app.packed.extension.old.ApplicationExtensor;
 import packed.internal.application.ApplicationSetup;
 
 /**

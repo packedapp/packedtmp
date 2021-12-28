@@ -10,7 +10,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -42,11 +41,11 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         }
     }
 
-    public void embed(Assembly assembly) {
-        // You cannot specify wirelets when embedding
-        container().link(PackedContainerDriver.DEFAULT, assembly);
+    public void embed(Assembly assembly, Wirelet... wirelets) {
+        // Is not on ContainerExtension... Because we do not add new containers.
+        throw new UnsupportedOperationException();
     }
-
+    
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
      * 
@@ -70,10 +69,6 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      */
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         return container().isExtensionUsed(extensionType);
-    }
-
-    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return container().link(PackedContainerDriver.DEFAULT, assembly, wirelets);
     }
 
     /** {@return a mirror for the container.} */

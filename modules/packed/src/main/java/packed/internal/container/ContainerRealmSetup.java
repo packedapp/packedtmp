@@ -17,11 +17,17 @@ package packed.internal.container;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.TreeSet;
 
 /**
  *
  */
 public abstract sealed class ContainerRealmSetup extends RealmSetup permits AssemblyRealmSetup,ComposerRealmSetup {
+
+    // Bliver draenet hver gang vi lukker en realm
+    // Til allersidst kopiere vi
+    //
+    final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
     protected void close() {
         if (current != null) {
@@ -42,10 +48,13 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
         }
         isClosed = true;
 
+        int extensionCount = container.extensions.size();
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(container.extensions.values());
         Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model.compareTo(c2.model));
 
         // Close every extension
+        // Okay vi haandtere ikke extensions der bliver tilfoejet mens vi lukker ordentligt
+        // Tror vi behoever en live heap i ContainerRealmSetup
         for (ExtensionSetup extension : extensionsOrdered) {
             extension.onUserClose();
         }
@@ -54,11 +63,23 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
             c.onRealmClose();
         }
 
+        ExtensionSetup e = extensions.pollFirst();
+        while (e != null) {
+            e = extensions.pollFirst();
+        }
+
+        // Check if any extensions have been added while close the last realm
+        if (extensionCount != container.extensions.size()) {
+            extensionsOrdered = new ArrayList<>(container.extensions.values());
+            Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model.compareTo(c2.model));
+        }
+
         // If root container. We close every extension
         if (container.depth == 0) {
             // Close every extension
             for (ExtensionSetup extension : extensionsOrdered) {
                 extension.onClose();
+                extension.realm().isClosed = true;
             }
         }
 

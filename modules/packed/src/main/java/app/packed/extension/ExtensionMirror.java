@@ -11,7 +11,7 @@ import app.packed.mirror.Mirror;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * Provides generic information about an extension used by a {@link #parent}.
+ * Provides generic information about an extension used by a {@link #container}.
  * <p>
  * This class can be extended by an extension to provide more detailed information about itself. For example,
  * {@link app.packed.inject.service.ServiceExtension} extends this class via

@@ -69,8 +69,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The extension we model. */
     private final Class<? extends Extension> extensionClass;
 
-    /** Whether or not is is only any immediately parent that will be linked. */
-    final boolean extensionLinkedDirectChildrenOnly;
 
     /** A method handle for creating instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
@@ -97,7 +95,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.nameFull = extensionClass.getCanonicalName();
         this.nameSimple = extensionClass.getSimpleName();
 
-        this.extensionLinkedDirectChildrenOnly = builder.connectParentOnly;
         // this.attributes = builder.pam;
     }
 
@@ -232,9 +229,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}. */
     public static final class Builder {
 
-        /** Whether or not we only connect to parent or all ancestors. */
-        private boolean connectParentOnly;
-
         /** A set of extension this extension depends on (does not include transitive extensions). */
         private Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
@@ -292,16 +286,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
             // this.pam = PackedAttributeModel.analyse(oc);
 
             return new ExtensionModel(this);
-        }
-
-        /**
-         * The extension will only connect is two containers are in a parent-child relationship. The default behavior is to
-         * connect with any ancestor.
-         * 
-         * @see Extension#$connectParentOnly
-         */
-        public void connectParentOnly() {
-            connectParentOnly = true;
         }
 
         /**

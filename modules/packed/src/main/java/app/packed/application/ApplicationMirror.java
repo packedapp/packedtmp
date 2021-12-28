@@ -1,12 +1,10 @@
 package app.packed.application;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.various.TaskListMirror;
-import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
@@ -46,6 +44,12 @@ public interface ApplicationMirror extends Mirror {
     /** {@return a descriptor for the application.} */
     ApplicationDescriptor descriptor();
 
+    /** {@return a {@link Set} view of every extension type that has been used in the container.} */
+    default Set<Class<? extends Extension>> extensionTypes() {
+        return container().extensionTypes();
+    }
+
+    
     /**
      * Returns an immutable set containing any extensions that have been disabled.
      * 
@@ -58,23 +62,6 @@ public interface ApplicationMirror extends Mirror {
     default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
         throw new UnsupportedOperationException();
     }
-
-    // Skal vi have baade en der finder alle mirrors og alle extensions.
-    /** { @return a set view of all extensions that are in use by the application.} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    default Set<Class<? super Extension>> findAllExtensions(boolean includeChildApplications) {
-        Set<Class<? super Extension>> result = new HashSet<>();
-        components(ContainerMirror.class).forEach(c -> result.addAll((Set) c.extensions()));
-        return Set.copyOf(result);
-    }
-
-    // Er det kun componenter i den application??? Ja ville jeg mene...
-    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
-    // app.rootContainer.children() <-- does this only include children in the same
-    // application?? or any children...
-
-    // teanker det kun er containere i samme application...
-    // ellers maa man bruge container.resolve("....")
 
     default void forEachComponent(Consumer<? super ComponentMirror> action) {
         container().components().forEach(action);
@@ -112,11 +99,6 @@ public interface ApplicationMirror extends Mirror {
 
     default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
         throw new UnsupportedOperationException();
-    }
-
-    // eller container().use(BeanExtensionMirror.class).
-    default Stream<BeanMirror> selectBeans() {
-        return select(BeanMirror.class);
     }
 
     <T extends ExtensionMirror> T use(Class<T> type);

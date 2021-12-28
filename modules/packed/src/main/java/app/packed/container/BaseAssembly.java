@@ -238,19 +238,11 @@ public abstract class BaseAssembly extends Assembly {
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the container that was linked
-     * @see ContainerConfiguration#link(Assembly, Wirelet...)
+     * @see ContainerExtension#link(Assembly, Wirelet...)
      */
     // Why not wire + wirelets???
     protected final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return configuration().link(assembly, wirelets);
-    }
-
-    protected final ContainerConfiguration link(ContainerDriver driver, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected final ContainerConfiguration link(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return container().link(assembly, wirelets);
     }
 
     /**
