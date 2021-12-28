@@ -1,9 +1,12 @@
 package app.packed.zzzz;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 import app.packed.lifecycle.RunState;
 
 public class ZapAssembly extends BaseAssembly {
@@ -18,6 +21,13 @@ public class ZapAssembly extends BaseAssembly {
 
     public static void main(String[] args) {
         App.run(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
+        ApplicationMirror am = App.mirrorOf(new ZapAssembly());
+
+        System.out.println(am.container().extensionTypes());
+        am.container().children().forEach(c -> {
+            System.out.println(c.path());
+            System.out.println(((ContainerMirror) c).extensionTypes());
+        });
     }
 
     public static class LinkMe extends BaseAssembly {
@@ -33,9 +43,14 @@ public class ZapAssembly extends BaseAssembly {
 
             bean().install(My.class);
             install(My.class);
+
         }
 
     }
 
     public static class My {}
+    
+    public static class MyExt extends Extension {
+        
+    }
 }

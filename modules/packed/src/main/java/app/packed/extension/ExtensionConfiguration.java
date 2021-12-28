@@ -58,19 +58,21 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
     ContainerMirror container();
-    
+
+    void checkConfigurableFor(Class<? extends Extension> extensionType);
+
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after {@link Extension#onComplete()} has been invoked by the runtime.
+     * An extension is no longer configurable after {@link Extension#onClose()} has been invoked by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void checkIsPreCompletion();
+    void checkConfigurableForUser();
 
     ContainerMirror link(RealmMirror realm, Assembly assembly, Wirelet... wirelets);
-    
+
     /**
      * Checks that Checks that child containers has been aded
      */
@@ -112,6 +114,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Ja det goer det jo saadan set...
     <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
+    boolean isApplicationRoot();
+    
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
      * 

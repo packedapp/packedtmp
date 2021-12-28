@@ -32,7 +32,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionModel;
@@ -102,7 +101,7 @@ public abstract non-sealed class Extension implements RealmSource {
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
-     * {@link #checkIsPreCompletion()} at any time.
+     * {@link #checkConfigurableForUser()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      */
@@ -115,20 +114,20 @@ public abstract non-sealed class Extension implements RealmSource {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegates to {@link ExtensionConfiguration#checkIsPreCompletion()}.
+     * This method delegates to {@link ExtensionConfiguration#checkConfigurableForUser()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    protected final void checkIsPreCompletion() {
-        configuration().checkIsPreCompletion();
+    protected final void checkConfigurableForUser() {
+        configuration().checkConfigurableForUser();
     }
 
     // checkExtendable...
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
      * 
-     * @see #onPostSetUp()
+     * @see #onUserClose()
      */
     // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
     // af brugeren med mindre XYZ...
@@ -158,13 +157,6 @@ public abstract non-sealed class Extension implements RealmSource {
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
         }
         return c;
-    }
-
-    // findExtension()
-    // findExtensor()
-    // findAncestor
-    protected final <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
-        return configuration().findParent(parentType);
     }
 
     /**
@@ -237,10 +229,6 @@ public abstract non-sealed class Extension implements RealmSource {
         return mirrorInitialize(new ExtensionMirror());
     }
 
-    protected ExtensionMirror applicationMirror() {
-        return mirrorInitialize(new ExtensionMirror());
-    }
-
     /**
      * Initializes the specified extension mirror.
      * <p>
@@ -269,7 +257,7 @@ public abstract non-sealed class Extension implements RealmSource {
      * What is possible however is allowed to wire new containers, for example, by calling
      * {@link BeanSupport2.BeanExtensionSupport2#link(Assembly, Wirelet...)}
      */
-    protected void onComplete() {
+    protected void onClose() {
         // Time
         // ──────────────────────────►
         // ┌────────────┐
@@ -287,11 +275,11 @@ public abstract non-sealed class Extension implements RealmSource {
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
-     * The next "lifecycle" method that will be called is {@link #onPostSetUp()}, which is called after the container has
+     * The next "lifecycle" method that will be called is {@link #onUserClose()}, which is called after the container has
      * been setup and before any linkage of child containers has started.
      * 
-     * @see #onPostSetUp()
-     * @see #onComplete()
+     * @see #onUserClose()
+     * @see #onClose()
      */
     protected void onNew() {}
 
@@ -302,14 +290,18 @@ public abstract non-sealed class Extension implements RealmSource {
      * Attempting to wire extensions at a later time will fail with InternalExtensionException
      * <p>
      * If you need, for example, to install extensors that depends on a particular dependency being installed (by other) You
-     * should installed via {@link #onComplete()}.
+     * should installed via {@link #onClose()}.
      * 
      * @see #checkIsPreLinkage()
      */
     // onPreembleComplete
     // onPreLinkage
     // onPreWiring????
-    protected void onPostSetUp() {
+    // onUserRealmClose
+    
+    // onUserClose
+    // onClose
+    protected void onUserClose() {
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
 

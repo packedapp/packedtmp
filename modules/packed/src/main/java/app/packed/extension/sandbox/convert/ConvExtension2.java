@@ -66,7 +66,7 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
     // Hvordan inheriter vi en AutoBean fra en parent container
     // inherit(Class<? extends AutoBean>) <--- er udelukkende taenkt som plads besparende
     @Override
-    protected void onPostSetUp() {
+    protected void onUserClose() {
         Optional<ConvDiscovable> d = findFirst(ConvDiscovable.class);
         Map<Class<?>, Function<?, ?>> existing;
         if (d.isEmpty()) {

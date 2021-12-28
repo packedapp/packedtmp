@@ -20,7 +20,7 @@ public class ZestExtension extends Extension {
     }
 
     @Override
-    protected void onComplete() {
+    protected void onClose() {
         use(BeanSupport2.class).install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
         handles = null;
     }

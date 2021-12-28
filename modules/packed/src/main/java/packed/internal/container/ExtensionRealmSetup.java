@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import packed.internal.application.ApplicationSetup;
@@ -27,23 +29,13 @@ public final class ExtensionRealmSetup extends RealmSetup {
     public final ExtensionModel extensionModel;
 
     /** The first extension that was added to the realm. */
-    private ExtensionSetup first;
+    final ExtensionSetup root;
 
-    /** The latest extension that was added to the realm. */
-    private ExtensionSetup last;
-
-    ExtensionRealmSetup(ApplicationSetup application, Class<? extends Extension> extensionType) {
+    ExtensionRealmSetup(ExtensionSetup root, ApplicationSetup application, Class<? extends Extension> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
+        this.root = requireNonNull(root);
     }
 
-    void add(ExtensionSetup extension) {
-        if (first == null) {
-            first = last = extension;
-        } else {
-            last = last.next = extension;
-        }
-    }
-    
     public void close() {
         super.close();
     }
@@ -57,6 +49,6 @@ public final class ExtensionRealmSetup extends RealmSetup {
     /** {@inheritDoc} */
     public <T extends ExtensionMirror> T use(Class<T> type) {
         throw new UnsupportedOperationException();
-        //return first.container.useExtension(type)
+        // return first.container.useExtension(type)
     }
 }

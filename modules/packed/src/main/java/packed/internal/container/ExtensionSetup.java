@@ -34,19 +34,18 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
             ExtensionMirror.class);
 
-    /** A handle for invoking the protected method {@link Extension#onComplete()}. */
-    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
-            void.class);
+    /** A handle for invoking the protected method {@link Extension#onClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onClose", void.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
-    /** A handle for invoking the protected method {@link Extension#onPostSetUp()}. */
-    private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onPostSetUp", void.class);
+    /** A handle for invoking the protected method {@link Extension#onUserClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_USER_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onUserClose",
+            void.class);
 
     /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
+    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** The container where the extension is used. */
@@ -59,23 +58,15 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Nullable
     private Extension instance;
 
-    /** Whether or not the extension has been configured. */
-    private boolean isConfigured;
-
-    /** Whether or not the extension has been configured. */
-    private boolean isNew;
-
     /** The static model of the extension. */
     final ExtensionModel model;
 
-    ExtensionSetup next;
-    /**
-     * The realm this extension belongs to, lazily initialized if needed, for example, if the extension installs its own
-     * beans.
-     */
-    private final ExtensionRealmSetup realm;
+    /** Any parent extension this extension may have. Only the root extension does not have a parent. */
+    @Nullable
+    public final ExtensionSetup parent;
 
-    private ExtensionSetup parent;
+    /** The realm this extension belongs to. */
+    private final ExtensionRealmSetup realm;
 
     /**
      * Creates a new extension setup.
@@ -89,14 +80,15 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.container = requireNonNull(container);
         this.parent = parent;
         if (parent == null) {
-
+            this.realm = container.application.extensions.computeIfAbsent(extensionClass, ec -> new ExtensionRealmSetup(this, container.application, ec));
+            this.model = requireNonNull(realm.extensionModel);
+            this.extensionType = model.type();
         } else {
-
+            this.realm = parent.realm;
+            this.model = parent.model;
+            this.extensionType = parent.extensionType;
         }
         // Find (or create) the extension realm for the application
-        this.realm = container.application.extensions.computeIfAbsent(extensionClass, ec -> new ExtensionRealmSetup(container.application, ec));
-        this.model = requireNonNull(realm.extensionModel);
-        this.extensionType = model.type();
     }
 
     /** {@inheritDoc} */
@@ -112,26 +104,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 //        }
 //    }
 
-    /** {@inheritDoc} */
-    @Override
-    public ContainerMirror container() {
-        return container.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void checkIsPreCompletion() {
-        if (isConfigured) {
-            throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
-        }
-    }
 
     /** {@inheritDoc} */
     @Override
     public void checkIsPreLinkage() {
-        if (!isNew) {
-            throw new IllegalStateException();
-        }
 //        // Ja og saa alligevel ikke. Hvis vi lige saa stille taeller ned...
 //        // Og disable hver extension loebende
 //        if (container.containerChildren != null) {
@@ -141,8 +117,20 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
+    public void checkConfigurableForUser() {
+        container.realm.checkOpen();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
         action.build(composer);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerMirror container() {
+        return container.mirror();
     }
 
     /** {@inheritDoc} */
@@ -180,6 +168,26 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return Optional.empty();
     }
 
+    void initialize() {
+        // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
+        instance = model.newInstance(this);
+        VH_EXTENSION_CONFIGURATION.set(instance, this);
+
+        // Add the extension to the container's extension map as well as the (application-scoped) extension realm
+        container.extensions.put(extensionType, this);
+
+        // The extension has been now been fully wired, run any notifications
+        // extension.onWired();
+        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
+
+        // Finally, invoke Extension#onNew() after which the new extension can be returned to the end-user
+        try {
+            MH_EXTENSION_ON_NEW.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+    }
+
     /**
      * Returns the extension instance.
      * 
@@ -197,6 +205,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
         }
         return e;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isApplicationRoot() {
+        return parent == null;
     }
 
     /** {@inheritDoc} */
@@ -226,22 +240,21 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /**
-     * Invokes {@link Extension#onComplete()}.
+     * Invokes {@link Extension#onClose()}.
      * <p>
      * The extension is completed once the realm the container is part of is closed.
      */
     void onComplete() {
         try {
-            MH_EXTENSION_ON_COMPLETE.invokeExact(instance);
+            MH_EXTENSION_ON_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-        isConfigured = true;
     }
 
     void preContainerChildren() {
         try {
-            MH_EXTENSION_ON_PREEMBLE_COMPLETE.invokeExact(instance);
+            MH_EXTENSION_ON_USER_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -306,24 +319,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return (E) supportModel.newInstance(instance, extensionType);
     }
 
-    void initialize() {
-        // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
-        instance = model.newInstance(this);
-        VH_EXTENSION_CONTEXT.set(instance, this);
-
-        // Add the extension to the container's extension map as well as the (application-scoped) extension realm
-        container.extensions.put(extensionType, this);
-        realm.add(this);
-
-        // The extension has been now been fully wired, run any notifications
-        // extension.onWired();
-        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
-
-        // Finally, invoke Extension#onNew() after which the new extension can be returned to the end-user
-        try {
-            MH_EXTENSION_ON_NEW.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
+    /** {@inheritDoc} */
+    @Override
+    public void checkConfigurableFor(Class<? extends Extension> extensionType) {}
 }

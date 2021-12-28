@@ -329,21 +329,17 @@ public final class ContainerSetup extends ComponentSetup {
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onNew.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
-            if (containerChildren != null) {
-                throw new IllegalStateException(
-                        "Cannot install new extensions after child containers have been added to this container, extensionClass = " + extensionClass);
-            }
 
             // Checks that container is still configurable
             if (requestedBy == null) {
                 realm.checkOpen();
             } else {
-                requestedBy.checkIsPreCompletion();
+                requestedBy.checkConfigurableForUser();
             }
 
-//            ExtensionSetup extensionParent = parent == null ? null : parent.useExtension(extensionClass, null);
+            // make sure it is recursively installed into the root container
+            ExtensionSetup extensionParent = parent == null ? null : parent.useExtension(extensionClass, null);
 
-            ExtensionSetup extensionParent = null;
             // Create a extension and initialize it.
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
             extension.initialize();
@@ -463,3 +459,7 @@ public final class ContainerSetup extends ComponentSetup {
         }
     }
 }
+//if (containerChildren != null) {
+//throw new IllegalStateException(
+//      "Cannot install new extensions after child containers have been added to this container, extensionClass = " + extensionClass);
+//}

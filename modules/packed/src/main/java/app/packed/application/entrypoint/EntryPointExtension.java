@@ -13,10 +13,6 @@ public class EntryPointExtension extends Extension {
 
     boolean hasMain;
 
-    @Override
-    protected EntryPointExtensionMirror applicationMirror() {
-        return mirrorInitialize(new EntryPointExtensionMirror(this, true));
-    }
 
     public void main(Runnable runnable) {
         // Det her er en function
