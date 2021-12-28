@@ -33,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class ComposerRealmSetup extends RealmSetup {
+public final class ComposerRealmSetup extends ContainerRealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,

@@ -29,23 +29,23 @@ import packed.internal.component.ComponentSetup;
  * The internal configuration of realm.
  */
 // BuildRealm???? Is this runtime at all???
-public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerRealmSetup, ExtensionRealmSetup {
+public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRealmSetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     private RealmAccessor accessor;
 
     /** The current active component in the realm. */
-    private ComponentSetup current;
+    protected ComponentSetup current;
 
     /** Whether or not this realm is closed. */
-    private boolean isClosed;
+    protected boolean isClosed;
 
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
      * When we close the realm we then run through this list and recursively close each container.
      */
     // Hmm burde kunne bruge traet istedet for
-    private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
+    protected ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
@@ -62,18 +62,6 @@ public abstract sealed class RealmSetup permits AssemblyRealmSetup, ComposerReal
         if (isClosed) {
             throw new IllegalStateException();
         }
-    }
-
-    protected void close() {
-        if (current != null) {
-            current.onWired();
-            current = null;
-        }
-        isClosed = true;
-        for (ContainerSetup c : rootContainers) {
-            c.onRealmClose();
-        }
-        //assert container.name != null;
     }
 
     public ComponentSetup current() {

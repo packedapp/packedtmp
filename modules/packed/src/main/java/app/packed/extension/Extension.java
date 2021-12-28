@@ -38,6 +38,7 @@ import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.container.RealmSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.StackWalkerUtil;
 import packed.internal.util.ThrowableUtil;
@@ -315,12 +316,15 @@ public abstract non-sealed class Extension implements RealmSource {
     // onClose
     protected void onUserClose() {
         ExtensionSetup s = configuration();
+        RealmSetup realm = s.container.realm;
         ArrayList<ContainerSetup> list = s.container.containerChildren;
         if (list != null) {
             for (ContainerSetup c : list) {
-                ExtensionSetup child = c.extensions.get(s.extensionType);
-                if (child != null) {
-                    child.instance().onUserClose();
+                if (realm == c.realm) {
+                    ExtensionSetup child = c.extensions.get(s.extensionType);
+                    if (child != null) {
+                        child.instance().onUserClose();
+                    }
                 }
             }
         }

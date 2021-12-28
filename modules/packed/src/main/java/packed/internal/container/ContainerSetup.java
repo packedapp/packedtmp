@@ -255,17 +255,31 @@ public final class ContainerSetup extends ComponentSetup {
         // Complete all extensions in order
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
-        ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
-        Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model.compareTo(c2.model));
 
         // Close every extension
-        for (ExtensionSetup extension : extensionsOrdered) {
-            extension.onComplete();
+//        for (ExtensionSetup extension : extensionsOrdered) {
+//     //       extension.onComplete();
+//        }
+
+        injection.resolve();
+    }
+    public void onRealmCloseNew() {
+        // We recursively close all children in the same realm first
+        // We do not close individual components
+        if (containerChildren != null) {
+            for (ContainerSetup c : containerChildren) {
+                if (c.realm == realm) {
+                    c.onRealmClose();
+                }
+            }
+        }
+
+        if (!hasRunPreContainerChildren) {
+            runPredContainerChildren();
         }
 
         injection.resolve();
     }
-
     public void postBuild(ContainerConfiguration configuration) {
         assemblyModel.postBuild(configuration);
     }
@@ -289,7 +303,7 @@ public final class ContainerSetup extends ComponentSetup {
         // Det vi i virkeligheden har brug for er en cursor...
         // ind i extensions
         for (ExtensionSetup ea : extensions.values()) {
-            ea.preContainerChildren();
+            ea.onUserClose();
         }
 
         // Den fungere ikke 100% den her loesning...
@@ -298,7 +312,7 @@ public final class ContainerSetup extends ComponentSetup {
             ArrayList<ExtensionSetup> te = tmpExtensions;
             tmpExtensions = null;
             for (ExtensionSetup ea : te) {
-                ea.preContainerChildren();
+                ea.onUserClose();
             }
         }
     }

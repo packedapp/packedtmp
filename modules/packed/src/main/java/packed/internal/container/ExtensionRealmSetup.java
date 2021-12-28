@@ -18,7 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 import packed.internal.application.ApplicationSetup;
 
 /**
@@ -36,19 +35,9 @@ public final class ExtensionRealmSetup extends RealmSetup {
         this.root = requireNonNull(root);
     }
 
-    public void close() {
-        super.close();
-    }
-
     /** {@inheritDoc} */
     @Override
     public Class<?> realmType() {
         return extensionModel.type();
-    }
-
-    /** {@inheritDoc} */
-    public <T extends ExtensionMirror> T use(Class<T> type) {
-        throw new UnsupportedOperationException();
-        // return first.container.useExtension(type)
     }
 }

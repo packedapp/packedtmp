@@ -32,7 +32,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class AssemblyRealmSetup extends RealmSetup {
+public final class AssemblyRealmSetup extends ContainerRealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
@@ -86,8 +86,10 @@ public final class AssemblyRealmSetup extends RealmSetup {
         }
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
-        close();
+        closeNew(container);
     }
+    
+    
 
     /** {@inheritDoc} */
     @Override

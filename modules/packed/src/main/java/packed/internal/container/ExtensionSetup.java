@@ -97,12 +97,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.application.descriptor;
     }
 
-//    protected void attributesAdd(DefaultAttributeMap dam) {
-//        PackedAttributeModel pam = model.attributes;
-//        if (pam != null) {
-//            pam.set(dam, instance);
-//        }
-//    }
+    /** {@inheritDoc} */
+    @Override
+    public void checkConfigurableFor(Class<? extends Extension> extensionType) {}
 
     /** {@inheritDoc} */
     @Override
@@ -120,6 +117,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public ContainerMirror container() {
         return container.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int depth() {
+        return container.depth;
     }
 
     /** {@inheritDoc} */
@@ -233,7 +236,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * <p>
      * The extension is completed once the realm the container is part of is closed.
      */
-    void onComplete() {
+    void onClose() {
         try {
             MH_EXTENSION_ON_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
@@ -241,7 +244,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
     }
 
-    void preContainerChildren() {
+    void onUserClose() {
         try {
             MH_EXTENSION_ON_USER_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
@@ -307,8 +310,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) supportModel.newInstance(instance, extensionType);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void checkConfigurableFor(Class<? extends Extension> extensionType) {}
 }
+
+//protected void attributesAdd(DefaultAttributeMap dam) {
+//  PackedAttributeModel pam = model.attributes;
+//  if (pam != null) {
+//      pam.set(dam, instance);
+//  }
+//}

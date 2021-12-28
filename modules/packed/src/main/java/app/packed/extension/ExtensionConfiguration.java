@@ -109,6 +109,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Ja det goer det jo saadan set...
     <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
+    int depth();
+    
     boolean isApplicationRoot();
     
     /**
