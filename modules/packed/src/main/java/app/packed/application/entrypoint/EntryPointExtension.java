@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 
 // Cannot use both @app.packed.application.Main and the CLI extension at the same time.
 /**
@@ -15,7 +14,7 @@ public class EntryPointExtension extends Extension {
     boolean hasMain;
 
     @Override
-    protected ExtensionMirror applicationMirror() {
+    protected EntryPointExtensionMirror applicationMirror() {
         return mirrorInitialize(new EntryPointExtensionMirror(this, true));
     }
 

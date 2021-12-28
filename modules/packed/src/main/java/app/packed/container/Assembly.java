@@ -25,7 +25,7 @@ import java.util.Set;
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.Realm;
+import app.packed.component.RealmSource;
 import app.packed.extension.Extension;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
@@ -51,7 +51,7 @@ import packed.internal.util.LookupUtil;
  * 
  * @see BaseAssembly
  */
-public abstract non-sealed class Assembly implements Realm {
+public abstract non-sealed class Assembly implements RealmSource {
 
     /** A marker configuration object, indicating that an assembly has already been used. */
     private static final ContainerConfiguration USED = new ContainerConfiguration();

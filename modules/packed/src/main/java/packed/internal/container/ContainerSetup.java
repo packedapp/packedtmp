@@ -341,8 +341,11 @@ public final class ContainerSetup extends ComponentSetup {
                 requestedBy.checkIsPreCompletion();
             }
 
+//            ExtensionSetup extensionParent = parent == null ? null : parent.useExtension(extensionClass, null);
+
+            ExtensionSetup extensionParent = null;
             // Create a extension and initialize it.
-            extension = new ExtensionSetup(this, extensionClass);
+            extension = new ExtensionSetup(extensionParent, this, extensionClass);
             extension.initialize();
 
             if (hasRunPreContainerChildren) {

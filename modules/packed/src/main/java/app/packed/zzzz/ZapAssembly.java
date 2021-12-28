@@ -1,7 +1,6 @@
 package app.packed.zzzz;
 
 import app.packed.application.App;
-import app.packed.application.AsyncApp;
 import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
@@ -11,21 +10,14 @@ public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
+        new Exception().printStackTrace();
+
         named("asdasd");
         link(new LinkMe(), Wirelet.named("heher"));
     }
 
     public static void main(String[] args) {
         App.run(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
-
-        AsyncApp.mirrorOf(new ZapAssembly());
-
-        // Det gode ved mirror er at
-        // Daemon.introspect(new ZapAssembly());
-        // Daemon.reflect(new ZapAssembly());
-        AsyncApp.mirrorOf(new ZapAssembly());
-
-        App.driver().print(new ZapAssembly());
     }
 
     public static class LinkMe extends BaseAssembly {

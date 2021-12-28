@@ -99,6 +99,7 @@ public @interface Provide {
      * 
      * @return whether or not the provided value is a constant
      */
+    /// Maaske har vi slet ikke constant....
     boolean constant() default false;
 
 

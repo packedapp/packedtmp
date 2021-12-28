@@ -82,6 +82,9 @@ public class BeanExtension extends Extension {
         return wire(driver, parent, parent.realm);
     }
 
+    public int beanCount() {
+        return 4;
+    }
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror mirror() {

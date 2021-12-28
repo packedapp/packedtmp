@@ -75,6 +75,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      */
     private final ExtensionRealmSetup realm;
 
+    private ExtensionSetup parent;
+
     /**
      * Creates a new extension setup.
      * 
@@ -83,11 +85,16 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @param model
      *            the model of the extension
      */
-    ExtensionSetup(ContainerSetup container, Class<? extends Extension> extensionClass) {
+    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension> extensionClass) {
         this.container = requireNonNull(container);
+        this.parent = parent;
+        if (parent == null) {
 
+        } else {
+
+        }
         // Find (or create) the extension realm for the application
-        realm = container.application.extensions.computeIfAbsent(extensionClass, ec -> new ExtensionRealmSetup(container.application, ec));
+        this.realm = container.application.extensions.computeIfAbsent(extensionClass, ec -> new ExtensionRealmSetup(container.application, ec));
         this.model = requireNonNull(realm.extensionModel);
         this.extensionType = model.type();
     }

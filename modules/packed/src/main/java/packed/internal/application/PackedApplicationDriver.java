@@ -133,6 +133,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
+        // Create a new assembly realm which
         AssemblyRealmSetup realm = new AssemblyRealmSetup(this, ApplicationBuildType.INSTANCE, assembly, wirelets);
         realm.build();
         return ApplicationInitializationContext.launch(this, realm.application, null);

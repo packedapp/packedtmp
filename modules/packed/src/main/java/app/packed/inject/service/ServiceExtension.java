@@ -39,8 +39,8 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanDriverBinder;
 import packed.internal.bean.OldBeanDriver.OtherBeanDriver;
+import packed.internal.bean.PackedBeanDriverBinder;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -418,6 +418,7 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
      *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
+        // IDK about consum
         services.exports().setExportTransformer(transformer);
     }
 

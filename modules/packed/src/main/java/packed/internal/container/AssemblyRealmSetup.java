@@ -77,8 +77,8 @@ public final class AssemblyRealmSetup extends RealmSetup {
     }
 
     public void build() {
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        // This will recursively call down through any sub-containers that are linked
+        // Invoke Assembly::doBuild
+        // which in turn will invoke Assembly::build
         try {
             MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, configuration);
         } catch (Throwable e) {

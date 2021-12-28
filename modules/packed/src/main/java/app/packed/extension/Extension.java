@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport2;
-import app.packed.component.Realm;
+import app.packed.component.RealmSource;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -95,7 +95,7 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public abstract non-sealed class Extension implements Realm {
+public abstract non-sealed class Extension implements RealmSource {
 
     /**
      * The extension's configuration that most methods delegate to.

@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation.nonruntime;
+package app.packed.component;
+
+import app.packed.container.Assembly;
+import app.packed.container.ComposerAction;
+import app.packed.extension.Extension;
 
 /**
  *
  */
-public class AopExtension {
-    
-}
+@SuppressWarnings("rawtypes")
+public sealed interface RealmSource permits Assembly,Extension,ComposerAction {}
+// A realm can be closed...
 
-class AopExtensionMirror {
+// Assembly realm -> when build returns
+// Extension realm -> when the application is in the last phase
+// Composer action realm -> when build returns
 
-    // Det er vel altid beans man "dekorere...
-    // IDK maaske man kan dekoere andre klasser
-}
-
-// Generere en klasse...
+// Nu naar vi faar Application beans med application scope...
+// Giver det jo ikke rigtig mening at sige den er installeret via denne Assembly.
