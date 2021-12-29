@@ -198,28 +198,6 @@ public final class ContainerSetup extends ComponentSetup {
         return new BuildTimeContainerMirror();
     }
 
-    public void onRealmClose() {
-        // We recursively close all children in the same realm first
-        // We do not close individual components
-        if (containerChildren != null) {
-            for (ContainerSetup c : containerChildren) {
-                if (c.realm == realm) {
-                    c.onRealmClose();
-                }
-            }
-        }
-        // Complete all extensions in order
-        // Vil faktisk mene det skal vaere den modsatte order...
-        // Tror vi skal have vendt comparatoren
-
-        // Close every extension
-//        for (ExtensionSetup extension : extensionsOrdered) {
-//     //       extension.onComplete();
-//        }
-
-        injection.resolve();
-    }
-
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
     }
