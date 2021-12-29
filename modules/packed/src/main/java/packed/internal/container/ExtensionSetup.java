@@ -281,7 +281,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = container.useExtension(supportExtensionType, this).instance;
+        Extension instance = container.useExtensionSetup(supportExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) supportModel.newInstance(instance, extensionType);
