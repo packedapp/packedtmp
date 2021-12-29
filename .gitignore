@@ -10,3 +10,4 @@ target.tmp
 /sandbox
 .DS_Store
 /trace*
+/meta-annotations/
