@@ -92,7 +92,7 @@ public class ImageMicro {
         public void foo() {}
     }
 
-    public static class MyExtension extends Extension {
+    public static class MyExtension extends Extension<MyExtension> {
 
     }
 

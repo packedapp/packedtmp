@@ -36,7 +36,7 @@ public @interface AccessibleMethodHook {
     Class<? extends AccessibleMethodHook.Bootstrap> bootstrapExtensor() default Bootstrap.class;
 
     /** The extension this hook is a part of. */
-    Class<? extends Extension> extension();
+    Class<? extends Extension<?>> extension();
 
     /** The annotation that triggers the hook. */
     Class<? extends Annotation> onAnnotation();
@@ -134,7 +134,7 @@ public @interface AccessibleMethodHook {
     BootstrapType[] bootstrapTypes();
 
     /** The extension this hook is a part of. */
-    Class<? extends Extension> extension();
+    Class<? extends Extension<?>> extension();
 
     /** The annotation that triggers the hook. */
     Class<? extends Annotation> onAnnotation();

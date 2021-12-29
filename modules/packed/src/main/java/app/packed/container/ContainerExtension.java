@@ -27,7 +27,7 @@ import packed.internal.container.PackedContainerDriver;
 /**
  * An extension for adding new containers to an existing container.
  */
-public class ContainerExtension extends Extension {
+public class ContainerExtension extends Extension<ContainerExtension > {
 
     /** The container we adding new containers to. */
     final ContainerSetup container;

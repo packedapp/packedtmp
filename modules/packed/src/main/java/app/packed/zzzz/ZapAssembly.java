@@ -50,7 +50,7 @@ public class ZapAssembly extends BaseAssembly {
 
     public static class My {}
     
-    public static class MyExt extends Extension {
+    public static class MyExt extends Extension<MyExt> {
         
     }
 }

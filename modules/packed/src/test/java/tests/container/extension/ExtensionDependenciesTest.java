@@ -41,7 +41,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
     }
 
     @DependsOn(extensions = Ex2.class)
-    static final class Ex1 extends Extension {
+    static final class Ex1 extends Extension<Ex1> {
 
         @Override
         protected void onNew() {
@@ -50,7 +50,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
     }
 
     @DependsOn(extensions = Ex3.class)
-    static final class Ex2 extends Extension {
+    static final class Ex2 extends Extension<Ex2> {
         @Override
         protected void onNew() {
             use(Ex3.Ex3Support.class);
@@ -59,10 +59,9 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
         class Sub extends ExtensionSupport {
 
         }
-
     }
 
-    static final class Ex3 extends Extension {
+    static final class Ex3 extends Extension<Ex3> {
 
         class Ex3Support extends ExtensionSupport {
 

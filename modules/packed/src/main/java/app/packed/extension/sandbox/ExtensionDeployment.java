@@ -5,7 +5,7 @@ import app.packed.extension.Extension;
 // Deployment of features...
 // isStrongly connected
 
-public abstract class ExtensionDeployment<E extends Extension> {
+public abstract class ExtensionDeployment<E extends Extension<E>> {
     
     protected void undeploy(boolean forUpgrade) {
         

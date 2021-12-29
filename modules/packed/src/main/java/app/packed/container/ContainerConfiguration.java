@@ -53,7 +53,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see BaseAssembly#extensionsTypes()
      * @see ContainerMirror#extensionsTypes()
      */
-    public Set<Class<? extends Extension>> extensionTypes() {
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
         return container().extensionTypes();
     }
 
@@ -67,7 +67,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
-    public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
     }
 
@@ -105,7 +105,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      *             already in used
      * @see #extensionsTypes()
      */
-    public <E extends Extension> E use(Class<E> extensionType) {
+    public <E extends Extension<?>> E use(Class<E> extensionType) {
         return container().useExtension(extensionType);
     }
 }

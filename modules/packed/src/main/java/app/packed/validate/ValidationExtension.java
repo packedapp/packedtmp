@@ -20,7 +20,7 @@ import app.packed.extension.Extension;
 /**
  *
  */
-public final class ValidationExtension extends Extension {
+public final class ValidationExtension extends Extension<ValidationExtension> {
     /* package-private */ ValidationExtension() {}
 
     //// Must be added in the top assembly...

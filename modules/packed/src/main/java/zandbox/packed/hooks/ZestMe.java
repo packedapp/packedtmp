@@ -48,7 +48,7 @@ public class ZestMe extends BaseAssembly {
     }
 
     @DependsOn(extensions = ServiceExtension.class)
-    public static class MyExt extends Extension {
+    public static class MyExt extends Extension<MyExt> {
 
         MyExt() {}
 

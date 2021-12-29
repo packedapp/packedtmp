@@ -15,7 +15,6 @@
  */
 package app.packed.extension;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
@@ -24,7 +23,6 @@ import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -54,7 +52,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
-    void checkExtensionConfigurable(Class<? extends Extension> extensionType);
+    void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType);
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -66,7 +64,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkUserConfigurable();
 
-    <T extends Extension> T root(Class<T> extensionType);
+    <T extends Extension<?>> T root(Class<T> extensionType);
 
     /**
      * @param <C>
@@ -83,20 +81,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     int extensionDepth();
 
-    /**
-     * Attempts to find a parent of the specified type.
-     * 
-     * @param <E>
-     *            the type of parent to find
-     * @param parentType
-     * @return
-     * @throws ClassCastException
-     *             if a parent was found but it was not of the specified type
-     */
-    // Vi skal vaek fra optional syntes jeg... IDK Giver det mening at have et resultat inde i en optional...
-    // Ja det goer det jo saadan set...
-    <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
-
     boolean isApplicationRoot();
 
     /**
@@ -106,7 +90,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *            the type of extension to test
      * @return true if disabled, otherwise false
      */
-    default boolean isExtensionBanned(Class<? extends Extension> extensionType) {
+    default boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
         throw new UnsupportedOperationException();
     }
 
@@ -123,7 +107,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     // Altsaa den snyder jo rigtig meget...
     // Eftersom man kan vaere fristet til at teste den
-    boolean isExtensionUsed(Class<? extends Extension> extensionType);
+    boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 
     /**
      * Returns a selection of all wirelets of the specified type.

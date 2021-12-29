@@ -16,7 +16,7 @@ import app.packed.extension.Extension;
 
 
 // Er det lidt extensionTree igen
-abstract class AppplicationWideExtension<T extends Extension> {
+abstract class AppplicationWideExtension<T extends Extension<?>> {
 
     protected final int count() {
         return 0;

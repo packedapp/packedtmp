@@ -2,14 +2,12 @@ package app.packed.extension.sandbox.convert;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBean;
 import app.packed.extension.ExtensionSupport;
+import app.packed.extension.old.ExtensionBeanDoubly;
 
 // Maaske er det ikke ContainerExtensor. But InheritableExtensor...
 // "Problemet" er applikation hosts... Vi gider jo ikke have 25 forskellige extensors.
@@ -30,13 +28,13 @@ import app.packed.extension.ExtensionSupport;
 
 // Converters er jo faktisk ligesom hooks...
 // Der kan vaere et callsite binding process...
-public class ConvExtension2 extends Extension implements ConvDiscovable {
+public class ConvExtension extends Extension<ConvExtension> implements ConvDiscovable {
 
     static final Map<Class<?>, Function<?, ?>> DEFAULTS = Map.of();
 
     Map<Class<?>, Function<?, ?>> converters = new HashMap<>();
 
-    ConvExtension2() {}
+    ConvExtension() {}
 
     public void add(Class<?> from, Function<?, ?> f) {
         checkUserConfigurable();
@@ -46,20 +44,7 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
     // Clear all converters
     public void clear() {}
 
-    // findParent();
-    // findAncestor();
-
-    protected <T extends ConvDiscovable> Optional<T> findFirst(Class<T> dis) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected <E extends Extension> Optional<E> findExtensionAncestor(Class<E> extension) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected <B extends ExtensionBean, E extends Extension, T> T findAncestorOrElse(Class<B> beanType, Function<B, T> f1, Class<E> extensionType,
-            Function<E, T> f2, @Nullable T defaultValue) {
-        // Will first look after a bean of the particular type. Then extension, or finally return default value
+    protected <E extends Extension<E>, X> ExtensionBeanDoubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
         throw new UnsupportedOperationException();
     }
 
@@ -67,36 +52,30 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
     // inherit(Class<? extends AutoBean>) <--- er udelukkende taenkt som plads besparende
     @Override
     protected void onUserClose() {
-        Optional<ConvDiscovable> d = findFirst(ConvDiscovable.class);
-        Map<Class<?>, Function<?, ?>> existing;
-        if (d.isEmpty()) {
-            existing = DEFAULTS;
-        } else {
-            ConvDiscovable cd = d.get();
-            if (cd instanceof ConvExtension e) {
-                existing = e.converters;
-            } else {
-                existing = ((ConvExtensor) cd).m;
-            }
-        }
+        ExtensionBeanDoubly<ConvExtension, ConvExtensor> ec = findFirst(ConvExtension.class, ConvExtensor.class);
 
-        Map<Class<?>, Function<?, ?>> ff = findAncestorOrElse(ConvExtensor.class, ce -> ce.m, ConvExtension.class, e -> e.converters, DEFAULTS);
-        System.out.println(ff);
         if (converters.isEmpty()) {
-            converters = existing;
-            use(BeanSupport.class).inheritOrInstall(ConvExtensor.class);
+            converters = ec.extractOrElse(e -> e.converters, e -> e.m, DEFAULTS); // for child extensions
+            if (ec.isPresent()) {
+                
+                // Men hvad en evt. autobean der allerede er installeret????
+                
+                // inherit(ConvExtension.class);
+                return; // don't install a new extensor, no new converters, and some parent got us covered
+            }
         } else {
-            HashMap<Class<?>, Function<?, ?>> map = new HashMap<>(existing);
+            HashMap<Class<?>, Function<?, ?>> map = new HashMap<>(ec.extractOrElse(e -> e.converters, e -> e.m, DEFAULTS));
             map.putAll(converters);
             converters = Map.copyOf(map); // make immutable copy
-            use(BeanSupport.class).install(ConvExtensor.class);
         }
+        // We only install an extensor if we are the root container or we have changes to the converters
+        use(BeanSupport.class).install(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
     }
 
     public class Sub extends ExtensionSupport {
 
         public void add(Class<?> from, Function<?, ?> f) {
-            ConvExtension2.this.add(from, f);
+            ConvExtension.this.add(from, f);
         }
     }
 }

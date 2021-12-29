@@ -139,7 +139,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 //        }
 //    }
 
-    public static final class MyExtension extends Extension {
+    public static final class MyExtension extends Extension<MyExtension> {
 
     }
 

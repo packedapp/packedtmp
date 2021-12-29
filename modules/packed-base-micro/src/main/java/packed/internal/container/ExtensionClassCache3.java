@@ -47,7 +47,7 @@ final class ExtensionClassCache3<T> {
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> T newInstance(Class<T> extensionClass) {
+    static <T extends Extension<T>> T newInstance(Class<T> extensionClass) {
         // Time goes from around 1000 ns to 10 ns when we cache
         return (T) CACHE.get(extensionClass).get();
     }

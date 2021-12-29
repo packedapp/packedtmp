@@ -51,7 +51,7 @@ public class NewExtensions extends BaseAssembly {
     }
     
     
-    public static class MyExt extends Extension {
+    public static class MyExt extends Extension<MyExt> {
                 
         @Override
         protected void onClose() {

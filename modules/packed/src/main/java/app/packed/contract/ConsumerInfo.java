@@ -125,7 +125,7 @@ public interface ConsumerInfo {
      * 
      * @apiNote This method is only relevant for extension developers.
      */
-    Optional<Class<? extends Extension>> targetExtension();
+    Optional<Class<? extends Extension<?>>> targetExtension();
 
     /**
      * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this

@@ -55,7 +55,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror implements Iterab
         return Optional.empty();
     }
 
-    public Class<? extends Extension> managedBy() {
+    public Class<? extends Extension<?>> managedBy() {
         // There is always a single extension that manages all entry points in a single application
         // Fx
         //// CLI

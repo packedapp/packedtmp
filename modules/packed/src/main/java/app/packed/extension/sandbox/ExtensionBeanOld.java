@@ -85,7 +85,7 @@ public abstract class ExtensionBeanOld {
     //// Problemet er jo at use() automatisk enabler en extension
 
     @SuppressWarnings("unchecked")
-    static void $ignoreHooksIfExtensionisNotUsed(Class<? extends Extension>... extensionTypes) {
+    static void $ignoreHooksIfExtensionisNotUsed(Class<? extends Extension<?>>... extensionTypes) {
         // Vi kan bruge f.eks. @ExposeJFR paa en mode... Men den autoaktivere ikke extension'en
         // De bliver kun brugt
         throw new UnsupportedOperationException();
@@ -102,7 +102,7 @@ public abstract class ExtensionBeanOld {
         // https://martinfowler.com/articles/feature-toggles.html
     }
 
-    static class MyExt extends Extension {
+    static class MyExt extends Extension<MyExt> {
 
         class Sub extends ExtensionSupport {
             // Den kan f.eks. overskrives via wirelets?
@@ -111,7 +111,7 @@ public abstract class ExtensionBeanOld {
         }
     }
 
-    static class OtherExt extends Extension {
+    static class OtherExt extends Extension<OtherExt> {
         // conditionalInstallExtensor(MyExt.Sub.ENABLED, MyJFRExtensor.class);
     }
 }

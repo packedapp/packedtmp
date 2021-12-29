@@ -6,7 +6,6 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
@@ -19,7 +18,6 @@ import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
-import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -49,11 +47,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public final ContainerSetup container;
 
     /** The type of extension that is being configured. */
-    public final Class<? extends Extension> extensionType;
+    public final Class<? extends Extension<?>> extensionType;
 
     /** The extension instance, instantiated and set in {@link #initialize()}. */
     @Nullable
-    private Extension instance;
+    private Extension<?> instance;
 
     /** The static model of the extension. */
     public final ExtensionModel model;
@@ -75,7 +73,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @param extensionType
      *            the type of extension this setup class represents
      */
-    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension> extensionType) {
+    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
@@ -92,7 +90,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void checkExtensionConfigurable(Class<? extends Extension> extensionType) {}
+    public void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {}
 
     /** {@inheritDoc} */
     @Override
@@ -110,25 +108,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public int extensionDepth() {
         return container.depth;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
-        requireNonNull(type, "type is null");
-        ContainerSetup parent = container.parent;
-        if (parent != null) {
-            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
-            if (extensionContext != null) {
-                Extension instance = extensionContext.instance;
-                if (type.isInstance(instance)) {
-                    @SuppressWarnings("unchecked")
-                    ExtensionBeanConnection<T> c = (ExtensionBeanConnection<T>) PackedExtensionAncestor.sameApplication(instance);
-                    return Optional.of(c);
-                }
-            }
-        }
-        return Optional.empty();
     }
 
     void initialize() {
@@ -163,8 +142,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     // tree info, otherwise we should be able to ditch the method, as useExtension() always makes the extension instance
     // has been properly initialized
     // I'm not sure we want to ever expose it via ExtensionContext... Users would need to insert a cast
-    public Extension instance() {
-        Extension e = instance;
+    public Extension<?> instance() {
+        Extension<?> e = instance;
         if (e == null) {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
         }
@@ -177,9 +156,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return parent == null;
     }
 
+    public ExtensionSetup applicationRootSetup() {
+        ExtensionSetup s = this;
+        while (s.parent != null) {
+            s = s.parent;
+        }
+        return s;
+    }
+    
     /** {@inheritDoc} */
     @Override
-    public boolean isExtensionUsed(Class<? extends Extension> extensionClass) {
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         return container.isExtensionUsed(extensionClass);
     }
 
@@ -225,7 +212,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Extension> T root(Class<T> extensionType) {
+    public <T extends Extension<?>> T root(Class<T> extensionType) {
         ExtensionSetup s = this;
         while (s.parent != null) {
             s = s.parent;
@@ -267,7 +254,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Finds the subtension's model and its extension class
         ExtensionSupportModel supportModel = ExtensionSupportModel.of(supportClass);
-        Class<? extends Extension> supportExtensionType = supportModel.extensionType();
+        Class<? extends Extension<?>> supportExtensionType = supportModel.extensionType();
 
         // Check that the requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(supportExtensionType)) {
@@ -281,7 +268,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = container.useExtensionSetup(supportExtensionType, this).instance;
+        Extension<?> instance = container.useExtensionSetup(supportExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) supportModel.newInstance(instance, extensionType);

@@ -27,11 +27,11 @@ import packed.internal.util.StringFormatter;
  */
 final class ExtensionUtil {
 
-    private static final ClassValue<List<Class<? extends Extension>>> USE_DEPENDENCIES = new ClassValue<>() {
+    private static final ClassValue<List<Class<? extends Extension<?>>>> USE_DEPENDENCIES = new ClassValue<>() {
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected List<Class<? extends Extension>> computeValue(Class<?> type) {
+        protected List<Class<? extends Extension<?>>> computeValue(Class<?> type) {
             List<Class<?>> list = USE_DEPENDENCIES_OPTIONAL.get(type);
             for (Class<?> c : list) {
                 if (!Extension.class.isAssignableFrom(c)) {
@@ -88,7 +88,7 @@ final class ExtensionUtil {
      * @throws InternalExtensionException
      *             if some classes specified via {@link Packlet#optionalExtensions()} does not reference an extension type.
      */
-    static final List<Class<? extends Extension>> fromUseExtension(Class<?> c) {
+    static final List<Class<? extends Extension<?>>> fromUseExtension(Class<?> c) {
         return USE_DEPENDENCIES.get(c);
     }
 }

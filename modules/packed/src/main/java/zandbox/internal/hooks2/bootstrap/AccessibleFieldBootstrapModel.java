@@ -45,7 +45,7 @@ public final class AccessibleFieldBootstrapModel extends AbstractBootstrapModel 
             "context", AccessibleFieldBootstrapModel.BootstrapContext.class);
 
     private AccessibleFieldBootstrapModel(Class<? extends AccessibleFieldHook.Bootstrap> bootstrapClass, BootstrapClassLoader loader,
-            Class<? extends Extension> extensionClass) {
+            Class<? extends Extension<?>> extensionClass) {
         super(bootstrapClass, extensionClass);
     }
 

@@ -54,7 +54,7 @@ final class ExtensionModelWithCachedSupplier<T> {
     private final Supplier<T> s;
 
     /** The type of extension. */
-    final Class<? extends Extension> type;
+    final Class<? extends Extension<?>> type;
 
     /**
      * Creates a new extension class cache.
@@ -62,7 +62,7 @@ final class ExtensionModelWithCachedSupplier<T> {
      * @param type
      *            the extension type
      */
-    private ExtensionModelWithCachedSupplier(Class<? extends Extension> type) {
+    private ExtensionModelWithCachedSupplier(Class<? extends Extension<?>> type) {
         this.type = requireNonNull(type);
         /// TODO Check not abstract
         Constructor<?> constructor;
@@ -100,7 +100,7 @@ final class ExtensionModelWithCachedSupplier<T> {
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> T newInstance(Class<T> extensionClass) {
+    static <T extends Extension<T>> T newInstance(Class<T> extensionClass) {
         // Time goes from around 1000 ns to 10 ns when we cache
         return (T) CACHE.get(extensionClass).get();
     }

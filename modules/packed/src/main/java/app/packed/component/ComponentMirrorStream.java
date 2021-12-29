@@ -251,7 +251,7 @@ public interface ComponentMirrorStream extends Stream<ComponentMirror> {
          * @return an option that includes all components that belongs to any of the specified extension types
          */
         @SafeVarargs
-        public static ComponentMirrorStream.Option includeExtensions(Class<? extends Extension>... extensionType) {
+        public static ComponentMirrorStream.Option includeExtensions(Class<? extends Extension<?>>... extensionType) {
             throw new UnsupportedOperationException();
         }
 

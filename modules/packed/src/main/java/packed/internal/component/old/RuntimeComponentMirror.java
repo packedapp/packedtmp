@@ -291,7 +291,7 @@ public final class RuntimeComponentMirror {
     }
 
 
-    public Optional<Class<? extends Extension>> managedByExtension() {
+    public Optional<Class<? extends Extension<?>>> managedByExtension() {
         throw new UnsupportedOperationException();
     }
 

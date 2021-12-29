@@ -65,13 +65,13 @@ public class SubtensionModelTest {
 //        assertThatThrownBy(() -> SubtensionModel.of(UnresolvedConstructor.class)).isExactlyInstanceOf(InternalExtensionException.class);
     }
 
-    static class TestExtension extends Extension {
+    static class TestExtension extends Extension<TestExtension> {
 
         @ExtensionMember(TestExtension.class)
         class TestExtensionSupport extends ExtensionSupport {
-            final Class<? extends Extension> requestor;
+            final Class<? extends Extension<?>> requestor;
 
-            TestExtensionSupport(Class<? extends Extension> requestor) {
+            TestExtensionSupport(Class<? extends Extension<?>> requestor) {
                 this.requestor = requestor;
             }
 

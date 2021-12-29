@@ -82,11 +82,11 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }
 
-    public static final class TestExtension1 extends Extension {
+    public static final class TestExtension1 extends Extension<TestExtension1 > {
         TestExtension1() {}
     }
 
-    public static final class TestExtension2 extends Extension {
+    public static final class TestExtension2 extends Extension<TestExtension2> {
         TestExtension2() {}
     }
 }

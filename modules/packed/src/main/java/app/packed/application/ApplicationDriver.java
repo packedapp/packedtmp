@@ -73,7 +73,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * 
      * @return a set of disabled extensions
      */
-    Set<Class<? extends Extension>> bannedExtensions();
+    Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -281,7 +281,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          *            the types of extension to disable
          * @return
          */
-        Builder disableExtension(Class<? extends Extension> extensionType);
+        Builder disableExtension(Class<? extends Extension<?>> extensionType);
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
@@ -536,18 +536,18 @@ interface ApplicationDriverSandbox<A> {
         }
 
         @SuppressWarnings("exports")
-        default <E extends Extension> Builder2 enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationDescriptor, E> onInit) {
+        default <E extends Extension<E>> Builder2 enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationDescriptor, E> onInit) {
             return this;
         }
 
         // prerequisite
         @SuppressWarnings("exports")
-        default <E extends Extension> Builder2 enableExtension(Class<? extends E> extensionType, Consumer<E> onInit) {
+        default <E extends Extension<E>> Builder2 enableExtension(Class<? extends E> extensionType, Consumer<E> onInit) {
             return this;
         }
 
         @SuppressWarnings("exports")
-        default Builder2 enableExtension(Class<? extends Extension> extensionType) {
+        default Builder2 enableExtension(Class<? extends Extension<?>> extensionType) {
             return this;
         }
 

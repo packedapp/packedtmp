@@ -17,14 +17,14 @@ import app.packed.inject.service.ServiceExtension;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface InstallExtensions {
-    Class<? extends Extension>[] value();
+    Class<? extends Extension<?>>[] value();
 }
 
 record InstallExtensionsX(InstallExtensions pc) implements AssemblySetup.Processor {
 
     @Override
     public void beforeBuild(ContainerConfiguration configuration) {
-        for (Class<? extends Extension> c : pc.value()) {
+        for (Class<? extends Extension<?>> c : pc.value()) {
             configuration.use(c);
         }
     }

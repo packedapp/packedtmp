@@ -48,7 +48,7 @@ public class EntryPointSupport extends ExtensionSupport {
         return 0;
     }
 
-    public Optional<Class<? extends Extension>> managedBy() {
+    public Optional<Class<? extends Extension<?>>> managedBy() {
         // Man bliver managed foerste gang med registrer en end point
         return Optional.empty();
     }

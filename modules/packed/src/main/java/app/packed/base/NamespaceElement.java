@@ -173,7 +173,7 @@ public interface NamespaceElement {
 //// As extensions are children of containers always...
 //// But then again ComponentStream.Option contains stuff about containers ect.
 //// Maybe model it as an attribute
-//Optional<Class<? extends Extension>> extension();
+//Optional<Class<? extends Extension<?>>> extension();
 
 ///**
 //* Returns the type of component.

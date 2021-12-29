@@ -8,7 +8,7 @@ import app.packed.extension.Extension;
 public @interface ExtensionSupportClass {
 
     // Need this to determind order of teardown
-    Class<? extends Extension> extension();
+    Class<? extends Extension<?>> extension();
 
     Scope scope();
 

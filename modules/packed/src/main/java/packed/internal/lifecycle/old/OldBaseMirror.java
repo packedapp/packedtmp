@@ -42,7 +42,7 @@ public interface OldBaseMirror /* extends Mirror */ {
         throw new UnsupportedOperationException();
     }
 
-    default Set<Class<? extends Extension>> extensions() {
+    default Set<Class<? extends Extension<?>>> extensions() {
         throw new UnsupportedOperationException();
     }
     

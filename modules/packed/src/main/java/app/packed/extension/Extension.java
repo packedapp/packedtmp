@@ -76,18 +76,7 @@ import packed.internal.util.ThrowableUtil;
  * 
  * @see ExtensionDescriptor
  */
-// Static initializers
-//// Dependencies
-//// Attributes
-//// Connections 
-//// LibraryInfo
-
-// bootstrapConfig
-//// dependsOn(Codegen)
-
-////// Problemet er den lazy extension thingy can enable andre extensions 
-// Configurable -> Parent -> 
-public abstract non-sealed class Extension implements RealmSource {
+public abstract non-sealed class Extension<E extends Extension<E>> implements RealmSource {
 
     /**
      * The extension's setup that most methods delegate to.
@@ -113,10 +102,15 @@ public abstract non-sealed class Extension implements RealmSource {
     // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
     // af brugeren med mindre XYZ...
     // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
-    protected final void checkExtensionConfigurable(Class<? extends Extension> extensionType) {
+    protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
         configuration().checkExtensionConfigurable(extensionType);
     }
 
+    @SuppressWarnings("unchecked")
+    protected final E applicationRoot() {
+        return (E) setup().applicationRootSetup().instance();
+    }
+    
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -165,14 +159,14 @@ public abstract non-sealed class Extension implements RealmSource {
      */
     // Kan disable den paa application driver...
     // Er det kombination af isExtensionDisabled og isUsed
-    /// Maaske bare Set<Class<? extends Extension>> disabledExtensions(); disabledExtension.contains
+    /// Maaske bare Set<Class<? extends Extension<?>>> disabledExtensions(); disabledExtension.contains
     /// Maaske vi skal have en selvstaedig classe.
     /// Disabled kan ogsaa vaere hvis vi koere med whitelist
 
     /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
     /// Maaske det er vigtigt at have de 2 options.
     /// isExtensionUsable() , makeUnusable
-    protected final boolean isExtensionBanned(Class<? extends Extension> extensionType) {
+    protected final boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
         return configuration().isExtensionBanned(extensionType);
     }
 
@@ -189,7 +183,7 @@ public abstract non-sealed class Extension implements RealmSource {
      * @implNote Packed does not perform detailed tracking on what extensions use other extensions. So it cannot answer
      *           questions about what exact extension is using another extension
      */
-    protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+    protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return configuration().isExtensionUsed(extensionType);
     }
 
@@ -367,7 +361,7 @@ public abstract non-sealed class Extension implements RealmSource {
      * @see ExtensionConfiguration#use(Class)
      * @see #$dependsOn(Class...)
      */
-    protected final <E extends ExtensionSupport> E use(Class<E> subtensionClass) {
+    protected final <S extends ExtensionSupport> S use(Class<S> subtensionClass) {
         return configuration().use(subtensionClass);
     }
 
@@ -408,7 +402,7 @@ public abstract non-sealed class Extension implements RealmSource {
     // Og man kan vel ikke bruge hook annoteringer
 //    
 //    @SafeVarargs
-//    protected static void $cycleBreaker(Class<? extends Extension>... extensions) {
+//    protected static void $cycleBreaker(Class<? extends Extension<?>>... extensions) {
         // Man maa saette den via noget VarHandle vaerk
     
 //        // A -DependsOn(B)
@@ -435,7 +429,7 @@ public abstract non-sealed class Extension implements RealmSource {
      * @see #$dependsOn(Class...)
      * @see Class#forName(String, boolean, ClassLoader)
      */
-    protected static Optional<Class<? extends Extension>> $dependsOnIfAvailable(String extensionName) {
+    protected static Optional<Class<? extends Extension<?>>> $dependsOnIfAvailable(String extensionName) {
         return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
     }
 
@@ -456,7 +450,7 @@ public abstract non-sealed class Extension implements RealmSource {
     protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
         Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
         // Attempt to load an extension with the specified name
-        Optional<Class<? extends Extension>> dependency = ExtensionModel.bootstrap(callerClass).dependsOnOptionally(extensionName);
+        Optional<Class<? extends Extension<?>>> dependency = ExtensionModel.bootstrap(callerClass).dependsOnOptionally(extensionName);
         // The extension does not exist, return an alternative value
         if (dependency.isEmpty()) {
             return alternative.get();
@@ -551,17 +545,28 @@ public abstract non-sealed class Extension implements RealmSource {
     public @interface DependsOn {
 
         /** {@return other extensions the annotated extension depends on} */
-        Class<? extends Extension>[] extensions() default {};
+        Class<? extends Extension<?>>[] extensions() default {};
 
         // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
         // Den kraever bare at den allerede har vaeret listet som optionally
         String[] optionally() default {};
     }
 }
+//Static initializers
+////Dependencies
+////Attributes
+////Connections 
+////LibraryInfo
+
+//bootstrapConfig
+////dependsOn(Codegen)
+
+//////Problemet er den lazy extension thingy can enable andre extensions 
+//Configurable -> Parent -> 
 
 class Zarchive {
 
-    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
+    protected static <T extends Extension<T>> void $addDependencyLazyInit(Class<? extends Extension<?>> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret
         // Registeres ogsaa som dependeenc
@@ -580,7 +585,7 @@ class Zarchive {
     // svare det til man kalder use(DooSupport.class)????
     // dependsOnAlways(ConfigException.class) -> Application or Container scope???
 
-    static void $dependsOnAlways(Class<? extends Extension>... extensions) {
+    static void $dependsOnAlways(Class<? extends Extension<?>>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
     }
 
@@ -605,7 +610,7 @@ class Zarchive {
 //// dependencyAdd
 //@Deprecated
 //@SafeVarargs
-//protected static void $dependsOn(Class<? extends Extension>... extensions) {}
+//protected static void $dependsOn(Class<? extends Extension<?>>... extensions) {}
 
 //// Ved ikke praecis hvad vi skal bruge den til...
 //// Er det close/open world check?

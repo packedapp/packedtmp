@@ -10,7 +10,7 @@ public interface FailureContext /* extends AttributedElement */ {
     boolean isRetryable();
 
     // If it is an extension that failed...
-    Optional<Extension> failingExtension();
+    Optional<Extension<?>> failingExtension();
 
     ComponentMirror component(); // vs instance Hmm begge ting giver mening!>!~
 

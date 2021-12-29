@@ -36,7 +36,7 @@ import packed.internal.container.ExtensionSetup;
 
 // Hvis ParamTraceren ogsaa er en del af MirrorExtensionen...
 // Betyder det vi ikke kan bruge den uden for en container...
-public class MirrorExtension extends Extension {
+public class MirrorExtension extends Extension<MirrorExtension> {
 
     /** The container setup. */
     final ContainerSetup container;

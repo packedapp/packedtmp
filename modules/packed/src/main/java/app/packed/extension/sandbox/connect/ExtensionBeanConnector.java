@@ -3,7 +3,7 @@ package app.packed.extension.sandbox.connect;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBean;
 
-public interface ExtensionBeanConnector<E extends Extension, B extends ExtensionBean> {
+public interface ExtensionBeanConnector<E extends Extension<E>, B extends ExtensionBean> {
     E findExtension();
 
     void inherit();
@@ -19,7 +19,7 @@ public interface ExtensionBeanConnector<E extends Extension, B extends Extension
 class NewExt {
 
     // Saa vi har sagt hvilken bean det er
-    <E extends Extension, B extends ExtensionBean> ExtensionBeanConnector<E, B> connect(Class<B> extensionBean) {
+    <E extends Extension<E>, B extends ExtensionBean> ExtensionBeanConnector<E, B> connect(Class<B> extensionBean) {
         throw new UnsupportedOperationException();
     }
 }

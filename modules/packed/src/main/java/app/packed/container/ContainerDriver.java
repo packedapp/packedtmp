@@ -23,7 +23,7 @@ public abstract sealed class ContainerDriver permits PackedContainerDriver {
      * 
      * @return a set of disabled extensions
      */
-    public abstract Set<Class<? extends Extension>> bannedExtensions();
+    public abstract Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /** {@return creates a new configuration object, only used by the PackedContainerDriver.} */
     protected ContainerConfiguration newConfiguration() {

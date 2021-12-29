@@ -52,7 +52,7 @@ public final class AccessibleMethodBootstrapModel extends AbstractBootstrapModel
             "context", AccessibleMethodBootstrapModel.BootstrapContext.class);
 
     private AccessibleMethodBootstrapModel(Class<? extends AccessibleMethodHook.Bootstrap> bootstrapClass, BootstrapClassLoader loader,
-            Class<? extends Extension> extensionClass) {
+            Class<? extends Extension<?>> extensionClass) {
         super(bootstrapClass, extensionClass);
     }
 

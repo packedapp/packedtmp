@@ -6,7 +6,7 @@ import java.util.Map;
 
 import app.packed.extension.Extension;
 
-public class ZestExtension extends Extension {
+public class ZestExtension extends Extension<ZestExtension> {
 
     private ArrayList<MethodHandle> handles = new ArrayList<>();
 

@@ -177,7 +177,7 @@ public abstract non-sealed class Assembly implements RealmSource {
      * @see ContainerConfiguration#extensionsTypes()
      * @see #use(Class)
      */
-    protected final Set<Class<? extends Extension>> extensionTypes() {
+    protected final Set<Class<? extends Extension<?>>> extensionTypes() {
         return configuration().extensionTypes();
     }
 
@@ -257,7 +257,7 @@ public abstract non-sealed class Assembly implements RealmSource {
      *             if called after the container is no longer configurable
      * @see ContainerConfiguration#use(Class)
      */
-    protected final <T extends Extension> T use(Class<T> extensionType) {
+    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
     

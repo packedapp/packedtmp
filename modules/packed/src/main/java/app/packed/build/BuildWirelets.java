@@ -68,7 +68,7 @@ public final class BuildWirelets {
     // Maaske er det en build wirelet???
     // Taenker
     @SafeVarargs
-    public static Wirelet disableExtension(Class<? extends Extension>... extensionTypes) {
+    public static Wirelet disableExtension(Class<? extends Extension<?>>... extensionTypes) {
         throw new UnsupportedOperationException();
     }
 

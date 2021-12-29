@@ -24,7 +24,7 @@ import app.packed.extension.ExtensionSelection;
 /**
  *
  */
-public record PackedExtensionSelection<T extends Extension> (ContainerSetup container, Class<? extends Extension> extensionType)
+public record PackedExtensionSelection<T extends Extension<T>> (ContainerSetup container, Class<? extends Extension<?>> extensionType)
         implements ExtensionSelection<T> {
 
     /** {@inheritDoc} */

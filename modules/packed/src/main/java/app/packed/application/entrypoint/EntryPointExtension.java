@@ -9,7 +9,7 @@ import app.packed.extension.Extension;
 /**
  * An extension that controls any entry points of the an application.
  */
-public class EntryPointExtension extends Extension {
+public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     boolean hasMain;
 

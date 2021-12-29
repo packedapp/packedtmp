@@ -23,11 +23,11 @@ public final class ExtensorModel {
         }
     };
 
-    private final Class<? extends Extension> extensionClass;
+    private final Class<? extends Extension<?>> extensionClass;
 
     private final ExtensionSupportClass.Scope scope;
 
-    public ExtensorModel(Class<? extends Extension> extensionClass, Scope scope) {
+    public ExtensorModel(Class<? extends Extension<?>> extensionClass, Scope scope) {
         this.extensionClass = requireNonNull(extensionClass);
         this.scope = requireNonNull(scope);
     }

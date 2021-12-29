@@ -50,7 +50,7 @@ public @interface AccessibleFieldHook {
     Class<? extends AccessibleFieldHook.Bootstrap> bootstrapBean() default Bootstrap.class;
 
     /** The extension this hook is a part of. */
-    Class<? extends Extension> extension();
+    Class<? extends Extension<?>> extension();
 
     /** The annotation that triggers the hook. */
     Class<? extends Annotation> onAnnotation();

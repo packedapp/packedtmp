@@ -94,7 +94,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Set<Class<? extends Extension>> disabledExtensions() {
+        public Set<Class<? extends Extension<?>>> disabledExtensions() {
             // TODO add additional disabled extensions
             return application.driver.bannedExtensions();
         }

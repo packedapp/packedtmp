@@ -55,7 +55,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     public final PackedContainerDriver containerDriver = PackedContainerDriver.DEFAULT;
 
-    final Set<Class<? extends Extension>> disabledExtensions;
+    final Set<Class<? extends Extension<?>>> disabledExtensions;
 
     private final boolean isExecutable;
 
@@ -112,7 +112,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> bannedExtensions() {
+    public Set<Class<? extends Extension<?>>> bannedExtensions() {
         return disabledExtensions;
     }
 
@@ -201,7 +201,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 //    }
 
     @SuppressWarnings("unchecked")
-    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension>... extensionTypes) {
+    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension<?>>... extensionTypes) {
         // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
         throw new UnsupportedOperationException();
     }
@@ -232,7 +232,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
                 "services", ServiceLocator.class);
 
-        private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
+        private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
 
         /** Whether or not the applications that will be produced are executable. */
         private boolean isExecutable = true;
@@ -278,9 +278,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
 //      /** {@inheritDoc} */
 //      @Override
-//      public Builder disable(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+//      public Builder disable(@SuppressWarnings("unchecked") Class<? extends Extension<?>>... extensionTypes) {
 //          requireNonNull(extensionTypes, "extensionTypes is null");
-//          for (Class<? extends Extension> c : extensionTypes) {
+//          for (Class<? extends Extension<?>> c : extensionTypes) {
 //              disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, c));
 //          }
 //          return this;
@@ -294,9 +294,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder disableExtension(Class<? extends Extension> extensionType) {
+        public Builder disableExtension(Class<? extends Extension<?>> extensionType) {
             requireNonNull(extensionType, "extensionType is null");
-            disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, extensionType));
+            ClassUtil.checkProperSubclass(Extension.class, extensionType);
+            disabledExtensions.add(extensionType);
             return this;
         }
 

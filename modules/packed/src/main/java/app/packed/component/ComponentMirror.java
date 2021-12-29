@@ -106,7 +106,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // RegisteredWith
     // DeclaredBy
     // Det er jo mere eller Realmen her
-    /* UserOrExtension */ Optional<Class<? extends Extension>> registrant();
+    /* UserOrExtension */ Optional<Class<? extends Extension<?>>> registrant();
 
     /**
      * Computes the relation from this component to the specified component.

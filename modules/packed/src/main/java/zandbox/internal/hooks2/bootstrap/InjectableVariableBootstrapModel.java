@@ -54,7 +54,7 @@ public class InjectableVariableBootstrapModel extends AbstractBootstrapModel {
     private final Settings request;
 
     private InjectableVariableBootstrapModel(Class<? extends InjectAnnotatedVariableHook.Bootstrap> bootstrapClass, Builder loader,
-            Class<? extends Extension> extensionClass) {
+            Class<? extends Extension<?>> extensionClass) {
         super(bootstrapClass, extensionClass);
         this.request = new Settings(loader);
     }

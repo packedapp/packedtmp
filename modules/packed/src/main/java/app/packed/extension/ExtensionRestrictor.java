@@ -33,7 +33,7 @@ interface ExtensionRestrictor {
 
 class Zammbly {
     
-    ExtensionRestrictor restrictUseOf(Class<? extends Extension> extensionType) {
+    ExtensionRestrictor restrictUseOf(Class<? extends Extension<?>> extensionType) {
         throw new UnsupportedOperationException();
     }
 }

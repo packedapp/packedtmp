@@ -33,7 +33,7 @@ public class ChildInject extends BaseAssembly {
     }
 
     @DependsOn(extensions = ServiceExtension.class)
-    public static class MyExt extends Extension {
+    public static class MyExt extends Extension<MyExt> {
 
         final String name;
         final long l = System.nanoTime();

@@ -88,7 +88,7 @@ import packed.internal.util.ThrowableUtil;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
 @DependsOn(extensions = BeanExtension.class)
-public /*non-sealed */ class ServiceExtension extends Extension {
+public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
@@ -443,7 +443,7 @@ public /*non-sealed */ class ServiceExtension extends Extension {
         /// limited usefullness
 
         /** The requesting extension. */
-        final Class<? extends Extension> requestingExtension;
+        final Class<? extends Extension<?>> requestingExtension;
 
         /**
          * Creates a new sub.
@@ -451,7 +451,7 @@ public /*non-sealed */ class ServiceExtension extends Extension {
          * @param requestingExtension
          *            the requesting extension
          */
-        /* package-private */ ServiceExtensionSupport(Class<? extends Extension> requestingExtension) {
+        /* package-private */ ServiceExtensionSupport(Class<? extends Extension<?>> requestingExtension) {
             this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
         }
 

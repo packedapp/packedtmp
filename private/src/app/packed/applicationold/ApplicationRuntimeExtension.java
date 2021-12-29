@@ -6,7 +6,7 @@ import app.packed.extension.Extension;
 // vi gider da ikke have den i hver container...
 
 // Tror den doer
-public class ApplicationRuntimeExtension extends Extension {
+public class ApplicationRuntimeExtension extends Extension<ApplicationRuntimeExtension> {
 
     /** Create a new extension. */
     ApplicationRuntimeExtension() {}

@@ -23,7 +23,7 @@ import app.packed.extension.Extension;
 // Not a big fan...
 // Alternativ er at bruge @Nullable... for inject
 // Og saa registrere den der runtime type fra en statisk metode i bootstrap...
-public interface ExtensionShare<T extends Extension, S> {
+public interface ExtensionShare<T extends Extension<T>, S> {
     boolean hasExtension();
     boolean hasRuntime();
     T extension();

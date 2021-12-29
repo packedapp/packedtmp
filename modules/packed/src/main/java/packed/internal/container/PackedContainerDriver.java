@@ -22,7 +22,7 @@ public final class PackedContainerDriver extends ContainerDriver {
             ComponentConfiguration.class, "component", ComponentSetup.class);
 
     @Override
-    public Set<Class<? extends Extension>> bannedExtensions() {
+    public Set<Class<? extends Extension<?>>> bannedExtensions() {
         throw new UnsupportedOperationException();
     }
 

@@ -24,13 +24,13 @@ public /* primitive */ final class UserOrExtension {
     private static final UserOrExtension USER = new UserOrExtension(null);
 
     @Nullable
-    private final Class<? extends Extension> extension;
+    private final Class<? extends Extension<?>> extension;
 
-    private UserOrExtension(Class<? extends Extension> extension) {
+    private UserOrExtension(Class<? extends Extension<?>> extension) {
         this.extension = extension;
     }
 
-    public Class<? extends Extension> extension() {
+    public Class<? extends Extension<?>> extension() {
         if (extension == null) {
             throw new NoSuchElementException("No extension present");
         }
@@ -49,7 +49,7 @@ public /* primitive */ final class UserOrExtension {
         return USER;
     }
 
-    public static UserOrExtension extension(Class<? extends Extension> extensionType) {
+    public static UserOrExtension extension(Class<? extends Extension<?>> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return new UserOrExtension(extensionType);
     }

@@ -27,7 +27,7 @@ import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
 /** A model for a {@link Extension.ExtensionSupport} class. Not used outside of this package. */
-record ExtensionSupportModel(Class<? extends Extension> extensionType, MethodHandle mhConstructor) {
+record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
 
     /** Models of all subtensions. */
     private final static ClassValue<ExtensionSupportModel> MODELS = new ClassValue<>() {
@@ -51,7 +51,7 @@ record ExtensionSupportModel(Class<? extends Extension> extensionType, MethodHan
 //                        + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
 //            }
 
-            Class<? extends Extension> extensionClass = extensionMember.value();
+            Class<? extends Extension<?>> extensionClass = extensionMember.value();
             ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
             // Create an infuser exposing two services:
@@ -59,7 +59,7 @@ record ExtensionSupportModel(Class<? extends Extension> extensionType, MethodHan
             // 2. The class of the extension that wants to use the subtension
             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, Class.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
-            builder.provide(new Key<Class<? extends Extension>>() {}).adaptArgument(1); // Requesting extension
+            builder.provide(new Key<Class<? extends Extension<?>>>() {}).adaptArgument(1); // Requesting extension
 
             // Find a method handle for the subtensions's constructor
             MethodHandle constructor = builder.findConstructor(ExtensionSupport.class, m -> new InternalExtensionException(m));
@@ -77,7 +77,7 @@ record ExtensionSupportModel(Class<? extends Extension> extensionType, MethodHan
      *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    ExtensionSupport newInstance(Extension extension, Class<? extends Extension> requestingExtensionClass) {
+    ExtensionSupport newInstance(Extension<?> extension, Class<? extends Extension<?>> requestingExtensionClass) {
         // mhConstructor = (Extension,Class)Subtension
         try {
             return (ExtensionSupport) mhConstructor.invokeExact(extension, requestingExtensionClass);

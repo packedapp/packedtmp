@@ -1,12 +1,9 @@
 package app.packed.bean.instance;
 
-import java.util.Optional;
-
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.old.ExtensionBeanConnection;
 
 public class TstExt extends BaseAssembly {
 
@@ -14,7 +11,7 @@ public class TstExt extends BaseAssembly {
     protected void build() {
         new Exception().printStackTrace();
         use(MyExt.class);
-        installInstance("werwer");//.inject("xxxx");
+        installInstance("werwer");// .inject("xxxx");
         link(new Subbb());
     }
 
@@ -22,22 +19,23 @@ public class TstExt extends BaseAssembly {
         App.run(new TstExt());
     }
 
-    static class MyExt extends Extension {
+    static class MyExt extends Extension<MyExt> {
 
         final int count;
 
         MyExt(ExtensionConfiguration c) {
-            Optional<ExtensionBeanConnection<MyExt>> ea = c.findParent(MyExt.class);
-            if (ea.isPresent()) {
-                System.out.println("--- Nice ---");
-                System.out.println(ea.get());
-                System.out.println(this);
-                count = ea.get().instance().count + 1;
-            } else {
-                count = 0;
-            }
-
-            System.out.println("SAD" + c.findParent(MyExt.class).isPresent());
+            count = c.extensionDepth();
+//            Optional<ExtensionBeanConnection<MyExt>> ea = c.findParent(MyExt.class);
+//            if (ea.isPresent()) {
+//                System.out.println("--- Nice ---");
+//                System.out.println(ea.get());
+//                System.out.println(this);
+//                count = ea.get().instance().count + 1;
+//            } else {
+//                count = 0;
+//            }
+//
+//            System.out.println("SAD" + c.findParent(MyExt.class).isPresent());
         }
     }
 

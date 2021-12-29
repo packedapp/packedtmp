@@ -30,7 +30,7 @@ public final class ExtensionRealmSetup extends RealmSetup {
     /** The first extension that was added to the realm. */
     final ExtensionSetup root;
 
-    ExtensionRealmSetup(ExtensionSetup root, ApplicationSetup application, Class<? extends Extension> extensionType) {
+    ExtensionRealmSetup(ExtensionSetup root, ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }

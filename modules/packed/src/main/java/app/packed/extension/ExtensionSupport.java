@@ -23,7 +23,7 @@ package app.packed.extension;
  * 
  * An extension There are no annotations that make sense for this class
  * 
- * {@code Class<? extends Extension>} which is the
+ * {@code Class<? extends Extension<?>>} which is the
  * 
  * <p>
  * A new instance of the extension support class is automatically created by the runtime when requested. These instances

@@ -30,12 +30,12 @@ public class ExtensionModelTest {
 
     @Test
     public void normal() {
-        Extension ne1 = ExtensionModel.of(NormalExtension.class).newInstance(null);
-        Extension ne2 = ExtensionModel.of(NormalExtension.class).newInstance(null);
+        Extension<?> ne1 = ExtensionModel.of(NormalExtension.class).newInstance(null);
+        Extension<?> ne2 = ExtensionModel.of(NormalExtension.class).newInstance(null);
         assertThat(ne1).isNotNull();
         assertThat(ne1).isNotSameAs(ne2);
 
-        Extension priv = ExtensionModel.of(PrivateExtension.class).newInstance(null);
+        Extension<?> priv = ExtensionModel.of(PrivateExtension.class).newInstance(null);
         assertThat(priv).isNotNull();
     }
 
@@ -71,19 +71,19 @@ public class ExtensionModelTest {
         // And unnamed, automatic modules...
     }
 
-    public abstract class AbstractTestExtension extends Extension {}
+    public abstract class AbstractTestExtension extends Extension<AbstractTestExtension> {}
 
-    public class InnerClassExtension extends Extension {}
+    public class InnerClassExtension extends Extension<InnerClassExtension> {}
 
-    public static final class TakesParameterExtension extends Extension {
+    public static final class TakesParameterExtension extends Extension<TakesParameterExtension> {
         TakesParameterExtension(String s) {}
     }
 
-    public static final class NormalExtension extends Extension {
+    public static final class NormalExtension extends Extension<NormalExtension> {
         NormalExtension() {}
     }
 
-    private static final class PrivateExtension extends Extension {
+    private static final class PrivateExtension extends Extension<PrivateExtension> {
         private PrivateExtension() {}
     }
 }

@@ -42,7 +42,7 @@ public @interface InjectAnnotatedVariableHook {
     Class<? extends InjectAnnotatedVariableHook.Bootstrap> bootstrapBean();
 
     /** The extension this hook is a part of. */
-    Class<? extends Extension> extension();
+    Class<? extends Extension<?>> extension();
 
     /** The annotation that triggers the hook. */
     Class<? extends Annotation> onAnnotation();

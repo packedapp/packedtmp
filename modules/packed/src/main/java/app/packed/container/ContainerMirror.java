@@ -22,7 +22,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
     Set<ExtensionMirror> extensions(); // return Map<Type, Mirror> instead???
 
     /** {@return a {@link Set} view of every extension type that has been used in the container.} */
-    Set<Class<? extends Extension>> extensionTypes();
+    Set<Class<? extends Extension<?>>> extensionTypes();
 
     /**
      * @param <T>
@@ -41,7 +41,7 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
-    boolean isExtensionUsed(Class<? extends Extension> extensionType);
+    boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 
     /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws

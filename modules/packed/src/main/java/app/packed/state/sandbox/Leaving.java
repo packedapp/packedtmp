@@ -92,7 +92,7 @@ public @interface Leaving {
 
 // Men de kan også sige at man skal specifict skal sige ExportAll....
 
-// Kan evt. have en GuestIsolate(Class<? extends Extension> <- gør at det for en guest ser ud til 
+// Kan evt. have en GuestIsolate(Class<? extends Extension<?>> <- gør at det for en guest ser ud til 
 // at det er den første i et træ. Det betyder også at evt. System sidecars bliver splittet??
 // Eller??? Måske ikke, igen alt det her opdeling er jo frivillig
 

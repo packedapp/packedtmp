@@ -39,9 +39,9 @@ import packed.internal.util.StringFormatter;
 // I think the new one is simpler...??
 final class ExtensionDependencyValidator {
 
-    private static final Map<Class<? extends Extension>, List<Class<? extends Extension>>> VALIDATED = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Class<? extends Extension<?>>, List<Class<? extends Extension<?>>>> VALIDATED = Collections.synchronizedMap(new WeakHashMap<>());
 
-    private static Node collect(Class<? extends Extension> extensionClass, IdentityHashMap<Class<? extends Extension>, Node> nodes) {
+    private static Node collect(Class<? extends Extension<?>> extensionClass, IdentityHashMap<Class<? extends Extension<?>>, Node> nodes) {
         Node n = nodes.get(extensionClass);
         if (n == null) {
             nodes.put(extensionClass, n = new Node(extensionClass));
@@ -52,17 +52,17 @@ final class ExtensionDependencyValidator {
         return n;
     }
 
-    static List<Class<? extends Extension>> dependenciesOf(Class<? extends Extension> extensionClass) {
-        List<Class<? extends Extension>> result = VALIDATED.get(extensionClass);
+    static List<Class<? extends Extension<?>>> dependenciesOf(Class<? extends Extension<?>> extensionClass) {
+        List<Class<? extends Extension<?>>> result = VALIDATED.get(extensionClass);
         if (result != null) {
             return result;
         }
         return dependenciesOf0(extensionClass);
     }
 
-    static List<Class<? extends Extension>> dependenciesOf0(Class<? extends Extension> extensionClass) {
+    static List<Class<? extends Extension<?>>> dependenciesOf0(Class<? extends Extension<?>> extensionClass) {
         // Create nodes and resolve edges
-        IdentityHashMap<Class<? extends Extension>, Node> nodes = new IdentityHashMap<>();
+        IdentityHashMap<Class<? extends Extension<?>>, Node> nodes = new IdentityHashMap<>();
         collect(extensionClass, nodes);
 
         // Run Tarjan's strongly connected components
@@ -84,18 +84,18 @@ final class ExtensionDependencyValidator {
     }
 
     private static class Node {
-        private final List<Class<? extends Extension>> dependencies;
-        final Class<? extends Extension> extensionClass;
+        private final List<Class<? extends Extension<?>>> dependencies;
+        final Class<? extends Extension<?>> extensionClass;
         private int index;
 
         private int lowLink;
         private final Node[] nodes;
         private boolean onStack;
 
-        Node(Class<? extends Extension> extensionClass) {
+        Node(Class<? extends Extension<?>> extensionClass) {
             this.extensionClass = requireNonNull(extensionClass);
             this.dependencies = ExtensionUtil.fromUseExtension(extensionClass);
-            for (Class<? extends Extension> c : dependencies) {
+            for (Class<? extends Extension<?>> c : dependencies) {
                 if (c == extensionClass) {
                     throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot depend on itself via " + c);
                 }
@@ -137,7 +137,7 @@ final class ExtensionDependencyValidator {
             if (n.index == n.lowLink) {
                 if (stack.size() > 1 && stack.peek() != n) {
                     // System.out.println("Stack size " + stack.size() + " for node " + n);
-                    ArrayList<Class<? extends Extension>> scc = new ArrayList<>();
+                    ArrayList<Class<? extends Extension<?>>> scc = new ArrayList<>();
                     Node n1 = stack.pop();
                     // System.out.println("Popping " + n1);
                     while (n1 != n) {

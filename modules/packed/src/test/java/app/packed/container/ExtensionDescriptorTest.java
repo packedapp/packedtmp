@@ -26,7 +26,6 @@ import app.packed.extension.ExtensionDescriptor;
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
 
-
     @Test
     public void empty() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(EmptyExtension.class);
@@ -42,7 +41,7 @@ public class ExtensionDescriptorTest {
     }
 
     @DependsOn(extensions = EmptyExtension.class)
-    static class VariousExtension extends Extension {
+    static class VariousExtension extends Extension<VariousExtension> {
 
         //@ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
@@ -71,5 +70,5 @@ public class ExtensionDescriptorTest {
         }
     }
 
-    static class EmptyExtension extends Extension {}
+    static class EmptyExtension extends Extension<EmptyExtension> {}
 }

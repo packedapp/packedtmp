@@ -50,9 +50,9 @@ public final class PackedComponentStreamOption implements ComponentMirrorStream.
     private final int s;
 
     @Nullable
-    private final Set<Class<? extends Extension>> includeExtensions;
+    private final Set<Class<? extends Extension<?>>> includeExtensions;
 
-    PackedComponentStreamOption(int s, Set<Class<? extends Extension>> includeExtensions) {
+    PackedComponentStreamOption(int s, Set<Class<? extends Extension<?>>> includeExtensions) {
         this.s = s;
         this.includeExtensions = includeExtensions;
     }
@@ -85,7 +85,7 @@ public final class PackedComponentStreamOption implements ComponentMirrorStream.
             return o0;
         }
         int s = o0.s;
-        Set<Class<? extends Extension>> includeExtensions = o0.includeExtensions;
+        Set<Class<? extends Extension<?>>> includeExtensions = o0.includeExtensions;
         for (int i = 1; i < options.length; i++) {
             PackedComponentStreamOption oo = (PackedComponentStreamOption) options[i];
             s |= oo.s;
@@ -105,7 +105,7 @@ public final class PackedComponentStreamOption implements ComponentMirrorStream.
     }
 
     public boolean processThisDeeper(RuntimeComponentMirror origin, RuntimeComponentMirror actual) {
-        // Class<? extends Extension> extensionClass = actual.model.extension().orElse(null);
+        // Class<? extends Extension<?>> extensionClass = actual.model.extension().orElse(null);
         // if (s==0) return;
         // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionClass))) to &&, dobbel check
         // Also in next method
@@ -119,7 +119,7 @@ public final class PackedComponentStreamOption implements ComponentMirrorStream.
     }
 
     public boolean processThisDeeper(ComponentSetup origin, ComponentSetup actual) {
-//        Class<? extends Extension> extensionClass = actual.extension().orElse(null);
+//        Class<? extends Extension<?>> extensionClass = actual.extension().orElse(null);
 //        // if (s==0) return;
 //        if (extensionClass != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionClass)))) {
 //            return false;

@@ -33,7 +33,7 @@ import app.packed.bean.BeanMirror;
 // Saa kan vi ogsaa bruge den paa runtime
 
 // Den bliver vel noedt til at vaere live...
-public interface ExtensionSelection<T extends Extension> extends Iterable<T> {
+public interface ExtensionSelection<T extends Extension<T>> extends Iterable<T> {
 
     // Ideen er at man kan faa saadan en injected ind i et mirror...
 
@@ -83,7 +83,7 @@ class MyExtMirror {
     }
 }
 
-class TestExtension extends Extension {
+class TestExtension extends Extension<TestExtension> {
 
     Collection<BeanMirror> beans() {
         return List.of();

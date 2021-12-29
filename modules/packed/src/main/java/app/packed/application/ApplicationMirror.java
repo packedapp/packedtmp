@@ -45,7 +45,7 @@ public interface ApplicationMirror extends Mirror {
     ApplicationDescriptor descriptor();
 
     /** {@return a {@link Set} view of every extension type that has been used in the container.} */
-    default Set<Class<? extends Extension>> extensionTypes() {
+    default Set<Class<? extends Extension<?>>> extensionTypes() {
         return container().extensionTypes();
     }
 
@@ -57,7 +57,7 @@ public interface ApplicationMirror extends Mirror {
      * 
      * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
-    Set<Class<? extends Extension>> disabledExtensions();
+    Set<Class<? extends Extension<?>>> disabledExtensions();
 
     default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
         throw new UnsupportedOperationException();

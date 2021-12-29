@@ -59,7 +59,7 @@ public final class ContainerSetup extends ComponentSetup {
     public ArrayList<ContainerSetup> containerChildren;
 
     /** All extensions in use in this container. */
-    public final LinkedHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new LinkedHashMap<>();
+    public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /** The injector of this container. */
     // I think move this to BeanSetup
@@ -176,7 +176,7 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** {@return a unmodifiable view of all extension types that are in use.} */
-    public Set<Class<? extends Extension>> extensionTypes() {
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
@@ -190,7 +190,7 @@ public final class ContainerSetup extends ComponentSetup {
      * @see ExtensionConfiguration#isExtensionUsed(Class)
      * @see ContainerMirror#isExtensionUsed(Class)
      */
-    public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.containsKey(extensionType);
     }
@@ -206,7 +206,7 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends Extension> E useExtension(Class<E> extensionClass) {
+    public <E extends Extension<?>> E useExtension(Class<E> extensionClass) {
         realm.newOperation();
         ExtensionSetup extension = useExtensionSetup(extensionClass, /* requested by the user, not another extension */ null);
         return (E) extension.instance();
@@ -227,7 +227,7 @@ public final class ContainerSetup extends ComponentSetup {
      *             if the
      */
     // Any dependencies needed have been checked
-    ExtensionSetup useExtensionSetup(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
+    ExtensionSetup useExtensionSetup(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
@@ -266,17 +266,17 @@ public final class ContainerSetup extends ComponentSetup {
     private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
         /** Extracts the extension that */
-        private static final ClassValue<Class<? extends Extension>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
+        private static final ClassValue<Class<? extends Extension<?>>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
 
             /** {@inheritDoc} */
-            protected Class<? extends Extension> computeValue(Class<?> implementation) {
+            protected Class<? extends Extension<?>> computeValue(Class<?> implementation) {
                 ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);
 
                 ExtensionMember em = implementation.getAnnotation(ExtensionMember.class);
                 if (em == null) {
                     throw new InternalExtensionException(implementation + " must be annotated with @ExtensionMember");
                 }
-                Class<? extends Extension> extensionType = em.value();
+                Class<? extends Extension<?>> extensionType = em.value();
                 ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
 
                 // Den
@@ -298,7 +298,7 @@ public final class ContainerSetup extends ComponentSetup {
         }
 
         @Override
-        public Optional<Class<? extends Extension>> registrant() {
+        public Optional<Class<? extends Extension<?>>> registrant() {
             throw new UnsupportedOperationException();
         }
 
@@ -314,7 +314,7 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Set<Class<? extends Extension>> extensionTypes() {
+        public Set<Class<? extends Extension<?>>> extensionTypes() {
             return ContainerSetup.this.extensionTypes();
         }
 
@@ -325,7 +325,7 @@ public final class ContainerSetup extends ComponentSetup {
             requireNonNull(mirrorType, "mirrorType is null");
 
             // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-            Class<? extends Extension> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(mirrorType);
+            Class<? extends Extension<?>> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(mirrorType);
 
             // See if the container uses the extension.
             ExtensionSetup extension = extensions.get(cl);
@@ -348,7 +348,7 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+        public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
             return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 

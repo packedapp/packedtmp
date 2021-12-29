@@ -225,7 +225,7 @@ public abstract class BaseAssembly extends Assembly {
      * @throws IllegalArgumentException
      *             if the specified extension type is {@link Extension}
      */
-    protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+    protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return configuration().isExtensionUsed(extensionType);
     }
 

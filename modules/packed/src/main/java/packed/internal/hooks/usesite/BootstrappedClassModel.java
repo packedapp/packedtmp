@@ -49,7 +49,7 @@ public final class BootstrappedClassModel {
 
     /** Any extension this model is a part of. */
     @Nullable
-    public final Class<? extends Extension> extensionClass;
+    public final Class<? extends Extension<?>> extensionClass;
 
     /** All hooks. */
     private final List<UseSiteMemberHookModel> models;

@@ -18,7 +18,7 @@ import packed.internal.container.RealmSetup;
 /**
  * An extension for creating new beans.
  */
-public class BeanExtension extends Extension {
+public class BeanExtension extends Extension<BeanExtension> {
 
     /** The container we installing beans into. */
     final ContainerSetup parent;

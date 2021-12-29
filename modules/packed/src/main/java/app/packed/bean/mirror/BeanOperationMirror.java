@@ -70,12 +70,12 @@ public abstract class BeanOperationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    public final Class<? extends Extension> extension() {
+    public final Class<? extends Extension<?>> extension() {
         throw new UnsupportedOperationException();
     }
 
     // Den her slags functionalitet ligger altid hos Extensions
-    public Class<? extends Extension> manager() {
+    public Class<? extends Extension<?>> manager() {
         throw new UnsupportedOperationException();
     }
 }

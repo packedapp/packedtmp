@@ -46,7 +46,7 @@ class UsageLogging {
         }
     }
 
-    static class LoggingExtension extends Extension {
+    static class LoggingExtension extends Extension<LoggingExtension> {
         public void enable() {}
     }
 

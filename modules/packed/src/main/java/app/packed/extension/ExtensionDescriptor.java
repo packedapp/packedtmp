@@ -56,7 +56,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
     int compareTo(ExtensionDescriptor descriptor);
 
     /** {@return an immutable unordered set containing every dependency the extension declares.} */
-    Set<Class<? extends Extension>> dependencies();
+    Set<Class<? extends Extension<?>>> dependencies();
 
     /**
      * Returns the depth of the extension in the extension dependency graph.
@@ -134,7 +134,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
     String name();
 
     /** {@return the type of extension this descriptor describes.} */
-    Class<? extends Extension> type();
+    Class<? extends Extension<?>> type();
 
     /**
      * Returns a descriptor for the specified extension type.
@@ -146,7 +146,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      *             if the definition of the extension was invalid. For example, if there are circles in the extension
      *             dependency hierarchy.
      */
-    static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+    static ExtensionDescriptor of(Class<? extends Extension<?>> extensionType) {
         return ExtensionModel.of(extensionType);
     }
 }
@@ -179,7 +179,7 @@ interface SandboxExtensionDescriptor {
     }
 }
 // allDependencies
-// default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {
+// default Set<Class<? extends Extension<?>>> dependenciesWithTransitiveDependencies() {
 //dependencies().stream().map(ExtensionDescriptor::of).flatMap(ExtensionDescriptor::dependenciesWithTransitiveDependencies);
 //return null;
 // }

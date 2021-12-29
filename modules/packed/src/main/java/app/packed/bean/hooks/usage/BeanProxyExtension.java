@@ -6,7 +6,7 @@ import app.packed.inject.Factory;
 
 // Syntes service interfaces er noget andet... end bean Proxy
 
-class BeanProxyExtension extends Extension {
+class BeanProxyExtension extends Extension<BeanProxyExtension > {
     BeanProxyExtension() {}
 
     // Problemet er her provide()

@@ -28,9 +28,9 @@ public @interface ExtensionMember {
      * Returns the extension the annotated class is a member of. The annotated class must be located in the same module as
      * the extension defined in this value. Otherwise an {@link InternalExtensionException} will be thrown at runtime.
      */
-    Class<? extends Extension> value();
+    Class<? extends Extension<?>> value();
     
-    // static Set<Class<?>> findMembers(Class<? extends Extension>) IDK about this
+    // static Set<Class<?>> findMembers(Class<? extends Extension<?>>) IDK about this
 
 }
 

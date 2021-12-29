@@ -98,7 +98,7 @@ public class ExtensionMirror implements Mirror {
     }
 
     /** {@return the type of extension this mirror is a part of.} */
-    public final Class<? extends Extension> extensionType() {
+    public final Class<? extends Extension<?>> extensionType() {
         return extension().extensionType;
     }
 

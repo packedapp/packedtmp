@@ -19,7 +19,7 @@ import packed.internal.container.ExtensionSetup;
  * Supports bean member (Constructor, Method, Field) injection.
  * 
  */
-public class BeanExtension2 extends Extension {
+public class BeanExtension2 extends Extension<BeanExtension2> {
 
     /** The container we are registering the beans in. */
     final ContainerSetup container;

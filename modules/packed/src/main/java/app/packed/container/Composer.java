@@ -200,7 +200,7 @@ public abstract class Composer {
 
 // Er det ikke noget vi skal definere i vores ArtifactDriver...
 //@SafeVarargs
-//protected static void $AllowExtensions(Class<? extends Extension>... extensions) {
+//protected static void $AllowExtensions(Class<? extends Extension<?>>... extensions) {
 //    throw new UnsupportedOperationException();
 //}
 //
@@ -214,7 +214,7 @@ public abstract class Composer {
 //// De her bliver kaldt fra en statisks initializer
 //// Ikke hvis man skal bruge en ArtifactDriver...
 //@SafeVarargs
-//protected static void $RejectExtensions(Class<? extends Extension>... extensions) {
+//protected static void $RejectExtensions(Class<? extends Extension<?>>... extensions) {
 //    throw new UnsupportedOperationException();
 //}
 //Can take a CCC context. And cast it and provide lookup??

@@ -56,7 +56,7 @@ public @interface Packlet {
      * 
      * @return the extensions that the annotated type uses
      */
-    Class<? extends Extension>[] extension();
+    Class<? extends Extension<?>>[] extension();
 
     /**
      * Optional extension types that will only be used if they can be resolved at runtime using

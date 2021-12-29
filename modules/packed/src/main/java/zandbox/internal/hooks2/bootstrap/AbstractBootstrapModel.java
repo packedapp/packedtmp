@@ -15,13 +15,13 @@ public abstract class AbstractBootstrapModel {
     /** The extension this bootstrap belongs to. */
     // We need to store this info here...
     // And
-    protected final Class<? extends Extension> extensionClass;
+    protected final Class<? extends Extension<?>> extensionClass;
 
     protected final MethodHandle mhConstructor;
 
     protected final Class<?> bootstrapClass;
 
-    AbstractBootstrapModel(Class<?> bootstrapClass, Class<? extends Extension> extensionClass) {
+    AbstractBootstrapModel(Class<?> bootstrapClass, Class<? extends Extension<?>> extensionClass) {
         this.bootstrapClass = requireNonNull(bootstrapClass);
         this.extensionClass = requireNonNull(extensionClass);
         Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), bootstrapClass);
@@ -55,7 +55,7 @@ public abstract class AbstractBootstrapModel {
         throw new UnsupportedOperationException();
     }
 
-    public final Class<? extends Extension> extensionClass() {
+    public final Class<? extends Extension<?>> extensionClass() {
         return extensionClass;
     }
 }

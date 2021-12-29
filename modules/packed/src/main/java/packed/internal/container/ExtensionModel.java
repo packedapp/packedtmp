@@ -51,9 +51,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected ExtensionModel computeValue(Class<?> extensionClass) {
-            return Loader.load(ClassUtil.checkProperSubclass(Extension.class, extensionClass), null);
+            return Loader.load((Class) ClassUtil.checkProperSubclass(Extension.class, extensionClass), null);
         }
     };
 
@@ -64,7 +65,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private final int depth;
 
     /** The extension we model. */
-    private final Class<? extends Extension> extensionClass;
+    private final Class<? extends Extension<?>> extensionClass;
 
     /** A method handle for creating instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
@@ -103,7 +104,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *             next
      */
     @Nullable
-    public Class<? extends Extension> checkSameModule(Class<? extends Extension> eType) {
+    public Class<? extends Extension<?>> checkSameModule(Class<? extends Extension<?>> eType) {
         if (extensionClass.getModule() != eType.getModule()) {
             throw new InternalExtensionException("The extension " + eType + " and type " + extensionClass + " must be defined in the same module, was "
                     + eType.getModule() + " and " + extensionClass.getModule());
@@ -146,7 +147,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> dependencies() {
+    public Set<Class<? extends Extension<?>>> dependencies() {
         return dependencies;
     }
 
@@ -158,7 +159,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends Extension> type() {
+    public Class<? extends Extension<?>> type() {
         return extensionClass;
     }
 
@@ -181,9 +182,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *            the setup of the extension
      * @return a new extension instance
      */
-    Extension newInstance(ExtensionSetup extension) {
+    Extension<?> newInstance(ExtensionSetup extension) {
         try {
-            return (Extension) mhConstructor.invokeExact(extension);
+            return (Extension<?>) mhConstructor.invokeExact(extension);
         } catch (Throwable e) {
             throw new InternalExtensionException("An instance of the extension " + nameFull + " could not be created.", e);
         }
@@ -216,7 +217,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @throws InternalExtensionException
      *             if a valid model for the extension could not be created
      */
-    public static ExtensionModel of(Class<? extends Extension> extensionType) {
+    public static ExtensionModel of(Class<? extends Extension<?>> extensionType) {
         return MODELS.get(extensionType);
     }
 
@@ -224,13 +225,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
     public static final class Builder {
 
         /** A set of extension this extension depends on (does not include transitive extensions). */
-        private Set<Class<? extends Extension>> dependencies = new HashSet<>();
+        private Set<Class<? extends Extension<?>>> dependencies = new HashSet<>();
 
         /** The depth of the extension relative to other extensions. */
         private int depth;
 
         /** The extension we are building a model for. */
-        private final Class<? extends Extension> extensionClass;
+        private final Class<? extends Extension<?>> extensionClass;
 
         /** A handle for creating new extension instances. */
         private MethodHandle mhConstructor; // (ExtensionSetup)Extension
@@ -239,9 +240,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency. Skal lige gennemtaenkes,
          * det er lidt kompliceret classloader
          */
-        private Set<Class<? extends Extension>> pendingLoadDependencies = Collections.newSetFromMap(new WeakHashMap<>());
+        private Set<Class<? extends Extension<?>>> pendingLoadDependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
-        private Builder(Class<? extends Extension> extensionClass) {
+        private Builder(Class<? extends Extension<?>> extensionClass) {
             this.extensionClass = requireNonNull(extensionClass);
         }
 
@@ -256,7 +257,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 dependsOn(false, depende.extensions());
             }
             
-            for (Class<? extends Extension> dependencyType : pendingLoadDependencies) {
+            for (Class<? extends Extension<?>> dependencyType : pendingLoadDependencies) {
                 ExtensionModel model = Loader.load(dependencyType, loader);
                 depth = Math.max(depth, model.depth + 1);
                 dependencies.add(dependencyType);
@@ -285,9 +286,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * @see Extension#$dependsOn(Class...)
          */
         @SuppressWarnings("unchecked")
-        public void dependsOn(boolean optionally, Class<? extends Extension>... extensions) {
+        public void dependsOn(boolean optionally, Class<? extends Extension<?>>... extensions) {
             requireNonNull(extensions, "extensions is null");
-            for (Class<? extends Extension> dependencyType : extensions) {
+            for (Class<? extends Extension<?>> dependencyType : extensions) {
                 requireNonNull(dependencyType);
                 if (extensionClass == dependencyType) {
                     throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
@@ -299,7 +300,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         @SuppressWarnings("unchecked")
-        public Optional<Class<? extends Extension>> dependsOnOptionally(String extension) {
+        public Optional<Class<? extends Extension<?>>> dependsOnOptionally(String extension) {
             ClassLoader cl = extensionClass.getClassLoader();
             Class<?> c = null;
             try {
@@ -315,7 +316,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 throw new InternalExtensionException(
                         "The specified string \"" + extension + "\" " + " specified an invalid extension " + StringFormatter.format(c));
             }
-            Class<? extends Extension> dependency = (Class<? extends Extension>) c;
+            Class<? extends Extension<?>> dependency = (Class<? extends Extension<?>>) c;
 
             ExtensionModel.of(dependency);
             dependsOn(true, dependency);
@@ -332,7 +333,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private static final class Loader {
 
         /** A map that contains Bootstrap, Builder or Throwable */
-        private static final WeakHashMap<Class<? extends Extension>, Object> DATA = new WeakHashMap<>();
+        private static final WeakHashMap<Class<? extends Extension<?>>, Object> DATA = new WeakHashMap<>();
 
         /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */
         private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
@@ -341,9 +342,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * A stack used for checking for cyclic dependencies between extension. We do not expect deep stacks (or at least very
          * few of them), so it is okay to check for membership in linear time.
          */
-        private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
+        private final ArrayDeque<Class<? extends Extension<?>>> stack = new ArrayDeque<>();
 
-        private ExtensionModel loadLocked(Class<? extends Extension> extensionClass) {
+        private ExtensionModel loadLocked(Class<? extends Extension<?>> extensionClass) {
             // Check for cyclic dependencies between extensions
             if (stack.peek() != extensionClass) {
                 if (!stack.isEmpty() && stack.contains(extensionClass)) {
@@ -404,7 +405,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
             }
             @SuppressWarnings("unchecked")
-            Class<? extends Extension> extensionClass = (Class<? extends Extension>) callerClass;
+            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) callerClass;
             GLOBAL_LOCK.lock();
             try {
                 Object m = DATA.get(callerClass);
@@ -423,7 +424,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
         }
 
-        private static ExtensionModel load(Class<? extends Extension> extensionClass, @Nullable Loader loader) {
+        private static ExtensionModel load(Class<? extends Extension<?>> extensionClass, @Nullable Loader loader) {
             // The creation of an Extension model is a bit complex because we need to
             // create the models of dependencies recursively while also checking for cyclic dependencies
 

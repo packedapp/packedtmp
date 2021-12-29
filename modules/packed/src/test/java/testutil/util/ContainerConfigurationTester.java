@@ -48,7 +48,7 @@ public class ContainerConfigurationTester {
         return cc;
     }
 
-    public Set<Class<? extends Extension>> extensions() {
+    public Set<Class<? extends Extension<?>>> extensions() {
         return cc.extensionTypes();
     }
 
@@ -90,11 +90,11 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public <T extends Extension> T use(Class<T> extensionClass) {
+    public <T extends Extension<T>> T use(Class<T> extensionClass) {
         return cc.use(extensionClass);
     }
 
-    public <T extends Extension> ContainerConfigurationTester use(Class<T> extensionClass, Consumer<? super T> consumer) {
+    public <T extends Extension<T>> ContainerConfigurationTester use(Class<T> extensionClass, Consumer<? super T> consumer) {
         consumer.accept(cc.use(extensionClass));
         return this;
     }

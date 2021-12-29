@@ -48,17 +48,17 @@ public class HookOnExtensionActivationMicro {
 
     /* --------------------------------------- */
 
-    public static class Comp1Field extends Extension {
+    public static class Comp1Field extends Extension<Comp1Field> {
         @HookActivateAnnotation
         public static final String foo = "";
     }
 
-    public static class Comp1Method extends Extension {
+    public static class Comp1Method extends Extension<Comp1Method> {
         @HookActivateAnnotation
         public static final void foo() {}
     }
 
-    public static class Comp1Field1Method extends Extension {
+    public static class Comp1Field1Method extends Extension<Comp1Field1Method> {
         @HookActivateAnnotation
         public static final String foo = "";
 
@@ -66,7 +66,7 @@ public class HookOnExtensionActivationMicro {
         public static final void foo() {}
     }
 
-    public static class Comp3Fields3Methods extends Extension {
+    public static class Comp3Fields3Methods extends Extension<Comp3Fields3Methods> {
         @HookActivateAnnotation
         public static final String foo1 = "";
         @HookActivateAnnotation
@@ -84,7 +84,7 @@ public class HookOnExtensionActivationMicro {
         public static final void foo3() {}
     }
 
-    public static class Comp5Fields5Methods extends Extension {
+    public static class Comp5Fields5Methods extends Extension<Comp5Fields5Methods> {
         @HookActivateAnnotation
         public static final String foo1 = "";
         @HookActivateAnnotation

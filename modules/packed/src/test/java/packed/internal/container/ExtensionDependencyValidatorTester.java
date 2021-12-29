@@ -29,15 +29,15 @@ public class ExtensionDependencyValidatorTester {
     }
 
     @Packlet(extension = { MyExtension2.class, MyExtension3.class })
-    public class MyExtension extends Extension {}
+    public class MyExtension extends Extension<MyExtension> {}
 
     @Packlet(extension = MyExtension3.class)
-    public class MyExtension2 extends Extension {}
+    public class MyExtension2 extends Extension<MyExtension2> {}
 
     @Packlet(extension = MyExtension4.class)
-    public class MyExtension3 extends Extension {}
+    public class MyExtension3 extends Extension<MyExtension3> {}
 
     @Packlet(extension = MyExtension.class)
-    public class MyExtension4 extends Extension {}
+    public class MyExtension4 extends Extension<MyExtension4> {}
 
 }

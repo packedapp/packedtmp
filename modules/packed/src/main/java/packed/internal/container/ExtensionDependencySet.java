@@ -25,13 +25,13 @@ import java.util.List;
 import app.packed.extension.Extension;
 
 /** Immutable implementation of {@link ExtensionDependencySet}. */
-final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension>> {
+final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension<?>>> {
 
     /** The extension types this set contains */
     // Need to changes this to a list
-    final List<Class<? extends Extension>> extensions;
+    final List<Class<? extends Extension<?>>> extensions;
 
-    private ExtensionDependencySet(List<Class<? extends Extension>> extensions) {
+    private ExtensionDependencySet(List<Class<? extends Extension<?>>> extensions) {
         this.extensions = requireNonNull(extensions);
     }
 
@@ -42,7 +42,7 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
      *            the extension type to test
      * @return whether or not this ordering contains the specified extension type
      */
-    public boolean contains(Class<? extends Extension> extensionClass) {
+    public boolean contains(Class<? extends Extension<?>> extensionClass) {
         return extensions.contains(extensionClass);
     }
 
@@ -64,7 +64,7 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
     }
 
     @Override
-    public Iterator<Class<? extends Extension>> iterator() {
+    public Iterator<Class<? extends Extension<?>>> iterator() {
         return extensions.iterator();
     }
 
@@ -85,8 +85,8 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
      *             if trying to add BaseExtension
      */
     @SuppressWarnings("unchecked")
-    public static ExtensionDependencySet of(Collection<Class<? extends Extension>> extensions) {
+    public static ExtensionDependencySet of(Collection<Class<? extends Extension<?>>> extensions) {
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).toList();
-        return new ExtensionDependencySet((List<Class<? extends Extension>>) l);
+        return new ExtensionDependencySet((List<Class<? extends Extension<?>>>) l);
     }
 }
