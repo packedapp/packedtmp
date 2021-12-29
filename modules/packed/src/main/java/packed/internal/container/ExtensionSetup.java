@@ -140,7 +140,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         container.extensions.put(extensionType, this);
 
         // Hvad hvis en extension linker en af deres egne assemblies.
-        if (container.realm instanceof AssemblyRealmSetup r && r.container == container) {
+        if (container.realm instanceof ContainerRealmSetup r && r.container() == container) {
             r.extensions.add(this);
         }
 

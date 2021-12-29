@@ -29,6 +29,8 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
     //
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
+    public abstract ContainerSetup container();
+
     protected void close() {
         if (current != null) {
             current.onWired();
@@ -41,7 +43,8 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
         // assert container.name != null;
     }
 
-    protected void closeNew(ContainerSetup container) {
+    protected void closeNew() {
+        ContainerSetup container = container();
         if (current != null) {
             current.onWired();
             current = null;
@@ -66,6 +69,7 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
         ExtensionSetup e = extensions.pollFirst();
         while (e != null) {
             e = extensions.pollFirst();
+            //e.onUserClose();
         }
 
         // Check if any extensions have been added while close the last realm

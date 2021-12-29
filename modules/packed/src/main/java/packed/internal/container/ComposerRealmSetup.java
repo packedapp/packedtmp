@@ -78,4 +78,10 @@ public final class ComposerRealmSetup extends ContainerRealmSetup {
     public Class<?> realmType() {
         return composer.getClass();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerSetup container() {
+        return container;
+    }
 }

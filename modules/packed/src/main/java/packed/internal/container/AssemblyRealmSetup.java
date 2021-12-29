@@ -93,12 +93,18 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
         }
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
-        closeNew(container);
+        closeNew();
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> realmType() {
         return assembly.getClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerSetup container() {
+        return container;
     }
 }

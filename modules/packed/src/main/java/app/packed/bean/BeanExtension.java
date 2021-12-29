@@ -85,6 +85,17 @@ public class BeanExtension extends Extension {
     public int beanCount() {
         return 4;
     }
+    
+    @Override
+    protected void onClose() {
+        super.onClose();
+    }
+
+    @Override
+    protected void onUserClose() {
+        super.onUserClose();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror mirror() {
