@@ -48,8 +48,6 @@ import packed.internal.util.CollectionUtil;
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
 
-    // TODO move to AssemblyRealmSetup
-    public final AssemblyModel assemblyModel;
 
     /** Children of this node (lazily initialized) in insertion order. */
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>(1);
@@ -65,6 +63,7 @@ public final class ContainerSetup extends ComponentSetup {
     private boolean hasRunPreContainerChildren;
 
     /** The injector of this container. */
+    // I think move this to BeanSetup
     public final ContainerInjectorSetup injection = new ContainerInjectorSetup(this);
 
     /**
@@ -72,8 +71,6 @@ public final class ContainerSetup extends ComponentSetup {
      * ignored.
      */
     public boolean nameInitializedWithWirelet;
-
-    private ArrayList<ExtensionSetup> tmpExtensions;
 
     /** Wirelets that was specified when creating the component. */
     // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
@@ -97,8 +94,6 @@ public final class ContainerSetup extends ComponentSetup {
     public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver driver, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
-
-        this.assemblyModel = AssemblyModel.of(realm.realmType());
 
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
@@ -241,14 +236,6 @@ public final class ContainerSetup extends ComponentSetup {
         injection.resolve();
     }
 
-    public void postBuild(ContainerConfiguration configuration) {
-        assemblyModel.postBuild(configuration);
-    }
-
-    public void preBuild(ContainerConfiguration configuration) {
-        assemblyModel.preBuild(configuration);
-    }
-
     private void runPredContainerChildren() {
         if (hasRunPreContainerChildren) {
             return;
@@ -266,16 +253,6 @@ public final class ContainerSetup extends ComponentSetup {
         for (ExtensionSetup ea : extensions.values()) {
             ea.onUserClose();
         }
-
-        // Den fungere ikke 100% den her loesning...
-        // Hvir vi bruger nyte extensions... skal de jo helst koeres paa den rigtige plads...
-        while (tmpExtensions != null) {
-            ArrayList<ExtensionSetup> te = tmpExtensions;
-            tmpExtensions = null;
-            for (ExtensionSetup ea : te) {
-                ea.onUserClose();
-            }
-        }
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
@@ -287,7 +264,7 @@ public final class ContainerSetup extends ComponentSetup {
      * 
      * @param extensionClass
      *            the type of extension
-     * @param requestedBy
+     * @param requestedByExtension
      *            non-null if it is another extension that is requesting the extension
      * @return the extension's context
      * @throws IllegalStateException
@@ -297,7 +274,7 @@ public final class ContainerSetup extends ComponentSetup {
      *             if the
      */
     // Any dependencies needed have been checked
-    ExtensionSetup useExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup requestedBy) {
+    ExtensionSetup useExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
@@ -306,26 +283,28 @@ public final class ContainerSetup extends ComponentSetup {
         if (extension == null) {
 
             // Checks that container is still configurable
-            if (requestedBy == null) {
+            if (requestedByExtension == null) {
+                // A user has made a request, that requires an extension to be installed.
+                // Check that the realm is still open
+
+                // TODO check that the extensionClass is not banned for users
+
                 realm.checkOpen();
             } else {
-                requestedBy.checkUserConfigurable();
+                // An extension has made a request, that requires an extension to be installed.
+
+                // TODO check that the extensionClass is not banned for users
+
+                // TODO Check that the extension user model has not been closed
+                requestedByExtension.checkUserConfigurable();
             }
 
             // make sure it is recursively installed into the root container
-            ExtensionSetup extensionParent = parent == null ? null : parent.useExtension(extensionClass, null);
+            ExtensionSetup extensionParent = parent == null ? null : parent.useExtension(extensionClass, requestedByExtension);
 
             // Create a extension and initialize it.
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
             extension.initialize();
-
-            if (hasRunPreContainerChildren) {
-                ArrayList<ExtensionSetup> l = tmpExtensions;
-                if (l == null) {
-                    l = tmpExtensions = new ArrayList<>();
-                }
-                l.add(extension);
-            }
         }
         return extension;
     }

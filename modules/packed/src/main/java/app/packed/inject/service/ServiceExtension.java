@@ -88,6 +88,11 @@ import packed.internal.util.ThrowableUtil;
 
 public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseExtension */ {
 
+    /** A handle that can access superclass private ComponentConfiguration#component(). */
+    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
+            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
+            MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
+
     /** A binder for prototype service beans. */
     @SuppressWarnings("rawtypes")
     private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
@@ -97,6 +102,10 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
     @SuppressWarnings("rawtypes")
     private static final OtherBeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             BeanType.BASE);
+
+    static {
+        $dependsOn(BeanExtension.class);
+    }
 
     /** The service manager. */
     private final ServiceManagerSetup services;
@@ -109,6 +118,15 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
         this.services = ((ExtensionSetup) configuration).container.injection.newServiceManagerFromServiceExtension();
+    }
+
+    /** {@return the container setup instance that we are wrapping.} */
+    private BeanSetup bean(BeanConfiguration<?> conf) {
+        try {
+            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(conf);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 
     // Validates the outward facing contract
@@ -134,6 +152,23 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
     }
+
+    // Her kan en extension faktisk exporte ting...
+    public <T> ExportedServiceConfiguration<T> export(ContainerBeanConfiguration<T> bean) {
+        // Taenker det ogsaa er maaden vi kam exportere
+        return bean(bean).sourceExport();
+    }
+
+    // Altsaa skal vi hellere have noget services().filter().exportall();
+
+    // Alternativ this export all er noget med services()..
+
+    // is exportAll applied immediately or at the end???
+
+    // Maaske er den mest brugbart hvis den bliver applied nu!
+    // Fordi saa kan man styre ting...
+    // F.eks. definere alt der skal exportes foerst
+    // Den er isaer god inde man begynder at linke andre containere
 
     /**
      * Exports an internal service outside of this container.
@@ -173,37 +208,6 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
         checkUserConfigurable();
         return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
-
-    /** A handle that can access superclass private ComponentConfiguration#component(). */
-    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
-            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
-
-    /** {@return the container setup instance that we are wrapping.} */
-    private BeanSetup bean(BeanConfiguration<?> conf) {
-        try {
-            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(conf);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
-    // Her kan en extension faktisk exporte ting...
-    public <T> ExportedServiceConfiguration<T> export(ContainerBeanConfiguration<T> bean) {
-        // Taenker det ogsaa er maaden vi kam exportere
-        return bean(bean).sourceExport();
-    }
-
-    // Altsaa skal vi hellere have noget services().filter().exportall();
-
-    // Alternativ this export all er noget med services()..
-
-    // is exportAll applied immediately or at the end???
-
-    // Maaske er den mest brugbart hvis den bliver applied nu!
-    // Fordi saa kan man styre ting...
-    // F.eks. definere alt der skal exportes foerst
-    // Den er isaer god inde man begynder at linke andre containere
 
     // One of 3 models...
     // Fails on other exports
@@ -246,11 +250,6 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
         return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
-    // Fungere ikke rigtig med mi
-    public <T> ServiceConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
      * constructor or method to instantiate the service instance once the injector is created.
@@ -270,6 +269,11 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
         // Create a bean driver by binding the implementation
         ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupport.class).wire(SINGLETON_SERVICE_BEAN_BINDER, implementation);
         return c.provide();
+    }
+
+    // Fungere ikke rigtig med mi
+    public <T> ServiceConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -456,10 +460,6 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
         public void check() {
             System.out.println("Requested by " + requestingExtension);
         }
-    }
-
-    static {
-        $dependsOn(BeanExtension.class);
     }
 }
 

@@ -36,7 +36,10 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            ContainerConfiguration.class);
+            AssemblyRealmSetup.class, ContainerConfiguration.class);
+
+    // TODO move to AssemblyRealmSetup
+    public final AssemblyModel assemblyModel;
 
     final Assembly assembly;
 
@@ -47,7 +50,7 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
     // Den giver kun mening for assemblies...
     /** The root component of this realm. */
     public final ContainerSetup container;
-    
+
     /**
      * Builds an application using the specified assembly and optional wirelets.
      * 
@@ -64,12 +67,16 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.container = application.container;
         this.configuration = applicationDriver.containerDriver.toConfiguration(container);
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+
         wireCommit(container);
     }
 
     public AssemblyRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
+
         this.assembly = requireNonNull(assembly, "assembly is null");
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
         // if embed do xxx
         // else create new container
         this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
@@ -80,7 +87,7 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
         // Invoke Assembly::doBuild
         // which in turn will invoke Assembly::build
         try {
-            MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, configuration);
+            MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, this, configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -88,8 +95,6 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
         // Close the realm, if the application has been built successfully (no exception was thrown)
         closeNew(container);
     }
-    
-    
 
     /** {@inheritDoc} */
     @Override

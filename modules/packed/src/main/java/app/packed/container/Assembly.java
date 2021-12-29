@@ -27,6 +27,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.RealmSource;
 import app.packed.extension.Extension;
+import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 
@@ -141,7 +142,7 @@ public abstract non-sealed class Assembly implements RealmSource {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(ContainerConfiguration configuration) {
+    private void doBuild(AssemblyRealmSetup realm, ContainerConfiguration configuration) {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
@@ -149,13 +150,14 @@ public abstract non-sealed class Assembly implements RealmSource {
 
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
-                cs.preBuild(configuration);
+
+                realm.assemblyModel.preBuild(configuration);
 
                 // Call the build method implemented by the user
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
-                cs.postBuild(configuration);
+                realm.assemblyModel.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
