@@ -50,8 +50,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** Children of this node (lazily initialized) in insertion order. */
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
 
-    /** Child containers, lazy initialized. */
-    /// Hmm just iterate through all?? except for benchmarks it shouldnt really be a problem
+    /** Children that are containers (subset of children), lazy initialized. */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
@@ -134,7 +133,7 @@ public final class ContainerSetup extends ComponentSetup {
                 // addChild(child, name);
             }
         }
-        
+
         // Various container tree-node management
         if (parent != null) {
             // Add this container to the children of the parent
@@ -356,4 +355,3 @@ public final class ContainerSetup extends ComponentSetup {
         }
     }
 }
-

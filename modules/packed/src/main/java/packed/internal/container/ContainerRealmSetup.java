@@ -26,23 +26,13 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
     // Bliver draenet hver gang vi lukker en realm
     // Til allersidst kopiere vi
     //
+
+    /** An order set of extension according to the natural extension dependency order. */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
     public abstract ContainerSetup container();
 
-    protected void close() {
-        if (current != null) {
-            current.onWired();
-            current = null;
-        }
-        isClosed = true;
-        for (ContainerSetup c : rootContainers) {
-            onRealmClose(c);
-        }
-        // assert container.name != null;
-    }
-
-    protected void closeNew() {
+    void closeRealm() {
         ContainerSetup container = container();
         if (current != null) {
             current.onWired();
@@ -70,13 +60,8 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
             }
         }
 
-        
-        
-        for (ContainerSetup c : rootContainers) {
-            onRealmClose(c);
-        }
+        onRealmClose(container);
     }
-
 
     private void onRealmClose(ContainerSetup cs) {
         // We recursively close all children in the same realm first

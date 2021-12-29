@@ -18,7 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
@@ -40,12 +39,12 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
     /** Whether or not this realm is closed. */
     protected boolean isClosed;
 
-    /**
-     * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
-     * When we close the realm we then run through this list and recursively close each container.
-     */
-    // Hmm burde kunne bruge traet istedet for
-    protected ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
+//    /**
+//     * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
+//     * When we close the realm we then run through this list and recursively close each container.
+//     */
+//    // Hmm burde kunne bruge traet istedet for
+//    protected ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
@@ -95,13 +94,13 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
 
     public void wireCommit(ComponentSetup component) {
         current = component;
-
-        // TODO: Move to class I think
-        if (component instanceof ContainerSetup container) {
-            if (container.parent == null || container.parent.realm != this) {
-                rootContainers.add(container);
-            }
-        }
+//
+//        // TODO: Move to class I think
+//        if (component instanceof ContainerSetup container) {
+//            if (container.parent == null || container.parent.realm != this) {
+//                rootContainers.add(container);
+//            }
+//        }
     }
 
     public void wirePrepare() {

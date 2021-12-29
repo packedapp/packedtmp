@@ -70,7 +70,7 @@ public final class ComposerRealmSetup extends ContainerRealmSetup {
         }
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
-        close();
+        closeRealm();
     }
 
     /** {@inheritDoc} */
