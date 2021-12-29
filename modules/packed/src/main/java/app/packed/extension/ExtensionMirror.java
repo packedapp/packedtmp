@@ -82,8 +82,10 @@ public class ExtensionMirror implements Mirror {
         return e;
     }
 
+    // All methods are named extension*() instead of *() because subclasses might want to use descriptor()
+    
     /** {@return a descriptor for the extension this mirror is a part of.} */
-    public final ExtensionDescriptor extensionDescriptor() { // extensionDescriptor() instead of descriptor() because subclasses might want to use descriptor()
+    public final ExtensionDescriptor extensionDescriptor() {
         return extension().model;
     }
 

@@ -2,7 +2,7 @@ package app.packed.extension;
 
 /**
  * Extension support classes are the main way that extensions interact without other extensions. Developers that are not
- * creating their own extensions will likely deal with these type of classes.
+ * creating their own extensions will likely never deal with these type of classes.
  * <p>
  * 
  * <p>
@@ -32,10 +32,9 @@ package app.packed.extension;
  * @see Extension#use(Class)
  * @see ExtensionConfiguration#use(Class)
  */
-
-// Syntes altid det skal vaere en seperat klasse
-// Fordi saa kan den klasse declare en masse interfaces som inner classes
-// Se fx EntryPointSupport
-
 public abstract class ExtensionSupport {}
+
+//Syntes altid det skal vaere en seperat klasse
+//Fordi saa kan den klasse declare en masse interfaces som inner classes
+//Se fx EntryPointSupport
 //Kalder vi den bare ExtensionSupport, og Saa FileSupport, ServiceSupport
