@@ -44,7 +44,11 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 
-/** Build-time configuration of a container. */
+/**
+ * Build-time configuration of a container.
+ * <p>
+ * This class is never exposed directly to users but instead via {@link ContainerConfiguration}.
+ */
 public final class ContainerSetup extends ComponentSetup {
 
     /** Children of this node (lazily initialized) in insertion order. */

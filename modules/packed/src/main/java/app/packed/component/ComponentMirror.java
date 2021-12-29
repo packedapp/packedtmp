@@ -76,19 +76,6 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();
 
-    default ComponentMirror in(ComponentScope boundary) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @param scope
-     *            the scope to check
-     * @param other
-     *            the other component to check
-     * @return true if this component and the specified component is in the same specified scope, otherwise false
-     */
-    boolean isInSame(ComponentScope scope, ComponentMirror other);
-
     default Optional<LifetimeMirror> lifetime() {
         throw new UnsupportedOperationException();
     }

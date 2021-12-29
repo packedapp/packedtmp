@@ -354,8 +354,6 @@ public class CollectionUtil {
         public int size() {
             return collection.size();
         }
-
-
     }
 
     public static final class SetView<E> implements Set<E> {

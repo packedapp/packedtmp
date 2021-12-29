@@ -39,13 +39,6 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
     /** Whether or not this realm is closed. */
     protected boolean isClosed;
 
-//    /**
-//     * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
-//     * When we close the realm we then run through this list and recursively close each container.
-//     */
-//    // Hmm burde kunne bruge traet istedet for
-//    protected ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
-
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
     public RealmAccessor accessor() {

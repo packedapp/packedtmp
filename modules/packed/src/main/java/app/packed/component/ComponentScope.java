@@ -43,9 +43,11 @@ public enum ComponentScope {
 
     /** A scope that indicates any component within the same application. */
     APPLICATION,
-    
+
     /** A scope that indicates any component within the same application. */
     CONTAINER,
+
+    // CONTAINER_SUBSYSTEM,
 
     // Der hvor denne her giver mening, er fx naar man siger install(..., spyOnWire(Scope.COMPONENT))
     // will never be inherited
@@ -63,9 +65,9 @@ public enum ComponentScope {
      * Hovedgrunden til vi ikke har den med, er at extensions ikke har runtime services som boern... Saa den er lidt
      * ubrugelig
      */
-    public boolean in(ComponentMirror c1, ComponentMirror c2) {
-        return c1.isInSame(this, c2);
-    }
+//    public boolean in(ComponentMirror c1, ComponentMirror c2) {
+//        return c1.isInSame(this, c2);
+//    }
 }
 
 final class Scope {
@@ -132,9 +134,9 @@ class XComp2 {
     }
 
     public static void main(ComponentMirror c1, ComponentMirror c2) {
-        if (ComponentScope.NAMESPACE.in(c1, c2)) {
-
-        }
+//        if (ComponentScope.NAMESPACE.in(c1, c2)) {
+//
+//        }
 
     }
 }

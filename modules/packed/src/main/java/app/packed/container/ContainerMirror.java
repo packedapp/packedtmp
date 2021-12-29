@@ -18,9 +18,6 @@ import app.packed.extension.InternalExtensionException;
  */
 public non-sealed interface ContainerMirror extends ComponentMirror {
 
-    // Set<BeanMirror> beans(), or maybe just BeanExtensionMirror
-    // Nahh vi har maaske kun containere som boern
-
     /** {@return a {@link Set} view of every extension that has been used in the container.} */
     Set<ExtensionMirror> extensions(); // return Map<Type, Mirror> instead???
 
