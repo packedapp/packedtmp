@@ -224,6 +224,13 @@ public final class ContainerSetup extends ComponentSetup {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
+    public <E extends Extension> E useExtension(Class<E> extensionClass) {
+        realm.newOperation();
+        ExtensionSetup extension = useExtensionSetup(extensionClass, /* requested by the user, not another extension */ null);
+        return (E) extension.instance(); // extract the extension instance
+    }
+
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * 
@@ -239,7 +246,7 @@ public final class ContainerSetup extends ComponentSetup {
      *             if the
      */
     // Any dependencies needed have been checked
-    ExtensionSetup useExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
+    ExtensionSetup useExtensionSetup(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
@@ -265,20 +272,13 @@ public final class ContainerSetup extends ComponentSetup {
             }
 
             // make sure it is recursively installed into the root container
-            ExtensionSetup extensionParent = parent == null ? null : parent.useExtension(extensionClass, requestedByExtension);
+            ExtensionSetup extensionParent = parent == null ? null : parent.useExtensionSetup(extensionClass, requestedByExtension);
 
             // Create a extension and initialize it.
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
             extension.initialize();
         }
         return extension;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <E extends Extension> E useExtension(Class<E> extensionClass) {
-        realm.newOperation();
-        ExtensionSetup extension = useExtension(extensionClass, /* requested by the user, not another extension */ null);
-        return (E) extension.instance(); // extract the extension instance
     }
 
     /** A build-time container mirror. */
