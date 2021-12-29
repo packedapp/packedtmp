@@ -15,14 +15,14 @@
  */
 package app.packed.inject.mirror;
 
-import app.packed.component.RealmMirror;
+import app.packed.component.UserOrExtension;
 
 /**
  *
  */
 public /*non-sealed*/ interface ProducerSite extends InjectionSite {
     
-    RealmMirror producer();
+    UserOrExtension producer();
 
     
     interface MethodProducerSite extends ProducerSite {

@@ -30,7 +30,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.RealmMirror;
+import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
@@ -251,11 +251,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
 
         /** {@inheritDoc} */
-        public final RealmMirror realm() {
+        public final UserOrExtension owner() {
             if (realm instanceof ExtensionRealmSetup s) {
-                return RealmMirror.extension(s.extensionModel.type());
+                return UserOrExtension.extension(s.extensionModel.type());
             }
-            return RealmMirror.application();
+            return UserOrExtension.user();
         }
 
         /** {@inheritDoc} */

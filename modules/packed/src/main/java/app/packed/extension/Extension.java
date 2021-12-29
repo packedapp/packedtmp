@@ -15,6 +15,11 @@
  */
 package app.packed.extension;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
@@ -71,42 +76,27 @@ import packed.internal.util.ThrowableUtil;
  * 
  * @see ExtensionDescriptor
  */
-
-// Maaske har vi Extension.state()
-// Hvor vi pakker alle de der isX ned i
-// Har ikke lige kigget paa dem nogle uger
-// Og jeg er allerede i tvivl om hvad checkExtendable
-// checkUnconnected o.s.v. er
-
-// alternativ har vi noget a.la. onFinalize(ExtensionFinalizer finalizer)
-
 // Static initializers
 //// Dependencies
 //// Attributes
 //// Connections 
 //// LibraryInfo
 
-// Maaske har vi findDescendent(Class<? extends Extension>)
-
 // bootstrapConfig
 //// dependsOn(Codegen)
 
-// Extension State
-//// Instantiate
-//// Link
-//// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
 public abstract non-sealed class Extension implements RealmSource {
 
     /**
-     * The extension's configuration that most methods delegate to.
+     * The extension's setup that most methods delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkUserConfigurable()} at any time.
      * <p>
-     * This field should never be read directly, but only accessed via {@link #configuration()}.
+     * This field should only be accessed via {@link #setup()}.
      */
     @Nullable
     private ExtensionSetup setup;
@@ -157,7 +147,7 @@ public abstract non-sealed class Extension implements RealmSource {
         return setup();
     }
 
-    protected final ExtensionSetup setup() {
+    private final ExtensionSetup setup() {
         ExtensionSetup c = setup;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
@@ -416,37 +406,19 @@ public abstract non-sealed class Extension implements RealmSource {
     // Hmm, er det overhoved interessant at faa en Subtension???
     // Vil vi ikke hellere have extensionen.
     // Og man kan vel ikke bruge hook annoteringer
-    @SafeVarargs
-    protected static void $cycleBreaker(Class<? extends Extension>... extensions) {
-        // A -DependsOn(B)
-        // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
+//    
+//    @SafeVarargs
+//    protected static void $cycleBreaker(Class<? extends Extension>... extensions) {
+        // Man maa saette den via noget VarHandle vaerk
+    
+//        // A -DependsOn(B)
+//        // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
+//
+//        // Specified extension must have a dependency on this extension
+//        // And must be in same module
+//        throw new UnsupportedOperationException();
+//    }
 
-        // Specified extension must have a dependency on this extension
-        // And must be in same module
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds one or more extensions to the set of dependencies of this extension.
-     * <p>
-     * Every extension that another extension directly uses must be explicitly registered. Even if the extension is only
-     * used on a rare occasions.
-     * 
-     * @param extensions
-     *            the dependencies to add
-     * @throws InternalExtensionException
-     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-     *             the extension graph.
-     * @throws UnsupportedOperationException
-     *             if this method is called from outside of an extension's class initializer
-     * @see #$dependsOnIfAvailable(String)
-     * @see #$dependsOnIfAvailable(String, String, Supplier)
-     */
-    // dependencyAdd
-    @SafeVarargs
-    protected static void $dependsOn(Class<? extends Extension>... extensions) {
-        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(true, extensions);
-    }
 
     /**
      * Registers an optional dependency of this extension. The extension
@@ -532,13 +504,13 @@ public abstract non-sealed class Extension implements RealmSource {
         // dependsOn(ClassGenExtension.class);
     }
 
-    /**
-     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
-     * network extension
-     * <p>
-     * If only certain cirkus stances use checkRunnableApplication()
-     */
-    protected static void $requiresRunnableApplication() {}
+//    /**
+//     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
+//     * network extension
+//     * <p>
+//     * If only certain cirkus stances use checkRunnableApplication()
+//     */
+//    protected static void $requiresRunnableApplication() {}
 //
 //    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
 //        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
@@ -569,11 +541,13 @@ public abstract non-sealed class Extension implements RealmSource {
         // Her vil man nok ikke vaelge at
     }
 
-
     /**
      *
      */
     // Vi goer det her fordi vi ikke vil class initialize alle extensions.
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
     public @interface DependsOn {
 
         /** {@return other extensions the annotated extension depends on} */
@@ -611,6 +585,28 @@ class Zarchive {
     }
 
 }
+//
+///**
+// * Adds one or more extensions to the set of dependencies of this extension.
+// * <p>
+// * Every extension that another extension directly uses must be explicitly registered. Even if the extension is only
+// * used on a rare occasions.
+// * 
+// * @param extensions
+// *            the dependencies to add
+// * @throws InternalExtensionException
+// *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
+// *             the extension graph.
+// * @throws UnsupportedOperationException
+// *             if this method is called from outside of an extension's class initializer
+// * @see #$dependsOnIfAvailable(String)
+// * @see #$dependsOnIfAvailable(String, String, Supplier)
+// */
+//// dependencyAdd
+//@Deprecated
+//@SafeVarargs
+//protected static void $dependsOn(Class<? extends Extension>... extensions) {}
+
 //// Ved ikke praecis hvad vi skal bruge den til...
 //// Er det close/open world check?
 // Er containers... eller er det child extensions

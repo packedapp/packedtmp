@@ -39,7 +39,6 @@ import app.packed.lifecycle.OnStart;
  * time() TimeExtension
  * <p>
  * 
- * 
  * With common functionality provide by app.packed.base
  * 
  * <p>

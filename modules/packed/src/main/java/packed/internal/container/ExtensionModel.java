@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
@@ -72,7 +73,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private final String nameFull;
 
     /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
-    private final String nameSimple;
+    private final String name;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -87,10 +88,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.dependencies = ExtensionDependencySet.of(builder.dependencies);
 
         // Cache some frequently used strings.
+        this.name = extensionClass.getSimpleName();
         this.nameFull = extensionClass.getCanonicalName();
-        this.nameSimple = extensionClass.getSimpleName();
-
-        // this.attributes = builder.pam;
     }
 
     /**
@@ -147,7 +146,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionDependencySet dependencies() {
+    public Set<Class<? extends Extension>> dependencies() {
         return dependencies;
     }
 
@@ -172,7 +171,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return nameSimple;
+        return name;
     }
 
     /**
@@ -236,10 +235,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A handle for creating new extension instances. */
         private MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
-//        /** A model of all methods that provide attributes. */
-//        @Nullable
-//        private PackedAttributeModel pam;
-
         /**
          * Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency. Skal lige gennemtaenkes,
          * det er lidt kompliceret classloader
@@ -256,6 +251,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * @return the extension model
          */
         private ExtensionModel build(Loader loader) {
+            DependsOn depende = extensionClass.getAnnotation(DependsOn.class);
+            if (depende != null) {
+                dependsOn(false, depende.extensions());
+            }
+            
             for (Class<? extends Extension> dependencyType : pendingLoadDependencies) {
                 ExtensionModel model = Loader.load(dependencyType, loader);
                 depth = Math.max(depth, model.depth + 1);
@@ -264,12 +264,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
             builder.provide(ExtensionConfiguration.class).adaptArgument(0);
-            // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
-            builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
-            // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
-            // MethodHandle mh =
-            // ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
-            // builder.provideHidden(extensionClass).invokeExact(mh, 0);
 
             // Find a method handle for the extension's constructor
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));

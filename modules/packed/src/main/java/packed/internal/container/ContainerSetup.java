@@ -298,7 +298,7 @@ public final class ContainerSetup extends ComponentSetup {
         }
 
         @Override
-        public Optional<Class<? extends Extension>> declaredByExtension() {
+        public Optional<Class<? extends Extension>> registrant() {
             throw new UnsupportedOperationException();
         }
 

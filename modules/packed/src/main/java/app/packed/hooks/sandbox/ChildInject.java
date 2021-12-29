@@ -4,6 +4,7 @@ import app.packed.application.App;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.inject.service.ServiceExtension;
 
 public class ChildInject extends BaseAssembly {
@@ -31,6 +32,7 @@ public class ChildInject extends BaseAssembly {
         }
     }
 
+    @DependsOn(extensions = ServiceExtension.class)
     public static class MyExt extends Extension {
 
         final String name;
@@ -51,10 +53,6 @@ public class ChildInject extends BaseAssembly {
 
         public void foo() {
             use(ServiceExtension.ServiceExtensionSupport.class).check();
-        }
-
-        static {
-            $dependsOn(ServiceExtension.class);
         }
     }
 }

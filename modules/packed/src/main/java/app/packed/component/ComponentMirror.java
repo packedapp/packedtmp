@@ -46,6 +46,41 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
 
     Stream<ComponentMirror> components();
 
+    /** {@return the distance to the root component, the root component having depth {@code 0}.} */
+    int depth();
+
+    default Optional<LifetimeMirror> lifetime() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the name of this component.
+     * <p>
+     * If no name is explicitly set when configuring a component. Packed will automatically assign a name that is unique
+     * among other components with the same parent.
+     *
+     * @return the name of this component
+     */
+    String name();
+
+    /**
+     * Returns the owner of the component. This is either the user (the owner of the application) or an extension.
+     * 
+     * @return the owner of the component
+     */
+    UserOrExtension owner();
+
+    /** {@return the parent component of this component. Or empty if a root component.} */
+    Optional<ContainerMirror> parent();
+
+    /** {@return the path of this component} */
+    NamespacePath path();
+
+    default void print() {
+        // Super useful...
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
      * drive
@@ -71,42 +106,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // RegisteredWith
     // DeclaredBy
     // Det er jo mere eller Realmen her
-    /* UserOrExtension */ Optional<Class<? extends Extension>> declaredByExtension();
-
-    /** {@return the distance to the root component, the root component having depth {@code 0}.} */
-    int depth();
-
-    default Optional<LifetimeMirror> lifetime() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the name of this component.
-     * <p>
-     * If no name is explicitly set when configuring a component. Packed will automatically assign a name that is unique
-     * among other components with the same parent.
-     *
-     * @return the name of this component
-     */
-    String name();
-
-    /** {@return the parent component of this component. Or empty if a root component.} */
-    Optional<ContainerMirror> parent();
-
-    /** {@return the path of this component} */
-    NamespacePath path();
-
-    default void print() {
-        // Super useful...
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the owner of the component. This is either the user (the owner of the application) or an extension.
-     * 
-     * @return the owner of the component
-     */
-    RealmMirror realm();
+    /* UserOrExtension */ Optional<Class<? extends Extension>> registrant();
 
     /**
      * Computes the relation from this component to the specified component.

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionSupport;
 import testutil.util.AbstractApplicationTest;
 
@@ -39,24 +40,17 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
         });
     }
 
+    @DependsOn(extensions = Ex2.class)
     static final class Ex1 extends Extension {
-        static {
-            $dependsOn(Ex2.class);
-        }
 
         @Override
         protected void onNew() {
             use(Ex2.Sub.class);
         }
-
-
     }
 
+    @DependsOn(extensions = Ex3.class)
     static final class Ex2 extends Extension {
-        static {
-            $dependsOn(Ex3.class);
-        }
-
         @Override
         protected void onNew() {
             use(Ex3.Ex3Support.class);

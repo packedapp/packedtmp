@@ -213,7 +213,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Class<? extends Extension>> declaredByExtension() {
+        public Optional<Class<? extends Extension>> registrant() {
             throw new UnsupportedOperationException();
         }
 

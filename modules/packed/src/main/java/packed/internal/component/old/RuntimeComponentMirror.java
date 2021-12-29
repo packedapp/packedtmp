@@ -32,7 +32,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.RealmMirror;
+import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationInitializationContext;
@@ -296,7 +296,7 @@ public final class RuntimeComponentMirror {
     }
 
 
-    public RealmMirror realm() {
+    public UserOrExtension realm() {
         throw new UnsupportedOperationException();
     }
 }

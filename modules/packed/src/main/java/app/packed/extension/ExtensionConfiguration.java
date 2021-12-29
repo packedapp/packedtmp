@@ -46,7 +46,7 @@ import packed.internal.container.ExtensionSetup;
 // Features
 // * Application Info
 // * Get/check state
-// * find ancestors
+// * find family members
 // * Get extension support
 // * Get wirelets
 public sealed interface ExtensionConfiguration permits ExtensionSetup {

@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionDescriptor;
 
 /** Tests {@link ExtensionDescriptor}. */
@@ -40,11 +41,8 @@ public class ExtensionDescriptorTest {
         assertThat(ed.type()).isSameAs(VariousExtension.class);
     }
 
+    @DependsOn(extensions = EmptyExtension.class)
     static class VariousExtension extends Extension {
-
-        static {
-            $dependsOn(EmptyExtension.class);
-        }
 
         //@ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {

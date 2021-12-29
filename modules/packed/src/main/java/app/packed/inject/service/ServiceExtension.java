@@ -32,6 +32,7 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
@@ -86,7 +87,8 @@ import packed.internal.util.ThrowableUtil;
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
-public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseExtension */ {
+@DependsOn(extensions = BeanExtension.class)
+public /*non-sealed */ class ServiceExtension extends Extension {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
@@ -102,10 +104,6 @@ public /*non-sealed */ class ServiceExtension extends Extension /*extends BaseEx
     @SuppressWarnings("rawtypes")
     private static final OtherBeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             BeanType.BASE);
-
-    static {
-        $dependsOn(BeanExtension.class);
-    }
 
     /** The service manager. */
     private final ServiceManagerSetup services;

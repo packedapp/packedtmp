@@ -37,7 +37,7 @@ public class HelloWorldAssembly extends BaseAssembly {
         ApplicationMirror mirror = App.mirrorOf(new HelloWorldAssembly());
         
         EntryPointExtensionMirror m = mirror.use(EntryPointExtensionMirror.class);
-        System.out.println(m.isMain());
+        System.out.println(m.hasMain());
         
     }
 

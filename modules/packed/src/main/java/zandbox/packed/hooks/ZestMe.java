@@ -18,6 +18,7 @@ package zandbox.packed.hooks;
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
 import app.packed.inject.service.ServiceExtension;
 
 /**
@@ -46,6 +47,7 @@ public class ZestMe extends BaseAssembly {
 
     }
 
+    @DependsOn(extensions = ServiceExtension.class)
     public static class MyExt extends Extension {
 
         MyExt() {}
@@ -62,8 +64,5 @@ public class ZestMe extends BaseAssembly {
             System.out.println("Configured");
         }
 
-        static {
-            $dependsOn(ServiceExtension.class);
-        }
     }
 }

@@ -20,14 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.RealmMirror;
+import app.packed.component.UserOrExtension;
 import app.packed.extension.ExtensionSupport;
 
 public class BeanSupport2 extends ExtensionSupport {
-    final RealmMirror agent;
+    final UserOrExtension agent;
     final BeanExtension2 extension;
 
-    BeanSupport2(BeanExtension2 extension, RealmMirror agent) {
+    BeanSupport2(BeanExtension2 extension, UserOrExtension agent) {
         this.extension = extension;
         this.agent = agent;
     }
@@ -57,13 +57,13 @@ public class BeanSupport2 extends ExtensionSupport {
         throw new UnsupportedOperationException();
     }
 
-    public final <T, B extends BeanConfiguration<T>> B register(RealmMirror agent, BeanDriver driver, B configuration, Class<T> implementation) {
+    public final <T, B extends BeanConfiguration<T>> B register(UserOrExtension agent, BeanDriver driver, B configuration, Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         extension.wire(configuration, agent, implementation);
         throw new UnsupportedOperationException();
     }
 
-    public final <T, B extends BeanConfiguration<T>> B registerChild(RealmMirror agent, ComponentConfiguration parent, BeanDriver driver, B configuration,
+    public final <T, B extends BeanConfiguration<T>> B registerChild(UserOrExtension agent, ComponentConfiguration parent, BeanDriver driver, B configuration,
             Class<T> implementation) {
         throw new UnsupportedOperationException();
     }

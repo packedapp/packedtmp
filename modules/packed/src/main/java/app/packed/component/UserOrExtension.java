@@ -13,15 +13,20 @@ import app.packed.extension.Extension;
 
 // Hvem ejer en component
 // Hvem provider en injectable value
-public /* primitive */ final class RealmMirror {
+
+
+// Er ikke paa det er en Realm... anyway
+// En AssemblyRealm
+
+public /* primitive */ final class UserOrExtension {
 
     // Application???? As in the application owns it, whoever that application is.
-    private static final RealmMirror APPLICATION = new RealmMirror(null);
+    private static final UserOrExtension USER = new UserOrExtension(null);
 
     @Nullable
     private final Class<? extends Extension> extension;
 
-    private RealmMirror(Class<? extends Extension> extension) {
+    private UserOrExtension(Class<? extends Extension> extension) {
         this.extension = extension;
     }
 
@@ -32,20 +37,20 @@ public /* primitive */ final class RealmMirror {
         return extension;
     }
 
-    public boolean isApplication() {
-        return this == APPLICATION;
+    public boolean isUser() {
+        return this == USER;
     }
 
     public boolean isExtension() {
-        return this != APPLICATION;
+        return this != USER;
     }
 
-    public static RealmMirror application() {
-        return APPLICATION;
+    public static UserOrExtension user() {
+        return USER;
     }
 
-    public static RealmMirror extension(Class<? extends Extension> extensionType) {
+    public static UserOrExtension extension(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return new RealmMirror(extensionType);
+        return new UserOrExtension(extensionType);
     }
 }

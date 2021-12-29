@@ -15,6 +15,8 @@
  */
 package app.packed.application.entrypoint;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -29,17 +31,18 @@ import app.packed.extension.ExtensionMirror;
 @ExtensionMember(EntryPointExtension.class)
 public class EntryPointExtensionMirror extends ExtensionMirror implements Iterable<EntryPointMirror> {
 
-    final EntryPointExtension e;
+    /** The extension point extension we are mirroring. */
+    final EntryPointExtension extension;
 
     final boolean isApplication;
 
-    EntryPointExtensionMirror(EntryPointExtension e, boolean isApplication) {
-        this.e = e;
+    EntryPointExtensionMirror(EntryPointExtension extension, boolean isApplication) {
+        this.extension = requireNonNull(extension);
         this.isApplication = isApplication;
     }
 
-    public boolean isMain() {
-        return e.hasMain;
+    public boolean hasMain() {
+        return extension.hasMain;
     }
 
     /** {@inheritDoc} */

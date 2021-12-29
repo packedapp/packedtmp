@@ -15,6 +15,8 @@
  */
 package app.packed.application.entrypoint;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 
 import app.packed.build.BuildException;
@@ -27,6 +29,12 @@ import app.packed.extension.ExtensionSupport;
  */
 @ExtensionMember(EntryPointExtension.class)
 public class EntryPointSupport extends ExtensionSupport {
+
+    final EntryPointExtension extension;
+
+    EntryPointSupport(EntryPointExtension extension) {
+        this.extension = requireNonNull(extension);
+    }
 
     /**
      * @param beanOperation
