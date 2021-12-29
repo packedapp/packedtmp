@@ -568,10 +568,7 @@ public abstract non-sealed class Extension implements RealmSource {
         // }
         // Her vil man nok ikke vaelge at
     }
-//
-//    protected interface ClassComponentDriverBuilder {
-//        BeanDriver.Binder<Object, BaseBeanConfiguration> build();
-//    }
+
 
     /**
      *

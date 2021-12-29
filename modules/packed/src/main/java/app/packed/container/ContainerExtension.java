@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import packed.internal.container.AssemblyRealmSetup;
@@ -23,15 +25,15 @@ import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedContainerDriver;
 
 /**
- * An extension for adding contain new containers.
+ * An extension for adding new containers to an existing container.
  */
 public class ContainerExtension extends Extension {
 
-    /** The container we installing beans into. */
+    /** The container we adding new containers to. */
     final ContainerSetup container;
 
     /**
-     * Create a new bean extension.
+     * Create a new container extension.
      * 
      * @param configuration
      *            an extension configuration object
@@ -56,7 +58,7 @@ public class ContainerExtension extends Extension {
      * @return the component that was linked
      */
     public ContainerMirror link(ContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerDriver d = (PackedContainerDriver) driver; 
+        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null"); 
         
         // Create a new realm for the assembly
         AssemblyRealmSetup newRealm = new AssemblyRealmSetup(d, container, assembly, wirelets);

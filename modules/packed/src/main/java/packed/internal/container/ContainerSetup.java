@@ -48,6 +48,7 @@ import packed.internal.util.CollectionUtil;
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
 
+    // TODO move to AssemblyRealmSetup
     public final AssemblyModel assemblyModel;
 
     /** Children of this node (lazily initialized) in insertion order. */
@@ -206,30 +207,6 @@ public final class ContainerSetup extends ComponentSetup {
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.containsKey(extensionType);
-    }
-
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param realm
-     *            realm
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     */
-    public ContainerMirror link(PackedContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
-
-        // Create a new realm for the assembly
-        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(driver, this, assembly, wirelets);
-
-        realm.wirePrepare(); // check that the container is open for business
-
-        // Close the new realm again after the assembly has been successfully linked
-        newRealm.build();
-
-        return (ContainerMirror) newRealm.container.mirror();
     }
 
     /** {@return a container mirror.} */

@@ -30,6 +30,7 @@ import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.bean.BeanSetup;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
@@ -73,6 +74,7 @@ class MainBootstrap extends RealMethodSidecarBootstrap {
             EntryPointExtension e = c.parent.useExtension(EntryPointExtension.class);
             e.hasMain = true;
             c.parent.useExtension(ServiceExtension.class);
+            c.application.entryPoints = new EntryPointSetup();
             MainThreadOfControl mc = c.application.entryPoints.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
             mc.cs = (BeanSetup) c;

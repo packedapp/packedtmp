@@ -66,6 +66,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkUserConfigurable();
 
+    <T extends Extension> T root(Class<T> extensionType);
+
     /**
      * @param <C>
      *            the type of composer
@@ -80,7 +82,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 
     int extensionDepth();
-
 
     /**
      * Attempts to find a parent of the specified type.
@@ -97,7 +98,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
     boolean isApplicationRoot();
-    
+
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
      * 
@@ -108,7 +109,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     default boolean isExtensionBanned(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Returns whether or not the specified extension is used (in the same container) by this extension, other extensions,
      * or application code.

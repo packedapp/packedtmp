@@ -17,7 +17,6 @@ package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.LinkedHashMap;
 import java.util.Set;
 
 import app.packed.application.ApplicationDescriptor;
@@ -31,7 +30,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
@@ -49,10 +47,7 @@ public final class ApplicationSetup {
 
     /** Entry points in the application, is null if there are none. */
     @Nullable
-    public final EntryPointSetup entryPoints = new EntryPointSetup();
-
-    /** All extensions used in the application. */
-    public final LinkedHashMap<Class<? extends Extension>, ExtensionRealmSetup> extensions = new LinkedHashMap<>();
+    public EntryPointSetup entryPoints;
 
     /**
      * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(RunState)} at
@@ -119,7 +114,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public <T extends ExtensionMirror> T use(Class<T> type) {
-            // 
+            //
             return container().useExtension(type);
         }
     }

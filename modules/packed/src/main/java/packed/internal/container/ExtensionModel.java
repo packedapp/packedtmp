@@ -56,10 +56,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     };
 
-//    /** A model of any attributes defined on the extension class. */
-//    @Nullable
-//    final PackedAttributeModel attributes;
-
     /** The direct dependencies of the extension. */
     private final ExtensionDependencySet dependencies;
 
@@ -68,7 +64,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** The extension we model. */
     private final Class<? extends Extension> extensionClass;
-
 
     /** A method handle for creating instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension

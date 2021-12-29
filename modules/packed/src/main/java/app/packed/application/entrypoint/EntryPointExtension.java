@@ -13,7 +13,6 @@ public class EntryPointExtension extends Extension {
 
     boolean hasMain;
 
-
     public void main(Runnable runnable) {
         // Det her er en function
     }

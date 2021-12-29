@@ -16,6 +16,7 @@
 package app.packed.application.usage;
 
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.entrypoint.EntryPointExtensionMirror;
 import app.packed.application.entrypoint.Main;
 import app.packed.container.BaseAssembly;
@@ -33,7 +34,9 @@ public class HelloWorldAssembly extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new HelloWorldAssembly());
         
-        EntryPointExtensionMirror m = App.mirrorOf(new HelloWorldAssembly()).use(EntryPointExtensionMirror.class);
+        ApplicationMirror mirror = App.mirrorOf(new HelloWorldAssembly());
+        
+        EntryPointExtensionMirror m = mirror.use(EntryPointExtensionMirror.class);
         System.out.println(m.isMain());
         
     }

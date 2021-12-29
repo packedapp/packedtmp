@@ -71,6 +71,9 @@ public class ExtensionMirror implements Mirror {
         // If we find a valid use case we can always remove final
 
         // Check other.getType()==getType()????
+        
+        // TODO if we have local extensions, we cannot just rely on extension=extension
+        
         return this == other || other instanceof ExtensionMirror m && extension() == m.extension();
     }
 
@@ -95,10 +98,20 @@ public class ExtensionMirror implements Mirror {
         return ExtensionDescriptor.of(extensionType());
     }
 
+    /** {@return the full name of the extension.} */
+    public final String extensionFullName() {
+        return extension().model.fullName();
+    }
+
     /** {@return a set of all beans that are registered explicitly by the extension.} */
     public ComponentMirrorSet extensionMemberBeans() {
         // All installed beans that are owned by this extension
         throw new UnsupportedOperationException();
+    }
+
+    /** {@return the name of the extension.} */
+    public final String extensionName() {
+        return extension().model.name();
     }
 
     /** {@return the type of extension this mirror is a part of.} */

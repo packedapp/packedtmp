@@ -56,9 +56,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private Extension instance;
 
     /** The static model of the extension. */
-    final ExtensionModel model;
+    public final ExtensionModel model;
 
-    /** Any parent extension this extension may have. Only the root extension does not have a parent. */
+    /** Any parent extension this extension may have. Only the root extension in an application does not have a parent. */
     @Nullable
     public final ExtensionSetup parent;
 
@@ -68,24 +68,20 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /**
      * Creates a new extension setup.
      * 
+     * @param parent
+     *            any parent this extension might have, null if the root extension
      * @param container
      *            the container this extension belongs to
-     * @param model
-     *            the model of the extension
+     * @param extensionType
+     *            the type of extension this setup class represents
      */
-    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension> extensionClass) {
+    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension> extensionType) {
         this.container = requireNonNull(container);
+        this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
-        if (parent == null) {
-            this.realm = container.application.extensions.computeIfAbsent(extensionClass, ec -> new ExtensionRealmSetup(this, container.application, ec));
-            this.model = requireNonNull(realm.extensionModel);
-            this.extensionType = model.type();
-        } else {
-            this.realm = parent.realm;
-            this.model = parent.model;
-            this.extensionType = parent.extensionType;
-        }
-        // Find (or create) the extension realm for the application
+        this.realm = parent == null ? new ExtensionRealmSetup(this, container.application, extensionType) : parent.realm;
+        this.model = requireNonNull(realm.extensionModel);
+
     }
 
     /** {@inheritDoc} */
@@ -116,22 +112,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.depth;
     }
 
-//    /** {@inheritDoc} */
-//    @Override
-//    public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
-//        requireNonNull(type, "type is null");
-//        ContainerSetup parent = container.parent;
-//        while (parent != null) {
-//            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
-//            if (extensionContext != null) {
-//                return PackedExtensionAncestor.sameApplication(extensionContext.instance);
-//            }
-//            // if (parentOnly) break;
-//            parent = parent.parent;
-//        }
-//        return ExtensionBeanConnection.empty();
-//    }
-
     /** {@inheritDoc} */
     @Override
     public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
@@ -152,16 +132,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     void initialize() {
-        // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
+        // Creates a new extension instance, and set Extension.setup = this
         instance = model.newInstance(this);
         VH_EXTENSION_CONFIGURATION.set(instance, this);
 
         // Add the extension to the container's extension map as well as the (application-scoped) extension realm
         container.extensions.put(extensionType, this);
 
-        // The extension has been now been fully wired, run any notifications
-        // extension.onWired();
-        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
+        // Hvad hvis en extension linker en af deres egne assemblies.
+        if (container.realm instanceof AssemblyRealmSetup r && r.container == container) {
+            r.extensions.add(this);
+        }
 
         // Finally, invoke Extension#onNew() after which the new extension can be returned to the end-user
         try {
@@ -244,6 +225,16 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
+    public <T extends Extension> T root(Class<T> extensionType) {
+        ExtensionSetup s = this;
+        while (s.parent != null) {
+            s = s.parent;
+        }
+        return extensionType.cast(s.instance());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
@@ -296,6 +287,22 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return (E) supportModel.newInstance(instance, extensionType);
     }
 }
+
+///** {@inheritDoc} */
+//@Override
+//public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
+//  requireNonNull(type, "type is null");
+//  ContainerSetup parent = container.parent;
+//  while (parent != null) {
+//      ExtensionSetup extensionContext = parent.extensions.get(extensionType);
+//      if (extensionContext != null) {
+//          return PackedExtensionAncestor.sameApplication(extensionContext.instance);
+//      }
+//      // if (parentOnly) break;
+//      parent = parent.parent;
+//  }
+//  return ExtensionBeanConnection.empty();
+//}
 
 //protected void attributesAdd(DefaultAttributeMap dam) {
 //  PackedAttributeModel pam = model.attributes;
