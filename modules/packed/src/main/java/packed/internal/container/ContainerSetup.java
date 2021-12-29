@@ -28,7 +28,6 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblySetup;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -48,19 +47,16 @@ import packed.internal.util.CollectionUtil;
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
 
-
     /** Children of this node (lazily initialized) in insertion order. */
-    public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>(1);
+    public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
 
     /** Child containers, lazy initialized. */
     /// Hmm just iterate through all?? except for benchmarks it shouldnt really be a problem
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
-    /** All extensions in use, in no particular order. */
+    /** All extensions in use in this container. */
     public final LinkedHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new LinkedHashMap<>();
-
-    private boolean hasRunPreContainerChildren;
 
     /** The injector of this container. */
     // I think move this to BeanSetup
@@ -138,10 +134,10 @@ public final class ContainerSetup extends ComponentSetup {
                 // addChild(child, name);
             }
         }
+        
         // Various container tree-node management
         if (parent != null) {
             // Add this container to the children of the parent
-            this.parent.runPredContainerChildren();
             ArrayList<ContainerSetup> c = parent.containerChildren;
             if (c == null) {
                 c = parent.containerChildren = new ArrayList<>(5);
@@ -174,14 +170,6 @@ public final class ContainerSetup extends ComponentSetup {
             initializeNameWithPrefix(n);
         }
         assert name != null;
-    }
-
-    public void applyAssemblyHook(AssemblySetup.Processor hook) {
-        // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration
-        // der lige pludselig kan have andre rettigheder.
-        // Teoretisk attack mulighed, spawn en ny traad med configurationen.
-        // Hvor vi haaber at ramme den lige praecis som vi har lyst til
-
     }
 
     /** {@return a unmodifiable view of all extension types that are in use.} */
@@ -220,10 +208,6 @@ public final class ContainerSetup extends ComponentSetup {
                 }
             }
         }
-
-        if (!hasRunPreContainerChildren) {
-            runPredContainerChildren();
-        }
         // Complete all extensions in order
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
@@ -234,25 +218,6 @@ public final class ContainerSetup extends ComponentSetup {
 //        }
 
         injection.resolve();
-    }
-
-    private void runPredContainerChildren() {
-        if (hasRunPreContainerChildren) {
-            return;
-        }
-        hasRunPreContainerChildren = true;
-        if (extensions.isEmpty()) {
-            return;
-        }
-        // We have a problem here... We need to
-        // keep track of extensions that are added in this step..
-        // And run ea.preContainerChildren on them...
-        // And then repeat until some list/set has not been touched...
-        // Det vi i virkeligheden har brug for er en cursor...
-        // ind i extensions
-        for (ExtensionSetup ea : extensions.values()) {
-            ea.onUserClose();
-        }
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
@@ -413,7 +378,4 @@ public final class ContainerSetup extends ComponentSetup {
         }
     }
 }
-//if (containerChildren != null) {
-//throw new IllegalStateException(
-//      "Cannot install new extensions after child containers have been added to this container, extensionClass = " + extensionClass);
-//}
+

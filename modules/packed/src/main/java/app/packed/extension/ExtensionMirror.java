@@ -1,7 +1,6 @@
 package app.packed.extension;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentMirrorSet;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -51,16 +50,6 @@ public class ExtensionMirror implements Mirror {
      */
     protected ExtensionMirror() {}
 
-//    /** {@return the application the extension is used in.} */
-//    public final ApplicationMirror application() {
-//        return extension().container.application.mirror();
-//    }
-
-//    /** {@return the container the extension is used in.} */
-//    public final ContainerMirror container() {
-//        return extension().container.mirror();
-//    }
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -95,27 +84,21 @@ public class ExtensionMirror implements Mirror {
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() { // extensionDescriptor() instead of descriptor() because subclasses might want to use descriptor()
-        return ExtensionDescriptor.of(extensionType());
+        return extension().model;
     }
 
     /** {@return the full name of the extension.} */
     public final String extensionFullName() {
-        return extension().model.fullName();
-    }
-
-    /** {@return a set of all beans that are registered explicitly by the extension.} */
-    public ComponentMirrorSet extensionMemberBeans() {
-        // All installed beans that are owned by this extension
-        throw new UnsupportedOperationException();
+        return extensionDescriptor().fullName();
     }
 
     /** {@return the name of the extension.} */
     public final String extensionName() {
-        return extension().model.name();
+        return extensionDescriptor().name();
     }
 
     /** {@return the type of extension this mirror is a part of.} */
-    public final Class<? extends Extension> extensionType() { // extensionType() instead of type() because subclasses might want to use type()
+    public final Class<? extends Extension> extensionType() {
         return extension().extensionType;
     }
 
@@ -143,8 +126,25 @@ public class ExtensionMirror implements Mirror {
     public String toString() {
         return extensionType().getCanonicalName();
     }
-
 }
+
+
+//// Nahh, hellere noget beans().findAllFrom(FooExtension.class)
+///** {@return a set of all beans that are registered explicitly by the extension.} */
+//public ComponentMirrorSet extensionMemberBeans() {
+//    // All installed beans that are owned by this extension
+//    throw new UnsupportedOperationException();
+//}
+
+///** {@return the application the extension is used in.} */
+//public final ApplicationMirror application() {
+//  return extension().container.application.mirror();
+//}
+
+///** {@return the container the extension is used in.} */
+//public final ContainerMirror container() {
+//  return extension().container.mirror();
+//}
 
 //// Disse blev fjernet da vi begyndte at share extension mirrors mellem containere og applikationer.
 ///**
