@@ -56,7 +56,7 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(EntryPointExtension.class)
-@BeanMethod.Hook(bootstrap = MainBootstrap.class)
+@BeanMethod.Hook(bootstrap = MainBootstrap.class, extension = EntryPointExtension.class)
 public @interface Main {}
 
 class MainBootstrap extends RealMethodSidecarBootstrap {

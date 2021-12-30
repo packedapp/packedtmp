@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import app.packed.bean.BeanMirror;
 
@@ -32,22 +34,15 @@ import app.packed.bean.BeanMirror;
 // Maaske T extends Extension | T extends ExtensionBean... 
 // Saa kan vi ogsaa bruge den paa runtime
 
-// Den bliver vel noedt til at vaere live...
-public interface ExtensionSelection<T extends Extension<T>> extends Iterable<T> {
+//// Kan vi lave den som generisk tree???
+//// * Maaske vi vil returnere nogle ExtensionConfiguration's
 
-    // Ideen er at man kan faa saadan en injected ind i et mirror...
+// map(extension->extension.configuration()) 
 
-    default int intSum(ToIntFunction<? super T> mapper) {
-        requireNonNull(mapper, "mapper is null");
-        int result = 0;
-        for (T t : this) {
-            int tmp = mapper.applyAsInt(t);
-            result = Math.addExact(result, tmp);
-        }
-        return result;
-    }
-    
-    default <E> List<E> listCollect(BiConsumer<T, List<E>> action) {
+// TreeView<T>
+public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
+
+    default <E> List<E> collectList(BiConsumer<T, List<E>> action) {
         requireNonNull(action, "action is null");
         ArrayList<E> result = new ArrayList<>();
         for (T t : this) {
@@ -56,7 +51,37 @@ public interface ExtensionSelection<T extends Extension<T>> extends Iterable<T> 
         return result;
     }
 
-    default long longSum(ToLongFunction<? super T> mapper) {
+    /** {@return the number of extensions in the tree.} */
+    default int count() {
+        int size = 0;
+        for (@SuppressWarnings("unused")
+        T t : this) {
+            size++;
+        }
+        return size;
+    }
+
+    default T root() {
+        return iterator().next();
+    }
+
+    // Ideen er at man kan faa saadan en injected ind i et mirror...
+
+    default Stream<T> stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
+    default int sumInt(ToIntFunction<? super T> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        int result = 0;
+        for (T t : this) {
+            int tmp = mapper.applyAsInt(t);
+            result = Math.addExact(result, tmp);
+        }
+        return result;
+    }
+
+    default long sumLong(ToLongFunction<? super T> mapper) {
         requireNonNull(mapper, "mapper is null");
         long result = 0;
         for (T t : this) {
@@ -65,21 +90,27 @@ public interface ExtensionSelection<T extends Extension<T>> extends Iterable<T> 
         }
         return result;
     }
+
+    static <E extends Extension<?>> ExtensionTree<E> ofSingle(E extension) {
+        // Den her kan godt vaere public
+        // Men dem der iterere kan ikke
+        throw new UnsupportedOperationException();
+    }
 }
 
 class MyExtMirror {
-    final ExtensionSelection<TestExtension> es;
+    final ExtensionTree<TestExtension> es;
 
-    MyExtMirror(ExtensionSelection<TestExtension> es) {
+    MyExtMirror(ExtensionTree<TestExtension> es) {
         this.es = es;
     }
 
     public int beanCount() {
-        return es.intSum(e -> e.count());
+        return es.sumInt(e -> e.count());
     }
 
     public Collection<BeanMirror> beans() {
-        return es.listCollect((e, c) -> c.addAll(e.beans()));
+        return es.collectList((e, c) -> c.addAll(e.beans()));
     }
 }
 

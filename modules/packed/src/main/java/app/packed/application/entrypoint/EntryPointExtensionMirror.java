@@ -24,25 +24,24 @@ import java.util.Optional;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
+import app.packed.extension.ExtensionTree;
 
 /**
  * A mirror for the {@link EntryPointExtension}.
  */
+// I don't know about Iterable 
 @ExtensionMember(EntryPointExtension.class)
 public class EntryPointExtensionMirror extends ExtensionMirror implements Iterable<EntryPointMirror> {
 
     /** The extension point extension we are mirroring. */
-    final EntryPointExtension extension;
+    final ExtensionTree<EntryPointExtension> tree;
 
-    final boolean isApplication;
-
-    EntryPointExtensionMirror(EntryPointExtension extension, boolean isApplication) {
-        this.extension = requireNonNull(extension);
-        this.isApplication = isApplication;
+    EntryPointExtensionMirror(ExtensionTree<EntryPointExtension> tree) {
+        this.tree = requireNonNull(tree);
     }
 
     public boolean hasMain() {
-        return extension.hasMain;
+        return tree.stream().anyMatch(e -> e.hasMain);
     }
 
     /** {@inheritDoc} */

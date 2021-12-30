@@ -1,5 +1,6 @@
 package app.packed.application.entrypoint;
 
+import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.bean.ContainerBeanConfiguration;
@@ -13,6 +14,12 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     boolean hasMain;
 
+    Shared shared;
+
+    protected void onNew() {
+        shared = configuration().isApplicationRoot() ? new Shared() : applicationTree().root().shared;
+    }
+
     public void main(Runnable runnable) {
         // Det her er en function
     }
@@ -25,8 +32,22 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     @Override
+    protected void onClose() {
+        if (isApplicationRoot()) {
+            // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
+            // extensions'ene
+            
+            // install
+            // provide (visible i mxxz;ias:"?aZ.a:n  aZz¸ m  nl jj m ,m   ;n .n ≥ en container)
+            // provideShared (container + subcontainers)
+            shareInstance(new MethodHandle[0]);
+        }
+        super.onClose();
+    }
+
+    @Override
     public EntryPointExtensionMirror mirror() {
-        return mirrorInitialize(new EntryPointExtensionMirror(this, false));
+        return mirrorInitialize(new EntryPointExtensionMirror(tree()));
     }
 
     public void setShutdownStrategy(Supplier<Throwable> maker) {
@@ -36,6 +57,20 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // CancellationException
         // Men ved ikke om vi skal have en special exception istedet for???
         // En checked istedet ligesom TimeoutException
+    }
+
+    static class Shared {
+        MethodHandle[] entryPoints;
+        Class<? extends Extension<?>> takeOver;
+        int entryPointCount;
+        void takeOver(Class<? extends Extension<?>> takeOver) {
+            if (this.takeOver != null) {
+
+            } else if (entryPointCount > 0) { // has main
+
+            }
+            this.takeOver = takeOver;
+        }
     }
 }
 //Engang ville vi vil gerne droppe den. Hoved grunden er at applikationen godt vil bestemme om entry points'ene.

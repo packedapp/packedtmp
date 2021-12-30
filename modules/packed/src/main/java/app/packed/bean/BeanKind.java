@@ -3,6 +3,7 @@ package app.packed.bean;
 // Maybe BeanKind instead
 public enum BeanKind {
 
+    EXTENSION,
     /** Lives and dies with the application. */
     APPLICATION,
     

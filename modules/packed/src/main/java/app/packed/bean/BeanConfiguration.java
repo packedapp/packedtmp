@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentConfiguration;
+import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.lifecycle.RunState;
 
 /**
@@ -14,7 +15,7 @@ import app.packed.lifecycle.RunState;
  */
 @SuppressWarnings("rawtypes")
 public abstract sealed class BeanConfiguration<T>
-        extends ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration, FunctionalBeanConfiguration {
+        extends ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration, FunctionalBeanConfiguration, ExtensionBeanConfiguration {
 
     // Hmm, vi dekorere ikke fx ServiceLocator...
     // Maaske er det bedre at dekorere typer???

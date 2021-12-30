@@ -3,11 +3,12 @@ package app.packed.bean;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
-import packed.internal.bean.PackedBeanDriverBinder;
 import packed.internal.bean.OldBeanDriver.OtherBeanDriver;
+import packed.internal.bean.PackedBeanDriverBinder;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -34,7 +35,7 @@ public final class BeanSupport extends ExtensionSupport {
         throw new UnsupportedOperationException();
     }
 
-    public <T, P> void extensionPoint(ContainerBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> provider) {
+    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> provider) {
 
         // framework will call
         // consumer(T, P) at initialization time
@@ -46,29 +47,17 @@ public final class BeanSupport extends ExtensionSupport {
         return beanConfiguration;
     }
 
-    public <T> ContainerBeanConfiguration<T> inheritOrInstall(Class<T> implementation) {
+    
+    // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
+    public final <T> ExtensionBeanConfiguration<T> install(Class<?> implementation) {
         throw new UnsupportedOperationException();
     }
 
-    public <T> ContainerBeanConfiguration<T> inheritOrInstall(Factory<T> implementation) {
+    public final <T> ExtensionBeanConfiguration<T> install(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 
-    public final <T> ContainerBeanConfiguration<T> install(Class<?> implementation) {
-        // Alternativt
-
-        // ExtensionBeanConfiguration extends ApplicationBeanConfiguration {}
-        // .inherit(); naaah
-        // Vil gerne vide om vi skal inherite foer vi kalder install
-
-        throw new UnsupportedOperationException();
-    }
-
-    public final <T> ContainerBeanConfiguration<T> install(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    public final <T> ContainerBeanConfiguration<T> installInstance(Object instance) {
+    public final <T> ExtensionBeanConfiguration<T> installInstance(Object instance) {
         throw new UnsupportedOperationException();
     }
 
@@ -80,13 +69,13 @@ public final class BeanSupport extends ExtensionSupport {
     public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
 
-        ContainerSetup container = extension.parent;
+        ContainerSetup container = extension.container;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
     }
 
     public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Factory<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.parent;
+        ContainerSetup container = extension.container;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
     }
 
@@ -95,14 +84,14 @@ public final class BeanSupport extends ExtensionSupport {
     // 2. Specifie ComponentConfiguration must have been installed by the same extension
     public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.parent;
+        ContainerSetup container = extension.container;
         return BeanExtension.wire(b.bind(implementation), container, container.realm);
 
     }
 
     public <T, C extends BeanConfiguration<T>> C wireInstance(OtherBeanDriver<T, C> binder, T instance) {
         PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.parent;
+        ContainerSetup container = extension.container;
         return BeanExtension.wire(b.bindInstance(instance), container, container.realm);
 
     }

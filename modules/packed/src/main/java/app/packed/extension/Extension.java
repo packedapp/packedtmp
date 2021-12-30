@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport2;
 import app.packed.component.RealmSource;
@@ -43,6 +44,7 @@ import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.container.PackedExtensionSelection;
 import packed.internal.container.RealmSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.StackWalkerUtil;
@@ -78,6 +80,14 @@ import packed.internal.util.ThrowableUtil;
  */
 public abstract non-sealed class Extension<E extends Extension<E>> implements RealmSource {
 
+    
+    protected final void shareInstance(Object instance) {
+        
+    }
+    
+    protected final boolean isApplicationRoot() {
+        return configuration().isApplicationRoot();
+    }
     /**
      * The extension's setup that most methods delegate to.
      * <p>
@@ -93,6 +103,12 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final ExtensionTree<E> applicationTree() {
+        ExtensionSetup setup = setup();
+        return new PackedExtensionSelection(setup.applicationRootSetup(), setup.extensionType);
+    }
+
     // checkExtendable...
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
@@ -104,11 +120,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
     protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
         configuration().checkExtensionConfigurable(extensionType);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final E applicationRoot() {
-        return (E) setup().applicationRootSetup().instance();
     }
     
     /**
@@ -122,7 +133,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected final void checkUserConfigurable() {
         configuration().checkUserConfigurable();
     }
-
+    
     /**
      * Returns a configuration object for this extension. The configuration object can be used standalone in situations
      * where the extension needs to delegate responsibility to classes that cannot invoke the protected methods on
@@ -140,14 +151,9 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected final ExtensionConfiguration configuration() {
         return setup();
     }
-
-    private final ExtensionSetup setup() {
-        ExtensionSetup c = setup;
-        if (c == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
-                    + "initialization before the extension is returned to the user, override Extension#onNew()");
-        }
-        return c;
+    
+    protected final NamespacePath containerPath() {
+        return configuration().containerPath();
     }
 
     /**
@@ -187,6 +193,10 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
         return configuration().isExtensionUsed(extensionType);
     }
 
+    protected final E lifetimeRoot() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a mirror for the extension.
      * <p>
@@ -220,7 +230,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected ExtensionMirror mirror() {
         return mirrorInitialize(new ExtensionMirror());
     }
-
     /**
      * Initializes the specified extension mirror.
      * <p>
@@ -337,6 +346,21 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
         return configuration().selectWirelets(wireletClass);
     }
 
+    private final ExtensionSetup setup() {
+        ExtensionSetup c = setup;
+        if (c == null) {
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
+                    + "initialization before the extension is returned to the user, override Extension#onNew()");
+        }
+        return c;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final ExtensionTree<E> tree() {
+        ExtensionSetup setup = setup();
+        return new PackedExtensionSelection(setup, setup.extensionType);
+    }
+
     /**
      * Use another extension by acquiring an instance of its subtension.
      * <p>
@@ -412,6 +436,13 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
 //        // And must be in same module
 //        throw new UnsupportedOperationException();
 //    }
+    
+//    protected static void $lookup(MethodHandles.Lookup lookup) {
+//        // Nej den giver sgu ikke saerlig god mening...
+//        // Men har et requirement paa app.packed.base
+//        // 
+//    }
+
 
 
     /**

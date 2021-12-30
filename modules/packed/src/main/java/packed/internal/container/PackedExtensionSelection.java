@@ -19,31 +19,50 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionSelection;
+import app.packed.extension.ExtensionTree;
 
 /**
  *
  */
-public record PackedExtensionSelection<T extends Extension<T>> (ContainerSetup container, Class<? extends Extension<?>> extensionType)
-        implements ExtensionSelection<T> {
+public record PackedExtensionSelection<T extends Extension<?>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionTree<T> {
 
     /** {@inheritDoc} */
     @Override
     public Iterator<T> iterator() {
         ArrayList<T> list = new ArrayList<>();
-        add(container, list);
+        add(extension, extension.container, list);
         return list.iterator();
     }
 
-    @SuppressWarnings("unchecked")
-    private void add(ContainerSetup container, ArrayList<T> extensions) {
+    private void add(ExtensionSetup es, ContainerSetup container, ArrayList<T> extensions) {
+        extensions.add(extensionType.cast(es.instance()));
         if (container.containerChildren != null) {
+            System.out.println("====DAV fra " + container.path());
             for (ContainerSetup c : container.containerChildren) {
-                ExtensionSetup es = c.extensions.get(extensionType);
-                extensions.add((T) es.instance());
-                add(c, extensions);
+                ExtensionSetup childExtension = c.extensions.get(extensionType);
+                if (childExtension != null) {
+                    add(childExtension, c, extensions);
+                }
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return null;
     }
 
     final class Iter implements Iterator<T> {

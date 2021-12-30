@@ -37,6 +37,7 @@ import packed.internal.util.BasePackageAccess;
 /**
  *
  */
+// Maaske returnere ReflectionFactory med en lookup
 public abstract class ReflectionFactory<T> extends Factory<T> {
 
     private ReflectionFactory(TypeToken<T> typeLiteralOrKey) {

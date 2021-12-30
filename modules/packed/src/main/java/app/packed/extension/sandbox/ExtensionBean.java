@@ -1,4 +1,4 @@
-package app.packed.extension;
+package app.packed.extension.sandbox;
 
 // Auto injectable by any other bean...
 // Singleton

@@ -18,6 +18,7 @@ package app.packed.extension;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
+import app.packed.base.NamespacePath;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
@@ -53,7 +54,9 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
     void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType);
-
+    
+    NamespacePath containerPath();
+    
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -64,6 +67,13 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkUserConfigurable();
 
+//    default ExtensionConfiguration extract(Extension<?> extension) {
+//        if (extension.getExtensionType == configuration.getExtensionType) {
+//            // ok
+//        }
+//        // fail
+//    }
+    
     <T extends Extension<?>> T root(Class<T> extensionType);
 
     /**

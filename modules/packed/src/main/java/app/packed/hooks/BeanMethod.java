@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
+import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass.ClassHook;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
@@ -338,5 +339,8 @@ public abstract class BeanMethod {
 
         /** Bootstrap classes for this hook. */
         Class<? extends BeanMethod> bootstrap();
+        
+        @SuppressWarnings("rawtypes")
+        Class<? extends Extension> extension() default Extension.class;
     }
 }

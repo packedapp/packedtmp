@@ -59,6 +59,8 @@ public class EntryPointSupport extends ExtensionSupport {
     // Behoever kun blive brugt hvis man har mere end et EntryPoint
     // Maaske tager man evt. bare det foerste entry point som default
     // hvis der ikke blive sat noget
+
+    // @AutoService
     interface EntryPointSelector {
 
         /**

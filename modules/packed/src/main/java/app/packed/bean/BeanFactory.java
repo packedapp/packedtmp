@@ -5,4 +5,5 @@ package app.packed.bean;
 // Her taenkes specielt paa situationer hvor vi ikke kan bruge wirelets
 class BeanFactory {
 
+    // Maaske kan vi wrappe existerende factories?
 }

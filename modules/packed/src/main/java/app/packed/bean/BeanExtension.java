@@ -21,7 +21,7 @@ import packed.internal.container.RealmSetup;
 public class BeanExtension extends Extension<BeanExtension> {
 
     /** The container we installing beans into. */
-    final ContainerSetup parent;
+    final ContainerSetup container;
 
     /**
      * Create a new bean extension.
@@ -30,7 +30,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      *            an extension configuration object
      */
     /* package-private */ BeanExtension(ExtensionConfiguration configuration) {
-        this.parent = ((ExtensionSetup) configuration).container;
+        this.container = ((ExtensionSetup) configuration).container;
     }
 
     /**
@@ -49,7 +49,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         //// IDK maaske kun paa support
 
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
-        return wire(driver, parent, parent.realm);
+        return wire(driver, container, container.realm);
     }
 
     /**
@@ -62,7 +62,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(factory);
-        return wire(driver, parent, parent.realm);
+        return wire(driver, container, container.realm);
     }
 
     /**
@@ -79,7 +79,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
         PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
-        return wire(driver, parent, parent.realm);
+        return wire(driver, container, container.realm);
     }
 
     public int beanCount() {
@@ -99,7 +99,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror mirror() {
-        return mirrorInitialize(new BeanExtensionMirror(this));
+        return mirrorInitialize(new BeanExtensionMirror(tree()));
     }
 
     static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ContainerSetup parent, RealmSetup realm, Wirelet... wirelets) {

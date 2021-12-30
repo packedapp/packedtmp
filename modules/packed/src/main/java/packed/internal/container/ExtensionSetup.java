@@ -8,6 +8,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.application.ApplicationDescriptor;
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
@@ -272,6 +273,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) supportModel.newInstance(instance, extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespacePath containerPath() {
+        return container.path();
     }
 }
 

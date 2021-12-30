@@ -28,7 +28,7 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
-import app.packed.extension.UnavailableExtensionException;
+import app.packed.extension.RestrictedExtensionException;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
@@ -275,7 +275,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         
         /**
          * Disables 1 or more extensions. Attempting to use a disabled extension will result in an
-         * {@link UnavailableExtensionException} being thrown
+         * {@link RestrictedExtensionException} being thrown
          * 
          * @param extensionTypes
          *            the types of extension to disable

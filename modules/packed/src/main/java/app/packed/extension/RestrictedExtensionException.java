@@ -37,7 +37,7 @@ import app.packed.application.ApplicationDriver;
 //if disabled, or if application extension used by a non-root container
 
 // extends BuildException?? Skal vi bare smide BuildException?
-public class UnavailableExtensionException extends RuntimeException {
+public class RestrictedExtensionException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -48,7 +48,7 @@ public class UnavailableExtensionException extends RuntimeException {
      * @param message
      *            the message
      */
-    public UnavailableExtensionException(String message) {
+    public RestrictedExtensionException(String message) {
         super(message);
     }
 
@@ -60,7 +60,7 @@ public class UnavailableExtensionException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    public UnavailableExtensionException(String message, Throwable cause) {
+    public RestrictedExtensionException(String message, Throwable cause) {
         super(message, cause);
     }
 }
