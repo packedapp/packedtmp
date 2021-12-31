@@ -263,7 +263,7 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** A build-time container mirror. */
-    private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
+    public final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
         /** Extracts the extension that */
         private static final ClassValue<Class<? extends Extension<?>>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {

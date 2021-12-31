@@ -32,10 +32,16 @@ import app.packed.mirror.Mirror;
 /**
  * A mirror of a component.
  * <p>
+ * Instances of this is interface is always either a {@link ContainerMirror} or {@link BeanMirror} instance.
+ * <p>
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
 // Skal laves til klasse syntes jeg
+// IDK, faar vi f.eks. en ExtensionBeanMirror???? Jeg har svaert ved at se det.
+//// EntityBeanMirror...
+//// Men er det ikke bedre med EntityMirror { BeanMirror bean()}???
+// Kommer i
 public sealed interface ComponentMirror extends Mirror permits ContainerMirror,BeanMirror {
 
     /** {@return the application this component is a part of.} */

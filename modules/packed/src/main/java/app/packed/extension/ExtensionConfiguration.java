@@ -55,6 +55,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType);
     
+    /** {@return the path of the container that this extension belongs to.} */
     NamespacePath containerPath();
     
     /**

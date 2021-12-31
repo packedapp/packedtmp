@@ -198,7 +198,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     }
 
     /** A build-time bean mirror. */
-    private final class BuildTimeBeanMirror extends AbstractBuildTimeComponentMirror implements BeanMirror {
+    public final class BuildTimeBeanMirror extends AbstractBuildTimeComponentMirror implements BeanMirror {
 
         /** {@inheritDoc} */
         @Override

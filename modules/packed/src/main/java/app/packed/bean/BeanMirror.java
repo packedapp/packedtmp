@@ -5,11 +5,12 @@ import java.util.Set;
 import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
+import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 
 /**
- * A mirror of a bean (component).
+ * A mirror of a bean.
  */
-public non-sealed interface BeanMirror extends ComponentMirror {
+public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
     /** {@return the type (class) of the bean.} */
     Class<?> beanType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class

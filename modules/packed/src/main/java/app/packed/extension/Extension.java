@@ -80,14 +80,6 @@ import packed.internal.util.ThrowableUtil;
  */
 public abstract non-sealed class Extension<E extends Extension<E>> implements RealmSource {
 
-    
-    protected final void shareInstance(Object instance) {
-        
-    }
-    
-    protected final boolean isApplicationRoot() {
-        return configuration().isApplicationRoot();
-    }
     /**
      * The extension's setup that most methods delegate to.
      * <p>
@@ -121,7 +113,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
         configuration().checkExtensionConfigurable(extensionType);
     }
-    
+
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -133,7 +125,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected final void checkUserConfigurable() {
         configuration().checkUserConfigurable();
     }
-    
+
     /**
      * Returns a configuration object for this extension. The configuration object can be used standalone in situations
      * where the extension needs to delegate responsibility to classes that cannot invoke the protected methods on
@@ -151,9 +143,14 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected final ExtensionConfiguration configuration() {
         return setup();
     }
-    
+
+    /** {@return the path of the container that this extension belongs to.} */
     protected final NamespacePath containerPath() {
         return configuration().containerPath();
+    }
+
+    protected final boolean isApplicationRoot() {
+        return configuration().isApplicationRoot();
     }
 
     /**
@@ -230,6 +227,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected ExtensionMirror mirror() {
         return mirrorInitialize(new ExtensionMirror());
     }
+
     /**
      * Initializes the specified extension mirror.
      * <p>
@@ -302,6 +300,9 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     /**
      * Invoked (by the runtime) when.
      * <p>
+     * This method should be used to fail fast.
+     * 
+     * <p>
      * This is the last opportunity to wire any components that requires extensions that have not already been added.
      * Attempting to wire extensions at a later time will fail with InternalExtensionException
      * <p>
@@ -353,6 +354,10 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
         }
         return c;
+    }
+
+    protected final void shareInstance(Object instance) {
+
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -427,8 +432,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
 //    
 //    @SafeVarargs
 //    protected static void $cycleBreaker(Class<? extends Extension<?>>... extensions) {
-        // Man maa saette den via noget VarHandle vaerk
-    
+    // Man maa saette den via noget VarHandle vaerk
+
 //        // A -DependsOn(B)
 //        // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
 //
@@ -436,14 +441,12 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
 //        // And must be in same module
 //        throw new UnsupportedOperationException();
 //    }
-    
+
 //    protected static void $lookup(MethodHandles.Lookup lookup) {
 //        // Nej den giver sgu ikke saerlig god mening...
 //        // Men har et requirement paa app.packed.base
 //        // 
 //    }
-
-
 
     /**
      * Registers an optional dependency of this extension. The extension

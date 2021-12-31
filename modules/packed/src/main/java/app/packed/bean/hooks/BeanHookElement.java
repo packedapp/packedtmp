@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.extension.sandbox.ExtensionBean;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor.AbstractAnnotatedElementProcessor;
 
 public /*sealed*/ abstract class BeanHookElement /*permits BeanClass,BeanField,BeanMethod,BeanMethodInterceptor*/ {
@@ -52,7 +51,7 @@ public /*sealed*/ abstract class BeanHookElement /*permits BeanClass,BeanField,B
 
     abstract AbstractAnnotatedElementProcessor processor();
 
-    public static void $registerExtensionBean(Class<? extends ExtensionBean> cl) {}
+    //public static void $registerExtensionBean(Class<? extends ExtensionBean> cl) {}
 }
 
 /**

@@ -26,8 +26,6 @@ import app.packed.mirror.Mirror;
 
 
 // Could be a inner interface on BeanOperationMirror
-
-
 public interface BeanOperationErrorHandlingMirror extends Mirror {
 
     default void print() {

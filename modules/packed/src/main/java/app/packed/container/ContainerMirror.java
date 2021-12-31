@@ -10,13 +10,14 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
+import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
 
 /**
  * A mirror of a container (component).
  * <p>
  * An instance of this class is typically obtained from an {@link ApplicationMirror}.
  */
-public non-sealed interface ContainerMirror extends ComponentMirror {
+public sealed interface ContainerMirror extends ComponentMirror permits BuildTimeContainerMirror {
 
     /** {@return a {@link Set} view of every extension that has been used in the container.} */
     Set<ExtensionMirror> extensions(); // return Map<Type, Mirror> instead???
