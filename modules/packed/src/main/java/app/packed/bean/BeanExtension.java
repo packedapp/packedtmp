@@ -1,20 +1,14 @@
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.UserOrExtension;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
-import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanDriver;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.container.RealmSetup;
 
 /**
  * An extension for creating new beans.
@@ -99,18 +93,18 @@ public class BeanExtension extends Extension<BeanExtension> {
     protected BeanExtensionMirror mirror() {
         return mirrorInitialize(new BeanExtensionMirror(tree()));
     }
-
-    static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ContainerSetup parent, RealmSetup realm, Wirelet... wirelets) {
-        requireNonNull(driver, "driver is null");
-        // Prepare to wire the component (make sure the realm is still open)
-        realm.wirePrepare();
-
-        // Create the new component
-        BeanSetup component = new BeanSetup(parent.lifetime, realm, driver, parent, driver.binding);
-
-        realm.wireCommit(component);
-
-        // Return a component configuration to the user
-        return driver.toConfiguration(component);
-    }
+//
+//    static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ContainerSetup parent, RealmSetup realm, Wirelet... wirelets) {
+//        requireNonNull(driver, "driver is null");
+//        // Prepare to wire the component (make sure the realm is still open)
+//        realm.wirePrepare();
+//
+//        // Create the new component
+//        BeanSetup component = new BeanSetup(parent.lifetime, realm, driver, parent, driver.binding);
+//
+//        realm.wireCommit(component);
+//
+//        // Return a component configuration to the user
+//        return driver.toConfiguration(component);
+//    }
 }

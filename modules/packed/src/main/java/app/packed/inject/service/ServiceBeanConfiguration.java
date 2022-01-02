@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
@@ -45,6 +46,10 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
+
+    public ServiceBeanConfiguration(BeanHandle<T> handle) {
+        super(handle);
+    }
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is

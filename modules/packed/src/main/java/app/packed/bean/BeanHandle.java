@@ -15,6 +15,8 @@
  */
 package app.packed.bean;
 
+import java.util.function.Function;
+
 import packed.internal.bean.PackedBeanHandle;
 
 /**
@@ -51,3 +53,34 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
 // Inject BeanManager<T>
 // MH(ExtensionContext, )
+
+/* sealed */ interface ZBuilder {
+
+    ZBuilder build();
+
+    // Specific super type
+
+    // Den kan vi jo se fra Typen af configuration...
+    ZBuilder kind(BeanKind kind);
+
+    ZBuilder namePrefix(Function<Class<?>, String> computeIt);
+
+    ZBuilder namePrefix(String prefix);
+
+    ZBuilder noInstances();
+
+    // BeanConfigurationBinder<BeanConfiguration> buildBinder();
+    ZBuilder noReflection();
+
+    ZBuilder oneInstance();
+
+    // Vi kan ikke rejecte extensions paa bean niveau...
+    //// Man kan altid lave en anden extension som bruger den extension jo
+    //// Saa det er kun paa container niveau vi kan forbyde extensions
+    
+    //// For instantiationOnly
+    // reflectOnConstructorOnly();
+
+    // reflectOn(Fields|Methods|Constructors)
+    // look in declaring class
+}

@@ -32,11 +32,6 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     public ContainerBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
-    
-    public ContainerBeanConfiguration() {
-        super(null);
-    }
-
 
     public <X extends Runnable & Callable<String>> X foo() {
         return null;

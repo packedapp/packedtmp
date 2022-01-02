@@ -27,10 +27,11 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSupportOld;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
@@ -40,8 +41,6 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.OldBeanDriver.OtherBeanDriver;
-import packed.internal.bean.PackedBeanDriverBinder;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -88,22 +87,22 @@ import packed.internal.util.ThrowableUtil;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
 @DependsOn(extensions = BeanExtension.class)
-public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
+public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
 
-    /** A binder for prototype service beans. */
-    @SuppressWarnings("rawtypes")
-    private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
-            BeanType.PROTOTYPE_UNMANAGED);
-
-    /** A binder for singleton service beans. */
-    @SuppressWarnings("rawtypes")
-    private static final OtherBeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
-            BeanType.BASE);
+//    /** A binder for prototype service beans. */
+//    @SuppressWarnings("rawtypes")
+//    private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
+//            BeanType.PROTOTYPE_UNMANAGED);
+//
+//    /** A binder for singleton service beans. */
+//    @SuppressWarnings("rawtypes")
+//    private static final OtherBeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
+//            BeanType.BASE);
 
     /** The service manager. */
     private final ServiceManagerSetup services;
@@ -262,11 +261,13 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
      * @return a service configuration for the service
      * @see InjectorComposer#provide(Class)
      */
-    @SuppressWarnings("unchecked")
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         // Create a bean driver by binding the implementation
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, implementation);
-        return c.provide();
+
+        BeanHandle<T> bh = use(BeanSupportOld.class).register(UserOrExtension.user(), implementation);
+        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+
+        return sbc.provide();
     }
 
     // Fungere ikke rigtig med mi
@@ -286,11 +287,17 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
      * @return the configuration of the component that was installed
      */
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
-        // Create a bean driver by binding a factory
-        @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
+//        // Create a bean driver by binding a factory
+//        @SuppressWarnings("unchecked")
+//        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
+//
+//        return c.provide();
 
-        return c.provide();
+        BeanHandle<T> bh = use(BeanSupportOld.class).register(UserOrExtension.user(), factory);
+        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+
+        return sbc.provide();
+
     }
 
     /**
@@ -325,26 +332,40 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
      * @return a service configuration for the service
      */
     public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
-        // Create the bean driver by binding the implementation
-        @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
+        BeanHandle<T> bh = use(BeanSupportOld.class).registerInstance(UserOrExtension.user(), instance);
+        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
-        return c.provide();
+        return sbc.provide();
+//        
+//        
+//        // Create the bean driver by binding the implementation
+//        @SuppressWarnings("unchecked")
+//        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
+//
+//        return c.provide();
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        // Create a bean driver by binding the implementation
-        @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
+        BeanHandle<T> bh = use(BeanSupportOld.class).register(UserOrExtension.user(), implementation);
+        bh.prototype();
+        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
-        return c; // no provide??
+        return sbc.provide();
+//        
+//        
+//        // Create a bean driver by binding the implementation
+//        @SuppressWarnings("unchecked")
+//        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
+//
+//        return c; // no provide??
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, factory);
+        BeanHandle<T> bh = use(BeanSupportOld.class).register(UserOrExtension.user(), factory);
+        bh.prototype();
+        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
-        return c;
+        return sbc.provide();
     }
 
     // requires bliver automatisk anchoret...
