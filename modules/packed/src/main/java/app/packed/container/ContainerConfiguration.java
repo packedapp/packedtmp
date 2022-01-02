@@ -14,27 +14,12 @@ import packed.internal.container.PackedContainerHandle;
  */
 public final class ContainerConfiguration extends ComponentConfiguration {
 
-    /** Must be created through Assembly, ContainerDriver or Composer. */
-    ContainerConfiguration() {
-        this.container = null;
-    }
-
     /** The component we are configuring. Is initially null until initialized by someone. */
     final ContainerSetup container;
 
-    @Override
-    protected void checkIsWiring() {
-        container.checkIsWiring();
-    }
-
-    @Override
-    public NamespacePath path() {
-        return container.path();
-    }
-
-    @Override
-    public String toString() {
-        return container.toString();
+    /** Must be created through Assembly, ContainerDriver or Composer. */
+    ContainerConfiguration() {
+        this.container = null;
     }
 
     public ContainerConfiguration(ContainerHandle containerHandle) {
@@ -48,6 +33,11 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         return container.application.descriptor;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    protected void checkIsWiring() {
+        container.checkIsWiring();
+    }
 
     public void embed(Assembly assembly) {
         throw new UnsupportedOperationException();
@@ -63,6 +53,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return container.extensionTypes();
     }
+
 
     /**
      * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
@@ -91,8 +82,20 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         return this;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public NamespacePath path() {
+        return container.path();
+    }
+
     public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container.selectWirelets(wireletClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return container.toString();
     }
 
     /**

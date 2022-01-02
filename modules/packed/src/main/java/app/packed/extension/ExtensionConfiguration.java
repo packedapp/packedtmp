@@ -55,9 +55,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType);
     
-    /** {@return the path of the container that this extension belongs to.} */
-    NamespacePath containerPath();
-    
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -67,16 +64,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkUserConfigurable();
-
-//    default ExtensionConfiguration extract(Extension<?> extension) {
-//        if (extension.getExtensionType == configuration.getExtensionType) {
-//            // ok
-//        }
-//        // fail
-//    }
     
-    <T extends Extension<?>> T root(Class<T> extensionType);
-
     /**
      * @param <C>
      *            the type of composer
@@ -90,8 +78,22 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Taenker det stadig ser ud som om vi kommer fra samme assembly
     <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 
-    int extensionDepth();
+//    default ExtensionConfiguration extract(Extension<?> extension) {
+//        if (extension.getExtensionType == configuration.getExtensionType) {
+//            // ok
+//        }
+//        // fail
+//    }
+    
+    int containerDepth();
 
+    /** {@return the path of the container that this extension is a part of.} */
+    NamespacePath containerPath();
+
+    default boolean isLifetimeRoot() {
+        return isApplicationRoot();
+    }
+    
     boolean isApplicationRoot();
 
     /**

@@ -56,19 +56,19 @@ public class NewExtensions extends BaseAssembly {
         @Override
         protected void onClose() {
             super.onClose();
-            System.out.println("OnClose " + configuration().extensionDepth());
+            System.out.println("OnClose " + configuration().containerDepth());
         }
 
         @Override
         protected void onNew() {
             super.onNew();
-            System.out.println("OnNew " + configuration().extensionDepth());
+            System.out.println("OnNew " + configuration().containerDepth());
         }
 
         @Override
         protected void onUserClose() {
             super.onUserClose();
-            System.out.println("OnUserClose " + configuration().extensionDepth());
+            System.out.println("OnUserClose " + configuration().containerDepth());
         }
     }
 }

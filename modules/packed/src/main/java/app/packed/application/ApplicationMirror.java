@@ -29,7 +29,6 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror extends Mirror {
 
-
     /** {@return the root container in the application.} */
     ContainerMirror container();
 

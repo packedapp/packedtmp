@@ -107,7 +107,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public int extensionDepth() {
+    public int containerDepth() {
         return container.depth;
     }
 
@@ -209,16 +209,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@return the realm of this extension. This method will lazy initialize it.} */
     public ExtensionRealmSetup realm() {
         return realm;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends Extension<?>> T root(Class<T> extensionType) {
-        ExtensionSetup s = this;
-        while (s.parent != null) {
-            s = s.parent;
-        }
-        return extensionType.cast(s.instance());
     }
 
     /** {@inheritDoc} */

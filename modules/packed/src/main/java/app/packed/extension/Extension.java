@@ -98,7 +98,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected BeanSupport beans() {
         return use(BeanSupport.class);
     }
-    
+
+    /** {@return a tree view that spans all extension of this type in the same application.} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionTree<E> applicationTree() {
         ExtensionSetup setup = setup();

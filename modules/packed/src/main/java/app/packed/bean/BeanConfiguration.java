@@ -1,5 +1,7 @@
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -24,7 +26,7 @@ public abstract sealed class BeanConfiguration<T> extends
     private final BeanSetup bean;
     
     protected BeanConfiguration(BeanHandle<T> handle) {
-        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) handle;
+        PackedBeanHandle<?> bh = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
         this.bean = bh.newSetup();
     }
 
@@ -33,17 +35,6 @@ public abstract sealed class BeanConfiguration<T> extends
         bean.checkIsWiring();
     }
 
-    @Override
-    public NamespacePath path() {
-        return bean.path();
-    }
-
-    @Override
-    public String toString() {
-        return bean.toString();
-    }
-
-    
     // Hmm, vi dekorere ikke fx ServiceLocator...
     // Maaske er det bedre at dekorere typer???
     //// InjectableVarSelector<T>
@@ -60,12 +51,11 @@ public abstract sealed class BeanConfiguration<T> extends
         return inject(Key.of(key), instance);
     }
 
+    
     // Taenker den overrider
     public <E> BeanConfiguration<T> inject(Key<E> key, E instance) {
         throw new UnsupportedOperationException();
     }
-
-    // Ved ikke praecis hvad den overskriver...
 
     // Kunne ogsaa vaere bind
     @SuppressWarnings("unchecked")
@@ -75,6 +65,8 @@ public abstract sealed class BeanConfiguration<T> extends
 
     /** {@return the kind of bean that is being configured. } */
     public abstract BeanKind kind();
+
+    // Ved ikke praecis hvad den overskriver...
 
     /**
      * This method can be overridden to return a subclass of bean mirror.
@@ -115,5 +107,15 @@ public abstract sealed class BeanConfiguration<T> extends
     public BeanConfiguration<T> on(RunState state, Consumer<T> action) {
         // Maybe throw UOE instead of IAE
         return this;
+    }
+
+    @Override
+    public NamespacePath path() {
+        return bean.path();
+    }
+
+    @Override
+    public String toString() {
+        return bean.toString();
     }
 }

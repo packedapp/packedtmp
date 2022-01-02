@@ -17,6 +17,7 @@ package app.packed.bean;
 
 import java.util.function.Function;
 
+import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanHandle;
 
 /**
@@ -34,6 +35,14 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     }
 
     void prototype();
+
+    //////////////// Sidecars
+    default void addSidecarInstance(Object o) {}
+    default void addSidecar(Class<?> clazz) {}
+    default void addSidecar(Factory<?> clazz) {}
+
+    // Provide stuff, state holder, Lifecycle
+    
     
 }
 /// set properties
@@ -67,7 +76,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     // Vi kan ikke rejecte extensions paa bean niveau...
     //// Man kan altid lave en anden extension som bruger den extension jo
     //// Saa det er kun paa container niveau vi kan forbyde extensions
-    
+
     //// For instantiationOnly
     // reflectOnConstructorOnly();
 

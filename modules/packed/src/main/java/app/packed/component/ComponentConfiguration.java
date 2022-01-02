@@ -30,34 +30,9 @@ import app.packed.container.Wirelet;
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration {
 
     protected abstract void checkIsWiring();
-//
-//    /**
-//     * Returns an extension configuration object. This configuration object is typically used in situations where the
-//     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
-//     * visibility rules.
-//     * <p>
-//     * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
-//     * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
-//     * access to the configuration object.
-//     * <p>
-//     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
-//     * 
-//     * @throws IllegalStateException
-//     *             if invoked from the constructor of the configuration.
-//     * @return a configuration object for this extension
-//     */
-//    final ComponentSetup component() {
-//        ComponentSetup c = component;
-//        if (c == null) {
-//            throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
-//                    + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
-//        }
-//        return c;
-//    }
 
     /** {@return a mirror for the component/} */
-    // Er det et problem.. naar den ikke er fuldt wired endnu???
-    // Men det er den vel, paa naer navnet
+    // Er det et problem.. naar den ikke er fuldt wired endnu??? Men det er den vel, paa naer navnet
     protected abstract ComponentMirror mirror();
 
     /**
@@ -102,12 +77,31 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
     // IDK skal vi bare noejes med at have den paa mirror'et?
     // Nej det er rart at kunne kalde den
     public abstract NamespacePath path();
-
-    /** {@inheritDoc} */
-    @Override
-    public abstract String toString();
 }
-
+//
+///**
+//* Returns an extension configuration object. This configuration object is typically used in situations where the
+//* extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
+//* visibility rules.
+//* <p>
+//* An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
+//* subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
+//* access to the configuration object.
+//* <p>
+//* This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
+//* 
+//* @throws IllegalStateException
+//*             if invoked from the constructor of the configuration.
+//* @return a configuration object for this extension
+//*/
+//final ComponentSetup component() {
+//  ComponentSetup c = component;
+//  if (c == null) {
+//      throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
+//              + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
+//  }
+//  return c;
+//}
 // Altsaa maaske skal vi reintroducere component context...
 // Det er isaer den der BeanConfiguration.provide jeg ikke har lyst til at hardcode i BeanConfiguration...
 /// Men hvis vi saa har ServiceExtension.Sub.provide(BeanConfigurationContext bc)
