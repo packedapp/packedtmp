@@ -17,7 +17,6 @@ package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.UserOrExtension;
@@ -49,14 +48,6 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
         this.beanType = requireNonNull(beanType);
         this.source = source;
         this.factory = factory;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <S extends BeanConfiguration<T>> S build(S configuration) {
-        BeanSetup bean = new BeanSetup(container, container.realm, container.lifetime, this);
-        System.out.println(bean);
-        return configuration;
     }
 
     /** {@inheritDoc} */

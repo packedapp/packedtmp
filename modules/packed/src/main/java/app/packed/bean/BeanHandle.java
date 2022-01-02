@@ -35,16 +35,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     void prototype();
     
-    /**
-     * @param <S>
-     *            the type of bean
-     * @param configuration
-     *            the configuration
-     * @return the specified configuration
-     * @throws IllegalArgumentException
-     *             if the specified configuration has previously been used for building stuff
-     */
-    <S extends BeanConfiguration<T>> S build(S configuration);
 }
 /// set properties
 /// Bind operation (Eller er det hooks???)

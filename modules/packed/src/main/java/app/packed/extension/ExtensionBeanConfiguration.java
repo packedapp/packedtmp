@@ -3,7 +3,7 @@ package app.packed.extension;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanSupportOld;
+import app.packed.bean.BeanSupport;
 import app.packed.inject.Factory;
 
 /**
@@ -13,9 +13,9 @@ import app.packed.inject.Factory;
  * <>
  * InjectionScope
  * 
- * @see BeanSupportOld#install(Class)
- * @see BeanSupportOld#install(Factory)
- * @see BeanSupportOld#installInstance(Object)
+ * @see BeanSupport#install(Class)
+ * @see BeanSupport#install(Factory)
+ * @see BeanSupport#installInstance(Object)
  */
 // Taenker vi flytter den til .bean egentlig
 public final class ExtensionBeanConfiguration<T> extends BeanConfiguration<T> {
