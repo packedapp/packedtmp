@@ -26,6 +26,10 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     /** Must be created through Assembly, ContainerDriver or Composer. */
     ContainerConfiguration() {}
 
+    
+    /** Must be created through Assembly, ContainerDriver or Composer. */
+    public ContainerConfiguration(ContainerHandle driver) {}
+
     /** {@return a descriptor for the application the container is a part of.} */
     // Why not just an application mirror???
     public ApplicationDescriptor application() {

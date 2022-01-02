@@ -66,13 +66,13 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.container = application.container;
-        this.configuration = applicationDriver.containerDriver.toConfiguration(container);
+        this.configuration = new PackedContainerHandle(container).toConfiguration(container);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
 
         wireCommit(container);
     }
 
-    public AssemblyRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyRealmSetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
 
         this.assembly = requireNonNull(assembly, "assembly is null");

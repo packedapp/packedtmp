@@ -22,7 +22,7 @@ import app.packed.extension.ExtensionConfiguration;
 import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedContainerDriver;
+import packed.internal.container.PackedContainerHandle;
 
 /**
  * An extension for adding new containers to an existing container.
@@ -43,7 +43,7 @@ public class ContainerExtension extends Extension<ContainerExtension > {
     }
 
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return link(PackedContainerDriver.DEFAULT, assembly, wirelets);
+        return link(new PackedContainerHandle(container), assembly, wirelets);
     }
 
     /**
@@ -57,8 +57,8 @@ public class ContainerExtension extends Extension<ContainerExtension > {
      *            optional wirelets
      * @return the component that was linked
      */
-    public ContainerMirror link(ContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null"); 
+    public ContainerMirror link(ContainerHandle driver, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(driver, "driver is null"); 
         
         // Create a new realm for the assembly
         AssemblyRealmSetup newRealm = new AssemblyRealmSetup(d, container, assembly, wirelets);

@@ -38,7 +38,6 @@ import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.container.CompositeWirelet;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.WireletWrapper;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
@@ -52,8 +51,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
     // vil sikre sig af en application goere x...
     public static final PackedApplicationDriver<Void> MIRROR_DRIVER = new Builder().buildVoid();
-
-    public final PackedContainerDriver containerDriver = PackedContainerDriver.DEFAULT;
 
     final Set<Class<? extends Extension<?>>> disabledExtensions;
 

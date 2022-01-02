@@ -38,8 +38,8 @@ import packed.internal.util.LookupUtil;
  * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
  * functionality of Packed.
  * <p>
- * An assembly is a thin wrapper that encapsulates a {@link ContainerDriver} and the configuration of a component provided
- * by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
+ * An assembly is a thin wrapper that encapsulates the configuration of a container provided by the driver. This class
+ * is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * Assemblies are composable via linking.
  * 
@@ -65,7 +65,8 @@ public abstract non-sealed class Assembly implements RealmSource {
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the container instance has not yet been used to build anything.</li>
+     * <li>Initially, this field is null, indicating that the container instance has not yet been used to build
+     * anything.</li>
      * <li>Then, as a part of the build process, it is initialized with the actual container configuration object.</li>
      * <li>Finally, {@link #USED} is set to indicate that the assembly has been used.</li>
      * </ul>
@@ -170,7 +171,7 @@ public abstract non-sealed class Assembly implements RealmSource {
     protected final void embed(Assembly assembly) {
         configuration().embed(assembly);
     }
-    
+
     /**
      * {@return an unmodifiable view of the extensions that are currently used.}
      * 
@@ -199,13 +200,13 @@ public abstract non-sealed class Assembly implements RealmSource {
     }
 
     /**
-     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
-     * case sensitive.
+     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
+     * is case sensitive.
      * <p>
      * This method should be called as the first thing when configuring a container.
      * <p>
-     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way that
-     * it will have a unique name among other sibling container.
+     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way
+     * that it will have a unique name among other sibling container.
      *
      * @param name
      *            the name of the container
@@ -260,7 +261,7 @@ public abstract non-sealed class Assembly implements RealmSource {
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
-    
+
     // On container or assembly???
     // Not container I think...
     // Assembly + Extension

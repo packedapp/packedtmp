@@ -53,7 +53,7 @@ public final class ComposerRealmSetup extends ContainerRealmSetup {
         this.composer = composer;
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
         this.container = application.container;
-        componentConfiguration = applicationDriver.containerDriver.toConfiguration(container);
+        this.componentConfiguration = new PackedContainerHandle(container).toConfiguration(container);
         wireCommit(container);
     }
 

@@ -30,6 +30,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.PackedContainerHandle;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
@@ -68,13 +69,13 @@ public final class ApplicationSetup {
     public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildType buildKind, RealmSetup realm, Wirelet[] wirelets) {
         this.driver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
-
         this.descriptor = new PackedApplicationDescriptor(buildKind);
+
+        // Create the root container of the application
+        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), new PackedContainerHandle(null), null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-
-        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), driver.containerDriver, null, wirelets);
         this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
     }
 

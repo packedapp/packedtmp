@@ -4,22 +4,27 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
+import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
+import app.packed.container.ContainerHandle;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
-public final class PackedContainerDriver extends ContainerDriver {
-
-    /** A driver for configuring containers. */
-    public static final PackedContainerDriver DEFAULT = new PackedContainerDriver();
+public final class PackedContainerHandle implements ContainerHandle {
 
     /** A handle that can access ComponentConfiguration#component. */
     private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
             ComponentConfiguration.class, "component", ComponentSetup.class);
+
+    @Nullable
+    final ContainerSetup parent;
+
+    public PackedContainerHandle(@Nullable ContainerSetup parent) {
+        this.parent = parent;
+    }
 
     @Override
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
@@ -27,7 +32,7 @@ public final class PackedContainerDriver extends ContainerDriver {
     }
 
     public final ContainerConfiguration toConfiguration(ContainerSetup component) {
-        ContainerConfiguration c = newConfiguration();
+        ContainerConfiguration c = new ContainerConfiguration(this);
         VH_COMPONENT_CONFIGURATION_COMPONENT.set(c, component);
         return c;
     }

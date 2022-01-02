@@ -105,6 +105,7 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * <p>
      * <strong>Note:</strong> This method should never be overridden with a public modifier.
      */
+    // Jeg tror vi replacer den med en lambda paa BeanHandle
     protected void onConfigured() {}
 
     /**
