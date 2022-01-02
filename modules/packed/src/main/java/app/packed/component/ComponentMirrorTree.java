@@ -22,6 +22,13 @@ package app.packed.component;
 
 
 // Fx en Lifetime er jo altid et component tree...
+
+
+// TreeView
+
+//// TreeView<ComponentMirror>
+//// TreeView<ContainerMirror>
+//// TreeView<T extends Extension<?>>
 public interface ComponentMirrorTree extends ComponentMirrorSet {
     ComponentMirror root();  // Optional<CM> if we have empty trees.
 }

@@ -28,14 +28,11 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
-import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
-import packed.internal.component.old.PackedComponentStream;
-import packed.internal.component.old.PackedComponentStreamOption;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
@@ -215,10 +212,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         protected abstract Collection<ComponentMirror> children();
 
-        public Stream<ComponentMirror> components() {
-            return stream();
-        }
-
         /** {@inheritDoc} */
         public final int depth() {
             return depth;
@@ -275,6 +268,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             }
             throw new UnsupportedOperationException();
         }
+
 //
 //        /** {@inheritDoc} */
 //        public final ContainerMirror root() {
@@ -288,24 +282,22 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 //                return c.mirror();
 //            }
 //        }
-
+//
         /** {@inheritDoc} */
-        public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
-            return new PackedComponentStream(stream0(ComponentSetup.this, true, PackedComponentStreamOption.of(options)));
+        public final Stream<ComponentMirror> components() {
+            return stream0(ComponentSetup.this, true);
         }
 
-        private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
+        private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
             @SuppressWarnings({ "unchecked", "rawtypes" })
             Collection<AbstractBuildTimeComponentMirror> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
-                if (option.processThisDeeper(origin, ComponentSetup.this)) {
-                    Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
-                    return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(thisMirror()), s);
-                }
-                return Stream.empty();
+                Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false));
+                return /*isRoot && option.excludeOrigin() ? s :*/ Stream.concat(Stream.of(thisMirror()), s);
+                //return Stream.empty();
             } else {
-                return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(thisMirror());
+                return /*isRoot && option.excludeOrigin() ? Stream.empty() :*/ Stream.of(thisMirror());
             }
         }
 

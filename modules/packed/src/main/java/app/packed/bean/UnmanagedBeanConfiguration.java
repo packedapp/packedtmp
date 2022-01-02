@@ -1,9 +1,14 @@
 package app.packed.bean;
 
 public non-sealed class UnmanagedBeanConfiguration<T> extends BeanConfiguration<T> {
-
-    public UnmanagedBeanConfiguration() {}
     
+    /**
+     * @param handle
+     */
+    protected UnmanagedBeanConfiguration(BeanHandle<T> handle) {
+        super(handle);
+    }
+
     /** {@inheritDoc} */
     @Override
     public final BeanKind kind() {

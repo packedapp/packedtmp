@@ -41,8 +41,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
         }
     }
 
-    public void embed(Assembly assembly, Wirelet... wirelets) {
-        // Is not on ContainerExtension... Because we do not add new containers.
+    public void embed(Assembly assembly) {
         throw new UnsupportedOperationException();
     }
     

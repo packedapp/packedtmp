@@ -27,7 +27,7 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanSupport;
+import app.packed.bean.BeanSupportOld;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.ComponentConfiguration;
@@ -265,7 +265,7 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
     @SuppressWarnings("unchecked")
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         // Create a bean driver by binding the implementation
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupport.class).wire(SINGLETON_SERVICE_BEAN_BINDER, implementation);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, implementation);
         return c.provide();
     }
 
@@ -288,7 +288,7 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
         // Create a bean driver by binding a factory
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupport.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
 
         return c.provide();
     }
@@ -327,7 +327,7 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
     public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
         // Create the bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupport.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
 
         return c.provide();
     }
@@ -335,14 +335,14 @@ public /*non-sealed */ class ServiceExtension extends Extension<ServiceExtension
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // Create a bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupport.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
 
         return c; // no provide??
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         @SuppressWarnings("unchecked")
-        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupport.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, factory);
+        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, factory);
 
         return c;
     }

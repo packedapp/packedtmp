@@ -2,6 +2,7 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.UserOrExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -10,7 +11,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanDriver;
-import packed.internal.bean.PackedBeanDriverBinder;
+import packed.internal.bean.PackedBeanHandle;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
@@ -45,11 +46,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        //// Maaske har vi noget install(BeanDriver bd, Class), installInstance(BeanDriver, Object)
-        //// IDK maaske kun paa support
-
-        PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
-        return wire(driver, container, container.realm);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(container, UserOrExtension.user(), implementation);
+        return new ContainerBeanConfiguration<>(handle);
     }
 
     /**
@@ -61,8 +59,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(factory);
-        return wire(driver, container, container.realm);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(container, UserOrExtension.user(), factory);
+        return new ContainerBeanConfiguration<>(handle);
     }
 
     /**
@@ -78,8 +76,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<ContainerBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
-        return wire(driver, container, container.realm);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofInstance(container, UserOrExtension.user(), instance);
+        return new ContainerBeanConfiguration<>(handle);
     }
 
     public int beanCount() {

@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component.old;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentScope;
 import app.packed.extension.Extension;
-import packed.internal.component.old.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link ComponentMirror components}. An
@@ -77,7 +78,8 @@ import packed.internal.component.old.PackedComponentStreamOption;
 // Ved ikke om 
 // stream().members();
 
-public interface ComponentMirrorStream extends Stream<ComponentMirror> {
+
+interface ComponentMirrorStream extends Stream<ComponentMirror> {
 
 //    /**
 //     * Returns a stream that only contains containers.
@@ -217,7 +219,6 @@ public interface ComponentMirrorStream extends Stream<ComponentMirror> {
      * 
      * The order in which children should be processed
      * 
-     * @see ComponentMirror#stream(Option...)
      */
     // I virkeligheden er det system view options.
     // Noget af det vil jeg mene..

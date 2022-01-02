@@ -29,14 +29,6 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror extends Mirror {
 
-    default Stream<ComponentMirror> components() {
-        return container().components();
-    }
-
-    /** {@return the component in the application}. */
-    default <T extends ComponentMirror> SetView<T> components(Class<T> componentType) {
-        throw new UnsupportedOperationException();
-    }
 
     /** {@return the root container in the application.} */
     ContainerMirror container();
@@ -129,5 +121,9 @@ public interface ApplicationMirror extends Mirror {
     // IDK om vi bare altid bruger en Application Launcher class...
     public static ApplicationMirror of(Assembly assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
+    }
+    
+    default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
+        return container().useExtension(extensionMirrorType);
     }
 }

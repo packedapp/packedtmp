@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,7 +29,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
-import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
@@ -230,19 +228,19 @@ public final class RuntimeComponentMirror {
       //  return PackedComponentInstanceRelation.relation(this, (RuntimeComponentMirror) other);
     }
 
-    /**
-     * @param path
-     */
-
-    public RuntimeComponentMirror resolve(CharSequence path) {
-        RuntimeComponentMirror c = findComponent(path);
-        if (c == null) {
-            // Maybe try an match with some fuzzy logic, if children is a resonable size)
-            List<?> list = stream().map(e -> e.path()).toList();
-            throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
-        }
-        return c;
-    }
+//    /**
+//     * @param path
+//     */
+//
+//    public RuntimeComponentMirror resolve(CharSequence path) {
+//        RuntimeComponentMirror c = findComponent(path);
+//        if (c == null) {
+//            // Maybe try an match with some fuzzy logic, if children is a resonable size)
+//            List<?> list = stream().map(e -> e.path()).toList();
+//            throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
+//        }
+//        return c;
+//    }
 
     /** {@inheritDoc} */
 
@@ -258,25 +256,25 @@ public final class RuntimeComponentMirror {
 
     /** {@inheritDoc} */
 
-    public ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
-        throw new UnsupportedOperationException();
-//        return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
-    }
-
-    @SuppressWarnings("unused")
-    private Stream<RuntimeComponentMirror> stream0(RuntimeComponentMirror origin, boolean isRoot, PackedComponentStreamOption option) {
-        // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-        Map<String, RuntimeComponentMirror> c = children;
-        if (c != null && !c.isEmpty()) {
-            if (option.processThisDeeper(origin, this)) {
-                Stream<RuntimeComponentMirror> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
-                return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
-            }
-            return Stream.empty();
-        } else {
-            return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
-        }
-    }
+//    public ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
+//        throw new UnsupportedOperationException();
+////        return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
+//    }
+//
+//    @SuppressWarnings("unused")
+//    private Stream<RuntimeComponentMirror> stream0(RuntimeComponentMirror origin, boolean isRoot, PackedComponentStreamOption option) {
+//        // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
+//        Map<String, RuntimeComponentMirror> c = children;
+//        if (c != null && !c.isEmpty()) {
+//            if (option.processThisDeeper(origin, this)) {
+//                Stream<RuntimeComponentMirror> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
+//                return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
+//            }
+//            return Stream.empty();
+//        } else {
+//            return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
+//        }
+//    }
 
 
     public ContainerMirror container() {

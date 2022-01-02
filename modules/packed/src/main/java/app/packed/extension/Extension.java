@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanSupport2;
+import app.packed.bean.BeanSupport;
 import app.packed.component.RealmSource;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -95,6 +95,9 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
+    protected BeanSupport beans() {
+        return use(BeanSupport.class);
+    }
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionTree<E> applicationTree() {
         ExtensionSetup setup = setup();

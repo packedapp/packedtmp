@@ -17,11 +17,6 @@ package app.packed.base;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import app.packed.component.ComponentMirrorStream;
-import app.packed.component.ComponentMirrorStream.Option;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
@@ -92,15 +87,15 @@ public interface NamespaceElement {
     // Syntes ikke vi skal have baade tryResolve or resolve...
     NamespaceElement resolve(CharSequence path);
 
-    /**
-     * Returns a stream consisting of this component and all of its descendants in any order.
-     *
-     * @param options
-     *            specifying the order and contents of the stream
-     * 
-     * @return a component stream consisting of this component and all of its descendants in any order
-     */
-    Stream<? extends NamespaceElement> stream(ComponentMirrorStream.Option... options);
+//    /**
+//     * Returns a stream consisting of this component and all of its descendants in any order.
+//     *
+//     * @param options
+//     *            specifying the order and contents of the stream
+//     * 
+//     * @return a component stream consisting of this component and all of its descendants in any order
+//     */
+//    Stream<? extends NamespaceElement> stream(ComponentMirrorStream.Option... options);
 
     /**
      * Returns the root component of the namespace this component is located in.
@@ -131,9 +126,9 @@ public interface NamespaceElement {
     // Well it is more or less the same options....
     // Tror vi laver options om til en klasse. Og saa har to metoder.
     // Og dropper varargs..
-    default void traverse(Consumer<? super NamespaceElement> action) {
-        stream(Option.maxDepth(1)).forEach(action);
-    }
+//    default void traverse(Consumer<? super NamespaceElement> action) {
+//        stream(Option.maxDepth(1)).forEach(action);
+//    }
 
     default Optional<NamespaceElement> tryResolve(CharSequence path) {
         throw new UnsupportedOperationException();

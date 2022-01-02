@@ -1,4 +1,4 @@
-package app.packed.component;
+package packed.internal.component.old;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;

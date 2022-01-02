@@ -4,17 +4,41 @@ package app.packed.bean;
 public enum BeanKind {
 
     EXTENSION,
-    /** Lives and dies with the application. */
-    APPLICATION,
+    
+    /** Lives and dies with the container it is installed into. */
+    CONTAINER,
     
     // Instantiated by an extensions that
     // A single ideally operates within it
-    REQUEST,
+    OPERATION,
 
-    // Instantiated and deconstructed by an extension and some point
+    // Instantiated and deconstructed by an extension and some point (For example, 
     MANAGED,
 
     /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
     UNMANAGED;
 }
+// Er ikke sikker paa den her
+// Container == Extension paa alt paanaer injection visibility
+
+
 // Scoped vs unscoped
+
+enum BeanLifetime {
+    
+    /** Lives and dies with the container it is installed into. */
+    CONTAINER,
+    
+    // Instantiated by an extensions that
+    // A single ideally operates within it
+    OPERATION,
+
+    // Instantiated and deconstructed by an extension and some point (For example, JPA entity) 
+    MANAGED,
+
+    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
+    CONSTRUCTED,
+    
+    /** Constructed by other people. For example a bean that must verified at some point. */
+    UNMANAGED;
+}

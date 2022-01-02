@@ -18,8 +18,10 @@ package app.packed.component;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanHandle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
+import packed.internal.bean.PackedBeanHandle;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -34,6 +36,15 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
     /** The component we are configuring. Is initially null until initialized by someone. */
     @Nullable
     private ComponentSetup component;
+
+    protected ComponentConfiguration() {
+
+    }
+
+    protected ComponentConfiguration(BeanHandle<?> beanHandle) {
+        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) beanHandle;
+        this.component = bh.newSetup();
+    }
 
     protected void checkIsWiring() {
         component().checkIsWiring();
@@ -54,9 +65,6 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      *             if invoked from the constructor of the configuration.
      * @return a configuration object for this extension
      */
-    // Altsaa maaske skal vi reintroducere component context...
-    // Det er isaer den der BeanConfiguration.provide jeg ikke har lyst til at hardcode i BeanConfiguration...
-    /// Men hvis vi saa har ServiceExtension.Sub.provide(BeanConfigurationContext bc)
     final ComponentSetup component() {
         ComponentSetup c = component;
         if (c == null) {
@@ -68,6 +76,7 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
 
     /** {@return a mirror for the component/} */
     // Er det et problem.. naar den ikke er fuldt wired endnu???
+    // Men det er den vel, paa naer navnet
     protected abstract ComponentMirror mirror();
 
     /**
@@ -112,6 +121,7 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * @return the path of this configuration.
      */
     // IDK skal vi bare noejes med at have den paa mirror'et?
+    // Nej det er rart at kunne kalde den
     public final NamespacePath path() {
         return component().path();
     }
@@ -122,6 +132,10 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
         return component().toString();
     }
 }
+
+// Altsaa maaske skal vi reintroducere component context...
+// Det er isaer den der BeanConfiguration.provide jeg ikke har lyst til at hardcode i BeanConfiguration...
+/// Men hvis vi saa har ServiceExtension.Sub.provide(BeanConfigurationContext bc)
 
 ///**
 //* A method that can be overridden

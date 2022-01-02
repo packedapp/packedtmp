@@ -23,7 +23,6 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentMirrorStream;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 
@@ -31,7 +30,7 @@ import packed.internal.component.ComponentSetup;
  *
  */
 // Kopiere lidt paenere kode fra jdk.nashorn.internal.runtime.regexp.joni.Option
-public final class PackedComponentStreamOption implements ComponentMirrorStream.Option {
+final class PackedComponentStreamOption implements ComponentMirrorStream.Option {
 
     private static final int EXCLUDE_ORIGIN = 1;
 

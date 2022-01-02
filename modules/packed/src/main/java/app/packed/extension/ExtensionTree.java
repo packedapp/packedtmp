@@ -110,13 +110,13 @@ class MyExtMirror {
     }
 
     public Collection<BeanMirror> beans() {
-        return es.collectList((e, c) -> c.addAll(e.beans()));
+        return es.collectList((e, c) -> c.addAll(e.beansx()));
     }
 }
 
 class TestExtension extends Extension<TestExtension> {
 
-    Collection<BeanMirror> beans() {
+    Collection<BeanMirror> beansx() {
         return List.of();
     }
 

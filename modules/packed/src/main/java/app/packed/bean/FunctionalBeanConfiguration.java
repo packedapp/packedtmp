@@ -20,6 +20,13 @@ package app.packed.bean;
  */
 public non-sealed class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
 
+    /**
+     * @param handle
+     */
+    protected FunctionalBeanConfiguration(BeanHandle<Void> handle) {
+        super(handle);
+    }
+
     /** {@inheritDoc} */
     @Override
     public BeanKind kind() {

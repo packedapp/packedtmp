@@ -59,24 +59,14 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public final BeanType beanType;
 
-    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ContainerSetup parent, Object source) {
+    public BeanSetup(ContainerSetup parent, RealmSetup realm, LifetimeSetup lifetime, PackedBeanHandle<?> beanHandle) {
         super(parent.application, realm, lifetime, parent);
-        this.beanType = driver.kind();
-        // Reserve a place in the constant pool if the source is a singleton
-        // If instance != null we kan vel pool.permstore()
-        this.singletonAccessor = driver.binder.kind() == BeanType.BASE ? lifetime.pool.reserve(driver.beanType()) : null;
-
-        // The source is either a Class, a Factory, or a generic instance
-        if (source instanceof Class<?> cl) {
-            boolean isStaticClassSource = false; // TODO fix
-            this.factory = isStaticClassSource ? null : ReflectionFactory.of(cl);
-        } else if (source instanceof Factory<?> fac) {
-            this.factory = fac;
-        } else {
-            this.factory = null;
-
-            // non-constants singlestons are added to the constant pool elsewhere
-            lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, source));
+        this.beanType = BeanType.BASE;
+        this.factory = beanHandle.factory;
+        this.singletonAccessor = beanHandle.kind == BeanType.BASE ? lifetime.pool.reserve(beanHandle.beanType) : null;
+        
+        if (factory == null) {
+            lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, beanHandle.source));
         }
 
         if (factory == null) {
@@ -91,14 +81,14 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         }
 
         // Find a hook model for the bean type and wire it
-        this.hookModel = realm.accessor().modelOf(driver.beanType());
+        this.hookModel = realm.accessor().modelOf(beanHandle.beanType);
         hookModel.onWire(this);
 
         // Set the name of the component if it have not already been set using a wirelet
         initializeNameWithPrefix(hookModel.simpleName());
     }
 
-    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ContainerSetup parent, Object source, boolean ignore) {
+    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ContainerSetup parent, Object source) {
         super(parent.application, realm, lifetime, parent);
         this.beanType = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
@@ -107,7 +97,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
-            this.factory = ReflectionFactory.of(cl);
+            boolean isStaticClassSource = false; // TODO fix
+            this.factory = isStaticClassSource ? null : ReflectionFactory.of(cl);
         } else if (source instanceof Factory<?> fac) {
             this.factory = fac;
         } else {

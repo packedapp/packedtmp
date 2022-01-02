@@ -26,6 +26,18 @@ import java.util.concurrent.Callable;
  */
 public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
 
+    /**
+     * @param handle
+     */
+    public ContainerBeanConfiguration(BeanHandle<T> handle) {
+        super(handle);
+    }
+    
+    public ContainerBeanConfiguration() {
+        super(null);
+    }
+
+
     public <X extends Runnable & Callable<String>> X foo() {
         return null;
     }
@@ -33,7 +45,7 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     /** {@inheritDoc} */
     @Override
     public final BeanKind kind() {
-        return BeanKind.APPLICATION;
+        return BeanKind.CONTAINER;
     }
 
     /** {@inheritDoc} */

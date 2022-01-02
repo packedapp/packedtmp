@@ -1,54 +1,35 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package app.packed.bean;
 
-import java.util.function.BiConsumer;
-
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.UserOrExtension;
 import app.packed.extension.ExtensionBeanConfiguration;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
-import packed.internal.bean.OldBeanDriver.OtherBeanDriver;
-import packed.internal.bean.PackedBeanDriverBinder;
-import packed.internal.container.ContainerSetup;
+import packed.internal.bean.PackedBeanHandle;
 
-/**
- * A bean extension support class.
- * 
- * Like other extension support classes this class is mainly used developers of extensions and not application developers.
- */
-@ExtensionMember(BeanExtension.class)
-// Maybe just BeanSupport, EntryPointSupport, WebSupport
-public final class BeanSupport extends ExtensionSupport {
+public class BeanSupport extends ExtensionSupport {
+    final UserOrExtension agent;
+    final BeanExtension2 extension;
 
-    /** The bean extension we are wrapping. */
-    private final BeanExtension extension;
-
-    /**
-     * @param beanExtension
-     */
-    BeanSupport(BeanExtension beanExtension) {
-        extension = beanExtension;
+    BeanSupport(BeanExtension2 extension, UserOrExtension agent) {
+        this.extension = extension;
+        this.agent = agent;
     }
 
-    public <T, C extends BeanConfiguration<T>> C add(Object driver, C configuration, Class<? extends T> implementation) {
-        // configuration, must be unattached
-        throw new UnsupportedOperationException();
-    }
-
-    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> provider) {
-
-        // framework will call
-        // consumer(T, P) at initialization time
-
-    }
-
-    public <B extends BeanConfiguration<?>> B fullAccess(B beanConfiguration) {
-        // Enten denne eller ogsaa skal vi require en annotation
-        return beanConfiguration;
-    }
-
-    
-    // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<?> implementation) {
         throw new UnsupportedOperationException();
     }
@@ -60,39 +41,73 @@ public final class BeanSupport extends ExtensionSupport {
     public final <T> ExtensionBeanConfiguration<T> installInstance(Object instance) {
         throw new UnsupportedOperationException();
     }
-
-    // Det er lidt for at undgaa BeanDriver<T,C>...
-    public <B extends BeanConfiguration<?>> B populateConfiguration(B beanConfiguration) {
-        return beanConfiguration;
+    
+    // ***********************  ***********************
+    // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
+    public final <T> BeanHandle<T> register(UserOrExtension agent, Class<T> implementation) {
+        return PackedBeanHandle.ofFactory(extension.container, agent, implementation);
     }
-
-    public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
-        PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-
-        ContainerSetup container = extension.container;
-        return BeanExtension.wire(b.bind(implementation), container, container.realm);
+    
+    public final <T> BeanHandle<T> register(UserOrExtension agent, Factory<T> factory) {
+        return PackedBeanHandle.ofFactory(extension.container, agent, factory);
     }
-
-    public <T, C extends BeanConfiguration<T>> C wire(OtherBeanDriver<T, C> binder, Factory<? extends T> implementation) {
-        PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.container;
-        return BeanExtension.wire(b.bind(implementation), container, container.realm);
+    
+    public final <T> BeanHandle<T> registerInstance(UserOrExtension agent, T instance) {
+        return PackedBeanHandle.ofInstance(extension.container, agent, instance);
     }
-
-    // installs a child to the specified component.
-    // 1. Specifie ComponentConfiguration must be in the same container
-    // 2. Specifie ComponentConfiguration must have been installed by the same extension
-    public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, OtherBeanDriver<T, C> binder, Class<? extends T> implementation) {
-        PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.container;
-        return BeanExtension.wire(b.bind(implementation), container, container.realm);
-
-    }
-
-    public <T, C extends BeanConfiguration<T>> C wireInstance(OtherBeanDriver<T, C> binder, T instance) {
-        PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-        ContainerSetup container = extension.container;
-        return BeanExtension.wire(b.bindInstance(instance), container, container.realm);
-
+    
+    public final <T> BeanHandle<T> registerSynthetic(UserOrExtension agent) {
+        throw new UnsupportedOperationException();
     }
 }
+
+//public class BeanSupport2 extends ExtensionSupport {
+//    final UserOrExtension agent;
+//    final BeanExtension2 extension;
+//
+//    BeanSupport2(BeanExtension2 extension, UserOrExtension agent) {
+//        this.extension = extension;
+//        this.agent = agent;
+//    }
+//
+//    // Beans where the owner is itself
+//
+//    public final MethodHandle accessor(ContainerBeanConfiguration<?> configuration) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public final <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
+//        requireNonNull(implementation, "implementation is null");
+//        return extension.wire(new ContainerBeanConfiguration<>(), agent, implementation);
+//    }
+//
+//    // Must have been created by this subtension
+//    // (ExtensionContext) -> Object
+//    public final MethodHandle newInstance(UnmanagedBeanConfiguration<?> configuration) {
+//        return newInstanceBuilder(configuration).build();
+//    }
+//
+//    public final MethodHandleBuilder newInstanceBuilder(UnmanagedBeanConfiguration<?> configuration) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public final MethodHandle processor(ManagedBeanConfiguration<?> configuration) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public final <T> BeanHandle<T> register(UserOrExtension agent, Class<T> implementation) {
+//        requireNonNull(implementation, "implementation is null");
+//        throw new UnsupportedOperationException();
+//    }
+//    
+//    public final <T, B extends BeanConfiguration<T>> B register(UserOrExtension agent, BeanDriver driver, B configuration, Class<T> implementation) {
+//        requireNonNull(implementation, "implementation is null");
+//        extension.wire(configuration, agent, implementation);
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public final <T, B extends BeanConfiguration<T>> B registerChild(UserOrExtension agent, ComponentConfiguration parent, BeanDriver driver, B configuration,
+//            Class<T> implementation) {
+//        throw new UnsupportedOperationException();
+//    }
+//}

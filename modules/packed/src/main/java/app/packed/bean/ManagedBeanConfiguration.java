@@ -3,7 +3,10 @@ package app.packed.bean;
 // ExtensionManagedBean?
 public non-sealed class ManagedBeanConfiguration<T> extends BeanConfiguration<T> {
 
-    public ManagedBeanConfiguration() {}
+    public ManagedBeanConfiguration(BeanHandle<T> handle) {
+        super(handle);
+        
+    }
     /** {@inheritDoc} */
     @Override
     public final BeanKind kind() {

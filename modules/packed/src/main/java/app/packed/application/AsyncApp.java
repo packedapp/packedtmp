@@ -75,4 +75,8 @@ public interface AsyncApp extends AutoCloseable {
     public static AsyncApp start(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
+    
+    static ApplicationDriver<AsyncApp> driver() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -4,33 +4,44 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Map;
 
+import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 
 public class ZestExtension extends Extension<ZestExtension> {
 
     private ArrayList<MethodHandle> handles = new ArrayList<>();
 
-    public <T> ManagedBeanConfiguration<T> install(Class<T> stuff) {
-        BeanSupport2 b = use(BeanSupport2.class);
-        ManagedBeanConfiguration<T> conf = b.register(null, BeanDriver.builder().build(), new ManagedBeanConfiguration<>(), stuff);
-        
-        handles.add(b.processor(conf)); 
-        
-        return conf;
+//    public <T> ManagedBeanConfiguration<T> install(Class<T> stuff) {
+//        BeanSupport2 b = use(BeanSupport2.class);
+//        // TROR ikke man kan lave MH før i onClose..
+//        // Vi kender jo ikke noedvendig id'et foer senere
+//        ManagedBeanConfiguration<T> conf = b.register(null, BeanDriver.builder().build(), new ManagedBeanConfiguration<>(), stuff);
+//        handles.add(b.processor(conf));
+//        return conf;
+//    }
+
+    public <T> ManagedBeanConfiguration<T> install2(Class<T> stuff) {
+        BeanHandle<T> handle = beans().register(UserOrExtension.user(), stuff);
+
+        // handle.lifetime.
+
+        return new ManagedBeanConfiguration<>(handle);
     }
 
     @Override
     protected void onClose() {
-        use(BeanSupport2.class).install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
+        // for each handle-> resolve to MethodHandle
+        
+        beans().install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
         handles = null;
     }
 
     static class RuntimeBean {
         final MethodHandle[] mh;
-        final ExtensionContext ec;
+        final RuntimeExtensionContext ec;
         final Map<Class<?>, Integer> mo;
 
-        RuntimeBean(ExtensionContext ec, Map<Class<?>, Integer> mo, MethodHandle[] mh) {
+        RuntimeBean(RuntimeExtensionContext ec, Map<Class<?>, Integer> mo, MethodHandle[] mh) {
             this.ec = ec;
             this.mh = mh;
             this.mo = mo;
@@ -49,5 +60,5 @@ public class ZestExtension extends Extension<ZestExtension> {
         }
     }
 
-    interface ExtensionContext {}
+    interface RuntimeExtensionContext {}
 }

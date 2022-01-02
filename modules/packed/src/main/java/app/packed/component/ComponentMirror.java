@@ -17,13 +17,11 @@ package app.packed.component;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
@@ -48,11 +46,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     ApplicationMirror application();
 
     /** {@return an unmodifiable view of all of the children of this component.} */
-    Collection<ComponentMirror> children(); // ComponentMirrorSet?
+    Collection<ComponentMirror> children();
 
     Stream<ComponentMirror> components();
 
-    /** {@return the distance to the root component, the root component having depth {@code 0}.} */
+    /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
     int depth();
 
     default Optional<LifetimeMirror> lifetime() {
@@ -62,8 +60,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /**
      * Returns the name of this component.
      * <p>
-     * If no name is explicitly set when configuring a component. Packed will automatically assign a name that is unique
-     * among other components with the same parent.
+     * If no name was explicitly set when the component was configured. Packed will automatically assign a name that is
+     * unique among other components with the same parent.
      *
      * @return the name of this component
      */
@@ -128,33 +126,33 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // Syntes ikke vi skal have baade tryResolve or resolve...
     ComponentMirror resolve(CharSequence path);
 
-    /**
-     * Returns a stream consisting of this component and all of its descendants in any order.
-     *
-     * @param options
-     *            specifying the order and contents of the stream
-     * 
-     * @return a component stream consisting of this component and all of its descendants in any order
-     */
-    ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
+//    /**
+//     * Returns a stream consisting of this component and all of its descendants in any order.
+//     *
+//     * @param options
+//     *            specifying the order and contents of the stream
+//     * 
+//     * @return a component stream consisting of this component and all of its descendants in any order
+//     */
+//    ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
 
-    /**
-     * 
-     * 
-     * <p>
-     * This operation does not allocate any objects internally.
-     * 
-     * @implNote Implementations of this method should never generate object (which is a bit difficult
-     * @param action
-     *            oops
-     */
-    // We want to take some options I think. But not as a options
-    // Well it is more or less the same options....
-    // Tror vi laver options om til en klasse. Og saa har to metoder.
-    // Og dropper varargs..
-    default void traverse(Consumer<? super ComponentMirror> action) {
-        stream(Option.maxDepth(1)).forEach(action);
-    }
+//    /**
+//     * 
+//     * 
+//     * <p>
+//     * This operation does not allocate any objects internally.
+//     * 
+//     * @implNote Implementations of this method should never generate object (which is a bit difficult
+//     * @param action
+//     *            oops
+//     */
+//    // We want to take some options I think. But not as a options
+//    // Well it is more or less the same options....
+//    // Tror vi laver options om til en klasse. Og saa har to metoder.
+//    // Og dropper varargs..
+//    default void traverse(Consumer<? super ComponentMirror> action) {
+//        stream(Option.maxDepth(1)).forEach(action);
+//    }
 
 //    // The returned component is always a system component
 //    default Component viewAs(Object options) {
@@ -290,26 +288,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // Maaske fromSourceIterator
     // https://en.wikipedia.org/wiki/Tree_structure
     // description()? -> Same, parent, child, descendend, ancestor,
-
-    // default WiringStrength wiringStrength() {
-//        return hasSameGuest() ? WiringStrength.STRONG : WiringStrength.WEAK;
-    // }
-
-    // interface InterExtensionRelationship {
-    // from, to
-    // isX
-    // distance
-    // }
 }
 
-interface ZoldMirror {
-
-    // Er uklart om det er boernene eller deep down
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        // components().forEach(action);
-    }
-
-}
 ///**
 // * <p>
 // * This operation does not allocate any objects internally.

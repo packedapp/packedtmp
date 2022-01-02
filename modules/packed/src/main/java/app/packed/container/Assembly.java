@@ -28,7 +28,6 @@ import app.packed.base.Nullable;
 import app.packed.component.RealmSource;
 import app.packed.extension.Extension;
 import packed.internal.container.AssemblyRealmSetup;
-import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -98,17 +97,17 @@ public abstract non-sealed class Assembly implements RealmSource {
      * not try to configure the extension after it has been configured.
      * 
      * <p>
-     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkBuildNotStarted()}.
+     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkPreBuild()}.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see ContainerConfiguration#checkBuildNotStarted()
+     * @see ContainerConfiguration#checkPreBuild()
      */
     // Before build is started?? or do we allow to call these method
-    // checkPreBuild()? // checkConfigurable()
+    // checkPreBuild()? // checkConfigurable(), checkBuildNotStarted
     // Det er ogsaa inde hooks er kaldt
     //// Ideen er at vi kan kalde metode fra configurations metoder
-    protected final void checkBuildNotStarted() {
+    protected final void checkPreBuild() {
         // Why not just test configuration == null????
 
         // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
@@ -146,14 +145,11 @@ public abstract non-sealed class Assembly implements RealmSource {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
-            ContainerSetup cs = configuration.container();
-
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
-
                 realm.assemblyModel.preBuild(configuration);
 
-                // Call the build method implemented by the user
+                // Call build() which is implemented by the user
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
@@ -171,6 +167,10 @@ public abstract non-sealed class Assembly implements RealmSource {
         }
     }
 
+    protected final void embed(Assembly assembly) {
+        configuration().embed(assembly);
+    }
+    
     /**
      * {@return an unmodifiable view of the extensions that are currently used.}
      * 

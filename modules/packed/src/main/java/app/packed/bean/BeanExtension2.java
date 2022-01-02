@@ -1,13 +1,12 @@
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.UserOrExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
+import packed.internal.bean.PackedBeanHandle;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
@@ -50,8 +49,8 @@ public class BeanExtension2 extends Extension<BeanExtension2> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return wire(new ContainerBeanConfiguration<>(), UserOrExtension.user(), implementation);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(container, UserOrExtension.user(), implementation);
+        return new ContainerBeanConfiguration<>(handle);
     }
 
     /**
@@ -63,8 +62,8 @@ public class BeanExtension2 extends Extension<BeanExtension2> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        return wire(new ContainerBeanConfiguration<>(), UserOrExtension.user(), factory);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(container, UserOrExtension.user(), factory);
+        return new ContainerBeanConfiguration<>(handle);
     }
 
     /**
@@ -80,27 +79,7 @@ public class BeanExtension2 extends Extension<BeanExtension2> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        checkIsProperInstance(instance);
-        return wire(new ContainerBeanConfiguration<>(), UserOrExtension.user(), instance);
-    }
-
-    <B extends BeanConfiguration<?>> B wire(B configuration, UserOrExtension owner, Object source) {
-
-        return configuration;
-    }
-
-    /**
-     * Checks that the specified instance object is not a instance of {@link Class} or {@link Factory}.
-     * 
-     * @param instance
-     *            the object to check
-     */
-    private static void checkIsProperInstance(Object instance) {
-        requireNonNull(instance, "instance is null");
-        if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Factory.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
-        }
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofInstance(container, UserOrExtension.user(), instance);
+        return new ContainerBeanConfiguration<>(handle);
     }
 }
