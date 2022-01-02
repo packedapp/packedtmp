@@ -17,9 +17,8 @@ package app.packed.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -30,7 +29,6 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSupport;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
@@ -41,7 +39,6 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.bean.BeanSetup;
-import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
@@ -89,11 +86,9 @@ import packed.internal.util.ThrowableUtil;
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
-    /** A handle that can access superclass private ComponentConfiguration#component(). */
-    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
-            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
-
+    /** A var handle that can update the {@link #configuration()} field in this class. */
+    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
+    
 //    /** A binder for prototype service beans. */
 //    @SuppressWarnings("rawtypes")
 //    private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
@@ -120,7 +115,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     /** {@return the container setup instance that we are wrapping.} */
     private BeanSetup bean(BeanConfiguration<?> conf) {
         try {
-            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(conf);
+            return (BeanSetup) VH_BEAN_SETUP.get(conf);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

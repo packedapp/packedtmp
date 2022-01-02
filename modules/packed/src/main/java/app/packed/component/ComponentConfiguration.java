@@ -16,13 +16,9 @@
 package app.packed.component;
 
 import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import packed.internal.bean.PackedBeanHandle;
-import packed.internal.component.ComponentSetup;
 
 /**
  * The base class for all component configuration classes.
@@ -33,46 +29,31 @@ import packed.internal.component.ComponentSetup;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration {
 
-    /** The component we are configuring. Is initially null until initialized by someone. */
-    @Nullable
-    private ComponentSetup component;
-
-    protected ComponentConfiguration() {
-
-    }
-
-    protected ComponentConfiguration(BeanHandle<?> beanHandle) {
-        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) beanHandle;
-        this.component = bh.newSetup();
-    }
-
-    protected void checkIsWiring() {
-        component().checkIsWiring();
-    }
-
-    /**
-     * Returns an extension configuration object. This configuration object is typically used in situations where the
-     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
-     * visibility rules.
-     * <p>
-     * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
-     * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
-     * access to the configuration object.
-     * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
-     * 
-     * @throws IllegalStateException
-     *             if invoked from the constructor of the configuration.
-     * @return a configuration object for this extension
-     */
-    final ComponentSetup component() {
-        ComponentSetup c = component;
-        if (c == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
-                    + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
-        }
-        return c;
-    }
+    protected abstract void checkIsWiring();
+//
+//    /**
+//     * Returns an extension configuration object. This configuration object is typically used in situations where the
+//     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
+//     * visibility rules.
+//     * <p>
+//     * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
+//     * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
+//     * access to the configuration object.
+//     * <p>
+//     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
+//     * 
+//     * @throws IllegalStateException
+//     *             if invoked from the constructor of the configuration.
+//     * @return a configuration object for this extension
+//     */
+//    final ComponentSetup component() {
+//        ComponentSetup c = component;
+//        if (c == null) {
+//            throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
+//                    + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
+//        }
+//        return c;
+//    }
 
     /** {@return a mirror for the component/} */
     // Er det et problem.. naar den ikke er fuldt wired endnu???
@@ -95,10 +76,7 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * @see ComponentMirror#name()
      * @see Wirelet#named(String)
      */
-    public ComponentConfiguration named(String name) {
-        component().named(name);
-        return this;
-    }
+    public abstract ComponentConfiguration named(String name);
 
     /**
      * Ivoked A callback method invoked by Packed immediatly before it is marked as no longer configurable
@@ -123,15 +101,11 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      */
     // IDK skal vi bare noejes med at have den paa mirror'et?
     // Nej det er rart at kunne kalde den
-    public final NamespacePath path() {
-        return component().path();
-    }
+    public abstract NamespacePath path();
 
     /** {@inheritDoc} */
     @Override
-    public String toString() {
-        return component().toString();
-    }
+    public abstract String toString();
 }
 
 // Altsaa maaske skal vi reintroducere component context...

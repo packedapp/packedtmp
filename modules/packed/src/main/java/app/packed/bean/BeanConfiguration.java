@@ -4,9 +4,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.lifecycle.RunState;
+import packed.internal.bean.BeanSetup;
+import packed.internal.bean.PackedBeanHandle;
 
 /**
  * 
@@ -17,10 +20,30 @@ import app.packed.lifecycle.RunState;
 public abstract sealed class BeanConfiguration<T> extends
         ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration,FunctionalBeanConfiguration,ExtensionBeanConfiguration {
 
+    /** The component we are configuring. Is initially null until initialized by someone. */
+    private final BeanSetup bean;
+    
     protected BeanConfiguration(BeanHandle<T> handle) {
-        super(handle);
+        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) handle;
+        this.bean = bh.newSetup();
     }
 
+    @Override
+    protected void checkIsWiring() {
+        bean.checkIsWiring();
+    }
+
+    @Override
+    public NamespacePath path() {
+        return bean.path();
+    }
+
+    @Override
+    public String toString() {
+        return bean.toString();
+    }
+
+    
     // Hmm, vi dekorere ikke fx ServiceLocator...
     // Maaske er det bedre at dekorere typer???
     //// InjectableVarSelector<T>
@@ -70,7 +93,7 @@ public abstract sealed class BeanConfiguration<T> extends
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration<T> named(String name) {
-        super.named(name);
+        bean.named(name);
         return this;
     }
 

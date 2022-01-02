@@ -15,20 +15,17 @@
  */
 package app.packed.inject.service;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.bean.BeanSetup;
-import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -42,10 +39,8 @@ import packed.internal.util.ThrowableUtil;
 // Serviceable
 public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
 
-    /** A handle that can access superclass private ComponentConfiguration#component(). */
-    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
-            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
+    /** A var handle that can update the {@link #configuration()} field in this class. */
+    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
 
     public ServiceBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
@@ -88,7 +83,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
     /** {@return the container setup instance that we are wrapping.} */
     private BeanSetup bean() {
         try {
-            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact((BeanConfiguration<?>) this);
+            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration<?>) this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

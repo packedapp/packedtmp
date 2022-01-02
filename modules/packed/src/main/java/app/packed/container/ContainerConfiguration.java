@@ -1,54 +1,58 @@
 package app.packed.container;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.application.ApplicationDescriptor;
+import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
+import packed.internal.container.PackedContainerHandle;
 
 /**
  * The configuration of a container.
  */
 public final class ContainerConfiguration extends ComponentConfiguration {
 
-    /** A method handle that can access ComponentConfiguration#component() from superclass. */
-    private static final MethodHandle MH_COMPONENT_CONFIGURATION_SETUP = MethodHandles.explicitCastArguments(
-            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
-
     /** Must be created through Assembly, ContainerDriver or Composer. */
-    ContainerConfiguration() {}
+    ContainerConfiguration() {
+        this.container = null;
+    }
 
-    
-    /** Must be created through Assembly, ContainerDriver or Composer. */
-    public ContainerConfiguration(ContainerHandle driver) {}
+    /** The component we are configuring. Is initially null until initialized by someone. */
+    final ContainerSetup container;
+
+    @Override
+    protected void checkIsWiring() {
+        container.checkIsWiring();
+    }
+
+    @Override
+    public NamespacePath path() {
+        return container.path();
+    }
+
+    @Override
+    public String toString() {
+        return container.toString();
+    }
+
+    public ContainerConfiguration(ContainerHandle containerHandle) {
+        PackedContainerHandle bh = (PackedContainerHandle) containerHandle;
+        this.container = bh.setup;
+    }
 
     /** {@return a descriptor for the application the container is a part of.} */
     // Why not just an application mirror???
     public ApplicationDescriptor application() {
-        return container().application.descriptor;
+        return container.application.descriptor;
     }
 
-    /** {@return the wrapped container.} */
-    ContainerSetup container() {
-        try {
-            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_SETUP.invokeExact(this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
 
     public void embed(Assembly assembly) {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * {@return an unmodifiable view of the extensions that are currently used by this container.}
      * 
@@ -57,7 +61,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see ContainerMirror#extensionsTypes()
      */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container().extensionTypes();
+        return container.extensionTypes();
     }
 
     /**
@@ -71,24 +75,24 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      *           cannot give a more detailed answer about who is using a particular extension
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container().isExtensionUsed(extensionType);
+        return container.isExtensionUsed(extensionType);
     }
 
     /** {@return a mirror for the container.} */
     @Override
     public ContainerMirror mirror() {
-        return container().mirror();
+        return container.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
     public ContainerConfiguration named(String name) {
-        super.named(name);
+        container.named(name);
         return this;
     }
 
     public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return container().selectWirelets(wireletClass);
+        return container.selectWirelets(wireletClass);
     }
 
     /**
@@ -109,7 +113,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see #extensionsTypes()
      */
     public <E extends Extension<?>> E use(Class<E> extensionType) {
-        return container().useExtension(extensionType);
+        return container.useExtension(extensionType);
     }
 }
 
@@ -133,4 +137,3 @@ public final class ContainerConfiguration extends ComponentConfiguration {
 //    requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
 //    container().realm.lookup(lookup);
 //}
-

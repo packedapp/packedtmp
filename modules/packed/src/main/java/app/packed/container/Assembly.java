@@ -112,7 +112,7 @@ public abstract non-sealed class Assembly implements RealmSource {
         // Why not just test configuration == null????
 
         // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
-        configuration().container().realm.checkOpen();
+        configuration().container.realm.checkOpen();
     }
 
     /**
@@ -196,7 +196,7 @@ public abstract non-sealed class Assembly implements RealmSource {
     // skal vi jo ogsaa bruge den der. IDK
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        configuration().container().realm.lookup(lookup);
+        configuration().container.realm.lookup(lookup);
     }
 
     /**
