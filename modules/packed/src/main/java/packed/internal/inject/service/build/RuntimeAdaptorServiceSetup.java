@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.dependency.InjectionNode;
+import packed.internal.bean.inject.InjectionNode;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;

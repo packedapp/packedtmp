@@ -82,7 +82,7 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
 //     //       extension.onComplete();
 //        }
 
-        cs.injection.resolve();
+        cs.beans.resolve();
     }
 
 }

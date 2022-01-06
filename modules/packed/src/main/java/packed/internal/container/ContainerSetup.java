@@ -38,8 +38,8 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.bean.inject.BeanContainerSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
@@ -51,19 +51,18 @@ import packed.internal.util.CollectionUtil;
  */
 public final class ContainerSetup extends ComponentSetup {
 
+    /** Manages injection and other things for the beans registered in the container. */
+    public final BeanContainerSetup beans = new BeanContainerSetup(this);
+
     /** Children of this node (lazily initialized) in insertion order. */
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
 
-    /** Children that are containers (subset of children), lazy initialized. */
+    /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
-    /** All extensions in use in this container. */
+    /** All extensions used by this container. */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
-
-    /** The injector of this container. */
-    // I think move this to BeanSetup
-    public final ContainerInjectorSetup injection = new ContainerInjectorSetup(this);
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -297,11 +296,6 @@ public final class ContainerSetup extends ComponentSetup {
             return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
         }
 
-        @Override
-        public Optional<Class<? extends Extension<?>>> registrant() {
-            throw new UnsupportedOperationException();
-        }
-
         /** {@inheritDoc} */
         @Override
         public Set<ExtensionMirror> extensions() {
@@ -350,6 +344,11 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
             return ContainerSetup.this.isExtensionUsed(extensionType);
+        }
+
+        @Override
+        public Optional<Class<? extends Extension<?>>> registrant() {
+            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */

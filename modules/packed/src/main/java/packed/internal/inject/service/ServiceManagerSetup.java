@@ -33,7 +33,6 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
-import packed.internal.inject.dependency.ApplicationInjectorSetup;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -42,10 +41,10 @@ import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolSetup;
+import packed.internal.service.sandbox.Injector;
+import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
@@ -204,7 +203,7 @@ public final class ServiceManagerSetup {
         // Process exports from any children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup child = c.injection.getServiceManager();
+                ServiceManagerSetup child = c.beans.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
@@ -235,7 +234,7 @@ public final class ServiceManagerSetup {
         // Process child requirements to children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup m = c.injection.getServiceManager();
+                ServiceManagerSetup m = c.beans.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);
                 }

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.bean.inject.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
 
 /**

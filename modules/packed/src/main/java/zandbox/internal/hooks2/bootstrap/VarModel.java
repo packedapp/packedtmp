@@ -12,7 +12,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.base.Nullable;
-import packed.internal.hooks.var2.Var;
+import packed.internal.bean.hooks.var2.Var;
 import packed.internal.util.TypeUtil;
 
 public final class VarModel {

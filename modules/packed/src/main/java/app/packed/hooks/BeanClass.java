@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import packed.internal.hooks.usesite.UseSiteClassHookModel;
+import packed.internal.bean.hooks.usesite.UseSiteClassHookModel;
 
 // Kan vi annotere Bootstrap med
 // @MethodHook(annotatations = ...)

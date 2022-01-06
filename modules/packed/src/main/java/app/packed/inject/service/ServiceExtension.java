@@ -42,7 +42,7 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import packed.internal.service.sandbox.InjectorComposer;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -109,7 +109,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            an extension configuration object.
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.services = ((ExtensionSetup) configuration).container.injection.newServiceManagerFromServiceExtension();
+        this.services = ((ExtensionSetup) configuration).container.beans.newServiceManagerFromServiceExtension();
     }
 
     /** {@return the container setup instance that we are wrapping.} */

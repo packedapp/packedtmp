@@ -33,7 +33,7 @@ import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass.ClassHook;
-import packed.internal.hooks.usesite.UseSiteMethodHookModel;
+import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**

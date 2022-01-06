@@ -96,6 +96,17 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         // Men dem der iterere kan ikke
         throw new UnsupportedOperationException();
     }
+    
+ // Node operations
+ // boolean isRoot();
+ // Tree connectedTree();
+ // root
+ // parent
+ // children
+ // sieblings
+ // forEachChild
+ // int index.... from [0 to size-1] In order of usage????
+
 }
 
 class MyExtMirror {

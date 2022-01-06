@@ -24,7 +24,7 @@ public abstract sealed class BeanConfiguration<T> extends
 
     /** The component we are configuring. Is initially null until initialized by someone. */
     private final BeanSetup bean;
-    
+
     protected BeanConfiguration(BeanHandle<T> handle) {
         PackedBeanHandle<?> bh = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
         this.bean = bh.newSetup();
@@ -51,7 +51,6 @@ public abstract sealed class BeanConfiguration<T> extends
         return inject(Key.of(key), instance);
     }
 
-    
     // Taenker den overrider
     public <E> BeanConfiguration<T> inject(Key<E> key, E instance) {
         throw new UnsupportedOperationException();

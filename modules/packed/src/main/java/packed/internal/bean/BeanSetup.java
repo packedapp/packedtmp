@@ -19,13 +19,13 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
+import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.DependencyProducer;
+import packed.internal.bean.inject.InjectionNode;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.hooks.usesite.BootstrappedClassModel;
-import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProducer;
-import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
@@ -76,7 +76,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.dependenciesOld();
             this.injectionNode = new InjectionNode(this, dependencies, mh);
-            parent.injection.addNode(injectionNode);
+            parent.beans.addNode(injectionNode);
         }
 
         // Find a hook model for the bean type and wire it
@@ -122,7 +122,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             } else {
                 key = Key.of(hookModel.clazz); // Move to model?? What if instance has Qualifier???
             }
-            s = service = parent.injection.getServiceManagerOrCreate().provideSource(this, key);
+            s = service = parent.beans.getServiceManagerOrCreate().provideSource(this, key);
         }
         return s;
     }
@@ -130,7 +130,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @SuppressWarnings("unchecked")
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) parent.injection.getServiceManagerOrCreate().exports().export(service);
+        return (ExportedServiceConfiguration<T>) parent.beans.getServiceManagerOrCreate().exports().export(service);
     }
 
     public void sourceProvide() {

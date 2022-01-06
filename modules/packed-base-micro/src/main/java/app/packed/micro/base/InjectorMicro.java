@@ -30,7 +30,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.service.sandbox.Injector;
 
 /**
  *

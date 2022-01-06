@@ -87,7 +87,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
      * @return a service locator for the application
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = application.container.injection.getServiceManager();
+        ServiceManagerSetup sm = application.container.beans.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
     }
 

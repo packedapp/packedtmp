@@ -25,10 +25,10 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import app.packed.inject.service.ServiceExtension;
+import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.DependencyProducer;
+import packed.internal.bean.inject.InjectionNode;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProducer;
-import packed.internal.inject.dependency.InjectionNode;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.

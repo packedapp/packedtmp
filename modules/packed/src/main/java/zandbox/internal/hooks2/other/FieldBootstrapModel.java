@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.extension.InternalExtensionException;
 import app.packed.hooks.BeanField;
-import packed.internal.hooks.usesite.UseSiteFieldHookModel;
+import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

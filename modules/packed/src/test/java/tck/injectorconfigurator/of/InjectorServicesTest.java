@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.service.sandbox.Injector;
 
 /**
  *

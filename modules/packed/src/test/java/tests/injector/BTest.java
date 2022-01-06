@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.Service;
-import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.service.sandbox.Injector;
 
 /**
  *

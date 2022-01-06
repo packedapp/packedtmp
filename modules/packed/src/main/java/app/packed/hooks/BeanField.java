@@ -34,7 +34,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.inject.Factory;
-import packed.internal.hooks.usesite.UseSiteFieldHookModel;
+import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 
 public abstract class BeanField {
 

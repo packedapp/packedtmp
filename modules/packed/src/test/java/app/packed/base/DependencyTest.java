@@ -32,7 +32,7 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.bean.inject.DependencyDescriptor;
 
 /**
  *

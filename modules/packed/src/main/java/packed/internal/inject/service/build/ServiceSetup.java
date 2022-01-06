@@ -22,7 +22,7 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.Service;
-import packed.internal.inject.dependency.DependencyProducer;
+import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.inject.service.InternalService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -35,7 +35,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are only exposed as a {@link Service} to end users if {@link #isKeyFrozen}. 
  */
-public abstract class ServiceSetup implements InternalService, DependencyProducer {
+public abstract non-sealed class ServiceSetup implements InternalService, DependencyProducer {
 
     private boolean isKeyFrozen;
 

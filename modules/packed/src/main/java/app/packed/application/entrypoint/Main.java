@@ -33,7 +33,7 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.bean.BeanSetup;
-import packed.internal.hooks.usesite.UseSiteMethodHookModel;
+import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 
 /**
  * Trying to build an application with more than a single method annotated with this annotation will fail with

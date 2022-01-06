@@ -29,7 +29,7 @@ import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeToken;
-import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.bean.inject.DependencyDescriptor;
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;

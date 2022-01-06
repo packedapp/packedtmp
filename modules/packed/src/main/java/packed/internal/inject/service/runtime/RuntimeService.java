@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import packed.internal.inject.service.InternalService;
 
 /** Represents a service at runtime. */
-public interface RuntimeService extends InternalService {
+public non-sealed interface RuntimeService extends InternalService {
 
     @Override
     default <T> InternalService decorate(Function<? super T, ? extends T> decoratingFunction) {

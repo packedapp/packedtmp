@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
-import packed.internal.hooks.variable.FieldVariable;
-import packed.internal.hooks.variable.ParameterVariable;
+import packed.internal.bean.hooks.variable.FieldVariable;
+import packed.internal.bean.hooks.variable.ParameterVariable;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 

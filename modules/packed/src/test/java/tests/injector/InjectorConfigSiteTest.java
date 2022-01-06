@@ -28,7 +28,7 @@ import app.packed.base.TypeToken;
 import app.packed.inject.ReflectionFactory;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.config.ConfigSite;
-import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.D;

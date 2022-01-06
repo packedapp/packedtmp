@@ -26,7 +26,7 @@ import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
-/** A model for a {@link Extension.ExtensionSupport} class. Not used outside of this package. */
+/** A model for an {@link Extension.ExtensionSupport} class. Not used outside of this package. */
 record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
 
     /** Models of all subtensions. */
@@ -45,7 +45,7 @@ record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, Method
 
             // TODO check same module
             // Move to a common method
-            //            
+            //
 //            if (declaringClass == null || !ExtensionSupport.class.isAssignableFrom(declaringClass)) {
 //                throw new InternalExtensionException(subtensionClass
 //                        + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");

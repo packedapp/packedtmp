@@ -44,7 +44,7 @@ import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedExtensionSelection;
+import packed.internal.container.PackedExtensionTree;
 import packed.internal.container.RealmSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.StackWalkerUtil;
@@ -103,7 +103,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionTree<E> applicationTree() {
         ExtensionSetup setup = setup();
-        return new PackedExtensionSelection(setup.applicationRootSetup(), setup.extensionType);
+        return new PackedExtensionTree(setup.applicationRootSetup(), setup.extensionType);
     }
 
     // checkExtendable...
@@ -368,7 +368,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionTree<E> tree() {
         ExtensionSetup setup = setup();
-        return new PackedExtensionSelection(setup, setup.extensionType);
+        return new PackedExtensionTree(setup, setup.extensionType);
     }
 
     /**
