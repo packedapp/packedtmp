@@ -15,7 +15,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -26,6 +25,7 @@ import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InjectionNode;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimeSetup;
@@ -50,8 +50,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public final BeanType beanType;
 
-    public final UserOrExtension owner;
-
     /** An injection node, if instances of the source needs to be created at runtime (not a constant). */
     @Nullable
     private final InjectionNode injectionNode;
@@ -69,13 +67,12 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         super(container.application, realm, lifetime, container);
         this.beanType = BeanType.BASE;
         // Tror ikke vi skal have den her med. Maa tage det fra realmen
-        this.owner = beanHandle.userOrExtension;
         this.factory = beanHandle.factory;
         this.singletonHandle = beanHandle.kind == BeanType.BASE ? lifetime.pool.reserve(beanHandle.beanType) : null;
 
         // Eller skal det her maaske i realmen????
-        if (owner.isExtension()) {
-            container.useExtensionSetup(owner.extension(), null).beans.beans.put(Key.of(beanHandle.beanType), this);
+        if (realm instanceof ExtensionRealmSetup s) {
+            container.useExtensionSetup(s.realmType(), null).beans.beans.put(Key.of(beanHandle.beanType), this);
         }
 
         if (factory == null) {

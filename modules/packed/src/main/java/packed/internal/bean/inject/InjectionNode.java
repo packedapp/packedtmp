@@ -26,12 +26,12 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
-import app.packed.extension.Extension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
 import packed.internal.bean.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -225,16 +225,11 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                 if (sbm != null) {
                     if (e == null) {
-                        if (source.owner.isUser()) {
-                            ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
-                            e = wrapper == null ? null : wrapper.getSingle();
-                        } else {
+                        if (source.realm instanceof ExtensionRealmSetup ers) {
                             Key<?> requiredKey = sd.key();
-                            Class<? extends Extension<?>> ext = source.owner.extension();
-
                             Key<?> thisKey = Key.of(source.hookModel.clazz);
                             ContainerSetup parent = source.parent;
-                            ExtensionSetup es = parent.useExtensionSetup(ext, null);
+                            ExtensionSetup es = parent.useExtensionSetup(ers.realmType(), null);
                             BeanSetup bs = null;
                             if (thisKey.equals(requiredKey)) {
                                 if (es.parent != null) {
@@ -245,6 +240,10 @@ public final class InjectionNode implements LifetimePoolWriteable {
                             }
 
                             e = bs;
+
+                        } else {
+                            ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
+                            e = wrapper == null ? null : wrapper.getSingle();
                         }
                     }
 

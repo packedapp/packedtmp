@@ -42,8 +42,6 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
 
     BeanType kind = BeanType.BASE;
 
-    final UserOrExtension userOrExtension;
-
     boolean extensionBean;
 
     public PackedBeanMaker(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
@@ -55,7 +53,6 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
         }
         this.beanType = requireNonNull(beanType);
         this.source = source;
-        this.userOrExtension = requireNonNull(userOrExtension);
         this.factory = factory;
     }
 
