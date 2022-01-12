@@ -72,6 +72,8 @@ class MainBootstrap extends RealMethodSidecarBootstrap {
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
 
             EntryPointExtension e = c.parent.useExtension(EntryPointExtension.class);
+            e.shared().takeOver(EntryPointExtension.class);
+            
             e.hasMain = true;
             c.parent.useExtension(ServiceExtension.class);
             c.application.entryPoints = new EntryPointSetup();

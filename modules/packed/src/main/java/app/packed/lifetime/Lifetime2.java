@@ -49,7 +49,8 @@ class SpringIntegration extends BaseAssembly {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void build() {
-        for (var e : m.entrySet())
+        for (var e : m.entrySet()) {
             provideInstance(e.getValue()).as((Class) e.getKey());
+        }
     }
 }

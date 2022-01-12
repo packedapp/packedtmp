@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
-import packed.internal.lifetime.PoolAccessor;
+import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -53,7 +53,7 @@ public class EntryPointSetup {
             }
 
             try {
-                PoolAccessor sa = l.cs.singletonAccessor;
+                PoolEntryHandle sa = l.cs.singletonHandle;
                 if (sa != null && !l.isStatic) {
                     Object o = sa.read(launchContext.pool());
                     l.methodHandle.invoke(o);

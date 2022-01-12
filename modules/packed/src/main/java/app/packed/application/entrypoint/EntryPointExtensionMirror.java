@@ -54,12 +54,14 @@ public class EntryPointExtensionMirror extends ExtensionMirror implements Iterab
         return Optional.empty();
     }
 
+    // Optional, I think. We can add the extension
+    // But add any entry points
     public Class<? extends Extension<?>> managedBy() {
         // There is always a single extension that manages all entry points in a single application
         // Fx
         //// CLI
         //// Serverless
-        return EntryPointExtension.class;
+        return tree.root().shared().takeOver;
     }
 
     public void overview() {}

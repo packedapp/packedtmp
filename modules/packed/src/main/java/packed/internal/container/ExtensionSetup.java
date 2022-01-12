@@ -64,6 +64,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The realm this extension belongs to. */
     private final ExtensionRealmSetup realm;
 
+    /** Beans, registered for this particular extension instance */
+    public final ExtensionBeanManager beans;
+
     /**
      * Creates a new extension setup.
      * 
@@ -80,6 +83,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.parent = parent;
         this.realm = parent == null ? new ExtensionRealmSetup(this, container.application, extensionType) : parent.realm;
         this.model = requireNonNull(realm.extensionModel);
+        this.beans = new ExtensionBeanManager(parent == null ? null : parent.beans);
 
     }
 
@@ -164,7 +168,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
         return s;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {

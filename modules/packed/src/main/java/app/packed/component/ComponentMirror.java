@@ -53,6 +53,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
     int depth();
 
+    /** {@return any lifetime this component may be a part of.} */
     default Optional<LifetimeMirror> lifetime() {
         throw new UnsupportedOperationException();
     }

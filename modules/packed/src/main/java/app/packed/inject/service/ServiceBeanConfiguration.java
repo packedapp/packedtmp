@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanMaker;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -42,7 +42,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
 
-    public ServiceBeanConfiguration(BeanHandle<T> handle) {
+    public ServiceBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
     }
 

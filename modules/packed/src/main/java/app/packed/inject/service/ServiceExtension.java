@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanMaker;
 import app.packed.bean.BeanSupport;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.component.UserOrExtension;
@@ -259,7 +259,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         // Create a bean driver by binding the implementation
 
-        BeanHandle<T> bh = use(BeanSupport.class).register(UserOrExtension.user(), implementation);
+        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
         ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
         return sbc.provide();
@@ -288,7 +288,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 //
 //        return c.provide();
 
-        BeanHandle<T> bh = use(BeanSupport.class).register(UserOrExtension.user(), factory);
+        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), factory);
         ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
         return sbc.provide();
@@ -327,7 +327,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      * @return a service configuration for the service
      */
     public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
-        BeanHandle<T> bh = use(BeanSupport.class).registerInstance(UserOrExtension.user(), instance);
+        BeanMaker<T> bh = use(BeanSupport.class).newMakerInstance(UserOrExtension.user(), instance);
         ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
         return sbc.provide();
@@ -341,7 +341,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> bh = use(BeanSupport.class).register(UserOrExtension.user(), implementation);
+        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
         bh.prototype();
         ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
@@ -356,7 +356,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanHandle<T> bh = use(BeanSupport.class).register(UserOrExtension.user(), factory);
+        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), factory);
         bh.prototype();
         ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 

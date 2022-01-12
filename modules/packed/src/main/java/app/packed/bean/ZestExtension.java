@@ -21,11 +21,11 @@ public class ZestExtension extends Extension<ZestExtension> {
 //    }
 
     public <T> ManagedBeanConfiguration<T> install2(Class<T> stuff) {
-        BeanHandle<T> handle = beans().register(UserOrExtension.user(), stuff);
+        BeanMaker<T> maker = beans().newMaker(UserOrExtension.user(), stuff);
 
         // handle.lifetime.
 
-        return new ManagedBeanConfiguration<>(handle);
+        return new ManagedBeanConfiguration<>(maker);
     }
 
     @Override

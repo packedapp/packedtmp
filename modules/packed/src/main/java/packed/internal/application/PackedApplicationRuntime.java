@@ -18,7 +18,6 @@ package packed.internal.application;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -53,8 +52,6 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
     // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
-    // Staten er selvf gemt i sync
-    final Sync sync = new Sync();
 
     public PackedApplicationRuntime(ApplicationInitializationContext launchContext) {}
 
@@ -125,8 +122,6 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
         } finally {
             lock.unlock();
         }
-
-        // run starting
 
         lock.lock();
         try {
@@ -201,20 +196,6 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
             throw new UnsupportedOperationException();
         } finally {
             lock.unlock();
-        }
-    }
-
-    @SuppressWarnings("serial") // Guest is not synchronized
-    public static final class Sync extends AbstractQueuedSynchronizer {
-
-        @Override
-        protected int tryAcquireShared(int arg) {
-            return super.tryAcquireShared(arg);
-        }
-
-        @Override
-        protected boolean tryReleaseShared(int arg) {
-            return super.tryReleaseShared(arg);
         }
     }
 }

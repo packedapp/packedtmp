@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.lifetime;
 
 /**
  *
  */
-public non-sealed class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
-
-    /**
-     * @param handle
-     */
-    protected FunctionalBeanConfiguration(BeanMaker<Void> handle) {
-        super(handle);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind kind() {
-        return null;
-    }
+public enum LifetimeTransition {
+    INITIALIZATION, STARTUP, SHUTDOWN;
 }
+// Initialization - Single threaded - On Any failure
+// Startup - Potential Multi threaded - On Any failure
+// Shutdown - Potential Multi threaded - always continues (reverse order)
+
+
+// initialize(Lifesegment pre, Lifesegment segment, Lifesegment post)
+// startup(Lifesegment pre, Lifesegment segment, Lifesegment post);
+// stop(Lifesegment pre, Lifesegment segment, Lifesegment post);

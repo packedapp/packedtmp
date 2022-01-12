@@ -17,7 +17,7 @@ package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanMaker;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;
@@ -28,7 +28,7 @@ import packed.internal.container.RealmSetup;
 /**
  *
  */
-public final class PackedBeanHandle<T> implements BeanHandle<T> {
+public final class PackedBeanMaker<T> implements BeanMaker<T> {
 
     final Factory<?> factory;
 
@@ -42,11 +42,20 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
 
     BeanType kind = BeanType.BASE;
 
-    public PackedBeanHandle(ContainerSetup container, RealmSetup realm, Class<?> beanType, Factory<?> factory, Object source) {
+    final UserOrExtension userOrExtension;
+
+    boolean extensionBean;
+
+    public PackedBeanMaker(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
         this.container = requireNonNull(container);
-        this.realm = requireNonNull(realm);
+        if (userOrExtension.isUser()) {
+            this.realm = container.realm;
+        } else {
+            this.realm = container.extensions.get(userOrExtension.extension()).realm();
+        }
         this.beanType = requireNonNull(beanType);
         this.source = source;
+        this.userOrExtension = requireNonNull(userOrExtension);
         this.factory = factory;
     }
 
@@ -57,25 +66,26 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
         realm.wireCommit(bs);
         return bs;
     }
-    public static <T> PackedBeanHandle<T> ofFactory(ContainerSetup container, UserOrExtension owner, Class<T> implementation) {
+
+    public static <T> PackedBeanMaker<T> ofFactory(ContainerSetup container, UserOrExtension owner, Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return new PackedBeanHandle<>(container, container.realm, implementation, ReflectionFactory.of(implementation), implementation);
+        return new PackedBeanMaker<>(container, owner, implementation, ReflectionFactory.of(implementation), implementation);
     }
 
-    public static <T> PackedBeanHandle<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
+    public static <T> PackedBeanMaker<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
         requireNonNull(factory, "factory is null");
 
-        return new PackedBeanHandle<>(container, container.realm, factory.rawType(), factory, factory);
+        return new PackedBeanMaker<>(container, owner, factory.rawType(), factory, factory);
     }
 
-    public static <T> PackedBeanHandle<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
+    public static <T> PackedBeanMaker<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
-        return new PackedBeanHandle<>(container, container.realm, instance.getClass(), null, instance);
+        return new PackedBeanMaker<>(container, owner, instance.getClass(), null, instance);
     }
 
     /** {@inheritDoc} */
@@ -85,5 +95,9 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
 //            throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
 //        }
         this.kind = BeanType.PROTOTYPE_UNMANAGED;
+    }
+
+    public void extensionBean() {
+        this.extensionBean = true;
     }
 }

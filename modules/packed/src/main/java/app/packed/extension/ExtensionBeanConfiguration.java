@@ -1,8 +1,8 @@
 package app.packed.extension;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanMaker;
 import app.packed.bean.BeanSupport;
 import app.packed.inject.Factory;
 
@@ -18,12 +18,13 @@ import app.packed.inject.Factory;
  * @see BeanSupport#installInstance(Object)
  */
 // Taenker vi flytter den til .bean egentlig
+// Har vi behov for T??? IDK
 public final class ExtensionBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /**
      * @param handle
      */
-    protected ExtensionBeanConfiguration(BeanHandle<T> handle) {
+    public ExtensionBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
     }
 

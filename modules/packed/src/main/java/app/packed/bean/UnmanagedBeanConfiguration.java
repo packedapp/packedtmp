@@ -5,7 +5,7 @@ public non-sealed class UnmanagedBeanConfiguration<T> extends BeanConfiguration<
     /**
      * @param handle
      */
-    protected UnmanagedBeanConfiguration(BeanHandle<T> handle) {
+    protected UnmanagedBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
     }
 

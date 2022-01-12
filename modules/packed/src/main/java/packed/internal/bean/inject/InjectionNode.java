@@ -23,12 +23,16 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
+import app.packed.extension.Extension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
 import packed.internal.bean.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -37,7 +41,7 @@ import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.LifetimePoolWriteable;
-import packed.internal.lifetime.PoolAccessor;
+import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -69,6 +73,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
     public final int providerDelta;
 
+    // Constructing something from a Factory
     public InjectionNode(BeanSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
@@ -81,12 +86,13 @@ public final class InjectionNode implements LifetimePoolWriteable {
         this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
     }
 
+    // Field/Method hook
     public InjectionNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && source.singletonAccessor == null) {
+            if (!Modifier.isStatic(smm.getModifiers()) && source.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
             ServiceManagerSetup sbm = source.parent.beans.getServiceManagerOrCreate();
@@ -135,7 +141,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
     }
 
     @Nullable
-    private PoolAccessor poolAccessor() {
+    private PoolEntryHandle poolAccessor() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (service != null) {
@@ -144,7 +150,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
             // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
             return null;
         }
-        return source.singletonAccessor;
+        return source.singletonHandle;
     }
 
     // All dependencies have been successfully resolved
@@ -167,7 +173,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
         needsPostProcessing = false;
 
         if (sourceMember != null) {
-            if (source.singletonAccessor != null) {
+            if (source.singletonHandle != null) {
                 // Maybe shared with SourceAssembly
 //                if (sourceMember.runAt == RunAt.INITIALIZATION) {
 //
@@ -210,15 +216,36 @@ public final class InjectionNode implements LifetimePoolWriteable {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProducer e = null;
                 if (source != null) {
+                    //// Checker om der er hooks der provider servicen
                     BootstrappedClassModel sm = source.hookModel;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }
                 }
+
                 if (sbm != null) {
                     if (e == null) {
-                        ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
-                        e = wrapper == null ? null : wrapper.getSingle();
+                        if (source.owner.isUser()) {
+                            ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
+                            e = wrapper == null ? null : wrapper.getSingle();
+                        } else {
+                            Key<?> requiredKey = sd.key();
+                            Class<? extends Extension<?>> ext = source.owner.extension();
+
+                            Key<?> thisKey = Key.of(source.hookModel.clazz);
+                            ContainerSetup parent = source.parent;
+                            ExtensionSetup es = parent.useExtensionSetup(ext, null);
+                            BeanSetup bs = null;
+                            if (thisKey.equals(requiredKey)) {
+                                if (es.parent != null) {
+                                    bs = es.parent.beans.lookup(requiredKey);
+                                }
+                            } else {
+                                bs = es.beans.lookup(requiredKey);
+                            }
+
+                            e = bs;
+                        }
                     }
 
                     sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);

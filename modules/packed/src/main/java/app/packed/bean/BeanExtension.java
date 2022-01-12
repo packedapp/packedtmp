@@ -6,7 +6,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceBeanConfiguration;
-import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanMaker;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
@@ -40,7 +40,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(container, UserOrExtension.user(), implementation);
+        PackedBeanMaker<T> handle = PackedBeanMaker.ofFactory(container, UserOrExtension.user(), implementation);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -53,7 +53,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(container, UserOrExtension.user(), factory);
+        PackedBeanMaker<T> handle = PackedBeanMaker.ofFactory(container, UserOrExtension.user(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -70,7 +70,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanHandle<T> handle = PackedBeanHandle.ofInstance(container, UserOrExtension.user(), instance);
+        PackedBeanMaker<T> handle = PackedBeanMaker.ofInstance(container, UserOrExtension.user(), instance);
         return new ContainerBeanConfiguration<>(handle);
     }
 

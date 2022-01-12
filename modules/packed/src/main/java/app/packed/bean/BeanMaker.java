@@ -18,14 +18,14 @@ package app.packed.bean;
 import java.util.function.Function;
 
 import app.packed.inject.Factory;
-import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanMaker;
 
 /**
  *
  */
 // BeanBuilder, BeanRegistrant
 @SuppressWarnings("rawtypes")
-public sealed interface BeanHandle<T> permits PackedBeanHandle {
+public sealed interface BeanMaker<T> permits PackedBeanMaker {
 
     // Taenker den foerst bliver commitet naar man laver en configuration???
 

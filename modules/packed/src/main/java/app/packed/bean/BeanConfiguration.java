@@ -11,7 +11,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.lifecycle.RunState;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanMaker;
 
 /**
  * 
@@ -22,12 +22,12 @@ import packed.internal.bean.PackedBeanHandle;
 public abstract sealed class BeanConfiguration<T> extends
         ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration,FunctionalBeanConfiguration,ExtensionBeanConfiguration {
 
-    /** The component we are configuring. Is initially null until initialized by someone. */
+    /** The bean we are configuring. */
     private final BeanSetup bean;
 
-    protected BeanConfiguration(BeanHandle<T> handle) {
-        PackedBeanHandle<?> bh = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
-        this.bean = bh.newSetup();
+    protected BeanConfiguration(BeanMaker<T> maker) {
+        PackedBeanMaker<?> pbm = requireNonNull((PackedBeanMaker<?>) maker, "maker is null");
+        this.bean = pbm.newSetup();
     }
 
     @Override
@@ -108,11 +108,13 @@ public abstract sealed class BeanConfiguration<T> extends
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public NamespacePath path() {
         return bean.path();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return bean.toString();

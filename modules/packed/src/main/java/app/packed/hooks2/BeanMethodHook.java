@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.hooks2;
 
 /**
  *
  */
-public non-sealed class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
+public @interface BeanMethodHook {
 
-    /**
-     * @param handle
-     */
-    protected FunctionalBeanConfiguration(BeanMaker<Void> handle) {
-        super(handle);
+    Class<? extends Build> buildWith();
+    
+    
+    abstract class Bootstrap extends Build {
+
+        void buildWith(Class<? extends Build> buildWith) {
+            
+        }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind kind() {
-        return null;
+    
+    abstract class Build {
+        protected abstract void build();
     }
 }
+
+

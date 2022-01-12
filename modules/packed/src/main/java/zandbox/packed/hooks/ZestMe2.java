@@ -15,48 +15,53 @@
  */
 package zandbox.packed.hooks;
 
+import java.util.Optional;
+
 import app.packed.application.App;
-import app.packed.application.ApplicationMirror;
-import app.packed.application.entrypoint.EntryPointExtension;
-import app.packed.application.entrypoint.EntryPointExtensionMirror;
-import app.packed.application.entrypoint.EntryPointSupport;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
-import app.packed.inject.service.ServiceExtension;
 
 /**
  *
  */
-public class ZestMe extends BaseAssembly {
+public class ZestMe2 extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        install(Foo.class);
+        install(Bla.class);
         use(MyExt.class);
+        link(new Foo());
     }
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
 //        ExtensionDescriptor ed = ExtensionDescriptor.of(rMyExt.class);
-        App.run(new ZestMe() /* , BuildWirelets.printDebug().all() */);
+        App.run(new ZestMe2() /* , BuildWirelets.printDebug().all() */);
         // System.out.println(ed.dependencies());
         System.out.println(System.currentTimeMillis() - start);
 
-        ApplicationMirror m = App.mirrorOf(new ZestMe());
-        System.out.println("-----");
-        System.out.println(m.container().useExtension(EntryPointExtensionMirror.class).managedBy());
+        // ApplicationMirror m = App.mirrorOf(new ZestMe2());
+        // System.out.println("-----");
 
         // System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
     }
 
-    public static class Foo {
+    public record Bla(Optional<String> os) {}
+
+    public static class Foo extends BaseAssembly {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void build() {
+            use(MyExt.class);
+        }
 
     }
 
-    @DependsOn(extensions = { ServiceExtension.class, EntryPointExtension.class, BeanExtension.class })
+    @DependsOn(extensions = { BeanExtension.class })
     public static class MyExt extends Extension<MyExt> {
 
         MyExt() {}
@@ -64,13 +69,13 @@ public class ZestMe extends BaseAssembly {
         /** {@inheritDoc} */
         @Override
         protected void onNew() {
-            beans().installInstance(new Hibib("123"));
-            beans().install(Habab.class);
-
+            if (containerPath().depth() == 0) {
+                //beans().installInstance(new Hibib("123"));
+                //beans().install(Habab.class);
+            } else {
+              //  beans().install(Habab.class);
+            }
             System.out.println("ADDED");
-            System.out.println(use(EntryPointSupport.class).managedBy());
-            System.out.println(use(EntryPointSupport.class).registerEntryPoint(null));
-            System.out.println(use(EntryPointSupport.class).managedBy());
         }
 
         /** {@inheritDoc} */
@@ -81,5 +86,10 @@ public class ZestMe extends BaseAssembly {
     }
 
     public record Hibib(String s) {}
-    public record Habab(Hibib b) {}
+
+    public record Habab(Hibib b, Optional<Habab> hab) {
+        public Habab {
+            System.out.println(b);
+        }
+    }
 }

@@ -37,7 +37,7 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> realmType() {
+    public Class<? extends Extension<?>> realmType() {
         return extensionModel.type();
     }
 }

@@ -61,14 +61,14 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return source.singletonAccessor != null;
+        return source.singletonHandle != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), source.singletonAccessor.read(context.pool));
+            return RuntimeService.constant(key(), source.singletonHandle.read(context.pool));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

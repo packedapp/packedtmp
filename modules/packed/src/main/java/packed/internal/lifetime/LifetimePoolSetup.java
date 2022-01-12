@@ -61,7 +61,7 @@ public final class LifetimePoolSetup {
      * 
      * @return the index to store the object in at runtime
      */
-    public PoolAccessor reserve(Class<?> type) {
-        return new PoolAccessor(type, size++);
+    public PoolEntryHandle reserve(Class<?> type) {
+        return new PoolEntryHandle(type, size++);
     }
 }

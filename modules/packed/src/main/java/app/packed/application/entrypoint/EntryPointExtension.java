@@ -1,6 +1,8 @@
 package app.packed.application.entrypoint;
 
 import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.ContainerBeanConfiguration;
@@ -16,9 +18,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     Shared shared;
 
-    protected void onNew() {
-        shared = configuration().isApplicationRoot() ? new Shared() : applicationTree().root().shared;
-    }
+    /* package-private */ EntryPointExtension() {}
 
     public void main(Runnable runnable) {
         // Det her er en function
@@ -32,22 +32,26 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     @Override
+    public EntryPointExtensionMirror mirror() {
+        return mirrorInitialize(new EntryPointExtensionMirror(tree()));
+    }
+
+    @Override
     protected void onClose() {
         if (isApplicationRoot()) {
             // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
             // extensions'ene
-            
+
             // install
-            // provide (visible i mxxz;ias:"?aZ.a:n  aZz¸ m  nl jj m ,m   ;n .n ≥ en container)
+            // provide (visible i mxxz;ias:"?aZ.a:n aZz¸ m nl jj m ,m ;n .n ≥ en container)
             // provideShared (container + subcontainers)
             shareInstance(new MethodHandle[0]);
         }
         super.onClose();
     }
 
-    @Override
-    public EntryPointExtensionMirror mirror() {
-        return mirrorInitialize(new EntryPointExtensionMirror(tree()));
+    protected void onNew() {
+        shared = configuration().isApplicationRoot() ? new Shared() : applicationTree().root().shared;
     }
 
     public void setShutdownStrategy(Supplier<Throwable> maker) {
@@ -59,21 +63,36 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // En checked istedet ligesom TimeoutException
     }
 
+    Shared shared() {
+        if (isApplicationRoot()) {
+            Shared s = shared;
+            if (s == null) {
+                s = shared = new Shared();
+            }
+            return s;
+        } else {
+            return applicationTree().root().shared();
+        }
+    }
+
     static class Shared {
+        int entryPointCount;
         MethodHandle[] entryPoints;
         Class<? extends Extension<?>> takeOver;
-        int entryPointCount;
+        final List<EntryPointConf> entrypoints = new ArrayList<>();
+
         void takeOver(Class<? extends Extension<?>> takeOver) {
             if (this.takeOver != null) {
-
-            } else if (entryPointCount > 0) { // has main
-
+                if (takeOver == this.takeOver) {
+                    return;
+                }
+                throw new IllegalStateException();
             }
             this.takeOver = takeOver;
         }
     }
+
+    static class EntryPointConf {
+
+    }
 }
-//Engang ville vi vil gerne droppe den. Hoved grunden er at applikationen godt vil bestemme om entry points'ene.
-//Altsaa vi skal jo ikke goere noget specifikt fra assemblien.
-//Det er jo dem der deployer/mapper applikationen som siger hvad der skal ske. Dvs. 
-//De kan ikke bestemme at der skal installeres en extension

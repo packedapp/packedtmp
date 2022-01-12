@@ -7,12 +7,12 @@ import java.lang.invoke.MethodHandles;
 
 import packed.internal.util.MethodHandleUtil;
 
-public final class PoolAccessor {
+public final class PoolEntryHandle {
 
     private final Class<?> clazz;
     private final int index;
 
-    PoolAccessor(Class<?> clazz, int index) {
+    PoolEntryHandle(Class<?> clazz, int index) {
         this.clazz = requireNonNull(clazz);
         this.index = index;
     }

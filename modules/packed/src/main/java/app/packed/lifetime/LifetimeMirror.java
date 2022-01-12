@@ -1,10 +1,12 @@
 package app.packed.lifetime;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.BeanLifecycleOperationMirrorPlan;
-import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorTree;
 import app.packed.mirror.Mirror;
 
 // Kan man have Dependent beans... DVS beans
@@ -25,29 +27,35 @@ import app.packed.mirror.Mirror;
  */
 public interface LifetimeMirror extends Mirror {
 
+    LifetimeMirror applicationRoot();
+    
     Set<LifetimeMirror> children();
     
-    ComponentMirror component();
+    ComponentMirrorTree components();
 
-    Set<ComponentMirror> components();
+    boolean isSingleton(); // I relation til foraeldren
 
     Optional<LifetimeMirror> parent();
 
     BeanLifecycleOperationMirrorPlan plan();
-
-    LifetimeMirror root(); // application?
     
+    List<BeanMirror> beanLifecycleOrder();
     // Noget om hvordan den bliver aktiveret???
     //// Altsaa fx fra hvilken operation
 }
 
+
+interface LifetimeMirror2  {
+    // Altsaa det er taenkt paa at man kan have fx application dependencies.
+    // Altsaa en egentlig graph af ting der skal vaere oppe og koere.
+    Set<LifetimeMirror> dependants();
+}
 
 enum LifetimeType {
     
     CONTAINER,
 
     DEPENDANT,
-    
     
     LAZY,
     

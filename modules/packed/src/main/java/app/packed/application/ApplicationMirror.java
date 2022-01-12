@@ -40,16 +40,6 @@ public interface ApplicationMirror extends Mirror {
         return container().extensionTypes();
     }
 
-    
-    /**
-     * Returns an immutable set containing any extensions that have been disabled.
-     * 
-     * @return an immutable set containing any extensions that have been disabled
-     * 
-     * @see ApplicationDriver.Builder#disableExtension(Class...)
-     */
-    Set<Class<? extends Extension<?>>> disabledExtensions();
-
     default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
         throw new UnsupportedOperationException();
     }
@@ -126,3 +116,12 @@ public interface ApplicationMirror extends Mirror {
         return container().useExtension(extensionMirrorType);
     }
 }
+//
+///**
+// * Returns an immutable set containing any extensions that have been disabled.
+// * 
+// * @return an immutable set containing any extensions that have been disabled
+// * 
+// * @see ApplicationDriver.Builder#disableExtension(Class...)
+// */
+//Set<Class<? extends Extension<?>>> disabledExtensions();

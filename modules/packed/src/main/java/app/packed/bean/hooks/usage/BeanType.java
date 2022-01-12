@@ -17,6 +17,8 @@ public enum BeanType {
     // Men hvorfor ikke get(@ConfigFoo("sdfsf"), String req) <--
     STATIC, // static?
 
+    EXTENSION_BEAN,
+    
     /**
      * A singleton bean.
      * <p>

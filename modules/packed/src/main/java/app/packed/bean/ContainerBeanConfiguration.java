@@ -29,7 +29,7 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     /**
      * @param handle
      */
-    public ContainerBeanConfiguration(BeanHandle<T> handle) {
+    public ContainerBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
     }
 

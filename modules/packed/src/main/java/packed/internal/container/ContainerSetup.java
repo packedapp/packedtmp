@@ -226,7 +226,7 @@ public final class ContainerSetup extends ComponentSetup {
      *             if the
      */
     // Any dependencies needed have been checked
-    ExtensionSetup useExtensionSetup(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
+    public ExtensionSetup useExtensionSetup(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 

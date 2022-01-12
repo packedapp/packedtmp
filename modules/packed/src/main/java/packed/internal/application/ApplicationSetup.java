@@ -17,8 +17,6 @@ package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
-
 import app.packed.application.ApplicationDescriptor;
 import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
 import app.packed.application.ApplicationMirror;
@@ -26,14 +24,13 @@ import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerHandle;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
-import packed.internal.lifetime.PoolAccessor;
+import packed.internal.lifetime.PoolEntryHandle;
 
 /** Build-time configuration of an application. */
 public final class ApplicationSetup {
@@ -58,7 +55,7 @@ public final class ApplicationSetup {
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
-    final PoolAccessor runtimeAccessor;
+    final PoolEntryHandle runtimeAccessor;
 
     /**
      * Create a new application setup
@@ -95,13 +92,6 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Set<Class<? extends Extension<?>>> disabledExtensions() {
-            // TODO add additional disabled extensions
-            return application.driver.bannedExtensions();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public Module module() {
             return application.container.realm.realmType().getModule();
         }
@@ -115,7 +105,6 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public <T extends ExtensionMirror> T use(Class<T> type) {
-            //
             return container().useExtension(type);
         }
     }

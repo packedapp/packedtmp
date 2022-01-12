@@ -15,6 +15,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -28,20 +29,28 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimeSetup;
-import packed.internal.lifetime.PoolAccessor;
+import packed.internal.lifetime.PoolEntryHandle;
 
 /** The build-time configuration of a bean. */
 public final class BeanSetup extends ComponentSetup implements DependencyProducer {
 
     /**
-     * Factory that was specified. We only keep this around to find the key that it should be exposed as a service with. As
-     * we need to lazy calculate it from {@link #provide(ComponentSetup)}
+     * Factory that was specified if this bean was not created from a single bean instance.
+     * <p>
+     * We only keep this around to find the default key that the bean will be exposed as if registered as a service. We lazy
+     * calculate it from {@link #provide(ComponentSetup)}
      */
     @Nullable
     private final Factory<?> factory;
 
-    /** A model of every hook on the bean. */
+    /** A model of the hooks on the bean. */
     public final BootstrappedClassModel hookModel;
+
+    /* Information about the type of bean. */
+
+    public final BeanType beanType;
+
+    public final UserOrExtension owner;
 
     /** An injection node, if instances of the source needs to be created at runtime (not a constant). */
     @Nullable
@@ -54,29 +63,36 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
-    public final PoolAccessor singletonAccessor;
+    public final PoolEntryHandle singletonHandle;
 
-    public final BeanType beanType;
-
-    public BeanSetup(ContainerSetup parent, RealmSetup realm, LifetimeSetup lifetime, PackedBeanHandle<?> beanHandle) {
-        super(parent.application, realm, lifetime, parent);
+    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanMaker<?> beanHandle) {
+        super(container.application, realm, lifetime, container);
         this.beanType = BeanType.BASE;
+        // Tror ikke vi skal have den her med. Maa tage det fra realmen
+        this.owner = beanHandle.userOrExtension;
         this.factory = beanHandle.factory;
-        this.singletonAccessor = beanHandle.kind == BeanType.BASE ? lifetime.pool.reserve(beanHandle.beanType) : null;
-        
-        if (factory == null) {
-            lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, beanHandle.source));
+        this.singletonHandle = beanHandle.kind == BeanType.BASE ? lifetime.pool.reserve(beanHandle.beanType) : null;
+
+        // Eller skal det her maaske i realmen????
+        if (owner.isExtension()) {
+            container.useExtensionSetup(owner.extension(), null).beans.beans.put(Key.of(beanHandle.beanType), this);
         }
 
         if (factory == null) {
+            // We already have a bean instance, no need to have an injection node for creating a new bean instance.
             this.injectionNode = null;
+
+            // Store the supplied bean instance in the lifetime (constant) pool. (Or maybe
+            lifetime.pool.addConstant(pool -> singletonHandle.store(pool, beanHandle.source));
+            // Or maybe just bind the instance directly in the method handles.
         } else {
+            // Extract a MethodHandlefrom the factory
             MethodHandle mh = realm.accessor().toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.dependenciesOld();
             this.injectionNode = new InjectionNode(this, dependencies, mh);
-            parent.beans.addNode(injectionNode);
+            container.beans.addNode(injectionNode);
         }
 
         // Find a hook model for the bean type and wire it
@@ -99,8 +115,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     public MethodHandle dependencyAccessor() {
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
-        if (singletonAccessor != null) {
-            return singletonAccessor.poolReader(); // MethodHandle(ConstantPool)T
+        if (singletonHandle != null) {
+            return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
         } else {
             return injectionNode.buildMethodHandle(); // MethodHandle(ConstantPool)T
         }

@@ -27,7 +27,7 @@ import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.lifetime.PoolAccessor;
+import packed.internal.lifetime.PoolEntryHandle;
 
 /**
  *
@@ -38,7 +38,7 @@ public final class SourceMemberServiceSetup extends ServiceSetup {
 
     /** If constant, the region index to store it in */
     @Nullable
-    public final PoolAccessor accessor;
+    public final PoolEntryHandle accessor;
 
     public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, InjectionNode dependant, Key<?> key, boolean isConst) {
         super(key);

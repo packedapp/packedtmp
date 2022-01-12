@@ -22,10 +22,16 @@ package app.packed.application.entrypoint;
 //Alle skal kunne faa den injected.
 //Paanaer non- entrypoint controlling extensions.
 //Som jeg vil mene ikke har adgang til den
-public /* primitive */ class StringArgs {
+
+// was StringArgs
+// MainArgs... Men det er vel ikke kun Main den virker sammen med?
+// Eller maaske er det. Nej fordi vi vil gerne kunne bruge
+// ApplicationImage.use("fsdfsdf") <- uaghaendig af extension
+// Det kan vi vel egentlig ogsaa...
+public /* primitive */ class ArgList {
     private final String[] args;
 
-    StringArgs(String[] args) {
+    ArgList(String[] args) {
         this.args = args;
     }
 
