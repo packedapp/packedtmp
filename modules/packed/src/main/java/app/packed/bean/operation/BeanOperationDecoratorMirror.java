@@ -15,19 +15,10 @@
  */
 package app.packed.bean.operation;
 
-import app.packed.mirror.Mirror;
-
 /**
  *
  */
-// What happens if an operation fails
+// Maaske direkte paa BeanOperation?
+public class BeanOperationDecoratorMirror {
 
-// passthrough
-// Could be a inner interface on BeanOperationMirror
-// Maaske er det ogsaa noget der kan bruges udover bean operations?
-public interface BeanOperationErrorHandlingMirror extends Mirror {
-
-    default void print() {
-        
-    }
 }

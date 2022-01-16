@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.bean.inject.InjectionNode;
+import packed.internal.bean.inject.DependencyConsumer;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -72,8 +72,8 @@ public final class ExportedServiceSetup extends ServiceSetup {
 
     @Override
     @Nullable
-    public InjectionNode dependant() {
-        return serviceToExport.dependant();
+    public DependencyConsumer dependencyConsumer() {
+        return serviceToExport.dependencyConsumer();
     }
 
     @Override

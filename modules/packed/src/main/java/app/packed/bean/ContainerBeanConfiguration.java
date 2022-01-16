@@ -27,10 +27,10 @@ import java.util.concurrent.Callable;
 public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /**
-     * @param handle
+     * @param maker
      */
-    public ContainerBeanConfiguration(BeanMaker<T> handle) {
-        super(handle);
+    public ContainerBeanConfiguration(BeanMaker<T> maker) {
+        super(maker);
     }
 
     public <X extends Runnable & Callable<String>> X foo() {

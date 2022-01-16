@@ -77,11 +77,14 @@ import packed.internal.util.ThrowableUtil;
  * capturing interactions with the extension.
  * 
  * @see ExtensionDescriptor
+ * 
+ * @param <E>
+ *            The type of the extension subclass
  */
 public abstract non-sealed class Extension<E extends Extension<E>> implements RealmSource {
 
     /**
-     * The extension's setup that most methods delegate to.
+     * The extension's setup that all methods delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
@@ -95,15 +98,14 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
-    protected BeanSupport beans() {
+    /**
+     * 
+     * @return a bean support class
+     * 
+     * @see BaseAssembly#bean
+     */
+    protected final BeanSupport bean() {
         return use(BeanSupport.class);
-    }
-
-    /** {@return a tree view that spans all extension of this type in the same application.} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final ExtensionTree<E> applicationTree() {
-        ExtensionSetup setup = setup();
-        return new PackedExtensionTree(setup.applicationRootSetup(), setup.extensionType);
     }
 
     // checkExtendable...
@@ -154,30 +156,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
         return configuration().containerPath();
     }
 
-    protected final boolean isApplicationRoot() {
-        return configuration().isApplicationRoot();
-    }
-
-    /**
-     * @param extensionType
-     *            the extension type to test
-     * @return {@code true} if the extension is disabled, otherwise {@code false}
-     * 
-     * @see ApplicationDriver.Builder#disableExtension(Class...)
-     */
-    // Kan disable den paa application driver...
-    // Er det kombination af isExtensionDisabled og isUsed
-    /// Maaske bare Set<Class<? extends Extension<?>>> disabledExtensions(); disabledExtension.contains
-    /// Maaske vi skal have en selvstaedig classe.
-    /// Disabled kan ogsaa vaere hvis vi koere med whitelist
-
-    /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
-    /// Maaske det er vigtigt at have de 2 options.
-    /// isExtensionUsable() , makeUnusable
-    protected final boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
-        return configuration().isExtensionBanned(extensionType);
-    }
-
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
     // Her er det jo root container vi skal teste
@@ -195,8 +173,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
         return configuration().isExtensionUsed(extensionType);
     }
 
-    protected final E lifetimeRoot() {
-        throw new UnsupportedOperationException();
+    protected final boolean isRootOfApplication() {
+        return configuration().isRootOfApplication();
     }
 
     /**
@@ -352,6 +330,12 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
         return configuration().selectWirelets(wireletClass);
     }
 
+    /**
+     * <p>
+     * ExtensionSetup is exposed as {@link ExtensionConfiguration} via {@link #configuration()}.
+     * 
+     * @return
+     */
     private final ExtensionSetup setup() {
         ExtensionSetup c = setup;
         if (c == null) {
@@ -369,6 +353,17 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected final ExtensionTree<E> tree() {
         ExtensionSetup setup = setup();
         return new PackedExtensionTree(setup, setup.extensionType);
+    }
+
+    /** {@return a tree view that spans all extension of this type in the same application.} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final ExtensionTree<E> treeOfApplication() {
+        ExtensionSetup setup = setup();
+        return new PackedExtensionTree(setup.applicationRootSetup(), setup.extensionType);
+    }
+
+    protected final ExtensionTree<E> treeOfLifetime() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -605,6 +600,28 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
 
 class Zarchive {
 
+
+    /**
+     * @param extensionType
+     *            the extension type to test
+     * @return {@code true} if the extension is disabled, otherwise {@code false}
+     * 
+     * @see ApplicationDriver.Builder#disableExtension(Class...)
+     */
+    // Kan disable den paa application driver...
+    // Er det kombination af isExtensionDisabled og isUsed
+    /// Maaske bare Set<Class<? extends Extension<?>>> disabledExtensions(); disabledExtension.contains
+    /// Maaske vi skal have en selvstaedig classe.
+    /// Disabled kan ogsaa vaere hvis vi koere med whitelist
+
+    /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
+    /// Maaske det er vigtigt at have de 2 options.
+    /// isExtensionUsable() , makeUnusable
+    protected final boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
+        throw new UnsupportedOperationException();
+    }
+
+    
     protected static <T extends Extension<T>> void $addDependencyLazyInit(Class<? extends Extension<?>> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret

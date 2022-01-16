@@ -3,6 +3,8 @@ package app.packed.bean;
 // Maybe BeanKind instead
 public enum BeanKind {
 
+    FUNCTIONAL_BEAN,
+    
     EXTENSION,
     
     /** Lives and dies with the container it is installed into. */

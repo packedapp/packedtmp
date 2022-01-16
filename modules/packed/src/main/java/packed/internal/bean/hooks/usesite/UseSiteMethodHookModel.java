@@ -29,7 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.hooks.BeanMethod;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
@@ -58,7 +58,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
     private final Method method;
 
     UseSiteMethodHookModel(Builder builder) {
-        super(builder, DependencyDescriptor.fromExecutable(builder.shared.methodUnsafe));
+        super(builder, InternalDependency.fromExecutable(builder.shared.methodUnsafe));
         this.method = requireNonNull(builder.shared.methodUnsafe);
         this.bootstrapModel = requireNonNull(builder.model);
         this.directMethodHandle = requireNonNull(builder.shared.direct());
@@ -69,7 +69,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         DependencyProducer[] providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
-            DependencyDescriptor d = dependencies.get(i);
+            InternalDependency d = dependencies.get(i);
             HookedMethodProvide dp = bootstrapModel.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());

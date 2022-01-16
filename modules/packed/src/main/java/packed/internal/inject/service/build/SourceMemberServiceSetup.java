@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.bean.inject.InjectionNode;
+import packed.internal.bean.inject.DependencyConsumer;
 import packed.internal.component.ComponentSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
@@ -34,29 +34,29 @@ import packed.internal.lifetime.PoolEntryHandle;
  */
 public final class SourceMemberServiceSetup extends ServiceSetup {
 
-    private final InjectionNode dependant;
+    private final DependencyConsumer consumer;
 
     /** If constant, the region index to store it in */
     @Nullable
     public final PoolEntryHandle accessor;
 
-    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, InjectionNode dependant, Key<?> key, boolean isConst) {
+    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependencyConsumer dependant, Key<?> key, boolean isConst) {
         super(key);
-        this.dependant = requireNonNull(dependant);
+        this.consumer = requireNonNull(dependant);
         // TODO fix Object
         this.accessor = isConst ? compConf.lifetime.pool.reserve(Object.class) : null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public InjectionNode dependant() {
-        return dependant;
+    public DependencyConsumer dependencyConsumer() {
+        return consumer;
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return dependant.buildMethodHandle();
+        return consumer.runtimeMethodHandle();
     }
 
     /** {@inheritDoc} */
@@ -78,6 +78,6 @@ public final class SourceMemberServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "@Provide " + dependant.directMethodHandle;
+        return "@Provide " + consumer.originalMethodHandle;
     }
 }

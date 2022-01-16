@@ -29,7 +29,22 @@ public non-sealed class FunctionalBeanConfiguration extends BeanConfiguration<Vo
 
     /** {@inheritDoc} */
     @Override
-    public BeanKind kind() {
-        return null;
+    public final BeanKind kind() {
+        return BeanKind.FUNCTIONAL_BEAN;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public FunctionalBeanConfiguration named(String name) {
+        super.named(name);
+        return this;
+    }
+}
+
+//Maaske man skal returnere en FunctionConfiguration istedet for
+//Ideen er vi har en FunctionalBeanConfiguration
+
+//Ved ikke om det er taenkt som enkelt delene i en FunctionalBean??
+abstract /* non-sealed */ class FunctionConfiguration /* extends ComponentConfiguration */ {
+
 }

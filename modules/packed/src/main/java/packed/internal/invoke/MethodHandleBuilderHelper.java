@@ -35,7 +35,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Service;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 
@@ -111,7 +111,7 @@ class MethodHandleBuilderHelper {
 
         for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
-            DependencyDescriptor sd = DependencyDescriptor.fromVariable(p, i);
+            InternalDependency sd = InternalDependency.fromVariable(p, i);
             Class<?> askingForType = sd.key().rawType();
             MethodHandleBuilder.AnnoClassEntry anno = find(aa, p);
 

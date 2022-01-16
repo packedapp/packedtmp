@@ -24,7 +24,7 @@ public class TstExt extends BaseAssembly {
         final int count;
 
         MyExt(ExtensionConfiguration c) {
-            count = c.containerDepth();
+            count = c.containerPath().depth();
 //            Optional<ExtensionBeanConnection<MyExt>> ea = c.findParent(MyExt.class);
 //            if (ea.isPresent()) {
 //                System.out.println("--- Nice ---");

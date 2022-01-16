@@ -64,8 +64,8 @@ public class ZestMe extends BaseAssembly {
         /** {@inheritDoc} */
         @Override
         protected void onNew() {
-            beans().installInstance(new Hibib("123"));
-            beans().install(Habab.class);
+            bean().installInstance(new Hibib("123"));
+            bean().install(Habab.class);
 
             System.out.println("ADDED");
             System.out.println(use(EntryPointSupport.class).managedBy());

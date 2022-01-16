@@ -17,6 +17,7 @@ public final class PoolEntryHandle {
         this.index = index;
     }
 
+    // Skal vi vide hvor vi bliver laest fra???
     public MethodHandle poolReader() {
         // (LifetimePool, int)Object -> (LifetimePool)Object
         MethodHandle mh = MethodHandles.insertArguments(LifetimePool.MH_CONSTANT_POOL_READER, 1, index);

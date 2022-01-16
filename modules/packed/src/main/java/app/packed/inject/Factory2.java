@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -42,18 +42,18 @@ public abstract class Factory2<T, U, R> extends CapturingFactory<R> {
             Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<List<DependencyDescriptor>> DEPENDENCY_CACHE = new ClassValue<>() {
+    private static final ClassValue<List<InternalDependency>> DEPENDENCY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected List<DependencyDescriptor> computeValue(Class<?> type) {
-            return DependencyDescriptor.fromTypeVariables((Class) type, Factory2.class, 0, 1);
+        protected List<InternalDependency> computeValue(Class<?> type) {
+            return InternalDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1);
         }
     };
 
     /** The dependencies of this factory, extracted from the type variables of the subclass. */
-    private final List<DependencyDescriptor> dependencies;
+    private final List<InternalDependency> dependencies;
 
     /** The method handle responsible for providing the actual values. */
     private final MethodHandle methodHandle;
@@ -81,7 +81,7 @@ public abstract class Factory2<T, U, R> extends CapturingFactory<R> {
 
     /** {@inheritDoc} */
     @Override
-    List<DependencyDescriptor> dependencies() {
+    List<InternalDependency> dependencies() {
         return dependencies;
     }
 

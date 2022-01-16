@@ -109,12 +109,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         action.build(composer);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int containerDepth() {
-        return container.depth;
-    }
-
     void initialize() {
         // Creates a new extension instance, and set Extension.setup = this
         instance = model.newInstance(this);
@@ -157,7 +151,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isApplicationRoot() {
+    public boolean isRootOfApplication() {
         return parent == null;
     }
 

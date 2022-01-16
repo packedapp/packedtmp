@@ -45,7 +45,6 @@ public class HelloWorldAssembly extends BaseAssembly {
 
         @Main
         public void runMeAndExit() {
-            new Exception().printStackTrace();
             System.out.println("HelloWorld");
         }
     }

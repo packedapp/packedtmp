@@ -56,7 +56,7 @@ public interface DependencyProducer {
     MethodHandle dependencyAccessor();
 
     /**
-     * Returns an injectable if this provider itself needs dependencies fulfilled. Returns null if it requires no
+     * Returns a dependency consumer, if this producer itself needs dependencies fulfilled. Returns null if it requires no
      * dependencies.
      * <p>
      * This method is primarily used in connection with discovering cycles in the dependency graph.
@@ -64,5 +64,5 @@ public interface DependencyProducer {
      * @return an injectable if this dependency provider itself needs dependencies fulfilled, otherwise null
      */
     @Nullable
-    InjectionNode dependant();
+    DependencyConsumer dependencyConsumer();
 }

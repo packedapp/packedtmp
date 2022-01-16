@@ -38,7 +38,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     @Override
     protected void onClose() {
-        if (isApplicationRoot()) {
+        if (isRootOfApplication()) {
             // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
             // extensions'ene
 
@@ -51,7 +51,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     protected void onNew() {
-        shared = configuration().isApplicationRoot() ? new Shared() : applicationTree().root().shared;
+        shared = configuration().isRootOfApplication() ? new Shared() : treeOfApplication().root().shared;
     }
 
     public void setShutdownStrategy(Supplier<Throwable> maker) {
@@ -64,14 +64,14 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     Shared shared() {
-        if (isApplicationRoot()) {
+        if (isRootOfApplication()) {
             Shared s = shared;
             if (s == null) {
                 s = shared = new Shared();
             }
             return s;
         } else {
-            return applicationTree().root().shared();
+            return treeOfApplication().root().shared();
         }
     }
 

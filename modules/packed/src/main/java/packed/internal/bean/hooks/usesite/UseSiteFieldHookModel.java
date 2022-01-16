@@ -30,7 +30,7 @@ import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanField.Hook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.HookedMethodProvide;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
@@ -68,7 +68,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
-            DependencyDescriptor d = dependencies.get(i);
+            InternalDependency d = dependencies.get(i);
             HookedMethodProvide dp = hook.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());

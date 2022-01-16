@@ -87,24 +87,24 @@ import packed.internal.util.ReflectionUtil;
 //Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
 // Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
 
-public final class DependencyDescriptor {
+public final class InternalDependency {
 
     /** A cache of service dependencies. */
-    private static final ClassValue<DependencyDescriptor> CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<InternalDependency> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected DependencyDescriptor computeValue(Class<?> type) {
+        protected InternalDependency computeValue(Class<?> type) {
             if (type == Optional.class) {
                 throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
             } else if (type == OptionalInt.class) {
-                return new DependencyDescriptor(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
+                return new InternalDependency(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
             } else if (type == OptionalLong.class) {
-                return new DependencyDescriptor(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
+                return new InternalDependency(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
             } else if (type == OptionalDouble.class) {
-                return new DependencyDescriptor(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
+                return new InternalDependency(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
             }
-            return new DependencyDescriptor(type, Key.of(type), Optionality.REQUIRED, null);
+            return new InternalDependency(type, Key.of(type), Optionality.REQUIRED, null);
         }
     };
 
@@ -130,7 +130,7 @@ public final class DependencyDescriptor {
      * @param variable
      *            an optional field or parameter
      */
-    private DependencyDescriptor(Type type, Key<?> key, Optionality optionality, @Nullable Parameter variable) {
+    private InternalDependency(Type type, Key<?> key, Optionality optionality, @Nullable Parameter variable) {
         this.type = requireNonNull(type);
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
@@ -163,10 +163,10 @@ public final class DependencyDescriptor {
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        } else if (obj.getClass() != DependencyDescriptor.class) {
+        } else if (obj.getClass() != InternalDependency.class) {
             return false;
         }
-        DependencyDescriptor other = (DependencyDescriptor) obj;
+        InternalDependency other = (InternalDependency) obj;
         // Hmm hashcode and equals for optional????
         return Objects.equals(key, other.key) && optionality == other.optionality && Objects.equals(variable, other.variable);
     }
@@ -274,14 +274,14 @@ public final class DependencyDescriptor {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
-    public static List<DependencyDescriptor> fromExecutable(Executable executable) {
+    public static List<InternalDependency> fromExecutable(Executable executable) {
         Parameter[] parameters = executable.getParameters();
         return switch (parameters.length) {
         case 0 -> List.of();
         case 1 -> List.of(fromVariable(parameters[0], 0));
         case 2 -> List.of(fromVariable(parameters[0], 0), fromVariable(parameters[1], 1));
         default -> {
-            DependencyDescriptor[] sd = new DependencyDescriptor[parameters.length];
+            InternalDependency[] sd = new InternalDependency[parameters.length];
             for (int i = 0; i < sd.length; i++) {
                 sd[i] = fromVariable(parameters[i], i);
             }
@@ -290,7 +290,7 @@ public final class DependencyDescriptor {
         };
     }
 
-    public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+    public static <T> InternalDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
 
         // Find any qualifier annotation that might be present
@@ -320,11 +320,11 @@ public final class DependencyDescriptor {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new DependencyDescriptor(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new InternalDependency(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
-    public static <T> List<DependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        ArrayList<DependencyDescriptor> result = new ArrayList<>();
+    public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
+        ArrayList<InternalDependency> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
             result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
         }
@@ -333,7 +333,7 @@ public final class DependencyDescriptor {
 
     // Taenker den her skal laves fra en Infuser...
     // Som bestemmer om vi f.eks. forstaar Provider, Optional osv.
-    public static <T> DependencyDescriptor fromVariable(Parameter parameter, int index) {
+    public static <T> InternalDependency fromVariable(Parameter parameter, int index) {
         requireNonNull(parameter, "variable is null");
 
         Type getParameterizedType = ReflectionUtil.getParameterizedType(parameter, index);
@@ -389,7 +389,7 @@ public final class DependencyDescriptor {
         // TL is free from Optional
         Key<?> key = Key.convertTypeLiteralNullableAnnotation(parameter, tl, qualifiers);
 
-        return new DependencyDescriptor(getParameterizedType, key, optionallaity, parameter);
+        return new InternalDependency(getParameterizedType, key, optionallaity, parameter);
     }
 
     /**
@@ -399,12 +399,12 @@ public final class DependencyDescriptor {
      *            the class to return a dependency for
      * @return a service dependency for the specified class
      */
-    public static DependencyDescriptor of(Class<?> key) {
+    public static InternalDependency of(Class<?> key) {
         requireNonNull(key, "key is null");
         return CLASS_CACHE.get(key);
     }
 
-    public static DependencyDescriptor of(Key<?> key) {
+    public static InternalDependency of(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifiers()) {
             TypeToken<?> tl = key.typeToken();
@@ -412,19 +412,19 @@ public final class DependencyDescriptor {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new DependencyDescriptor(key.typeToken().type(), key, Optionality.REQUIRED, null);
+        return new InternalDependency(key.typeToken().type(), key, Optionality.REQUIRED, null);
     }
 
     private enum Optionality {
         REQUIRED {
             @Override
-            public Object empty(DependencyDescriptor dependency) {
+            public Object empty(InternalDependency dependency) {
                 throw new UnsupportedOperationException("This dependency is not optional, dependency = " + dependency);
             }
         },
         OPTIONAL {
             @Override
-            public Object empty(DependencyDescriptor dependency) {
+            public Object empty(InternalDependency dependency) {
                 return Optional.empty();
             }
 
@@ -435,7 +435,7 @@ public final class DependencyDescriptor {
         },
         OPTIONAL_INT {
             @Override
-            public Object empty(DependencyDescriptor dependency) {
+            public Object empty(InternalDependency dependency) {
                 return OptionalInt.empty();
             }
 
@@ -446,7 +446,7 @@ public final class DependencyDescriptor {
         },
         OPTIONAL_LONG {
             @Override
-            public Object empty(DependencyDescriptor dependency) {
+            public Object empty(InternalDependency dependency) {
                 return OptionalLong.empty();
             }
 
@@ -457,7 +457,7 @@ public final class DependencyDescriptor {
         },
         OPTIONAL_DOUBLE {
             @Override
-            public Object empty(DependencyDescriptor dependency) {
+            public Object empty(InternalDependency dependency) {
                 return OptionalDouble.empty();
             }
 
@@ -468,12 +468,12 @@ public final class DependencyDescriptor {
         },
         OPTIONAL_NULLABLE {
             @Override
-            public Object empty(DependencyDescriptor dependency) {
+            public Object empty(InternalDependency dependency) {
                 return null;
             }
         };
 
-        public abstract Object empty(DependencyDescriptor dependency);
+        public abstract Object empty(InternalDependency dependency);
 
         public Object wrapIfOptional(Object object) {
             return null;

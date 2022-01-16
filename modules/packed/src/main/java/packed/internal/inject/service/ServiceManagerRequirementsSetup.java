@@ -25,9 +25,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InjectionNode;
+import packed.internal.bean.inject.DependencyConsumer;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -69,7 +69,7 @@ public final class ServiceManagerRequirementsSetup {
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
                     // Has at least on dependency, so a source is present
-                    List<DependencyDescriptor> dependencies = e.entry.dependencies;
+                    List<InternalDependency> dependencies = e.entry.dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");
@@ -119,7 +119,7 @@ public final class ServiceManagerRequirementsSetup {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionNode entry, int index, DependencyDescriptor dependency, @Nullable DependencyProducer resolvedTo,
+    public void recordResolvedDependency(DependencyConsumer entry, int index, InternalDependency dependency, @Nullable DependencyProducer resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -152,7 +152,7 @@ public final class ServiceManagerRequirementsSetup {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 
-    record ServiceDependencyRequirement(DependencyDescriptor dependency, InjectionNode entry) {}
+    record ServiceDependencyRequirement(InternalDependency dependency, DependencyConsumer entry) {}
 
     static class Requirement {
 
@@ -167,14 +167,14 @@ public final class ServiceManagerRequirementsSetup {
             this.key = key;
         }
 
-        void missingDependency(InjectionNode i, int dependencyIndex, DependencyDescriptor d) {
+        void missingDependency(DependencyConsumer i, int dependencyIndex, InternalDependency d) {
             if (!d.isOptional()) {
                 isOptional = false;
             }
             list.add(new FromInjectable(i, dependencyIndex, d));
         }
 
-        record FromInjectable(InjectionNode i, int dependencyIndex, DependencyDescriptor d) {}
+        record FromInjectable(DependencyConsumer i, int dependencyIndex, InternalDependency d) {}
     }
 
 }

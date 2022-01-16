@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -88,18 +88,18 @@ public abstract class Factory1<T, R> extends CapturingFactory<R> {
             Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    static final ClassValue<List<DependencyDescriptor>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
+    static final ClassValue<List<InternalDependency>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected List<DependencyDescriptor> computeValue(Class<?> type) {
-            return DependencyDescriptor.fromTypeVariables((Class) type, Factory1.class, 0);
+        protected List<InternalDependency> computeValue(Class<?> type) {
+            return InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0);
         }
     };
 
     /** The dependencies of this factory, extracted from the type variables of the subclass. */
-    private final List<DependencyDescriptor> dependencies;
+    private final List<InternalDependency> dependencies;
 
     /** The method handle responsible for providing the actual values. */
     private MethodHandle methodHandle;
@@ -126,7 +126,7 @@ public abstract class Factory1<T, R> extends CapturingFactory<R> {
 
     /** {@inheritDoc} */
     @Override
-    List<DependencyDescriptor> dependencies() {
+    List<InternalDependency> dependencies() {
         return dependencies;
     }
 

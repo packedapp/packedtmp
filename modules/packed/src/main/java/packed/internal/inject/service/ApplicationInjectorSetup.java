@@ -22,7 +22,7 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InjectionNode;
+import packed.internal.bean.inject.DependencyConsumer;
 import packed.internal.container.ContainerSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
 
@@ -35,8 +35,8 @@ import packed.internal.lifetime.LifetimePoolSetup;
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
  * 
- * Responsible for invoking the {@link InjectionNode#onAllDependenciesResolved(LifetimePoolSetup)} callback for
- * every {@link InjectionNode}. We do this here, because we guarantee that all dependants of a dependant are always
+ * Responsible for invoking the {@link DependencyConsumer#onAllDependenciesResolved(LifetimePoolSetup)} callback for
+ * every {@link DependencyConsumer}. We do this here, because we guarantee that all dependants of a dependant are always
  * invoked before the dependant itself.
  */
 // New algorithm
@@ -63,15 +63,15 @@ public final class ApplicationInjectorSetup {
     }
 
     private DependencyCycle dependencyCyclesFind(LifetimePoolSetup region, ContainerSetup container) {
-        ArrayDeque<InjectionNode> stack = new ArrayDeque<>();
-        ArrayDeque<InjectionNode> dependencies = new ArrayDeque<>();
+        ArrayDeque<DependencyConsumer> stack = new ArrayDeque<>();
+        ArrayDeque<DependencyConsumer> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private DependencyCycle dependencyCyclesFind(ArrayDeque<InjectionNode> stack, ArrayDeque<InjectionNode> dependencies, LifetimePoolSetup region,
+    private DependencyCycle dependencyCyclesFind(ArrayDeque<DependencyConsumer> stack, ArrayDeque<DependencyConsumer> dependencies, LifetimePoolSetup region,
             ContainerSetup container) {
-        for (InjectionNode node : container.beans.nodes) {
+        for (DependencyConsumer node : container.beans.consumers) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
@@ -103,15 +103,15 @@ public final class ApplicationInjectorSetup {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(LifetimePoolSetup region, InjectionNode injectable, ArrayDeque<InjectionNode> stack,
-            ArrayDeque<InjectionNode> dependencies) {
-        DependencyProducer[] deps = injectable.providers;
+    private DependencyCycle detectCycle(LifetimePoolSetup region, DependencyConsumer injectable, ArrayDeque<DependencyConsumer> stack,
+            ArrayDeque<DependencyConsumer> dependencies) {
+        DependencyProducer[] deps = injectable.producers;
         if (deps.length > 0) {
             stack.push(injectable);
             for (int i = 0; i < deps.length; i++) {
                 DependencyProducer dependency = deps[i];
                 if (dependency != null) {
-                    InjectionNode next = dependency.dependant();
+                    DependencyConsumer next = dependency.dependencyConsumer();
                     if (next != null) {
                         if (next.needsPostProcessing) {
                             dependencies.push(next);
@@ -144,9 +144,9 @@ public final class ApplicationInjectorSetup {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<InjectionNode> dependencies;
+        final ArrayDeque<DependencyConsumer> dependencies;
 
-        DependencyCycle(ArrayDeque<InjectionNode> dependencies) {
+        DependencyCycle(ArrayDeque<DependencyConsumer> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 

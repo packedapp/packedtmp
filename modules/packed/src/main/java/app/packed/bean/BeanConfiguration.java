@@ -7,14 +7,15 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
+import app.packed.bean.operation.ExtensionBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
-import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.lifecycle.RunState;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanMaker;
 
 /**
- * 
+ * The base class for the configuration of a bean.
+ * <p>
  * {@code BeanConfiguration} is the superclass of the various bean configuration classes available in Packed.
  * 
  */
@@ -23,7 +24,7 @@ public abstract sealed class BeanConfiguration<T> extends
         ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration,FunctionalBeanConfiguration,ExtensionBeanConfiguration {
 
     /** The bean we are configuring. */
-    private final BeanSetup bean;
+    final BeanSetup bean;
 
     protected BeanConfiguration(BeanMaker<T> maker) {
         PackedBeanMaker<?> pbm = requireNonNull((PackedBeanMaker<?>) maker, "maker is null");
@@ -110,7 +111,7 @@ public abstract sealed class BeanConfiguration<T> extends
 
     /** {@inheritDoc} */
     @Override
-    public NamespacePath path() {
+    public final NamespacePath path() {
         return bean.path();
     }
 

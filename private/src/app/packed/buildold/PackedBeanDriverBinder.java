@@ -18,9 +18,9 @@ import packed.internal.invoke.Infuser;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> implements OldBeanDriver.OtherBeanDriver<T, C> {
 
-    /** A {@link BeanType#BASE} bean binder. */
+    /** A {@link BeanType#CONTAINER_BEAN} bean binder. */
     public static final PackedBeanDriverBinder SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            ServiceBeanConfiguration.class, BeanType.BASE);
+            ServiceBeanConfiguration.class, BeanType.CONTAINER_BEAN);
 
 //    /** A {@link BeanType#STATIC} bean binder. */
 //    public static final PackedBeanDriverBinder STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
@@ -60,7 +60,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
     /** {@inheritDoc} */
     public PackedBeanDriver<C> bind(Factory<? extends T> factory) {
         requireNonNull(factory, "factory is bull");
-        if (kind == BeanType.STATIC) {
+        if (kind == BeanType.FUNCTIONAL_BEAN) {
             throw new UnsupportedOperationException("Cannot bind a factory to a static bean.");
         }
         return new PackedBeanDriver(this, factory.rawType(), factory);
@@ -73,7 +73,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
             throw new IllegalArgumentException("Cannot bind a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Factory instance to this method, was " + instance);
-        } else if (kind != BeanType.BASE) {
+        } else if (kind != BeanType.CONTAINER_BEAN) {
             throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
         }
         return new PackedBeanDriver(this, instance.getClass(), instance);

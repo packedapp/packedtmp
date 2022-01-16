@@ -29,7 +29,7 @@ import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeToken;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
@@ -76,7 +76,7 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
     /** A factory that wraps a method or constructor. */
     static final class ExecutableFactory<T> extends ReflectionFactory<T> {
 
-        private final List<DependencyDescriptor> dependencies;
+        private final List<InternalDependency> dependencies;
 
         /** A factory with an executable as a target. */
         public final Executable executable;
@@ -90,18 +90,18 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
         private ExecutableFactory(TypeToken<T> key, Class<?> findConstructorOn) {
             super(key);
             this.executable = MemberScanner.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
-            this.dependencies = DependencyDescriptor.fromExecutable(executable);
+            this.dependencies = InternalDependency.fromExecutable(executable);
         }
 
         private ExecutableFactory(TypeToken<T> key, Constructor<?> constructor) {
             super(key);
             this.executable = constructor;
-            this.dependencies = DependencyDescriptor.fromExecutable(executable);
+            this.dependencies = InternalDependency.fromExecutable(executable);
         }
 
         /** {@inheritDoc} */
         @Override
-        List<DependencyDescriptor> dependencies() {
+        List<InternalDependency> dependencies() {
             return dependencies;
         }
 
@@ -178,7 +178,7 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
         /** {@inheritDoc} */
 
         @Override
-        List<DependencyDescriptor> dependencies() {
+        List<InternalDependency> dependencies() {
             return List.of();
         }
 

@@ -40,7 +40,7 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
 
     final RealmSetup realm;
 
-    BeanType kind = BeanType.BASE;
+    BeanType kind = BeanType.CONTAINER_BEAN;
 
     boolean extensionBean;
 

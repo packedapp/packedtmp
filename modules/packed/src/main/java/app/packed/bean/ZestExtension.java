@@ -21,7 +21,7 @@ public class ZestExtension extends Extension<ZestExtension> {
 //    }
 
     public <T> ManagedBeanConfiguration<T> install2(Class<T> stuff) {
-        BeanMaker<T> maker = beans().newMaker(UserOrExtension.user(), stuff);
+        BeanMaker<T> maker = bean().newMaker(UserOrExtension.user(), stuff);
 
         // handle.lifetime.
 
@@ -32,7 +32,7 @@ public class ZestExtension extends Extension<ZestExtension> {
     protected void onClose() {
         // for each handle-> resolve to MethodHandle
         
-        beans().install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
+        bean().install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
         handles = null;
     }
 

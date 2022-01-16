@@ -54,7 +54,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
     void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType);
-    
+
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -64,7 +64,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkUserConfigurable();
-    
+
     /**
      * @param <C>
      *            the type of composer
@@ -84,28 +84,10 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 //        }
 //        // fail
 //    }
-    
-    int containerDepth();
 
-    /** {@return the path of the container that this extension is a part of.} */
+    /** {@return the path of the container where this extension instance is used.} */
     NamespacePath containerPath();
 
-    default boolean isLifetimeRoot() {
-        return isApplicationRoot();
-    }
-    
-    boolean isApplicationRoot();
-
-    /**
-     * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
-     * 
-     * @param extensionType
-     *            the type of extension to test
-     * @return true if disabled, otherwise false
-     */
-    default boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Returns whether or not the specified extension is used (in the same container) by this extension, other extensions,
@@ -121,6 +103,13 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Altsaa den snyder jo rigtig meget...
     // Eftersom man kan vaere fristet til at teste den
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
+
+    /** {@return whether or not the extension instance is used in the root container of the application.} */
+    boolean isRootOfApplication();
+
+    default boolean isRootOfLifetime() {
+        return isRootOfApplication();
+    }
 
     /**
      * Returns a selection of all wirelets of the specified type.
@@ -169,6 +158,19 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
 interface Zandbox {
 
+    
+
+    /**
+     * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
+     * 
+     * @param extensionType
+     *            the type of extension to test
+     * @return true if disabled, otherwise false
+     */
+    default boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
+        throw new UnsupportedOperationException();
+    }
+    
 //    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
 //        throw new UnsupportedOperationException();
 //    }

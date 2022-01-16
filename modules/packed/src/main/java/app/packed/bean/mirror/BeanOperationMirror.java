@@ -15,11 +15,14 @@
  */
 package app.packed.bean.mirror;
 
+import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.BeanOperationErrorHandlingMirror;
 import app.packed.extension.Extension;
+import app.packed.inject.mirror.Dependency;
 import app.packed.lifetime.Lifetime;
 import app.packed.mirror.Mirror;
 
@@ -33,15 +36,31 @@ import app.packed.mirror.Mirror;
 // A bean field get/set/compute
 
 // A bean constructor is _not_ an operation...
-public abstract class BeanOperationMirror implements Mirror {
+
+// AnnotatedElement????? Nah, hmm...
+
+public abstract class BeanOperationMirror implements Mirror /*, AnnotatedElement */ {
 
     /** {@return the application the operation is a part of.} */
     public final ApplicationMirror application() {
         return bean().application();
     }
+    
+    public final List<Dependency> arguments() {
+        //; // What are we having injected... Giver det mening for functions????
+        
+        
+        // BiFunction(WebRequest, WebResponse) vs
+        // foo(WebRequest req, WebResponse res)
+        // Hvorfor ikke...
 
+        // Men er det dependencies??? Ja det er vel fx for @Provide
+        return List.of();
+    }
+
+    
     /** {@return the bean that declares the operation.} */
-    public final Bean2Mirror bean() {
+    public final BeanMirror bean() {
         throw new UnsupportedOperationException();
     }
 
@@ -62,7 +81,7 @@ public abstract class BeanOperationMirror implements Mirror {
        return false;
    }
 
-    public final BeanMemberMirror member() {
+    public final BeanMemberMirror source() {
         throw new UnsupportedOperationException();
     }
 

@@ -18,12 +18,12 @@ package testutil.assertj.inject;
 import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 
 /**
  *
  */
-public class KeyAssert extends AbstractAssert<KeyAssert, DependencyDescriptor> {
+public class KeyAssert extends AbstractAssert<KeyAssert, InternalDependency> {
 
     public KeyAssert keyIs(Class<?> type) {
         return keyIs(Key.of(type));
@@ -72,11 +72,11 @@ public class KeyAssert extends AbstractAssert<KeyAssert, DependencyDescriptor> {
         return this;
     }
 
-    public KeyAssert(DependencyDescriptor actual) {
+    public KeyAssert(InternalDependency actual) {
         super(actual, KeyAssert.class);
     }
 
-    public static KeyAssert assertThat(DependencyDescriptor actual) {
+    public static KeyAssert assertThat(InternalDependency actual) {
         return new KeyAssert(actual);
     }
 

@@ -15,23 +15,25 @@ public enum BeanType {
     // Request er en ting... 
     // Men vi kan ikke faa injecte f.x. configuration
     // Men hvorfor ikke get(@ConfigFoo("sdfsf"), String req) <--
-    STATIC, // static?
+    FUNCTIONAL_BEAN, // STATIC_BEAN?
 
-    EXTENSION_BEAN,
-    
     /**
      * A singleton bean.
      * <p>
      * A single instance of the bean is created together with the application instance. It is coterminous with the
      * application instance itself.
      */
-    BASE,
+    CONTAINER_BEAN,
 
     /**
      * A lazy singleton bean.
      * <p>
      */
-    LAZY_SINGLETON,
+    LAZY_CONTAINER_BEAN, // IDK
+    
+    // Kan kun have 1 af hver type
+    // Er visible i child lifetypes (+dependent?)
+    EXTENSION_BEAN,
 
     /**
      * A prototype bean.

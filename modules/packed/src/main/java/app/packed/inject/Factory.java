@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
@@ -137,7 +137,7 @@ public abstract class Factory<R> {
     // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
     public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
-        List<DependencyDescriptor> dependencies = dependencies();
+        List<InternalDependency> dependencies = dependencies();
         Objects.checkIndex(position, dependencies.size());
         int len = 1 + additionalArguments.length;
         int newLen = dependencies.size() - len;
@@ -147,7 +147,7 @@ public abstract class Factory<R> {
         }
 
         // Removing dependencies that are being replaced
-        DependencyDescriptor[] dd = new DependencyDescriptor[newLen];
+        InternalDependency[] dd = new InternalDependency[newLen];
         for (int i = 0; i < position; i++) {
             dd[i] = dependencies().get(i);
         }
@@ -186,7 +186,7 @@ public abstract class Factory<R> {
     }
 
     // taenker vi laver den her public og saa bare caster...
-    List<DependencyDescriptor> dependencies() {
+    List<InternalDependency> dependencies() {
         return List.of();
     }
 
@@ -215,7 +215,7 @@ public abstract class Factory<R> {
      */
     // input, output...
     @SuppressWarnings({ "rawtypes", "unchecked", "exports" })
-    public final List<DependencyDescriptor> dependenciesOld() {
+    public final List<InternalDependency> dependenciesOld() {
         return (List) dependencies();
     }
 
@@ -463,12 +463,12 @@ public abstract class Factory<R> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final Factory<T> delegate;
 
-        private final List<DependencyDescriptor> dependencies;
+        private final List<InternalDependency> dependencies;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
 
-        private BindingFactory(Factory<T> delegate, int index, DependencyDescriptor[] dd, Object[] arguments) {
+        private BindingFactory(Factory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
             super(delegate.typeLiteral);
             this.index = index;
             this.delegate = requireNonNull(delegate);
@@ -478,7 +478,7 @@ public abstract class Factory<R> {
 
         /** {@inheritDoc} */
         @Override
-        List<DependencyDescriptor> dependencies() {
+        List<InternalDependency> dependencies() {
             return dependencies;
         }
 
@@ -526,7 +526,7 @@ public abstract class Factory<R> {
 
         /** {@inheritDoc} */
         @Override
-        List<DependencyDescriptor> dependencies() {
+        List<InternalDependency> dependencies() {
             return delegate.dependencies();
         }
 
@@ -558,7 +558,7 @@ public abstract class Factory<R> {
 
         /** {@inheritDoc} */
         @Override
-        List<DependencyDescriptor> dependencies() {
+        List<InternalDependency> dependencies() {
             return delegate.dependencies();
         }
 

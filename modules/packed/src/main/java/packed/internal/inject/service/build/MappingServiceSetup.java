@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.bean.inject.InjectionNode;
+import packed.internal.bean.inject.DependencyConsumer;
 import packed.internal.inject.service.runtime.MappingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -52,8 +52,8 @@ final class MappingServiceSetup extends ServiceSetup {
 
     @Override
     @Nullable
-    public InjectionNode dependant() {
-        return entryToMap.dependant();
+    public DependencyConsumer dependencyConsumer() {
+        return entryToMap.dependencyConsumer();
     }
 
     @Override

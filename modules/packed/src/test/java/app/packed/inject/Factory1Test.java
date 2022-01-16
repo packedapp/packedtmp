@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 
 /** Tests {@link Factory1}. */
 public class Factory1Test {
@@ -36,9 +36,9 @@ public class Factory1Test {
 
         Factory1<String, Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<DependencyDescriptor> dependencies = f.dependencies();
+        List<InternalDependency> dependencies = f.dependencies();
         assertThat(dependencies).hasSize(1);
-        DependencyDescriptor d = dependencies.get(0);
+        InternalDependency d = dependencies.get(0);
 
         assertThat(d.isOptional()).isFalse();
         assertThat(d.key()).isEqualTo(Key.of(String.class));

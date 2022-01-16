@@ -2,9 +2,9 @@ package app.packed.bean;
 
 import java.util.function.BiConsumer;
 
+import app.packed.bean.operation.ExtensionBeanConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;

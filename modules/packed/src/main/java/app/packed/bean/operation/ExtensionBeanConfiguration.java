@@ -1,4 +1,4 @@
-package app.packed.extension;
+package app.packed.bean.operation;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;

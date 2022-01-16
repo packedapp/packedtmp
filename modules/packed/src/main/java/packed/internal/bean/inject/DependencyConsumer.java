@@ -47,48 +47,52 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class InjectionNode implements LifetimePoolWriteable {
+public class DependencyConsumer implements LifetimePoolWriteable {
+
+    /** The dependencies that must be resolved. */
+    public final List<InternalDependency> dependencies;
+
+    /** Resolved dependencies. Must match the number of parameters in {@link #originalMethodHandle}. */
+    public final DependencyProducer[] producers;
+
+    /** The bean this dependency consumer is a part of. */
+    public final BeanSetup bean;
+
+    /** A method handle to the underlying constructor, method, field, factory ect. */
+    public final MethodHandle originalMethodHandle;
+
+    /** The method handle that is used at runtime and delegates to {@link #originalMethodHandle} */
+    MethodHandle runtimeMethodHandle;
+
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
+
+    public boolean needsPostProcessing = true;
+
+    public final int providerDelta;
 
     @Nullable
     private final SourceMemberServiceSetup service;
 
-    MethodHandle buildMethodHandle;
-
-    /** The dependencies that must be resolved. */
-    public final List<DependencyDescriptor> dependencies;
-
-    /** A direct method handle. */
-    public final MethodHandle directMethodHandle;
-
-    public boolean needsPostProcessing = true;
-
-    /** Resolved dependencies. Must match the number of parameters in {@link #directMethodHandle}. */
-    public final DependencyProducer[] providers;
-
-    /** The source (component) this dependent is or is a part of. */
-    public final BeanSetup source;
-
     @Nullable
     private final UseSiteMemberHookModel sourceMember;
 
-    public final int providerDelta;
-
     // Constructing something from a Factory
-    public InjectionNode(BeanSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
-        this.source = requireNonNull(source);
+    public DependencyConsumer(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
+        this.bean = requireNonNull(source);
         this.sourceMember = null;
 
         this.service = null; // Any build entry is stored in SourceAssembly#service
         this.dependencies = dependencies;
-        this.directMethodHandle = mh;
+        this.originalMethodHandle = mh;
 
         this.providerDelta = 0;
-        this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
+        this.producers = new DependencyProducer[originalMethodHandle.type().parameterCount()];
     }
 
     // Field/Method hook
-    public InjectionNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
-        this.source = requireNonNull(source);
+    public DependencyConsumer(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+        this.bean = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
@@ -102,55 +106,58 @@ public final class InjectionNode implements LifetimePoolWriteable {
             this.service = null;
         }
         this.dependencies = smm.dependencies;
-        this.directMethodHandle = smm.methodHandle();
+        this.originalMethodHandle = smm.methodHandle();
 
-        this.providers = dependencyProviders;
-        this.providerDelta = providers.length == dependencies.size() ? 0 : 1;
+        this.producers = dependencyProviders;
+        this.providerDelta = producers.length == dependencies.size() ? 0 : 1;
 
         if (!Modifier.isStatic(smm.getModifiers())) {
             dependencyProviders[0] = source;
         }
     }
 
-    public final MethodHandle buildMethodHandle() {
-        MethodHandle mh = buildMethodHandle;
+    /**
+     * 
+     * <p>
+     * All possible configuration issues from users and extension should already have been checked by this point. If this
+     * method fails it is a problem with packed.
+     * 
+     * It is always an internal fa This method should never fail
+     * 
+     * @return the runtime method handle
+     */
+    public final MethodHandle runtimeMethodHandle() {
+        // See if we have already build the runtime method handle
+        MethodHandle mh = runtimeMethodHandle;
         if (mh != null) {
             return mh;
         }
 
-        if (providers.length == 0) {
-            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, LifetimePool.class);
-        } else if (providers.length == 1) {
-            requireNonNull(providers[0]);
-            // System.out.println(providers[0].getClass());
-            // System.out.println(providers[0].dependencyAccessor());
-            return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, providers[0].dependencyAccessor());
+        // Temporary check
+        if (producers != null) {
+            for (int i = 0; i < producers.length; i++) {
+                requireNonNull(producers[i]);
+            }
+        }
+
+        if (producers.length == 0) {
+            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimePool.class);
+        } else if (producers.length == 1) {
+            mh = MethodHandles.collectArguments(originalMethodHandle, 0, producers[0].dependencyAccessor());
         } else {
-            mh = directMethodHandle;
+            mh = originalMethodHandle;
 
             // We create a new method that a
-            for (int i = 0; i < providers.length; i++) {
-                DependencyProducer dp = providers[i];
-                requireNonNull(dp);
+            for (int i = 0; i < producers.length; i++) {
+                DependencyProducer dp = producers[i];
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), LifetimePool.class);
-            return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[providers.length]);
+            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimePool.class);
+            mh = MethodHandles.permuteArguments(mh, mt, new int[producers.length]);
         }
-    }
 
-    @Nullable
-    private PoolEntryHandle poolAccessor() {
-        // buildEntry is null if it this Injectable is created from a source and not @AtProvides
-        // In which case we store the build entry (if available) in the source instead
-        if (service != null) {
-            return service.accessor;
-        } else if (sourceMember != null) {
-            // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
-            return null;
-        }
-        return source.singletonHandle;
+        return runtimeMethodHandle = mh;
     }
 
     // All dependencies have been successfully resolved
@@ -168,18 +175,18 @@ public final class InjectionNode implements LifetimePoolWriteable {
         // guarantee that all dependencies have already been visited
         if (poolAccessor() != null) {
             pool.addOrdered(this);
-            pool.postProcessing.add(() -> buildMethodHandle());
+            pool.postProcessing.add(() -> runtimeMethodHandle());
         }
         needsPostProcessing = false;
 
         if (sourceMember != null) {
-            if (source.singletonHandle != null) {
+            if (bean.singletonHandle != null) {
                 // Maybe shared with SourceAssembly
 //                if (sourceMember.runAt == RunAt.INITIALIZATION) {
 //
 //                }
                 if (sourceMember.provideAskey == null) {
-                    MethodHandle mh1 = buildMethodHandle();
+                    MethodHandle mh1 = runtimeMethodHandle();
 
                     // RuntimeRegionInvoker
                     // the method on the sidecar: sourceMember.model.onInitialize
@@ -192,7 +199,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                             mh2 = mh2.bindTo(mh1);
 
-                            source.application.container.lifetime.initializers.add(mh2);
+                            bean.application.container.lifetime.initializers.add(mh2);
                         }
                     }
                 }
@@ -200,24 +207,29 @@ public final class InjectionNode implements LifetimePoolWriteable {
         }
     }
 
-    public void setDependencyProvider(int index, DependencyProducer p) {
-        int providerIndex = index + providerDelta;
-        if (providers[providerIndex] != null) {
-            throw new IllegalStateException();
+    @Nullable
+    private PoolEntryHandle poolAccessor() {
+        // buildEntry is null if it this Injectable is created from a source and not @AtProvides
+        // In which case we store the build entry (if available) in the source instead
+        if (service != null) {
+            return service.accessor;
+        } else if (sourceMember != null) {
+            // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
+            return null;
         }
-        this.providers[providerIndex] = requireNonNull(p);
+        return bean.singletonHandle;
     }
 
     public void resolve(ServiceManagerSetup sbm) {
         boolean buildMH = true;
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
-            if (providers[providerIndex] == null) {
-                DependencyDescriptor sd = dependencies.get(i);
+            if (producers[providerIndex] == null) {
+                InternalDependency sd = dependencies.get(i);
                 DependencyProducer e = null;
-                if (source != null) {
+                if (bean != null) {
                     //// Checker om der er hooks der provider servicen
-                    BootstrappedClassModel sm = source.hookModel;
+                    BootstrappedClassModel sm = bean.hookModel;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }
@@ -225,10 +237,10 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                 if (sbm != null) {
                     if (e == null) {
-                        if (source.realm instanceof ExtensionRealmSetup ers) {
+                        if (bean.realm instanceof ExtensionRealmSetup ers) {
                             Key<?> requiredKey = sd.key();
-                            Key<?> thisKey = Key.of(source.hookModel.clazz);
-                            ContainerSetup parent = source.parent;
+                            Key<?> thisKey = Key.of(bean.hookModel.clazz);
+                            ContainerSetup parent = bean.parent;
                             ExtensionSetup es = parent.useExtensionSetup(ers.realmType(), null);
                             BeanSetup bs = null;
                             if (thisKey.equals(requiredKey)) {
@@ -249,7 +261,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                     sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);
                 }
-                providers[providerIndex] = e;
+                producers[providerIndex] = e;
 
                 if (e == null) {
                     buildMH = false;
@@ -258,13 +270,21 @@ public final class InjectionNode implements LifetimePoolWriteable {
         }
         // Den er lidt her midlertidigt...
         if (buildMH) {
-            buildMethodHandle();
+            runtimeMethodHandle();
         }
+    }
+
+    public void setDependencyProvider(int index, DependencyProducer p) {
+        int providerIndex = index + providerDelta;
+        if (producers[providerIndex] != null) {
+            throw new IllegalStateException();
+        }
+        this.producers[providerIndex] = requireNonNull(p);
     }
 
     @Override
     public void writeToPool(LifetimePool pool) {
-        MethodHandle mh = buildMethodHandle();
+        MethodHandle mh = runtimeMethodHandle();
 
         Object instance;
         try {

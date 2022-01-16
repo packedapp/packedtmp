@@ -29,9 +29,9 @@ import app.packed.hooks.BeanClass;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.AbstractHookModel;
 import packed.internal.bean.hooks.ClassHookModel;
-import packed.internal.bean.inject.DependencyDescriptor;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InjectionNode;
+import packed.internal.bean.inject.DependencyConsumer;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -40,7 +40,7 @@ import packed.internal.component.ComponentSetup;
 public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
 
     /** Dependencies that needs to be resolved. */
-    public final List<DependencyDescriptor> dependencies;
+    public final List<InternalDependency> dependencies;
 
     @Nullable
     public final Consumer<? super ComponentSetup> processor;
@@ -54,7 +54,7 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
 
-    UseSiteMemberHookModel(Builder builder, List<DependencyDescriptor> dependencies) {
+    UseSiteMemberHookModel(Builder builder, List<InternalDependency> dependencies) {
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
@@ -63,8 +63,8 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
 
     public void onWire(BeanSetup css) {
         // Register hooks, maybe move to component setup
-        InjectionNode i = new InjectionNode(css, this, createProviders());
-        css.parent.beans.addNode(i);
+        DependencyConsumer i = new DependencyConsumer(css, this, createProviders());
+        css.parent.beans.addConsumer(i);
         if (processor != null) {
             processor.accept(css);
         }

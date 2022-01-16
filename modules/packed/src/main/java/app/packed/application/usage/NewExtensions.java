@@ -36,6 +36,7 @@ public class NewExtensions extends BaseAssembly {
 
     public static void main(String[] args) {
         ApplicationMirror mirror = App.mirrorOf(new NewExtensions());
+        System.out.println("");
         System.out.println("Used Extensions " + mirror.extensionTypes());
         System.out.println("Number of beans " + mirror.container().useExtension(BeanExtensionMirror.class).beanCount());
         System.out.println();
@@ -50,25 +51,24 @@ public class NewExtensions extends BaseAssembly {
         }
     }
     
-    
     public static class MyExt extends Extension<MyExt> {
                 
         @Override
         protected void onClose() {
             super.onClose();
-            System.out.println("OnClose " + configuration().containerDepth());
+            System.out.println("OnClose " + containerPath());
         }
 
         @Override
         protected void onNew() {
             super.onNew();
-            System.out.println("OnNew " + configuration().containerDepth());
+            System.out.println("OnNew " + containerPath());
         }
 
         @Override
         protected void onUserClose() {
             super.onUserClose();
-            System.out.println("OnUserClose " + configuration().containerDepth());
+            System.out.println("OnUserClose " + containerPath());
         }
     }
 }
