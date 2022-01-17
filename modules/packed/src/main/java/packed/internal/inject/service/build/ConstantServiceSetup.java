@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.bean.inject.DependencyConsumer;
+import packed.internal.bean.inject.DependencyNode;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -42,7 +42,7 @@ public final class ConstantServiceSetup extends ServiceSetup {
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable DependencyConsumer dependencyConsumer() {
+    public @Nullable DependencyNode dependencyConsumer() {
         return null;
     }
 

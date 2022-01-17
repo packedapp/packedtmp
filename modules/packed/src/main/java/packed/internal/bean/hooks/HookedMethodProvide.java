@@ -25,7 +25,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.accessors.ScopedProvide;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.DependencyConsumer;
+import packed.internal.bean.inject.DependencyNode;
 import packed.internal.lifetime.LifetimePool;
 
 /**
@@ -57,7 +57,7 @@ public final class HookedMethodProvide implements DependencyProducer {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public DependencyConsumer dependencyConsumer() {
+    public DependencyNode dependencyConsumer() {
         return null;
     }
 

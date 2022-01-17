@@ -27,7 +27,7 @@ import app.packed.build.BuildException;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.DependencyConsumer;
+import packed.internal.bean.inject.DependencyNode;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -119,7 +119,7 @@ public final class ServiceManagerRequirementsSetup {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(DependencyConsumer entry, int index, InternalDependency dependency, @Nullable DependencyProducer resolvedTo,
+    public void recordResolvedDependency(DependencyNode entry, int index, InternalDependency dependency, @Nullable DependencyProducer resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -152,7 +152,7 @@ public final class ServiceManagerRequirementsSetup {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 
-    record ServiceDependencyRequirement(InternalDependency dependency, DependencyConsumer entry) {}
+    record ServiceDependencyRequirement(InternalDependency dependency, DependencyNode entry) {}
 
     static class Requirement {
 
@@ -167,14 +167,14 @@ public final class ServiceManagerRequirementsSetup {
             this.key = key;
         }
 
-        void missingDependency(DependencyConsumer i, int dependencyIndex, InternalDependency d) {
+        void missingDependency(DependencyNode i, int dependencyIndex, InternalDependency d) {
             if (!d.isOptional()) {
                 isOptional = false;
             }
             list.add(new FromInjectable(i, dependencyIndex, d));
         }
 
-        record FromInjectable(DependencyConsumer i, int dependencyIndex, InternalDependency d) {}
+        record FromInjectable(DependencyNode i, int dependencyIndex, InternalDependency d) {}
     }
 
 }

@@ -268,7 +268,7 @@ public final class ServiceManagerSetup {
                 ServiceSetup sa = map.get(r.key);
                 if (sa != null) {
                     for (FromInjectable i : r.list) {
-                        i.i().setDependencyProvider(i.dependencyIndex(), sa);
+                        i.i().setProducer(i.dependencyIndex(), sa);
                     }
                 }
             }

@@ -26,7 +26,9 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
+import packed.internal.bean.BeanInstanceDependencyNode;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.hooks.usesite.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
 import packed.internal.bean.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
@@ -47,16 +49,15 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class DependencyConsumer implements LifetimePoolWriteable {
+public abstract sealed class DependencyNode implements LifetimePoolWriteable permits BeanInstanceDependencyNode,BeanMemberDependencyNode {
+
+    /** The bean this dependency consumer is a part of. */
+    public final BeanSetup bean;
 
     /** The dependencies that must be resolved. */
     public final List<InternalDependency> dependencies;
 
-    /** Resolved dependencies. Must match the number of parameters in {@link #originalMethodHandle}. */
-    public final DependencyProducer[] producers;
-
-    /** The bean this dependency consumer is a part of. */
-    public final BeanSetup bean;
+    public boolean needsPostProcessing = true;
 
     /** A method handle to the underlying constructor, method, field, factory ect. */
     public final MethodHandle originalMethodHandle;
@@ -64,10 +65,11 @@ public class DependencyConsumer implements LifetimePoolWriteable {
     /** The method handle that is used at runtime and delegates to {@link #originalMethodHandle} */
     MethodHandle runtimeMethodHandle;
 
-    //////////////////////////////////////////////
-    //////////////////////////////////////////////
+    /** Resolved dependencies. Must match the number of parameters in {@link #originalMethodHandle}. */
+    public final DependencyProducer[] producers;
 
-    public boolean needsPostProcessing = true;
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
 
     public final int providerDelta;
 
@@ -78,7 +80,7 @@ public class DependencyConsumer implements LifetimePoolWriteable {
     private final UseSiteMemberHookModel sourceMember;
 
     // Constructing something from a Factory
-    public DependencyConsumer(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
+    protected DependencyNode(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
         this.bean = requireNonNull(source);
         this.sourceMember = null;
 
@@ -91,7 +93,7 @@ public class DependencyConsumer implements LifetimePoolWriteable {
     }
 
     // Field/Method hook
-    public DependencyConsumer(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+    protected DependencyNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.bean = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -116,50 +118,6 @@ public class DependencyConsumer implements LifetimePoolWriteable {
         }
     }
 
-    /**
-     * 
-     * <p>
-     * All possible configuration issues from users and extension should already have been checked by this point. If this
-     * method fails it is a problem with packed.
-     * 
-     * It is always an internal fa This method should never fail
-     * 
-     * @return the runtime method handle
-     */
-    public final MethodHandle runtimeMethodHandle() {
-        // See if we have already build the runtime method handle
-        MethodHandle mh = runtimeMethodHandle;
-        if (mh != null) {
-            return mh;
-        }
-
-        // Temporary check
-        if (producers != null) {
-            for (int i = 0; i < producers.length; i++) {
-                requireNonNull(producers[i]);
-            }
-        }
-
-        if (producers.length == 0) {
-            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimePool.class);
-        } else if (producers.length == 1) {
-            mh = MethodHandles.collectArguments(originalMethodHandle, 0, producers[0].dependencyAccessor());
-        } else {
-            mh = originalMethodHandle;
-
-            // We create a new method that a
-            for (int i = 0; i < producers.length; i++) {
-                DependencyProducer dp = producers[i];
-                mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
-            }
-            // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimePool.class);
-            mh = MethodHandles.permuteArguments(mh, mt, new int[producers.length]);
-        }
-
-        return runtimeMethodHandle = mh;
-    }
-
     // All dependencies have been successfully resolved
     /**
      * All of this consumers dependencies have been resolved
@@ -182,9 +140,7 @@ public class DependencyConsumer implements LifetimePoolWriteable {
         if (sourceMember != null) {
             if (bean.singletonHandle != null) {
                 // Maybe shared with SourceAssembly
-//                if (sourceMember.runAt == RunAt.INITIALIZATION) {
-//
-//                }
+
                 if (sourceMember.provideAskey == null) {
                     MethodHandle mh1 = runtimeMethodHandle();
 
@@ -274,7 +230,51 @@ public class DependencyConsumer implements LifetimePoolWriteable {
         }
     }
 
-    public void setDependencyProvider(int index, DependencyProducer p) {
+    /**
+     * 
+     * <p>
+     * All possible configuration issues from users and extension should already have been checked by this point. If this
+     * method fails it is an internal problem with packed.
+     * 
+     * @return the runtime method handle
+     */
+    public final MethodHandle runtimeMethodHandle() {
+        // See if we have already build the runtime method handle
+        MethodHandle mh = runtimeMethodHandle;
+        if (mh != null) {
+            return mh;
+        }
+
+        // Temporary check, All dependencies should have been resolved by now
+        if (producers != null) {
+            for (int i = 0; i < producers.length; i++) {
+                requireNonNull(producers[i]);
+            }
+        }
+
+        // We create the runtime method handle a little different, depending on the
+        // number of dependencies/producers it has
+        if (producers.length == 0) {
+            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimePool.class);
+        } else if (producers.length == 1) {
+            mh = MethodHandles.collectArguments(originalMethodHandle, 0, producers[0].dependencyAccessor());
+        } else {
+            mh = originalMethodHandle;
+
+            // We create a new method that a
+            for (int i = 0; i < producers.length; i++) {
+                mh = MethodHandles.collectArguments(mh, i, producers[i].dependencyAccessor());
+            }
+
+            // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
+            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimePool.class);
+            mh = MethodHandles.permuteArguments(mh, mt, new int[producers.length]);
+        }
+
+        return runtimeMethodHandle = mh;
+    }
+
+    public void setProducer(int index, DependencyProducer p) {
         int providerIndex = index + providerDelta;
         if (producers[providerIndex] != null) {
             throw new IllegalStateException();

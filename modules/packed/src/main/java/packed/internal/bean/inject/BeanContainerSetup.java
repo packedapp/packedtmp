@@ -12,7 +12,7 @@ import packed.internal.inject.service.ServiceManagerSetup;
 public final class BeanContainerSetup {
 
     /** All dependants that needs to be resolved. */
-    public final ArrayList<DependencyConsumer> consumers = new ArrayList<>();
+    public final ArrayList<DependencyNode> consumers = new ArrayList<>();
 
     private final ContainerSetup container;
 
@@ -30,7 +30,7 @@ public final class BeanContainerSetup {
      * @param dependant
      *            the injectable to add
      */
-    public void addConsumer(DependencyConsumer dependant) {
+    public void addConsumer(DependencyNode dependant) {
         consumers.add(requireNonNull(dependant));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
@@ -71,7 +71,7 @@ public final class BeanContainerSetup {
             sm.prepareDependants(container);
         }
 
-        for (DependencyConsumer i : consumers) {
+        for (DependencyNode i : consumers) {
             i.resolve(sm);
         }
 

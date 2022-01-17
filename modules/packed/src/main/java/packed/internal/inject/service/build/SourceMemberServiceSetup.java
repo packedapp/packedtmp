@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.bean.inject.DependencyConsumer;
+import packed.internal.bean.inject.DependencyNode;
 import packed.internal.component.ComponentSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
@@ -34,13 +34,13 @@ import packed.internal.lifetime.PoolEntryHandle;
  */
 public final class SourceMemberServiceSetup extends ServiceSetup {
 
-    private final DependencyConsumer consumer;
+    private final DependencyNode consumer;
 
     /** If constant, the region index to store it in */
     @Nullable
     public final PoolEntryHandle accessor;
 
-    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependencyConsumer dependant, Key<?> key, boolean isConst) {
+    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependencyNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.consumer = requireNonNull(dependant);
         // TODO fix Object
@@ -49,7 +49,7 @@ public final class SourceMemberServiceSetup extends ServiceSetup {
 
     /** {@inheritDoc} */
     @Override
-    public DependencyConsumer dependencyConsumer() {
+    public DependencyNode dependencyConsumer() {
         return consumer;
     }
 

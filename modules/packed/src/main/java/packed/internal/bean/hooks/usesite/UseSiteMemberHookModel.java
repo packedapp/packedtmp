@@ -29,9 +29,9 @@ import app.packed.hooks.BeanClass;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.AbstractHookModel;
 import packed.internal.bean.hooks.ClassHookModel;
-import packed.internal.bean.inject.InternalDependency;
+import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.DependencyConsumer;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -63,7 +63,7 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
 
     public void onWire(BeanSetup css) {
         // Register hooks, maybe move to component setup
-        DependencyConsumer i = new DependencyConsumer(css, this, createProviders());
+        DependencyNode i = new BeanMemberDependencyNode(css, this, createProviders());
         css.parent.beans.addConsumer(i);
         if (processor != null) {
             processor.accept(css);

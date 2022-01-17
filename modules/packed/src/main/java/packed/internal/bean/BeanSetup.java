@@ -20,7 +20,7 @@ import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
-import packed.internal.bean.inject.DependencyConsumer;
+import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
@@ -42,7 +42,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
      * actual dependencies). Null if a functional bean, or a bean instance was specified when configuring the bean.
      */
     @Nullable
-    private final DependencyConsumer dependencyConsumer;
+    private final DependencyNode dependencyConsumer;
 
     /**
      * Factory that was specified if this bean was created from a Factory or Class, null if created from an instance, for
@@ -95,7 +95,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = realm.accessor().toMethodHandle(factory);
 
-            this.dependencyConsumer = new DependencyConsumer(this, dependencies, mh);
+            this.dependencyConsumer = new BeanInstanceDependencyNode(this, dependencies, mh);
 
             container.beans.addConsumer(dependencyConsumer);
         }
@@ -123,7 +123,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public DependencyConsumer dependencyConsumer() {
+    public DependencyNode dependencyConsumer() {
         return dependencyConsumer;
     }
 
