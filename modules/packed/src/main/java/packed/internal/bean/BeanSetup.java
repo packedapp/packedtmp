@@ -63,6 +63,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     /** A service object if the source is provided as a service. */
     // Would be nice if we could move it somewhere else.. Like Listener
     @Nullable
+    @Deprecated
     private ServiceSetup service;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
@@ -185,10 +186,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         requireNonNull(key, "key is null");
         realm.checkOpen();
         provide().as(key);
-    }
-
-    public Optional<Key<?>> sourceProvideAsKey() {
-        return service == null ? Optional.empty() : Optional.of(service.key());
     }
 
     /** A build-time bean mirror. */

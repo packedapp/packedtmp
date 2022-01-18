@@ -20,6 +20,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -43,23 +44,28 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
 
     Key<?> provide;
 
+    private final ServiceableBean sb;
+
     /**
      * @param maker
      */
     public ContainerBeanConfiguration(BeanMaker<T> maker) {
         super(maker);
+        this.sb = new ServiceableBean(bean());
     }
 
     @Override
     protected void onWired() {
+        if (provide == null && export == null) {
+            return;
+        }
+        ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
+        BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean(), provide);
         if (provide != null) {
-            ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
-            //sms.addService(new BeanInstanceServiceSetup(bean(), provide));
+            sms.addService(setup);
         }
         if (export != null) {
-            ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
-            sms.exports().export(new BeanInstanceServiceSetup(bean(), export));
-            //parent.beans.getServiceManagerOrCreate().exports().export(service);
+            sms.exports().export(setup);
         }
     }
 
@@ -77,7 +83,8 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     }
 
     public void export() {
-        bean().sourceExport();
+        export = InternalServiceUtil.checkKey(bean().hookModel.clazz, bean().defaultKey());
+        bean.parent.useExtension(ServiceExtension.class);
     }
 
     /** {@inheritDoc} */
@@ -95,20 +102,19 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
 
     public ContainerBeanConfiguration<T> provide() {
         provide = InternalServiceUtil.checkKey(bean().hookModel.clazz, bean().defaultKey());
-        bean().sourceProvide();
+        bean.parent.useExtension(ServiceExtension.class);
         return this;
     }
 
     public ContainerBeanConfiguration<T> provideAs(Class<?> key) {
         provide = InternalServiceUtil.checkKey(bean().hookModel.clazz, key);
-        bean().sourceProvideAs(provide);
+        bean.parent.useExtension(ServiceExtension.class);
         return this;
     }
 
     public ContainerBeanConfiguration<T> provideAs(Key<?> key) {
         provide = InternalServiceUtil.checkKey(bean().hookModel.clazz, key);
-
-        bean().sourceProvideAs(key);
+        bean.parent.useExtension(ServiceExtension.class);
         return this;
     }
 

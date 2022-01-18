@@ -206,7 +206,6 @@ public final class ContainerSetup extends ComponentSetup {
 
     @SuppressWarnings("unchecked")
     public <E extends Extension<?>> E useExtension(Class<E> extensionClass) {
-        realm.newOperation();
         ExtensionSetup extension = useExtensionSetup(extensionClass, /* requested by the user, not another extension */ null);
         return (E) extension.instance();
     }

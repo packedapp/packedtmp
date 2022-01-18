@@ -21,9 +21,9 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
-import app.packed.inject.service.ServiceBeanConfiguration;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.ServicePrototypeBeanConfiguration;
 import app.packed.lifecycle.OnStart;
 
 /**
@@ -144,8 +144,7 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this container will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
+     * parent. 
      *
      * @param instance
      *            the component instance to install
@@ -240,11 +239,11 @@ public abstract class BaseAssembly extends Assembly {
         return installInstance(instance).provide();
     }
 
-    protected final <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    protected final <T> ServicePrototypeBeanConfiguration<T> providePrototype(Class<T> implementation) {
         return service().providePrototype(implementation);
     }
 
-    protected final <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    protected final <T> ServicePrototypeBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return service().providePrototype(factory);
     }
 

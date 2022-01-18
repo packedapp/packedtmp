@@ -36,12 +36,12 @@ import packed.internal.util.ThrowableUtil;
  */
 // Har vi 2 klasser? ServiceConfiguration + ExportableServiceContainer
 // Taenker vi kan bruge den ved composer as well.
-public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
+public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
 
-    public ServiceBeanConfiguration(BeanMaker<T> handle) {
+    public ServicePrototypeBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
     }
 
@@ -54,7 +54,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
      * @return this configuration
      * @see #as(Key)
      */
-    public ServiceBeanConfiguration<T> as(Class<? super T> key) {
+    public ServicePrototypeBeanConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -67,7 +67,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
      * @return this configuration
      * @see #as(Class)
      */
-    public ServiceBeanConfiguration<T> as(Key<? super T> key) {
+    public ServicePrototypeBeanConfiguration<T> as(Key<? super T> key) {
         provideAsService(key);
         return this;
     }
@@ -93,19 +93,14 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
         bean().sourceExport();
     }
 
-    // Overvejer at smide... istedet for optional
-    public Optional<Key<?>> key() {
-        return sourceProvideAsKey();
-    }
-
     /** {@inheritDoc} */
     @Override
-    public ServiceBeanConfiguration<T> named(String name) {
+    public ServicePrototypeBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }
 
-    public ServiceBeanConfiguration<T> provide() {
+    public ServicePrototypeBeanConfiguration<T> provide() {
         super.provide();
         return this;
     }
@@ -117,6 +112,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
     }
 
     protected Optional<Key<?>> sourceProvideAsKey() {
-        return bean().sourceProvideAsKey();
+        return super.providedAs();
+        //return bean().sourceProvideAsKey();
     }
 }

@@ -22,10 +22,10 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.ServiceBeanConfiguration;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 
@@ -41,7 +41,7 @@ import testutil.util.ContainerConfigurationTester;
 public class NameFreezeTest extends AbstractApplicationTest {
 
     /**
-     * Tests that we cannot call {@link ServiceBeanConfiguration#named(String)}. After {@link ServiceBeanConfiguration#getName()}.
+     * Tests that we cannot call {@link BeanConfiguration#named(String)}. After {@link BeanConfiguration#getName()}.
      */
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {

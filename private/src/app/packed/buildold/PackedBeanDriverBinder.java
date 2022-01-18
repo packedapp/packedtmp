@@ -10,7 +10,7 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ServicePrototypeBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 
@@ -20,7 +20,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
 
     /** A {@link BeanType#CONTAINER_BEAN} bean binder. */
     public static final PackedBeanDriverBinder SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            ServiceBeanConfiguration.class, BeanType.CONTAINER_BEAN);
+            ServicePrototypeBeanConfiguration.class, BeanType.CONTAINER_BEAN);
 
 //    /** A {@link BeanType#STATIC} bean binder. */
 //    public static final PackedBeanDriverBinder STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),

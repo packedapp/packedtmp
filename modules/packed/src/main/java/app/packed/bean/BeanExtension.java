@@ -5,7 +5,6 @@ import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.bean.PackedBeanMaker;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -62,8 +61,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * <p>
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this container will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
+     * parent. 
      *
      * @param instance
      *            the component instance to install
