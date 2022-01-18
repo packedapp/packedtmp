@@ -29,7 +29,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceExtension;
 import packed.internal.service.sandbox.Injector;
 
 /**
@@ -80,9 +79,7 @@ public class InjectorMicro {
 
         @Override
         public void build() {
-            ServiceExtension e = use(ServiceExtension.class);
-            provideInstance("Hey");
-            e.export(String.class);
+            provideInstance("Hey").export();
         }
     }
 }

@@ -3,6 +3,7 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.mirror.BeanElementMirror;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -29,6 +31,8 @@ import packed.internal.container.RealmSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
 public final class BeanSetup extends ComponentSetup implements DependencyProducer {
@@ -66,11 +70,28 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
+    /** A handle for invoking the protected method {@link Extension#onClose()}. */
+    private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
+            "onWired", void.class);
+
+    final PackedBeanMaker<?> beanHandle;
+
+    @Override
+    public void onWired() {
+        try {
+            MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact((ComponentConfiguration) beanHandle.configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        super.onWired();
+    }
+
     public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanMaker<?> beanHandle) {
         super(container.application, realm, lifetime, container);
         this.beanType = BeanType.CONTAINER_BEAN;
         this.factory = beanHandle.factory;
         this.hookModel = beanHandle.hookModel;
+        this.beanHandle = beanHandle;
         this.singletonHandle = beanHandle.kind == BeanType.CONTAINER_BEAN ? lifetime.pool.reserve(beanHandle.beanType) : null;
 
         if (realm instanceof ExtensionRealmSetup s) {
@@ -109,7 +130,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public Key<?> defaultKey() {
         if (factory != null) {
-           return Key.convertTypeLiteral(factory.typeLiteral());
+            return Key.convertTypeLiteral(factory.typeLiteral());
         } else {
             return hookModel.defaultKey();
         }
@@ -139,7 +160,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     public BeanMirror mirror() {
         return new BuildTimeBeanMirror();
     }
-    
+
     public ServiceSetup provide() {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;

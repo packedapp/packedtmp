@@ -23,26 +23,21 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.base.Qualifier;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMaker;
 import app.packed.bean.BeanSupport;
-import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.lifecycle.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
-import packed.internal.service.sandbox.InjectorComposer;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -131,71 +126,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkContract(ServiceContractChecker.exact(sc));
     }
 
-    /**
-     * Exports a service of the specified type. See {@link #export(Key)} for details.
-     * 
-     * @param <T>
-     *            the type of service to export
-     * @param key
-     *            the key of the service to export
-     * @return a configuration for the exported service
-     * @see #export(Key)
-     * @see #exportAll()
-     */
-    public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
-        return export(Key.of(key));
-    }
-
-    // Altsaa skal vi hellere have noget services().filter().exportall();
-
-    // Alternativ this export all er noget med services()..
-
-    // is exportAll applied immediately or at the end???
-
-    // Maaske er den mest brugbart hvis den bliver applied nu!
-    // Fordi saa kan man styre ting...
-    // F.eks. definere alt der skal exportes foerst
-    // Den er isaer god inde man begynder at linke andre containere
-
-    /**
-     * Exports an internal service outside of this container.
-     * 
-     * <pre>
-     *  {@code  
-     * install(ServiceImpl.class);
-     * export(ServiceImpl.class);}
-     * </pre>
-     * 
-     * You can also choose to expose a service under a different key then what it is known as internally in the
-     * 
-     * <pre>
-     *  {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class).as(Service.class);}
-     * </pre>
-     * 
-     * <p>
-     * Packed does not support any other way of exporting a service provided via a field or method annotated with
-     * {@link Provide} except for this method. There are no plan to add an Export annotation that can be used in connection
-     * with {@link Provide}.
-     * 
-     * <p>
-     * A service can be exported multiple times
-     * 
-     * @param <T>
-     *            the type of the service to export
-     * @param key
-     *            the key of the internal service to expose
-     * @return a service configuration for the exposed service
-     * @see #export(Key)
-     */
-    // Is used to export @Provide method and fields.
-    public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
-        requireNonNull(key, "key is null");
-        checkUserConfigurable();
-        return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
-    }
-
     // One of 3 models...
     // Fails on other exports
     // Ignores other exports
@@ -237,58 +167,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
-    /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
-     * constructor or method to instantiate the service instance once the injector is created.
-     * <p>
-     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
-     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param implementation
-     *            the implementation to bind
-     * @return a service configuration for the service
-     * @see InjectorComposer#provide(Class)
-     */
-    public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
-        // Create a bean driver by binding the implementation
 
-        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
-        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
-
-        return sbc.provide();
-    }
-
-    // Fungere ikke rigtig med mi
-    public <T> ContainerBeanConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     *
-     * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param factory
-     *            the factory used for creating the component instance
-     * @return the configuration of the component that was installed
-     */
-    public <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
-//        // Create a bean driver by binding a factory
-//        @SuppressWarnings("unchecked")
-//        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
-//
-//        return c.provide();
-
-        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), factory);
-        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
-
-        return sbc.provide();
-
-    }
 
     /**
      * Provides every service from the specified locator.
@@ -308,25 +187,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         services.provideAll(l);
     }
 
-    /**
-     * Binds a new service constant to the specified instance.
-     * <p>
-     * The default key for the service will be {@code instance.getClass()}. If the type returned by
-     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
-     * qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param instance
-     *            the instance to bind
-     * @return a service configuration for the service
-     */
-    public <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
-        BeanMaker<T> bh = use(BeanSupport.class).newMakerInstance(UserOrExtension.user(), instance);
-        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
-
-        return sbc.provide();
-    }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
@@ -464,6 +324,144 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         }
     }
 }
+//
+//// Fungere ikke rigtig med mi
+//public <T> ContainerBeanConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
+//  throw new UnsupportedOperationException();
+//}
+//
+///**
+//*
+//* <p>
+//* Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
+//*
+//* @param <T>
+//*            the type of component to install
+//* @param factory
+//*            the factory used for creating the component instance
+//* @return the configuration of the component that was installed
+//*/
+//public <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
+////  // Create a bean driver by binding a factory
+////  @SuppressWarnings("unchecked")
+////  ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
+////
+////  return c.provide();
+//
+//  BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), factory);
+//  ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+//
+//  return sbc.provide();
+//
+//}
+//
+///**
+// * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
+// * constructor or method to instantiate the service instance once the injector is created.
+// * <p>
+// * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
+// * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
+// *
+// * @param <T>
+// *            the type of service to bind
+// * @param implementation
+// *            the implementation to bind
+// * @return a service configuration for the service
+// * @see InjectorComposer#provide(Class)
+// */
+//public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
+//    // Create a bean driver by binding the implementation
+//
+//    BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
+//    ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+//
+//    return sbc.provide();
+//}
+
+///**
+//* Binds a new service constant to the specified instance.
+//* <p>
+//* The default key for the service will be {@code instance.getClass()}. If the type returned by
+//* {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
+//* qualifier annotation added.
+//*
+//* @param <T>
+//*            the type of service to bind
+//* @param instance
+//*            the instance to bind
+//* @return a service configuration for the service
+//*/
+//public <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
+// BeanMaker<T> bh = use(BeanSupport.class).newMakerInstance(UserOrExtension.user(), instance);
+// ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+//
+// return sbc.provide();
+//}
+///**
+//* Exports a service of the specified type. See {@link #export(Key)} for details.
+//* 
+//* @param <T>
+//*            the type of service to export
+//* @param key
+//*            the key of the service to export
+//* @return a configuration for the exported service
+//* @see #export(Key)
+//* @see #exportAll()
+//*/
+//public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
+// return export(Key.of(key));
+//}
+//
+//// Altsaa skal vi hellere have noget services().filter().exportall();
+//
+//// Alternativ this export all er noget med services()..
+//
+//// is exportAll applied immediately or at the end???
+//
+//// Maaske er den mest brugbart hvis den bliver applied nu!
+//// Fordi saa kan man styre ting...
+//// F.eks. definere alt der skal exportes foerst
+//// Den er isaer god inde man begynder at linke andre containere
+//
+///**
+//* Exports an internal service outside of this container.
+//* 
+//* <pre>
+//*  {@code  
+//* install(ServiceImpl.class);
+//* export(ServiceImpl.class);}
+//* </pre>
+//* 
+//* You can also choose to expose a service under a different key then what it is known as internally in the
+//* 
+//* <pre>
+//*  {@code  
+//* bind(ServiceImpl.class);
+//* expose(ServiceImpl.class).as(Service.class);}
+//* </pre>
+//* 
+//* <p>
+//* Packed does not support any other way of exporting a service provided via a field or method annotated with
+//* {@link Provide} except for this method. There are no plan to add an Export annotation that can be used in connection
+//* with {@link Provide}.
+//* 
+//* <p>
+//* A service can be exported multiple times
+//* 
+//* @param <T>
+//*            the type of the service to export
+//* @param key
+//*            the key of the internal service to expose
+//* @return a service configuration for the exposed service
+//* @see #export(Key)
+//*/
+//// Is used to export @Provide method and fields.
+//public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
+// requireNonNull(key, "key is null");
+// checkUserConfigurable();
+// return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+//}
+
 
 class ServiceExtensionBadIdeas {
     // Syntes anchorAll paa selve extensionen er en daarlig ide... Paa wirelets er det noget andet

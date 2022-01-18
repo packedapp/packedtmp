@@ -35,8 +35,8 @@ import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -287,7 +287,7 @@ public final class ServiceManagerSetup {
     }
 
     public <T> ServiceSetup provideSource(BeanSetup component, Key<T> key) {
-        ServiceSetup e = new BeanInstanceServiceSetup(this, component, key);
+        ServiceSetup e = new BeanInstanceServiceSetup(component, key);
         localServices.add(e);
         return e;
     }

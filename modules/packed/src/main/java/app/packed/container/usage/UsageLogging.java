@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.App;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
@@ -30,7 +31,7 @@ class UsageLogging {
         public void beforeBuild(ContainerConfiguration configuration) {
             System.out.println("Assembly is " + assemblyType);
 
-            configuration.use(ServiceExtension.class).provideInstance("hejhej");
+            configuration.use(BeanExtension.class).installInstance("hejhej").provide();
 
             configuration.use(LoggingExtension.class).enable();
         }

@@ -18,6 +18,7 @@ package packed.internal.service.sandbox;
 import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
@@ -106,7 +107,10 @@ public final class InjectorComposer extends Composer {
      * @return a service configuration for the service
      */
     public <T> ContainerBeanConfiguration<T> provide(Class<T> implementation) {
-        return extension().provide(implementation);
+        extension();
+        return configuration.use(BeanExtension.class).install(implementation).provide();
+
+        //return extension().provide(implementation);
         //return configuration.use(BeanExtension.class).install(implementation).provide();
     }
 
@@ -123,7 +127,10 @@ public final class InjectorComposer extends Composer {
      * @return a service configuration for the service
      */
     public <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
-        return extension().provide(factory);
+        extension();
+        return configuration.use(BeanExtension.class).install(factory).provide();
+
+        //return extension().provide(factory);
     }
 
     /**
@@ -185,7 +192,9 @@ public final class InjectorComposer extends Composer {
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
     public <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
-        return extension().provideInstance(instance);
+        extension();
+        return configuration.use(BeanExtension.class).installInstance(instance).provide();
+        
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {

@@ -29,6 +29,8 @@ import app.packed.container.Wirelet;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration {
 
+    protected void onWired() {}
+
     protected abstract void checkIsWiring();
 
     /** {@return a mirror for the component/} */

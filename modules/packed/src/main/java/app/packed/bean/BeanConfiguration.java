@@ -28,14 +28,14 @@ public abstract sealed class BeanConfiguration<T> extends
 
     protected BeanConfiguration(BeanMaker<T> maker) {
         PackedBeanMaker<?> pbm = requireNonNull((PackedBeanMaker<?>) maker, "maker is null");
-        this.bean = pbm.newSetup();
+        this.bean = pbm.newSetup(this);
     }
 
     @Override
     protected void checkIsWiring() {
-        bean.checkIsWiring();
+        bean.checkIsActive();
     }
-
+    
     // Hmm, vi dekorere ikke fx ServiceLocator...
     // Maaske er det bedre at dekorere typer???
     //// InjectableVarSelector<T>
@@ -66,8 +66,6 @@ public abstract sealed class BeanConfiguration<T> extends
     /** {@return the kind of bean that is being configured. } */
     public abstract BeanKind kind();
 
-    // Ved ikke praecis hvad den overskriver...
-
     /**
      * This method can be overridden to return a subclass of bean mirror.
      * 
@@ -81,6 +79,8 @@ public abstract sealed class BeanConfiguration<T> extends
         // Jeg taenker det er er
         throw new UnsupportedOperationException();
     }
+
+    // Ved ikke praecis hvad den overskriver...
 
     /** {@inheritDoc} */
     @Override
@@ -108,6 +108,7 @@ public abstract sealed class BeanConfiguration<T> extends
         // Maybe throw UOE instead of IAE
         return this;
     }
+
 
     /** {@inheritDoc} */
     @Override

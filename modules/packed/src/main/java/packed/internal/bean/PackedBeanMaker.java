@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanMaker;
 import app.packed.bean.hooks.usage.BeanType;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;
 import app.packed.inject.ReflectionFactory;
@@ -47,6 +48,8 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
     /** A model of the hooks on the bean. */
     public final HookModel hookModel;
 
+    public ComponentConfiguration configuration;
+
     public PackedBeanMaker(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
         this.container = requireNonNull(container);
         if (userOrExtension.isUser()) {
@@ -61,7 +64,8 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
     }
 
     /** {@inheritDoc} */
-    public BeanSetup newSetup() {
+    public BeanSetup newSetup(ComponentConfiguration configuration) {
+        this.configuration = requireNonNull(configuration);
         realm.wirePrepare();
         BeanSetup bs = new BeanSetup(container, container.realm, container.lifetime, this);
         realm.wireCommit(bs);

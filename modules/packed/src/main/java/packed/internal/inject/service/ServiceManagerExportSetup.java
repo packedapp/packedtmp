@@ -39,8 +39,6 @@ import packed.internal.inject.service.build.ServiceSetup;
 /**
  * This class manages everything to do with exporting of services.
  *
- * @see ServiceExtension#export(Class)
- * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
 public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
@@ -87,8 +85,6 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @param key
      *            the key of the service to export
      * @return a service configuration that can be returned to the user
-     * @see ServiceExtension#export(Class)
-     * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         return export0(new ExportedServiceSetup(key));

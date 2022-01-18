@@ -23,7 +23,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.DependencyNode;
-import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -40,7 +39,7 @@ public final class BeanInstanceServiceSetup extends ServiceSetup {
      * @param bean
      *            the component we provide for
      */
-    public BeanInstanceServiceSetup(ServiceManagerSetup im, BeanSetup bean, Key<?> key) {
+    public BeanInstanceServiceSetup(BeanSetup bean, Key<?> key) {
         super(key);
         this.bean = requireNonNull(bean);
     }

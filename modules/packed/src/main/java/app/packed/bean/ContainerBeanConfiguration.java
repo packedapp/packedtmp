@@ -22,6 +22,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.service.InternalServiceUtil;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -46,6 +47,19 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
      */
     public ContainerBeanConfiguration(BeanMaker<T> maker) {
         super(maker);
+    }
+
+    @Override
+    protected void onWired() {
+        if (provide != null) {
+            ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
+            //sms.addService(new BeaznInstanceServiceSetup(bean(), provide));
+        }
+        if (export != null) {
+            ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
+            //sms.exports().export(new BeanInstanceServiceSetup(bean(), export));
+            //parent.beans.getServiceManagerOrCreate().exports().export(service);
+        }
     }
 
     /** {@return the container setup instance that we are wrapping.} */
@@ -96,6 +110,7 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
         bean().sourceProvideAs(key);
         return this;
     }
+
 // Ser dum ud naar man laver completion
     public Optional<Key<?>> providedAs() {
         return Optional.ofNullable(provide);

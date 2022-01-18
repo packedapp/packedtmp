@@ -36,7 +36,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     protected void checkIsWiring() {
-        container.checkIsWiring();
+        container.checkIsActive();
     }
 
     public void embed(Assembly assembly) {

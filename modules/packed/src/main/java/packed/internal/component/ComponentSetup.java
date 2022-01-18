@@ -94,7 +94,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
     }
 
-    public final void checkIsWiring() {
+    public final void checkIsActive() {
         if (realm.active() != this) {
             String errorMsg;
             // if (realm.container == this) {
@@ -156,7 +156,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /** {@inheritDoc} */
     public final void named(String name) {
         checkComponentName(name); // Check if the name is valid
-        checkIsWiring();
+        checkIsActive();
 
         String currentName = this.name;
 
@@ -176,7 +176,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.name = name;
     }
 
-    public final void onWired() {
+    
+    public void onWired() {
         if (onWire != null) {
             onWire.accept(mirror());
         }
