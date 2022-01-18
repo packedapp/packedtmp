@@ -29,46 +29,46 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /** A entry wrapping a component source. */
-public final class SourceInstanceServiceSetup extends ServiceSetup {
+public final class BeanInstanceServiceSetup extends ServiceSetup {
 
     /** The singleton source we are wrapping */
-    private final BeanSetup source;
+    private final BeanSetup bean;
 
     /**
      * Creates a new node from an instance.
      * 
-     * @param component
+     * @param bean
      *            the component we provide for
      */
-    public SourceInstanceServiceSetup(ServiceManagerSetup im, BeanSetup component, Key<?> key) {
+    public BeanInstanceServiceSetup(ServiceManagerSetup im, BeanSetup bean, Key<?> key) {
         super(key);
-        this.source = requireNonNull(component);
+        this.bean = requireNonNull(bean);
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public DependencyNode dependencyConsumer() {
-        return source.dependencyConsumer();
+        return bean.dependencyConsumer();
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return source.dependencyAccessor();
+        return bean.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return source.singletonHandle != null;
+        return bean.singletonHandle != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), source.singletonHandle.read(context.pool));
+            return RuntimeService.constant(key(), bean.singletonHandle.read(context.pool));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }
@@ -77,6 +77,6 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "Singleton " + source;
+        return "Singleton " + bean;
     }
 }

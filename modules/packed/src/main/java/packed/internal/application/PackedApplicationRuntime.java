@@ -52,7 +52,6 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
     // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
-
     public PackedApplicationRuntime(ApplicationInitializationContext launchContext) {}
 
     // Hmm, maybe not

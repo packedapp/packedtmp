@@ -36,7 +36,7 @@ import packed.internal.container.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.inject.service.build.SourceInstanceServiceSetup;
+import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -90,9 +90,9 @@ public final class ServiceManagerSetup {
         this.tree = parent == null ? new ApplicationInjectorSetup() : parent.tree;
     }
 
-    public void addAssembly(ServiceSetup a) {
-        requireNonNull(a);
-        localServices.add(a);
+    public void addService(ServiceSetup service) {
+        requireNonNull(service);
+        localServices.add(service);
     }
 
     public void checkExportConfigurable() {
@@ -148,7 +148,7 @@ public final class ServiceManagerSetup {
         // Add exports
         if (exports != null) {
             for (ServiceSetup n : exports) {
-                builder.provides(n.key());
+                builder.provide(n.key());
             }
         }
 
@@ -156,9 +156,9 @@ public final class ServiceManagerSetup {
         if (dependencies != null && dependencies.requirements != null) {
             for (Requirement r : dependencies.requirements.values()) {
                 if (r.isOptional) {
-                    builder.optional(r.key);
+                    builder.requireOptional(r.key);
                 } else {
-                    builder.requires(r.key);
+                    builder.require(r.key);
                 }
             }
         }
@@ -287,7 +287,7 @@ public final class ServiceManagerSetup {
     }
 
     public <T> ServiceSetup provideSource(BeanSetup component, Key<T> key) {
-        ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
+        ServiceSetup e = new BeanInstanceServiceSetup(this, component, key);
         localServices.add(e);
         return e;
     }

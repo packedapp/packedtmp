@@ -56,7 +56,7 @@ public final class UseSiteClassHookModel {
         /** The model of the bootstrap class. */
         public final ClassHookModel model;
 
-        public Builder(BootstrappedClassModel.Builder source, ClassHookModel model) {
+        public Builder(HookModel.Builder source, ClassHookModel model) {
             super(source);
             this.model = model;
             this.instance = (BeanClass) model.newInstance();

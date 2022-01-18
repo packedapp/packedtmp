@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.inject.Factory;
-import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
+import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.hooks.usesite.BootstrappedSourcedClassModel;
 import packed.internal.invoke.OpenClass;
 import packed.internal.util.LookupUtil;
@@ -43,10 +43,10 @@ public abstract sealed class RealmAccessor {
             MethodHandle.class, Lookup.class);
 
     /** A cache of class models per accessor. */
-    private final ClassValue<BootstrappedClassModel> components = new ClassValue<>() {
+    private final ClassValue<HookModel> components = new ClassValue<>() {
 
         @Override
-        protected BootstrappedClassModel computeValue(Class<?> type) {
+        protected HookModel computeValue(Class<?> type) {
             OpenClass oc = OpenClass.of(lookup(), type);
             return BootstrappedSourcedClassModel.newModel(oc, null);
         }
@@ -60,7 +60,7 @@ public abstract sealed class RealmAccessor {
         }
     }
 
-    public final BootstrappedClassModel modelOf(Class<?> componentType) {
+    public final HookModel modelOf(Class<?> componentType) {
         return components.get(componentType);
     }
 

@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.container;
 
-import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceContract;
+import java.lang.invoke.MethodHandles;
+import java.util.Optional;
+
+import app.packed.base.NamespacePath;
 
 /**
  *
  */
-// @Validate(Req.class)
-public abstract class Plugin extends BaseAssembly {
+public interface RealmConfiguration {
 
-    static final ServiceContract CONTRACT = ServiceContract.build(b -> b.provide(String.class).require(Long.class));
+    // The current component that is being wired
+    // empty if the realm is no longer configurable
+    Optional<NamespacePath> activeComponent(); // ComponentConfiguration??? Det er jo internt i realmen
 
-    static class Req {
+    boolean isConfigurable();
 
-        // requireExported
-
-        // requireStrictsExports();
-        // requireStrictExports();
-
-        // failIfNotExported()
-    }
+    void lookup(MethodHandles.Lookup lookup);
 }

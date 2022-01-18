@@ -29,7 +29,7 @@ import app.packed.build.BuildException;
 import packed.internal.bean.BeanInstanceDependencyNode;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BeanMemberDependencyNode;
-import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
+import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.container.ContainerSetup;
@@ -38,7 +38,7 @@ import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.inject.service.build.SourceMemberServiceSetup;
+import packed.internal.inject.service.build.BeanMemberServiceSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
@@ -74,14 +74,14 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     public final int providerDelta;
 
     @Nullable
-    private final SourceMemberServiceSetup service;
+    private final BeanMemberServiceSetup service;
 
     @Nullable
     private final UseSiteMemberHookModel sourceMember;
 
     // Constructing something from a Factory
-    protected DependencyNode(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
-        this.bean = requireNonNull(source);
+    protected DependencyNode(BeanSetup bean, List<InternalDependency> dependencies, MethodHandle mh) {
+        this.bean = requireNonNull(bean);
         this.sourceMember = null;
 
         this.service = null; // Any build entry is stored in SourceAssembly#service
@@ -93,17 +93,17 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     }
 
     // Field/Method hook
-    protected DependencyNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
-        this.bean = requireNonNull(source);
+    protected DependencyNode(BeanSetup bean, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+        this.bean = requireNonNull(bean);
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && source.singletonHandle == null) {
+            if (!Modifier.isStatic(smm.getModifiers()) && bean.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManagerSetup sbm = source.parent.beans.getServiceManagerOrCreate();
-            ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, source, this, smm.provideAskey, smm.provideAsConstant);
-            sbm.addAssembly(sa);
+            ServiceManagerSetup sbm = bean.parent.beans.getServiceManagerOrCreate();
+            ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
+            sbm.addService(sa);
         } else {
             this.service = null;
         }
@@ -114,7 +114,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         this.providerDelta = producers.length == dependencies.size() ? 0 : 1;
 
         if (!Modifier.isStatic(smm.getModifiers())) {
-            dependencyProviders[0] = source;
+            dependencyProviders[0] = bean;
         }
     }
 
@@ -185,7 +185,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                 DependencyProducer e = null;
                 if (bean != null) {
                     //// Checker om der er hooks der provider servicen
-                    BootstrappedClassModel sm = bean.hookModel;
+                    HookModel sm = bean.hookModel;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }

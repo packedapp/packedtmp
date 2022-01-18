@@ -9,6 +9,7 @@ import app.packed.inject.service.ServiceExtension;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 
+/** This class is responsible for managing all beans in a container. */
 public final class BeanContainerSetup {
 
     /** All dependants that needs to be resolved. */

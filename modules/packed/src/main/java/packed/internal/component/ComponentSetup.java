@@ -95,7 +95,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     }
 
     public final void checkIsWiring() {
-        if (realm.current() != this) {
+        if (realm.active() != this) {
             String errorMsg;
             // if (realm.container == this) {
             errorMsg = "This operation must be called as the first thing in Assembly#build()";
@@ -158,20 +158,20 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         checkComponentName(name); // Check if the name is valid
         checkIsWiring();
 
+        String currentName = this.name;
+
         // If a name has been set using a wirelet it cannot be overridden
-        if (this instanceof ContainerSetup cs && cs.nameInitializedWithWirelet) {
+        if (this instanceof ContainerSetup cs && cs.isNameInitializedFromWirelet) {
             return;
-        } else if (name.equals(this.name)) {
+        } else if (name.equals(currentName)) {
             return;
         }
 
-        // maybe assume s==0
-
         if (parent != null) {
-            parent.children.remove(this.name);
             if (parent.children.putIfAbsent(name, this) != null) {
                 throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
             }
+            parent.children.remove(currentName);
         }
         this.name = name;
     }
@@ -294,10 +294,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             Collection<AbstractBuildTimeComponentMirror> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
                 Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false));
-                return /*isRoot && option.excludeOrigin() ? s :*/ Stream.concat(Stream.of(thisMirror()), s);
-                //return Stream.empty();
+                return /* isRoot && option.excludeOrigin() ? s : */ Stream.concat(Stream.of(thisMirror()), s);
+                // return Stream.empty();
             } else {
-                return /*isRoot && option.excludeOrigin() ? Stream.empty() :*/ Stream.of(thisMirror());
+                return /* isRoot && option.excludeOrigin() ? Stream.empty() : */ Stream.of(thisMirror());
             }
         }
 

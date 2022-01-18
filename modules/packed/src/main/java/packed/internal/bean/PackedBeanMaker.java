@@ -22,6 +22,7 @@ import app.packed.bean.hooks.usage.BeanType;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;
 import app.packed.inject.ReflectionFactory;
+import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
 
@@ -43,6 +44,8 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
     BeanType kind = BeanType.CONTAINER_BEAN;
 
     boolean extensionBean;
+    /** A model of the hooks on the bean. */
+    public final HookModel hookModel;
 
     public PackedBeanMaker(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
         this.container = requireNonNull(container);
@@ -54,6 +57,7 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
         this.beanType = requireNonNull(beanType);
         this.source = source;
         this.factory = factory;
+        this.hookModel = realm.accessor().modelOf(beanType);
     }
 
     /** {@inheritDoc} */

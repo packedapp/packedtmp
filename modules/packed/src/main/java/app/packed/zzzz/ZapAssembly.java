@@ -2,11 +2,13 @@ package app.packed.zzzz;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
+import app.packed.base.Tag;
 import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.inject.Factory1;
 import app.packed.lifecycle.RunState;
 
 public class ZapAssembly extends BaseAssembly {
@@ -14,6 +16,11 @@ public class ZapAssembly extends BaseAssembly {
     @Override
     protected void build() {
         new Exception().printStackTrace();
+
+        // Det kan man ikke pga af lifecycle annotations
+        // beanExtension.newAlias(ContainerBean.class).exportAs()
+        
+        provide(new Factory1<String, @Tag("asd") String>(e -> e) {});
 
         named("asdasd");
         link(new LinkMe(), Wirelet.named("heher"));
@@ -49,8 +56,8 @@ public class ZapAssembly extends BaseAssembly {
     }
 
     public static class My {}
-    
+
     public static class MyExt extends Extension<MyExt> {
-        
+
     }
 }

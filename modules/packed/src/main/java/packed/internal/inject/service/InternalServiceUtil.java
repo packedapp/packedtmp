@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.inject.service;
 
-import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceContract;
+import app.packed.base.Key;
 
 /**
  *
  */
-// @Validate(Req.class)
-public abstract class Plugin extends BaseAssembly {
+public class InternalServiceUtil {
 
-    static final ServiceContract CONTRACT = ServiceContract.build(b -> b.provide(String.class).require(Long.class));
+    public static Key<?> checkKey(Class<?> beanClass, Class<?> key) {
 
-    static class Req {
+        return Key.of(key);
+    }
 
-        // requireExported
-
-        // requireStrictsExports();
-        // requireStrictExports();
-
-        // failIfNotExported()
+    public static Key<?> checkKey(Class<?> beanClass, Key<?> key) {
+        return key;
     }
 }

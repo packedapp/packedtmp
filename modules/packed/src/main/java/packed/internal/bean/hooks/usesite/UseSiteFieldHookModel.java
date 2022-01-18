@@ -103,7 +103,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         final FieldHookModel hook;
 
-        public Builder(BootstrappedClassModel.Builder source, FieldHookModel hook, Field field) {
+        public Builder(HookModel.Builder source, FieldHookModel hook, Field field) {
             super(source, hook);
             this.hook = hook;
             this.field = field;
@@ -173,11 +173,11 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         private boolean isFieldUsed;
 
         /** The source. */
-        private final BootstrappedClassModel.Builder builder;
+        private final HookModel.Builder builder;
 
         private VarHandle varHandle;
 
-        public Shared(BootstrappedClassModel.Builder source, Field field) {
+        public Shared(HookModel.Builder source, Field field) {
             this.builder = requireNonNull(source);
             this.fieldUnsafe = requireNonNull(field);
         }

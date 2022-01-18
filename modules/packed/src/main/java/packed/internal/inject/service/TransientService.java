@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.hooks.usesite;
+package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.bean.hooks.AbstractHookModel;
+import app.packed.base.Key;
 
 /**
- * 
+ *
  */
-abstract class AbstractBootstrapBuilder {
+public final class TransientService {
+    final Class<?> assignableTo;
 
-    /** The single source this builder is a part of. */
-    public final HookModel.Builder source;
+    final boolean isExported;
 
-    protected final AbstractHookModel<?> bootstrapModel;
+    Key<?> key;
 
-    /** Whether or not bootstrap has been invoked. */
-    public boolean disabled;
-    
-    protected AbstractBootstrapBuilder(HookModel.Builder source) {
-        this.source = requireNonNull(source);
-        this.bootstrapModel = null;
+    public TransientService(Class<?> assignableTo, boolean isExport) {
+        this.assignableTo = requireNonNull(assignableTo);
+        this.isExported = isExport;
     }
 
-    protected void checkNotDisabled() {
-        
+    public void provideAs(Key<?> key) {
+
     }
 }

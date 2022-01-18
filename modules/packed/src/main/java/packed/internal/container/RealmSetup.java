@@ -34,7 +34,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
     private RealmAccessor accessor;
 
     /** The current active component in the realm. */
-    protected ComponentSetup current;
+    protected ComponentSetup active;
 
     /** Whether or not this realm is closed. */
     protected boolean isClosed;
@@ -56,14 +56,14 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
         }
     }
 
-    public ComponentSetup current() {
-        return current;
+    public ComponentSetup active() {
+        return active;
     }
 
     public void newOperation() {
-        if (current != null) {
-            current.onWired();
-            current = null;
+        if (active != null) {
+            active.onWired();
+            active = null;
         }
     }
 
@@ -86,7 +86,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
     }
 
     public void wireCommit(ComponentSetup component) {
-        current = component;
+        active = component;
 //
 //        // TODO: Move to class I think
 //        if (component instanceof ContainerSetup container) {
@@ -101,9 +101,9 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
             throw new IllegalStateException();
         }
         // We need to finish the existing wiring before adding new
-        if (current != null) {
-            current.onWired();
-            current = null;
+        if (active != null) {
+            active.onWired();
+            active = null;
         }
     }
     

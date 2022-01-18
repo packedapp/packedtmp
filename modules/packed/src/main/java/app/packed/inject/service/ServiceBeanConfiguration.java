@@ -24,7 +24,6 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanMaker;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.bean.BeanSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -35,8 +34,8 @@ import packed.internal.util.ThrowableUtil;
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
  * calling one of the install methods on, for example, {@link BaseAssembly}.
  */
-//ProvidableComponentConfiguration
-// Serviceable
+// Har vi 2 klasser? ServiceConfiguration + ExportableServiceContainer
+// Taenker vi kan bruge den ved composer as well.
 public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
@@ -73,13 +72,14 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
         return this;
     }
 
-    public ServiceBeanConfiguration<T> asNone() {
-        // Ideen er vi f.eks. kan
-        // asNone().exportAs(Doo.class);
-        provideAsService(null);
-        return this;
-    }
-    
+//    public ServiceBeanConfiguration<T> asNone() {
+//        // Ideen er vi f.eks. kan
+          // exportOnlyAs()
+//        // asNone().exportAs(Doo.class);
+//        provideAsService(null);
+//        return this;
+//    }
+
     /** {@return the container setup instance that we are wrapping.} */
     private BeanSetup bean() {
         try {
@@ -89,14 +89,15 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
         }
     }
 
-    public ExportedServiceConfiguration<T> export() {
-        return bean().sourceExport();
+    public void export() {
+        bean().sourceExport();
     }
+
     // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
         return sourceProvideAsKey();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public ServiceBeanConfiguration<T> named(String name) {
@@ -105,7 +106,7 @@ public class ServiceBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
     }
 
     public ServiceBeanConfiguration<T> provide() {
-        bean().sourceProvide();
+        super.provide();
         return this;
     }
 

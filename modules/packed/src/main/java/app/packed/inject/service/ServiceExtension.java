@@ -113,6 +113,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     /** {@return the container setup instance that we are wrapping.} */
+    @SuppressWarnings("unused")
     private BeanSetup bean(BeanConfiguration<?> conf) {
         try {
             return (BeanSetup) VH_BEAN_SETUP.get(conf);
@@ -143,12 +144,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      */
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
-    }
-
-    // Her kan en extension faktisk exporte ting...
-    public <T> ExportedServiceConfiguration<T> export(ContainerBeanConfiguration<T> bean) {
-        // Taenker det ogsaa er maaden vi kam exportere
-        return bean(bean).sourceExport();
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();

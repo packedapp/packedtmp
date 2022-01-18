@@ -20,7 +20,6 @@ public final class LifetimeSetup {
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
     
-    
     public LifetimeSetup(@Nullable LifetimeSetup parent) {
         this.parent = parent;
     }

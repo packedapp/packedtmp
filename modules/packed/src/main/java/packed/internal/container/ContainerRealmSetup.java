@@ -34,9 +34,9 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
 
     void closeRealm() {
         ContainerSetup container = container();
-        if (current != null) {
-            current.onWired();
-            current = null;
+        if (active != null) {
+            active.onWired();
+            active = null;
         }
         isClosed = true;
 

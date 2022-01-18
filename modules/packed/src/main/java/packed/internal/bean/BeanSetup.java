@@ -18,8 +18,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.bean.hooks.usesite.BootstrappedClassModel;
+import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InternalDependency;
@@ -42,7 +41,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
      * actual dependencies). Null if a functional bean, or a bean instance was specified when configuring the bean.
      */
     @Nullable
-    private final DependencyNode dependencyConsumer;
+    private final DependencyNode dependencyNode;
 
     /**
      * Factory that was specified if this bean was created from a Factory or Class, null if created from an instance, for
@@ -55,7 +54,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     private final Factory<?> factory;
 
     /** A model of the hooks on the bean. */
-    public final BootstrappedClassModel hookModel;
+    public final HookModel hookModel;
 
     /** A service object if the source is provided as a service. */
     // Would be nice if we could move it somewhere else.. Like Listener
@@ -71,6 +70,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         super(container.application, realm, lifetime, container);
         this.beanType = BeanType.CONTAINER_BEAN;
         this.factory = beanHandle.factory;
+        this.hookModel = beanHandle.hookModel;
         this.singletonHandle = beanHandle.kind == BeanType.CONTAINER_BEAN ? lifetime.pool.reserve(beanHandle.beanType) : null;
 
         if (realm instanceof ExtensionRealmSetup s) {
@@ -79,7 +79,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         if (factory == null) {
             // We already have a bean instance, no need to have an injection node for creating a new bean instance.
-            this.dependencyConsumer = null;
+            this.dependencyNode = null;
 
             // Store the supplied bean instance in the lifetime (constant) pool.
             // Skal vel faktisk vaere i application poolen????
@@ -95,17 +95,24 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = realm.accessor().toMethodHandle(factory);
 
-            this.dependencyConsumer = new BeanInstanceDependencyNode(this, dependencies, mh);
+            this.dependencyNode = new BeanInstanceDependencyNode(this, dependencies, mh);
 
-            container.beans.addConsumer(dependencyConsumer);
+            container.beans.addConsumer(dependencyNode);
         }
 
         // Find a hook model for the bean type and wire it
-        this.hookModel = realm.accessor().modelOf(beanHandle.beanType);
         hookModel.onWire(this);
 
         // Set the name of the component if it have not already been set using a wirelet
         initializeNameWithPrefix(hookModel.simpleName());
+    }
+
+    public Key<?> defaultKey() {
+        if (factory != null) {
+           return Key.convertTypeLiteral(factory.typeLiteral());
+        } else {
+            return hookModel.defaultKey();
+        }
     }
 
     /** {@inheritDoc} */
@@ -116,7 +123,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         if (singletonHandle != null) {
             return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
         } else {
-            return dependencyConsumer.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
+            return dependencyNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
         }
     }
 
@@ -124,7 +131,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Override
     @Nullable
     public DependencyNode dependencyConsumer() {
-        return dependencyConsumer;
+        return dependencyNode;
     }
 
     /** {@inheritDoc} */
@@ -132,26 +139,19 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     public BeanMirror mirror() {
         return new BuildTimeBeanMirror();
     }
-
+    
     public ServiceSetup provide() {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;
         if (s == null) {
-            Key<?> key;
-            if (factory != null) {
-                key = Key.convertTypeLiteral(factory.typeLiteral());
-            } else {
-                key = Key.of(hookModel.clazz); // Move to model?? What if instance has Qualifier???
-            }
-            s = service = parent.beans.getServiceManagerOrCreate().provideSource(this, key);
+            s = service = parent.beans.getServiceManagerOrCreate().provideSource(this, defaultKey());
         }
         return s;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> ExportedServiceConfiguration<T> sourceExport() {
+    public <T> void sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) parent.beans.getServiceManagerOrCreate().exports().export(service);
+        parent.beans.getServiceManagerOrCreate().exports().export(service);
     }
 
     public void sourceProvide() {

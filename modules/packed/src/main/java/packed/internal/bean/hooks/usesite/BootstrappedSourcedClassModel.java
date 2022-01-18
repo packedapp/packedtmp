@@ -21,11 +21,11 @@ public class BootstrappedSourcedClassModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static BootstrappedClassModel newModel(OpenClass oc, @Nullable ExtensionModel extension) {
+    public static HookModel newModel(OpenClass oc, @Nullable ExtensionModel extension) {
         return new Builder(oc, extension).build();
     }
 
-    private static class Builder extends BootstrappedClassModel.Builder {
+    private static class Builder extends HookModel.Builder {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<MethodHookBootstrapModel> METHOD_ANNOTATIONS = new ClassValue<>() {

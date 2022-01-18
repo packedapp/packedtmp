@@ -68,8 +68,7 @@ public class InjectorBindAssemblyTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                provideInstance("X");
-                export(String.class);
+                provideInstance("X").export();
             }
         };
 
@@ -87,8 +86,7 @@ public class InjectorBindAssemblyTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                providePrototype(new Factory0<>(al::incrementAndGet) {});
-                export(Long.class);
+                providePrototype(new Factory0<>(al::incrementAndGet) {}).export();
             }
         };
 

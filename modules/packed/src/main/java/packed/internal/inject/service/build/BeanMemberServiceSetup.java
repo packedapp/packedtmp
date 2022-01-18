@@ -32,7 +32,7 @@ import packed.internal.lifetime.PoolEntryHandle;
 /**
  *
  */
-public final class SourceMemberServiceSetup extends ServiceSetup {
+public final class BeanMemberServiceSetup extends ServiceSetup {
 
     private final DependencyNode consumer;
 
@@ -40,7 +40,7 @@ public final class SourceMemberServiceSetup extends ServiceSetup {
     @Nullable
     public final PoolEntryHandle accessor;
 
-    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependencyNode dependant, Key<?> key, boolean isConst) {
+    public BeanMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependencyNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.consumer = requireNonNull(dependant);
         // TODO fix Object

@@ -72,14 +72,13 @@ public class ServiceContractTCKTest {
     /** Tests that exported services are part of the contract. */
     @Test
     public void provides() {
-        ServiceContract expected = ServiceContract.build(b -> b.provides(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.provide(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
                 lookup(MethodHandles.lookup());
-                provide(A.class);
+                provide(A.class).export();
                 provide(B.class);
-                export(A.class);
             }
         });
     }
@@ -87,7 +86,7 @@ public class ServiceContractTCKTest {
     /** Checks that registering a service */
     @Test
     public void requires() {
-        ServiceContract expected = ServiceContract.build(b -> b.requires(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.require(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -100,7 +99,7 @@ public class ServiceContractTCKTest {
 
     @Test
     public void optional() {
-        ServiceContract expected = ServiceContract.build(b -> b.optional(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.requireOptional(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -114,7 +113,7 @@ public class ServiceContractTCKTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ServiceContract expected = ServiceContract.build(b -> b.requires(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.require(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -128,7 +127,7 @@ public class ServiceContractTCKTest {
 
     @Test
     public void all() {
-        ServiceContract expected = ServiceContract.build(b -> b.optional(A.class).requires(B.class).provides(C.class));
+        ServiceContract expected = ServiceContract.build(b -> b.requireOptional(A.class).require(B.class).provide(C.class));
         check(expected, new BaseAssembly() {
 
             @Override

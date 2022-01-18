@@ -103,7 +103,7 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
         @Nullable
         Key<?> provideAsKey;
 
-        Builder(BootstrappedClassModel.Builder source, AbstractHookModel<?> model) {
+        Builder(HookModel.Builder source, AbstractHookModel<?> model) {
             super(source);
             this.buildtimeModel = model;
         }

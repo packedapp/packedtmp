@@ -162,15 +162,6 @@ public final class ServiceContract extends Contract {
         return new ServiceContract.Builder(this);
     }
 
-    /**
-     * Returns an immutable set of all of the optional service keys of the owning entity.
-     * 
-     * @return an immutable set of all of the optional service keys of the owning entity
-     */
-    public Set<Key<?>> optional() {
-        return optional;
-    }
-
     public void print() {
         // ServiceContract.of(FooContainer()).print();
     }
@@ -191,6 +182,15 @@ public final class ServiceContract extends Contract {
      */
     public Set<Key<?>> requires() {
         return requires;
+    }
+
+    /**
+     * Returns an immutable set of all of the optional service keys of the owning entity.
+     * 
+     * @return an immutable set of all of the optional service keys of the owning entity
+     */
+    public Set<Key<?>> requiresOptional() {
+        return optional;
     }
 
     /** {@inheritDoc} */
@@ -288,7 +288,9 @@ public final class ServiceContract extends Contract {
         private static final String PROVIDES = "Provides";
         private static final String REQUIRES = "Requires";
 
-        private final HashMap<Key<?>, String> map = new HashMap<>();
+        /** Requirements and provides */
+        // Do we want to retain order???
+        private final HashMap<Key<?>, String> elements = new HashMap<>();
 
         /**
          * Creates a new contract builder builder from an existing service contract.
@@ -298,9 +300,9 @@ public final class ServiceContract extends Contract {
          */
         private Builder(ServiceContract existing) {
             if (existing != null) {
-                existing.optional.forEach(k -> map.put(k, OPTIONAL));
-                existing.provides.forEach(k -> map.put(k, PROVIDES));
-                existing.requires.forEach(k -> map.put(k, REQUIRES));
+                existing.optional.forEach(k -> elements.put(k, OPTIONAL));
+                existing.provides.forEach(k -> elements.put(k, PROVIDES));
+                existing.requires.forEach(k -> elements.put(k, REQUIRES));
             }
         }
 
@@ -313,7 +315,7 @@ public final class ServiceContract extends Contract {
          *             if any keys have been registered both as optional and required
          */
         public ServiceContract build() {
-            if (map.isEmpty()) {
+            if (elements.isEmpty()) {
                 return ServiceContract.EMPTY;
             }
 
@@ -321,7 +323,7 @@ public final class ServiceContract extends Contract {
             HashSet<Key<?>> tmpProvides = new HashSet<>();
             HashSet<Key<?>> tmpRequires = new HashSet<>();
 
-            map.forEach((k, v) -> {
+            elements.forEach((k, v) -> {
                 if (v == OPTIONAL) {
                     tmpOptional.add(k);
                 } else if (v == PROVIDES) {
@@ -338,7 +340,7 @@ public final class ServiceContract extends Contract {
             for (int i = 0; i < keys.length; i++) {
                 Key<?> key = keys[i];
                 requireNonNull(key, "Specified array of keys, contained a null at index " + i);
-                map.merge(key, type, (oldValue, newValue) -> {
+                elements.merge(key, type, (oldValue, newValue) -> {
                     if (oldValue == newValue) {
                         return oldValue;
                     } else if (oldValue == PROVIDES) {
@@ -354,23 +356,8 @@ public final class ServiceContract extends Contract {
             return this;
         }
 
-        public ServiceContract.Builder optional(Class<?>... keys) {
-            return optional(Key.of(keys));
-        }
-
-        /**
-         * Adds the specified key to the list of optional services.
-         * 
-         * @param keys
-         *            the keys to add
-         * @return this builder
-         */
-        public ServiceContract.Builder optional(Key<?>... keys) {
-            return compute(OPTIONAL, keys);
-        }
-
-        public ServiceContract.Builder provides(Class<?>... keys) {
-            return provides(Key.of(keys));
+        public ServiceContract.Builder provide(Class<?>... keys) {
+            return provide(Key.of(keys));
         }
 
         /**
@@ -382,7 +369,7 @@ public final class ServiceContract extends Contract {
          *            the keys to add
          * @return this builder
          */
-        public ServiceContract.Builder provides(Key<?>... keys) {
+        public ServiceContract.Builder provide(Key<?>... keys) {
             return compute(PROVIDES, keys);
         }
 
@@ -398,7 +385,7 @@ public final class ServiceContract extends Contract {
          */
         public ServiceContract.Builder remove(Key<?>... keys) {
             requireNonNull(keys, "keys is null");
-            map.keySet().removeAll(List.of(keys));
+            elements.keySet().removeAll(List.of(keys));
             return this;
         }
 
@@ -409,8 +396,8 @@ public final class ServiceContract extends Contract {
          *            the keys to add
          * @return this builder
          */
-        public ServiceContract.Builder requires(Class<?>... keys) {
-            return requires(Key.of(keys));
+        public ServiceContract.Builder require(Class<?>... keys) {
+            return require(Key.of(keys));
         }
 
         /**
@@ -420,8 +407,23 @@ public final class ServiceContract extends Contract {
          *            the keys to add
          * @return this builder
          */
-        public ServiceContract.Builder requires(Key<?>... keys) {
+        public ServiceContract.Builder require(Key<?>... keys) {
             return compute(REQUIRES, keys);
+        }
+
+        public ServiceContract.Builder requireOptional(Class<?>... keys) {
+            return requireOptional(Key.of(keys));
+        }
+
+        /**
+         * Adds the specified key to the list of optional services.
+         * 
+         * @param keys
+         *            the keys to add
+         * @return this builder
+         */
+        public ServiceContract.Builder requireOptional(Key<?>... keys) {
+            return compute(OPTIONAL, keys);
         }
     }
 }

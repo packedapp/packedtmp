@@ -42,7 +42,7 @@ import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.OpenClass;
 
 /** A model of a class that uses hooks. */
-public final class BootstrappedClassModel {
+public final class HookModel {
 
     /** The class of the model. */
     public final Class<?> clazz;
@@ -67,11 +67,16 @@ public final class BootstrappedClassModel {
      * @param builder
      *            a builder for this descriptor
      */
-    private BootstrappedClassModel(BootstrappedClassModel.Builder builder) {
+    private HookModel(HookModel.Builder builder) {
         this.clazz = builder.oc.type();
         this.models = List.copyOf(builder.models);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
         this.extensionClass = builder.extension == null ? null : builder.extension.type();
+    }
+
+    public Key<?> defaultKey() {
+        // What if instance has Qualifier???
+        return Key.of(clazz);
     }
 
     public void onWire(BeanSetup bean) {
@@ -92,8 +97,8 @@ public final class BootstrappedClassModel {
         }
         return s;
     }
-    
-    /** A builder object for {@link BootstrappedClassModel}. */
+
+    /** A builder object for {@link HookModel}. */
     public static abstract class Builder extends MemberScanner {
 
         final Map<Class<? extends BeanClass>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
@@ -127,7 +132,7 @@ public final class BootstrappedClassModel {
          * 
          * @return a new model
          */
-        public BootstrappedClassModel build() {
+        public HookModel build() {
 
             // TODO run through annotations
 
@@ -141,7 +146,7 @@ public final class BootstrappedClassModel {
             for (UseSiteClassHookModel.Builder b : classes.values()) {
                 b.complete();
             }
-            return new BootstrappedClassModel(this);
+            return new HookModel(this);
         }
 
         protected abstract @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType);

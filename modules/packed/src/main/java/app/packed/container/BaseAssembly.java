@@ -15,13 +15,11 @@
  */
 package app.packed.container;
 
-import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import app.packed.inject.service.ServiceExtension;
@@ -106,65 +104,6 @@ public abstract class BaseAssembly extends Assembly {
      */
     protected final ContainerExtension container() {
         return use(ContainerExtension.class);
-    }
-
-    /**
-     * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
-     * use case if having a single
-     * 
-     * When you expose an internal service, the descriptions and tags it may have are copied to the exposed services.
-     * Overridden them will not effect the internal service from which the exposed service was created.
-     * 
-     * <p>
-     * Once an internal service has been exposed, the internal service is made immutable. For example,
-     * {@code setDescription()} will fail in the following example with a runtime exception: <pre>{@code 
-     * ServiceConfiguration<?> sc = bind(ServiceImpl.class);
-     * expose(ServiceImpl.class).as(Service.class);
-     * sc.setDescription("foo");}
-     * </pre>
-     * <p>
-     * A single internal service can be exposed under multiple keys: <pre>{@code 
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class).as(Service1.class).setDescription("Service 1");
-     * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");}
-     * </pre>
-     * 
-     * @param <T>
-     *            the type of the exposed service
-     * 
-     * @param key
-     *            the key of the internal service to expose
-     * @return a service configuration for the exposed service
-     * @see #export(Key)
-     */
-    protected final <T> ExportedServiceConfiguration<T> export(Class<T> key) {
-        return service().export(key);
-    }
-
-    /**
-     * Exposes an internal service outside of this container.
-     * 
-     * 
-     * <pre> {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class);}
-     * </pre>
-     * 
-     * You can also choose to expose a service under a different key then what it is known as internally in the
-     * <pre> {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class).as(Service.class);}
-     * </pre>
-     * 
-     * @param <T>
-     *            the type of the exposed service
-     * @param key
-     *            the key of the internal service to expose
-     * @return a service configuration for the exposed service
-     * @see #export(Key)
-     */
-    protected final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
-        return service().export(key);
     }
 
     protected final void exportAll() {
@@ -369,4 +308,63 @@ public abstract class BaseAssembly extends Assembly {
 //
 //protected final void requireOptionally(Key<?>... keys) {
 //  service().requireOptionally(keys);
+//}
+
+///**
+// * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
+// * use case if having a single
+// * 
+// * When you expose an internal service, the descriptions and tags it may have are copied to the exposed services.
+// * Overridden them will not effect the internal service from which the exposed service was created.
+// * 
+// * <p>
+// * Once an internal service has been exposed, the internal service is made immutable. For example,
+// * {@code setDescription()} will fail in the following example with a runtime exception: <pre>{@code 
+// * ServiceConfiguration<?> sc = bind(ServiceImpl.class);
+// * expose(ServiceImpl.class).as(Service.class);
+// * sc.setDescription("foo");}
+// * </pre>
+// * <p>
+// * A single internal service can be exposed under multiple keys: <pre>{@code 
+// * bind(ServiceImpl.class);
+// * expose(ServiceImpl.class).as(Service1.class).setDescription("Service 1");
+// * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");}
+// * </pre>
+// * 
+// * @param <T>
+// *            the type of the exposed service
+// * 
+// * @param key
+// *            the key of the internal service to expose
+// * @return a service configuration for the exposed service
+// * @see #export(Key)
+// */
+//protected final <T> ExportedServiceConfiguration<T> export(Class<T> key) {
+//    return service().export(key);
+//}
+//
+///**
+// * Exposes an internal service outside of this container.
+// * 
+// * 
+// * <pre> {@code  
+// * bind(ServiceImpl.class);
+// * expose(ServiceImpl.class);}
+// * </pre>
+// * 
+// * You can also choose to expose a service under a different key then what it is known as internally in the
+// * <pre> {@code  
+// * bind(ServiceImpl.class);
+// * expose(ServiceImpl.class).as(Service.class);}
+// * </pre>
+// * 
+// * @param <T>
+// *            the type of the exposed service
+// * @param key
+// *            the key of the internal service to expose
+// * @return a service configuration for the exposed service
+// * @see #export(Key)
+// */
+//protected final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
+//    return service().export(key);
 //}

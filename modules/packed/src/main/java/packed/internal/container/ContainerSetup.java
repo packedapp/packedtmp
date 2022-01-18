@@ -68,7 +68,7 @@ public final class ContainerSetup extends ComponentSetup {
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
      */
-    public boolean nameInitializedWithWirelet;
+    public boolean isNameInitializedFromWirelet;
 
     /** Wirelets that was specified when creating the component. */
     // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
@@ -131,7 +131,7 @@ public final class ContainerSetup extends ComponentSetup {
                 this.wirelets.unconsumed = unconsumed;
             }
 
-            if (nameInitializedWithWirelet && parent != null) {
+            if (isNameInitializedFromWirelet && parent != null) {
                 initializeNameWithPrefix(name);
                 // addChild(child, name);
             }

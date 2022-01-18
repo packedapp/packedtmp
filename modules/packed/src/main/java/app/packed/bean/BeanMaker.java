@@ -33,6 +33,10 @@ public sealed interface BeanMaker<T> permits PackedBeanMaker {
         // bind(EntityMirror.class);
         // Mulighederne er uendelige, og
     }
+    
+    default void checkWiring() {
+        
+    }
 
     void prototype();
 

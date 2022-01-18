@@ -50,7 +50,7 @@ class SpringIntegration extends BaseAssembly {
     @Override
     protected void build() {
         for (var e : m.entrySet()) {
-            provideInstance(e.getValue()).as((Class) e.getKey());
+            provideInstance(e.getValue()).provideAs((Class) e.getKey());
         }
     }
 }

@@ -15,14 +15,51 @@
  */
 package app.packed.inject.service;
 
+import java.util.Optional;
+
 import app.packed.base.Key;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
 /**
  *
  */
 public interface ServiceConfiguration<T> {
+
+    Key<?> defaultKey();
     
+    // Once a bean has been exported, its key cannot be changed...
+    ServiceConfiguration<T> export();
+
+    /**
+     * Registers this service under the specified key.
+     *
+     * @param key
+     *            the key for which to register the service under
+     * @return this configuration
+     * @see #key()
+     */
+    default ServiceConfiguration<T> exportAs(Class<? super T> key) {
+        return exportAs(Key.of(key));
+    }
+
+    /**
+     * Registers this service under the specified key.
+     *
+     * @param key
+     *            the key for which to register the service under
+     * @return this configuration
+     * @see #key()
+     */
+    ServiceConfiguration<T> exportAs(Key<? super T> key);
+
+    /** {@return the key that the service is exported under}. */
+    Optional<Key<?>> exportedAs();
+
+    default ProvisionMode mode() {
+        throw new UnsupportedOperationException();
+    }
+
+    ServiceConfiguration<T> provide();
+
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -32,7 +69,9 @@ public interface ServiceConfiguration<T> {
      * @return this configuration
      * @see #as(Key)
      */
-    ServiceConfiguration<T> as(Class<? super T> key);
+    default ServiceConfiguration<T> provideAs(Class<? super T> key) {
+        return provideAs(Key.of(key));
+    }
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
@@ -43,8 +82,8 @@ public interface ServiceConfiguration<T> {
      * @return this configuration
      * @see #as(Class)
      */
-    ServiceConfiguration<T> as(Key<? super T> key);
+    ServiceConfiguration<T> provideAs(Key<? super T> key);
 
-    // Once a bean has been exported, its key cannot be changed...
-    ExportedServiceConfiguration<T> export();
+    Optional<Key<?>> providedAs();
+
 }
