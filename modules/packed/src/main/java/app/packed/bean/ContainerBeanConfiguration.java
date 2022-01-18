@@ -61,6 +61,10 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
         return bean().defaultKey();
     }
 
+    public void export() {
+        bean().sourceExport();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final BeanKind kind() {
@@ -92,7 +96,7 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
         bean().sourceProvideAs(key);
         return this;
     }
-
+// Ser dum ud naar man laver completion
     public Optional<Key<?>> providedAs() {
         return Optional.ofNullable(provide);
     }

@@ -261,7 +261,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     // Fungere ikke rigtig med mi
-    public <T> ServiceConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
+    public <T> ContainerBeanConfiguration<T> provide(ContainerBeanConfiguration<T> bean) {
         throw new UnsupportedOperationException();
     }
 
@@ -276,7 +276,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
+    public <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
 //        // Create a bean driver by binding a factory
 //        @SuppressWarnings("unchecked")
 //        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(SINGLETON_SERVICE_BEAN_BINDER, factory);
@@ -321,18 +321,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
+    public <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
         BeanMaker<T> bh = use(BeanSupport.class).newMakerInstance(UserOrExtension.user(), instance);
         ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
 
         return sbc.provide();
-//        
-//        
-//        // Create the bean driver by binding the implementation
-//        @SuppressWarnings("unchecked")
-//        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wireInstance(SINGLETON_SERVICE_BEAN_BINDER, instance);
-//
-//        return c.provide();
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {

@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.inject.ReflectionFactory;
 import app.packed.inject.service.ServiceBeanConfiguration;
 import packed.internal.service.sandbox.Injector;
@@ -44,8 +45,8 @@ public class ProvideTest {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ServiceBeanConfiguration<A> a = conf.provide(A.class);
-            ServiceBeanConfiguration<B> b = conf.provide(ReflectionFactory.of(B.class));
-            ServiceBeanConfiguration<C> c = conf.provideInstance(C0);
+            ContainerBeanConfiguration<B> b = conf.provide(ReflectionFactory.of(B.class));
+            ContainerBeanConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             ServiceBeanConfiguration<H> h = conf.providePrototype(H.class);
@@ -56,7 +57,7 @@ public class ProvideTest {
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            ServiceBeanConfiguration<A> sc = e.provideInstance(A0);
+            ContainerBeanConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, true, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -74,11 +75,11 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(ServiceBeanConfiguration<?> sc, boolean isConstant, Key<?> key) {
+    static void testConfiguration(ContainerBeanConfiguration<?> sc, boolean isConstant, Key<?> key) {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;
-        assertThat(sc.key().get()).isEqualTo(Key.of(A.class));
+        assertThat(sc.providedAs().get()).isEqualTo(Key.of(A.class));
         // assertThat(sc.tags().isEmpty());
     }
 }

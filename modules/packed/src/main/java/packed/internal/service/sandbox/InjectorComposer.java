@@ -18,6 +18,7 @@ package packed.internal.service.sandbox;
 import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -120,7 +121,7 @@ public final class InjectorComposer extends Composer {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
+    public <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
         return extension().provide(factory);
     }
 
@@ -182,7 +183,7 @@ public final class InjectorComposer extends Composer {
     // All annotations will be processed like provide() except that constructors will not be processed
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
-    public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
+    public <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
         return extension().provideInstance(instance);
     }
 

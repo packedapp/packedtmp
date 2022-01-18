@@ -216,7 +216,7 @@ public abstract class BaseAssembly extends Assembly {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
         return service().provide(factory);
     }
 
@@ -237,7 +237,7 @@ public abstract class BaseAssembly extends Assembly {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    protected final <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
+    protected final <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
         return service().provideInstance(instance);
     }
 
