@@ -201,8 +201,8 @@ public abstract class BaseAssembly extends Assembly {
      * @return a configuration object for the service bean
      * @see ServiceExtension#provide(Class)
      */
-    protected final <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
-        return service().provide(implementation);
+    protected final <T> ContainerBeanConfiguration<T> provide(Class<T> implementation) {
+        return install(implementation).provide();
     }
 
     /**
@@ -217,7 +217,7 @@ public abstract class BaseAssembly extends Assembly {
      * @return the configuration of the component that was installed
      */
     protected final <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
-        return service().provide(factory);
+        return install(factory).provide();
     }
 
     protected final void provideAll(ServiceLocator locator) {
@@ -238,7 +238,7 @@ public abstract class BaseAssembly extends Assembly {
      * @return a service configuration for the service
      */
     protected final <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
-        return service().provideInstance(instance);
+        return installInstance(instance).provide();
     }
 
     protected final <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
