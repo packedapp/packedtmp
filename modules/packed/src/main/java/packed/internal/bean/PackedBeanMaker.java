@@ -18,7 +18,7 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanMaker;
-import app.packed.bean.hooks.usage.BeanType;
+import app.packed.bean.hooks.usage.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;
@@ -42,7 +42,7 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
 
     final RealmSetup realm;
 
-    BeanType kind = BeanType.CONTAINER_BEAN;
+    BeanOldKind kind = BeanOldKind.CONTAINER_BEAN;
 
     boolean extensionBean;
     /** A model of the hooks on the bean. */
@@ -99,7 +99,7 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
 //        else if (kind != BeanType.BASE) {
 //            throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
 //        }
-        this.kind = BeanType.PROTOTYPE_UNMANAGED;
+        this.kind = BeanOldKind.PROTOTYPE_UNMANAGED;
     }
 
     public void extensionBean() {

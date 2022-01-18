@@ -21,7 +21,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanMaker;
-import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.UnmanagedBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.service.ServiceableBean;
@@ -36,7 +36,7 @@ import packed.internal.util.ThrowableUtil;
  */
 // Har vi 2 klasser? ServiceConfiguration + ExportableServiceContainer
 // Taenker vi kan bruge den ved composer as well.
-public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfiguration<T> {
+public class ServicePrototypeBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);

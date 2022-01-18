@@ -11,7 +11,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.hooks.usage.BeanType;
+import app.packed.bean.hooks.usage.BeanOldKind;
 import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
@@ -34,8 +34,14 @@ import packed.internal.util.ThrowableUtil;
 /** The build-time configuration of a bean. */
 public final class BeanSetup extends ComponentSetup implements DependencyProducer {
 
-    /* Information about the type of bean. */
-    public final BeanType beanType;
+    /** A handle for invoking the protected method {@link Extension#onClose()}. */
+    private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
+            "onWired", void.class);
+
+    final PackedBeanMaker<?> beanHandle;
+
+    /** The kind of bean we are configuring. */
+    public final BeanOldKind beanKind;
 
     /**
      * Non-null if a bean instance needs to be created at runtime. This include beans that have an empty constructor (no
@@ -62,29 +68,13 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    /** A handle for invoking the protected method {@link Extension#onClose()}. */
-    private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
-            "onWired", void.class);
-
-    final PackedBeanMaker<?> beanHandle;
-
-    @Override
-    public void onWired() {
-        try {
-            MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact((ComponentConfiguration) beanHandle.configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        super.onWired();
-    }
-
     public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanMaker<?> beanHandle) {
         super(container.application, realm, lifetime, container);
-        this.beanType = BeanType.CONTAINER_BEAN;
+        this.beanKind = BeanOldKind.CONTAINER_BEAN;
         this.factory = beanHandle.factory;
         this.hookModel = beanHandle.hookModel;
         this.beanHandle = beanHandle;
-        this.singletonHandle = beanHandle.kind == BeanType.CONTAINER_BEAN ? lifetime.pool.reserve(beanHandle.beanType) : null;
+        this.singletonHandle = beanHandle.kind == BeanOldKind.CONTAINER_BEAN ? lifetime.pool.reserve(beanHandle.beanType) : null;
 
         if (realm instanceof ExtensionRealmSetup s) {
             container.useExtensionSetup(s.realmType(), null).beans.beans.put(Key.of(beanHandle.beanType), this);
@@ -151,6 +141,16 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Override
     public BeanMirror mirror() {
         return new BuildTimeBeanMirror();
+    }
+
+    @Override
+    public void onWired() {
+        try {
+            MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact((ComponentConfiguration) beanHandle.configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        super.onWired();
     }
 
     /** A build-time bean mirror. */

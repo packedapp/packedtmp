@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.hooks.usage.BeanType;
+import app.packed.bean.hooks.usage.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServicePrototypeBeanConfiguration;
@@ -18,9 +18,9 @@ import packed.internal.invoke.Infuser;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> implements OldBeanDriver.OtherBeanDriver<T, C> {
 
-    /** A {@link BeanType#CONTAINER_BEAN} bean binder. */
+    /** A {@link BeanOldKind#CONTAINER_BEAN} bean binder. */
     public static final PackedBeanDriverBinder SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            ServicePrototypeBeanConfiguration.class, BeanType.CONTAINER_BEAN);
+            ServicePrototypeBeanConfiguration.class, BeanOldKind.CONTAINER_BEAN);
 
 //    /** A {@link BeanType#STATIC} bean binder. */
 //    public static final PackedBeanDriverBinder STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
@@ -28,9 +28,9 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
 
     final MethodHandle constructor;
 
-    final BeanType kind;
+    final BeanOldKind kind;
 
-    public PackedBeanDriverBinder(MethodHandle constructor, BeanType kind) {
+    public PackedBeanDriverBinder(MethodHandle constructor, BeanOldKind kind) {
         this.kind = requireNonNull(kind);
         this.constructor = constructor;
     }
@@ -60,7 +60,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
     /** {@inheritDoc} */
     public PackedBeanDriver<C> bind(Factory<? extends T> factory) {
         requireNonNull(factory, "factory is bull");
-        if (kind == BeanType.FUNCTIONAL_BEAN) {
+        if (kind == BeanOldKind.FUNCTIONAL_BEAN) {
             throw new UnsupportedOperationException("Cannot bind a factory to a static bean.");
         }
         return new PackedBeanDriver(this, factory.rawType(), factory);
@@ -73,17 +73,17 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
             throw new IllegalArgumentException("Cannot bind a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Factory instance to this method, was " + instance);
-        } else if (kind != BeanType.CONTAINER_BEAN) {
+        } else if (kind != BeanOldKind.CONTAINER_BEAN) {
             throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
         }
         return new PackedBeanDriver(this, instance.getClass(), instance);
     }
 
-    public BeanType kind() {
+    public BeanOldKind kind() {
         return kind;
     }
 
-    public static <T, C extends BeanConfiguration<?>> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanType kind) {
+    public static <T, C extends BeanConfiguration<?>> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanOldKind kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)

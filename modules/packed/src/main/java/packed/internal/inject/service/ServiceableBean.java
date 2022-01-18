@@ -27,7 +27,7 @@ import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 /**
  *
  */
-public class ServiceableBean {
+public final class ServiceableBean {
     final BeanSetup bean;
 
     Key<?> export;

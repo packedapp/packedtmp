@@ -3,7 +3,7 @@ package app.packed.bean.hooks.usage;
 /**
  *
  */
-public enum BeanType {
+public enum BeanOldKind {
 
     /**
      * A static bean.
