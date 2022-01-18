@@ -17,7 +17,6 @@ package app.packed.inject.service;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
@@ -25,6 +24,7 @@ import app.packed.bean.BeanMaker;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import packed.internal.bean.BeanSetup;
+import packed.internal.inject.service.ServiceableBean;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -40,9 +40,12 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
-
+    
+    private final ServiceableBean sb;
+    
     public ServicePrototypeBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
+        this.sb = new ServiceableBean(bean());
     }
 
     /**
@@ -68,17 +71,9 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
      * @see #as(Class)
      */
     public ServicePrototypeBeanConfiguration<T> as(Key<? super T> key) {
-        provideAsService(key);
+        bean().sourceProvideAs(key);
         return this;
     }
-
-//    public ServiceBeanConfiguration<T> asNone() {
-//        // Ideen er vi f.eks. kan
-          // exportOnlyAs()
-//        // asNone().exportAs(Doo.class);
-//        provideAsService(null);
-//        return this;
-//    }
 
     /** {@return the container setup instance that we are wrapping.} */
     private BeanSetup bean() {
@@ -88,6 +83,14 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
             throw ThrowableUtil.orUndeclared(e);
         }
     }
+
+//    public ServiceBeanConfiguration<T> asNone() {
+//        // Ideen er vi f.eks. kan
+          // exportOnlyAs()
+//        // asNone().exportAs(Doo.class);
+//        provideAsService(null);
+//        return this;
+//    }
 
     public ServicePrototypeBeanConfiguration<T> export() {
         bean().sourceExport();
@@ -101,19 +104,14 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
         return this;
     }
 
+    @Override
+    protected void onWired() {
+        super.onWired();
+        sb.onWired();
+    }
+
     public ServicePrototypeBeanConfiguration<T> provide() {
         super.provide();
         return this;
-    }
-
-    // The key unless asNone()
-
-    protected void provideAsService(Key<?> key) {
-        bean().sourceProvideAs(key);
-    }
-
-    protected Optional<Key<?>> sourceProvideAsKey() {
-        return super.providedAs();
-        //return bean().sourceProvideAsKey();
     }
 }

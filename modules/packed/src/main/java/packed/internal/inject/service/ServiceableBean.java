@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,6 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.service.InternalServiceUtil;
-import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 
 /**
@@ -36,7 +34,7 @@ public class ServiceableBean {
 
     Key<?> provide;
 
-    ServiceableBean(BeanSetup bean) {
+    public ServiceableBean(BeanSetup bean) {
         this.bean = requireNonNull(bean);
     }
 
@@ -54,7 +52,7 @@ public class ServiceableBean {
         }
     }
 
-    Key<?> defaultKey() {
+    public Key<?> defaultKey() {
         return bean.defaultKey();
     }
 

@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import packed.internal.bean.BeanSetup;
+import packed.internal.inject.service.ServiceableBean;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -36,6 +37,14 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
 
+    /** {@return the container setup instance that we are wrapping.} */
+    private BeanSetup bean() {
+        try {
+            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration<?>) this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
     private final ServiceableBean sb;
 
     /**
@@ -46,14 +55,6 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
         this.sb = new ServiceableBean(bean());
     }
 
-    /** {@return the container setup instance that we are wrapping.} */
-    private BeanSetup bean() {
-        try {
-            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration<?>) this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
 
     Key<?> defaultKey() {
         return sb.defaultKey();
