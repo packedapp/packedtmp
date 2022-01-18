@@ -20,11 +20,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.service.InternalServiceUtil;
-import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -40,10 +36,6 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
 
-    Key<?> export;
-
-    Key<?> provide;
-
     private final ServiceableBean sb;
 
     /**
@@ -52,21 +44,6 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     public ContainerBeanConfiguration(BeanMaker<T> maker) {
         super(maker);
         this.sb = new ServiceableBean(bean());
-    }
-
-    @Override
-    protected void onWired() {
-        if (provide == null && export == null) {
-            return;
-        }
-        ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
-        BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean(), provide);
-        if (provide != null) {
-            sms.addService(setup);
-        }
-        if (export != null) {
-            sms.exports().export(setup);
-        }
     }
 
     /** {@return the container setup instance that we are wrapping.} */
@@ -79,12 +56,12 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     }
 
     Key<?> defaultKey() {
-        return bean().defaultKey();
+        return sb.defaultKey();
     }
 
-    public void export() {
-        export = InternalServiceUtil.checkKey(bean().hookModel.clazz, bean().defaultKey());
-        bean.parent.useExtension(ServiceExtension.class);
+    public ContainerBeanConfiguration<T> export() {
+        sb.export();
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -100,27 +77,29 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
         return this;
     }
 
+    @Override
+    protected void onWired() {
+        sb.onWired();
+    }
+
     public ContainerBeanConfiguration<T> provide() {
-        provide = InternalServiceUtil.checkKey(bean().hookModel.clazz, bean().defaultKey());
-        bean.parent.useExtension(ServiceExtension.class);
+        sb.provide();
         return this;
     }
 
     public ContainerBeanConfiguration<T> provideAs(Class<?> key) {
-        provide = InternalServiceUtil.checkKey(bean().hookModel.clazz, key);
-        bean.parent.useExtension(ServiceExtension.class);
+        sb.provideAs(key);
         return this;
     }
 
     public ContainerBeanConfiguration<T> provideAs(Key<?> key) {
-        provide = InternalServiceUtil.checkKey(bean().hookModel.clazz, key);
-        bean.parent.useExtension(ServiceExtension.class);
+        sb.provideAs(key);
         return this;
     }
 
 // Ser dum ud naar man laver completion
     public Optional<Key<?>> providedAs() {
-        return Optional.ofNullable(provide);
+        return sb.providedAs();
     }
 }
 //

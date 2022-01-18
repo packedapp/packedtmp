@@ -89,8 +89,9 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
         }
     }
 
-    public void export() {
+    public ServicePrototypeBeanConfiguration<T> export() {
         bean().sourceExport();
+        return this;
     }
 
     /** {@inheritDoc} */
