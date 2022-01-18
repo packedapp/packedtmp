@@ -44,7 +44,7 @@ public class ProvideTest {
     public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            ServiceBeanConfiguration<A> a = conf.provide(A.class);
+            ContainerBeanConfiguration<A> a = conf.provide(A.class);
             ContainerBeanConfiguration<B> b = conf.provide(ReflectionFactory.of(B.class));
             ContainerBeanConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();

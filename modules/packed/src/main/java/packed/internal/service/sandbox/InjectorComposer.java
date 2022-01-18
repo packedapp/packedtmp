@@ -105,8 +105,9 @@ public final class InjectorComposer extends Composer {
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
      */
-    public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
+    public <T> ContainerBeanConfiguration<T> provide(Class<T> implementation) {
         return extension().provide(implementation);
+        //return configuration.use(BeanExtension.class).install(implementation).provide();
     }
 
     /**

@@ -36,7 +36,7 @@ public class InjectorHasService {
         Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
-            c.provide(A.class).as(new Key<@Left A>() {});
+            c.provide(A.class).provideAs(new Key<@Left A>() {});
         });
 
         assertThat(i.contains(A.class)).isTrue();

@@ -199,7 +199,6 @@ public abstract class BaseAssembly extends Assembly {
      * @param implementation
      *            the bean implementation that should be instantiated and provided as a service
      * @return a configuration object for the service bean
-     * @see ServiceExtension#provide(Class)
      */
     protected final <T> ContainerBeanConfiguration<T> provide(Class<T> implementation) {
         return install(implementation).provide();

@@ -39,7 +39,7 @@ public class InjectorWithTest {
         Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
-            c.provide(A.class).as(new Key<@Left A>() {});
+            c.provide(A.class).provideAs(new Key<@Left A>() {});
         });
 
         assertThat(i.use(A.class)).isInstanceOf(A.class);
