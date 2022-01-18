@@ -23,6 +23,7 @@ import app.packed.base.Key;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -53,11 +54,11 @@ public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<
     protected void onWired() {
         if (provide != null) {
             ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
-            //sms.addService(new BeaznInstanceServiceSetup(bean(), provide));
+            //sms.addService(new BeanInstanceServiceSetup(bean(), provide));
         }
         if (export != null) {
             ServiceManagerSetup sms = bean().parent.beans.getServiceManager();
-            //sms.exports().export(new BeanInstanceServiceSetup(bean(), export));
+            sms.exports().export(new BeanInstanceServiceSetup(bean(), export));
             //parent.beans.getServiceManagerOrCreate().exports().export(service);
         }
     }

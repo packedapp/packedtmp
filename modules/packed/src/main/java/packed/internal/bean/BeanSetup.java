@@ -165,7 +165,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;
         if (s == null) {
-            s = service = parent.beans.getServiceManagerOrCreate().provideSource(this, defaultKey());
+           // parent.beans.getServiceManagerOrCreate();
+           s = service = parent.beans.getServiceManagerOrCreate().provideSource(this, defaultKey());
         }
         return s;
     }
