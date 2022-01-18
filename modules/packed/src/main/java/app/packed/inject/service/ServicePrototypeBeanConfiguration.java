@@ -58,7 +58,8 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
      * @see #as(Key)
      */
     public ServicePrototypeBeanConfiguration<T> as(Class<? super T> key) {
-        return as(Key.of(key));
+        sb.provideAs(key);
+        return this;
     }
 
     /**
@@ -71,7 +72,7 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
      * @see #as(Class)
      */
     public ServicePrototypeBeanConfiguration<T> as(Key<? super T> key) {
-        bean().sourceProvideAs(key);
+        sb.provideAs(key);
         return this;
     }
 
@@ -93,7 +94,7 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
 //    }
 
     public ServicePrototypeBeanConfiguration<T> export() {
-        bean().sourceExport();
+        sb.export();
         return this;
     }
 
@@ -111,7 +112,7 @@ public class ServicePrototypeBeanConfiguration<T> extends ContainerBeanConfigura
     }
 
     public ServicePrototypeBeanConfiguration<T> provide() {
-        super.provide();
+        sb.provide();
         return this;
     }
 }

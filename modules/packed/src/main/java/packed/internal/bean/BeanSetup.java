@@ -1,7 +1,5 @@
 package packed.internal.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
@@ -28,7 +26,6 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.LookupUtil;
@@ -59,12 +56,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     /** A model of the hooks on the bean. */
     public final HookModel hookModel;
-
-    /** A service object if the source is provided as a service. */
-    // Would be nice if we could move it somewhere else.. Like Listener
-    @Nullable
-    @Deprecated
-    private ServiceSetup service;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     // What if managed prototype bean????
@@ -160,32 +151,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Override
     public BeanMirror mirror() {
         return new BuildTimeBeanMirror();
-    }
-
-    public ServiceSetup provide() {
-        // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        ServiceSetup s = service;
-        if (s == null) {
-           // parent.beans.getServiceManagerOrCreate();
-           s = service = parent.beans.getServiceManagerOrCreate().provideSource(this, defaultKey());
-        }
-        return s;
-    }
-
-    public <T> void sourceExport() {
-        sourceProvide();
-        parent.beans.getServiceManagerOrCreate().exports().export(service);
-    }
-
-    public void sourceProvide() {
-        realm.checkOpen();
-        provide();
-    }
-
-    public void sourceProvideAs(Key<?> key) {
-        requireNonNull(key, "key is null");
-        realm.checkOpen();
-        provide().as(key);
     }
 
     /** A build-time bean mirror. */
