@@ -15,10 +15,22 @@
  */
 package packed.internal.bean.hooks.usesite;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Modifier;
+
 import app.packed.base.Nullable;
+import app.packed.build.BuildException;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
+import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.build.BeanMemberServiceSetup;
+import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.lifetime.LifetimePoolMethodAccessor;
+import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /**
@@ -26,10 +38,33 @@ import packed.internal.lifetime.PoolEntryHandle;
  */
 public final class BeanMemberDependencyNode extends DependencyNode {
 
-    public BeanMemberDependencyNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
-        super(source, smm, dependencyProviders);
-    }
+    @Nullable
+    protected final UseSiteMemberHookModel sourceMember;
+
+    @Nullable
+    protected final BeanMemberServiceSetup service;
     
+    public BeanMemberDependencyNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+        super(source, smm.dependencies, smm.methodHandle(), dependencyProviders);
+
+        if (smm.provideAskey != null) {
+            if (!Modifier.isStatic(smm.getModifiers()) && bean.singletonHandle == null) {
+                throw new BuildException("Not okay)");
+            }
+            ServiceManagerSetup sbm = bean.parent.beans.getServiceManagerOrCreate();
+            ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
+            sbm.addService(sa);
+        } else {
+            this.service = null;
+        }
+        
+        this.sourceMember = requireNonNull(smm);
+
+        if (!Modifier.isStatic(smm.getModifiers())) {
+            dependencyProviders[0] = bean;
+        }
+    }
+
     @Nullable
     protected PoolEntryHandle poolAccessor() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
@@ -38,5 +73,38 @@ public final class BeanMemberDependencyNode extends DependencyNode {
             return service.accessor;
         }
         return null;
+    }
+
+    // All dependencies have been successfully resolved
+    /**
+     * All of this consumers dependencies have been resolved
+     * 
+     * @param pool
+     */
+    public void onAllDependenciesResolved(LifetimePoolSetup pool) {
+        super.onAllDependenciesResolved(pool);
+
+        if (bean.singletonHandle != null) {
+            // Maybe shared with SourceAssembly
+
+            if (sourceMember.provideAskey == null) {
+                MethodHandle mh1 = runtimeMethodHandle();
+
+                // RuntimeRegionInvoker
+                // the method on the sidecar: sourceMember.model.onInitialize
+
+                // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
+                if (sourceMember instanceof UseSiteMethodHookModel msm) {
+                    if (msm.bootstrapModel.onInitialize != null) {
+                        // System.out.println(msm.model.onInitialize);
+                        MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
+
+                        mh2 = mh2.bindTo(mh1);
+
+                        bean.application.container.lifetime.initializers.add(mh2);
+                    }
+                }
+            }
+        }
     }
 }

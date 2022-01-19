@@ -20,6 +20,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import packed.internal.bean.inject.DependencyNode;
+import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.lifetime.PoolEntryHandle;
 
@@ -30,11 +31,9 @@ import packed.internal.lifetime.PoolEntryHandle;
 public final class BeanInstanceDependencyNode extends DependencyNode {
 
     public BeanInstanceDependencyNode(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
-        super(source, dependencies, mh);
+        super(source, dependencies, mh, new DependencyProducer[mh.type().parameterCount()]);
     }
-    
-    
-    
+
     @Nullable
     protected PoolEntryHandle poolAccessor() {
         return bean.singletonHandle;

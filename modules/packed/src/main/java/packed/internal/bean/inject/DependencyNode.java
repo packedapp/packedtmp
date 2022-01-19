@@ -20,27 +20,19 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.build.BuildException;
 import packed.internal.bean.BeanInstanceDependencyNode;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.usesite.HookModel;
-import packed.internal.bean.hooks.usesite.UseSiteMemberHookModel;
-import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.BeanMemberServiceSetup;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePool;
-import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.lifetime.PoolEntryHandle;
@@ -62,60 +54,27 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     /** A method handle to the underlying constructor, method, field, factory ect. */
     public final MethodHandle originalMethodHandle;
 
-    /** The method handle that is used at runtime and delegates to {@link #originalMethodHandle} */
-    MethodHandle runtimeMethodHandle;
-
     /** Resolved dependencies. Must match the number of parameters in {@link #originalMethodHandle}. */
     public final DependencyProducer[] producers;
 
-    //////////////////////////////////////////////
-    //////////////////////////////////////////////
-
     public final int providerDelta;
 
-    @Nullable
-    protected final BeanMemberServiceSetup service;
+    //////////////////////////////////////////////
+    //////////////////////////////////////////////
 
-    @Nullable
-    protected final UseSiteMemberHookModel sourceMember;
+    /** The method handle that is used at runtime and delegates to {@link #originalMethodHandle} */
+    MethodHandle runtimeMethodHandle;
 
-    // Constructing something from a Factory
-    protected DependencyNode(BeanSetup bean, List<InternalDependency> dependencies, MethodHandle mh) {
+
+    // Field/Method hook
+    protected DependencyNode(BeanSetup bean, List<InternalDependency> dependencies, MethodHandle mh, DependencyProducer[] dependencyProviders) {
         this.bean = requireNonNull(bean);
-        this.sourceMember = null;
 
-        this.service = null; // Any build entry is stored in SourceAssembly#service
         this.dependencies = dependencies;
         this.originalMethodHandle = mh;
 
-        this.providerDelta = 0;
-        this.producers = new DependencyProducer[originalMethodHandle.type().parameterCount()];
-    }
-
-    // Field/Method hook
-    protected DependencyNode(BeanSetup bean, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
-        this.bean = requireNonNull(bean);
-        this.sourceMember = requireNonNull(smm);
-
-        if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && bean.singletonHandle == null) {
-                throw new BuildException("Not okay)");
-            }
-            ServiceManagerSetup sbm = bean.parent.beans.getServiceManagerOrCreate();
-            ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
-            sbm.addService(sa);
-        } else {
-            this.service = null;
-        }
-        this.dependencies = smm.dependencies;
-        this.originalMethodHandle = smm.methodHandle();
-
         this.producers = dependencyProviders;
         this.providerDelta = producers.length == dependencies.size() ? 0 : 1;
-
-        if (!Modifier.isStatic(smm.getModifiers())) {
-            dependencyProviders[0] = bean;
-        }
     }
 
     // All dependencies have been successfully resolved
@@ -137,30 +96,6 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         }
         needsPostProcessing = false;
 
-        if (sourceMember != null) {
-            if (bean.singletonHandle != null) {
-                // Maybe shared with SourceAssembly
-
-                if (sourceMember.provideAskey == null) {
-                    MethodHandle mh1 = runtimeMethodHandle();
-
-                    // RuntimeRegionInvoker
-                    // the method on the sidecar: sourceMember.model.onInitialize
-
-                    // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                    if (sourceMember instanceof UseSiteMethodHookModel msm) {
-                        if (msm.bootstrapModel.onInitialize != null) {
-                            // System.out.println(msm.model.onInitialize);
-                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
-
-                            mh2 = mh2.bindTo(mh1);
-
-                            bean.application.container.lifetime.initializers.add(mh2);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     protected abstract PoolEntryHandle poolAccessor();
