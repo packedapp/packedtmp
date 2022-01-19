@@ -1,7 +1,7 @@
 package app.packed.bean;
 
 // ExtensionManagedBean?
-public non-sealed class ManagedBeanConfiguration<T> extends BeanConfiguration<T> {
+public class ManagedBeanConfiguration<T> extends BeanConfiguration<T> {
 
     public ManagedBeanConfiguration(BeanMaker<T> handle) {
         super(handle);

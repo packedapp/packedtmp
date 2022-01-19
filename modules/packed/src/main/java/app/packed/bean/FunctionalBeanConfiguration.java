@@ -18,7 +18,7 @@ package app.packed.bean;
 /**
  *
  */
-public non-sealed class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
+public class FunctionalBeanConfiguration extends BeanConfiguration<Void /* -> to void with Valhalla */ > {
 
     /**
      * @param handle

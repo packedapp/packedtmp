@@ -47,7 +47,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      * @return a new service registry
      */
     public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceSetup> map) {
-        return new UnchangeableServiceRegistry(CollectionUtil.copyOf(map, b -> b.exposeAsService()));
+        return new UnchangeableServiceRegistry(CollectionUtil.copyOf(map, b -> b));
     }
 
     /** The registry implementation returned by {@link #copyOf(Map)}. */

@@ -254,7 +254,6 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
             // TODO, maybe it gets disabled the minute we start analyzing exports???
             // Nah, lige saa snart, vi begynder
 //            entry.sm.checkExportConfigurable();
-            service.as(key);
             return this;
         }
 

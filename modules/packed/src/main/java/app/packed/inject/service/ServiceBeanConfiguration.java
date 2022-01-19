@@ -36,14 +36,14 @@ import packed.internal.util.ThrowableUtil;
  */
 // Har vi 2 klasser? ServiceConfiguration + ExportableServiceContainer
 // Taenker vi kan bruge den ved composer as well.
-public class ServicePrototypeBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
+public class ServiceBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
     
     private final ServiceableBean sb;
     
-    public ServicePrototypeBeanConfiguration(BeanMaker<T> handle) {
+    public ServiceBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
         this.sb = new ServiceableBean(bean());
     }
@@ -57,7 +57,7 @@ public class ServicePrototypeBeanConfiguration<T> extends UnmanagedBeanConfigura
      * @return this configuration
      * @see #as(Key)
      */
-    public ServicePrototypeBeanConfiguration<T> as(Class<? super T> key) {
+    public ServiceBeanConfiguration<T> as(Class<? super T> key) {
         sb.provideAs(key);
         return this;
     }
@@ -71,7 +71,7 @@ public class ServicePrototypeBeanConfiguration<T> extends UnmanagedBeanConfigura
      * @return this configuration
      * @see #as(Class)
      */
-    public ServicePrototypeBeanConfiguration<T> as(Key<? super T> key) {
+    public ServiceBeanConfiguration<T> as(Key<? super T> key) {
         sb.provideAs(key);
         return this;
     }
@@ -93,14 +93,14 @@ public class ServicePrototypeBeanConfiguration<T> extends UnmanagedBeanConfigura
 //        return this;
 //    }
 
-    public ServicePrototypeBeanConfiguration<T> export() {
+    public ServiceBeanConfiguration<T> export() {
         sb.export();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ServicePrototypeBeanConfiguration<T> named(String name) {
+    public ServiceBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }
@@ -111,7 +111,7 @@ public class ServicePrototypeBeanConfiguration<T> extends UnmanagedBeanConfigura
         sb.onWired();
     }
 
-    public ServicePrototypeBeanConfiguration<T> provide() {
+    public ServiceBeanConfiguration<T> provide() {
         sb.provide();
         return this;
     }

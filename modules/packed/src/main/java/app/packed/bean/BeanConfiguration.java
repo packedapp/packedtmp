@@ -7,7 +7,6 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
-import app.packed.bean.operation.ExtensionBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.lifecycle.RunState;
 import packed.internal.bean.BeanSetup;
@@ -20,8 +19,7 @@ import packed.internal.bean.PackedBeanMaker;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract sealed class BeanConfiguration<T> extends
-        ComponentConfiguration permits ContainerBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration,FunctionalBeanConfiguration,ExtensionBeanConfiguration {
+public non-sealed abstract class BeanConfiguration<T> extends ComponentConfiguration {
 
     /** The bean we are configuring. */
     final BeanSetup bean;
@@ -35,7 +33,7 @@ public abstract sealed class BeanConfiguration<T> extends
     protected void checkIsWiring() {
         bean.checkIsActive();
     }
-    
+
     // Hmm, vi dekorere ikke fx ServiceLocator...
     // Maaske er det bedre at dekorere typer???
     //// InjectableVarSelector<T>
@@ -108,7 +106,6 @@ public abstract sealed class BeanConfiguration<T> extends
         // Maybe throw UOE instead of IAE
         return this;
     }
-
 
     /** {@inheritDoc} */
     @Override

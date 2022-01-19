@@ -37,44 +37,20 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public abstract non-sealed class ServiceSetup implements InternalService, DependencyProducer {
 
-    private boolean isKeyFrozen;
-
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
      * injected before the providing method can be invoked.
      */
-    private Key<?> key;
+    private final Key<?> key;
 
     ServiceSetup(Key<?> key) {
         this.key = requireNonNull(key);
     }
 
-    public final void as(Key<?> key) {
-        if (isKeyFrozen) {
-            throw new IllegalStateException("The key of the service can no longer be changed");
-        }
-        // requireConfigurable();
-        // validateKey(key);
-        // Det er sgu ikke lige til at validere det med generics signature....
-        // Vi validere kun raw type
-        this.key = requireNonNull(key, "key is null");
-    }
-
     @Override
     public final <T> ServiceSetup decorate(Function<? super T, ? extends T> decoratingFunction) {
         return new MappingServiceSetup(this, key, decoratingFunction);
-    }
-
-    public final Service exposeAsService() {
-        if (isKeyFrozen) {
-            return this;
-        }
-        return simple(key, isConstant());
-    }
-
-    public final void freeze() {
-        isKeyFrozen = true;
     }
 
     @Override

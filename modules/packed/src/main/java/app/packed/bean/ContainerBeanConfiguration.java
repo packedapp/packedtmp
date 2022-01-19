@@ -32,7 +32,7 @@ import packed.internal.util.ThrowableUtil;
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public non-sealed class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
+public class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
