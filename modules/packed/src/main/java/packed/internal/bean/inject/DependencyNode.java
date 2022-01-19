@@ -37,8 +37,8 @@ import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.BeanMemberServiceSetup;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
@@ -74,10 +74,10 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     public final int providerDelta;
 
     @Nullable
-    private final BeanMemberServiceSetup service;
+    protected final BeanMemberServiceSetup service;
 
     @Nullable
-    private final UseSiteMemberHookModel sourceMember;
+    protected final UseSiteMemberHookModel sourceMember;
 
     // Constructing something from a Factory
     protected DependencyNode(BeanSetup bean, List<InternalDependency> dependencies, MethodHandle mh) {
@@ -163,18 +163,8 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         }
     }
 
-    @Nullable
-    private PoolEntryHandle poolAccessor() {
-        // buildEntry is null if it this Injectable is created from a source and not @AtProvides
-        // In which case we store the build entry (if available) in the source instead
-        if (service != null) {
-            return service.accessor;
-        } else if (sourceMember != null) {
-            // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
-            return null;
-        }
-        return bean.singletonHandle;
-    }
+    protected abstract PoolEntryHandle poolAccessor();
+
 
     public void resolve(ServiceManagerSetup sbm) {
         boolean buildMH = true;

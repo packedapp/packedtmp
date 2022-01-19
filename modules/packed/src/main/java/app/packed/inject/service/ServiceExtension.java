@@ -83,7 +83,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
-    
+
 //    /** A binder for prototype service beans. */
 //    @SuppressWarnings("rawtypes")
 //    private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
@@ -167,8 +167,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
-
-
     /**
      * Provides every service from the specified locator.
      * 
@@ -187,20 +185,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         services.provideAll(l);
     }
 
-
     public <T> ServicePrototypeBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
         bh.prototype();
         ServicePrototypeBeanConfiguration<T> sbc = new ServicePrototypeBeanConfiguration<T>(bh);
-
         return sbc.provide();
-//        
-//        
-//        // Create a bean driver by binding the implementation
-//        @SuppressWarnings("unchecked")
-//        ServiceBeanConfiguration<T> c = (ServiceBeanConfiguration<T>) use(BeanSupportOld.class).wire(PROTOTYPE_SERVICE_BEAN_BINDER, implementation);
-//
-//        return c; // no provide??
     }
 
     public <T> ServicePrototypeBeanConfiguration<T> providePrototype(Factory<T> factory) {
@@ -461,7 +450,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 // checkUserConfigurable();
 // return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
 //}
-
 
 class ServiceExtensionBadIdeas {
     // Syntes anchorAll paa selve extensionen er en daarlig ide... Paa wirelets er det noget andet

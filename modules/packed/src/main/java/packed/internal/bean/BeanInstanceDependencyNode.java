@@ -18,8 +18,10 @@ package packed.internal.bean;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
+import app.packed.base.Nullable;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.InternalDependency;
+import packed.internal.lifetime.PoolEntryHandle;
 
 /**
  *
@@ -29,5 +31,12 @@ public final class BeanInstanceDependencyNode extends DependencyNode {
 
     public BeanInstanceDependencyNode(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
         super(source, dependencies, mh);
+    }
+    
+    
+    
+    @Nullable
+    protected PoolEntryHandle poolAccessor() {
+        return bean.singletonHandle;
     }
 }

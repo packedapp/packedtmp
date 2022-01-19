@@ -15,9 +15,11 @@
  */
 package packed.internal.bean.hooks.usesite;
 
+import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
+import packed.internal.lifetime.PoolEntryHandle;
 
 /**
  *
@@ -26,5 +28,15 @@ public final class BeanMemberDependencyNode extends DependencyNode {
 
     public BeanMemberDependencyNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         super(source, smm, dependencyProviders);
+    }
+    
+    @Nullable
+    protected PoolEntryHandle poolAccessor() {
+        // buildEntry is null if it this Injectable is created from a source and not @AtProvides
+        // In which case we store the build entry (if available) in the source instead
+        if (service != null) {
+            return service.accessor;
+        }
+        return null;
     }
 }
