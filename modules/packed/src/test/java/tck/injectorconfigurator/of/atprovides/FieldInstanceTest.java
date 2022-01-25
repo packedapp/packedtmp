@@ -26,7 +26,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 import app.packed.inject.ReflectionFactory;
 import app.packed.inject.service.Provide;
 import packed.internal.service.sandbox.Injector;

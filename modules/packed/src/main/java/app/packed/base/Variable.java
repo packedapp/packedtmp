@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.base;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,6 @@ import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.base.TypeToken;
 import packed.internal.bean.hooks.variable.FieldVariable;
 import packed.internal.bean.hooks.variable.ParameterVariable;
 

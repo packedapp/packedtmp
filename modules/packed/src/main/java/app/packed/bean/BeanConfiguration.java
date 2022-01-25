@@ -3,6 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
+import app.packed.bean.archive.ManagedBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionBeanConfiguration;
 import packed.internal.bean.BeanSetup;

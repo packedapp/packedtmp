@@ -23,7 +23,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ProvidableBeanConfiguration;
 import app.packed.lifecycle.OnStart;
 
 /**
@@ -239,11 +239,11 @@ public abstract class BaseAssembly extends Assembly {
         return installInstance(instance).provide();
     }
 
-    protected final <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    protected final <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         return service().providePrototype(implementation);
     }
 
-    protected final <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    protected final <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return service().providePrototype(factory);
     }
 

@@ -25,9 +25,9 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.Variable;
 import app.packed.hooks.BeanMethod;
 import app.packed.inject.Factory;
-import app.packed.inject.Variable;
 import app.packed.inject.sandbox.FactoryType;
 
 /**

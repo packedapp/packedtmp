@@ -1,9 +1,10 @@
-package app.packed.bean;
+package app.packed.bean.archive;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Map;
 
+import app.packed.bean.BeanMaker;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 

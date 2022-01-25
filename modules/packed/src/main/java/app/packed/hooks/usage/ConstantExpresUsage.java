@@ -15,9 +15,8 @@
  */
 package app.packed.hooks.usage;
 
-import app.packed.build.BuildWith;
+import app.packed.base.Variable;
 import app.packed.hooks.ContextualProvide;
-import app.packed.inject.Variable;
 import app.packed.inject.sandbox.HookBootstrap;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.variable.BeanDependency;

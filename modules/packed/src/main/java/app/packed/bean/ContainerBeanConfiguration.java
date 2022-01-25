@@ -15,15 +15,8 @@
  */
 package app.packed.bean;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-import java.util.Optional;
-
 import app.packed.base.Key;
-import packed.internal.bean.BeanSetup;
-import packed.internal.inject.service.ServiceableBean;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
+import app.packed.inject.service.ProvidableBeanConfiguration;
 
 /**
  * The configuration of a container bean.
@@ -36,36 +29,33 @@ import packed.internal.util.ThrowableUtil;
 // Og saa alligevel ikke... der er steder hvor vi fx gerne vil tage en ContainerBeanConfiguration.
 // Fx de der spi-ting
 
-public class ContainerBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+// extends ServiceBeanConfiguration... (ProvideableBeanConfiguration)
+public class ContainerBeanConfiguration<T> extends ProvidableBeanConfiguration<T> {
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
+//    /** A var handle that can update the {@link #configuration()} field in this class. */
+//    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
 
-    /** {@return the container setup instance that we are wrapping.} */
-    private BeanSetup bean() {
-        try {
-            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration) this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-    private final ServiceableBean sb;
 
     /**
      * @param maker
      */
     public ContainerBeanConfiguration(BeanMaker<T> maker) {
         super(maker);
-        this.sb = new ServiceableBean(bean());
     }
 
+//    /** {@return the container setup instance that we are wrapping.} */
+//    private BeanSetup bean() {
+//        try {
+//            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration) this);
+//        } catch (Throwable e) {
+//            throw ThrowableUtil.orUndeclared(e);
+//        }
+//    }
 
-    Key<?> defaultKey() {
-        return sb.defaultKey();
-    }
 
+    @Override
     public ContainerBeanConfiguration<T> export() {
-        sb.export();
+        super.export();
         return this;
     }
 
@@ -78,28 +68,28 @@ public class ContainerBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
 
     @Override
     protected void onWired() {
-        sb.onWired();
+        super.onWired();
+       // sb.onWired();
     }
 
+    @Override
     public ContainerBeanConfiguration<T> provide() {
-        sb.provide();
+        super.provide();
         return this;
     }
 
-    public ContainerBeanConfiguration<T> provideAs(Class<?> key) {
-        sb.provideAs(key);
+    @Override
+    public ContainerBeanConfiguration<T> provideAs(Class<? super T> key) {
+        super.provideAs(key);
         return this;
     }
 
-    public ContainerBeanConfiguration<T> provideAs(Key<?> key) {
-        sb.provideAs(key);
+    @Override
+    public ContainerBeanConfiguration<T> provideAs(Key<? super T> key) {
+        super.provideAs(key);
         return this;
     }
 
-// Ser dum ud naar man laver completion
-    public Optional<Key<?>> providedAs() {
-        return sb.providedAs();
-    }
 }
 //
 //public <X extends Runnable & Callable<String>> X foo() {

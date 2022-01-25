@@ -35,7 +35,7 @@ public enum BeanOperationSourceType {
     
     INSTANCE, // BeanInstance? Constant
     
-    FUNCTION, // FunctionalInterface + FN??? Vil mene FN er includet...
+    FUNCTION, // FunctionalInterface + FN??? Vil mene FN bliver unwrapped...
     
     CUSTOM; // Typically a MethodHandle
 }

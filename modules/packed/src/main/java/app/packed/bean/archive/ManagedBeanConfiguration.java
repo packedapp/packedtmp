@@ -1,4 +1,7 @@
-package app.packed.bean;
+package app.packed.bean.archive;
+
+import app.packed.bean.BeanMaker;
+import app.packed.bean.InstanceBeanConfiguration;
 
 // ExtensionManagedBean?
 public class ManagedBeanConfiguration<T> extends InstanceBeanConfiguration<T> {

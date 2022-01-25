@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.base;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,8 +27,9 @@ import java.util.List;
  * is modelled after {@link MethodType}.
  */
 //Som MethodType men med Annotations og generic types
-//InvokableType
-public final class FactoryType {
+//InvokableType, OperationType
+//// Ideen er lidt at en BeanOperation har en FunctionType...
+public final class FunctionType {
 
     static final Variable[] NO_VARS = {};
 
@@ -36,14 +37,14 @@ public final class FactoryType {
 
     private final Variable[] variables;
 
-    FactoryType(Variable returnType, Variable[] variables) {
+    FunctionType(Variable returnType, Variable[] variables) {
         this.returnType = returnType;
         this.variables = variables;
     }
 
     /**
-     * Return a method descriptor that is identical to this one, except that the return type has been changed to the
-     * specified type
+     * Return a factory type that is identical to this one, except that the return type has been changed to the specified
+     * type
      *
      * @param newReturn
      *            a field descriptor for the new return type
@@ -51,9 +52,9 @@ public final class FactoryType {
      *             if any argument is {@code null}
      * @return the new method descriptor
      */
-    public FactoryType changeReturnType(Variable newReturn) {
+    public FunctionType changeReturnType(Variable newReturn) {
         requireNonNull(newReturn, "newReturn is null");
-        return new FactoryType(newReturn, variables);
+        return new FunctionType(newReturn, variables);
     }
 
     /** {@return the return variable.} */
@@ -75,7 +76,7 @@ public final class FactoryType {
     public int variableCount() {
         return variables.length;
     }
-    
+
     /**
      * Return an immutable list of field descriptors for the parameter types of the method type described by this descriptor
      * 
@@ -85,17 +86,16 @@ public final class FactoryType {
         throw new UnsupportedOperationException();
     }
 
-    public static FactoryType of(Variable returnVar) {
+    public static FunctionType of(Variable returnVar) {
         requireNonNull(returnVar, "returnVar is null");
-        return new FactoryType(returnVar, NO_VARS);
+        return new FunctionType(returnVar, NO_VARS);
     }
-    
 
-    static FactoryType ofExecutable(Executable e) {
+    static FunctionType ofExecutable(Executable e) {
         throw new UnsupportedOperationException();
     }
 
-    static FactoryType ofMethodType(MethodType methodType) {
+    static FunctionType ofMethodType(MethodType methodType) {
         throw new UnsupportedOperationException();
     }
 

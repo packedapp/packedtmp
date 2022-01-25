@@ -15,7 +15,7 @@
  */
 package app.packed.hooks.usage;
 
-import app.packed.inject.Variable;
+import app.packed.base.Variable;
 import app.packed.inject.variable.BeanDependency.VariableInjector;
 
 /**

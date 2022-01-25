@@ -17,11 +17,12 @@ package app.packed.inject.service;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanMaker;
-import app.packed.bean.UnmanagedBeanConfiguration;
+import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.service.ServiceableBean;
@@ -38,44 +39,16 @@ import packed.internal.util.ThrowableUtil;
 // Taenker vi kan bruge den ved composer as well.
 
 // Tror vi dropper den her, og saa kun har ProvideableBeanConfiguration
-public class ServiceBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
+public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
     
     private final ServiceableBean sb;
     
-    public ServiceBeanConfiguration(BeanMaker<T> handle) {
+    public ProvidableBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
         this.sb = new ServiceableBean(bean());
-    }
-
-    /**
-     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
-     * null, any existing binding is removed.
-     *
-     * @param key
-     *            the key to bind to
-     * @return this configuration
-     * @see #as(Key)
-     */
-    public ServiceBeanConfiguration<T> as(Class<? super T> key) {
-        sb.provideAs(key);
-        return this;
-    }
-
-    /**
-     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
-     * null, any existing binding is removed.
-     *
-     * @param key
-     *            the key to bind to
-     * @return this configuration
-     * @see #as(Class)
-     */
-    public ServiceBeanConfiguration<T> as(Key<? super T> key) {
-        sb.provideAs(key);
-        return this;
     }
 
     /** {@return the container setup instance that we are wrapping.} */
@@ -87,6 +60,18 @@ public class ServiceBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
         }
     }
 
+    public ProvidableBeanConfiguration<T> export() {
+        sb.export();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ProvidableBeanConfiguration<T> named(String name) {
+        super.named(name);
+        return this;
+    }
+
 //    public ServiceBeanConfiguration<T> asNone() {
 //        // Ideen er vi f.eks. kan
           // exportOnlyAs()
@@ -95,26 +80,53 @@ public class ServiceBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
 //        return this;
 //    }
 
-    public ServiceBeanConfiguration<T> export() {
-        sb.export();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ServiceBeanConfiguration<T> named(String name) {
-        super.named(name);
-        return this;
-    }
-
     @Override
     protected void onWired() {
         super.onWired();
         sb.onWired();
     }
 
-    public ServiceBeanConfiguration<T> provide() {
+    public ProvidableBeanConfiguration<T> provide() {
         sb.provide();
         return this;
     }
+
+    /**
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
+     *
+     * @param key
+     *            the key to bind to
+     * @return this configuration
+     * @see #provideAs(Key)
+     */
+    public ProvidableBeanConfiguration<T> provideAs(Class<? super T> key) {
+        sb.provideAs(key);
+        return this;
+    }
+
+    /**
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
+     *
+     * @param key
+     *            the key to bind to
+     * @return this configuration
+     * @see #provideAs(Class)
+     */
+    public ProvidableBeanConfiguration<T> provideAs(Key<? super T> key) {
+        sb.provideAs(key);
+        return this;
+    }
+    
+
+ // Ser dum ud naar man laver completion
+     public Optional<Key<?>> providedAs() {
+         return sb.providedAs();
+     }
+     
+
+     Key<?> defaultKey() {
+         return sb.defaultKey();
+     }
 }

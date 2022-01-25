@@ -74,10 +74,19 @@ public interface Instance {
      */
     NamespacePath path();
 
-    boolean isStateless(); //en component metode???
+    boolean isStateless(); // en component metode???
     // What if stateless? empty string
+
     String state();
 }
+
+/**
+*
+*/
+interface InstanceStream {
+
+}
+
 //Tror bedre man kan snakke om component instances
 
 //Hvorfor runtime component

@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.inject.Variable;
+import app.packed.base.Variable;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;

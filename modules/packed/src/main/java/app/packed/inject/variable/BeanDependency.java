@@ -23,13 +23,13 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.base.Nullable;
+import app.packed.base.Variable;
 import app.packed.hooks.BeanClass;
 import app.packed.hooks.BeanConstructor;
 import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanMethod;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
-import app.packed.inject.Variable;
 
 /**
  *

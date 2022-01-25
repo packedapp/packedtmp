@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 import app.packed.container.AssemblySetup;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;

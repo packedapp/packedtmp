@@ -1,6 +1,7 @@
 package app.packed.bean;
 
 // Maybe BeanKind instead
+//// Eller ogsaa snakker vi 
 public enum BeanKind {
 
     FUNCTIONAL_BEAN,

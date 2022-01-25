@@ -22,16 +22,16 @@ import packed.internal.container.ContainerSetup;
 // Maybe just BeanSupport, EntryPointSupport, WebSupport
 public final class BeanSupport extends ExtensionSupport {
 
-    /** The bean extension we are wrapping. */
+    /** The container we will add beans into. */
     private final ContainerSetup container;
 
-    // I think 
+    // I think
     private final Class<? extends Extension<?>> extensionType;
 
     /**
      * @param beanExtension
      */
-    BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , UserOrExtension agent */) {
+    /* package-private */ BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , UserOrExtension agent */) {
         this.container = beanExtension.container;
         this.extensionType = (extensionType);
     }
@@ -45,7 +45,12 @@ public final class BeanSupport extends ExtensionSupport {
 
         // framework will call
         // consumer(T, P) at initialization time
+    }
 
+    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ExtensionBeanConfiguration<P> provider) {
+
+        // framework will call
+        // consumer(T, P) at initialization time
     }
 
     public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {

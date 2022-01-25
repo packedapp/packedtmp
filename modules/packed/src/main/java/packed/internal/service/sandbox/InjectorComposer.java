@@ -29,7 +29,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceBeanConfiguration;
+import app.packed.inject.service.ProvidableBeanConfiguration;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 
@@ -197,11 +197,11 @@ public final class InjectorComposer extends Composer {
         
     }
 
-    public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         return extension().providePrototype(implementation);
     }
 
-    public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
 

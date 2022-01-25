@@ -17,7 +17,7 @@ package app.packed.inject.mirror;
 
 import java.util.List;
 
-import app.packed.inject.Variable;
+import app.packed.base.Variable;
 
 /**
  *

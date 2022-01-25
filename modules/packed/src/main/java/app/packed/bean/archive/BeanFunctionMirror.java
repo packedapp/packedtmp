@@ -1,4 +1,4 @@
-package app.packed.bean;
+package app.packed.bean.archive;
 
 import java.lang.reflect.Type;
 
@@ -6,7 +6,8 @@ import java.lang.reflect.Type;
  * A mirror of a function (component).
  */
 // FunctionalComponentMirror? Men saa boer de andre jo ogsaa hedde det
-public /*non-sealed */ interface BeanFunctionMirror {
+// Tror det bliver til en Operation...
+/*non-sealed */ interface BeanFunctionMirror {
 
     Type functionType();
     

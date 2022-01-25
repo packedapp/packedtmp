@@ -46,7 +46,7 @@ class SpringIntegration extends BaseAssembly {
     Map<Class<?>, Object> m = new HashMap<>();
 
     /** {@inheritDoc} */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void build() {
         for (var e : m.entrySet()) {

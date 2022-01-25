@@ -23,7 +23,7 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;

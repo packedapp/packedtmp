@@ -1,9 +1,9 @@
 package app.packed.bean;
 
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 
 // Ideen er lidt at vi kan smide den her, hvis der er noget problemer med Bean definitionen
-// F.eks. 
+// F.eks. 2 injects...
 
 // BeanDeclarationException???
 public class BeanDefinitionException extends BuildException {

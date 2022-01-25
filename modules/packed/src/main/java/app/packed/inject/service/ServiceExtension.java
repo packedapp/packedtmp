@@ -185,17 +185,17 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         services.provideAll(l);
     }
 
-    public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
         bh.prototype();
-        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
         return sbc.provide();
     }
 
-    public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), factory);
         bh.prototype();
-        ServiceBeanConfiguration<T> sbc = new ServiceBeanConfiguration<T>(bh);
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
 
         return sbc.provide();
     }

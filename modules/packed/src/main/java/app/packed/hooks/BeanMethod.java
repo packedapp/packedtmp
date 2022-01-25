@@ -30,7 +30,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass.ClassHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;

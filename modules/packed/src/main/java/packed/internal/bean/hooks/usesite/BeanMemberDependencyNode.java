@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.Nullable;
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;

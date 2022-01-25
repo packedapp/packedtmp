@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildException;
+import app.packed.component.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.exceptionhandling.PanicException;

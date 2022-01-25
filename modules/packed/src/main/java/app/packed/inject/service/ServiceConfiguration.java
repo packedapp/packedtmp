@@ -67,7 +67,7 @@ public interface ServiceConfiguration<T> {
      * @param key
      *            the key to bind to
      * @return this configuration
-     * @see #as(Key)
+     * @see #provideAs(Key)
      */
     default ServiceConfiguration<T> provideAs(Class<? super T> key) {
         return provideAs(Key.of(key));
@@ -80,7 +80,7 @@ public interface ServiceConfiguration<T> {
      * @param key
      *            the key to bind to
      * @return this configuration
-     * @see #as(Class)
+     * @see #provideAs(Class)
      */
     ServiceConfiguration<T> provideAs(Key<? super T> key);
 

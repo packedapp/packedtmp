@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;

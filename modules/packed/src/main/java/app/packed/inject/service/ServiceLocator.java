@@ -134,6 +134,9 @@ public interface ServiceLocator extends ServiceRegistry {
     <T> ServiceSelection<T> selectAssignableTo(Class<T> type);
 
     // Maaske drop withAnyQualifiers
+    // T????? den giver ikke rigtig mening syntes jeg...
+    //// Eller er det key delen vi selector paa?
+    //// Altsaa selectOnKeyType
     default <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> typePart) {
         return selectWithAnyQualifiers(TypeToken.of(typePart));
     }

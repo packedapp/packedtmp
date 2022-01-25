@@ -12,6 +12,7 @@ import packed.internal.bean.BeanSetup;
 /**
  * A mirror for a {@link BeanExtension}.
  */
+// Ved ikke om vi bare smider det direkte ind paa containeren?
 @ExtensionMember(BeanExtension.class)
 public final class BeanExtensionMirror extends ExtensionMirror /* extends Iterable<BeanMirror> */ {
 

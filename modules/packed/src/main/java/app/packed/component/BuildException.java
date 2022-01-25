@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.build;
+package app.packed.component;
 
 /**
  * An exception that is typically thrown when build phase of an application fails.
