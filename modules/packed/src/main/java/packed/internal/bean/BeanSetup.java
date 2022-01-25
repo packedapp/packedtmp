@@ -158,7 +158,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> beanType() {
+        public Class<?> beanInstanceType() {
             return hookModel.clazz;
         }
 

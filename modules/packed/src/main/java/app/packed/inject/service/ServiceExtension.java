@@ -109,7 +109,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     /** {@return the container setup instance that we are wrapping.} */
     @SuppressWarnings("unused")
-    private BeanSetup bean(BeanConfiguration<?> conf) {
+    private BeanSetup bean(BeanConfiguration conf) {
         try {
             return (BeanSetup) VH_BEAN_SETUP.get(conf);
         } catch (Throwable e) {

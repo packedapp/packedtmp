@@ -32,7 +32,11 @@ import packed.internal.util.ThrowableUtil;
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
+
+// Og saa alligevel ikke... der er steder hvor vi fx gerne vil tage en ContainerBeanConfiguration.
+// Fx de der spi-ting
+
+public class ContainerBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
@@ -40,7 +44,7 @@ public class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
     /** {@return the container setup instance that we are wrapping.} */
     private BeanSetup bean() {
         try {
-            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration<?>) this);
+            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration) this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -63,12 +67,6 @@ public class ContainerBeanConfiguration<T> extends BeanConfiguration<T> {
     public ContainerBeanConfiguration<T> export() {
         sb.export();
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final BeanKind kind() {
-        return BeanKind.CONTAINER;
     }
 
     /** {@inheritDoc} */

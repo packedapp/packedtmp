@@ -84,7 +84,7 @@ public abstract non-sealed class Assembly implements RealmSource {
     /**
      * Invoked by the runtime as part of the build process. This is where you should compose the application
      * <p>
-     * This method will never be invoked more than once on a container instance.
+     * This method will never be invoked more than once for a given assembly instance.
      * <p>
      * Note: This method should never be invoked directly by the user.
      */
@@ -124,6 +124,10 @@ public abstract non-sealed class Assembly implements RealmSource {
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
+    // maybe rename to container???? and then we .realm()
+    // and .application()? where application is limited for extension realm assemblies
+    // only application().descriptor() works
+    // saa skal Extension.configuration() vel omnavngives til .extension() + .realm() IDKx
     protected final ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
@@ -265,6 +269,10 @@ public abstract non-sealed class Assembly implements RealmSource {
     // On container or assembly???
     // Not container I think...
     // Assembly + Extension
+    // So on Realm, eller application maaske
+    // Maaske holder vi den bare paa det respektive configurations objekt.
+    // Consumer<Throwable>
+    // Tror kun vi har behov for den for extension ikke?
     final void addCloseAction(Runnable action) {
         throw new UnsupportedOperationException();
     }

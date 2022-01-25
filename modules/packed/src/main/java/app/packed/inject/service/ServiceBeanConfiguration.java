@@ -36,6 +36,8 @@ import packed.internal.util.ThrowableUtil;
  */
 // Har vi 2 klasser? ServiceConfiguration + ExportableServiceContainer
 // Taenker vi kan bruge den ved composer as well.
+
+// Tror vi dropper den her, og saa kun har ProvideableBeanConfiguration
 public class ServiceBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
@@ -79,7 +81,7 @@ public class ServiceBeanConfiguration<T> extends UnmanagedBeanConfiguration<T> {
     /** {@return the container setup instance that we are wrapping.} */
     private BeanSetup bean() {
         try {
-            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration<?>) this);
+            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration) this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

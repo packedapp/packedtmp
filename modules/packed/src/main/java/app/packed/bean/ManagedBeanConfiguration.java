@@ -1,16 +1,10 @@
 package app.packed.bean;
 
 // ExtensionManagedBean?
-public class ManagedBeanConfiguration<T> extends BeanConfiguration<T> {
+public class ManagedBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     public ManagedBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
-        
-    }
-    /** {@inheritDoc} */
-    @Override
-    public final BeanKind kind() {
-        return BeanKind.MANAGED;
     }
 
     /** {@inheritDoc} */

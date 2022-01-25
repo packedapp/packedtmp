@@ -9,7 +9,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory1;
-import app.packed.lifecycle.RunState;
 
 public class ZapAssembly extends BaseAssembly {
 
@@ -44,7 +43,7 @@ public class ZapAssembly extends BaseAssembly {
             installInstance("SDADs");
             install(My.class);
 
-            install(My.class).on(RunState.RUNNING, e -> System.out.println(e + "OK"));
+            //install(My.class).on(RunState.RUNNING, e -> System.out.println(e + "OK"));
             installInstance("adasd");
             installInstance("asdasd");
 

@@ -31,5 +31,6 @@ public interface RealmConfiguration {
 
     boolean isConfigurable();
 
+    // Vil helst ikke have extensions til at bruge dem...
     void lookup(MethodHandles.Lookup lookup);
 }

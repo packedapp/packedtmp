@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package packed.internal.invoke;
 
 /**
  *
  */
-public class ApplicationConfiguration {
-    
-    // assembly.realm
-    // assembly.container
-    // assemcly.application
-    
-    // Det eneste er 
-    
-    
-    // Restart
-    // Lifecycle
+public class D {
+
+    public static void main(String[] args) {
+        System.out.println("ASDASD");
+    }
 }
-// Ideen er lidt at kunne kalde 
-// assembly.application().

@@ -16,7 +16,7 @@ import packed.internal.invoke.Infuser;
 
 /** Implementation of {@link OldBeanDriver.OtherBeanDriver}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> implements OldBeanDriver.OtherBeanDriver<T, C> {
+public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implements OldBeanDriver.OtherBeanDriver<T, C> {
 
     /** A {@link BeanOldKind#CONTAINER_BEAN} bean binder. */
     public static final PackedBeanDriverBinder SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
@@ -83,7 +83,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
         return kind;
     }
 
-    public static <T, C extends BeanConfiguration<?>> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanOldKind kind) {
+    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanOldKind kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)

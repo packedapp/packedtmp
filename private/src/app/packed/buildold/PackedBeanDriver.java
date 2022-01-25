@@ -13,7 +13,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link OldBeanDriver}. */
-public final class PackedBeanDriver<C extends BeanConfiguration<?>> implements OldBeanDriver<C> {
+public final class PackedBeanDriver<C extends BeanConfiguration> implements OldBeanDriver<C> {
 
     /** The bean type. */
     private final Class<?> beanType;

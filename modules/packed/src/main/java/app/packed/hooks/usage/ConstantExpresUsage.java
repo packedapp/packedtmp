@@ -19,8 +19,10 @@ import app.packed.build.BuildWith;
 import app.packed.hooks.ContextualProvide;
 import app.packed.inject.Variable;
 import app.packed.inject.sandbox.HookBootstrap;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.variable.BeanDependency;
 import app.packed.inject.variable.BeanDependency.VariableInjector;
+import app.packed.inject.variable.BeanDependencyHook;
 import app.packed.lifecycle.OnInitialize;
 
 /**
@@ -28,6 +30,16 @@ import app.packed.lifecycle.OnInitialize;
  */
 public class ConstantExpresUsage {
 
+    class Impl0 extends DependencyInjectorBuilder {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void build() {
+            Plus p = variable().getAnnotation(Plus.class); // getMetaAnnotation
+            binder().injectConstant(p.arg1() + p.arg2());
+        }
+    }
+    
     abstract class Impl1 extends BeanDependency {
 
         @BuildWith
@@ -83,7 +95,7 @@ public class ConstantExpresUsage {
 
     }
 
-    @BeanDependency.Hook(bootstrap = Impl1.class)
+    @BeanDependencyHook(bootstrap = Impl1.class, extension = ServiceExtension.class)
     @interface Plus {
         int arg1();
 

@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.hooks.usage;
+
+import app.packed.inject.Variable;
+import app.packed.inject.variable.BeanDependency.VariableInjector;
 
 /**
  *
  */
-public class ApplicationConfiguration {
+public abstract class DependencyInjectorBuilder {
+
+    public final VariableInjector binder() {
+        throw new UnsupportedOperationException();
+    }
+    public final Variable variable() {
+        throw new UnsupportedOperationException();
+    }
     
-    // assembly.realm
-    // assembly.container
-    // assemcly.application
-    
-    // Det eneste er 
-    
-    
-    // Restart
-    // Lifecycle
+    protected abstract void build();
 }
-// Ideen er lidt at kunne kalde 
-// assembly.application().

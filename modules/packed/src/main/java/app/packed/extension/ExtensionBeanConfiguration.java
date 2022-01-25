@@ -1,9 +1,8 @@
-package app.packed.bean.operation;
+package app.packed.extension;
 
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMaker;
 import app.packed.bean.BeanSupport;
+import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
 /**
@@ -19,18 +18,12 @@ import app.packed.inject.Factory;
  */
 // Taenker vi flytter den til .bean egentlig
 // Har vi behov for T??? IDK
-public final class ExtensionBeanConfiguration<T> extends BeanConfiguration<T> {
+public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
      * @param handle
      */
     public ExtensionBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind kind() {
-        return BeanKind.EXTENSION;
     }
 }

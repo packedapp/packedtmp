@@ -15,21 +15,50 @@
  */
 package app.packed.hooks2;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import app.packed.extension.Extension;
+import app.packed.hooks.BeanMethod;
+
 /**
  *
  */
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Retention(RUNTIME)
+@Documented
 public @interface BeanMethodHook {
 
+    /**
+     * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+     * <p>
+     * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+     * the value of this attribute is {@code true}.
+     * 
+     * @return whether or not the implementation is allowed to invoke the target method
+     * 
+     * @see BeanMethod#methodHandle()
+     */
+    boolean allowInvoke() default false; // allowIntercept...
+
+    @SuppressWarnings("rawtypes")
+    Class<? extends Extension> extension() default Extension.class;
+    
     Class<? extends Build> buildWith();
     
-    
     abstract class Bootstrap extends Build {
-
+        
         void buildWith(Class<? extends Build> buildWith) {
             
         }
     }
-    
+ 
+    // Taenker metoderne er public saa vi kan smide en instans rundt..
+    // Fx til ServiceSupport.provide(BeanMethodHook.Build) <--- reserves usage, creates operation 
     abstract class Build {
         protected abstract void build();
     }

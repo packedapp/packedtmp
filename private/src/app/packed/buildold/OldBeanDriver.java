@@ -7,13 +7,13 @@ import app.packed.bean.BeanConfiguration;
  * <p>
  * Except for the static methods on this interface. Bean drivers cannot be created directly. Instead binders are used
  */
-public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration<?>> {
+public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration> {
 
 
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
-    /* sealed */ interface OtherBeanDriver<T, C extends BeanConfiguration<?>> {
+    /* sealed */ interface OtherBeanDriver<T, C extends BeanConfiguration> {
 
     }
 

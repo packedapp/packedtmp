@@ -32,7 +32,7 @@ import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.inject.Provider;
-import app.packed.inject.variable.BeanDependency;
+import app.packed.inject.variable.BeanDependencyHook;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
@@ -41,7 +41,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@BeanDependency.Hook
+@BeanDependencyHook(extension = ServiceExtension.class)
 public interface ServiceLocator extends ServiceRegistry {
 
     /**

@@ -26,10 +26,7 @@ import app.packed.container.Wirelet;
  * This class can only be extended through one of its subclasses {@link BeanConfiguration} or
  * {@link ContainerConfiguration}.
  */
-@SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration {
-
-    protected void onWired() {}
 
     protected abstract void checkIsWiring();
 
@@ -63,6 +60,8 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
     // Jeg tror vi replacer den med en lambda paa BeanHandle
     protected void onConfigured() {}
 
+    protected void onWired() {}
+
     /**
      * Returns the full path of the component.
      * <p>
@@ -76,8 +75,6 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * 
      * @return the path of this configuration.
      */
-    // IDK skal vi bare noejes med at have den paa mirror'et?
-    // Nej det er rart at kunne kalde den
     public abstract NamespacePath path();
 }
 //

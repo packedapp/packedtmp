@@ -5,6 +5,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
+import app.packed.inject.ReflectionFactory;
 import packed.internal.bean.PackedBeanMaker;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -39,7 +40,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanMaker<T> handle = PackedBeanMaker.ofFactory(container, UserOrExtension.user(), implementation);
+        PackedBeanMaker<T> handle = PackedBeanMaker.ofFactory(container, UserOrExtension.user(), ReflectionFactory.of(implementation));
         return new ContainerBeanConfiguration<>(handle);
     }
 

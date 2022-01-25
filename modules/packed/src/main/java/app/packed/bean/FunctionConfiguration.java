@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.bean;
 
 /**
  *
  */
-public class ApplicationConfiguration {
-    
-    // assembly.realm
-    // assembly.container
-    // assemcly.application
-    
-    // Det eneste er 
-    
-    
-    // Restart
-    // Lifecycle
+// Ved ikke hvorfor vi skal have en klasse for det
+class FunctionConfiguration {
+ // Ideen er at brugeren kan configure path'en...
+    public BeanConfiguration bean() {
+        throw new UnsupportedOperationException();
+    }
 }
-// Ideen er lidt at kunne kalde 
-// assembly.application().

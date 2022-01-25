@@ -22,7 +22,6 @@ import app.packed.bean.hooks.usage.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;
-import app.packed.inject.ReflectionFactory;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
@@ -32,23 +31,23 @@ import packed.internal.container.RealmSetup;
  */
 public final class PackedBeanMaker<T> implements BeanMaker<T> {
 
-    final Factory<?> factory;
-
     final Class<?> beanType;
 
-    final Object source;
+    public ComponentConfiguration configuration;
 
     final ContainerSetup container;
 
-    final RealmSetup realm;
-
-    BeanOldKind kind = BeanOldKind.CONTAINER_BEAN;
-
     boolean extensionBean;
+
+    final Factory<?> factory;
+
     /** A model of the hooks on the bean. */
     public final HookModel hookModel;
 
-    public ComponentConfiguration configuration;
+    BeanOldKind kind = BeanOldKind.CONTAINER_BEAN;
+    final RealmSetup realm;
+
+    final Object source;
 
     public PackedBeanMaker(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
         this.container = requireNonNull(container);
@@ -63,6 +62,10 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
         this.hookModel = realm.accessor().modelOf(beanType);
     }
 
+    public void extensionBean() {
+        this.extensionBean = true;
+    }
+
     /** {@inheritDoc} */
     public BeanSetup newSetup(ComponentConfiguration configuration) {
         this.configuration = requireNonNull(configuration);
@@ -70,27 +73,6 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
         BeanSetup bs = new BeanSetup(container, container.realm, container.lifetime, this);
         realm.wireCommit(bs);
         return bs;
-    }
-
-    public static <T> PackedBeanMaker<T> ofFactory(ContainerSetup container, UserOrExtension owner, Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return new PackedBeanMaker<>(container, owner, implementation, ReflectionFactory.of(implementation), implementation);
-    }
-
-    public static <T> PackedBeanMaker<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-
-        return new PackedBeanMaker<>(container, owner, factory.rawType(), factory, factory);
-    }
-
-    public static <T> PackedBeanMaker<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
-        requireNonNull(instance, "instance is null");
-        if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Factory.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
-        }
-        return new PackedBeanMaker<>(container, owner, instance.getClass(), null, instance);
     }
 
     /** {@inheritDoc} */
@@ -102,7 +84,19 @@ public final class PackedBeanMaker<T> implements BeanMaker<T> {
         this.kind = BeanOldKind.PROTOTYPE_UNMANAGED;
     }
 
-    public void extensionBean() {
-        this.extensionBean = true;
+    public static <T> PackedBeanMaker<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
+        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
+        requireNonNull(factory, "factory is null");
+        return new PackedBeanMaker<>(container, owner, factory.rawType(), factory, factory);
+    }
+
+    public static <T> PackedBeanMaker<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
+        requireNonNull(instance, "instance is null");
+        if (Class.class.isInstance(instance)) {
+            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
+        } else if (Factory.class.isInstance(instance)) {
+            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
+        }
+        return new PackedBeanMaker<>(container, owner, instance.getClass(), null, instance);
     }
 }

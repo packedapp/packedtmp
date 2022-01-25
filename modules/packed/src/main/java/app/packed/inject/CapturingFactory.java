@@ -50,12 +50,12 @@ abstract class CapturingFactory<R> extends Factory<R> {
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
      * constructor in this (super) class.
      * 
-     * @param instance
+     * @param function
      *            the function instance
      */
-    protected CapturingFactory(Object instance) {
+    protected CapturingFactory(Object function) {
         super();
-        this.instance = requireNonNull(instance); // should have already been checked by subclasses
+        this.instance = requireNonNull(function); // should have already been checked by subclasses
        // analyze();
     }
 

@@ -51,13 +51,7 @@ public abstract class BeanDependency {
 
     // VariablsActivatableHook
 
-    // On Annotation Type ->
-    // On Non-annotation Type -> Typed (raw)
-    public @interface Hook {
-        // Bootstrap kan vaere optional... Saa skal det vaere en statisk @ScopedProvide paa selve annoteringen...
-        Class<? extends BeanDependency> bootstrap() default BeanDependency.class;
-    }
-    // Maaske vi kun supportere Typed
+    
 
     //// Eller maaske har vi to typer
 

@@ -25,6 +25,7 @@ import packed.internal.bean.PackedBeanMaker;
  */
 // BeanBuilder, BeanRegistrant
 @SuppressWarnings("rawtypes")
+// BeanInstanceMaker???
 public sealed interface BeanMaker<T> permits PackedBeanMaker {
 
     // Taenker den foerst bliver commitet naar man laver en configuration???

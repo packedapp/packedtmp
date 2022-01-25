@@ -38,6 +38,7 @@ import packed.internal.util.BasePackageAccess;
  *
  */
 // Maaske returnere ReflectionFactory med en lookup
+// ReflectiveFactory
 public abstract class ReflectionFactory<T> extends Factory<T> {
 
     private ReflectionFactory(TypeToken<T> typeLiteralOrKey) {
@@ -294,6 +295,7 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
     // InjectSupport.defaultInjectable()
     
     // If @Initialize -> rename to findInitializer
+    // Hvis vi nogensinde laver en BeanFactory klasse... Saa hoere de jo til der.
     @SuppressWarnings("unchecked")
     public static <T> /* ReflectionFactory<T> */ Factory<T> of(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");

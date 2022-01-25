@@ -85,11 +85,8 @@ public abstract class Factory<R> {
     /** The type of objects this factory creates. */
     private final TypeToken<R> typeLiteral;
 
-    // private Object cache; // maaske er det en general cache.. der ogsaa kan indeholde Key
-    // Hov, vi bliver ogsaa noedt til at cache MethodHandle fra field/method/ect...
-
     /**
-     * Used by {@link CapturingFactory} constructor, because we cannot call the instance method {@link Object#getClass()}
+     * Used by {@link CapturingFactory} constructor, because we cannot call (an instance method) {@link Object#getClass()}
      * before calling this constructor.
      */
     @SuppressWarnings("unchecked")
@@ -102,7 +99,7 @@ public abstract class Factory<R> {
     Factory(boolean isCapturingFactory, Object functionInstance) {
         this.typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
         this.methodHandle = null;
-        
+
         // Find CapturingFactoryMeta in a ClassValueCache
     }
 
@@ -164,7 +161,7 @@ public abstract class Factory<R> {
 
         // TODO check types...
 
-        return new BindingFactory<>(this, position, dd, args);
+        return new BoundFactory<>(this, position, dd, args);
     }
 
     /**
@@ -173,7 +170,7 @@ public abstract class Factory<R> {
      * 
      * @param argument
      *            the argument to bind.
-     * @return the new factory
+     * @return a new factory
      */
     // bindConstant like sidecar???
     // bindRaw
@@ -289,15 +286,16 @@ public abstract class Factory<R> {
     }
 
     /**
-     * Returns a new factory that will perform the specified action after the factory has produced an object. But before the
-     * instance is used anywhere.
+     * Returns a new factory that will perform the specified action immediately after the factory has constructed an object.
+     * And before the constructed object is used anywhere.
      * 
      * @param action
      *            the post construction action
      * @return the new factory
      */
-    public final Factory<R> postConstruction(Consumer<? super R> action) {
-        return new PostConstructionFactory<>(this, action);
+    // was PostConstructor?
+    public final Factory<R> peek(Consumer<? super R> action) {
+        return new PeekableFactory<>(this, action);
     }
 
     /**
@@ -360,6 +358,11 @@ public abstract class Factory<R> {
     /** {@return The number of variables this factory takes.} */
     public final int variableCount() {
         return dependencies().size();
+    }
+
+    /** {@return The variables this factory takes.} */
+    public final List<Variable> variables() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -453,10 +456,9 @@ public abstract class Factory<R> {
         throw new UnsupportedOperationException();
     }
 
-    
     /** A special factory created via {@link #withLookup(Lookup)}. */
     // A simple version of Binding... Maybe just only have one
-    private static final class BindingFactory<T> extends Factory<T> {
+    private static final class BoundFactory<T> extends Factory<T> {
 
         private final Object[] arguments;
 
@@ -468,7 +470,7 @@ public abstract class Factory<R> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
 
-        private BindingFactory(Factory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
+        private BoundFactory(Factory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
             super(delegate.typeLiteral);
             this.index = index;
             this.delegate = requireNonNull(delegate);
@@ -537,8 +539,8 @@ public abstract class Factory<R> {
         }
     }
 
-    /** A special factory created for {@link #postConstruction(Consumer)}}. */
-    private static final class PostConstructionFactory<T> extends Factory<T> {
+    /** A factory for {@link #peek(Consumer)}}. */
+    private static final class PeekableFactory<T> extends Factory<T> {
 
         /** A method handle for {@link Function#apply(Object)}. */
         private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
@@ -549,7 +551,7 @@ public abstract class Factory<R> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final Factory<T> delegate;
 
-        private PostConstructionFactory(Factory<T> delegate, Consumer<? super T> action) {
+        private PeekableFactory(Factory<T> delegate, Consumer<? super T> action) {
             super(delegate.typeLiteral);
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));

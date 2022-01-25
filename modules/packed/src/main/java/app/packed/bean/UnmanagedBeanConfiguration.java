@@ -1,18 +1,12 @@
 package app.packed.bean;
 
-public class UnmanagedBeanConfiguration<T> extends BeanConfiguration<T> {
+public class UnmanagedBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
     
     /**
      * @param handle
      */
     protected UnmanagedBeanConfiguration(BeanMaker<T> handle) {
         super(handle);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final BeanKind kind() {
-        return BeanKind.UNMANAGED;
     }
 
     /** {@inheritDoc} */

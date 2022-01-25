@@ -10,10 +10,12 @@ import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 /**
  * A mirror of a bean.
  */
+// Vi har kun 1... ikke flere ligesom BeanConfiguration
 public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
     /** {@return the type (class) of the bean.} */
-    Class<?> beanType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
+    // Optional instead??? Nope, vi returnere void.class
+    Class<?> beanInstanceType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
 
     // The container t
     /** {@return the container the bean belongs to. Is identical to #parent() which is never empty for a bean.} */

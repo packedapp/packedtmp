@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks2;
+package app.packed.inject.variable;
 
-/**
- *
- */
-public @interface BeanInjectVarHook {
+import app.packed.extension.Extension;
 
+// On Annotation Type ->
+// On Non-annotation Type -> Typed (raw)
+
+// BeanProvideHook
+
+// Not inherited
+public @interface BeanDependencyHook {
+    
+    @SuppressWarnings("rawtypes")
+    Class<? extends Extension> extension();
+    
+    // Bootstrap kan vaere optional... Saa skal det vaere en statisk @ScopedProvide paa selve annoteringen...
+    Class<? extends BeanDependency> bootstrap() default BeanDependency.class;
 }

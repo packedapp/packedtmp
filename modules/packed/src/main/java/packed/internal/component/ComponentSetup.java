@@ -102,6 +102,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             // } else {
             // errorMsg = "This operation must be called immediately after the component has been wired";
             // }
+            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
             throw new IllegalStateException(errorMsg);
         }
     }

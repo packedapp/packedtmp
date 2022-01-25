@@ -2,12 +2,13 @@ package app.packed.bean;
 
 import java.util.function.BiConsumer;
 
-import app.packed.bean.operation.ExtensionBeanConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
+import app.packed.inject.ReflectionFactory;
 import packed.internal.bean.PackedBeanMaker;
 import packed.internal.container.ContainerSetup;
 
@@ -47,14 +48,14 @@ public final class BeanSupport extends ExtensionSupport {
 
     }
 
-    public <B extends BeanConfiguration<?>> B fullAccess(B beanConfiguration) {
+    public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {
         // Enten denne eller ogsaa skal vi require en annotation
         return beanConfiguration;
     }
 
     // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanMaker<T> m = PackedBeanMaker.ofFactory(container, UserOrExtension.extension(extensionType), implementation);
+        PackedBeanMaker<T> m = PackedBeanMaker.ofFactory(container, UserOrExtension.extension(extensionType), ReflectionFactory.of(implementation));
         m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
     }
@@ -73,7 +74,7 @@ public final class BeanSupport extends ExtensionSupport {
     // *********************** ***********************
     // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
     public final <T> BeanMaker<T> newMaker(UserOrExtension agent, Class<T> implementation) {
-        return PackedBeanMaker.ofFactory(container, agent, implementation);
+        return PackedBeanMaker.ofFactory(container, agent, ReflectionFactory.of(implementation));
     }
 
     public final <T> BeanMaker<T> newMaker(UserOrExtension agent, Factory<T> factory) {

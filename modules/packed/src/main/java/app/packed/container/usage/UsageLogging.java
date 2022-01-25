@@ -41,7 +41,7 @@ class UsageLogging {
             configuration.use(ServiceExtension.class).exportAll();
             for (ComponentMirror c : configuration.mirror().children()) {
                 if (c instanceof BeanMirror b) {
-                    System.out.println("WE got a bean of type " + b.beanType());
+                    System.out.println("WE got a bean of type " + b.beanInstanceType());
                 }
             }
         }
