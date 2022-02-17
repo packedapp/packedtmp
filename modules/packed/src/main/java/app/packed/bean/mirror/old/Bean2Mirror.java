@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.mirror.old;
 
 import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanFactoryMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
 
 /**

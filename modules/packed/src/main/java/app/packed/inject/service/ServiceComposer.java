@@ -28,10 +28,11 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
+import app.packed.bean.BeanSupport;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
-import app.packed.inject.LookupFactory;
+import app.packed.inject.ReflectiveFactory;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -123,7 +124,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     // will decorate a service injected as itself
 
     public void map(Class<?> implementation) {
-        map(LookupFactory.of(implementation));
+        map(BeanSupport.of(implementation));
     }
 
     /**
@@ -150,13 +151,13 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     public abstract void map(Factory<?> factory);
 
     public void prototype(Class<?> implementation) {
-        prototype(LookupFactory.of(implementation));
+        prototype(BeanSupport.of(implementation));
     }
 
     public abstract void prototype(Factory<?> factory);
 
     public void provide(Class<?> implementation) {
-        provide(LookupFactory.of(implementation));
+        provide(BeanSupport.of(implementation));
     }
 
     public abstract void provide(Factory<?> factory);
@@ -392,7 +393,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     }
 
     public void replace(Class<?> implementation) {
-        replace(LookupFactory.of(implementation));
+        replace(ReflectiveFactory.of(implementation));
     }
 
     /**

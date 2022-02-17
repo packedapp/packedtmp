@@ -54,10 +54,6 @@ public interface ServiceConfiguration<T> {
     /** {@return the key that the service is exported under}. */
     Optional<Key<?>> exportedAs();
 
-    default ProvisionMode mode() {
-        throw new UnsupportedOperationException();
-    }
-
     ServiceConfiguration<T> provide();
 
     /**

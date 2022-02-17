@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.mirror.old;
+
+import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.BeanOperationMirrorSelection;
+import app.packed.mirror.Mirror;
 
 /**
  *
  */
-// Det er jo taenkt paa et Functional Interface...
-
-// Men kan vi slaa den sammen med noget interface/whoareyou mirror
-public class BeanFunctionMirror {
-
+public interface BeanElementMirror extends Mirror {
+    
+    boolean isSynthetic();
+    
+    BeanOperationMirrorSelection<BeanOperationMirror> operations();
+    
+    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> mirrorType);
 }

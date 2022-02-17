@@ -15,18 +15,24 @@
  */
 package app.packed.bean.mirror;
 
-import java.lang.reflect.Field;
-
 /**
  *
  */
-public interface BeanFieldMirror extends BeanMemberMirror {
+// GeneratedClassMirror, GeneratedBeanClassMirror
+// GeneratedBeanInterceptedBeanMirror
 
-    /**
-     * @return
-     * 
-     * @throws UnsupportedOperationException
-     *             if invoked at runtime
-     */
-    Field field();
+
+// Man kan lave en class proxy
+// Eller en bean proxy
+// Eller en operation proxy (paa en enkelt operation no need to generate a proxy) 
+
+///// Kunne ogsaa bare vaere at angive at vi maaler ting???
+///// Altsaa selve Servlet pipelinen
+///// Det betyder nok ogsaa at vi 
+public class BeanOperationInterceptorMirror {
+
+    // Compiled into the class or wrapper in the operation pipeline
+    
+    
+    // isPre, isPost, isAround
 }

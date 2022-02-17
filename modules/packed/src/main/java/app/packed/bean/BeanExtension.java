@@ -7,9 +7,8 @@ import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.LookupFactory;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.bean.PackedBeanCustomizer;
+import packed.internal.bean.PackedBeanDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
@@ -44,7 +43,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), LookupFactory.of(implementation));
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.of(implementation));
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -57,7 +56,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), factory);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -73,7 +72,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofInstance(container, UserOrExtension.user(), instance);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(container, UserOrExtension.user(), instance);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -96,14 +95,14 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), LookupFactory.of(implementation));
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.of(implementation));
         handle.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanCustomizer<T> bh = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), factory);
+        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
         bh.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
         return sbc.provide();

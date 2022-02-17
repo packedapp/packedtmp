@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.old;
+package app.packed.bean.mirror.old;
 
 /**
- * Beans don't have constructors because a bean may be constructed in other ways
- * 
- * <p>
- * Shis is no ordinary constructor
+ *
  */
+public interface BeanExecutableMirror /* extends BeanMemberMirror*/ {
 
-// Maaske kalder vi det en constructor alligevel.. For det construere jo en bean!!!
-
-// Ligesom en BeanMethod ikke
-
-// Lad os se hvor valhalla ender
-// Was BeanInitializer but renamed to BeanConstructor
-public interface BeanConstructorMirror extends BeanExecutableMirror {
-
-    // constructor/factory
-}
-
-class X {
-
-    public static void main(String[] args) {
-        // VarHandle.AccessMode.
-    }
 }

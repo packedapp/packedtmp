@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
+import app.packed.bean.BeanExtension;
 import app.packed.extension.ExtensionMember;
 import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanMethod;
@@ -76,7 +77,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionMember(ServiceExtension.class)
+@ExtensionMember(BeanExtension.class)
 @BeanField.Hook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 @BeanMethod.Hook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {
@@ -100,17 +101,16 @@ public @interface Provide {
      * @return whether or not the provided value is a constant
      */
     /// Maaske har vi slet ikke constant....
+    //// Maaske har vi en @ConstantProvide istedet for??? Eller Scope(Constant);
     boolean constant() default false;
-
-
-    /**
-     * @return the provision mode being used
-     * 
-     * @implNote
-     */
-    ProvisionMode mode() default ProvisionMode.ON_DEMAND;
 }
 
+///**
+//* @return the provision mode being used
+//* 
+//* @implNote
+//*/
+//ProvisionMode mode() default ProvisionMode.ON_DEMAND;
 
 /** A field sidecar for {@link Provide}. */
 final class ProvideFieldBootstrap extends BeanField {

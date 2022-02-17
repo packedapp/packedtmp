@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.member.old;
+package app.packed.bean.mirror.old;
+
+import java.lang.reflect.Field;
 
 /**
  *
  */
-public interface BeanExecutableMirror /* extends BeanMemberMirror*/ {
+public interface BeanFieldMirror extends BeanMemberMirror {
 
+    /**
+     * @return
+     * 
+     * @throws UnsupportedOperationException
+     *             if invoked at runtime
+     */
+    Field field();
 }

@@ -36,7 +36,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
-    final PackedBeanCustomizer<?> beanHandle;
+    final PackedBeanDriver<?> beanHandle;
 
     /** The kind of bean we are configuring. */
     public final BeanOldKind beanKind;
@@ -66,7 +66,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanCustomizer<?> beanHandle) {
+    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanDriver<?> beanHandle) {
         super(container.application, realm, lifetime, container);
         this.beanKind = BeanOldKind.CONTAINER_BEAN;
         this.factory = beanHandle.factory;

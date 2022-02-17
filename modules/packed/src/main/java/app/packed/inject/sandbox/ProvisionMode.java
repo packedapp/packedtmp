@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.inject.sandbox;
 
 // ? Why is ProvisionMode not part of ServiceContract
 // A Because it should not be part of how services are used
 
-public enum ProvisionMode {
+enum ProvisionMode {
     ON_DEMAND, EAGER_SINGLETON, LAZY_SINGLETON;
     
     // @ImplNote

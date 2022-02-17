@@ -15,6 +15,9 @@
  */
 package app.packed.bean.mirror;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,10 +37,12 @@ import app.packed.mirror.Mirror;
 // A bean method
 // A bean field get/set/compute
 
-// A bean constructor is _not_ an operation...
+// A bean constructor is _not_ an operation... Or maybe
 
 // AnnotatedElement????? Nah, hmm...
 
+// Attribute support. Det vil give mening at kunne attache noget information af lidt mere dynamisk karakter?
+// Fx informations annotations?? Her taenker jeg paa OpenAPI annoteringer
 public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElement */ {
 
     public final List<Dependency> dependencies() {
@@ -92,9 +97,31 @@ public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElemen
         return Optional.empty();
     }
 
-    public final BeanOperationTargetMirror source() {
+    public final TargetMirror target() {
         throw new UnsupportedOperationException();
     }
+    
+    public interface TargetMirror {
+        TargetType type();
+    }
+    
+    public enum TargetType {
+
+        /** The operation is based on accessing a {@link Field}. */
+        FIELD,
+
+        /** The operation is based on invoking a {@link Method}. */
+        METHOD,
+
+        /** The operation is based on invoking a {@link Constructor} */
+        CONSTRUCTOR,
+
+        /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
+        FUNCTION,
+
+        OTHER; // Typically a MethodHandle, or an instance
+    }
+
 }
 //ExportServiceMirror vs ExportedServiceMirror
 //ProvideServiceMirror vs ProvidedServiceMirror

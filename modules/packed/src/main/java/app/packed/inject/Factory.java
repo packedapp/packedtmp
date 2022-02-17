@@ -402,7 +402,7 @@ public abstract class Factory<R> {
     // openResult(Lookup) <---- maaske er den baa en
     public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (this instanceof LookupFactory.ExecutableFactory || this instanceof LookupFactory.FieldFactory) {
+        if (this instanceof ReflectiveFactory.ExecutableFactory || this instanceof ReflectiveFactory.FieldFactory) {
             return new LookedUpFactory<>(this, toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(

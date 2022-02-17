@@ -40,15 +40,18 @@ import packed.internal.util.BasePackageAccess;
 // Maaske returnere ReflectionFactory med en lookup
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
-public abstract class LookupFactory<T> extends Factory<T> {
+public abstract class ReflectiveFactory<T> extends Factory<T> {
 
-    private LookupFactory(TypeToken<T> typeLiteralOrKey) {
+    private ReflectiveFactory(TypeToken<T> typeLiteralOrKey) {
         super(typeLiteralOrKey);
     }
 
     public Factory<T> lookup() {
         // Problemet er her at vi jo faktisk i mange tilfaelde vil laase hele beanen op????
         // Taenker vi har metoderne paa BeanFactory
+        
+        // Vi vil helst ikke have at vi overskrive metoder... Men det bliver vi jo noedt til at kunne
+        // hvis vi har subklasser
         return this;
     }
 
@@ -82,7 +85,7 @@ public abstract class LookupFactory<T> extends Factory<T> {
     }
 
     /** A factory that wraps a method or constructor. */
-    static final class ExecutableFactory<T> extends LookupFactory<T> {
+    static final class ExecutableFactory<T> extends ReflectiveFactory<T> {
 
         private final List<InternalDependency> dependencies;
 
@@ -172,7 +175,7 @@ public abstract class LookupFactory<T> extends Factory<T> {
     };
 
     /** An invoker that can read and write fields. */
-    static final class FieldFactory<T> extends LookupFactory<T> {
+    static final class FieldFactory<T> extends ReflectiveFactory<T> {
 
         /** The field we invoke. */
         private final Field field;

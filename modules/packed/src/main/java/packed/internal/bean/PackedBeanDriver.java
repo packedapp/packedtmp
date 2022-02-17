@@ -17,7 +17,7 @@ package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bean.BeanCustomizer;
+import app.packed.bean.BeanDriver;
 import app.packed.bean.hooks.usage.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
@@ -26,10 +26,8 @@ import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
 
-/**
- *
- */
-public final class PackedBeanCustomizer<T> implements BeanCustomizer<T> {
+/** The implementation of {@link BeanDriver}. */
+public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     final Class<?> beanType;
 
@@ -49,7 +47,7 @@ public final class PackedBeanCustomizer<T> implements BeanCustomizer<T> {
 
     final Object source;
 
-    public PackedBeanCustomizer(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
+    public PackedBeanDriver(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
         this.container = requireNonNull(container);
         if (userOrExtension.isUser()) {
             this.realm = container.realm;
@@ -84,19 +82,19 @@ public final class PackedBeanCustomizer<T> implements BeanCustomizer<T> {
         this.kind = BeanOldKind.PROTOTYPE_UNMANAGED;
     }
 
-    public static <T> PackedBeanCustomizer<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
+    public static <T> PackedBeanDriver<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
-        return new PackedBeanCustomizer<>(container, owner, factory.rawType(), factory, factory);
+        return new PackedBeanDriver<>(container, owner, factory.rawType(), factory, factory);
     }
 
-    public static <T> PackedBeanCustomizer<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
+    public static <T> PackedBeanDriver<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
-        return new PackedBeanCustomizer<>(container, owner, instance.getClass(), null, instance);
+        return new PackedBeanDriver<>(container, owner, instance.getClass(), null, instance);
     }
 }

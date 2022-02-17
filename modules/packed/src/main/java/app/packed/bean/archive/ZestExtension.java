@@ -4,7 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Map;
 
-import app.packed.bean.BeanCustomizer;
+import app.packed.bean.BeanDriver;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 
@@ -22,7 +22,7 @@ public class ZestExtension extends Extension<ZestExtension> {
 //    }
 
     public <T> ManagedBeanConfiguration<T> install2(Class<T> stuff) {
-        BeanCustomizer<T> maker = bean().newCustomizer(UserOrExtension.user(), stuff);
+        BeanDriver<T> maker = bean().newDriver(UserOrExtension.user(), stuff);
 
         //// Det er vel bestemt udfra typen
         // access singlton / makeNew

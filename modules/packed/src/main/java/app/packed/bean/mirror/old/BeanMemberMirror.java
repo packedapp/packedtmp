@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.mirror.old;
 
 import java.util.List;
 

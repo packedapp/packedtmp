@@ -7,7 +7,7 @@ import app.packed.bean.archive.ManagedBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionBeanConfiguration;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanCustomizer;
+import packed.internal.bean.PackedBeanDriver;
 
 /**
  * The base class for the configuration of a bean.
@@ -19,8 +19,8 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
     /** The bean we are configuring. */
     final BeanSetup bean;
 
-    protected BeanConfiguration(BeanCustomizer<?> maker) {
-        PackedBeanCustomizer<?> pbm = requireNonNull((PackedBeanCustomizer<?>) maker, "maker is null");
+    protected BeanConfiguration(BeanDriver<?> maker) {
+        PackedBeanDriver<?> pbm = requireNonNull((PackedBeanDriver<?>) maker, "maker is null");
         this.bean = pbm.newSetup(this);
     }
 

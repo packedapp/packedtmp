@@ -27,7 +27,7 @@ public class ContainerBeanConfiguration<T> extends ProvidableBeanConfiguration<T
     /**
      * @param maker
      */
-    public ContainerBeanConfiguration(BeanCustomizer<T> maker) {
+    public ContainerBeanConfiguration(BeanDriver<T> maker) {
         super(maker);
     }
 

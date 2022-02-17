@@ -18,15 +18,16 @@ package app.packed.bean;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.inject.Factory;
-import packed.internal.bean.PackedBeanCustomizer;
+import packed.internal.bean.PackedBeanDriver;
 
 /**
- *
+ * A bean driver must be created via {@link BeanSupport}.
  */
 @SuppressWarnings("rawtypes")
-// Alternativ name: BeanDriver, Soeg videre under GraalmVM fra og med D
-public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
+// Alternativ name: BeanDefiner, Soeg videre under GraalmVM fra og med D
+public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
     // Taenker den foerst bliver commitet naar man laver en configuration???
 
@@ -43,10 +44,8 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
         // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
         // ServiceScope.Bean
     }
-    
-    default void checkWiring() {
 
-    }
+    default void checkWiring() {}
 
     void prototype();
 
@@ -59,6 +58,20 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
 
     // Provide stuff, state holder, Lifecycle
 
+    default FunctionalBeanOperationConfiguration addOperationFunctional(Class<?> functionType, Object function) {
+        throw new UnsupportedOperationException();
+    }
+
+    default FunctionalBeanOperationConfiguration addOperation() {
+        throw new UnsupportedOperationException();
+    }
+    
+    interface FunctionalBeanOperationConfiguration {
+        FunctionalBeanOperationConfiguration addMirror(Class<? extends BeanOperationMirror> bomType);
+        FunctionalBeanOperationConfiguration name(String name);
+        FunctionalBeanOperationConfiguration prefix(String prefix); // Maaske tilfoejer vi bare automatisk et prefix, hvis der eksistere en med samme navn
+        /// IDK
+    }
 }
 /// set properties
 /// Bind operation (Eller er det hooks???)
@@ -98,8 +111,22 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
     // reflectOn(Fields|Methods|Constructors)
     // look in declaring class
 }
+
+/**
+*
+*/
+class BeanBuilder {
+
+   public BeanConfiguration build() {
+       return null;
+   }
+
+   public <C extends BeanConfiguration> C build(C configuration) {
+       return configuration;
+   }
+}
+
 //BeanBuilder, BeanRegistrant
 
 //BeanInstanceMaker??? Nope, det er ikke kun bean instances...
 //Men vi har maaske n ekstra
-

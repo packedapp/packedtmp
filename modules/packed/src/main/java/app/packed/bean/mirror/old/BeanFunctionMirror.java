@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.mirror.old;
 
 /**
  *
  */
-// GeneratedClassMirror, GeneratedBeanClassMirror
-// GeneratedBeanInterceptedBeanMirror
+// Det er jo taenkt paa et Functional Interface...
 
+// Men kan vi slaa den sammen med noget interface/whoareyou mirror
+public class BeanFunctionMirror {
 
-///// Kunne ogsaa bare vaere at angive at vi maaler ting???
-///// Altsaa selve Servlet pipelinen
-///// Det betyder nok ogsaa at vi 
-public class BeanInterceptorMirror {
-
-    // Compiled into the class or wrapper in the operation pipeline
-    
-    
-    // isPre, isPost, isAround
 }

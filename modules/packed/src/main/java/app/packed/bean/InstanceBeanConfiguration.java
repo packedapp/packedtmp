@@ -30,7 +30,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     /**
      * @param maker
      */
-    protected InstanceBeanConfiguration(BeanCustomizer<T> maker) {
+    protected InstanceBeanConfiguration(BeanDriver<T> maker) {
         super(maker);
     }
 
