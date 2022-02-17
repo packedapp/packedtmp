@@ -17,29 +17,18 @@ package app.packed.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanMaker;
-import app.packed.bean.BeanSupport;
-import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionSupport;
-import app.packed.inject.Factory;
 import app.packed.validate.Validator;
-import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.runtime.AbstractServiceLocator;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -50,6 +39,12 @@ import packed.internal.util.ThrowableUtil;
  * 
  * 
  */
+//Functionality for
+//* Explicitly requiring services: require, requiOpt & Manual Requirements Management
+//* Exporting services: export, exportAll
+
+
+//// Was
 // Functionality for
 // * Explicitly requiring services: require, requiOpt & Manual Requirements Management
 // * Exporting services: export, exportAll
@@ -81,19 +76,6 @@ import packed.internal.util.ThrowableUtil;
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
-
-//    /** A binder for prototype service beans. */
-//    @SuppressWarnings("rawtypes")
-//    private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
-//            BeanType.PROTOTYPE_UNMANAGED);
-//
-//    /** A binder for singleton service beans. */
-//    @SuppressWarnings("rawtypes")
-//    private static final OtherBeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
-//            BeanType.BASE);
-
     /** The service manager. */
     private final ServiceManagerSetup services;
 
@@ -103,18 +85,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
+    ServiceExtension(ExtensionConfiguration configuration) {
         this.services = ((ExtensionSetup) configuration).container.beans.newServiceManagerFromServiceExtension();
-    }
-
-    /** {@return the container setup instance that we are wrapping.} */
-    @SuppressWarnings("unused")
-    private BeanSetup bean(BeanConfiguration conf) {
-        try {
-            return (BeanSetup) VH_BEAN_SETUP.get(conf);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
     }
 
     // Validates the outward facing contract
@@ -165,39 +137,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     @Override
     protected ServiceExtensionMirror mirror() {
         return mirrorInitialize(new ServiceExtensionMirror(services));
-    }
-
-    /**
-     * Provides every service from the specified locator.
-     * 
-     * @param locator
-     *            the locator to provide services from
-     * @throws IllegalArgumentException
-     *             if the specified locator is not implemented by Packed
-     */
-    public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-        if (!(locator instanceof AbstractServiceLocator l)) {
-            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-                    + " are currently not supported, locator type = " + locator.getClass().getName());
-        }
-        checkUserConfigurable();
-        services.provideAll(l);
-    }
-
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), implementation);
-        bh.prototype();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
-        return sbc.provide();
-    }
-
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanMaker<T> bh = use(BeanSupport.class).newMaker(UserOrExtension.user(), factory);
-        bh.prototype();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
-
-        return sbc.provide();
     }
 
     // requires bliver automatisk anchoret...

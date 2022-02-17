@@ -13,23 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import app.packed.container.Assembly;
-import app.packed.container.ComposerAction;
-import app.packed.extension.Extension;
+package app.packed.bean.mirror;
 
 /**
  *
  */
-@SuppressWarnings("rawtypes")
-// ComponentRealm
-public sealed interface RealmSource permits Assembly,Extension,ComposerAction {}
-// A realm can be closed...
 
-// Assembly realm -> when build returns
-// Extension realm -> when the application is in the last phase
-// Composer action realm -> when build returns
+// Kan modtage dependencies
 
-// Nu naar vi faar Application beans med application scope...
-// Giver det jo ikke rigtig mening at sige den er installeret via denne Assembly.
+// BeanOperation (Hooks)
+
+// BeanFactory
+// AutoServiceFactory
+
+// Kan vaere dependencies
+
+// UserServiceProvide (BeanInstance)X
+// BeanOperation (Kan andre end services????)
+// AutoServiceFactory
+// Binding operation
+
+
+////// ----- Fremtid
+
+//Sidecars (Sidebeans)
+
+
+
+////Kan dependences on
+////Det er jo ikke f.eks. et bean factory man kan depende paa. Men en bean
+
+
+public interface DependencyNode {
+
+}

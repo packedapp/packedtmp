@@ -30,7 +30,6 @@ import app.packed.base.TypeToken;
  */
 
 // Maaske extender man bare Factory??? IDK Syntes maaske det er fint
-
 abstract class CapturingFactory<R> extends Factory<R> {
 
     /** A cache of extracted type variables from subclasses of this class. */
@@ -44,7 +43,8 @@ abstract class CapturingFactory<R> extends Factory<R> {
         }
     };
 
-    final Object instance;
+    /** The function that the user specified. */
+    final Object function;
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
@@ -55,7 +55,7 @@ abstract class CapturingFactory<R> extends Factory<R> {
      */
     protected CapturingFactory(Object function) {
         super();
-        this.instance = requireNonNull(function); // should have already been checked by subclasses
+        this.function = requireNonNull(function); // should have already been checked by subclasses
        // analyze();
     }
 

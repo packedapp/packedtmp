@@ -254,7 +254,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
         // │ Wiring time │
         // └─────────────┘
         ExtensionSetup s = setup();
-        ArrayList<ContainerSetup> list = s.container.containerChildren;
+        ArrayList<ContainerSetup> list = s.container.containers;
         if (list != null) {
             for (ContainerSetup c : list) {
                 ExtensionSetup child = c.extensions.get(s.extensionType);
@@ -297,7 +297,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Re
     protected void onUserClose() {
         ExtensionSetup s = setup();
         RealmSetup realm = s.container.realm;
-        ArrayList<ContainerSetup> list = s.container.containerChildren;
+        ArrayList<ContainerSetup> list = s.container.containers;
         if (list != null) {
             for (ContainerSetup c : list) {
                 if (realm == c.realm) {

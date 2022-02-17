@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.bean;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanMaker;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.BaseAssembly;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.service.ServiceableBean;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
+import packed.internal.inject.service.InternalServiceUtil;
+import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 
 /**
  * A bean which provide an instance(s) of the bean type as a service.
@@ -41,23 +39,15 @@ import packed.internal.util.ThrowableUtil;
 // Tror vi dropper den her, og saa kun har ProvideableBeanConfiguration
 public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
-    
     private final ServiceableBean sb;
-    
-    public ProvidableBeanConfiguration(BeanMaker<T> handle) {
+
+    public ProvidableBeanConfiguration(BeanCustomizer<T> handle) {
         super(handle);
-        this.sb = new ServiceableBean(bean());
+        this.sb = new ServiceableBean(bean);
     }
 
-    /** {@return the container setup instance that we are wrapping.} */
-    private BeanSetup bean() {
-        try {
-            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration) this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+    Key<?> defaultKey() {
+        return sb.defaultKey();
     }
 
     public ProvidableBeanConfiguration<T> export() {
@@ -65,20 +55,20 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         return this;
     }
 
+//    public ServiceBeanConfiguration<T> asNone() {
+//        // Ideen er vi f.eks. kan
+    // exportOnlyAs()
+//        // asNone().exportAs(Doo.class);
+//        provideAsService(null);
+//        return this;
+//    }
+
     /** {@inheritDoc} */
     @Override
     public ProvidableBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }
-
-//    public ServiceBeanConfiguration<T> asNone() {
-//        // Ideen er vi f.eks. kan
-          // exportOnlyAs()
-//        // asNone().exportAs(Doo.class);
-//        provideAsService(null);
-//        return this;
-//    }
 
     @Override
     protected void onWired() {
@@ -118,15 +108,64 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         sb.provideAs(key);
         return this;
     }
-    
 
- // Ser dum ud naar man laver completion
-     public Optional<Key<?>> providedAs() {
-         return sb.providedAs();
-     }
-     
+    // Ser dum ud naar man laver completion
+    public Optional<Key<?>> providedAs() {
+        return sb.providedAs();
+    }
 
-     Key<?> defaultKey() {
-         return sb.defaultKey();
-     }
+    private static final class ServiceableBean {
+        final BeanSetup bean;
+
+        Key<?> export;
+
+        Key<?> provide;
+
+        public ServiceableBean(BeanSetup bean) {
+            this.bean = requireNonNull(bean);
+        }
+
+        public Key<?> defaultKey() {
+            return bean.defaultKey();
+        }
+
+        public void export() {
+            export = InternalServiceUtil.checkKey(bean.hookModel.clazz, bean.defaultKey());
+            bean.parent.useExtension(ServiceExtension.class);
+        }
+
+        public void onWired() {
+            if (provide == null && export == null) {
+                return;
+            }
+            ServiceManagerSetup sms = bean.parent.beans.getServiceManager();
+            BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean, provide);
+            if (provide != null) {
+                sms.addService(setup);
+            }
+            if (export != null) {
+                sms.exports().export(setup);
+            }
+        }
+
+        public void provide() {
+            provide = InternalServiceUtil.checkKey(bean.hookModel.clazz, bean.defaultKey());
+            bean.parent.useExtension(ServiceExtension.class);
+        }
+
+        public void provideAs(Class<?> key) {
+            provide = InternalServiceUtil.checkKey(bean.hookModel.clazz, key);
+            bean.parent.useExtension(ServiceExtension.class);
+        }
+
+        public void provideAs(Key<?> key) {
+            provide = InternalServiceUtil.checkKey(bean.hookModel.clazz, key);
+            bean.parent.useExtension(ServiceExtension.class);
+        }
+
+        // Ser dum ud naar man laver completion
+        public Optional<Key<?>> providedAs() {
+            return Optional.ofNullable(provide);
+        }
+    }
 }

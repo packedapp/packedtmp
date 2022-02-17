@@ -18,19 +18,19 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.extension.Extension;
-import packed.internal.application.ApplicationSetup;
 
 /**
- *
+ * A single extension realm exists for an extension in a single application.
  */
 public final class ExtensionRealmSetup extends RealmSetup {
 
+    /** A model of the extension/ */
     public final ExtensionModel extensionModel;
 
-    /** The first extension that was added to the realm. */
+    /** The extension in the root container. */
     final ExtensionSetup root;
 
-    ExtensionRealmSetup(ExtensionSetup root, ApplicationSetup application, Class<? extends Extension<?>> extensionType) {
+    ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }

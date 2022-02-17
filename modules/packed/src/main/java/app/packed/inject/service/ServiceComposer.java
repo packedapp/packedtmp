@@ -31,7 +31,7 @@ import app.packed.base.Qualifier;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
-import app.packed.inject.ReflectionFactory;
+import app.packed.inject.LookupFactory;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -123,7 +123,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     // will decorate a service injected as itself
 
     public void map(Class<?> implementation) {
-        map(ReflectionFactory.of(implementation));
+        map(LookupFactory.of(implementation));
     }
 
     /**
@@ -150,13 +150,13 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     public abstract void map(Factory<?> factory);
 
     public void prototype(Class<?> implementation) {
-        prototype(ReflectionFactory.of(implementation));
+        prototype(LookupFactory.of(implementation));
     }
 
     public abstract void prototype(Factory<?> factory);
 
     public void provide(Class<?> implementation) {
-        provide(ReflectionFactory.of(implementation));
+        provide(LookupFactory.of(implementation));
     }
 
     public abstract void provide(Factory<?> factory);
@@ -392,7 +392,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     }
 
     public void replace(Class<?> implementation) {
-        replace(ReflectionFactory.of(implementation));
+        replace(LookupFactory.of(implementation));
     }
 
     /**

@@ -25,7 +25,7 @@ import app.packed.container.Composer;
 import packed.internal.component.ComponentSetup;
 
 /**
- * The internal configuration of realm.
+ * Configuration of a realm.
  */
 // BuildRealm???? Is this runtime at all???
 public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRealmSetup {
@@ -34,13 +34,14 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
     private RealmAccessor accessor;
 
     /** The current active component in the realm. */
-    protected ComponentSetup active;
+    protected ComponentSetup currentComponent;
 
     /** Whether or not this realm is closed. */
     protected boolean isClosed;
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
+    // Jaaa, men det klare jo ogsaa @JavaBaseSupport
     public RealmAccessor accessor() {
         RealmAccessor r = accessor;
         if (r == null) {
@@ -56,14 +57,14 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
         }
     }
 
-    public ComponentSetup active() {
-        return active;
+    public ComponentSetup currentComponent() {
+        return currentComponent;
     }
 
     public void newOperation() {
-        if (active != null) {
-            active.onWired();
-            active = null;
+        if (currentComponent != null) {
+            currentComponent.onWired();
+            currentComponent = null;
         }
     }
 
@@ -86,7 +87,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
     }
 
     public void wireCommit(ComponentSetup component) {
-        active = component;
+        currentComponent = component;
 //
 //        // TODO: Move to class I think
 //        if (component instanceof ContainerSetup container) {
@@ -101,10 +102,10 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRea
             throw new IllegalStateException();
         }
         // We need to finish the existing wiring before adding new
-        if (active != null) {
-            active.onWired();
-            active = null;
+        if (currentComponent != null) {
+            currentComponent.onWired();
+            currentComponent = null;
         }
     }
-    
+
 }

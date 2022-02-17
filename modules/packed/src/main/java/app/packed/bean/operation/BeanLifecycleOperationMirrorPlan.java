@@ -20,6 +20,7 @@ import java.util.List;
 /**
  *
  */
+// Maaske paa BeanExtension??? Eller direkte paa Component/Application/Container
 public interface BeanLifecycleOperationMirrorPlan {
 
     List<BeanLifecycleOperationMirror> beanInitializers();

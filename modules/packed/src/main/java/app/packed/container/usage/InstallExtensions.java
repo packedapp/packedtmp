@@ -6,13 +6,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.AssemblySetup;
+import app.packed.container.ContainerHook;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceExtension;
 
-@AssemblySetup(InstallExtensionsX.class)
+@ContainerHook(InstallExtensionsX.class)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -20,7 +20,7 @@ public @interface InstallExtensions {
     Class<? extends Extension<?>>[] value();
 }
 
-record InstallExtensionsX(InstallExtensions pc) implements AssemblySetup.Processor {
+record InstallExtensionsX(InstallExtensions pc) implements ContainerHook.Processor {
 
     @Override
     public void beforeBuild(ContainerConfiguration configuration) {

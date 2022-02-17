@@ -23,6 +23,7 @@ import app.packed.base.NamespacePath;
 /**
  *
  */
+// Overvejer at lave den offentlig
 public interface RealmConfiguration {
 
     // The current component that is being wired

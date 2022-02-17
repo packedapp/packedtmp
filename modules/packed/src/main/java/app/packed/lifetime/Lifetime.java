@@ -20,6 +20,8 @@ public interface Lifetime {
     
     // was Set<Lifetime> parents();
     Optional<Lifetime> parent();
+    
+    // root -> Application | Container | Bean | Operation | Dependeant?
 }
 // Hvad hvis man vil lave Request lifetime i shutdown?
 // 

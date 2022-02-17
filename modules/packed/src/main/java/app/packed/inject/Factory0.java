@@ -84,7 +84,7 @@ public abstract class Factory0<R> extends CapturingFactory<R> {
     private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
 
     /** The method handle responsible for providing the actual values. */
-    private MethodHandle methodHandle;
+    private final MethodHandle methodHandle;
 
     /**
      * Creates a new factory, that use the specified supplier to provide values.

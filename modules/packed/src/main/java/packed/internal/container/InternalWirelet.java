@@ -94,11 +94,11 @@ public abstract class InternalWirelet extends Wirelet {
         @Override
         protected void onBuild(ContainerSetup component) {
             // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
-            Consumer<? super ComponentMirror> existing = component.onWire;
+            Consumer<? super ComponentMirror> existing = component.onWireAction;
             if (existing == null) {
-                component.onWire = action;
+                component.onWireAction = action;
             } else {
-                component.onWire = existing.andThen((Consumer) action);
+                component.onWireAction = existing.andThen((Consumer) action);
             }
         }
     }

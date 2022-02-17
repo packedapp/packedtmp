@@ -47,7 +47,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The container where the extension is used. */
     public final ContainerSetup container;
 
-    /** The type of extension that is being configured. */
+    /** The type of extension that is being configured (copied form ExtenisonModel). */
     public final Class<? extends Extension<?>> extensionType;
 
     /** The extension instance, instantiated and set in {@link #initialize()}. */
@@ -81,7 +81,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
-        this.realm = parent == null ? new ExtensionRealmSetup(this, container.application, extensionType) : parent.realm;
+        this.realm = parent == null ? new ExtensionRealmSetup(this, extensionType) : parent.realm;
         this.model = requireNonNull(realm.extensionModel);
         this.beans = new ExtensionBeanManager(parent == null ? null : parent.beans);
 
@@ -110,11 +110,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     void initialize() {
-        // Creates a new extension instance, and set Extension.setup = this
+        // Creates a new extension instance
         instance = model.newInstance(this);
+
+        // Set Extension.setup = this
         VH_EXTENSION_CONFIGURATION.set(instance, this);
 
-        // Add the extension to the container's extension map as well as the (application-scoped) extension realm
+        // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, this);
 
         // Hvad hvis en extension linker en af deres egne assemblies.
@@ -122,7 +124,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             r.extensions.add(this);
         }
 
-        // Finally, invoke Extension#onNew() after which the new extension can be returned to the end-user
+        // Invoke Extension#onNew() before returning the new extension to the end-user
         try {
             MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {
@@ -269,26 +271,3 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.path();
     }
 }
-
-///** {@inheritDoc} */
-//@Override
-//public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
-//  requireNonNull(type, "type is null");
-//  ContainerSetup parent = container.parent;
-//  while (parent != null) {
-//      ExtensionSetup extensionContext = parent.extensions.get(extensionType);
-//      if (extensionContext != null) {
-//          return PackedExtensionAncestor.sameApplication(extensionContext.instance);
-//      }
-//      // if (parentOnly) break;
-//      parent = parent.parent;
-//  }
-//  return ExtensionBeanConnection.empty();
-//}
-
-//protected void attributesAdd(DefaultAttributeMap dam) {
-//  PackedAttributeModel pam = model.attributes;
-//  if (pam != null) {
-//      pam.set(dam, instance);
-//  }
-//}

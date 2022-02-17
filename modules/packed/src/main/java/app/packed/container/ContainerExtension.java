@@ -27,7 +27,7 @@ import packed.internal.container.PackedContainerHandle;
 /**
  * An extension for adding new containers to an existing container.
  */
-public class ContainerExtension extends Extension<ContainerExtension > {
+public class ContainerExtension extends Extension<ContainerExtension> {
 
     /** The container we adding new containers to. */
     final ContainerSetup container;
@@ -57,9 +57,10 @@ public class ContainerExtension extends Extension<ContainerExtension > {
      *            optional wirelets
      * @return the component that was linked
      */
-    public ContainerMirror link(ContainerHandle driver, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(driver, "driver is null"); 
-        
+    //// Har svaert ved at se at brugere vil bruge deres egen ContainerHandle...
+    public ContainerMirror link(ContainerCustomizer handle, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(handle, "handle is null");
+
         // Create a new realm for the assembly
         AssemblyRealmSetup newRealm = new AssemblyRealmSetup(d, container, assembly, wirelets);
 

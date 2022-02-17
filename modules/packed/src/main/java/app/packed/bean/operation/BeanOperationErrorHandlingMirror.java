@@ -27,6 +27,9 @@ import app.packed.mirror.Mirror;
 // Maaske er det ogsaa noget der kan bruges udover bean operations?
 public interface BeanOperationErrorHandlingMirror extends Mirror {
 
+    // Field Operation -> Enten har man en optional
+    // Unhandled
+    //
     default void print() {
         
     }

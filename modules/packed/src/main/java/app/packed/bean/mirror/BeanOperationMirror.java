@@ -18,12 +18,11 @@ package app.packed.bean.mirror;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.application.ApplicationMirror;
+import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.BeanOperationErrorHandlingMirror;
 import app.packed.extension.Extension;
 import app.packed.inject.mirror.Dependency;
-import app.packed.lifetime.Lifetime;
 import app.packed.mirror.Mirror;
 
 /**
@@ -39,62 +38,61 @@ import app.packed.mirror.Mirror;
 
 // AnnotatedElement????? Nah, hmm...
 
-public abstract class BeanOperationMirror implements Mirror /*, AnnotatedElement */ {
+public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElement */ {
 
-    /** {@return the application the operation is a part of.} */
-    public final ApplicationMirror application() {
-        return bean().application();
-    }
-    
-    public final List<Dependency> arguments() {
-        //; // What are we having injected... Giver det mening for functions????
-        
-        
+    public final List<Dependency> dependencies() {
+        // ; // What are we having injected... Giver det mening for functions????
+
         // BiFunction(WebRequest, WebResponse) vs
         // foo(WebRequest req, WebResponse res)
         // Hvorfor ikke...
 
         // Men er det dependencies??? Ja det er vel fx for @Provide
+        // Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
         return List.of();
     }
 
-    
     /** {@return the bean that declares the operation.} */
     public final BeanMirror bean() {
         throw new UnsupportedOperationException();
     }
 
-    public Optional<Lifetime> lifetime() {
-        throw new UnsupportedOperationException();
-    }
-    
-    public Optional<Lifetime> requiresNewLifetime() {
-        // @Get may be both
-        // @OnInitialize never requires new Lifetime
-        throw new UnsupportedOperationException();
-    }
-
-    // Might not match the signature of the method.
-    // For example, a @Schdule method might have a non-void signature.
-    // But we don't use the result
-   public final boolean computesResult() {
-       return false;
-   }
-
-    public final BeanMemberMirror source() {
-        throw new UnsupportedOperationException();
+    /**
+     * Returns true if the invocation of the operation creates a new bean instance. Returns false otherwise.
+     * 
+     * {@return whether or not a new bean is created when the operation starts.}
+     */
+    public final boolean createsNewBean() {
+        // Hvad med en constructor??
+        return false;
     }
 
     public final BeanOperationErrorHandlingMirror errorHandling() {
+        // field??? Unhandled?
         throw new UnsupportedOperationException();
     }
 
-    public final Class<? extends Extension<?>> extension() {
+    public final List<Object> interceptors() {
+        // decorators???
         throw new UnsupportedOperationException();
     }
 
-    // Den her slags functionalitet ligger altid hos Extensions
-    public Class<? extends Extension<?>> manager() {
+    /** {@return the extension that initiates the operation.} */
+    public final Class<? extends Extension<?>> operator() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * <p>
+     * This might not match the return type of any underlying method. For exa
+     * 
+     * @return the
+     */
+    public final Optional<TypeToken<?>> resultType() {
+        return Optional.empty();
+    }
+
+    public final BeanOperationTargetMirror source() {
         throw new UnsupportedOperationException();
     }
 }
@@ -104,3 +102,45 @@ public abstract class BeanOperationMirror implements Mirror /*, AnnotatedElement
 //ConfigUseMirror vs ConfigUsedMirror
 //LifecycleCallMirror vs LifecycleCalledMirror
 //ScheduleTaskMirror vs ScheduledTaskMirror
+
+///** {@return the application the operation is a part of.} */
+//public final ApplicationMirror application() {
+//  return bean().application();
+//}
+
+///**
+//* 
+//* If the lifetime
+//* 
+//* {@return the lifetime of the the operation.}
+//*/
+//public final LifetimeMirror lifetime() {
+//  return bean().lifetime().get();
+//  // lifetime != bean.lifetime() -> operation lifetime
+//}
+//
+//public Optional<Lifetime> requiresNewLifetime() {
+//  // @Get may be both
+//  // @OnInitialize never requires new Lifetime
+//
+//  // Maaske man kan kan kigge paa lifetime rooten...
+//  // Om det er en operation, en
+//
+//  throw new UnsupportedOperationException();
+//}
+
+////Paa en eller anden maade maa den bindes til noget...
+//Object boundTo();
+//
+///** {@return the component behind the action.} */
+//ComponentMirror component();
+//
+//InterruptPolicy interruptPolicy();
+//
+//boolean isAsync();
+//
+//public boolean isFactory() {
+//// isInitializer
+//// Ideen er at constructuren ser anderledes ud
+//return false;
+//}

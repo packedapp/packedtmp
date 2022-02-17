@@ -1,10 +1,12 @@
 package app.packed.application;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.various.TaskListMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
@@ -114,6 +116,14 @@ public interface ApplicationMirror extends Mirror {
     
     default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
         return container().useExtension(extensionMirrorType);
+    }
+    
+    default Collection<BeanOperationMirror> operations() {
+        throw new UnsupportedOperationException();
+    }
+
+    default <T extends BeanOperationMirror> Collection<T> operations(Class<T> operationType) {
+        throw new UnsupportedOperationException();
     }
 }
 //

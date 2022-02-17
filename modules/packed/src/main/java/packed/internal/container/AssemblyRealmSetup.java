@@ -34,13 +34,13 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class AssemblyRealmSetup extends ContainerRealmSetup {
 
-    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
+    /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             AssemblyRealmSetup.class, ContainerConfiguration.class);
 
-    // TODO move to AssemblyRealmSetup
     public final AssemblyModel assemblyModel;
 
+    /** The assembly used to create this realm. */
     final Assembly assembly;
 
     private final ContainerConfiguration configuration;

@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package app.packed.inject.mirror;
+
+import java.util.List;
 
 /**
  *
  */
-public class BeanFactoryMirror {
 
+
+// Bean Factory
+// Bean Operation
+// AutoService Factory
+public interface DependencyNode {
+    
+    /** {@return the dependencies of this injection site.} */
+    List<Dependency> dependencies();
 }
-//Should this extend Lifecycle operation????
-//Maaske er det ikke en operation??? 
-//Giver ikke mening at have error handle, eller lifecycle
-//Det er ikke en operation

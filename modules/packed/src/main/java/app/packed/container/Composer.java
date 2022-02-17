@@ -45,9 +45,6 @@ import packed.internal.util.LookupUtil;
 // Does not support mirrors
 public abstract class Composer {
 
-    /** A marker configuration object to indicate that a composer has already been used to build something. */
-    private static final ContainerConfiguration USED = new ContainerConfiguration();
-
     /** A handle that can access #configuration. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
@@ -79,7 +76,7 @@ public abstract class Composer {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of a composer");
-        } else if (c == USED) {
+        } else if (c == ContainerConfiguration.USED) {
             throw new IllegalStateException("This method must be called while the composer is active.");
         }
         return c;
@@ -105,9 +102,9 @@ public abstract class Composer {
                 onConfigured();
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
-                VH_CONFIGURATION.setVolatile(this, USED);
+                VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);
             }
-        } else if (existing == USED) {
+        } else if (existing == ContainerConfiguration.USED) {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This composer has already been used, composer = " + getClass());
         } else {

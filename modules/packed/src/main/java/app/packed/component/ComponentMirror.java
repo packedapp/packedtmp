@@ -54,6 +54,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     int depth();
 
     /** {@return any lifetime this component may be a part of.} */
+    // Tror vi er blevet enige om at alle componenter som minimum har
+    // application lifetime
+    
+    // You should just never use them after an application has been shutdown.
+    // Alt har en lifetime saa
     default Optional<LifetimeMirror> lifetime() {
         throw new UnsupportedOperationException();
     }
@@ -111,6 +116,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // RegisteredWith
     // DeclaredBy
     // Det er jo mere eller Realmen her
+    
+    // Giver den her super meget mening????    
+    /// fx @Get paa install(Foo.class) vs requestGet(Foo.class)
+    /// Vil jo have forskllig registrant...
+    /// Er nok mere relevant hvem der styre lifecyclen
     /* UserOrExtension */ Optional<Class<? extends Extension<?>>> registrant();
 
     /**

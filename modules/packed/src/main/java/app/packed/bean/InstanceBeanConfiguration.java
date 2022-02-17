@@ -24,12 +24,13 @@ import app.packed.lifecycle.RunState;
 /**
  * A bean that
  */
+//// Does it always have a Lifecycle??? Do we have a seperate configuration for this?
 public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /**
      * @param maker
      */
-    protected InstanceBeanConfiguration(BeanMaker<T> maker) {
+    protected InstanceBeanConfiguration(BeanCustomizer<T> maker) {
         super(maker);
     }
 
@@ -46,6 +47,10 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     // Hmm det er jo mere provide end inject..
     // men provide(FooClass.class).provide(ddd.Class);
     // maybe provideTo()
+    
+    // inject, bind, provide
+    //// Ikke provide... vi har allerede provideAs
+    //// bind syntes jeg er fint at det er positionelt
     public <E> InstanceBeanConfiguration<T> inject(Class<E> key, E instance) {
         return inject(Key.of(key), instance);
     }

@@ -35,14 +35,21 @@ import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 
 /**
- *
+ * A factory that needs a {@link Lookup} object.
  */
 // Maaske returnere ReflectionFactory med en lookup
 // ReflectiveFactory
-public abstract class ReflectionFactory<T> extends Factory<T> {
+// LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
+public abstract class LookupFactory<T> extends Factory<T> {
 
-    private ReflectionFactory(TypeToken<T> typeLiteralOrKey) {
+    private LookupFactory(TypeToken<T> typeLiteralOrKey) {
         super(typeLiteralOrKey);
+    }
+
+    public Factory<T> lookup() {
+        // Problemet er her at vi jo faktisk i mange tilfaelde vil laase hele beanen op????
+        // Taenker vi har metoderne paa BeanFactory
+        return this;
     }
 
     /**
@@ -75,7 +82,7 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
     }
 
     /** A factory that wraps a method or constructor. */
-    static final class ExecutableFactory<T> extends ReflectionFactory<T> {
+    static final class ExecutableFactory<T> extends LookupFactory<T> {
 
         private final List<InternalDependency> dependencies;
 
@@ -165,7 +172,7 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
     };
 
     /** An invoker that can read and write fields. */
-    static final class FieldFactory<T> extends ReflectionFactory<T> {
+    static final class FieldFactory<T> extends LookupFactory<T> {
 
         /** The field we invoke. */
         private final Field field;
@@ -293,7 +300,7 @@ public abstract class ReflectionFactory<T> extends Factory<T> {
     // Har droppet at kalde den find... Fordi find generelt returnere en Optional...
     // Lad os se hvad der sker med Map og generiks
     // InjectSupport.defaultInjectable()
-    
+
     // If @Initialize -> rename to findInitializer
     // Hvis vi nogensinde laver en BeanFactory klasse... Saa hoere de jo til der.
     @SuppressWarnings("unchecked")

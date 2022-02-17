@@ -7,10 +7,10 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.ProvidableBeanConfiguration;
 import app.packed.bean.hooks.usage.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ProvidableBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 

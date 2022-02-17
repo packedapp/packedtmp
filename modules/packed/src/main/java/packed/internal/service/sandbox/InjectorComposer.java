@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.ProvidableBeanConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -29,7 +30,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ProvidableBeanConfiguration;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 
@@ -171,7 +171,8 @@ public final class InjectorComposer extends Composer {
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
     public void provideAll(ServiceLocator injector) {
-        extension().provideAll(injector);
+        extension();
+        configuration.use(BeanExtension.class).provideAll(injector);
     }
 
     /**
@@ -198,11 +199,13 @@ public final class InjectorComposer extends Composer {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        return extension().providePrototype(implementation);
+        extension();
+        return configuration.use(BeanExtension.class).providePrototype(implementation);
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        return extension().providePrototype(factory);
+        extension();
+        return configuration.use(BeanExtension.class).providePrototype(factory);
     }
 
     static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {

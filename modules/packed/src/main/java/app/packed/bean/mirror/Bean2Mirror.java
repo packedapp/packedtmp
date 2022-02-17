@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.operation.BeanFactoryMirror;
+import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.operation.BeanOperationMirrorSelection;
 
 /**

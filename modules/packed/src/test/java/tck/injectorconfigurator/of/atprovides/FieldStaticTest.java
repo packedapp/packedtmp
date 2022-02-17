@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
-import app.packed.inject.ReflectionFactory;
+import app.packed.inject.LookupFactory;
 import app.packed.inject.service.Provide;
 import packed.internal.service.sandbox.Injector;
 import packed.internal.service.sandbox.InjectorComposer;
@@ -39,16 +39,16 @@ public class FieldStaticTest {
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
         MixedFieldsInstantiable.test(c -> c.provide(MixedFieldsInstantiable.class));
-        MixedFieldsInstantiable.test(c -> c.provide(ReflectionFactory.of(MixedFieldsInstantiable.class)));
-        MixedFieldsInstantiable.test(c -> c.provide(ReflectionFactory.of(new TypeToken<MixedFieldsInstantiable>() {})));
+        MixedFieldsInstantiable.test(c -> c.provide(LookupFactory.of(MixedFieldsInstantiable.class)));
+        MixedFieldsInstantiable.test(c -> c.provide(LookupFactory.of(new TypeToken<MixedFieldsInstantiable>() {})));
     }
 
     /** Tests prototype {@link Provide#constant()} on static fields. */
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
-        MixedFieldsNoInstantiation.test(c -> c.providePrototype(ReflectionFactory.of(MixedFieldsNoInstantiation.class)));
-        MixedFieldsNoInstantiation.test(c -> c.providePrototype(ReflectionFactory.of(new TypeToken<MixedFieldsNoInstantiation>() {})));
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(LookupFactory.of(MixedFieldsNoInstantiation.class)));
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(LookupFactory.of(new TypeToken<MixedFieldsNoInstantiation>() {})));
     }
 
     /** A helper class that can be instantiated. */

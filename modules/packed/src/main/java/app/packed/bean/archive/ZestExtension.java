@@ -4,7 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Map;
 
-import app.packed.bean.BeanMaker;
+import app.packed.bean.BeanCustomizer;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 
@@ -22,8 +22,23 @@ public class ZestExtension extends Extension<ZestExtension> {
 //    }
 
     public <T> ManagedBeanConfiguration<T> install2(Class<T> stuff) {
-        BeanMaker<T> maker = bean().newMaker(UserOrExtension.user(), stuff);
+        BeanCustomizer<T> maker = bean().newCustomizer(UserOrExtension.user(), stuff);
 
+        //// Det er vel bestemt udfra typen
+        // access singlton / makeNew
+        
+        // void maker.addInvocationArgument(Class<?> ) extra param to mh
+        // MethodType invocationType();
+        // Som er void runtimeExtensionContext som default
+        // Hmm depends on the bean stereotype...
+        // fx RequestBeans er altid void.
+        
+        // Kan vi have multiple invocation types??
+        // fx create + shutdown each taking different parameters.
+        // fx shutdown Entity may take the entity
+        
+        
+        // maker.runOnClose(handles.add...)
         // handle.lifetime.
 
         return new ManagedBeanConfiguration<>(maker);
@@ -32,11 +47,12 @@ public class ZestExtension extends Extension<ZestExtension> {
     @Override
     protected void onClose() {
         // for each handle-> resolve to MethodHandle
-        
+
         bean().install(RuntimeBean.class).inject(handles.toArray(i -> new MethodHandle[i]));
         handles = null;
     }
 
+    // primitive record
     static class RuntimeBean {
         final MethodHandle[] mh;
         final RuntimeExtensionContext ec;
@@ -61,5 +77,7 @@ public class ZestExtension extends Extension<ZestExtension> {
         }
     }
 
+    // BeanContext???? IDK alle beans fra samme extension kan vel bruge dem?
+    
     interface RuntimeExtensionContext {}
 }

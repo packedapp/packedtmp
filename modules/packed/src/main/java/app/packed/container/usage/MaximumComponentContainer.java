@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.component.BuildException;
-import app.packed.container.AssemblySetup;
+import app.packed.container.ContainerHook;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 
 // @MetaAnnotation(AssemblyHook.class)
-@AssemblySetup(RandomProcX.class)
+@ContainerHook(RandomProcX.class)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -29,7 +29,7 @@ class MyAss extends BaseAssembly {
     }
 }
 
-record RandomProcX(MaximumComponentContainer pc) implements AssemblySetup.Processor {
+record RandomProcX(MaximumComponentContainer pc) implements ContainerHook.Processor {
 
     @Override
     public void onCompleted(ContainerMirror mirror) {

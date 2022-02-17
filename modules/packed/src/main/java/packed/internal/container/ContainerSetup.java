@@ -51,15 +51,15 @@ import packed.internal.util.CollectionUtil;
  */
 public final class ContainerSetup extends ComponentSetup {
 
-    /** Manages injection and other things for the beans registered in the container. */
+    /** All the beans in the container. */
     public final BeanContainerSetup beans = new BeanContainerSetup(this);
 
-    /** Children of this node (lazily initialized) in insertion order. */
+    /** Children of this node in insertion order. */
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
 
     /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */
     @Nullable
-    public ArrayList<ContainerSetup> containerChildren;
+    public ArrayList<ContainerSetup> containers;
 
     /** All extensions used by this container. */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
@@ -76,20 +76,22 @@ public final class ContainerSetup extends ComponentSetup {
     public final WireletWrapper wirelets;
 
     /**
-     * Create a new container (component) setup.
+     * Create a new container setup.
      * 
      * @param application
      *            the application this container is a part of
      * @param realm
      *            the realm this container is a part of
-     * @param driver
+     * @param lifetime
+     *            the lifetime this container is part of
+     * @param handle
      *            the driver that is used to create this container
      * @param parent
-     *            any parent component
+     *            any parent container
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerHandle driver, @Nullable ContainerSetup parent,
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
@@ -140,9 +142,9 @@ public final class ContainerSetup extends ComponentSetup {
         // Various container tree-node management
         if (parent != null) {
             // Add this container to the children of the parent
-            ArrayList<ContainerSetup> c = parent.containerChildren;
+            ArrayList<ContainerSetup> c = parent.containers;
             if (c == null) {
-                c = parent.containerChildren = new ArrayList<>(5);
+                c = parent.containers = new ArrayList<>(5);
             }
             c.add(this);
         }
@@ -263,7 +265,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** A build-time container mirror. */
     public final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
-        /** Extracts the extension that */
+        /** Extracts the extension that a given {@link ExtensionMirror} belongs to. */
         private static final ClassValue<Class<? extends Extension<?>>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
 
             /** {@inheritDoc} */
@@ -345,6 +347,7 @@ public final class ContainerSetup extends ComponentSetup {
             return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 
+        /** {@inheritDoc} */
         @Override
         public Optional<Class<? extends Extension<?>>> registrant() {
             throw new UnsupportedOperationException();

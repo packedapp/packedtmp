@@ -14,7 +14,7 @@ public abstract class ServiceProvideOldMirror extends ServiceProvideMirror {
     // annotation, config method
     public abstract Object configSite(); // or ConfigMirror...
 
-    public abstract Set<ServiceProvideOldMirror> dependencies();
+    public abstract Set<ServiceProvideOldMirror> realDependencies();
 
     // export()
     public abstract int id(); // Ideen var at kunne sammenligne services, der blot var exporteret...

@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import app.packed.container.Assembly;
-import app.packed.container.ComposerAction;
-import app.packed.extension.Extension;
+package app.packed.inject.service;
 
 /**
  *
  */
-@SuppressWarnings("rawtypes")
-// ComponentRealm
-public sealed interface RealmSource permits Assembly,Extension,ComposerAction {}
-// A realm can be closed...
-
-// Assembly realm -> when build returns
-// Extension realm -> when the application is in the last phase
-// Composer action realm -> when build returns
-
-// Nu naar vi faar Application beans med application scope...
-// Giver det jo ikke rigtig mening at sige den er installeret via denne Assembly.
+public enum ServiceScope {
+    CONTAINER, BEAN, METHOD;
+}
+// Could technically be Executable instead of Method
+// But I don't know of any constructor use cases

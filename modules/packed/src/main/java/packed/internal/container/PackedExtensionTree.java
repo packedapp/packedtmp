@@ -24,6 +24,7 @@ import app.packed.extension.ExtensionTree;
 /**
  *
  */
+// Tree, SequencedTree
 public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionTree<T> {
 
     /** {@inheritDoc} */
@@ -36,9 +37,9 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
 
     private void add(ExtensionSetup es, ContainerSetup container, ArrayList<T> extensions) {
         extensions.add(extensionType.cast(es.instance()));
-        if (container.containerChildren != null) {
+        if (container.containers != null) {
             System.out.println("====DAV fra " + container.path());
-            for (ContainerSetup c : container.containerChildren) {
+            for (ContainerSetup c : container.containers) {
                 ExtensionSetup childExtension = c.extensions.get(extensionType);
                 if (childExtension != null) {
                     add(childExtension, c, extensions);
@@ -49,27 +50,19 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return null;
+        return "ExtensionTree<" + extensionType.getSimpleName() + ">";
     }
 
     final class Iter implements Iterator<T> {
 
+        ContainerSetup current;
+
         T next;
 
-        ContainerSetup current;
+        void advanced() {
+
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -81,10 +74,6 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
         @Override
         public T next() {
             return next;
-        }
-
-        void advanced() {
-
         }
     }
 }

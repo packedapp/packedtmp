@@ -17,38 +17,48 @@ package app.packed.bean;
 
 import java.util.function.Function;
 
+import app.packed.base.Key;
 import app.packed.inject.Factory;
-import packed.internal.bean.PackedBeanMaker;
+import packed.internal.bean.PackedBeanCustomizer;
 
 /**
  *
  */
-// BeanBuilder, BeanRegistrant
 @SuppressWarnings("rawtypes")
-// BeanInstanceMaker???
-public sealed interface BeanMaker<T> permits PackedBeanMaker {
+// Alternativ name: BeanDriver, Soeg videre under GraalmVM fra og med D
+public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
 
     // Taenker den foerst bliver commitet naar man laver en configuration???
+
+    default InvokerConfiguration factory() {
+        throw new UnsupportedOperationException();
+    }
 
     default void bindOperationMirror() {
         // bind(EntityMirror.class);
         // Mulighederne er uendelige, og
     }
+
+    default <E> void bindService(Key<E> key, Class<E> implementation) {
+        // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
+        // ServiceScope.Bean
+    }
     
     default void checkWiring() {
-        
+
     }
 
     void prototype();
 
     //////////////// Sidecars
     default void addSidecarInstance(Object o) {}
+
     default void addSidecar(Class<?> clazz) {}
+
     default void addSidecar(Factory<?> clazz) {}
 
     // Provide stuff, state holder, Lifecycle
-    
-    
+
 }
 /// set properties
 /// Bind operation (Eller er det hooks???)
@@ -88,3 +98,8 @@ public sealed interface BeanMaker<T> permits PackedBeanMaker {
     // reflectOn(Fields|Methods|Constructors)
     // look in declaring class
 }
+//BeanBuilder, BeanRegistrant
+
+//BeanInstanceMaker??? Nope, det er ikke kun bean instances...
+//Men vi har maaske n ekstra
+

@@ -18,10 +18,10 @@ public class ZapAssembly extends BaseAssembly {
 
         // Det kan man ikke pga af lifecycle annotations
         // beanExtension.newAlias(ContainerBean.class).exportAs()
-        
-        provide(new Factory1<String, @Tag("asd") String>(e -> e) {});
-
         named("asdasd");
+        
+        install(new Factory1<String, @Tag("asd") String>(e -> e) {});
+
         link(new LinkMe(), Wirelet.named("heher"));
     }
 

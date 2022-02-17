@@ -18,12 +18,12 @@ package app.packed.container;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.ProvidableBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ProvidableBeanConfiguration;
 import app.packed.lifecycle.OnStart;
 
 /**
@@ -219,7 +219,7 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     protected final void provideAll(ServiceLocator locator) {
-        service().provideAll(locator);
+        bean().provideAll(locator);
     }
 
     /**
@@ -240,11 +240,11 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     protected final <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        return service().providePrototype(implementation);
+        return bean().providePrototype(implementation);
     }
 
     protected final <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        return service().providePrototype(factory);
+        return bean().providePrototype(factory);
     }
 
 //    protected final void requireGuest() {

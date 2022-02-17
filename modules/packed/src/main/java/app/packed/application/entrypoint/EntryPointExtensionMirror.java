@@ -50,6 +50,9 @@ public class EntryPointExtensionMirror extends ExtensionMirror implements Iterab
         return List.<EntryPointMirror>of().iterator();
     }
 
+    /**
+     * @return stuff
+     */
     public Optional<EntryPointMirror> main() {
         return Optional.empty();
     }

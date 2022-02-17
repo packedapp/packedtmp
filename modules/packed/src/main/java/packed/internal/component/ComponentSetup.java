@@ -44,13 +44,14 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /** The application this component is a part of. */
     public final ApplicationSetup application;
 
-    /** The depth of the component in the application. */
+    /** The depth of the component in the application tree. */
     public final int depth;
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
     /** The name of this component. */
+    @Nullable
     public String name;
 
     /**
@@ -59,9 +60,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
      * This field is not final as it may be updated later via wirelets.
      */
     @Nullable
-    public Consumer<? super ComponentMirror> onWire;
+    public Consumer<? super ComponentMirror> onWireAction;
 
-    /** The parent of this component, or null for a root container. */
+    /** The container this component belongs to, or null for a root container. */
     @Nullable
     public final ContainerSetup parent;
 
@@ -90,12 +91,12 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             this.depth = 0;
         } else {
             this.depth = parent.depth + 1;
-            this.onWire = parent.onWire;
+            this.onWireAction = parent.onWireAction;
         }
     }
 
     public final void checkIsActive() {
-        if (realm.active() != this) {
+        if (realm.currentComponent() != this) {
             String errorMsg;
             // if (realm.container == this) {
             errorMsg = "This operation must be called as the first thing in Assembly#build()";
@@ -155,32 +156,38 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     public abstract ComponentMirror mirror();
 
     /** {@inheritDoc} */
-    public final void named(String name) {
-        checkComponentName(name); // Check if the name is valid
+    public final void named(String newName) {
+        // We start by validating the new name of the component
+        checkComponentName(newName);
+
+        // Check that this component is still active and the name can be set
         checkIsActive();
 
         String currentName = this.name;
 
-        // If a name has been set using a wirelet it cannot be overridden
-        if (this instanceof ContainerSetup cs && cs.isNameInitializedFromWirelet) {
-            return;
-        } else if (name.equals(currentName)) {
+        if (newName.equals(currentName)) {
             return;
         }
 
+        // If the name of the component (container) has been set using a wirelet.
+        // Any attempt to override will be ignored
+        if (this instanceof ContainerSetup cs && cs.isNameInitializedFromWirelet) {
+            return;
+        }
+
+        // Unless we are the root container. We need to insert this component in the parent container
         if (parent != null) {
-            if (parent.children.putIfAbsent(name, this) != null) {
-                throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
+            if (parent.children.putIfAbsent(newName, this) != null) {
+                throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
             }
             parent.children.remove(currentName);
         }
-        this.name = name;
+        this.name = newName;
     }
 
-    
     public void onWired() {
-        if (onWire != null) {
-            onWire.accept(mirror());
+        if (onWireAction != null) {
+            onWireAction.accept(mirror());
         }
     }
 

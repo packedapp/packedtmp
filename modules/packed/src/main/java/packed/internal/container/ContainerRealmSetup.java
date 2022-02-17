@@ -34,9 +34,9 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
 
     void closeRealm() {
         ContainerSetup container = container();
-        if (active != null) {
-            active.onWired();
-            active = null;
+        if (currentComponent != null) {
+            currentComponent.onWired();
+            currentComponent = null;
         }
         isClosed = true;
 
@@ -66,8 +66,8 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
     private void onRealmClose(ContainerSetup cs) {
         // We recursively close all children in the same realm first
         // We do not close individual components
-        if (cs.containerChildren != null) {
-            for (ContainerSetup c : cs.containerChildren) {
+        if (cs.containers != null) {
+            for (ContainerSetup c : cs.containers) {
                 if (c.realm == cs.realm) {
                     onRealmClose(c);
                 }

@@ -53,9 +53,6 @@ import packed.internal.util.LookupUtil;
  */
 public abstract non-sealed class Assembly implements RealmSource {
 
-    /** A marker configuration object, indicating that an assembly has already been used. */
-    private static final ContainerConfiguration USED = new ContainerConfiguration();
-
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
@@ -76,9 +73,20 @@ public abstract non-sealed class Assembly implements RealmSource {
     @Nullable
     private ContainerConfiguration configuration;
 
+    // On container or assembly???
+    // Not container I think...
+    // Assembly + Extension
+    // So on Realm, eller application maaske
+    // Maaske holder vi den bare paa det respektive configurations objekt.
+    // Consumer<Throwable>
+    // Tror kun vi har behov for den for extension ikke?
+    final void addCloseAction(Runnable action) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return a descriptor for the application being built.} */
     protected final ApplicationDescriptor application() {
-        return configuration().application();
+        return configuration().container.application.descriptor;
     }
 
     /**
@@ -116,11 +124,11 @@ public abstract non-sealed class Assembly implements RealmSource {
     }
 
     /**
-     * Returns the configuration object for this assembly.
+     * Returns the configuration of the root container of this assembly.
      * <p>
      * This method must only be called from within the {@link #build()} method.
      * 
-     * @return the wrapped configuration object
+     * @return the container configuration object
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
@@ -128,11 +136,13 @@ public abstract non-sealed class Assembly implements RealmSource {
     // and .application()? where application is limited for extension realm assemblies
     // only application().descriptor() works
     // saa skal Extension.configuration() vel omnavngives til .extension() + .realm() IDKx
+    
+    // Problemet er at vi har ContainerExtension...
     protected final ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
-        } else if (c == USED) {
+        } else if (c == ContainerConfiguration.USED) {
             throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
         return c;
@@ -154,16 +164,16 @@ public abstract non-sealed class Assembly implements RealmSource {
                 // Run AssemblyHook.onPreBuild if hooks are present
                 realm.assemblyModel.preBuild(configuration);
 
-                // Call build() which is implemented by the user
+                // Call the actual build() method
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
                 realm.assemblyModel.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
-                VH_CONFIGURATION.setVolatile(this, USED);
+                VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);
             }
-        } else if (existing == USED) {
+        } else if (existing == ContainerConfiguration.USED) {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
         } else {
@@ -264,16 +274,5 @@ public abstract non-sealed class Assembly implements RealmSource {
      */
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
-    }
-
-    // On container or assembly???
-    // Not container I think...
-    // Assembly + Extension
-    // So on Realm, eller application maaske
-    // Maaske holder vi den bare paa det respektive configurations objekt.
-    // Consumer<Throwable>
-    // Tror kun vi har behov for den for extension ikke?
-    final void addCloseAction(Runnable action) {
-        throw new UnsupportedOperationException();
     }
 }

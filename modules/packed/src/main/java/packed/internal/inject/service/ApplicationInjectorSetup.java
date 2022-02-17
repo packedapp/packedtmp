@@ -80,8 +80,8 @@ public final class ApplicationInjectorSetup {
             }
         }
 
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
+        if (container.containers != null) {
+            for (ContainerSetup c : container.containers) {
                 dependencyCyclesFind(stack, dependencies, region, c);
             }
         }

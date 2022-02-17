@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
 import app.packed.component.BuildException;
-import app.packed.inject.ReflectionFactory;
+import app.packed.inject.LookupFactory;
 import app.packed.inject.service.Provide;
 import packed.internal.service.sandbox.Injector;
 import packed.internal.service.sandbox.InjectorComposer;
@@ -40,8 +40,8 @@ public class MethodInstanceTest {
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
-        MixedMethods.test(c -> c.provide(ReflectionFactory.of(MixedMethods.class)));
-        MixedMethods.test(c -> c.provide(ReflectionFactory.of(new TypeToken<MixedMethods>() {})));
+        MixedMethods.test(c -> c.provide(LookupFactory.of(MixedMethods.class)));
+        MixedMethods.test(c -> c.provide(LookupFactory.of(new TypeToken<MixedMethods>() {})));
     }
 
     // /** Tests lazy {@link Provide2#instantionMode()} on instance methods. */

@@ -2,8 +2,8 @@ package app.packed.container;
 
 import java.util.Set;
 
-import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.container.ContainerSetup;
@@ -12,34 +12,39 @@ import packed.internal.container.PackedContainerHandle;
 /**
  * The configuration of a container.
  */
-public final class ContainerConfiguration extends ComponentConfiguration {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
-    /** The component we are configuring. Is initially null until initialized by someone. */
+    /**
+     * A marker configuration object to indicate that a composer or assembly has already been used to build something. Must
+     * never be exposed to end-users.
+     */
+    static final ContainerConfiguration USED = new ContainerConfiguration();
+
+    /** The component we are configuring. Is only null for {@link #USED}. */
+    @Nullable
     final ContainerSetup container;
 
-    /** Must be created through Assembly, ContainerDriver or Composer. */
-    ContainerConfiguration() {
+    /** Used by {@link #USED}. */
+    private ContainerConfiguration() {
         this.container = null;
     }
 
-    public ContainerConfiguration(ContainerHandle containerHandle) {
+    public ContainerConfiguration(ContainerCustomizer containerHandle) {
         PackedContainerHandle bh = (PackedContainerHandle) containerHandle;
         this.container = bh.setup;
     }
 
-    /** {@return a descriptor for the application the container is a part of.} */
-    // Why not just an application mirror???
-    public ApplicationDescriptor application() {
-        return container.application.descriptor;
-    }
-
     /** {@inheritDoc} */
     @Override
-    protected void checkIsWiring() {
+    protected final void checkIsWiring() {
         container.checkIsActive();
     }
 
-    public void embed(Assembly assembly) {
+    public final void embed(Assembly assembly) {
+        /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
+        // der er paa den assembly der definere dem
+        
+        // Men der er helt klart noget arbejde der
         throw new UnsupportedOperationException();
     }
 
@@ -50,10 +55,9 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see BaseAssembly#extensionsTypes()
      * @see ContainerMirror#extensionsTypes()
      */
-    public Set<Class<? extends Extension<?>>> extensionTypes() {
+    public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return container.extensionTypes();
     }
-
 
     /**
      * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
@@ -65,7 +69,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+    public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container.isExtensionUsed(extensionType);
     }
 
@@ -84,11 +88,12 @@ public final class ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public NamespacePath path() {
+    public final NamespacePath path() {
         return container.path();
     }
 
-    public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+    // never selects extension wirelets...
+    public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container.selectWirelets(wireletClass);
     }
 
@@ -115,10 +120,18 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      *             already in used
      * @see #extensionsTypes()
      */
-    public <E extends Extension<?>> E use(Class<E> extensionType) {
+    public final <E extends Extension<?>> E use(Class<E> extensionType) {
         return container.useExtension(extensionType);
     }
 }
+
+//// Virker underlig den ikke er paa component
+///** {@return a descriptor for the application the container is a part of.} */
+//// Why not just an application mirror??? Why not on Component?
+//// I think it is better on (user) realm
+//public ApplicationDescriptor application() {
+//    return container.application.descriptor;
+//}
 
 // Altsaa vi har den kun paa assembly, men maaske
 /**

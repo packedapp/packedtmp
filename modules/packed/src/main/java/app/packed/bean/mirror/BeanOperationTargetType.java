@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package app.packed.bean.mirror;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -22,22 +22,21 @@ import java.lang.reflect.Method;
 /**
  *
  */
-public enum BeanOperationSourceType {
+public enum BeanOperationTargetType {
 
-    /** The operation is based on accessing a {@link Field} */
+    /** The operation is based on accessing a {@link Field}. */
     FIELD,
 
-    /** The operation is based on invoking a {@link Method} */
+    /** The operation is based on invoking a {@link Method}. */
     METHOD,
 
     /** The operation is based on invoking a {@link Constructor} */
     CONSTRUCTOR,
-    
-    INSTANCE, // BeanInstance? Constant
-    
-    FUNCTION, // FunctionalInterface + FN??? Vil mene FN bliver unwrapped...
-    
-    CUSTOM; // Typically a MethodHandle
+
+    /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
+    FUNCTION,
+
+    OTHER; // Typically a MethodHandle, or an instance
 }
 
 // Hvis vi har et factory der wrapper en metode er det saa method??? eller FN/factory
@@ -45,3 +44,5 @@ public enum BeanOperationSourceType {
 
 // Hvad er Factory.of(FooClass.class).bind(String.class, "doobar");
 // Constructor eller Custom????
+
+// 

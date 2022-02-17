@@ -4,11 +4,11 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerCustomizer;
 import app.packed.extension.Extension;
 
 /** A special component driver that create containers. */
-public final class PackedContainerHandle implements ContainerHandle {
+public final class PackedContainerHandle implements ContainerCustomizer {
 
     @Nullable
     final ContainerSetup parent;

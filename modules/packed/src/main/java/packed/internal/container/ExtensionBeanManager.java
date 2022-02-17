@@ -23,14 +23,17 @@ import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
 
 /**
- *
+ * Manages all beans for a single container.
+ * 
+ * <p>
+ * We might embed the functionality directly into ExtensionSetup once
+ * the implementation is finalized.
  */
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
-
 public final class ExtensionBeanManager {
 
-   public final Map<Key<?>, BeanSetup> beans = new LinkedHashMap<>();
+    public final Map<Key<?>, BeanSetup> beans = new LinkedHashMap<>();
 
     @Nullable
     final ExtensionBeanManager parent;

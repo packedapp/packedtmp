@@ -5,14 +5,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanOldKind;
-import app.packed.bean.mirror.BeanElementMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
@@ -38,7 +36,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
-    final PackedBeanMaker<?> beanHandle;
+    final PackedBeanCustomizer<?> beanHandle;
 
     /** The kind of bean we are configuring. */
     public final BeanOldKind beanKind;
@@ -68,7 +66,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanMaker<?> beanHandle) {
+    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanCustomizer<?> beanHandle) {
         super(container.application, realm, lifetime, container);
         this.beanKind = BeanOldKind.CONTAINER_BEAN;
         this.factory = beanHandle.factory;
@@ -76,6 +74,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         this.beanHandle = beanHandle;
         this.singletonHandle = beanHandle.kind == BeanOldKind.CONTAINER_BEAN ? lifetime.pool.reserve(beanHandle.beanType) : null;
 
+        // Does this bean belong to an extension
+        // Maybe test if isExtensionBean instead
         if (realm instanceof ExtensionRealmSetup s) {
             container.useExtensionSetup(s.realmType(), null).beans.beans.put(Key.of(beanHandle.beanType), this);
         }
@@ -143,6 +143,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         return new BuildTimeBeanMirror();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onWired() {
         try {
@@ -158,7 +159,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> beanInstanceType() {
+        public Class<?> instanceType() {
             return hookModel.clazz;
         }
 
@@ -171,18 +172,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         /** {@inheritDoc} */
         public final ContainerMirror container() {
             return parent.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<BeanElementMirror> hooks() {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T extends BeanElementMirror> Set<?> hooks(Class<T> hookType) {
-            return null;
         }
 
         @Override

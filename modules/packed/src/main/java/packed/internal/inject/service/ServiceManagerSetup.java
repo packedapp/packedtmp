@@ -201,8 +201,8 @@ public final class ServiceManagerSetup {
         }
 
         // Process exports from any children
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
+        if (container.containers != null) {
+            for (ContainerSetup c : container.containers) {
                 ServiceManagerSetup child = c.beans.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
@@ -232,8 +232,8 @@ public final class ServiceManagerSetup {
         // Add error messages if any nodes with the same key have been added multiple times
 
         // Process child requirements to children
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
+        if (container.containers != null) {
+            for (ContainerSetup c : container.containers) {
                 ServiceManagerSetup m = c.beans.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);

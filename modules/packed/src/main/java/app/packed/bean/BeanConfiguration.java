@@ -7,24 +7,24 @@ import app.packed.bean.archive.ManagedBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionBeanConfiguration;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanMaker;
+import packed.internal.bean.PackedBeanCustomizer;
 
 /**
  * The base class for the configuration of a bean.
  * <p>
  * {@code BeanConfiguration} is the superclass of the various bean configuration classes available in Packed.
- * 
  */
 public non-sealed class BeanConfiguration extends ComponentConfiguration {
 
     /** The bean we are configuring. */
-    private final BeanSetup bean;
+    final BeanSetup bean;
 
-    protected BeanConfiguration(BeanMaker<?> maker) {
-        PackedBeanMaker<?> pbm = requireNonNull((PackedBeanMaker<?>) maker, "maker is null");
+    protected BeanConfiguration(BeanCustomizer<?> maker) {
+        PackedBeanCustomizer<?> pbm = requireNonNull((PackedBeanCustomizer<?>) maker, "maker is null");
         this.bean = pbm.newSetup(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected final void checkIsWiring() {
         bean.checkIsActive();
@@ -56,8 +56,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
         // Jeg taenker det er er
         throw new UnsupportedOperationException();
     }
-
-    // Ved ikke praecis hvad den overskriver...
 
     /** {@inheritDoc} */
     @Override

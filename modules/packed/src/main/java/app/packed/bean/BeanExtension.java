@@ -1,14 +1,18 @@
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.component.UserOrExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.ReflectionFactory;
-import packed.internal.bean.PackedBeanMaker;
+import app.packed.inject.LookupFactory;
+import app.packed.inject.service.ServiceLocator;
+import packed.internal.bean.PackedBeanCustomizer;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension for creating new beans.
@@ -40,7 +44,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanMaker<T> handle = PackedBeanMaker.ofFactory(container, UserOrExtension.user(), ReflectionFactory.of(implementation));
+        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), LookupFactory.of(implementation));
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -53,7 +57,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanMaker<T> handle = PackedBeanMaker.ofFactory(container, UserOrExtension.user(), factory);
+        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -62,21 +66,53 @@ public class BeanExtension extends Extension<BeanExtension> {
      * <p>
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this container will have have component as its
-     * parent. 
+     * parent.
      *
      * @param instance
      *            the component instance to install
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanMaker<T> handle = PackedBeanMaker.ofInstance(container, UserOrExtension.user(), instance);
+        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofInstance(container, UserOrExtension.user(), instance);
         return new ContainerBeanConfiguration<>(handle);
+    }
+
+    /**
+     * Provides every service from the specified locator.
+     * 
+     * @param locator
+     *            the locator to provide services from
+     * @throws IllegalArgumentException
+     *             if the specified locator is not implemented by Packed
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+        if (!(locator instanceof AbstractServiceLocator l)) {
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+                    + " are currently not supported, locator type = " + locator.getClass().getName());
+        }
+        checkUserConfigurable();
+        container.beans.getServiceManager().provideAll(l);
+    }
+
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        PackedBeanCustomizer<T> handle = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), LookupFactory.of(implementation));
+        handle.prototype();
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
+        return sbc.provide();
+    }
+
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+        PackedBeanCustomizer<T> bh = PackedBeanCustomizer.ofFactory(container, UserOrExtension.user(), factory);
+        bh.prototype();
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
+        return sbc.provide();
     }
 
     public int beanCount() {
         return 4;
     }
-    
+
     @Override
     protected void onClose() {
         super.onClose();

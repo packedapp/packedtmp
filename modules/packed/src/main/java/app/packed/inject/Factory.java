@@ -288,13 +288,12 @@ public abstract class Factory<R> {
 
     /**
      * Returns a new factory that will perform the specified action immediately after the factory has constructed an object.
-     * And before the constructed object is used anywhere.
+     * And before the constructed object is returned to the runtime.
      * 
      * @param action
-     *            the post construction action
+     *            the action to run
      * @return the new factory
      */
-    // was PostConstructor?
     public final Factory<R> peek(Consumer<? super R> action) {
         return new PeekableFactory<>(this, action);
     }
@@ -403,7 +402,7 @@ public abstract class Factory<R> {
     // openResult(Lookup) <---- maaske er den baa en
     public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectionFactory.ExecutableFactory || this instanceof ReflectionFactory.FieldFactory) {
+        if (this instanceof LookupFactory.ExecutableFactory || this instanceof LookupFactory.FieldFactory) {
             return new LookedUpFactory<>(this, toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(

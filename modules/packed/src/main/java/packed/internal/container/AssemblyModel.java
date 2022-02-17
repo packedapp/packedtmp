@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import app.packed.base.Key;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblySetup;
+import app.packed.container.ContainerHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
@@ -18,9 +18,9 @@ import packed.internal.util.ThrowableUtil;
 /** A model of an {@link Assembly}. */
 public final /* primitive */ class AssemblyModel {
     
-    private final AssemblySetup.Processor[] hooks;
+    private final ContainerHook.Processor[] hooks;
 
-    private AssemblyModel(AssemblySetup.Processor[] hooks) {
+    private AssemblyModel(ContainerHook.Processor[] hooks) {
         this.hooks = requireNonNull(hooks);
     }
 
@@ -29,11 +29,11 @@ public final /* primitive */ class AssemblyModel {
 
         @Override
         protected AssemblyModel computeValue(Class<?> type) {
-            ArrayList<AssemblySetup.Processor> hooks = new ArrayList<>();
+            ArrayList<ContainerHook.Processor> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
-                if (a instanceof AssemblySetup h) {
-                    for (Class<? extends AssemblySetup.Processor> b : h.value()) {
-                        if (AssemblySetup.Processor.class.isAssignableFrom(b)) {
+                if (a instanceof ContainerHook h) {
+                    for (Class<? extends ContainerHook.Processor> b : h.value()) {
+                        if (ContainerHook.Processor.class.isAssignableFrom(b)) {
                             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), b, Class.class);
                             builder.provide(new Key<Class<? extends Assembly >>() {}).adaptArgument(0);
                             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
@@ -45,11 +45,11 @@ public final /* primitive */ class AssemblyModel {
 
                             // Find a method handle for the extension's constructor
 
-                            MethodHandle constructor = builder.findConstructor(AssemblySetup.Processor.class, m -> new InternalExtensionException(m));
+                            MethodHandle constructor = builder.findConstructor(ContainerHook.Processor.class, m -> new InternalExtensionException(m));
 
-                            AssemblySetup.Processor instance;
+                            ContainerHook.Processor instance;
                             try {
-                                instance = (AssemblySetup.Processor) constructor.invokeExact(type);
+                                instance = (ContainerHook.Processor) constructor.invokeExact(type);
                             } catch (Throwable t) {
                                 throw ThrowableUtil.orUndeclared(t);
                             }
@@ -58,18 +58,18 @@ public final /* primitive */ class AssemblyModel {
                     }
                 }
             }
-            return new AssemblyModel(hooks.toArray(s -> new AssemblySetup.Processor[s]));
+            return new AssemblyModel(hooks.toArray(s -> new ContainerHook.Processor[s]));
         }
     };
 
     public void preBuild(ContainerConfiguration configuration) {
-        for (AssemblySetup.Processor h : hooks) {
+        for (ContainerHook.Processor h : hooks) {
             h.beforeBuild(configuration);
         }
     }
 
     public void postBuild(ContainerConfiguration configuration) {
-        for (AssemblySetup.Processor h : hooks) {
+        for (ContainerHook.Processor h : hooks) {
             h.afterBuild(configuration);
         }
     }
@@ -80,7 +80,7 @@ public final /* primitive */ class AssemblyModel {
 }
 
 class ContainerBuildHookModel {
-    final AssemblySetup.Processor hook;
+    final ContainerHook.Processor hook;
 
     ContainerBuildHookModel(Builder builder) {
         this.hook = null;

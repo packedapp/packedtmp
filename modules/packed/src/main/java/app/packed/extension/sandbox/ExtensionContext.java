@@ -18,6 +18,7 @@ package app.packed.extension.sandbox;
 /**
  *
  */
+// Strengt taget skulle bruge ikke kunne bruge denne ogsaa?
 public interface ExtensionContext {
 
 }

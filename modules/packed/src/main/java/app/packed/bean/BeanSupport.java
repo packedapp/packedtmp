@@ -8,8 +8,8 @@ import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
-import app.packed.inject.ReflectionFactory;
-import packed.internal.bean.PackedBeanMaker;
+import app.packed.inject.LookupFactory;
+import packed.internal.bean.PackedBeanCustomizer;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -60,7 +60,7 @@ public final class BeanSupport extends ExtensionSupport {
 
     // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanMaker<T> m = PackedBeanMaker.ofFactory(container, UserOrExtension.extension(extensionType), ReflectionFactory.of(implementation));
+        PackedBeanCustomizer<T> m = PackedBeanCustomizer.ofFactory(container, UserOrExtension.extension(extensionType), LookupFactory.of(implementation));
         m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
     }
@@ -70,7 +70,7 @@ public final class BeanSupport extends ExtensionSupport {
     }
 
     public final <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanMaker<T> m = PackedBeanMaker.ofInstance(container, UserOrExtension.extension(extensionType), instance);
+        PackedBeanCustomizer<T> m = PackedBeanCustomizer.ofInstance(container, UserOrExtension.extension(extensionType), instance);
         m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
 
@@ -78,23 +78,23 @@ public final class BeanSupport extends ExtensionSupport {
 
     // *********************** ***********************
     // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
-    public final <T> BeanMaker<T> newMaker(UserOrExtension agent, Class<T> implementation) {
-        return PackedBeanMaker.ofFactory(container, agent, ReflectionFactory.of(implementation));
+    public final <T> BeanCustomizer<T> newCustomizer(UserOrExtension agent, Class<T> implementation) {
+        return PackedBeanCustomizer.ofFactory(container, agent, LookupFactory.of(implementation));
     }
 
-    public final <T> BeanMaker<T> newMaker(UserOrExtension agent, Factory<T> factory) {
-        return PackedBeanMaker.ofFactory(container, agent, factory);
+    public final <T> BeanCustomizer<T> newCustomizer(UserOrExtension agent, Factory<T> factory) {
+        return PackedBeanCustomizer.ofFactory(container, agent, factory);
     }
 
-    public final <T> BeanMaker<T> newMakerInstance(UserOrExtension agent, T instance) {
-        return PackedBeanMaker.ofInstance(container, agent, instance);
+    public final <T> BeanCustomizer<T> newCustomizerInstance(UserOrExtension agent, T instance) {
+        return PackedBeanCustomizer.ofInstance(container, agent, instance);
     }
 
-    public final <T> BeanMaker<T> newSyntheticMaker(UserOrExtension agent) {
+    public final <T> BeanCustomizer<T> newSyntheticCustomizer(UserOrExtension agent) {
         throw new UnsupportedOperationException();
     }
 
-    public final BeanMaker<Void> newFunctionalMaker(UserOrExtension agent) {
+    public final BeanCustomizer<Void> newFunctionalCustomizer(UserOrExtension agent) {
         throw new UnsupportedOperationException();
     }
 }

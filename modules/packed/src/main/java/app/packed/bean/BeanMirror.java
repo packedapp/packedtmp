@@ -1,40 +1,62 @@
 package app.packed.bean;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Optional;
 
-import app.packed.bean.mirror.BeanElementMirror;
+import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.extension.Extension;
 import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 
+// Class -> members
+// Scanning class -> Hooks
+// Bean -> Operation
 /**
  * A mirror of a bean.
  */
-// Vi har kun 1... ikke flere ligesom BeanConfiguration
 public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
-    /** {@return the type (class) of the bean.} */
-    // Optional instead??? Nope, vi returnere void.class
-    Class<?> beanInstanceType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
-
-    // The container t
     /** {@return the container the bean belongs to. Is identical to #parent() which is never empty for a bean.} */
     ContainerMirror container();
 
-    /** {@return all hooks that have been applied on the bean.} */
-    Set<BeanElementMirror> hooks();
+    default Class<? extends Extension<?>> installedVia() {
+        // The extension that performed the actual installation of the bean
+        return BeanExtension.class;
+    }
 
-    <T extends BeanElementMirror> Set<?> hooks(Class<T> hookType);
+    /** {@return the type (class) of the bean.} */
+    // Optional instead??? Nope, vi returnere void.class
+    // What about an akka actor???
+    Class<?> instanceType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
 
     /** {@return the kind of the bean.} */
     BeanKind kind();
 
+    default Optional<BeanFactoryMirror> factory() {
+        // Kunne man forstille sig at en bean havde 2 constructors??
+        // Som man valgte af paa runtime????
+        return Optional.empty();
+    }
+
+    default Collection<BeanOperationMirror> operations() {
+        throw new UnsupportedOperationException();
+    }
+
+    default <T extends BeanOperationMirror> Collection<T> operations(Class<T> operationType) {
+        throw new UnsupportedOperationException();
+    }
     // boolean isInstantiated
 
     // Scope-> BuildConstant, RuntimeConstant, Prototype...
 
     // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
 }
+///** {@return all hooks that have been applied on the bean.} */
+//// Tror slet ikke vi skal have dem her...
+//Set<BeanElementMirror> hooks();
+//
+//<T extends BeanElementMirror> Set<?> hooks(Class<T> hookType);
 
 // Maaske er den bare fyldt med attributer istedet for et decideres mirror IDK
 // Er ikke sikker paa en driver har et mirror

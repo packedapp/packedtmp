@@ -16,43 +16,22 @@
 package app.packed.bean;
 
 import app.packed.base.Key;
-import app.packed.inject.service.ProvidableBeanConfiguration;
 
 /**
- * The configuration of a container bean.
- * <p>
- * that can serve as basis for actual component configuration types.
- * <p>
- * Component configuration classes do not need to extend this class.
+ * A configuration of a container bean.
  */
-
-// Og saa alligevel ikke... der er steder hvor vi fx gerne vil tage en ContainerBeanConfiguration.
-// Fx de der spi-ting
-
-// extends ServiceBeanConfiguration... (ProvideableBeanConfiguration)
+// Tror ikke den kan noget PBC ikke kan.
+// Men vi kan kraeve den som parameter nogle steder.
 public class ContainerBeanConfiguration<T> extends ProvidableBeanConfiguration<T> {
-
-//    /** A var handle that can update the {@link #configuration()} field in this class. */
-//    private static final VarHandle VH_BEAN_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "bean", BeanSetup.class);
-
 
     /**
      * @param maker
      */
-    public ContainerBeanConfiguration(BeanMaker<T> maker) {
+    public ContainerBeanConfiguration(BeanCustomizer<T> maker) {
         super(maker);
     }
 
-//    /** {@return the container setup instance that we are wrapping.} */
-//    private BeanSetup bean() {
-//        try {
-//            return (BeanSetup) VH_BEAN_SETUP.get((BeanConfiguration) this);
-//        } catch (Throwable e) {
-//            throw ThrowableUtil.orUndeclared(e);
-//        }
-//    }
-
-
+    /** {@inheritDoc} */
     @Override
     public ContainerBeanConfiguration<T> export() {
         super.export();
@@ -66,30 +45,26 @@ public class ContainerBeanConfiguration<T> extends ProvidableBeanConfiguration<T
         return this;
     }
 
-    @Override
-    protected void onWired() {
-        super.onWired();
-       // sb.onWired();
-    }
-
+    /** {@inheritDoc} */
     @Override
     public ContainerBeanConfiguration<T> provide() {
         super.provide();
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ContainerBeanConfiguration<T> provideAs(Class<? super T> key) {
         super.provideAs(key);
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ContainerBeanConfiguration<T> provideAs(Key<? super T> key) {
         super.provideAs(key);
         return this;
     }
-
 }
 //
 //public <X extends Runnable & Callable<String>> X foo() {
