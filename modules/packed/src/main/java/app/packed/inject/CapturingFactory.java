@@ -83,33 +83,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         }
     };
 
-    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
-        if (!expectedType.isInstance(value)) {
-            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
-            if (value == null) {
-                // NPE???
-                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
-            } else {
-                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
-                // instance.getClass());
-                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
-                        + " but returned a " + value.getClass().getName() + " instance");
-            }
-        }
-    }
-
-    /** The dependencies of this factory, extracted from the type variables of the subclass. */
-    // Taenker vi laver en private record delegate der holder begge ting...
-    // Og saa laeser
-    private final List<InternalDependency> dependencies;
-
-    final MethodHandle methodHandle;
-
     /** The type of objects this factory creates. */
-    private final TypeToken<R> typeLiteral;
-
-    /** The type of objects this factory creates. */
-    @SuppressWarnings("unused")
     private final CanonicalizedCapturingInternalFactory<R> factory;
 
     /**
@@ -122,30 +96,31 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
     @SuppressWarnings("unchecked")
     CapturingFactory(Object function) {
         super();
-        this.typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
+        TypeToken<R> typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
         requireNonNull(function); // should have already been checked by subclasses
         // analyze();
 
+        final MethodHandle methodHandle;
+        final List<InternalDependency> dependencies;
+        Class<?> rawType = typeLiteral.rawType();
         if (this instanceof Factory0) {
-            MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType()); // (Supplier, Class)Object -> ()Object
-            this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // ()Object -> ()R
-            this.dependencies = List.of();
+            MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
+            methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
+            dependencies = List.of();
         } else if (this instanceof Factory1) {
-            this.dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
+            dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
 
-            Class<?> ret = rawType();
             Class<?> param = dependencies.get(0).rawType();
-            MethodHandle mh = CREATE1.bindTo(function).bindTo(ret); // (Function, Class, Object)Object -> (Object)Object
-            this.methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ret, param)); // (Object)Object -> (T)R
+            MethodHandle mh = CREATE1.bindTo(function).bindTo(rawType); // (Function, Class, Object)Object -> (Object)Object
+            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, param)); // (Object)Object -> (T)R
 
         } else {
-            this.dependencies = DEPENDENCY_CACHE2.get(getClass());
+            dependencies = DEPENDENCY_CACHE2.get(getClass());
 
-            Class<?> ret = rawType();
             Class<?> parem1 = dependencies.get(0).rawType();
             Class<?> parem2 = dependencies.get(1).rawType();
-            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType()); // (Function, Class, Object, Object)Object -> (Object, Object)Object
-            this.methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ret, parem1, parem2)); // (Object, Object)Object -> (T, U)R
+            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType ); // (Function, Class, Object, Object)Object -> (Object, Object)Object
+            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
         this.factory = new CanonicalizedCapturingInternalFactory<>(typeLiteral, methodHandle, dependencies);
 
@@ -184,10 +159,29 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         System.out.println(mh);
     }
 
+    InternalFactory<R> canonicalize() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public TypeToken<R> typeLiteral() {
-        return typeLiteral;
+        return factory.typeLiteral();
+    }
+
+    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
+        if (!expectedType.isInstance(value)) {
+            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
+            if (value == null) {
+                // NPE???
+                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
+            } else {
+                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
+                // instance.getClass());
+                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
+                        + " but returned a " + value.getClass().getName() + " instance");
+            }
+        }
     }
 
     /**
@@ -230,10 +224,6 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         T value = function.apply(object);
         checkReturnValue(expectedType, value, function);
         return value;
-    }
-
-    InternalFactory<R> canonicalize() {
-        throw new UnsupportedOperationException();
     }
 
     /**
