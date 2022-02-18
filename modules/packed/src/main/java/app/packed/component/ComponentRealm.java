@@ -24,7 +24,7 @@ import app.packed.extension.Extension;
  */
 @SuppressWarnings("rawtypes")
 // ComponentRealm
-public sealed interface RealmSource permits Assembly,Extension,ComposerAction {}
+public sealed interface ComponentRealm permits Assembly,Extension,ComposerAction {}
 // A realm can be closed...
 
 // Assembly realm -> when build returns

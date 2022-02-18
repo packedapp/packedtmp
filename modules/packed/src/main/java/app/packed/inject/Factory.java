@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -34,7 +33,6 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
-import app.packed.bean.BeanSupport;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.inject.InternalFactory;
 import packed.internal.inject.InternalFactory.BoundFactory;
@@ -43,8 +41,6 @@ import packed.internal.inject.InternalFactory.LookedUpFactory;
 import packed.internal.inject.InternalFactory.PeekableFactory;
 import packed.internal.inject.ReflectiveFactory;
 import packed.internal.inject.ReflectiveFactory.ExecutableFactory;
-import packed.internal.invoke.typevariable.TypeVariableExtractor;
-import packed.internal.util.BasePackageAccess;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -70,157 +66,8 @@ import packed.internal.util.BasePackageAccess;
  * <pre> {@code Factory<Long> f = new Factory<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
  */
-
-// Det er vigtigt at vi binder og ikke injecter. Altsaa goer klar at vi udelukkene binder noget til den ene parameter.
-// Its friend the abstract class Procedure... like Factory but no return..
-// Then move it to base...
-// Not a Function because it takes annotations...
 @SuppressWarnings("rawtypes")
 public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory {
-
-    /** A cache of factories used by {@link #of(Class)}. */
-    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
-        }
-    };
-
-    /**
-     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
-     * literals that are manually constructed.
-     */
-    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
-            return new ExecutableFactory<>(tl, tl.rawType());
-        }
-    };
-
-    /** A type variable extractor. */
-    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
-
-    /**
-     * This method is equivalent to {@link #of(Class)} except taking a type literal.
-     *
-     * @param <T>
-     *            the implementation type
-     * @param implementation
-     *            the implementation type
-     * @return a factory for the specified implementation type
-     */
-    @SuppressWarnings("unchecked")
-    // Hmm vi har jo ikke parameterized beans???
-    public static <T> Factory<T> of(TypeToken<T> implementation) {
-        // Can cache it with a Class[] array corresponding to type parameters...
-        requireNonNull(implementation, "implementation is null");
-        if (!implementation.isCanonicalized()) {
-            // We cache factories for all "new TypeToken<>(){}"
-            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
-        }
-        Type t = implementation.type();
-        if (t instanceof Class<?> cl) {
-            return (Factory<T>) BeanSupport.defaultFactoryFor(cl);
-        } else {
-            ExecutableFactory<?> f = CLASS_CACHE.get(implementation.rawType());
-            return new ExecutableFactory<>(f, implementation);
-        }
-    }
-
-    // ReflectionFactory.of
-    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
-        requireNonNull(type, "type is null");
-        return ofConstructor(constructor, TypeToken.of(type));
-    }
-
-    // * <pre>
-//  * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
-//  * });
-//  * </pre>
-    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
-        requireNonNull(constructor, "constructor is null");
-        // TODO we probably need to validate the type literal here
-        return new ExecutableFactory<>(type, constructor);
-    }
-
-    /**
-     * Creates a new factory that uses the specified constructor to create new instances.
-     *
-     * @param constructor
-     *            the constructor used for creating new instances
-     * @return the new factory
-     */
-    public static <T> Factory<T> ofConstructor(Constructor<T> constructor) {
-        requireNonNull(constructor, "constructor is null");
-        TypeToken<T> tl = TypeToken.of(constructor.getDeclaringClass());
-        return new ExecutableFactory<>(tl, constructor);
-    }
-
-    // Hvad goer vi med en klasse der er mere restri
-    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
-        requireNonNull(returnType, "returnType is null");
-        return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
-    }
-
-    // Annotations will be retained from the method
-    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
-        throw new UnsupportedOperationException();
-    }
-
-    // If the specified instance is not a static method. An extra variable
-    // use bind(Foo) to bind the variable.
-    /**
-     * <p>
-     * If the specified method is not a static method. The returned factory will have the method's declaring class as its
-     * first variable. Use {@link #provide(Object)} to bind an instance of the declaring class.
-     * 
-     * @param <T>
-     *            the type of value returned by the method
-     * @param method
-     *            the method to wrap
-     * @param returnType
-     *            the type of value returned by the method
-     * @return a factory that wraps the specified method
-     * @see #ofMethod(Method, TypeToken)
-     */
-    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
-        requireNonNull(returnType, "returnType is null");
-        return ofMethod(method, TypeToken.of(returnType));
-    }
-
-    // Den her sletter evt. Qualifier paa metoden...
-    public static <T> Factory<T> ofMethod(Method method, TypeToken<T> returnType) {
-        requireNonNull(method, "method is null");
-        requireNonNull(returnType, "returnType is null");
-
-        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
-        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
-        // Map.of(), new MethodMirror(method)));
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
-     * {@link #ofConstructor(Constructor)} method this method takes a type literal that can be used to create factories with
-     * a generic signature:
-     *
-     *
-     * 
-     * @param constructor
-     *            the constructor used from creating an instance
-     * @param type
-     *            a type literal
-     * @return the new factory
-     * @see #ofConstructor(Constructor)
-     */
-
-    public static <T> Factory<T> ofStaticFactory(Class<?> clazz, TypeToken<T> returnType) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Binds the specified argument(s) to a variable with the specified index as returned by {@link #variables()}. This
@@ -294,40 +141,6 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
     final Factory<R> bindSupplier(int index, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
     }
-
-//    // taenker vi laver den her public og saa bare caster...
-//    List<InternalDependency> dependencies() {
-//        return List.of();
-//    }
-
-//    /**
-//     * The key under which If this factory is registered as a service. This method returns the (default) key that will be
-//     * used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
-//     * factory is used to register a service.
-//     *
-//     * @return the key under which this factory will be registered unless
-//     * @see #withKey(Key)
-//     */
-//    public final Key<T> key() {
-//        return key;
-//    }
-//
-//    /**
-//     * Returns an immutable list of all variables (typically fields or parameters) that needs to be successfully injected in
-//     * order for the factory to provide a new value.
-//     * <p>
-//     * The list returned by this method is affected by any previous bindings to specific variables. For example, via
-//     * {@link #bind(int, Object, Object...)}.
-//     * <p>
-//     * Factories created via {@link #ofConstant(Object)} always return an empty list.
-//     * 
-//     * @return any variables that was used to construct the factory
-//     */
-//    // input, output...
-//    @SuppressWarnings({ "unchecked", "exports" })
-//    public final List<InternalDependency> dependenciesOld() {
-//        return (List) dependencies();
-//    }
 
     final <T> Factory<T> mapTo(Class<T> key, Function<? super T, ? extends T> mapper) {
 
@@ -413,10 +226,10 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
 
     /**
      * Returns a new factory that will perform the specified action immediately after the factory has constructed an object.
-     * And before the constructed object is returned to the runtime.
+     * And before the object is returned to the runtime.
      * 
      * @param action
-     *            the action to run
+     *            the action to run after the factory has returned an object
      * @return the new factory
      */
     public final Factory<R> peek(Consumer<? super R> action) {
@@ -512,29 +325,6 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
-    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
-        if (!expectedType.isInstance(value)) {
-            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
-            if (value == null) {
-                // NPE???
-                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
-            } else {
-                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
-                // instance.getClass());
-                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
-                        + " but returned a " + value.getClass().getName() + " instance");
-            }
-        }
-    }
-
-    // new Factory<String>(SomeMethod);
-    // How we skal have
-    // Maaske kan vi
-
-    // If the specified method is an instance method
-    // variables will include a dependenc for it as the first
-    // parameters
-
     /**
      * Returns a factory that returns the specified instance every time the factory must provide a value.
      * <p>
@@ -555,7 +345,106 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
         return new ConstantFactory<T>(constant);
     }
 
+    // ReflectionFactory.of
+    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
+        requireNonNull(type, "type is null");
+        return ofConstructor(constructor, TypeToken.of(type));
+    }
+
+    // * <pre>
+//  * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+//  * });
+//  * </pre>
+    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
+        requireNonNull(constructor, "constructor is null");
+        // TODO we probably need to validate the type literal here
+        return new ExecutableFactory<>(type, constructor);
+    }
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances.
+     *
+     * @param constructor
+     *            the constructor used for creating new instances
+     * @return the new factory
+     */
+    public static <T> Factory<T> ofConstructor(Constructor<T> constructor) {
+        requireNonNull(constructor, "constructor is null");
+        TypeToken<T> tl = TypeToken.of(constructor.getDeclaringClass());
+        return new ExecutableFactory<>(tl, constructor);
+    }
+
+    // Hvad goer vi med en klasse der er mere restri
+    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
+        requireNonNull(returnType, "returnType is null");
+        return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
+    }
+
+    // Annotations will be retained from the method
+    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
+        throw new UnsupportedOperationException();
+    }
+
+    // If the specified instance is not a static method. An extra variable
+    // use bind(Foo) to bind the variable.
+    /**
+     * <p>
+     * If the specified method is not a static method. The returned factory will have the method's declaring class as its
+     * first variable. Use {@link #provide(Object)} to bind an instance of the declaring class.
+     * 
+     * @param <T>
+     *            the type of value returned by the method
+     * @param method
+     *            the method to wrap
+     * @param returnType
+     *            the type of value returned by the method
+     * @return a factory that wraps the specified method
+     * @see #ofMethod(Method, TypeToken)
+     */
+    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
+        requireNonNull(returnType, "returnType is null");
+        return ofMethod(method, TypeToken.of(returnType));
+    }
+
+    // Den her sletter evt. Qualifier paa metoden...
+    public static <T> Factory<T> ofMethod(Method method, TypeToken<T> returnType) {
+        requireNonNull(method, "method is null");
+        requireNonNull(returnType, "returnType is null");
+
+        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
+        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
+        // Map.of(), new MethodMirror(method)));
+        throw new UnsupportedOperationException();
+    }
+
+    // new Factory<String>(SomeMethod);
+    // How we skal have
+    // Maaske kan vi
+
+    // If the specified method is an instance method
+    // variables will include a dependenc for it as the first
+    // parameters
+
     public static <T> Factory<T> ofMethodHandle(MethodHandle methodHandle) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
+     * {@link #ofConstructor(Constructor)} method this method takes a type literal that can be used to create factories with
+     * a generic signature:
+     *
+     *
+     * 
+     * @param constructor
+     *            the constructor used from creating an instance
+     * @param type
+     *            a type literal
+     * @return the new factory
+     * @see #ofConstructor(Constructor)
+     */
+
+    public static <T> Factory<T> ofStaticFactory(Class<?> clazz, TypeToken<T> returnType) {
         throw new UnsupportedOperationException();
     }
 

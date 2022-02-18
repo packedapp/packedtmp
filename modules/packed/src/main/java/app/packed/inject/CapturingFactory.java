@@ -51,7 +51,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
     /** A method handle for invoking {@link #create(Supplier, Class)}. */
     private static final MethodHandle CREATE0 = LookupUtil.lookupStatic(MethodHandles.lookup(), "create0", Object.class, Supplier.class, Class.class);
-    
+
     /** A method handle for invoking {@link #create(Function, Class, Object)}. */
     private static final MethodHandle CREATE1 = LookupUtil.lookupStatic(MethodHandles.lookup(), "create1", Object.class, Function.class, Class.class,
             Object.class);
@@ -81,16 +81,31 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         }
     };
 
+    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
+        if (!expectedType.isInstance(value)) {
+            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
+            if (value == null) {
+                // NPE???
+                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
+            } else {
+                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
+                // instance.getClass());
+                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
+                        + " but returned a " + value.getClass().getName() + " instance");
+            }
+        }
+    }
+
     /** The dependencies of this factory, extracted from the type variables of the subclass. */
+    // Taenker vi laver en private record delegate der holder begge ting...
+    // Og saa laeser
     private final List<InternalDependency> dependencies;
 
-    /** The function that the user specified. */
-    final Object function;
-
     final MethodHandle methodHandle;
+
     /** The type of objects this factory creates. */
     private final TypeToken<R> typeLiteral;
-    
+
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
      * constructor in this (super) class.
@@ -102,7 +117,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
     CapturingFactory(Object function) {
         super();
         this.typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
-        this.function = requireNonNull(function); // should have already been checked by subclasses
+        requireNonNull(function); // should have already been checked by subclasses
         // analyze();
 
         if (this instanceof Factory0) {
@@ -233,13 +248,11 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         return value;
     }
 
-    public static void main(String[] args) {
-        new Factory0<>(() -> "") {};
-    }
-
     // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
     // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
-    static class FactoryMetadata {
+    
+    // Den kommer ind i InternalFactory
+    record FactoryMetadata() {
         // find single Constructor... extract information about function type
 
         // must be a public type readable for anyone

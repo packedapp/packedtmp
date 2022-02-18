@@ -2,9 +2,10 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
 import java.util.function.BiConsumer;
 
+import app.packed.base.TypeToken;
 import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanConfiguration;
@@ -14,8 +15,9 @@ import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.ReflectiveFactory;
-import packed.internal.invoke.MemberScanner;
+import packed.internal.inject.ReflectiveFactory.ExecutableFactory;
+import packed.internal.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.util.BasePackageAccess;
 
 /**
  * A bean extension support class.
@@ -112,15 +114,33 @@ public final class BeanSupport extends ExtensionSupport {
     }
 
     /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
-    private static final ClassValue<Factory<?>> CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        protected Factory<?> computeValue(Class<?> implementation) {
-            Constructor<?> con = MemberScanner.getConstructor(implementation, true, e -> new BeanDefinitionException(e));
-            return ReflectiveFactory.ofConstructor(con);
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
         }
     };
 
+
+    /**
+     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
+     * literals that are manually constructed.
+     */
+    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
+            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
+            return new ExecutableFactory<>(tl, tl.rawType());
+        }
+    };
+
+    /** A type variable extractor. */
+    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
+
+    
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
      * <ul>
@@ -157,8 +177,35 @@ public final class BeanSupport extends ExtensionSupport {
     // If @Initialize -> rename to findInitializer
     // Flyt til BeanFactories
     @SuppressWarnings("unchecked")
-    public static <T> /* ReflectionFactory<T> */ Factory<T> defaultFactoryFor(Class<T> implementation) {
+    public static <T> Factory<T> defaultFactoryFor(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) CLASS_CACHE.get(implementation);
+    }
+
+    /**
+     * This method is equivalent to {@link #of(Class)} except taking a type literal.
+     *
+     * @param <T>
+     *            the implementation type
+     * @param implementation
+     *            the implementation type
+     * @return a factory for the specified implementation type
+     */
+    @SuppressWarnings("unchecked")
+    // Hmm vi har jo ikke parameterized beans???
+    public static <T> Factory<T> defaultFactoryFor(TypeToken<T> implementation) {
+        // Can cache it with a Class[] array corresponding to type parameters...
+        requireNonNull(implementation, "implementation is null");
+        if (!implementation.isCanonicalized()) {
+            // We cache factories for all "new TypeToken<>(){}"
+            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+        }
+        Type t = implementation.type();
+        if (t instanceof Class<?> cl) {
+            return (Factory<T>) BeanSupport.defaultFactoryFor(cl);
+        } else {
+            ExecutableFactory<?> f = CLASS_CACHE.get(implementation.rawType());
+            return new ExecutableFactory<>(f, implementation);
+        }
     }
 }

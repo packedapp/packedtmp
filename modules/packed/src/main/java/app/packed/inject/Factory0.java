@@ -70,8 +70,6 @@ import java.util.function.Supplier;
  * @see Factory
  * @see Factory2
  */
-// Maybe define a CustomFactory we can override...
-// I think so... And maybe install a MethodHand use $toConcract... Nahh kan ikke bruge $ fordi vi overskriver...
 public abstract class Factory0<R> extends CapturingFactory<R> {
 
     /**

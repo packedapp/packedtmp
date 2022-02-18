@@ -32,7 +32,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport;
-import app.packed.component.RealmSource;
+import app.packed.component.ComponentRealm;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -81,7 +81,7 @@ import packed.internal.util.ThrowableUtil;
  * @param <E>
  *            The type of the extension subclass
  */
-public abstract non-sealed class Extension<E extends Extension<E>> implements RealmSource {
+public abstract non-sealed class Extension<E extends Extension<E>> implements ComponentRealm {
 
     /**
      * The extension's setup that all methods delegate to.

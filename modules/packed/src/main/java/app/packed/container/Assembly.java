@@ -25,7 +25,7 @@ import java.util.Set;
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.RealmSource;
+import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.util.LookupUtil;
@@ -51,7 +51,7 @@ import packed.internal.util.LookupUtil;
  * 
  * @see BaseAssembly
  */
-public abstract non-sealed class Assembly implements RealmSource {
+public abstract non-sealed class Assembly implements ComponentRealm {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);

@@ -36,6 +36,8 @@ import packed.internal.util.LookupValue;
  * a {@link Lookup} object, for example, via {@link Assembly#lookup(Lookup)}. And another where users use a module
  * descriptor to provide access.
  */
+// Altsaa er det mere en Bean ting???
+// BeanRealm???
 public abstract sealed class RealmAccessor {
 
     /** A cache of class models per accessor. */

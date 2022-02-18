@@ -38,6 +38,12 @@ import packed.internal.util.MethodHandleUtil;
  */
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
+    /** A var handle that can update the {@link #configuration()} field in this class. */
+    private static final VarHandle VH_CF_DEPENDENCIES = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "dependencies", List.class);
+
+    /** A var handle that can update the {@link #configuration()} field in this class. */
+    private static final VarHandle VH_CF_METHOD_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "methodHandle", MethodHandle.class);
+
     /** The type of objects this factory creates. */
     private final TypeToken<R> typeLiteral;
 
@@ -46,15 +52,15 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         this.typeLiteral = typeLiteralOrKey;
     }
 
-    public abstract MethodHandle toMethodHandle(Lookup lookup);
-
     public abstract List<InternalDependency> dependencies();
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_CF_DEPENDENCIES = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "dependencies", List.class);
+    public abstract MethodHandle toMethodHandle(Lookup lookup);
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_CF_METHOD_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "methodHandle", MethodHandle.class);
+    /** {@inheritDoc} */
+    @Override
+    public TypeToken<R> typeLiteral() {
+        return typeLiteral;
+    }
 
     public static final List<InternalDependency> dependencies(Factory<?> factory) {
         if (factory instanceof InternalFactory<?> f) {
@@ -70,12 +76,6 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         } else {
             return (MethodHandle) VH_CF_METHOD_HANDLE.get(factory);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TypeToken<R> typeLiteral() {
-        return typeLiteral;
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
@@ -128,14 +128,14 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
         /** {@inheritDoc} */
         @Override
-        public MethodHandle toMethodHandle(Lookup ignore) {
-            return MethodHandles.constant(instance.getClass(), instance);
+        public List<InternalDependency> dependencies() {
+            return List.of();
         }
 
         /** {@inheritDoc} */
         @Override
-        public List<InternalDependency> dependencies() {
-            return List.of();
+        public MethodHandle toMethodHandle(Lookup ignore) {
+            return MethodHandles.constant(instance.getClass(), instance);
         }
     }
 
