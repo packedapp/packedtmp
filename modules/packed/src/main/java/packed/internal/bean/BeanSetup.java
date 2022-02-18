@@ -92,8 +92,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             lifetime.pool.addConstant(pool -> singletonHandle.store(pool, beanHandle.source));
             // Or maybe just bind the instance directly in the method handles.
         } else {
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            List<InternalDependency> dependencies = (List) InternalFactory.dependencies(factory);
+            List<InternalDependency> dependencies = factory.dependencies();
 
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = realm.accessor().toMethodHandle(factory);

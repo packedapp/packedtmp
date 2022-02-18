@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import app.packed.inject.Factory;
 import packed.internal.bean.hooks.usesite.BootstrappedSourcedClassModel;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.inject.InternalFactory;
@@ -69,8 +68,8 @@ public abstract sealed class RealmAccessor {
      *            the factory to extract a method handle for
      * @return the method handle
      */
-    public final MethodHandle toMethodHandle(Factory<?> factory) {
-        return InternalFactory.toMethodHandle0(factory, lookup());
+    public final MethodHandle toMethodHandle(InternalFactory<?> factory) {
+        return factory.toMethodHandle(lookup());
     }
 
     /**

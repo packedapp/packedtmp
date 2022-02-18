@@ -37,7 +37,7 @@ public class Factory1Test {
 
         Factory1<String, Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<InternalDependency> dependencies = InternalFactory.dependencies(f);
+        List<InternalDependency> dependencies = InternalFactory.canonicalize(f).dependencies();
         assertThat(dependencies).hasSize(1);
         InternalDependency d = dependencies.get(0);
 

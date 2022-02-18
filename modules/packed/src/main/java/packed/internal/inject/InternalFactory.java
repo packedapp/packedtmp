@@ -39,14 +39,6 @@ import packed.internal.util.MethodHandleUtil;
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_CF_DEPENDENCIES = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "dependencies",
-            List.class);
-
-    /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_CF_METHOD_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "methodHandle",
-            MethodHandle.class);
-
-    /** A var handle that can update the {@link #configuration()} field in this class. */
     private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "factory",
             CanonicalizedCapturingInternalFactory.class);
 
@@ -74,22 +66,6 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
             return (InternalFactory<R>) VH_CF_FACTORY.get(factory);
         } else {
             return (InternalFactory<R>) factory;
-        }
-    }
-    
-    public static final List<InternalDependency> dependencies(Factory<?> factory) {
-        if (factory instanceof InternalFactory<?> f) {
-            return f.dependencies();
-        } else {
-            return (List<InternalDependency>) VH_CF_DEPENDENCIES.get(factory);
-        }
-    }
-
-    public static final MethodHandle toMethodHandle0(Factory<?> factory, Lookup lookup) {
-        if (factory instanceof InternalFactory<?> f) {
-            return f.toMethodHandle(lookup);
-        } else {
-            return (MethodHandle) VH_CF_METHOD_HANDLE.get(factory);
         }
     }
 
@@ -134,14 +110,14 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         private final Object[] arguments;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
+        private final InternalFactory<T> delegate;
 
         private final List<InternalDependency> dependencies;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
 
-        public BoundFactory(Factory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
+        public BoundFactory(InternalFactory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
             super(delegate.typeLiteral());
             this.index = index;
             this.delegate = requireNonNull(delegate);
@@ -158,7 +134,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         /** {@inheritDoc} */
         @Override
         public MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = toMethodHandle0(delegate, lookup);
+            MethodHandle mh = delegate.toMethodHandle(lookup);
             return MethodHandles.insertArguments(mh, index, arguments);
         }
     }
@@ -192,12 +168,12 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
     public static final class LookedUpFactory<T> extends InternalFactory<T> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
+        private final InternalFactory<T> delegate;
 
         /** The method handle that was unreflected. */
         private final MethodHandle methodHandle;
 
-        public LookedUpFactory(Factory<T> delegate, MethodHandle methodHandle) {
+        public LookedUpFactory(ReflectiveFactory<T> delegate, MethodHandle methodHandle) {
             super(delegate.typeLiteral());
             this.delegate = delegate;
             this.methodHandle = requireNonNull(methodHandle);
@@ -206,7 +182,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         /** {@inheritDoc} */
         @Override
         public List<InternalDependency> dependencies() {
-            return dependencies(delegate);
+            return delegate.dependencies();
         }
 
         /** {@inheritDoc} */
@@ -226,9 +202,9 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         private final MethodHandle consumer;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
+        private final InternalFactory<T> delegate;
 
-        public PeekableFactory(Factory<T> delegate, Consumer<? super T> action) {
+        public PeekableFactory(InternalFactory<T> delegate, Consumer<? super T> action) {
             super(delegate.typeLiteral());
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
@@ -238,13 +214,13 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         /** {@inheritDoc} */
         @Override
         public List<InternalDependency> dependencies() {
-            return dependencies(delegate);
+            return delegate.dependencies();
         }
 
         /** {@inheritDoc} */
         @Override
         public MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = toMethodHandle0(delegate, lookup);
+            MethodHandle mh = delegate.toMethodHandle(lookup);
             mh = MethodHandles.filterReturnValue(mh, consumer);
             return MethodHandleUtil.castReturnType(mh, rawType());
         }

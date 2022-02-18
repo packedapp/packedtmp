@@ -94,7 +94,8 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
     // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
     public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
-        List<InternalDependency> dependencies = InternalFactory.dependencies(this);
+        InternalFactory<R> f = InternalFactory.canonicalize(this);
+        List<InternalDependency> dependencies = f.dependencies();
         Objects.checkIndex(position, dependencies.size());
         int len = 1 + additionalArguments.length;
         int newLen = dependencies.size() - len;
@@ -121,7 +122,7 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
 
         // TODO check types...
 
-        return new BoundFactory<>(this, position, dd, args);
+        return new BoundFactory<>(f, position, dd, args);
     }
 
     /**
@@ -233,7 +234,7 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
      * @return the new factory
      */
     public final Factory<R> peek(Consumer<? super R> action) {
-        return new PeekableFactory<>(this, action);
+        return new PeekableFactory<>(InternalFactory.canonicalize(this), action);
     }
 
     /**
@@ -316,10 +317,10 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
     // openResult(Lookup) <---- maaske er den baa en
     public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectiveFactory.ExecutableFactory f) {
-            return new LookedUpFactory<>(this, f.toMethodHandle(lookup));
-        } else if (this instanceof ReflectiveFactory.FieldFactory f) {
-            return new LookedUpFactory<>(this, f.toMethodHandle(lookup));
+        if (this instanceof ReflectiveFactory.ExecutableFactory<R> f) {
+            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
+        } else if (this instanceof ReflectiveFactory.FieldFactory<R> f) {
+            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
