@@ -25,6 +25,7 @@ import app.packed.inject.Factory;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.inject.InternalFactory;
 
 /** The implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<T> implements BeanDriver<T> {
@@ -37,7 +38,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     boolean extensionBean;
 
-    final Factory<?> factory;
+    final InternalFactory<?> factory;
 
     /** A model of the hooks on the bean. */
     public final HookModel hookModel;
@@ -47,7 +48,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     final Object source;
 
-    public PackedBeanDriver(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, Factory<?> factory, Object source) {
+    public PackedBeanDriver(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, InternalFactory<?> factory, Object source) {
         this.container = requireNonNull(container);
         if (userOrExtension.isUser()) {
             this.realm = container.realm;
@@ -85,7 +86,8 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     public static <T> PackedBeanDriver<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
-        return new PackedBeanDriver<>(container, owner, factory.rawType(), factory, factory);
+        InternalFactory<T> f = InternalFactory.canonicalize(factory);
+        return new PackedBeanDriver<>(container, owner, f.rawType(), f, f);
     }
 
     public static <T> PackedBeanDriver<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {

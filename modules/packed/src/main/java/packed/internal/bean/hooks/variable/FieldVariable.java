@@ -17,38 +17,74 @@ package packed.internal.bean.hooks.variable;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 
 /**
  *
  */
-// Ditch AbstractVariable I think
-public final class FieldVariable extends AbstractVariable<Field> {
+public record FieldVariable(Field field) implements Variable {
 
-    /**
-     * @param field
-     */
-    public FieldVariable(Field field) {
-        super(requireNonNull(field, "field is null"));
+    public FieldVariable {
+        requireNonNull(field, "field is null");
+    }
+
+    @Override
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return field.isAnnotationPresent(annotationClass);
+    }
+
+    @Override
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return field.getAnnotationsByType(annotationClass);
+    }
+
+    @Override
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return field.getDeclaredAnnotation(annotationClass);
+    }
+
+    @Override
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return field.getDeclaredAnnotationsByType(annotationClass);
     }
 
     /** {@inheritDoc} */
-    public Optional<String> name() {
-        return Optional.of(element.getName());
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return field.getAnnotation(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getAnnotations() {
+        return field.getAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getDeclaredAnnotations() {
+        return field.getDeclaredAnnotations();
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getType() {
-        return element.getType();
+        return field.getType();
+    }
+
+    /** {@inheritDoc} */
+    public Optional<String> name() {
+        return Optional.of(field.getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public TypeToken<?> typeToken() {
-        return TypeToken.fromField(element);
+        return TypeToken.fromField(field);
     }
 }

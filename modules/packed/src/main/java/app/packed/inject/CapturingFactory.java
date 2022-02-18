@@ -30,6 +30,8 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
 import packed.internal.bean.inject.InternalDependency;
+import packed.internal.inject.InternalFactory;
+import packed.internal.inject.InternalFactory.CanonicalizedCapturingInternalFactory;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
@@ -106,6 +108,10 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
     /** The type of objects this factory creates. */
     private final TypeToken<R> typeLiteral;
 
+    /** The type of objects this factory creates. */
+    @SuppressWarnings("unused")
+    private final CanonicalizedCapturingInternalFactory<R> factory;
+
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
      * constructor in this (super) class.
@@ -141,6 +147,8 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
             MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType()); // (Function, Class, Object, Object)Object -> (Object, Object)Object
             this.methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ret, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
+        this.factory = new CanonicalizedCapturingInternalFactory<>(typeLiteral, methodHandle, dependencies);
+
     }
 
     void analyze() {
@@ -224,6 +232,10 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         return value;
     }
 
+    InternalFactory<R> canonicalize() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Supplies a value.
      * 
@@ -250,7 +262,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
     // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
     // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
-    
+
     // Den kommer ind i InternalFactory
     record FactoryMetadata() {
         // find single Constructor... extract information about function type

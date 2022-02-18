@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import packed.internal.bean.hooks.variable.FieldVariable;
 import packed.internal.bean.hooks.variable.ParameterVariable;
+import packed.internal.bean.hooks.variable.TypeVariableVariable;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 
@@ -56,7 +57,7 @@ import packed.internal.bean.hooks.variable.ParameterVariable;
  * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
  *          {@link TypeVariable}
  */
-public interface Variable extends AnnotatedElement {
+public sealed interface Variable extends AnnotatedElement permits FieldVariable, ParameterVariable, TypeVariableVariable {
 
     default Object getDeclaringElement() {
         // return Field

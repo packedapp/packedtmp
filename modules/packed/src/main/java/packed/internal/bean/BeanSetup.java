@@ -15,7 +15,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.inject.Factory;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
@@ -57,7 +56,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
      * calculate it from {@link #provide(ComponentSetup)}
      */
     @Nullable
-    private final Factory<?> factory;
+    private final InternalFactory<?> factory;
 
     /** A model of the hooks on the bean. */
     public final HookModel hookModel;

@@ -17,36 +17,67 @@ package packed.internal.bean.hooks.variable;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 
 /**
  *
  */
-public final class ParameterVariable extends AbstractVariable<Parameter> {
+public record ParameterVariable(Parameter parameter) implements Variable {
 
-    final Parameter p;
+    public Executable getDeclaringExecutable() {
+        return parameter.getDeclaringExecutable();
+    }
 
-    int index;
+    public AnnotatedType getAnnotatedType() {
+        return parameter.getAnnotatedType();
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return parameter.getAnnotation(annotationClass);
+    }
+
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return parameter.getAnnotationsByType(annotationClass);
+    }
+
+    public Annotation[] getDeclaredAnnotations() {
+        return parameter.getDeclaredAnnotations();
+    }
+
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return parameter.getDeclaredAnnotation(annotationClass);
+    }
+
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return parameter.getDeclaredAnnotationsByType(annotationClass);
+    }
+
+    public Annotation[] getAnnotations() {
+        return parameter.getAnnotations();
+    }
 
     /**
      * @param e
      */
-    public ParameterVariable(Parameter e) {
-        super(e);
-        this.p = requireNonNull(e);
+    public ParameterVariable {
+        requireNonNull(parameter);
     }
 
     public Optional<String> name() {
-        return Optional.of(p.getName());
+        return Optional.of(parameter.getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getType() {
-        return p.getType();
+        return parameter.getType();
     }
 
     /** {@inheritDoc} */

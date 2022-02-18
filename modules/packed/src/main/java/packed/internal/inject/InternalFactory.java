@@ -39,11 +39,18 @@ import packed.internal.util.MethodHandleUtil;
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_CF_DEPENDENCIES = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "dependencies", List.class);
+    private static final VarHandle VH_CF_DEPENDENCIES = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "dependencies",
+            List.class);
 
     /** A var handle that can update the {@link #configuration()} field in this class. */
-    private static final VarHandle VH_CF_METHOD_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "methodHandle", MethodHandle.class);
+    private static final VarHandle VH_CF_METHOD_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "methodHandle",
+            MethodHandle.class);
 
+    /** A var handle that can update the {@link #configuration()} field in this class. */
+    private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "factory",
+            CanonicalizedCapturingInternalFactory.class);
+
+    
     /** The type of objects this factory creates. */
     private final TypeToken<R> typeLiteral;
 
@@ -62,6 +69,14 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         return typeLiteral;
     }
 
+    public static <R> InternalFactory<R> canonicalize(Factory<R> factory) {
+        if (factory instanceof CapturingFactory<R> f) {
+            return (InternalFactory<R>) VH_CF_FACTORY.get(factory);
+        } else {
+            return (InternalFactory<R>) factory;
+        }
+    }
+    
     public static final List<InternalDependency> dependencies(Factory<?> factory) {
         if (factory instanceof InternalFactory<?> f) {
             return f.dependencies();
@@ -76,6 +91,40 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         } else {
             return (MethodHandle) VH_CF_METHOD_HANDLE.get(factory);
         }
+    }
+
+    public static final class CanonicalizedCapturingInternalFactory<T> extends InternalFactory<T> {
+
+        // Ideen er lidt at saa snart vi bruger et CapturingFactory saa smider vi den ind her
+
+        /** The dependencies of this factory, extracted from the type variables of the subclass. */
+        // Taenker vi laver en private record delegate der holder begge ting...
+        // Og saa laeser
+        public final List<InternalDependency> dependencies;
+
+        public final MethodHandle methodHandle;
+
+        /**
+         * @param typeLiteralOrKey
+         */
+        public CanonicalizedCapturingInternalFactory(TypeToken<T> typeLiteralOrKey, MethodHandle methodHandle, List<InternalDependency> dependencies) {
+            super(typeLiteralOrKey);
+            this.dependencies = dependencies;
+            this.methodHandle = methodHandle;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public List<InternalDependency> dependencies() {
+            return dependencies;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle toMethodHandle(Lookup lookup) {
+            return methodHandle;
+        }
+
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */

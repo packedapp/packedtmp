@@ -17,34 +17,68 @@ package packed.internal.bean.hooks.variable;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 
 /**
  *
  */
-public final class TypeVariableVariable extends AbstractVariable<TypeVariable<?>> {
+public record TypeVariableVariable(TypeVariable<?> typeVariable) implements Variable {
 
-    final TypeVariable<?> p;
+    @Override
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return typeVariable.isAnnotationPresent(annotationClass);
+    }
+
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return typeVariable.getAnnotation(annotationClass);
+    }
+
+    @Override
+    public Annotation[] getAnnotations() {
+        return typeVariable.getAnnotations();
+    }
+
+    @Override
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return typeVariable.getAnnotationsByType(annotationClass);
+    }
+
+    @Override
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return typeVariable.getDeclaredAnnotation(annotationClass);
+    }
+
+    @Override
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return typeVariable.getDeclaredAnnotationsByType(annotationClass);
+    }
+
+    @Override
+    public Annotation[] getDeclaredAnnotations() {
+        return typeVariable.getDeclaredAnnotations();
+    }
 
     /**
      * @param e
      */
-    public TypeVariableVariable(TypeVariable<?> e) {
-        super(e);
-        this.p = requireNonNull(e);
+    public TypeVariableVariable {
+        requireNonNull(typeVariable);
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getType() {
-        return p.getGenericDeclaration().getClass();
+        return typeVariable.getGenericDeclaration().getClass();
     }
-    
+
     public Optional<String> name() {
-        return Optional.of(p.getName());
+        return Optional.of(typeVariable.getName());
     }
 
     /** {@inheritDoc} */
