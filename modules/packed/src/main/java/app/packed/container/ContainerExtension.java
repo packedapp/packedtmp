@@ -22,7 +22,7 @@ import app.packed.extension.ExtensionConfiguration;
 import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedContainerHandle;
+import packed.internal.container.PackedContainerDriver;
 
 /**
  * An extension for adding new containers to an existing container.
@@ -43,7 +43,7 @@ public class ContainerExtension extends Extension<ContainerExtension> {
     }
 
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return link(new PackedContainerHandle(container), assembly, wirelets);
+        return link(new PackedContainerDriver(container), assembly, wirelets);
     }
 
     /**
@@ -58,8 +58,8 @@ public class ContainerExtension extends Extension<ContainerExtension> {
      * @return the component that was linked
      */
     //// Har svaert ved at se at brugere vil bruge deres egen ContainerHandle...
-    public ContainerMirror link(ContainerCustomizer handle, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(handle, "handle is null");
+    public ContainerMirror link(ContainerDriver handle, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(handle, "handle is null");
 
         // Create a new realm for the assembly
         AssemblyRealmSetup newRealm = new AssemblyRealmSetup(d, container, assembly, wirelets);

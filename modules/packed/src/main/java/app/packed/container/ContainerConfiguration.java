@@ -7,7 +7,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerHandle;
+import packed.internal.container.PackedContainerDriver;
 
 /**
  * The configuration of a container.
@@ -29,8 +29,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         this.container = null;
     }
 
-    public ContainerConfiguration(ContainerCustomizer containerHandle) {
-        PackedContainerHandle bh = (PackedContainerHandle) containerHandle;
+    public ContainerConfiguration(ContainerDriver containerHandle) {
+        PackedContainerDriver bh = (PackedContainerDriver) containerHandle;
         this.container = bh.setup;
     }
 

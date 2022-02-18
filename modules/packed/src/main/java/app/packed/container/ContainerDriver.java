@@ -5,9 +5,9 @@ import java.util.Set;
 import app.packed.application.AsyncApp;
 import app.packed.extension.Extension;
 import app.packed.extension.sandbox.ExtensionLauncher;
-import packed.internal.container.PackedContainerHandle;
+import packed.internal.container.PackedContainerDriver;
 
-public sealed interface ContainerCustomizer permits PackedContainerHandle {
+public sealed interface ContainerDriver permits PackedContainerDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.

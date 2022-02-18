@@ -27,7 +27,7 @@ import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerHandle;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
@@ -69,7 +69,7 @@ public final class ApplicationSetup {
         this.descriptor = new PackedApplicationDescriptor(buildKind);
 
         // Create the root container of the application
-        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), new PackedContainerHandle(null), null, wirelets);
+        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), new PackedContainerDriver(null), null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool

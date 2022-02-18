@@ -45,7 +45,7 @@ public abstract class InternalWirelet extends Wirelet {
     protected final ApplicationSetup checkIsApplication(ContainerSetup component) {
         ApplicationSetup application = component.application;
         if (application.container != component) {
-            throw new IllegalArgumentException("This wirelet can only be specified when wiring an application, wirelet = " + this);
+            throw new IllegalArgumentException("This wirelet can only be specified when wiring the root container of an application, wirelet = " + this);
         }
         return application;
     }

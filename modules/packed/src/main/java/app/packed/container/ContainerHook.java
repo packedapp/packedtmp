@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Can be used on subclasses of
+ * Can be used on subclasses of (ComponentRealm)
  * 
  * Assembly : Will be applied to all containers installed by the user
  * 
@@ -18,12 +18,11 @@ import java.lang.invoke.MethodHandles;
  * 
  * Extension
  * 
- * Is ignored on any other classes
+ * Is ignored on any other classes.
  */
 
 // Vi inkludere alle containere defineret i en assembly.
-// Fordi det er det vi ogsaa goer med beans. Det giver ingen
-// mening ikke at goere det.
+// Fordi det er det vi ogsaa goer med beans hook. Det giver ingen mening ikke at goere det.
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

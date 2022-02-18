@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.ContainerBeanConfiguration;
 import packed.internal.container.CompositeWirelet;
-import packed.internal.container.WireletModel;
 import packed.internal.container.InternalWirelet.OverrideNameWirelet;
+import packed.internal.container.WireletModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**
@@ -82,6 +82,8 @@ import packed.internal.util.StackWalkerUtil;
 // Istedet for at skulle slaa en WireletModel op, som man ville skulle for $buildtimeOnly
 
 // Linklet
+// sealed -> ExtensionWirelet<E>, UserWirelet, InternalWirelet
+// Maybe even add RuntimeExtensionWirelet, UserRuntimeWirelet
 public abstract class Wirelet {
 
     /**
