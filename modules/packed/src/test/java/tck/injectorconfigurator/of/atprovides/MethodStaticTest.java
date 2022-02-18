@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanSupport;
-import app.packed.inject.ReflectiveFactory;
 import app.packed.inject.service.Provide;
+import packed.internal.inject.ReflectiveFactory;
 import packed.internal.service.sandbox.Injector;
 import packed.internal.service.sandbox.InjectorComposer;
 
@@ -37,7 +37,7 @@ public class MethodStaticTest {
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
-        MixedMethodsInstantiable.test(c -> c.provide(BeanSupport.of(MixedMethodsInstantiable.class)));
+        MixedMethodsInstantiable.test(c -> c.provide(BeanSupport.defaultFactoryFor(MixedMethodsInstantiable.class)));
         MixedMethodsInstantiable.test(c -> c.provide(ReflectiveFactory.of(new TypeToken<MixedMethodsInstantiable>() {})));
     }
 
@@ -54,7 +54,7 @@ public class MethodStaticTest {
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanSupport.of(MixedMethodsNoInstantiation.class)));
+        MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanSupport.defaultFactoryFor(MixedMethodsNoInstantiation.class)));
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(ReflectiveFactory.of(new TypeToken<MixedMethodsNoInstantiation>() {})));
     }
 

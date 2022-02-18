@@ -21,8 +21,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -33,9 +34,17 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
+import app.packed.bean.BeanSupport;
 import packed.internal.bean.inject.InternalDependency;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.inject.InternalFactory;
+import packed.internal.inject.InternalFactory.BoundFactory;
+import packed.internal.inject.InternalFactory.ConstantFactory;
+import packed.internal.inject.InternalFactory.LookedUpFactory;
+import packed.internal.inject.InternalFactory.PeekableFactory;
+import packed.internal.inject.ReflectiveFactory;
+import packed.internal.inject.ReflectiveFactory.ExecutableFactory;
+import packed.internal.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.util.BasePackageAccess;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -66,48 +75,151 @@ import packed.internal.util.MethodHandleUtil;
 // Its friend the abstract class Procedure... like Factory but no return..
 // Then move it to base...
 // Not a Function because it takes annotations...
-// I think we might want an AbstractFactory...
-public abstract class Factory<R> {
+@SuppressWarnings("rawtypes")
+public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory {
+
+    /** A cache of factories used by {@link #of(Class)}. */
+    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
+        }
+    };
 
     /**
-     * The factory's method handle. Is initial null for factories that need access to a {@link Lookup} object.
+     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
+     * literals that are manually constructed.
+     */
+    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
+            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
+            return new ExecutableFactory<>(tl, tl.rawType());
+        }
+    };
+
+    /** A type variable extractor. */
+    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
+
+    /**
+     * This method is equivalent to {@link #of(Class)} except taking a type literal.
+     *
+     * @param <T>
+     *            the implementation type
+     * @param implementation
+     *            the implementation type
+     * @return a factory for the specified implementation type
+     */
+    @SuppressWarnings("unchecked")
+    // Hmm vi har jo ikke parameterized beans???
+    public static <T> Factory<T> of(TypeToken<T> implementation) {
+        // Can cache it with a Class[] array corresponding to type parameters...
+        requireNonNull(implementation, "implementation is null");
+        if (!implementation.isCanonicalized()) {
+            // We cache factories for all "new TypeToken<>(){}"
+            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+        }
+        Type t = implementation.type();
+        if (t instanceof Class<?> cl) {
+            return (Factory<T>) BeanSupport.defaultFactoryFor(cl);
+        } else {
+            ExecutableFactory<?> f = CLASS_CACHE.get(implementation.rawType());
+            return new ExecutableFactory<>(f, implementation);
+        }
+    }
+
+    // ReflectionFactory.of
+    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
+        requireNonNull(type, "type is null");
+        return ofConstructor(constructor, TypeToken.of(type));
+    }
+
+    // * <pre>
+//  * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+//  * });
+//  * </pre>
+    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
+        requireNonNull(constructor, "constructor is null");
+        // TODO we probably need to validate the type literal here
+        return new ExecutableFactory<>(type, constructor);
+    }
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances.
+     *
+     * @param constructor
+     *            the constructor used for creating new instances
+     * @return the new factory
+     */
+    public static <T> Factory<T> ofConstructor(Constructor<T> constructor) {
+        requireNonNull(constructor, "constructor is null");
+        TypeToken<T> tl = TypeToken.of(constructor.getDeclaringClass());
+        return new ExecutableFactory<>(tl, constructor);
+    }
+
+    // Hvad goer vi med en klasse der er mere restri
+    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
+        requireNonNull(returnType, "returnType is null");
+        return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
+    }
+
+    // Annotations will be retained from the method
+    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
+        throw new UnsupportedOperationException();
+    }
+
+    // If the specified instance is not a static method. An extra variable
+    // use bind(Foo) to bind the variable.
+    /**
      * <p>
-     * With respect to the Java Memory Model, any method handle will behave as if all of its (internal) fields are final
-     * variables. This means that any method handle made visible to the application will always be fully formed. This is
-     * true even if the method handle is published through a shared variable in a data race.
+     * If the specified method is not a static method. The returned factory will have the method's declaring class as its
+     * first variable. Use {@link #provide(Object)} to bind an instance of the declaring class.
+     * 
+     * @param <T>
+     *            the type of value returned by the method
+     * @param method
+     *            the method to wrap
+     * @param returnType
+     *            the type of value returned by the method
+     * @return a factory that wraps the specified method
+     * @see #ofMethod(Method, TypeToken)
      */
-    // So we cache it.. But access checks must be performed every time...
-    // Only if it is a class..
-    // Maybe we need a flag... like... You can use this method handle without doing any kind of
-    // checks. Or you need to verify usage of this factory with the realm.
-    // Basically that the underlying class is open to whatever realm there is
-    private MethodHandle methodHandle;
+    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
+        requireNonNull(returnType, "returnType is null");
+        return ofMethod(method, TypeToken.of(returnType));
+    }
 
-    /** The type of objects this factory creates. */
-    private final TypeToken<R> typeLiteral;
+    // Den her sletter evt. Qualifier paa metoden...
+    public static <T> Factory<T> ofMethod(Method method, TypeToken<T> returnType) {
+        requireNonNull(method, "method is null");
+        requireNonNull(returnType, "returnType is null");
+
+        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
+        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
+        // Map.of(), new MethodMirror(method)));
+        throw new UnsupportedOperationException();
+    }
 
     /**
-     * Used by {@link CapturingFactory} constructor, because we cannot call (an instance method) {@link Object#getClass()}
-     * before calling this constructor.
+     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
+     * {@link #ofConstructor(Constructor)} method this method takes a type literal that can be used to create factories with
+     * a generic signature:
+     *
+     *
+     * 
+     * @param constructor
+     *            the constructor used from creating an instance
+     * @param type
+     *            a type literal
+     * @return the new factory
+     * @see #ofConstructor(Constructor)
      */
-    @SuppressWarnings("unchecked")
-    Factory() {
-        this.typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
-        this.methodHandle = null;
-    }
 
-    @SuppressWarnings("unchecked")
-    Factory(boolean isCapturingFactory, Object functionInstance) {
-        this.typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
-        this.methodHandle = null;
-
-        // Find CapturingFactoryMeta in a ClassValueCache
-    }
-
-    Factory(TypeToken<R> typeLiteralOrKey) {
-        requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        this.typeLiteral = typeLiteralOrKey;
-        this.methodHandle = null;
+    public static <T> Factory<T> ofStaticFactory(Class<?> clazz, TypeToken<T> returnType) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -135,7 +247,7 @@ public abstract class Factory<R> {
     // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
     public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
-        List<InternalDependency> dependencies = dependencies();
+        List<InternalDependency> dependencies = InternalFactory.dependencies(this);
         Objects.checkIndex(position, dependencies.size());
         int len = 1 + additionalArguments.length;
         int newLen = dependencies.size() - len;
@@ -147,7 +259,7 @@ public abstract class Factory<R> {
         // Removing dependencies that are being replaced
         InternalDependency[] dd = new InternalDependency[newLen];
         for (int i = 0; i < position; i++) {
-            dd[i] = dependencies().get(i);
+            dd[i] = dependencies.get(i);
         }
         for (int i = position; i < dd.length; i++) {
             dd[i] = dependencies.get(i + len);
@@ -183,10 +295,10 @@ public abstract class Factory<R> {
         throw new UnsupportedOperationException();
     }
 
-    // taenker vi laver den her public og saa bare caster...
-    List<InternalDependency> dependencies() {
-        return List.of();
-    }
+//    // taenker vi laver den her public og saa bare caster...
+//    List<InternalDependency> dependencies() {
+//        return List.of();
+//    }
 
 //    /**
 //     * The key under which If this factory is registered as a service. This method returns the (default) key that will be
@@ -199,23 +311,23 @@ public abstract class Factory<R> {
 //    public final Key<T> key() {
 //        return key;
 //    }
-
-    /**
-     * Returns an immutable list of all variables (typically fields or parameters) that needs to be successfully injected in
-     * order for the factory to provide a new value.
-     * <p>
-     * The list returned by this method is affected by any previous bindings to specific variables. For example, via
-     * {@link #bind(int, Object, Object...)}.
-     * <p>
-     * Factories created via {@link #ofConstant(Object)} always return an empty list.
-     * 
-     * @return any variables that was used to construct the factory
-     */
-    // input, output...
-    @SuppressWarnings({ "rawtypes", "unchecked", "exports" })
-    public final List<InternalDependency> dependenciesOld() {
-        return (List) dependencies();
-    }
+//
+//    /**
+//     * Returns an immutable list of all variables (typically fields or parameters) that needs to be successfully injected in
+//     * order for the factory to provide a new value.
+//     * <p>
+//     * The list returned by this method is affected by any previous bindings to specific variables. For example, via
+//     * {@link #bind(int, Object, Object...)}.
+//     * <p>
+//     * Factories created via {@link #ofConstant(Object)} always return an empty list.
+//     * 
+//     * @return any variables that was used to construct the factory
+//     */
+//    // input, output...
+//    @SuppressWarnings({ "unchecked", "exports" })
+//    public final List<InternalDependency> dependenciesOld() {
+//        return (List) dependencies();
+//    }
 
     final <T> Factory<T> mapTo(Class<T> key, Function<? super T, ? extends T> mapper) {
 
@@ -283,6 +395,19 @@ public abstract class Factory<R> {
 
     // needsRealm???
     boolean needsLookup() {
+
+//      final boolean needsLookup() {
+        // Needs Realm?
+
+//          // Tror ikke rigtig den fungere...
+//          // Det skal jo vaere relativt til en klasse...
+//          // F.eks. hvis X en public klasse, med en public constructor.
+//          // Og X er readable til A, men ikke B.
+//          // Saa har A ikke brug for et Lookup Object, men B har.
+//          // Ved ikke rigtig hvad denne skal bruges til....
+//          // Maa betyde om man skal
+//          return false;
+//      }
         return false;
     }
 
@@ -309,37 +434,13 @@ public abstract class Factory<R> {
         return typeLiteral().rawType();
     }
 
-//    final boolean needsLookup() {
-    // Needs Realm?
-
-//        // Tror ikke rigtig den fungere...
-//        // Det skal jo vaere relativt til en klasse...
-//        // F.eks. hvis X en public klasse, med en public constructor.
-//        // Og X er readable til A, men ikke B.
-//        // Saa har A ikke brug for et Lookup Object, men B har.
-//        // Ved ikke rigtig hvad denne skal bruges til....
-//        // Maa betyde om man skal
-//        return false;
-//    }
-
-    /**
-     * @param lookup
-     *            a lookup that can be used to unreflect fields, constructors or methods.
-     * @return a new method handle
-     */
-    MethodHandle toMethodHandle(Lookup lookup) {
-        return methodHandle;
-    }
-
     /**
      * Returns the type of the type of objects this factory provide.
      *
      * @return the type of the type of objects this factory provide
      * @see #rawType()
      */
-    public final TypeToken<R> typeLiteral() {
-        return typeLiteral;
-    }
+    public abstract TypeToken<R> typeLiteral();
 
     final Factory<R> useExactType(Class<? extends R> type) {
         // TypeHint.. withExactType
@@ -357,7 +458,7 @@ public abstract class Factory<R> {
 
     /** {@return The number of variables this factory takes.} */
     public final int variableCount() {
-        return dependencies().size();
+        throw new UnsupportedOperationException();
     }
 
     /** {@return The variables this factory takes.} */
@@ -402,8 +503,10 @@ public abstract class Factory<R> {
     // openResult(Lookup) <---- maaske er den baa en
     public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectiveFactory.ExecutableFactory || this instanceof ReflectiveFactory.FieldFactory) {
-            return new LookedUpFactory<>(this, toMethodHandle(lookup));
+        if (this instanceof ReflectiveFactory.ExecutableFactory f) {
+            return new LookedUpFactory<>(this, f.toMethodHandle(lookup));
+        } else if (this instanceof ReflectiveFactory.FieldFactory f) {
+            return new LookedUpFactory<>(this, f.toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
@@ -445,8 +548,8 @@ public abstract class Factory<R> {
      *            the instance to return on every request
      * @return the factory
      */
-    // What about annotations and type variables
-    // ofConstant(List<int> l)
+    // What about annotations and type variables??
+    // ofInstance(List<int> l)
     public static <T> Factory<T> ofConstant(T constant) {
         requireNonNull(constant, "constant is null");
         return new ConstantFactory<T>(constant);
@@ -456,128 +559,6 @@ public abstract class Factory<R> {
         throw new UnsupportedOperationException();
     }
 
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    // A simple version of Binding... Maybe just only have one
-    private static final class BoundFactory<T> extends Factory<T> {
-
-        private final Object[] arguments;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
-        private final List<InternalDependency> dependencies;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final int index;
-
-        private BoundFactory(Factory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
-            super(delegate.typeLiteral);
-            this.index = index;
-            this.delegate = requireNonNull(delegate);
-            this.arguments = arguments;
-            this.dependencies = List.of(dd);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        List<InternalDependency> dependencies() {
-            return dependencies;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = delegate.toMethodHandle(lookup);
-            return MethodHandles.insertArguments(mh, index, arguments);
-        }
-    }
-
-    /** A factory that provides the same value every time, used by {@link Factory#ofConstant(Object)}. */
-    private static final class ConstantFactory<T> extends Factory<T> {
-
-        /** The value that is returned every time. */
-        private final T instance;
-
-        @SuppressWarnings("unchecked")
-        private ConstantFactory(T instance) {
-            super((TypeToken<T>) TypeToken.of(instance.getClass()));
-            this.instance = instance;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup ignore) {
-            return MethodHandles.constant(instance.getClass(), instance);
-        }
-    }
-
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    private static final class LookedUpFactory<T> extends Factory<T> {
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
-        /** The method handle that was unreflected. */
-        private final MethodHandle methodHandle;
-
-        private LookedUpFactory(Factory<T> delegate, MethodHandle methodHandle) {
-            super(delegate.typeLiteral);
-            this.delegate = delegate;
-            this.methodHandle = requireNonNull(methodHandle);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        List<InternalDependency> dependencies() {
-            return delegate.dependencies();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup ignore) {
-            return methodHandle;
-        }
-    }
-
-    /** A factory for {@link #peek(Consumer)}}. */
-    private static final class PeekableFactory<T> extends Factory<T> {
-
-        /** A method handle for {@link Function#apply(Object)}. */
-        private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
-
-        /** The method handle that was unreflected. */
-        private final MethodHandle consumer;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
-        private PeekableFactory(Factory<T> delegate, Consumer<? super T> action) {
-            super(delegate.typeLiteral);
-            this.delegate = delegate;
-            MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
-            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType(), rawType()));
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        List<InternalDependency> dependencies() {
-            return delegate.dependencies();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = delegate.toMethodHandle(lookup);
-            mh = MethodHandles.filterReturnValue(mh, consumer);
-            return MethodHandleUtil.castReturnType(mh, rawType());
-        }
-
-        @SuppressWarnings({ "unchecked", "unused", "rawtypes" })
-        private static Object accept(Consumer consumer, Object object) {
-            consumer.accept(object);
-            return object;
-        }
-    }
 }
 //TODO Qualifiers on Methods, Types together with findInjectable????
 //Yes need to pick those up!!!!

@@ -17,14 +17,8 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import packed.internal.util.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -80,12 +74,6 @@ import packed.internal.util.MethodHandleUtil;
 // I think so... And maybe install a MethodHand use $toConcract... Nahh kan ikke bruge $ fordi vi overskriver...
 public abstract class Factory0<R> extends CapturingFactory<R> {
 
-    /** A method handle for invoking {@link #create(Supplier, Class)}. */
-    private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
-
-    /** The method handle responsible for providing the actual values. */
-    private final MethodHandle methodHandle;
-
     /**
      * Creates a new factory, that use the specified supplier to provide values.
      *
@@ -98,33 +86,5 @@ public abstract class Factory0<R> extends CapturingFactory<R> {
      */
     protected Factory0(Supplier<? extends R> supplier) {
         super(requireNonNull(supplier, "supplier is null"));
-        MethodHandle mh = CREATE.bindTo(supplier).bindTo(rawType()); // (Supplier, Class)Object -> ()Object
-        this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // ()Object -> ()R
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    MethodHandle toMethodHandle(Lookup ignore) {
-        return methodHandle;
-    }
-
-    /**
-     * Supplies a value.
-     * 
-     * @param <T>
-     *            the type of value supplied
-     * @param supplier
-     *            the supplier that supplies the actual value
-     * @param expectedType
-     *            the type we expect the supplier to return
-     * @return the value that was supplied by the specified supplier
-     * @throws FactoryException
-     *             if the created value is null or not assignable to the raw type of the factory
-     */
-    @SuppressWarnings("unused") // only invoked via #CREATE
-    private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {
-        T value = supplier.get();
-        checkReturnValue(expectedType, value, supplier);
-        return value;
     }
 }

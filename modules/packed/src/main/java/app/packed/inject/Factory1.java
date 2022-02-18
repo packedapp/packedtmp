@@ -17,17 +17,9 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import packed.internal.bean.inject.InternalDependency;
-import packed.internal.util.LookupUtil;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -81,27 +73,6 @@ import packed.internal.util.LookupUtil;
  */
 public abstract class Factory1<T, R> extends CapturingFactory<R> {
 
-    /** A method handle for invoking {@link #create(Function, Class, Object)}. */
-    private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Function.class, Class.class,
-            Object.class);
-
-    /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    static final ClassValue<List<InternalDependency>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected List<InternalDependency> computeValue(Class<?> type) {
-            return InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0);
-        }
-    };
-
-    /** The dependencies of this factory, extracted from the type variables of the subclass. */
-    private final List<InternalDependency> dependencies;
-
-    /** The method handle responsible for providing the actual values. */
-    private MethodHandle methodHandle;
-
     /**
      * Creates a new factory, that uses the specified function to provide instances.
      *
@@ -114,45 +85,5 @@ public abstract class Factory1<T, R> extends CapturingFactory<R> {
      */
     protected Factory1(Function<? super T, ? extends R> function) {
         super(requireNonNull(function, "function is null"));
-        this.dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
-
-        Class<?> ret = rawType();
-        Class<?> param = dependencies.get(0).rawType();
-        MethodHandle mh = CREATE.bindTo(function).bindTo(ret); // (Function, Class, Object)Object -> (Object)Object
-        this.methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ret, param)); // (Object)Object -> (T)R
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    List<InternalDependency> dependencies() {
-        return dependencies;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    MethodHandle toMethodHandle(Lookup ignore) {
-        return methodHandle;
-    }
-
-    /**
-     * Supplies a value.
-     * 
-     * @param <T>
-     *            the type of value supplied
-     * @param function
-     *            the function that supplies the actual value
-     * @param expectedType
-     *            the type we expect the supplier to return
-     * @param object
-     *            the single argument to the function
-     * @return the value that was supplied by the specified supplier
-     * @throws FactoryException
-     *             if the created value is null or not assignable to the raw type of the factory
-     */
-    @SuppressWarnings("unused") // only invoked via #CREATE
-    private static <T> T create(Function<Object, ? extends T> function, Class<?> expectedType, Object object) {
-        T value = function.apply(object);
-        checkReturnValue(expectedType, value, function);
-        return value;
     }
 }

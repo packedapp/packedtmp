@@ -43,7 +43,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.of(implementation));
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.defaultFactoryFor(implementation));
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -76,52 +76,6 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new ContainerBeanConfiguration<>(handle);
     }
 
-    /**
-     * Provides every service from the specified locator.
-     * 
-     * @param locator
-     *            the locator to provide services from
-     * @throws IllegalArgumentException
-     *             if the specified locator is not implemented by Packed
-     */
-    public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-        if (!(locator instanceof AbstractServiceLocator l)) {
-            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-                    + " are currently not supported, locator type = " + locator.getClass().getName());
-        }
-        checkUserConfigurable();
-        container.beans.getServiceManager().provideAll(l);
-    }
-
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.of(implementation));
-        handle.prototype();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
-        return sbc.provide();
-    }
-
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
-        bh.prototype();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
-        return sbc.provide();
-    }
-
-    public int beanCount() {
-        return 4;
-    }
-
-    @Override
-    protected void onClose() {
-        super.onClose();
-    }
-
-    @Override
-    protected void onUserClose() {
-        super.onUserClose();
-    }
-
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror mirror() {
@@ -141,4 +95,46 @@ public class BeanExtension extends Extension<BeanExtension> {
 //        // Return a component configuration to the user
 //        return driver.toConfiguration(component);
 //    }
+
+    @Override
+    protected void onClose() {
+        super.onClose();
+    }
+
+    @Override
+    protected void onUserClose() {
+        super.onUserClose();
+    }
+
+    /**
+     * Provides every service from the specified locator.
+     * 
+     * @param locator
+     *            the locator to provide services from
+     * @throws IllegalArgumentException
+     *             if the specified locator is not implemented by Packed
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+        if (!(locator instanceof AbstractServiceLocator l)) {
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+                    + " are currently not supported, locator type = " + locator.getClass().getName());
+        }
+        checkUserConfigurable();
+        container.beans.getServiceManager().provideAll(l);
+    }
+
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.defaultFactoryFor(implementation));
+        handle.prototype();
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
+        return sbc.provide();
+    }
+
+    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
+        bh.prototype();
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
+        return sbc.provide();
+    }
 }

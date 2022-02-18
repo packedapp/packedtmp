@@ -24,12 +24,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.inject.Factory;
-import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.hooks.usesite.BootstrappedSourcedClassModel;
+import packed.internal.bean.hooks.usesite.HookModel;
+import packed.internal.inject.InternalFactory;
 import packed.internal.invoke.OpenClass;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * This class exists because we have two ways to access the members of a component instance. One where the users provide
@@ -37,10 +37,6 @@ import packed.internal.util.ThrowableUtil;
  * descriptor to provide access.
  */
 public abstract sealed class RealmAccessor {
-
-    /** Calls package-private method Factory.toMethodHandle(Lookup). */
-    private static final MethodHandle MH_FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
-            MethodHandle.class, Lookup.class);
 
     /** A cache of class models per accessor. */
     private final ClassValue<HookModel> components = new ClassValue<>() {
@@ -72,11 +68,7 @@ public abstract sealed class RealmAccessor {
      * @return the method handle
      */
     public final MethodHandle toMethodHandle(Factory<?> factory) {
-        try {
-            return (MethodHandle) MH_FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+        return InternalFactory.toMethodHandle0(factory, lookup());
     }
 
     /**

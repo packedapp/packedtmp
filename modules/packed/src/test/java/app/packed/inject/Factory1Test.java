@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import packed.internal.bean.inject.InternalDependency;
+import packed.internal.inject.InternalFactory;
 
 /** Tests {@link Factory1}. */
 public class Factory1Test {
@@ -36,7 +37,7 @@ public class Factory1Test {
 
         Factory1<String, Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<InternalDependency> dependencies = f.dependencies();
+        List<InternalDependency> dependencies = InternalFactory.dependencies(f);
         assertThat(dependencies).hasSize(1);
         InternalDependency d = dependencies.get(0);
 

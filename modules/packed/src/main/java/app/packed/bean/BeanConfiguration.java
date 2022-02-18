@@ -19,9 +19,17 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
     /** The bean we are configuring. */
     final BeanSetup bean;
 
-    protected BeanConfiguration(BeanDriver<?> maker) {
-        PackedBeanDriver<?> pbm = requireNonNull((PackedBeanDriver<?>) maker, "maker is null");
-        this.bean = pbm.newSetup(this);
+    /**
+     * Create a new bean configuration using the specified driver.
+     * 
+     * @param driver
+     *            the driver of the bean
+     * @throws IllegalStateException
+     *             if the specified driver has already been used
+     */
+    protected BeanConfiguration(BeanDriver<?> driver) {
+        PackedBeanDriver<?> d = requireNonNull((PackedBeanDriver<?>) driver, "driver is null");
+        this.bean = d.newSetup(this);
     }
 
     /** {@inheritDoc} */
@@ -52,7 +60,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      *             if the configuration has not been wired yet
      */
     @Override
-    protected BeanMirror mirror() {
+    protected final BeanMirror mirror() {
         // Jeg taenker det er er
         throw new UnsupportedOperationException();
     }

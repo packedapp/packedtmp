@@ -1,5 +1,8 @@
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.Constructor;
 import java.util.function.BiConsumer;
 
 import app.packed.component.UserOrExtension;
@@ -9,9 +12,10 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
-import app.packed.inject.ReflectiveFactory;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.container.ContainerSetup;
+import packed.internal.inject.ReflectiveFactory;
+import packed.internal.invoke.MemberScanner;
 
 /**
  * A bean extension support class.
@@ -23,7 +27,6 @@ import packed.internal.container.ContainerSetup;
 // Maybe just BeanSupport, EntryPointSupport, WebSupport
 public final class BeanSupport extends ExtensionSupport {
 
-    
     /** The container we will add beans into. */
     private final ContainerSetup container;
 
@@ -62,7 +65,7 @@ public final class BeanSupport extends ExtensionSupport {
 
     // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofFactory(container, UserOrExtension.extension(extensionType), BeanSupport.of(implementation));
+        PackedBeanDriver<T> m = PackedBeanDriver.ofFactory(container, UserOrExtension.extension(extensionType), BeanSupport.defaultFactoryFor(implementation));
         m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
     }
@@ -81,7 +84,7 @@ public final class BeanSupport extends ExtensionSupport {
     // *********************** ***********************
     // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
     public final <T> BeanDriver<T> newDriver(UserOrExtension agent, Class<T> implementation) {
-        return PackedBeanDriver.ofFactory(container, agent, BeanSupport.of(implementation));
+        return PackedBeanDriver.ofFactory(container, agent, BeanSupport.defaultFactoryFor(implementation));
     }
 
     public final <T> BeanDriver<T> newDriver(UserOrExtension agent, Factory<T> factory) {
@@ -107,6 +110,16 @@ public final class BeanSupport extends ExtensionSupport {
     public final BeanDriver<Void> newFunctionalDriver(UserOrExtension agent) {
         throw new UnsupportedOperationException();
     }
+
+    /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
+    private static final ClassValue<Factory<?>> CLASS_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected Factory<?> computeValue(Class<?> implementation) {
+            Constructor<?> con = MemberScanner.getConstructor(implementation, true, e -> new BeanDefinitionException(e));
+            return ReflectiveFactory.ofConstructor(con);
+        }
+    };
 
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
@@ -140,10 +153,12 @@ public final class BeanSupport extends ExtensionSupport {
     // Har droppet at kalde den find... Fordi find generelt returnere en Optional...
     // Lad os se hvad der sker med Map og generiks
     // InjectSupport.defaultInjectable()
-    
+
     // If @Initialize -> rename to findInitializer
-    // Hvis vi nogensinde laver en BeanFactory klasse... Saa hoere de jo til der.
-    public static <T> /* ReflectionFactory<T> */ Factory<T> of(Class<T> implementation) {
-       return ReflectiveFactory.of(implementation);
+    // Flyt til BeanFactories
+    @SuppressWarnings("unchecked")
+    public static <T> /* ReflectionFactory<T> */ Factory<T> defaultFactoryFor(Class<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        return (Factory<T>) CLASS_CACHE.get(implementation);
     }
 }

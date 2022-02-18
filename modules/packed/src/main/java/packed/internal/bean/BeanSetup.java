@@ -24,6 +24,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.inject.InternalFactory;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.LookupUtil;
@@ -93,7 +94,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             // Or maybe just bind the instance directly in the method handles.
         } else {
             @SuppressWarnings({ "rawtypes", "unchecked" })
-            List<InternalDependency> dependencies = (List) factory.dependenciesOld();
+            List<InternalDependency> dependencies = (List) InternalFactory.dependencies(factory);
 
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = realm.accessor().toMethodHandle(factory);

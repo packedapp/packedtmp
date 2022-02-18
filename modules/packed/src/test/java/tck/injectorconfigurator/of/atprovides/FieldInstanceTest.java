@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanSupport;
 import app.packed.component.BuildException;
-import app.packed.inject.ReflectiveFactory;
 import app.packed.inject.service.Provide;
+import packed.internal.inject.ReflectiveFactory;
 import packed.internal.service.sandbox.Injector;
 import packed.internal.service.sandbox.InjectorComposer;
 
@@ -41,7 +41,7 @@ public class FieldInstanceTest {
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
-        MixedFields.test(c -> c.provide(BeanSupport.of(MixedFields.class)));
+        MixedFields.test(c -> c.provide(BeanSupport.defaultFactoryFor(MixedFields.class)));
         MixedFields.test(c -> c.provide(ReflectiveFactory.of(new TypeToken<MixedFields>() {})));
     }
 

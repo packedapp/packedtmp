@@ -78,7 +78,7 @@ public final class InjectorComposer extends Composer {
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-     * together with the injector. The runtime will use {@link Factory#of(Class)} to find the constructor or method used for
+     * together with the injector. The runtime will use {@link Factory#defaultFactoryFor(Class)} to find the constructor or method used for
      * instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the

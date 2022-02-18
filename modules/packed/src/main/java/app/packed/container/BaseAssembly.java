@@ -187,7 +187,7 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * This method is shortcut for ....
      * <p>
-     * The runtime will use {@link Factory#of(Class)} to find a valid constructor or method to instantiate the service
+     * The runtime will use {@link Factory#defaultFactoryFor(Class)} to find a valid constructor or method to instantiate the service
      * instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
