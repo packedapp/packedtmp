@@ -3,7 +3,7 @@ package packed.internal.bean.hooks.usesite;
 import java.lang.annotation.Annotation;
 
 import app.packed.base.Nullable;
-import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanFieldHook;
 import app.packed.hooks.BeanMethod;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
@@ -43,7 +43,7 @@ public class BootstrappedSourcedClassModel {
 
             @Override
             protected FieldHookModel computeValue(Class<?> type) {
-                BeanField.Hook afs = type.getAnnotation(BeanField.Hook.class);
+                BeanFieldHook afs = type.getAnnotation(BeanFieldHook.class);
                 return afs == null ? null : new FieldHookModel.Builder(afs).build();
             }
         };

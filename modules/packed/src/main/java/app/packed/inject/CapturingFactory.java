@@ -45,7 +45,6 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
-
         protected TypeToken<?> computeValue(Class<?> type) {
             return TypeToken.fromTypeVariable((Class) type, Factory.class, 0);
         }

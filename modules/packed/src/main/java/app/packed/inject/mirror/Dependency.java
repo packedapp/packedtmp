@@ -38,7 +38,6 @@ public /*sealed*/ interface Dependency /*permits ResolvedDependency, UnresolvedD
     // Maaske er composite en dependency type??? 
     // Altsaa det er jo ikke en bean... Man kan ikke have annoteringer...
     
-    
     /**
      * {@return whether or not the dependency is satisfiable
      */

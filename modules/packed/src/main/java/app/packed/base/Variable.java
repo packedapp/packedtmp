@@ -28,6 +28,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.hooks3.CommonVarInfo;
+import app.packed.hooks3.VariableParser;
 import packed.internal.bean.hooks.variable.FieldVariable;
 import packed.internal.bean.hooks.variable.ParameterVariable;
 import packed.internal.bean.hooks.variable.TypeVariableVariable;
@@ -96,6 +98,17 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
     TypeToken<?> typeToken();
 
     // expandMetaAnnotations(); -> Declared kept. Annotations -> Meta annotations
+    
+    // variable().parse()
+    @SuppressWarnings("exports")
+    default CommonVarInfo parse() {
+        return parse(CommonVarInfo.DEFAULT);
+    }
+
+    default <T> T parse(VariableParser<T> parser) {
+        // extract???
+        throw new UnsupportedOperationException();
+    }
     
     /**
      * Returns a variable from the specified field.

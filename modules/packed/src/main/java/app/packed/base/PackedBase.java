@@ -23,6 +23,7 @@ package app.packed.base;
 class PackedBase {
 
     // Per module layer??? Maybe not here
+    // Maaske paa LoggingExtensionSupport klassen
     public static boolean isJavaLoggingAvailable() {
         return true;
     }

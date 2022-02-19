@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks2;
+package app.packed.hooks3;
+
+import java.lang.annotation.Annotation;
 
 /**
  *
  */
-public @interface BeanMethodInterceptorHook {
+// Maaske bare AnnotationReader
+public class MetaAnnotationReader {
 
+    public <T extends Annotation> T readRequired(Class<T> annotationType) {
+        throw new UnsupportedOperationException();
+    }
 }

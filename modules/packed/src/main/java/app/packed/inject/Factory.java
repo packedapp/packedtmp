@@ -335,15 +335,13 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
      * 
      * @param <T>
      *            the type of value returned by the factory
-     * @param constant
+     * @param instance
      *            the instance to return on every request
      * @return the factory
      */
-    // What about annotations and type variables??
-    // ofInstance(List<int> l)
-    public static <T> Factory<T> ofConstant(T constant) {
-        requireNonNull(constant, "constant is null");
-        return new ConstantFactory<T>(constant);
+    public static <T> Factory<T> ofConstant(T instance) {
+        requireNonNull(instance, "instance is null");
+        return new ConstantFactory<T>(instance);
     }
 
     // ReflectionFactory.of

@@ -35,21 +35,15 @@ public class HelloWorldAssembly extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new HelloWorldAssembly());
 
-
-
         System.out.println();
         App.driver().print(new HelloWorldAssembly());
     }
 
     public static class HelloWorld {
 
-        public HelloWorld() {
-            System.out.println("NEW HELL");
-        }
-
         @Main
         public static void execute() {
-            System.out.println("HelloWorld");
+            System.out.println("Executing HelloWorld");
         }
     }
 }

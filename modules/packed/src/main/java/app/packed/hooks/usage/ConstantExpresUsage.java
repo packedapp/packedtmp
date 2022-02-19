@@ -16,9 +16,10 @@
 package app.packed.hooks.usage;
 
 import app.packed.base.Variable;
+import app.packed.bean.BeanExtension;
 import app.packed.hooks.ContextualProvide;
+import app.packed.hooks3.InjectableVariableHookBuilder;
 import app.packed.inject.sandbox.HookBootstrap;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.variable.BeanDependency;
 import app.packed.inject.variable.BeanDependency.VariableInjector;
 import app.packed.inject.variable.BeanDependencyHook;
@@ -85,6 +86,17 @@ public class ConstantExpresUsage {
         }
     }
 
+    class Impl5 extends InjectableVariableHookBuilder {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void build() {
+            Plus p = annotations().readRequired(Plus.class);
+            injector().injectConstant(p.arg1() + p.arg2());
+        }
+    }
+
+    
     class Fooo {
 
         @OnInitialize
@@ -94,7 +106,7 @@ public class ConstantExpresUsage {
 
     }
 
-    @BeanDependencyHook(bootstrap = Impl1.class, extension = ServiceExtension.class)
+    @BeanDependencyHook(bootstrap = Impl1.class, extension = BeanExtension.class)
     @interface Plus {
         int arg1();
 

@@ -1,11 +1,9 @@
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.NoSuchElementException;
 
-import app.packed.base.Nullable;
 import app.packed.extension.Extension;
+import packed.internal.util.ClassUtil;
 
 // Registrant
 // Operator, Contractor
@@ -14,43 +12,44 @@ import app.packed.extension.Extension;
 // Hvem ejer en component
 // Hvem provider en injectable value
 
-
 // Er ikke paa det er en Realm... anyway
 // En AssemblyRealm
 
 public /* primitive */ final class UserOrExtension {
 
     // Application???? As in the application owns it, whoever that application is.
-    private static final UserOrExtension USER = new UserOrExtension(null);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static final UserOrExtension USER = new UserOrExtension((Class) Extension.class);
 
-    @Nullable
-    private final Class<? extends Extension<?>> extension;
+    @SuppressWarnings( "rawtypes")
+    private final Class extension;
 
     private UserOrExtension(Class<? extends Extension<?>> extension) {
         this.extension = extension;
     }
 
+    @SuppressWarnings("unchecked")
     public Class<? extends Extension<?>> extension() {
-        if (extension == null) {
+        if (extension == Extension.class) {
             throw new NoSuchElementException("No extension present");
         }
         return extension;
     }
 
-    public boolean isUser() {
-        return this == USER;
+    public boolean isExtension() {
+        return extension != Extension.class;
     }
 
-    public boolean isExtension() {
-        return this != USER;
+    public boolean isUser() {
+        return extension == Extension.class;
+    }
+
+    public static UserOrExtension extension(Class<? extends Extension<?>> extensionType) {
+        ClassUtil.checkProperSubclass(Extension.class, extensionType);
+        return new UserOrExtension(extensionType);
     }
 
     public static UserOrExtension user() {
         return USER;
-    }
-
-    public static UserOrExtension extension(Class<? extends Extension<?>> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return new UserOrExtension(extensionType);
     }
 }

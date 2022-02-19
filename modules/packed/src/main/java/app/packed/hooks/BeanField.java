@@ -15,68 +15,34 @@
  */
 package app.packed.hooks;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.Variable;
+import app.packed.bean.InvokerConfiguration;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.inject.Factory;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
+import packed.internal.bean.hooks.variable.FieldVariable;
 
+// Mulige outcomes
+//// Der bliver lavet en VarHandle
+//// Der bliver lavet en MethodHandle evt 2 (.
+//// Der bliver lavet en Invoker
+
+// Disse foere alle til at der bliver lavet en operation
+//// Ingen af delene
 public abstract class BeanField {
-
-    /**
-     *
-     */
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface Hook {
-
-        /** Whether or not the sidecar is allow to get the contents of a field. */
-        boolean allowGet() default false;
-
-        /** Whether or not the sidecar is allow to set the contents of a field. */
-        boolean allowSet() default false;
-
-        // Maybe it should be mandatory... We don't currently support method hooks that
-        // maybe annotation() instead. Sounds better if we, for example, adds
-        // nameStartsWith()
-        Class<? extends Annotation>[] annotation() default {};
-
-        /** The hook's {@link BeanField} class. */
-        Class<? extends BeanField> bootstrap();
-    }
 
     /** The builder used by this bootstrap. Updated by {@link UseSiteFieldHookModel}. */
     private UseSiteFieldHookModel.@Nullable Builder builder;
-
-    Class<?> invoker;
-
-    protected final <T> void attach(Class<T> key, T instance) {
-        attach(Key.of(key), instance);
-    }
-
-    protected final <T> void attach(Key<T> key, T instance) {}
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void attach(Object instance) {
-        requireNonNull(instance, "instance is null");
-        attach((Class) instance.getClass(), instance);
-    }
 
     // Taenker vi har lov til at smide reflection exception???
     protected void bootstrap() {}
@@ -99,54 +65,20 @@ public abstract class BeanField {
      */
     protected final void checkWritable() {}
 
-    /** Disables any further processing of the field. */
-    public final void disable() {
-        builder().disable();
-    }
-
-    protected final void disableServiceInjection() {
-        // syntes den er enabled by default
-    }
-
     public final Field field() {
         return builder().field();
     }
 
-    /**
-     * Returns an annotated element from the method that is being bootstrapped.
-     * 
-     * @see AnnotatedElement#getAnnotation(Class)
-     */
-    // MS extends AnnotatedElement???? With meta annotations.
-    // Call method if you want without them...
-    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return builder().field().getAnnotation(annotationClass);
+    public final InvokerConfiguration invoker() {
+        throw new UnsupportedOperationException();
     }
 
-    public final Annotation[] getAnnotations() {
-        return builder().field().getAnnotations();
+    public final InvokerConfiguration invokerGetter() {
+        throw new UnsupportedOperationException();
     }
 
-    public final <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return builder().field().getAnnotationsByType(annotationClass);
-    }
-
-    /**
-     * Returns true if an annotation for the specified type is <em>present</em> on the hooked field, else false.
-     * 
-     * @param annotationClass
-     *            the Class object corresponding to the annotation type
-     * @return true if an annotation for the specified annotation type is present on the hooked field, else false
-     * 
-     * @see Field#isAnnotationPresent(Class)
-     */
-    public final boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        return builder().field().isAnnotationPresent(annotationClass);
-    }
-
-    protected final Optional<Key<?>> key() {
-        // Maaske extract via Key.of(Field)
-        return null;
+    public final InvokerConfiguration invokerSetter() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -174,17 +106,62 @@ public abstract class BeanField {
         throw new UnsupportedOperationException();
     }
 
-    protected final void provideAsService(boolean isConstant) {
-        builder().provideAsService(isConstant);
+    /**
+     * Must have both get and set
+     * 
+     * @return the variable
+     * @see Lookup#unreflectVarHandle(Field)
+     * @see BeanFieldHook#allowGet()
+     * @see BeanFieldHook#allowSet()
+     * @throws UnsupportedOperationException
+     *             if the extension field has not both get and set access
+     */
+    public final VarHandle varHandle() {
+        return builder().varHandle();
     }
 
-    protected final void provideAsService(boolean isConstant, Class<?> key) {
-        provideAsService(isConstant, Key.of(key));
+    /** {@return the underlying represented as a {@code Variable}.} */
+    public final Variable variable() {
+        return new FieldVariable(builder().field());
+    }
+}
 
+class BeanFieldSandbox {
+
+}
+
+class BeanFieldOldCrap {
+
+    Class<?> invoker;
+
+    // A variable parser?
+    protected final Optional<Key<?>> key() {
+        // Maaske extract via Key.of(Field)
+        return null;
     }
 
-    protected final void provideAsService(boolean isConstant, Key<?> key) {
-        builder().provideAsService(isConstant, key);
+    protected final <T> void attach(Class<T> key, T instance) {
+        attach(Key.of(key), instance);
+    }
+
+    protected final <T> void attach(Key<T> key, T instance) {}
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void attach(Object instance) {
+        requireNonNull(instance, "instance is null");
+        attach((Class) instance.getClass(), instance);
+    }
+
+    /** Disables any further processing of the field. */
+    // IDK kan vi ikke bare sige
+    public final void disable() {
+        // builder().disable();
+    }
+
+    // Tror slet ikke vi supportere injection???
+    // Brug et ServiceHook istedet for
+    protected final void disableServiceInjection() {
+        // syntes den er enabled by default
     }
 
     /**
@@ -205,27 +182,15 @@ public abstract class BeanField {
      * @param argument
      *            the argument to set
      * @throws UnsupportedOperationException
-     *             if {@link Hook#allowSet()} is false
+     *             if {@link BeanFieldHook#allowSet()} is false
      * @throws ClassCastException
      *             if the specified argument is not assignable to the field
      */
     // Get if static field...
+    // Hvor tit bruger vi lige den????
+    // Get a VarHandle and set it
     protected final void set(Object argument) {
-        builder().set(argument);
-    }
-
-    // Must have both get and set
-    // methodHandleGet
-    /**
-     * @return the variable
-     * @see Lookup#unreflectVarHandle(Field)
-     * @see Hook#allowGet()
-     * @see Hook#allowSet()
-     * @throws UnsupportedOperationException
-     *             if the extension field has not both get and set access
-     */
-    public final VarHandle varHandle() {
-        throw new UnsupportedOperationException();
+//        builder().set(argument);
     }
 
     static Factory<?> findFactory(String name) {

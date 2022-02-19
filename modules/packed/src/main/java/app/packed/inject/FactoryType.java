@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +22,8 @@ import java.lang.reflect.Executable;
 import java.util.Arrays;
 import java.util.List;
 
+import app.packed.base.Variable;
+
 /**
  * A function type represents the arguments and return type accepted and returned by an invokable function. This class
  * is modelled after {@link MethodType}.
@@ -29,7 +31,7 @@ import java.util.List;
 //Som MethodType men med Annotations og generic types
 //InvokableType, OperationType
 //// Ideen er lidt at en BeanOperation har en FunctionType...
-public final class FunctionType {
+public final class FactoryType {
 
     static final Variable[] NO_VARS = {};
 
@@ -37,7 +39,7 @@ public final class FunctionType {
 
     private final Variable[] variables;
 
-    FunctionType(Variable returnType, Variable[] variables) {
+    FactoryType(Variable returnType, Variable[] variables) {
         this.returnType = returnType;
         this.variables = variables;
     }
@@ -52,9 +54,9 @@ public final class FunctionType {
      *             if any argument is {@code null}
      * @return the new method descriptor
      */
-    public FunctionType changeReturnType(Variable newReturn) {
+    public FactoryType changeReturnType(Variable newReturn) {
         requireNonNull(newReturn, "newReturn is null");
-        return new FunctionType(newReturn, variables);
+        return new FactoryType(newReturn, variables);
     }
 
     /** {@return the return variable.} */
@@ -86,16 +88,16 @@ public final class FunctionType {
         throw new UnsupportedOperationException();
     }
 
-    public static FunctionType of(Variable returnVar) {
+    public static FactoryType of(Variable returnVar) {
         requireNonNull(returnVar, "returnVar is null");
-        return new FunctionType(returnVar, NO_VARS);
+        return new FactoryType(returnVar, NO_VARS);
     }
 
-    static FunctionType ofExecutable(Executable e) {
+    static FactoryType ofExecutable(Executable e) {
         throw new UnsupportedOperationException();
     }
 
-    static FunctionType ofMethodType(MethodType methodType) {
+    static FactoryType ofMethodType(MethodType methodType) {
         throw new UnsupportedOperationException();
     }
 

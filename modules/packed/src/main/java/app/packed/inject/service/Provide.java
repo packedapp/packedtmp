@@ -26,8 +26,10 @@ import app.packed.base.AnnotationMaker;
 import app.packed.bean.BeanExtension;
 import app.packed.extension.ExtensionMember;
 import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanFieldHook;
 import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
+import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -78,7 +80,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(BeanExtension.class)
-@BeanField.Hook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
+@BeanFieldHook(allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 @BeanMethod.Hook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {
 
@@ -118,7 +120,7 @@ final class ProvideFieldBootstrap extends BeanField {
     /** {@inheritDoc} */
     @Override
     protected void bootstrap() {
-        provideAsService(getAnnotation(Provide.class).constant());
+        UseSiteFieldHookModel.getBuilder(this).provideAsService(variable().getAnnotation(Provide.class).constant());
     }
 }
 

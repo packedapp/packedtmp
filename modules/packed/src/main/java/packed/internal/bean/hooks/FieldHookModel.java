@@ -23,6 +23,7 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.extension.InternalExtensionException;
 import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanFieldHook;
 import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.lifecycle.OnInitialize;
 
@@ -64,7 +65,7 @@ public final class FieldHookModel extends AbstractHookModel<BeanField> {
             super(c);
         }
 
-        public Builder(BeanField.Hook afs) {
+        public Builder(BeanFieldHook afs) {
             super(afs.bootstrap());
         }
 

@@ -27,11 +27,11 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.hooks.BeanField;
-import app.packed.hooks.BeanField.Hook;
+import app.packed.hooks.BeanFieldHook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.HookedMethodProvide;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;
@@ -47,6 +47,10 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanField.class, "builder",
             UseSiteFieldHookModel.Builder.class);
 
+    /** A MethodHandle that can invoke {@link BeanField#bootstrap}. */
+    private static final MethodHandle MH_FIELD_HOOK_BUILDER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanField.class, "builder",
+            UseSiteFieldHookModel.Builder.class);
+    
     /** A direct method handle to the field. */
     public final VarHandle varHandle;
 
@@ -56,6 +60,13 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     /** A model of the field hooks bootstrap. */
     private final FieldHookModel hook;
 
+    public static UseSiteFieldHookModel.Builder getBuilder(BeanField field) {
+        try {
+            return (UseSiteFieldHookModel.Builder) MH_FIELD_HOOK_BUILDER.invokeExact(field);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
     UseSiteFieldHookModel(Builder builder, VarHandle mh) {
         super(builder, List.of());
         this.modifiers = requireNonNull(builder.field.getModifiers());
@@ -94,7 +105,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     }
 
     /**
-     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link Hook#bootstrap()}.
+     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link BeanFieldHook#bootstrap()}.
      */
     public static final class Builder extends UseSiteMemberHookModel.Builder {
 
@@ -132,6 +143,10 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         public Field field() {
             return field;
+        }
+        
+        public VarHandle varHandle() {
+            throw new UnsupportedOperationException();
         }
 
         Object initialize() {
