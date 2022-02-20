@@ -27,6 +27,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
+import app.packed.hooks3.BeanHook;
 import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.util.LookupUtil;
 
@@ -43,17 +44,22 @@ import packed.internal.util.LookupUtil;
  * <p>
  * Assemblies are composable via linking.
  * 
+ * 
  * <p>
- * Packed never performs any kind of reflection based introspection of container implementations.
+ * Subclasses of this class supports 2 type based annotations. {@link ContainerHook} and {@link BeanHook}. Which
+ * controls how containers and beans are added respectively.
  * <p>
- * Instances of this class can only be used a single time. Trying to use it more than once will fail with
- * {@link IllegalStateException}.
+ * Packed does not support any annotations on fields or methods. And will never perform any kind of reflection based
+ * introspection of subclasses.
+ * <p>
+ * An assembly can never be used more than once. Trying to do so will result in an {@link IllegalStateException} being
+ * thrown.
  * 
  * @see BaseAssembly
  */
 public abstract non-sealed class Assembly implements ComponentRealm {
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
+    /** A var handle that can update the {@link #container()} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
@@ -73,20 +79,9 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     @Nullable
     private ContainerConfiguration configuration;
 
-    // On container or assembly???
-    // Not container I think...
-    // Assembly + Extension
-    // So on Realm, eller application maaske
-    // Maaske holder vi den bare paa det respektive configurations objekt.
-    // Consumer<Throwable>
-    // Tror kun vi har behov for den for extension ikke?
-    final void addCloseAction(Runnable action) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return a descriptor for the application being built.} */
     protected final ApplicationDescriptor application() {
-        return configuration().container.application.descriptor;
+        return container().container.application.descriptor;
     }
 
     /**
@@ -99,28 +94,20 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     protected abstract void build();
 
     /**
-     * Checks that {@link #build()} has not been called by the framework. the assembly has not already been used. This
+     * Checks that {@link #build()} has not yet been invoked by the framework. the assembly has not already been used. This
      * method is typically used
      * 
      * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions do
      * not try to configure the extension after it has been configured.
      * 
-     * <p>
-     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkPreBuild()}.
-     * 
      * @throws IllegalStateException
-     *             if {@link #build()} has been invoked
+     *             if {@link #build()} has already been invoked
      * @see ContainerConfiguration#checkPreBuild()
      */
-    // Before build is started?? or do we allow to call these method
-    // checkPreBuild()? // checkConfigurable(), checkBuildNotStarted
-    // Det er ogsaa inde hooks er kaldt
-    //// Ideen er at vi kan kalde metode fra configurations metoder
     protected final void checkPreBuild() {
-        // Why not just test configuration == null????
-
-        // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
-        configuration().container.realm.checkOpen();
+        if (configuration != null) {
+            throw new IllegalStateException("#build has already been called on the Assembly");
+        }
     }
 
     /**
@@ -136,9 +123,9 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     // and .application()? where application is limited for extension realm assemblies
     // only application().descriptor() works
     // saa skal Extension.configuration() vel omnavngives til .extension() + .realm() IDKx
-    
+
     // Problemet er at vi har ContainerExtension...
-    protected final ContainerConfiguration configuration() {
+    protected final ContainerConfiguration container() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
@@ -183,7 +170,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     }
 
     protected final void embed(Assembly assembly) {
-        configuration().embed(assembly);
+        container().embed(assembly);
     }
 
     /**
@@ -193,7 +180,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension<?>>> extensionTypes() {
-        return configuration().extensionTypes();
+        return container().extensionTypes();
     }
 
     /**
@@ -210,7 +197,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     // skal vi jo ogsaa bruge den der. IDK
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        configuration().container.realm.lookup(lookup);
+        container().container.realm.lookup(lookup);
     }
 
     /**
@@ -232,7 +219,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      *             if called from outside {@link #build()}
      */
     protected final void named(String name) {
-        configuration().named(name);
+        container().named(name);
     }
 
     /**
@@ -241,7 +228,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      * @see ContainerConfiguration#path()
      */
     protected final NamespacePath path() {
-        return configuration().path();
+        return container().path();
     }
 
     /**
@@ -250,18 +237,18 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      *            the type of wirelets to select
      * @param wireletClass
      *            the type of wirelets to select
-     * @return
+     * @return a wirelet selection
      * @see ContainerConfiguration#selectWirelets(Class)
      */
     protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return configuration().selectWirelets(wireletClass);
+        return container().selectWirelets(wireletClass);
     }
 
     /**
-     * Returns an extension instance of the specified type.
+     * Returns an instance of the specified extension type.
      * <p>
      * The framework will lazily create a single instance of a particular extension when requested. Returning the same
-     * instance for any subsequent calls.
+     * instance for subsequent calls.
      * 
      * @param <T>
      *            the type of extension to return
@@ -273,6 +260,6 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {
-        return configuration().use(extensionType);
+        return container().use(extensionType);
     }
 }

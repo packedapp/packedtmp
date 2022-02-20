@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.hooks.BeanClass;
 import app.packed.hooks.BeanConstructor;
-import app.packed.hooks.BeanFieldProcessor;
+import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanMethod;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
@@ -45,7 +45,7 @@ public abstract class BeanDependency {
 
     static void $nestWithMethod(Class<? extends BeanMethod> methodType) {}
 
-    static void $nestWithField(Class<? extends BeanFieldProcessor> methodType) {}
+    static void $nestWithField(Class<? extends BeanField> methodType) {}
 
     static void $nestWithConstructor(Class<? extends BeanConstructor> methodType) {}
 

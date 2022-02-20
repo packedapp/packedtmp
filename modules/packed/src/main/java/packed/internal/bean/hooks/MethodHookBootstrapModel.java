@@ -25,10 +25,11 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.extension.InternalExtensionException;
 import app.packed.hooks.BeanMethod;
+import app.packed.hooks.BeanMethodHook;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.hooks.accessors.ScopedProvide;
-import app.packed.lifecycle.OnInitialize;
+import app.packed.hooks3.MethodHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -47,7 +48,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
     public final Map<Key<?>, HookedMethodProvide> keys;
 
     // Must take an invoker...
-    public final MethodHandle onInitialize;
+  //  public final MethodHandle onInitialize;
 
     /**
      * Creates a new model.
@@ -57,7 +58,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
      */
     private MethodHookBootstrapModel(Builder builder) {
         super(builder);
-        this.onInitialize = builder.onInitialize;
+      //  this.onInitialize = builder.onInitialize;
         Map<Key<?>, HookedMethodProvide> tmp = new HashMap<>();
         builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
@@ -88,7 +89,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
 
         Class<?> invoker;
 
-        private MethodHandle onInitialize;
+       // private MethodHandle onInitialize;
 
         private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
@@ -96,7 +97,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
             super(c);
         }
 
-        public Builder(BeanMethod.Hook ams) {
+        public Builder(BeanMethodHook ams) {
             super(ams.bootstrap());
         }
 
@@ -120,14 +121,14 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
                 }
             }
 
-            OnInitialize oi = method.getAnnotation(OnInitialize.class);
-            if (oi != null) {
-                if (onInitialize != null) {
-                    throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
-                }
-                MethodHandle mh = oc.unreflect(method);
-                onInitialize = mh;
-            }
+//            OnInitialize oi = method.getAnnotation(OnInitialize.class);
+//            if (oi != null) {
+//                if (onInitialize != null) {
+//                    throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
+//                }
+//                MethodHandle mh = oc.unreflect(method);
+//                onInitialize = mh;
+//            }
         }
 
         public void provideInvoker() {

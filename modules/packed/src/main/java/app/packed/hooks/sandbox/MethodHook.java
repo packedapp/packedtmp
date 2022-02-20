@@ -32,7 +32,7 @@ import app.packed.container.Composer;
 import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass;
 import app.packed.hooks.BeanMethod;
-import app.packed.lifecycle.OnInitialize;
+import app.packed.hooks.BeanMethodHook;
 
 /**
  * A method hook allows for run-time customization of methods.
@@ -183,7 +183,7 @@ class SandboxBootstrap {
 //@Doo(extension = Rooddd(23, 234))
 
 @ZuperSupport // same
-@BeanMethod.Hook(bootstrap = Zester.Scan.class)
+@BeanMethodHook(bootstrap = Zester.Scan.class)
 class Zester extends BaseAssembly {
 
     /** {@inheritDoc} */
@@ -194,12 +194,12 @@ class Zester extends BaseAssembly {
 
     class Scan extends BeanMethod {
 
-        @OnInitialize
+      //  @OnInitialize
         public void doo(InstanceHandle<Runnable> ih) {
             ih.instance().run();
         }
 
-        @OnInitialize
+        //@OnInitialize
         public void doo(Method m) {
             System.out.println(m);
         }
@@ -213,7 +213,7 @@ class Zester extends BaseAssembly {
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@BeanMethod.Hook(bootstrap = Zester.Scan.class)
+@BeanMethodHook(bootstrap = Zester.Scan.class)
 @interface ZuperSupport {}
 
 // Man kan ogsaa have en BuildContext som man kan faa injected...

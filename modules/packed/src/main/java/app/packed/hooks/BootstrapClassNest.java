@@ -20,7 +20,7 @@ public abstract class BootstrapClassNest {
      * Returns a list of methods in this nest.
      * 
      * @return a list of all methods in this nest
-     * @see BeanFieldProcessor#manageBy(Class)
+     * @see BeanField#manageBy(Class)
      * @see BeanMethod#nestWith(Class)
      */
     public final List<BeanMethod> methods() {

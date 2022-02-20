@@ -26,7 +26,6 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 
@@ -53,9 +52,9 @@ public class ContainerConfigurationTester {
     }
 
     public ContainerConfigurationTester getNameIs(String expected) {
-        
-        //cc.path().parent().toString();
-        //assertThat(cc.getName()).isEqualTo(expected);
+
+        // cc.path().parent().toString();
+        // assertThat(cc.getName()).isEqualTo(expected);
         return this;
     }
 
@@ -72,7 +71,7 @@ public class ContainerConfigurationTester {
     }
 
     public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
-        cc.use(ContainerExtension.class).link(child, wirelets);
+        cc.link(child, wirelets);
         return this;
     }
 

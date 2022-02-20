@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 import app.packed.base.Nullable;
 import app.packed.hooks.BeanFieldHook;
-import app.packed.hooks.BeanMethod;
+import app.packed.hooks.BeanMethodHook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.container.ExtensionModel;
@@ -32,7 +32,7 @@ public class BootstrappedSourcedClassModel {
 
             @Override
             protected MethodHookBootstrapModel computeValue(Class<?> type) {
-                BeanMethod.Hook ams = type.getAnnotation(BeanMethod.Hook.class);
+                BeanMethodHook ams = type.getAnnotation(BeanMethodHook.class);
                 return ams == null ? null : new MethodHookBootstrapModel.Builder(ams).build();
             }
         };

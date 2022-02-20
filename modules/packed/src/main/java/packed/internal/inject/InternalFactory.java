@@ -38,7 +38,7 @@ import packed.internal.util.MethodHandleUtil;
  */
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
-    /** A var handle that can update the {@link #configuration()} field in this class. */
+    /** A var handle that can update the {@link #container()} field in this class. */
     private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "factory",
             CanonicalizedCapturingInternalFactory.class);
 

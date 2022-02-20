@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.component.BuildException;
 import app.packed.extension.ExtensionMember;
-import app.packed.hooks.BeanMethod;
+import app.packed.hooks.BeanMethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
@@ -56,7 +56,7 @@ import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(EntryPointExtension.class)
-@BeanMethod.Hook(bootstrap = MainBootstrap.class, extension = EntryPointExtension.class)
+@BeanMethodHook(bootstrap = MainBootstrap.class, extension = EntryPointExtension.class)
 public @interface Main {}
 
 class MainBootstrap extends RealMethodSidecarBootstrap {

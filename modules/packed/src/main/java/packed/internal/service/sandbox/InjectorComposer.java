@@ -27,7 +27,6 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceExtension;
@@ -73,7 +72,7 @@ public final class InjectorComposer extends Composer {
      *            optional import/export wirelets
      */
     public ComponentMirror link(Assembly  assembly, Wirelet... wirelets) {
-        return configuration.use(ContainerExtension.class).link(assembly, wirelets);
+        return configuration.link(assembly, wirelets);
     }
 
     /**

@@ -68,7 +68,7 @@ import app.packed.lifecycle.OnStart;
  * 
  * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
  * {@link BaseContainerConfiguration}. Delegating every invocation in the class to an instance of
- * {@link BaseContainerConfiguration} available via {@link #configuration()}.
+ * {@link BaseContainerConfiguration} available via {@link #container()}.
  * <p>
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
@@ -92,18 +92,6 @@ public abstract class BaseAssembly extends Assembly {
      */
     protected final BeanExtension bean() {
         return use(BeanExtension.class);
-    }
-
-    /**
-     * Returns a {@link ContainerExtension} instance.
-     * <p>
-     * Calling this method is short for {@code use(ContainerExtension.class)}
-     * 
-     * @return a container extension instance
-     * @see #use(Class)
-     */
-    protected final ContainerExtension container() {
-        return use(ContainerExtension.class);
     }
 
     protected final void exportAll() {
@@ -164,7 +152,7 @@ public abstract class BaseAssembly extends Assembly {
      *             if the specified extension type is {@link Extension}
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return configuration().isExtensionUsed(extensionType);
+        return container().isExtensionUsed(extensionType);
     }
 
     /**

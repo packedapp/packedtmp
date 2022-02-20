@@ -17,7 +17,6 @@ package app.packed.hooks.usage;
 
 import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.MethodAccessor;
-import app.packed.lifecycle.OnInitialize;
 
 /**
  *
@@ -31,7 +30,7 @@ public class ClassUseIt {
         // Tror maaske det skal saettes op i Bootstrap
         // Hvis man vil have mulighed for at kunne se hvad der sker...
         // @HintCallInvoker <---
-        @OnInitialize
+        //@OnInitialize
         public void invoke(MethodAccessor<?> i) throws Throwable {
             i.call(); // another method could just set the invoker...
             // for later invocation, a.la. web

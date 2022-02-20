@@ -25,9 +25,9 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.AnnotationMaker;
 import app.packed.bean.BeanExtension;
 import app.packed.extension.ExtensionMember;
-import app.packed.hooks.BeanFieldProcessor;
+import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanFieldHook;
-import app.packed.hooks.BeanMethod;
+import app.packed.hooks.BeanMethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 
@@ -81,7 +81,7 @@ import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 @Documented
 @ExtensionMember(BeanExtension.class)
 @BeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
-@BeanMethod.Hook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+@BeanMethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
@@ -115,7 +115,7 @@ public @interface Provide {
 //ProvisionMode mode() default ProvisionMode.ON_DEMAND;
 
 /** A field sidecar for {@link Provide}. */
-final class ProvideFieldHookProcessor extends BeanFieldProcessor {
+final class ProvideFieldHookProcessor extends BeanField {
 
     /** {@inheritDoc} */
     @Override

@@ -1,4 +1,4 @@
-package app.packed.hooks;
+package app.packed.hooks.usage;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

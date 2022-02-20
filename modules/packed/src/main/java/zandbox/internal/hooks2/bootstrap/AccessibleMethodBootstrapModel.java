@@ -8,7 +8,7 @@ import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
 import app.packed.extension.Extension;
-import app.packed.hooks.BeanFieldProcessor;
+import app.packed.hooks.BeanField;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -22,7 +22,7 @@ public final class AccessibleMethodBootstrapModel extends AbstractBootstrapModel
 
     private static final ThreadLocal<AccessibleMethodHook> ANNOTATION = new ThreadLocal<>();
 
-    /** A MethodHandle that can invoke {@link BeanFieldProcessor#bootstrap}. */
+    /** A MethodHandle that can invoke {@link BeanField#bootstrap}. */
     private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AccessibleMethodHook.Bootstrap.class,
             "bootstrap", void.class);
 
@@ -47,7 +47,7 @@ public final class AccessibleMethodBootstrapModel extends AbstractBootstrapModel
 
     private static final TmpLoader<BootstrapClassLoader> TL = new TmpLoader<>(BootstrapClassLoader.class, t -> new BootstrapClassLoader());
 
-    /** A VarHandle that can access {@link BeanFieldProcessor#processor}. */
+    /** A VarHandle that can access {@link BeanField#processor}. */
     private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), AccessibleMethodHook.Bootstrap.class,
             "context", AccessibleMethodBootstrapModel.BootstrapContext.class);
 

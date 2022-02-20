@@ -26,7 +26,7 @@ import java.util.List;
 
 import app.packed.hooks.BeanClass;
 import app.packed.hooks.BeanConstructor;
-import app.packed.hooks.BeanFieldProcessor;
+import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanMethod;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.bean.hooks.FieldHookModel;
@@ -82,11 +82,11 @@ public final class UseSiteClassHookModel {
             throw new UnsupportedOperationException();
         }
 
-        public List<BeanFieldProcessor> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
-            ArrayList<BeanFieldProcessor> list = new ArrayList<>();
+        public List<BeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+            ArrayList<BeanField> list = new ArrayList<>();
             for (Field f : source.type().getDeclaredFields()) {
                 UseSiteFieldHookModel.Builder b = new UseSiteFieldHookModel.Builder(this, ExposedFieldBootstrap.MODEL, f);
-                list.add((BeanFieldProcessor) b.initialize());
+                list.add((BeanField) b.initialize());
             }
             return List.copyOf(list);
         }
@@ -105,7 +105,7 @@ public final class UseSiteClassHookModel {
             throw new UnsupportedOperationException();
         }
 
-        static class ExposedFieldBootstrap extends BeanFieldProcessor {
+        static class ExposedFieldBootstrap extends BeanField {
             static final FieldHookModel MODEL = FieldHookModel.getModelForFake(ExposedFieldBootstrap.class);
         }
 

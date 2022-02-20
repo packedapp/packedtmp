@@ -1,11 +1,14 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
+import packed.internal.container.AssemblyRealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 
@@ -34,6 +37,16 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         this.container = bh.setup;
     }
 
+    // On container or assembly???
+    // Not container I think...
+    // Assembly + Extension
+    // So on Realm, eller application maaske
+    // Maaske holder vi den bare paa det respektive configurations objekt.
+    // Consumer<Throwable>
+    // Tror kun vi har behov for den for extension ikke?
+    final void addCloseAction(Runnable action) {
+        throw new UnsupportedOperationException();
+    }
     /** {@inheritDoc} */
     @Override
     protected final void checkIsWiring() {
@@ -122,6 +135,36 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      */
     public final <E extends Extension<?>> E use(Class<E> extensionType) {
         return container.useExtension(extensionType);
+    }
+    
+    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
+        return link(new PackedContainerDriver(container), assembly, wirelets);
+    }
+
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
+    //// Har svaert ved at se at brugere vil bruge deres egen ContainerHandle...
+    public ContainerMirror link(ContainerDriver handle, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(handle, "handle is null");
+
+        // Create a new realm for the assembly
+        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(d, container, assembly, wirelets);
+
+        container.realm.wirePrepare(); // check that the container is open for business
+
+        // Close the new realm again after the assembly has been successfully linked
+        newRealm.build();
+
+        return (ContainerMirror) newRealm.container.mirror();
     }
 }
 

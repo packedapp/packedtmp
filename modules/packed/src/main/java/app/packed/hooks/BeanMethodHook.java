@@ -22,21 +22,28 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import app.packed.extension.Extension;
 
-/**
- *
- */
-@Target(ElementType.ANNOTATION_TYPE)
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Documented
-public @interface BeanFieldHook {
+public @interface BeanMethodHook {
 
-    /** Whether or not the sidecar is allow to get the contents of a field. */
-    boolean allowGet() default false;
+    /**
+     * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+     * <p>
+     * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+     * the value of this attribute is {@code true}.
+     * 
+     * @return whether or not the implementation is allowed to invoke the target method
+     * 
+     * @see BeanMethod#methodHandle()
+     */
+    boolean allowInvoke() default false; // allowIntercept...
 
-    /** Whether or not the sidecar is allow to set the contents of a field. */
-    boolean allowSet() default false;
-
-    /** The hook's {@link BeanField} class. */
-    Class<? extends BeanField> processor();
+    /** Bootstrap classes for this hook. */
+    Class<? extends BeanMethod> bootstrap();
+    
+    @SuppressWarnings("rawtypes")
+    Class<? extends Extension> extension() default Extension.class;
 }

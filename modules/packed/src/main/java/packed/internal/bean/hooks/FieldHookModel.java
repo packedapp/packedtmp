@@ -22,18 +22,17 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanFieldProcessor;
 import app.packed.hooks.BeanFieldHook;
+import app.packed.hooks.BeanField;
 import app.packed.hooks.accessors.ScopedProvide;
-import app.packed.lifecycle.OnInitialize;
 
-/** A model of a {@link BeanFieldProcessor field bootstrap} implementation. */
-public final class FieldHookModel extends AbstractHookModel<BeanFieldProcessor> {
+/** A model of a {@link BeanField field bootstrap} implementation. */
+public final class FieldHookModel extends AbstractHookModel<BeanField> {
 
     public final Map<Key<?>, HookedMethodProvide> keys;
 
     // Must take an invoker...
-    public final MethodHandle onInitialize;
+   // public final MethodHandle onInitialize;
 
     /**
      * Creates a new model.
@@ -43,25 +42,25 @@ public final class FieldHookModel extends AbstractHookModel<BeanFieldProcessor> 
      */
     private FieldHookModel(Builder builder) {
         super(builder);
-        this.onInitialize = builder.onInitialize;
+        //this.onInitialize = builder.onInitialize;
         Map<Key<?>, HookedMethodProvide> tmp = new HashMap<>();
         builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
 
 
-    public static FieldHookModel getModelForFake(Class<? extends BeanFieldProcessor> c) {
+    public static FieldHookModel getModelForFake(Class<? extends BeanField> c) {
         return new Builder(c).build();
     }
 
     /** A builder for for a {@link FieldHookModel}. */
-    public final static class Builder extends AbstractHookModel.Builder<BeanFieldProcessor> {
+    public final static class Builder extends AbstractHookModel.Builder<BeanField> {
 
-        private MethodHandle onInitialize;
+     //   private MethodHandle onInitialize;
 
         private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
-        private Builder(Class<? extends BeanFieldProcessor> c) {
+        private Builder(Class<? extends BeanField> c) {
             super(c);
         }
 
@@ -72,7 +71,7 @@ public final class FieldHookModel extends AbstractHookModel<BeanFieldProcessor> 
         /** {@inheritDoc} */
         @Override
         public FieldHookModel build() {
-            scan(false, BeanFieldProcessor.class);
+            scan(false, BeanField.class);
             return new FieldHookModel(this);
         }
 
@@ -87,14 +86,14 @@ public final class FieldHookModel extends AbstractHookModel<BeanFieldProcessor> 
                 }
             }
 
-            OnInitialize oi = method.getAnnotation(OnInitialize.class);
-            if (oi != null) {
-                if (onInitialize != null) {
-                    throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
-                }
-                MethodHandle mh = oc.unreflect(method);
-                onInitialize = mh;
-            }
+//            OnInitialize oi = method.getAnnotation(OnInitialize.class);
+//            if (oi != null) {
+//                if (onInitialize != null) {
+//                    throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
+//                }
+//                MethodHandle mh = oc.unreflect(method);
+//                onInitialize = mh;
+//            }
         }
     }
 }

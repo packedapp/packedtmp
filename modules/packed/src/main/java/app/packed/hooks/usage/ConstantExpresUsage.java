@@ -17,7 +17,6 @@ package app.packed.hooks.usage;
 
 import app.packed.base.Variable;
 import app.packed.bean.BeanExtension;
-import app.packed.hooks.ContextualProvide;
 import app.packed.hooks3.InjectableVariableHookBuilder;
 import app.packed.inject.variable.BeanDependency;
 import app.packed.inject.variable.BeanDependency.VariableInjector;

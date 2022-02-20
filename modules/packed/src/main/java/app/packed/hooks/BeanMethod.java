@@ -15,14 +15,9 @@
  */
 package app.packed.hooks;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.AnnotatedElement;
@@ -31,7 +26,6 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
-import app.packed.extension.Extension;
 import app.packed.hooks.BeanClass.ClassHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
@@ -318,29 +312,5 @@ public abstract class BeanMethod {
     // @Path("${component.id}/")
     // Altsaa vi kan jo altid bare kalde WebSubextension.add...
     // protected static final void $supportMetaHook(Class<? extends Bootstrap> bootstrap) {}
-    
 
-    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    public @interface Hook {
-
-        /**
-         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
-         * <p>
-         * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
-         * the value of this attribute is {@code true}.
-         * 
-         * @return whether or not the implementation is allowed to invoke the target method
-         * 
-         * @see BeanMethod#methodHandle()
-         */
-        boolean allowInvoke() default false; // allowIntercept...
-
-        /** Bootstrap classes for this hook. */
-        Class<? extends BeanMethod> bootstrap();
-        
-        @SuppressWarnings("rawtypes")
-        Class<? extends Extension> extension() default Extension.class;
-    }
 }

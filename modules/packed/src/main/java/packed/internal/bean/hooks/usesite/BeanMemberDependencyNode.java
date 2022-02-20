@@ -18,7 +18,6 @@ package packed.internal.bean.hooks.usesite;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.Nullable;
@@ -29,7 +28,6 @@ import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.BeanMemberServiceSetup;
 import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 
@@ -95,14 +93,15 @@ public final class BeanMemberDependencyNode extends DependencyNode {
 
                 // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
                 if (sourceMember instanceof UseSiteMethodHookModel msm) {
-                    if (msm.bootstrapModel.onInitialize != null) {
-                        // System.out.println(msm.model.onInitialize);
-                        MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
-
-                        mh2 = mh2.bindTo(mh1);
-
-                        bean.application.container.lifetime.initializers.add(mh2);
-                    }
+                    System.out.println(mh1);
+//                    if (msm.bootstrapModel.onInitialize != null) {
+//                        // System.out.println(msm.model.onInitialize);
+//                        MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
+//
+//                        mh2 = mh2.bindTo(mh1);
+//
+//                        bean.application.container.lifetime.initializers.add(mh2);
+//                    }
                 }
             }
         }

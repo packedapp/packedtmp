@@ -47,10 +47,16 @@ import packed.internal.bean.hooks.variable.FieldVariable;
 
 // Disse foere alle til at der bliver lavet en operation
 //// Ingen af delene
-public abstract class BeanFieldProcessor {
+
+// BeanFieldProcessor??? BeanFieldBuilder
+public abstract class BeanField {
 
     /** The builder used by this bootstrap. Updated by {@link UseSiteFieldHookModel}. */
     private UseSiteFieldHookModel.@Nullable Builder builder;
+
+    public final <T extends BeanOperationMirror> void addOperationMirror(Class<T> mirrorType, Supplier<T> supplier) {
+
+    }
 
     // Taenker vi har lov til at smide reflection exception???
     protected void bootstrap() {}
@@ -68,7 +74,7 @@ public abstract class BeanFieldProcessor {
         return b;
     }
 
-    /** { @return the underlying field.} */
+    /** {@return the underlying field.} */
     public final Field field() {
         return builder().field();
     }
@@ -127,6 +133,7 @@ public abstract class BeanFieldProcessor {
     public final VarHandle varHandle() {
         return builder().varHandle();
     }
+    
 
     /** {@return the underlying represented as a {@code Variable}.} */
     public final Variable variable() {
@@ -135,20 +142,7 @@ public abstract class BeanFieldProcessor {
 }
 
 class BeanFieldSandbox {
-    
-    public final <T extends BeanOperationMirror> void addOperationMirror(Class<T> mirrorType, Supplier<T> supplier) {
 
-    }
-
-    public BeanFieldSandbox newOperation(ExtensionConfiguration ec) {
-        // fx hvis man vil provide den som en service og et eller andet samtidig
-        // BeanSupport.
-        /// Naah ikke en metode her...
-        // Vi skal bruge extensionen der goer det...
-        
-        // BeanField.
-        throw new UnsupportedOperationException();
-    }
 
     public final VarInjector injector() {
         // Er ikke sikker paa vi supportere denne
@@ -159,10 +153,20 @@ class BeanFieldSandbox {
         throw new UnsupportedOperationException();
     }
 
+    public BeanFieldSandbox newOperation(ExtensionConfiguration ec) {
+        // fx hvis man vil provide den som en service og et eller andet samtidig
+        // BeanSupport.
+        /// Naah ikke en metode her...
+        // Vi skal bruge extensionen der goer det...
+
+        // BeanField.
+        throw new UnsupportedOperationException();
+    }
+
     public final void requireContext(Class<?> contextType) {
         // fx SchedulingContext ect... Don't know if we need it
     }
-    
+
     public final <T> T variableCompute(Function<Variable, T> computer) {
         // Kan kun have en...
         throw new UnsupportedOperationException();

@@ -50,11 +50,11 @@ public abstract class BeanConstructor {
      * 
      * @return a direct method handle to the matching method
      * @see Lookup#unreflect(Method)
-     * @see BeanMethod.Hook#allowInvoke()
+     * @see BeanMethodHook#allowInvoke()
      * @see ClassHook#allowAllAccess()
      * 
      * @throws UnsupportedOperationException
-     *             if invocation access has not been granted via {@link BeanMethod.Hook#allowInvoke()}
+     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()}
      */
     public final MethodHandle methodHandle() {
         throw new UnsupportedOperationException();
