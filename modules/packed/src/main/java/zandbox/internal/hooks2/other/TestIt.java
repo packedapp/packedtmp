@@ -8,7 +8,6 @@ import zandbox.packed.hooks.ExtendWith;
 @ExtendWith(accessibleFields = {
         @AccessibleFieldHook(onAnnotation = Provide.class, extension = ServiceExtension.class, bootstrapBean = AccessibleFieldHook.Bootstrap.class),
         @AccessibleFieldHook(bootstrapBean = AccessibleFieldHook.Bootstrap.class, extension = ServiceExtension.class, onAnnotation = Provide.class) })
-
 // beanBinder.addAccessibleFieldHook(annotation, extension, bootstrap);
 //// Eneste der taeller imod det med at smide den paa beans...
 //// Er at man saa ikke kan extende den med andre annoteringer...

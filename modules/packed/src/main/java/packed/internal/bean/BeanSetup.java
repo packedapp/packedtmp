@@ -10,7 +10,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.hooks.usage.BeanOldKind;
+import app.packed.bean.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;

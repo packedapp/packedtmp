@@ -12,19 +12,19 @@ import java.lang.annotation.Target;
 @Documented
 //// Altsaa skal vi fjerne classX???? og saa kande den BeanMemberHook
 //// Taenker alt med klasse alligevel kraver
-public @interface BeanHook {
+public @interface OtherBeanHook {
 
     Class<? extends BeanClass>[] classAnnotated() default {};
 
     Class<? extends BeanClass>[] classAnnotatedAllAccess() default {};
-
-    Class<? extends BeanField>[] fieldAnnotated() default {};
-
-    Class<? extends BeanField>[] fieldAnnotatedAccessible() default {};
-
-    Class<? extends BeanField>[] fieldAnnotatedGettable() default {};
-
-    Class<? extends BeanField>[] fieldAnnotatedSettable() default {};
+//
+//    Class<? extends BeanField>[] fieldAnnotated() default {};
+//
+//    Class<? extends BeanField>[] fieldAnnotatedAccessible() default {};
+//
+//    Class<? extends BeanField>[] fieldAnnotatedGettable() default {};
+//
+//    Class<? extends BeanField>[] fieldAnnotatedSettable() default {};
 
     Class<? extends BeanMethod>[] methodAnnotated() default {};
 

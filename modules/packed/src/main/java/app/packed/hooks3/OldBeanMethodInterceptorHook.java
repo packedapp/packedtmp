@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.archive;
-
-import app.packed.bean.BeanConfiguration;
+package app.packed.hooks3;
 
 /**
  *
  */
-// Ved ikke hvorfor vi skal have en klasse for det.
-// Folk kan jo bare selv lave et configurations objekt der container den...
-class FunctionConfiguration {
- // Ideen er at brugeren kan configure path'en...
-    public BeanConfiguration bean() {
-        throw new UnsupportedOperationException();
-    }
+public @interface OldBeanMethodInterceptorHook {
+
 }

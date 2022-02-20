@@ -19,7 +19,6 @@ import app.packed.base.Variable;
 import app.packed.bean.BeanExtension;
 import app.packed.hooks.ContextualProvide;
 import app.packed.hooks3.InjectableVariableHookBuilder;
-import app.packed.inject.sandbox.HookBootstrap;
 import app.packed.inject.variable.BeanDependency;
 import app.packed.inject.variable.BeanDependency.VariableInjector;
 import app.packed.inject.variable.BeanDependencyHook;
@@ -112,6 +111,11 @@ public class ConstantExpresUsage {
 
         int arg2();
     }
+
+   public interface HookBootstrap<T> {
+       T val();
+   }
+
 }
 
 // Vi har leget lidt med tanken omkring variables...

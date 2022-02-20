@@ -26,25 +26,25 @@ import packed.internal.bean.BeanSetup;
  * Manages all beans for a single container.
  * 
  * <p>
- * We might embed the functionality directly into ExtensionSetup once
- * the implementation is finalized.
+ * We might embed the functionality directly into ExtensionSetup once the implementation is finalized.
  */
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
-public final class ExtensionBeanManager {
+public final class ExtensionBeanServiceManager {
 
     public final Map<Key<?>, BeanSetup> beans = new LinkedHashMap<>();
 
+    /** The (nullable) parent. */
     @Nullable
-    final ExtensionBeanManager parent;
+    final ExtensionBeanServiceManager parent;
 
-    ExtensionBeanManager(@Nullable ExtensionBeanManager parent) {
+    ExtensionBeanServiceManager(@Nullable ExtensionBeanServiceManager parent) {
         this.parent = parent;
     }
 
     @Nullable
     public BeanSetup lookup(Key<?> key) {
-        ExtensionBeanManager m = this;
+        ExtensionBeanServiceManager m = this;
         do {
             BeanSetup b = m.beans.get(key);
             if (b != null) {

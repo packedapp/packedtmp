@@ -173,7 +173,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         /** The method handle that was unreflected. */
         private final MethodHandle methodHandle;
 
-        public LookedUpFactory(ReflectiveFactory<T> delegate, MethodHandle methodHandle) {
+        public LookedUpFactory(InternalFactory<T> delegate, MethodHandle methodHandle) {
             super(delegate.typeLiteral());
             this.delegate = delegate;
             this.methodHandle = requireNonNull(methodHandle);

@@ -65,7 +65,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private final ExtensionRealmSetup realm;
 
     /** Beans, registered for this particular extension instance */
-    public final ExtensionBeanManager beans;
+    public final ExtensionBeanServiceManager beans;
 
     /**
      * Creates a new extension setup.
@@ -83,7 +83,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.parent = parent;
         this.realm = parent == null ? new ExtensionRealmSetup(this, extensionType) : parent.realm;
         this.model = requireNonNull(realm.extensionModel);
-        this.beans = new ExtensionBeanManager(parent == null ? null : parent.beans);
+        this.beans = new ExtensionBeanServiceManager(parent == null ? null : parent.beans);
 
     }
 

@@ -317,9 +317,7 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
     // openResult(Lookup) <---- maaske er den baa en
     public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectiveFactory.ExecutableFactory<R> f) {
-            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
-        } else if (this instanceof ReflectiveFactory.FieldFactory<R> f) {
+        if (this instanceof ReflectiveFactory<R> f) {
             return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(

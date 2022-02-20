@@ -3,7 +3,6 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
-import app.packed.bean.archive.ManagedBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.ExtensionBeanConfiguration;
 import packed.internal.bean.BeanSetup;
@@ -27,7 +26,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @throws IllegalStateException
      *             if the specified driver has already been used
      */
-    protected BeanConfiguration(BeanDriver<?> driver) {
+    public BeanConfiguration(BeanDriver<?> driver) {
         PackedBeanDriver<?> d = requireNonNull((PackedBeanDriver<?>) driver, "driver is null");
         this.bean = d.newSetup(this);
     }
@@ -44,8 +43,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
             return BeanKind.CONTAINER;
         } else if (this instanceof ExtensionBeanConfiguration) {
             return BeanKind.EXTENSION;
-        } else if (this instanceof ManagedBeanConfiguration) {
-            return BeanKind.MANAGED;
         } else {
             return BeanKind.UNMANAGED;
         }

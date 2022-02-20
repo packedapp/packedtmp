@@ -35,7 +35,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedNamespacePath;
 import packed.internal.lifetime.LifetimePool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
@@ -217,7 +216,9 @@ public final class RuntimeComponentMirror {
     /** {@inheritDoc} */
 
     public NamespacePath path() {
-        return PackedNamespacePath.of(this);
+     //   return PackedNamespacePath.of(this);
+        throw new UnsupportedOperationException();
+        
     }
 
     /** {@inheritDoc} */

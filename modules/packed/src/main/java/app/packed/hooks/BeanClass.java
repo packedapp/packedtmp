@@ -117,11 +117,11 @@ public abstract class BeanClass {
     // Det er altsammen separat fra bootstrap...
 
     // Must use buildWith, or manageByClassBootstrap();
-    protected final List<BeanField> fields() {
+    protected final List<BeanFieldProcessor> fields() {
         return fields(false, Object.class);
     }
 
-    protected final List<BeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+    protected final List<BeanFieldProcessor> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
         return builder().fields(declaredFieldsOnly, skipClasses);
     }
 

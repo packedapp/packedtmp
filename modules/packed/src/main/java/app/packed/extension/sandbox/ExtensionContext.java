@@ -19,6 +19,11 @@ package app.packed.extension.sandbox;
  *
  */
 // Strengt taget skulle bruge ikke kunne bruge denne ogsaa?
+
+// Container Instance x Extension
+
+// RuntimeExtensionContext? Just to make it clear
+// Maybe even ContainerContext or BeanContext
 public interface ExtensionContext {
 
 }

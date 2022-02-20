@@ -22,13 +22,13 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanFieldProcessor;
 import app.packed.hooks.BeanFieldHook;
 import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.lifecycle.OnInitialize;
 
-/** A model of a {@link BeanField field bootstrap} implementation. */
-public final class FieldHookModel extends AbstractHookModel<BeanField> {
+/** A model of a {@link BeanFieldProcessor field bootstrap} implementation. */
+public final class FieldHookModel extends AbstractHookModel<BeanFieldProcessor> {
 
     public final Map<Key<?>, HookedMethodProvide> keys;
 
@@ -50,29 +50,29 @@ public final class FieldHookModel extends AbstractHookModel<BeanField> {
     }
 
 
-    public static FieldHookModel getModelForFake(Class<? extends BeanField> c) {
+    public static FieldHookModel getModelForFake(Class<? extends BeanFieldProcessor> c) {
         return new Builder(c).build();
     }
 
     /** A builder for for a {@link FieldHookModel}. */
-    public final static class Builder extends AbstractHookModel.Builder<BeanField> {
+    public final static class Builder extends AbstractHookModel.Builder<BeanFieldProcessor> {
 
         private MethodHandle onInitialize;
 
         private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
-        private Builder(Class<? extends BeanField> c) {
+        private Builder(Class<? extends BeanFieldProcessor> c) {
             super(c);
         }
 
         public Builder(BeanFieldHook afs) {
-            super(afs.bootstrap());
+            super(afs.processor());
         }
 
         /** {@inheritDoc} */
         @Override
         public FieldHookModel build() {
-            scan(false, BeanField.class);
+            scan(false, BeanFieldProcessor.class);
             return new FieldHookModel(this);
         }
 

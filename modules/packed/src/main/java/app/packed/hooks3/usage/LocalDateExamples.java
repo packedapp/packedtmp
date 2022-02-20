@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks2.samples;
+package app.packed.hooks3.usage;
 
 import java.lang.invoke.MethodHandle;
 import java.time.LocalDate;

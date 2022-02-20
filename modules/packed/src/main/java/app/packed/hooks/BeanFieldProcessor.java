@@ -22,15 +22,23 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.bean.InvokerConfiguration;
+import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.hooks.accessors.MethodAccessor;
+import app.packed.hooks3.MetaAnnotationReader;
+import app.packed.hooks3.VarInjector;
 import app.packed.inject.Factory;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.bean.hooks.variable.FieldVariable;
+
+// Ideen er vel man laver en operation?
 
 // Mulige outcomes
 //// Der bliver lavet en VarHandle
@@ -39,7 +47,7 @@ import packed.internal.bean.hooks.variable.FieldVariable;
 
 // Disse foere alle til at der bliver lavet en operation
 //// Ingen af delene
-public abstract class BeanField {
+public abstract class BeanFieldProcessor {
 
     /** The builder used by this bootstrap. Updated by {@link UseSiteFieldHookModel}. */
     private UseSiteFieldHookModel.@Nullable Builder builder;
@@ -60,16 +68,12 @@ public abstract class BeanField {
         return b;
     }
 
-    /**
-     * Check not final??
-     */
-    protected final void checkWritable() {}
-
+    /** { @return the underlying field.} */
     public final Field field() {
         return builder().field();
     }
 
-    public final InvokerConfiguration invoker() {
+    public final InvokerConfiguration invoker(VarHandle.AccessMode accessMod) {
         throw new UnsupportedOperationException();
     }
 
@@ -91,6 +95,10 @@ public abstract class BeanField {
      *             if this method has previously been called on this instance
      * 
      */
+    //// Tror vi replacer den med noget BeanConfigurationContext (som har .get/.set)
+    // og bliver smidt ud efter build
+    // extension selv fungere paa container niveau.
+    // kunne have et Map<BeanInfo> i extensionen???
     protected final <T extends BeanClass> T manageBy(Class<T> type) {
         return builder().manageBy(type);
     }
@@ -127,18 +135,43 @@ public abstract class BeanField {
 }
 
 class BeanFieldSandbox {
+    
+    public final <T extends BeanOperationMirror> void addOperationMirror(Class<T> mirrorType, Supplier<T> supplier) {
 
+    }
+
+    public BeanFieldSandbox newOperation(ExtensionConfiguration ec) {
+        // fx hvis man vil provide den som en service og et eller andet samtidig
+        // BeanSupport.
+        /// Naah ikke en metode her...
+        // Vi skal bruge extensionen der goer det...
+        
+        // BeanField.
+        throw new UnsupportedOperationException();
+    }
+
+    public final VarInjector injector() {
+        // Er ikke sikker paa vi supportere denne
+        throw new UnsupportedOperationException();
+    }
+
+    public final MetaAnnotationReader metaAnnotations() {
+        throw new UnsupportedOperationException();
+    }
+
+    public final void requireContext(Class<?> contextType) {
+        // fx SchedulingContext ect... Don't know if we need it
+    }
+    
+    public final <T> T variableCompute(Function<Variable, T> computer) {
+        // Kan kun have en...
+        throw new UnsupportedOperationException();
+    }
 }
 
-class BeanFieldOldCrap {
+class ZeanFieldProcessorOldCrap {
 
     Class<?> invoker;
-
-    // A variable parser?
-    protected final Optional<Key<?>> key() {
-        // Maaske extract via Key.of(Field)
-        return null;
-    }
 
     protected final <T> void attach(Class<T> key, T instance) {
         attach(Key.of(key), instance);
@@ -152,6 +185,11 @@ class BeanFieldOldCrap {
         attach((Class) instance.getClass(), instance);
     }
 
+    /**
+     * Check not final??
+     */
+    protected final void checkNonFinal() {}
+
     /** Disables any further processing of the field. */
     // IDK kan vi ikke bare sige
     public final void disable() {
@@ -164,10 +202,16 @@ class BeanFieldOldCrap {
         // syntes den er enabled by default
     }
 
+    // A variable parser?
+    protected final Optional<Key<?>> key() {
+        // Maaske extract via Key.of(Field)
+        return null;
+    }
+
     /**
      * 
      * @throws IllegalStateException
-     *             if called from outside of {@link #bootstrap()}
+     *             if called from outside of {@link #processor()}
      */
     protected final void provideInvoker() {
         if (invoker != null) {

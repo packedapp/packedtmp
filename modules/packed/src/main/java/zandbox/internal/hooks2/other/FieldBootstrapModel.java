@@ -7,7 +7,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanFieldProcessor;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -15,17 +15,17 @@ import packed.internal.util.ThrowableUtil;
 public record FieldBootstrapModel(MethodHandle constructor) {
 
     /** A map that contains Bootstrap, Builder or Throwable */
-    private static final WeakHashMap<Class<? extends BeanField>, Object> DATA = new WeakHashMap<>();
+    private static final WeakHashMap<Class<? extends BeanFieldProcessor>, Object> DATA = new WeakHashMap<>();
 
     /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    /** A MethodHandle that can invoke {@link BeanField#bootstrap}. */
-    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanField.class, "bootstrap",
+    /** A MethodHandle that can invoke {@link BeanFieldProcessor#bootstrap}. */
+    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanFieldProcessor.class, "bootstrap",
             void.class);
 
-    /** A VarHandle that can access {@link BeanField#processor}. */
-    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanField.class, "builder",
+    /** A VarHandle that can access {@link BeanFieldProcessor#processor}. */
+    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanFieldProcessor.class, "builder",
             UseSiteFieldHookModel.Builder.class);
 
     /**
@@ -34,11 +34,11 @@ public record FieldBootstrapModel(MethodHandle constructor) {
      * @return
      */
     public static Builder bootstrap(Class<?> callerClass) {
-        if (!BeanField.class.isAssignableFrom(callerClass) || callerClass == BeanField.class) {
+        if (!BeanFieldProcessor.class.isAssignableFrom(callerClass) || callerClass == BeanFieldProcessor.class) {
             throw new InternalExtensionException("This method can only be called directly from a subclass of FieldHook.Bootstrap, caller was " + callerClass);
         }
         @SuppressWarnings("unchecked")
-        Class<? extends BeanField> extensionClass = (Class<? extends BeanField>) callerClass;
+        Class<? extends BeanFieldProcessor> extensionClass = (Class<? extends BeanFieldProcessor>) callerClass;
         GLOBAL_LOCK.lock();
         try {
             Object m = DATA.get(callerClass);
@@ -56,7 +56,7 @@ public record FieldBootstrapModel(MethodHandle constructor) {
         }
     }
 
-    public static void bootstrap(BeanField instance, UseSiteFieldHookModel.Builder builder) {
+    public static void bootstrap(BeanFieldProcessor instance, UseSiteFieldHookModel.Builder builder) {
         VH_FIELD_HOOK_BUILDER.set(instance, builder);
         try {
             MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes FieldHook.Bootstrap#bootstrap()

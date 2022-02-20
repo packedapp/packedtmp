@@ -7,17 +7,17 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.extension.Extension;
 
-/** A special component driver that create containers. */
+/** Implementation of {@link ContainerDriver}. */
 public final class PackedContainerDriver implements ContainerDriver {
 
     @Nullable
     final ContainerSetup parent;
 
+    public ContainerSetup setup;
+
     public PackedContainerDriver(@Nullable ContainerSetup parent) {
         this.parent = parent;
     }
-
-    public ContainerSetup setup;
 
     @Override
     public Set<Class<? extends Extension<?>>> bannedExtensions() {

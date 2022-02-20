@@ -18,7 +18,7 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanDriver;
-import app.packed.bean.hooks.usage.BeanOldKind;
+import app.packed.bean.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;

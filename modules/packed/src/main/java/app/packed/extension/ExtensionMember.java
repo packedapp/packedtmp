@@ -31,7 +31,6 @@ public @interface ExtensionMember {
     Class<? extends Extension<?>> value();
     
     // static Set<Class<?>> findMembers(Class<? extends Extension<?>>) IDK about this
-
 }
 
 //Vil sige den er god til at dokumentere hvem der er hvem. Men vi behoever jo egentlig ikke en faelles klasse

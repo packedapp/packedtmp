@@ -25,7 +25,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.AnnotationMaker;
 import app.packed.bean.BeanExtension;
 import app.packed.extension.ExtensionMember;
-import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanFieldProcessor;
 import app.packed.hooks.BeanFieldHook;
 import app.packed.hooks.BeanMethod;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
@@ -80,7 +80,7 @@ import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(BeanExtension.class)
-@BeanFieldHook(allowGet = true, bootstrap = ProvideFieldBootstrap.class)
+@BeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
 @BeanMethod.Hook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {
 
@@ -115,7 +115,7 @@ public @interface Provide {
 //ProvisionMode mode() default ProvisionMode.ON_DEMAND;
 
 /** A field sidecar for {@link Provide}. */
-final class ProvideFieldBootstrap extends BeanField {
+final class ProvideFieldHookProcessor extends BeanFieldProcessor {
 
     /** {@inheritDoc} */
     @Override

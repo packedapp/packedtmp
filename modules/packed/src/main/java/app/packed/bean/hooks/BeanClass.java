@@ -15,20 +15,18 @@
  */
 package app.packed.bean.hooks;
 
-import java.util.List;
-
 /**
  *
  */
 public abstract /*non-sealed*/ class BeanClass extends BeanHookElement {
     
-    protected final List<BeanField> fields() {
-        return fields(false, Object.class);
-    }
-
-    protected final List<BeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
-        throw new UnsupportedOperationException();
-    }
+//    protected final List<BeanField> fields() {
+//        return fields(false, Object.class);
+//    }
+//
+//    protected final List<BeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+//        throw new UnsupportedOperationException();
+//    }
 }
 
 // config.readClasspath(); <--- enables one application-wide Config - Extensions will auto register

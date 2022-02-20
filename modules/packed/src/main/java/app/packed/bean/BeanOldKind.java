@@ -1,4 +1,19 @@
-package app.packed.bean.hooks.usage;
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.bean;
 
 /**
  *
@@ -51,36 +66,3 @@ public enum BeanOldKind {
      */
     TRACKED // Managed
 }
-
-
-//Maaske har man bare none som default...
-//Saa kan det vaere Optional..
-//Nah, nok bedre med switch at altid have en mode
-
-// The key realization here is that MANY_OPEN_CLOSE vs INVOKABLE is an implementation detail
-//enum BeanInstantiationMode {
-//
-// // --------------- NONE ---------------
-// NO_INSTANTIATION,
-//
-// // --------------- ONE ---------------
-// ONE_LAZY_CONTAINER, // Created lazily in the container in which is it installed. And has the same maximum lifetime
-//
-// ONE_EAGER_CONTAINER, // Created together with the container in which it is installed. And has the same lifetime
-// 
-// // ------------- MANY -------------
-//
-// // Er gemt bag en MethodHandle, står både for at lave en evt. instans
-// // Men ogsaa for at slaa den ned igen...
-// // Kalderen faar aldrig instancen. Eller vi kan vel godt extract ting fra instancen?
-// MANY_INVOKEABLE,
-//
-// // FX Service protype Provide....
-// // Marks the component as not-closable
-// MANY_OPEN, // spawn, prototype, fireAndForge
-//
-// // Fully managed instances by extension
-// MANY_OPEN_CLOSE; // Constructer MH, Destructor MH
-//}
-//MANY_REACTIVE... Kind of like Invokable...
-////Maybe it is MANY_REQUEST

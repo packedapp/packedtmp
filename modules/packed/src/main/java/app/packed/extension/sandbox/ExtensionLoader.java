@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks2;
+package app.packed.extension.sandbox;
 
 /**
  *
  */
-public @interface BeanMethodInterceptorHook {
 
-}
+// Ideen er lidt at flytte alle de $metoder her til
+abstract class ExtensionLoader {}
+
+// @UseLoader(ServiceExtensionLoader.class)

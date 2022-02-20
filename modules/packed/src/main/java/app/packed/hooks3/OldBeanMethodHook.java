@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks2;
+package app.packed.hooks3;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -31,7 +31,7 @@ import app.packed.hooks.BeanMethod;
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Documented
-public @interface BeanMethodHook {
+public @interface OldBeanMethodHook {
 
     /**
      * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.

@@ -6,7 +6,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.hooks.usage.BeanOldKind;
+import app.packed.bean.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
