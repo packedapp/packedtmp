@@ -29,4 +29,12 @@ To install and compile the source code locally, run:
   mvn install
 ```
 
-Note that Packed requires Java 11 to compile and run.
+Note that Packed requires Java 17 to compile and run.
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
