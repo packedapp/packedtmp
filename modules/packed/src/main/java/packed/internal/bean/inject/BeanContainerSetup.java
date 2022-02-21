@@ -15,6 +15,7 @@ public final class BeanContainerSetup {
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
 
+    /** The container that beans are managed from. */
     private final ContainerSetup container;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */

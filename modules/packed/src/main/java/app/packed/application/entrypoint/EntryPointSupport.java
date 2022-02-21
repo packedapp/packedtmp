@@ -67,6 +67,9 @@ public class EntryPointSupport extends ExtensionSupport {
 
         // method.reserveMethodHandle(EC);
         extension.shared().takeOver(extensionType);
+        if (method instanceof MainBootstrap) {
+            extension.hasMain = true;
+        }
         return 0;
     }
 

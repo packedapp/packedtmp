@@ -15,6 +15,11 @@
  */
 package app.packed.container;
 
+import java.util.Set;
+
+import app.packed.component.UserOrExtension;
+import app.packed.extension.Extension;
+
 /**
  *
  */
@@ -23,12 +28,20 @@ package app.packed.container;
 // A scope can be known under different id's in an application
 public interface ContainerScopedMirror {
 
+    Set<ContainerMirror> containers();
+    
+    Set<UserOrExtension> participants();
+    
+    Class<? extends Extension<?>> owner();
+    
     ContainerScopedMirror aliasOf();
-
+    
     Object id();
 
     // Rooted??? // Vi har 2 sub container der bruger CLI...
     /////////////// Kan ikke se at den skulle vaere rooted
+    /// Jooo, men lur mig om den ikke er tilgaengelig i containere
+    /// der ikke bruger den... tror ikke vi har ikke rooted ting
 
     // more than 1 container
 

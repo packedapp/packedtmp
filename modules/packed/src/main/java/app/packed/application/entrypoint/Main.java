@@ -26,10 +26,9 @@ import java.lang.reflect.Modifier;
 
 import app.packed.component.BuildException;
 import app.packed.extension.ExtensionMember;
+import app.packed.hooks.BeanMethod;
 import app.packed.hooks.BeanMethodHook;
-import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.bean.BeanSetup;
@@ -59,7 +58,7 @@ import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 @BeanMethodHook(bootstrap = MainBootstrap.class, extension = EntryPointExtension.class)
 public @interface Main {}
 
-class MainBootstrap extends RealMethodSidecarBootstrap {
+class MainBootstrap extends BeanMethod {
 
     /** {@inheritDoc} */
     @Override
@@ -72,24 +71,16 @@ class MainBootstrap extends RealMethodSidecarBootstrap {
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
 
             EntryPointExtension e = c.parent.useExtension(EntryPointExtension.class);
-            e.shared().takeOver(EntryPointExtension.class);
+            new EntryPointSupport(e, EntryPointExtension.class).registerEntryPoint(this);
             
             e.hasMain = true;
             c.parent.useExtension(ServiceExtension.class);
             c.application.entryPoints = new EntryPointSetup();
+            
             MainThreadOfControl mc = c.application.entryPoints.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
             mc.cs = (BeanSetup) c;
             mc.methodHandle = mh;
         });
     }
-
-    protected void onInit(ApplicationSetup application, Runnable r) {
-        // application.setup...
-    }
-
-//    @OnInitialize
-//    protected void onInit(Runnable r) {
-//
-//    }
 }
