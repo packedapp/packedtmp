@@ -28,7 +28,7 @@ import packed.internal.component.ComponentSetup;
  * Configuration of a realm.
  */
 // BuildRealm???? Is this runtime at all???
-public abstract sealed class RealmSetup permits ExtensionRealmSetup,ContainerRealmSetup {
+public abstract sealed class RealmSetup permits ExtensionApplicationSetup,ContainerRealmSetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     private RealmAccessor accessor;

@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -45,7 +46,6 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
-import packed.internal.container.RealmSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.StackWalkerUtil;
 import packed.internal.util.ThrowableUtil;
@@ -272,8 +272,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
-     * The next "lifecycle" method that will be called is {@link #onAssemblyClose()}, which is called after the container has
-     * been setup and before any linkage of child containers has started.
+     * The next "lifecycle" method that will be called is {@link #onAssemblyClose()}, which is called after the container
+     * has been setup and before any linkage of child containers has started.
      * 
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
@@ -297,16 +297,14 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
         ExtensionSetup s = setup();
-        RealmSetup realm = s.container.realm;
-        ArrayList<ContainerSetup> list = s.container.containerChildren;
-        if (list != null) {
-            for (ContainerSetup c : list) {
-                if (realm == c.realm) {
-                    ExtensionSetup child = c.extensions.get(s.extensionType);
-                    if (child != null) {
-                        child.instance().onAssemblyClose();
-                    }
-                }
+        // Skal maaske have et Map<Class<Extension?, ArrayDeque<ExtensionSetup>) i containerRealm instead
+        
+        ArrayDeque<ContainerSetup> containers = s.container.containerRealm.containers;
+        ContainerSetup cs;
+        while ((cs = containers.pollLast()) != null) {
+            ExtensionSetup child = cs.extensions.get(s.extensionType);
+            if (child != null) {
+                child.instance().onAssemblyClose();
             }
         }
     }
@@ -601,7 +599,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
 class Zarchive {
 
-
     /**
      * @param extensionType
      *            the extension type to test
@@ -622,7 +619,6 @@ class Zarchive {
         throw new UnsupportedOperationException();
     }
 
-    
     protected static <T extends Extension<T>> void $addDependencyLazyInit(Class<? extends Extension<?>> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret

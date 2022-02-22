@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionTree;
@@ -30,28 +30,74 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
     /** {@inheritDoc} */
     @Override
     public Iterator<T> iterator() {
-        ArrayList<T> list = new ArrayList<>();
-        add(extension, extension.container, list);
-        return list.iterator();
+        return new Iter2<>(extension);
     }
-
-    private void add(ExtensionSetup es, ContainerSetup container, ArrayList<T> extensions) {
-        extensions.add(extensionType.cast(es.instance()));
-        if (container.containerChildren != null) {
-            System.out.println("====DAV fra " + container.path());
-            for (ContainerSetup c : container.containerChildren) {
-                ExtensionSetup childExtension = c.extensions.get(extensionType);
-                if (childExtension != null) {
-                    add(childExtension, c, extensions);
-                }
-            }
-        }
-    }
+//
+//    private void add(ExtensionSetup es, ContainerSetup container, ArrayList<T> extensions) {
+//        extensions.add(extensionType.cast(es.instance()));
+//        if (container.containerChildren != null) {
+//            System.out.println("====DAV fra " + container.path());
+//            for (ContainerSetup c : container.containerChildren) {
+//                ExtensionSetup childExtension = c.extensions.get(extensionType);
+//                if (childExtension != null) {
+//                    add(childExtension, c, extensions);
+//                }
+//            }
+//        }
+//    }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return "ExtensionTree<" + extensionType.getSimpleName() + ">";
+    }
+
+    // Could wrap a Function<ExtensionSetup,T> or allow both configuration and extension
+    // as T
+    static final class Iter2<T extends Extension<?>> implements Iterator<T> {
+
+        final ExtensionSetup root;
+        ExtensionSetup next;
+
+        Iter2(ExtensionSetup root) {
+            this.root = this.next = root;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        public T next() {
+            ExtensionSetup n = next;
+            if (n == null) {
+                throw new NoSuchElementException();
+            }
+
+            if (n.firstChild != null) {
+                next = n.firstChild;
+            } else {
+                next = findNext(n);
+            }
+
+            return (T) n.instance();
+        }
+
+        private ExtensionSetup findNext(ExtensionSetup current) {
+            if (current.siebling != null) {
+                return current.siebling;
+            }
+            ExtensionSetup parent = current.parent;
+            if (parent == root) {
+                return null;
+            } else {
+                return findNext(parent);
+            }
+        }
     }
 
     final class Iter implements Iterator<T> {

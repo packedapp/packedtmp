@@ -31,7 +31,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             ExtensionMirror.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onApplicationClose", void.class);
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onApplicationClose", void.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
@@ -61,8 +62,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Nullable
     public final ExtensionSetup parent;
 
+    @Nullable
+    public ExtensionSetup firstChild;
+
+    @Nullable
+    public ExtensionSetup lastChild;
+
+    @Nullable
+    public ExtensionSetup siebling;
+
     /** The realm this extension belongs to. */
-    private final ExtensionRealmSetup realm;
+    private final ExtensionApplicationSetup realm;
 
     /** Beans, registered for this particular extension instance */
     public final ExtensionBeanServiceManager beans;
@@ -81,10 +91,23 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
-        this.realm = parent == null ? new ExtensionRealmSetup(this, extensionType) : parent.realm;
-        this.model = requireNonNull(realm.extensionModel);
-        this.beans = new ExtensionBeanServiceManager(parent == null ? null : parent.beans);
+        if (parent == null) {
+            this.realm = new ExtensionApplicationSetup(this, extensionType);
+            this.beans = new ExtensionBeanServiceManager(null);
+        } else {
+            this.realm = parent.realm;
+            this.beans = new ExtensionBeanServiceManager(parent.beans);
+            // Add this extension to the children of the parent
 
+            if (parent.firstChild == null) {
+                parent.firstChild = this;
+            } else {
+                parent.lastChild.siebling = this;
+            }
+            parent.lastChild = this;
+        }
+        this.model = requireNonNull(realm.extensionModel);
+        realm.extensions.add(this);
     }
 
     /** {@inheritDoc} */
@@ -207,7 +230,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
-    public ExtensionRealmSetup realm() {
+    public ExtensionApplicationSetup realm() {
         return realm;
     }
 

@@ -33,8 +33,9 @@ import app.packed.component.UserOrExtension;
 import app.packed.container.ContainerMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
+import packed.internal.container.ContainerRealmSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionRealmSetup;
+import packed.internal.container.ExtensionApplicationSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
@@ -69,6 +70,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /** The realm this component is a part of. */
     public final RealmSetup realm;
 
+    public final ContainerRealmSetup containerRealm;
+
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
      * 
@@ -85,6 +88,12 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.application = requireNonNull(application);
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
+
+        if (realm instanceof ContainerRealmSetup s) {
+            this.containerRealm = s;
+        } else {
+            this.containerRealm = parent.containerRealm;
+        }
 
         this.parent = parent;
         if (parent == null) {
@@ -254,7 +263,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final UserOrExtension owner() {
-            if (realm instanceof ExtensionRealmSetup s) {
+            if (realm instanceof ExtensionApplicationSetup s) {
                 return UserOrExtension.extension(s.extensionModel.type());
             }
             return UserOrExtension.user();

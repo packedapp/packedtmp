@@ -17,14 +17,19 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 import app.packed.extension.Extension;
 
 /**
- * A single extension realm exists for an extension in a single application.
+ * A single instance of this class exists per extension per application.
+ * <p>
+ * Since all extensions that are used throughout an application is always installed in the root container.
+ * 
+ * 
  */
-public final class ExtensionRealmSetup extends RealmSetup {
+public final class ExtensionApplicationSetup extends RealmSetup {
 
     /** A model of the extension/ */
     public final ExtensionModel extensionModel;
@@ -32,10 +37,13 @@ public final class ExtensionRealmSetup extends RealmSetup {
     /** The extension in the root container. */
     final ExtensionSetup root;
 
-    // Not currently used,
-    List<ContainerSetup> containers = null;
+    public boolean closed;
 
-    ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
+    public final ArrayList<ExtensionSetup> extensions = new ArrayList<>();
+
+    public final ArrayDeque<ExtensionSetup> currentExtensions = new ArrayDeque<>();
+
+    ExtensionApplicationSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }

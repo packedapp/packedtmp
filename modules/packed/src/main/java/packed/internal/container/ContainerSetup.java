@@ -139,6 +139,8 @@ public final class ContainerSetup extends ComponentSetup {
             }
         }
 
+        containerRealm.containers.add(this);
+        
         // Various container tree-node management
         if (parent != null) {
             // Add this container to the children of the parent
@@ -257,6 +259,7 @@ public final class ContainerSetup extends ComponentSetup {
 
             // Create a extension and initialize it.
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
+            
             extension.initialize();
         }
         return extension;
