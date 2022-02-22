@@ -30,14 +30,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
             ExtensionMirror.class);
 
-    /** A handle for invoking the protected method {@link Extension#onClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onClose", void.class);
+    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onApplicationClose", void.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
-    /** A handle for invoking the protected method {@link Extension#onUserClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_USER_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onUserClose",
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_USER_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onAssemblyClose",
             void.class);
 
     /** A handle for setting the private field Extension#context. */
@@ -186,13 +186,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /**
-     * Invokes {@link Extension#onClose()}.
+     * Invokes {@link Extension#onApplicationClose()}.
      * <p>
      * The extension is completed once the realm the container is part of is closed.
      */
     void onClose() {
         try {
-            MH_EXTENSION_ON_CLOSE.invokeExact(instance);
+            MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

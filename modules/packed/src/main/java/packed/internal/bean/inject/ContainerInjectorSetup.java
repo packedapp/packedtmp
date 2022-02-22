@@ -10,7 +10,7 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /** This class is responsible for managing all beans in a container. */
-public final class BeanContainerSetup {
+public final class ContainerInjectorSetup {
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
@@ -22,7 +22,7 @@ public final class BeanContainerSetup {
     @Nullable
     private ServiceManagerSetup sm;
 
-    public BeanContainerSetup(ContainerSetup container) {
+    public ContainerInjectorSetup(ContainerSetup container) {
         this.container = requireNonNull(container);
     }
 

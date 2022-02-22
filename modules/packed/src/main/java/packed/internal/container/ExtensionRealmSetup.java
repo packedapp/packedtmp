@@ -17,6 +17,8 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+
 import app.packed.extension.Extension;
 
 /**
@@ -29,6 +31,9 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     /** The extension in the root container. */
     final ExtensionSetup root;
+
+    // Not currently used,
+    List<ContainerSetup> containers = null;
 
     ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);

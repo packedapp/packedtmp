@@ -38,7 +38,7 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.bean.inject.BeanContainerSetup;
+import packed.internal.bean.inject.ContainerInjectorSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
@@ -52,14 +52,14 @@ import packed.internal.util.CollectionUtil;
 public final class ContainerSetup extends ComponentSetup {
 
     /** All the beans in the container. */
-    public final BeanContainerSetup beans = new BeanContainerSetup(this);
+    public final ContainerInjectorSetup beans = new ContainerInjectorSetup(this);
 
     /** Children of this node in insertion order. */
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
 
     /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */
     @Nullable
-    public ArrayList<ContainerSetup> containers;
+    public ArrayList<ContainerSetup> containerChildren;
 
     /** All extensions used by this container. */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
@@ -142,9 +142,9 @@ public final class ContainerSetup extends ComponentSetup {
         // Various container tree-node management
         if (parent != null) {
             // Add this container to the children of the parent
-            ArrayList<ContainerSetup> c = parent.containers;
+            ArrayList<ContainerSetup> c = parent.containerChildren;
             if (c == null) {
-                c = parent.containers = new ArrayList<>(5);
+                c = parent.containerChildren = new ArrayList<>(5);
             }
             c.add(this);
         }

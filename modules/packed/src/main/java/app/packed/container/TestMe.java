@@ -13,62 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.usage;
+package app.packed.container;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationMirror;
-import app.packed.bean.BeanExtensionMirror;
-import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 
 /**
  *
  */
-public class NewExtensions extends BaseAssembly {
+public class TestMe extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        installInstance("asd");
-        link(new FooAss());
         use(MyExt.class);
+        installInstance("sdsd");
+        link(new Child());
     }
 
     public static void main(String[] args) {
-        ApplicationMirror mirror = App.mirrorOf(new NewExtensions());
-        System.out.println("");
-        System.out.println("Used Extensions " + mirror.extensionTypes());
-        System.out.println("Number of beans " + mirror.container().useExtension(BeanExtensionMirror.class).beanCount());
-        System.out.println();
+        App.mirrorOf(new TestMe());
     }
 
-    public static class FooAss extends BaseAssembly {
+    public static class Child extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
         protected void build() {
-            use(MyExt.class);
+            use(MyExt.class).isLast = true;
+            installInstance("sdsd");
         }
+
     }
-    
+
     public static class MyExt extends Extension<MyExt> {
-                
+
+        public boolean isLast = false;
+
         @Override
         protected void onApplicationClose() {
             super.onApplicationClose();
-            System.out.println("OnClose " + containerPath());
-        }
-
-        @Override
-        protected void onNew() {
-            super.onNew();
-            System.out.println("OnNew " + containerPath());
         }
 
         @Override
         protected void onAssemblyClose() {
+            System.out.println(isLast);
+            new Exception().printStackTrace();
             super.onAssemblyClose();
-            System.out.println("OnUserClose " + containerPath());
         }
+
     }
 }

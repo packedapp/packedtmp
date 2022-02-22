@@ -23,14 +23,8 @@ import java.util.TreeSet;
  */
 public abstract sealed class ContainerRealmSetup extends RealmSetup permits AssemblyRealmSetup,ComposerRealmSetup {
 
-    // Bliver draenet hver gang vi lukker en realm
-    // Til allersidst kopiere vi
-    //
-
     /** An order set of extension according to the natural extension dependency order. */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
-
-    public abstract ContainerSetup container();
 
     void closeRealm() {
         ContainerSetup container = container();
@@ -40,6 +34,14 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
         }
         isClosed = true;
 
+        // call Extension.onUserClose on the root container in the assembly.
+        // This is turn calls recursively down Extension.onUserClose on all
+        // ancestor extensions in the same realm.
+
+        // We use .pollFirst because extensions might add new extensions while closing
+        // In which we need to process them as well in the right order as determined
+        // by the order in the Treeset.
+        
         if (container.parent != null) {
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
@@ -47,6 +49,8 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
                 e = extensions.pollFirst();
             }
         } else {
+            // If we are the root assembly we also need to call extension.onClose()
+            
             ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
@@ -59,30 +63,8 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
                 extension.realm().isClosed = true;
             }
         }
-
-        onRealmClose(container);
     }
 
-    private void onRealmClose(ContainerSetup cs) {
-        // We recursively close all children in the same realm first
-        // We do not close individual components
-        if (cs.containers != null) {
-            for (ContainerSetup c : cs.containers) {
-                if (c.realm == cs.realm) {
-                    onRealmClose(c);
-                }
-            }
-        }
-        // Complete all extensions in order
-        // Vil faktisk mene det skal vaere den modsatte order...
-        // Tror vi skal have vendt comparatoren
-
-        // Close every extension
-//        for (ExtensionSetup extension : extensionsOrdered) {
-//     //       extension.onComplete();
-//        }
-
-        cs.beans.resolve();
-    }
-
+    /** {@return the setup of the root container in the realm.} */
+    public abstract ContainerSetup container();
 }

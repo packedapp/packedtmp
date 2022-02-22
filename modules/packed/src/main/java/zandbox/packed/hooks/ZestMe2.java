@@ -80,7 +80,7 @@ public class ZestMe2 extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
-        protected void onClose() {
+        protected void onApplicationClose() {
             System.out.println("Configured");
         }
     }

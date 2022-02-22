@@ -37,7 +37,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     @Override
-    protected void onClose() {
+    protected void onApplicationClose() {
         if (isRootOfApplication()) {
             // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
             // extensions'ene
@@ -47,7 +47,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
             // provideShared (container + subcontainers)
             shareInstance(new MethodHandle[0]);
         }
-        super.onClose();
+        super.onApplicationClose();
     }
 
     protected void onNew() {

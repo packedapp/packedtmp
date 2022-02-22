@@ -81,31 +81,33 @@ public class BeanExtension extends Extension<BeanExtension> {
     protected BeanExtensionMirror mirror() {
         return mirrorInitialize(new BeanExtensionMirror(tree()));
     }
-//
-//    static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ContainerSetup parent, RealmSetup realm, Wirelet... wirelets) {
-//        requireNonNull(driver, "driver is null");
-//        // Prepare to wire the component (make sure the realm is still open)
-//        realm.wirePrepare();
-//
-//        // Create the new component
-//        BeanSetup component = new BeanSetup(parent.lifetime, realm, driver, parent, driver.binding);
-//
-//        realm.wireCommit(component);
-//
-//        // Return a component configuration to the user
-//        return driver.toConfiguration(component);
-//    }
 
+
+    /** {@inheritDoc} */
     @Override
-    protected void onClose() {
-        super.onClose();
+    protected void onAssemblyClose() {
+        // onRealmClose (when the realm that the extension is closed)
+        // onSelfClose (When the extension itself is closed
+        onUserClose0(container);
     }
 
-    @Override
-    protected void onUserClose() {
-        super.onUserClose();
-    }
+    private void onUserClose0(ContainerSetup cs) {
+        // We recursively close all children in the same realm first
+        // We do not close individual components
+        if (cs.containerChildren != null) {
+            for (ContainerSetup c : cs.containerChildren) {
+                if (c.realm == cs.realm) {
+                    onUserClose0(c);
+                }
+            }
+        }
+        // Complete all extensions in order
+        // Vil faktisk mene det skal vaere den modsatte order...
+        // Tror vi skal have vendt comparatoren
 
+        cs.beans.resolve();
+    }
+    
     /**
      * Provides every service from the specified locator.
      * 

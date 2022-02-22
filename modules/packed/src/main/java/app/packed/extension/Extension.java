@@ -112,7 +112,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
      * 
-     * @see #onUserClose()
+     * @see #onAssemblyClose()
      */
     // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
     // af brugeren med mindre XYZ...
@@ -244,7 +244,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     // Det kan vi jo godt... Det er udelukkede taenkt som et
     // Feature flag test.... UseConfig()...
 
-    protected void onClose() {
+    protected void onApplicationClose() {
         // Time
         // ──────────────────────────►
         // ┌────────────┐
@@ -254,12 +254,12 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         // │ Wiring time │
         // └─────────────┘
         ExtensionSetup s = setup();
-        ArrayList<ContainerSetup> list = s.container.containers;
+        ArrayList<ContainerSetup> list = s.container.containerChildren;
         if (list != null) {
             for (ContainerSetup c : list) {
                 ExtensionSetup child = c.extensions.get(s.extensionType);
                 if (child != null) {
-                    child.instance().onClose();
+                    child.instance().onApplicationClose();
                 }
             }
         }
@@ -272,11 +272,11 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
      * <p>
-     * The next "lifecycle" method that will be called is {@link #onUserClose()}, which is called after the container has
+     * The next "lifecycle" method that will be called is {@link #onAssemblyClose()}, which is called after the container has
      * been setup and before any linkage of child containers has started.
      * 
-     * @see #onUserClose()
-     * @see #onClose()
+     * @see #onAssemblyClose()
+     * @see #onApplicationClose()
      */
     protected void onNew() {}
 
@@ -290,20 +290,21 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * Attempting to wire extensions at a later time will fail with InternalExtensionException
      * <p>
      * If you need, for example, to install extensors that depends on a particular dependency being installed (by other) You
-     * should installed via {@link #onClose()}.
+     * should installed via {@link #onApplicationClose()}.
      * 
      * @see #checkIsPreLinkage()
      */
-    protected void onUserClose() {
+    // When the realm in which the extension's container is located is closed
+    protected void onAssemblyClose() {
         ExtensionSetup s = setup();
         RealmSetup realm = s.container.realm;
-        ArrayList<ContainerSetup> list = s.container.containers;
+        ArrayList<ContainerSetup> list = s.container.containerChildren;
         if (list != null) {
             for (ContainerSetup c : list) {
                 if (realm == c.realm) {
                     ExtensionSetup child = c.extensions.get(s.extensionType);
                     if (child != null) {
-                        child.instance().onUserClose();
+                        child.instance().onAssemblyClose();
                     }
                 }
             }

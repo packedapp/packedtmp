@@ -75,7 +75,7 @@ public class ZestMe extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
-        protected void onClose() {
+        protected void onApplicationClose() {
             System.out.println("Configured");
         }
     }

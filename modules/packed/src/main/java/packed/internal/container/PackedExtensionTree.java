@@ -37,9 +37,9 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
 
     private void add(ExtensionSetup es, ContainerSetup container, ArrayList<T> extensions) {
         extensions.add(extensionType.cast(es.instance()));
-        if (container.containers != null) {
+        if (container.containerChildren != null) {
             System.out.println("====DAV fra " + container.path());
-            for (ContainerSetup c : container.containers) {
+            for (ContainerSetup c : container.containerChildren) {
                 ExtensionSetup childExtension = c.extensions.get(extensionType);
                 if (childExtension != null) {
                     add(childExtension, c, extensions);

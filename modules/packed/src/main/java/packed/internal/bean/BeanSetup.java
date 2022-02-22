@@ -32,7 +32,7 @@ import packed.internal.util.ThrowableUtil;
 /** The build-time configuration of a bean. */
 public final class BeanSetup extends ComponentSetup implements DependencyProducer {
 
-    /** A handle for invoking the protected method {@link Extension#onClose()}. */
+    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
