@@ -15,7 +15,6 @@
  */
 package packed.internal.container;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -26,8 +25,6 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
 
     /** An order set of extension according to the natural extension dependency order. */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
-
-    public final ArrayDeque<ContainerSetup> containers = new ArrayDeque<>(1);
 
     void closeRealm() {
         ContainerSetup container = container();

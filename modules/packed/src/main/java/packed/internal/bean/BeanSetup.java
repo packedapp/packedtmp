@@ -53,7 +53,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
      * example, installInstance.
      * <p>
      * We only keep this around to find the default key that the bean will be exposed as if registered as a service. We lazy
-     * calculate it from {@link #provide(ComponentSetup)}
+     * calculate it from {@link #provideInstance(ComponentSetup)}
      */
     @Nullable
     private final InternalFactory<?> factory;

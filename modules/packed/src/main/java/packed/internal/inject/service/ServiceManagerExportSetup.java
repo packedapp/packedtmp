@@ -27,11 +27,11 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceConfiguration;
 import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceRegistry;
+import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -61,7 +61,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     private final ServiceManagerSetup sm;
 
     @Nullable
-    Consumer<? super ServiceComposer> transformer;
+    Consumer<? super ServiceTransformer> transformer;
 
     /**
      * Creates a new export manager.
@@ -218,14 +218,14 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     /**
      * @param transformer
      */
-    public void setExportTransformer(Consumer<? super ServiceComposer> transformer) {
+    public void setExportTransformer(Consumer<? super ServiceTransformer> transformer) {
         if (this.transformer != null) {
             throw new IllegalStateException("This method can only be called once");
         }
         this.transformer = requireNonNull(transformer, "transformer is null");
     }
 
-    public void transform(BiConsumer<? super ServiceComposer, ? super ServiceContract> transformer) {
+    public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
         PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
     }
 
@@ -235,7 +235,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @param transformer
      *            the transformer to use
      */
-    public void transform(Consumer<? super ServiceComposer> transformer) {
+    public void transform(Consumer<? super ServiceTransformer> transformer) {
         PackedServiceComposer.transformInplace(resolvedExports, transformer);
     }
 

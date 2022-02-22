@@ -33,7 +33,7 @@ public class PluginTester extends BaseAssembly {
     protected void build() {
         for (Plugin p : ServiceLoader.load(Plugin.class)) {
             String pluginName = p.getClass().getCanonicalName();
-            link(p, ServiceWirelets.anchorAll(), ServiceWirelets.to(t -> t.rekeyAllWithTag(pluginName)));
+            link(p, ServiceWirelets.anchorAll(), ServiceWirelets.to(t -> t.rekeyAllAddTag(pluginName)));
         }
         exportAll();
     }

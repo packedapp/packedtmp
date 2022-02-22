@@ -6,6 +6,9 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
@@ -66,7 +69,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public ExtensionSetup firstChild;
 
     @Nullable
-    public ExtensionSetup lastChild;
+    private ExtensionSetup lastChild;
 
     @Nullable
     public ExtensionSetup siebling;
@@ -122,8 +125,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void checkUserConfigurable() {
-        container.realm.checkOpen();
+    public void checkAssemblyConfigurable() {
+        container.assembly.checkOpen();
     }
 
     /** {@inheritDoc} */
@@ -292,5 +295,56 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public NamespacePath containerPath() {
         return container.path();
+    }
+    
+    static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
+
+        /** The root extension. */
+        private final ExtensionSetup root;
+
+        /** The mapper that is applied on each node. */
+        private final Function<ExtensionSetup, T> mapper;
+        
+        private ExtensionSetup next;
+
+        PreOrderIterator(ExtensionSetup root, Function<ExtensionSetup, T> mapper) {
+            this.root = this.next = root;
+            this.mapper = mapper;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasNext() {
+            return next != null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T next() {
+            ExtensionSetup n = next;
+            if (n == null) {
+                throw new NoSuchElementException();
+            }
+
+            if (n.firstChild != null) {
+                next = n.firstChild;
+            } else {
+                next = findNext(n);
+            }
+
+            return mapper.apply(n);
+        }
+
+        private ExtensionSetup findNext(ExtensionSetup current) {
+            if (current.siebling != null) {
+                return current.siebling;
+            }
+            ExtensionSetup parent = current.parent;
+            if (parent == root) {
+                return null;
+            } else {
+                return findNext(parent);
+            }
+        }
     }
 }

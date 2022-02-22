@@ -46,7 +46,7 @@ public class BasicExtensionTest extends AbstractApplicationTest {
         CallingMethodsFromTheConstructor() {
             String msg = "This operation cannot be invoked from the constructor of the extension. If you need to perform initialization before the extension is returned to the user, override Extension#onNew()";
             // assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
-            assertThatIllegalStateException().isThrownBy(() -> checkUserConfigurable()).withMessage(msg);
+            assertThatIllegalStateException().isThrownBy(() -> checkAssemblyConfigurable()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.TestExtension1Support.class)).withMessage(msg);
         }
     }

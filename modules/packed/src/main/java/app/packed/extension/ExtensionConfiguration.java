@@ -58,12 +58,12 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after {@link Extension#onApplicationClose()} has been invoked by the runtime.
+     * An extension is no longer user configurable after the build method of the assembly has returned.
      * 
      * @throws IllegalStateException
-     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
+     *             if the extension is no longer configurable.
      */
-    void checkUserConfigurable();
+    void checkAssemblyConfigurable();
 
     /**
      * @param <C>
@@ -88,10 +88,9 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /** {@return the path of the container where this extension instance is used.} */
     NamespacePath containerPath();
 
-
     /**
-     * Returns whether or not the specified extension is used (in the same container) by this extension, other extensions,
-     * or application code.
+     * Returns whether or not the specified extension is currently used (in the same container) by this extension, other
+     * extensions, or application code.
      * 
      * @param extensionType
      *            the extension type to test
@@ -158,8 +157,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
 interface Zandbox {
 
-    
-
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
      * 
@@ -170,7 +167,7 @@ interface Zandbox {
     default boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
         throw new UnsupportedOperationException();
     }
-    
+
 //    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
 //        throw new UnsupportedOperationException();
 //    }

@@ -30,6 +30,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
 import app.packed.component.UserOrExtension;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
@@ -70,7 +71,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /** The realm this component is a part of. */
     public final RealmSetup realm;
 
-    public final ContainerRealmSetup containerRealm;
+    public final ContainerRealmSetup assembly;
 
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
@@ -90,9 +91,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.lifetime = requireNonNull(lifetime);
 
         if (realm instanceof ContainerRealmSetup s) {
-            this.containerRealm = s;
+            this.assembly = s;
         } else {
-            this.containerRealm = parent.containerRealm;
+            this.assembly = parent.assembly;
         }
 
         this.parent = parent;
@@ -228,6 +229,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             return application.mirror();
         }
 
+        public final AssemblyMirror assembly() {
+            throw new UnsupportedOperationException();
+        }
+        
         protected abstract Collection<ComponentMirror> children();
 
         /** {@inheritDoc} */
@@ -324,19 +329,3 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
     }
 }
-
-//public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
-//  requireNonNull(attribute, "attribute is null");
-//  requireNonNull(value, "value is null");
-//  // check realm.open + attribute.write
-//}
-//final AttributeMap attributes() {
-//  // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
-//  // Maaske er det simpelthen et view...
-//  // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
-//  DefaultAttributeMap dam = new DefaultAttributeMap();
-//  attributesAdd(dam);
-//  return dam;
-//}
-//
-//protected void attributesAdd(DefaultAttributeMap dam) {}

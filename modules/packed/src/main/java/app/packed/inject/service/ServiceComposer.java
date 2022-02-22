@@ -43,9 +43,6 @@ import app.packed.inject.Factory;
  * 
  * @see ServiceLocator#spawn(java.util.function.Consumer)
  * @see ServiceLocator#of(java.util.function.Consumer)
- * @see ServiceWirelets#to(java.util.function.Consumer)
- * @see ServiceWirelets#from(java.util.function.Consumer)
- * @see ServiceExtension#transformExports(java.util.function.Consumer)
  */
 // Create services
 

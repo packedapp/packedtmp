@@ -18,7 +18,18 @@ package app.packed.container;
 /**
  *
  */
-public interface AssemblyMirror {
+// Alternativ kan vi genere "fake" subclasses
+// ComposerAssembly<T extends Composer> og gemme dem i en ClassValue
 
-    Class<? extends Assembly> type();
+// alternativt isSynthetic paa AssemblyMirror
+
+public final class ComposerAssembly extends Assembly {
+
+    ComposerAssembly() {}
+
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        throw new Error();
+    }
 }

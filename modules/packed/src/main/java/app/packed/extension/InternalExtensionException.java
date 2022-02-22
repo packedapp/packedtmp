@@ -21,6 +21,8 @@ package app.packed.extension;
  * If you encounter this exception when using an extension. There is typically nothing you can do, except for reporting
  * it to the developer of the extension.
  */
+// Skal vi have det som en BuildException??
+// InternalExtensionBuildException
 public class InternalExtensionException extends RuntimeException {
 
     /** serialVersionUID. */

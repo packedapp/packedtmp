@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
@@ -45,6 +46,9 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
+    /** {@return the component's assembly.} */
+    AssemblyMirror assembly();
+
     /** {@return an unmodifiable view of all of the children of this component.} */
     Collection<ComponentMirror> children();
 
@@ -56,7 +60,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return any lifetime this component may be a part of.} */
     // Tror vi er blevet enige om at alle componenter som minimum har
     // application lifetime
-    
+
     // You should just never use them after an application has been shutdown.
     // Alt har en lifetime saa
     default Optional<LifetimeMirror> lifetime() {
@@ -116,8 +120,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // RegisteredWith
     // DeclaredBy
     // Det er jo mere eller Realmen her
-    
-    // Giver den her super meget mening????    
+
+    // Giver den her super meget mening????
     /// fx @Get paa install(Foo.class) vs requestGet(Foo.class)
     /// Vil jo have forskllig registrant...
     /// Er nok mere relevant hvem der styre lifecyclen

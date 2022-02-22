@@ -33,6 +33,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.InternalService;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -41,7 +42,7 @@ import packed.internal.util.CollectionUtil.ForwardingMap;
 import packed.internal.util.CollectionUtil.ForwardingStrategy;
 
 /** Implementation of {@link ServiceComposer}. */
-public final class PackedServiceComposer extends ServiceComposer {
+public final class PackedServiceComposer extends ServiceComposer implements ServiceTransformer {
 
     /** A lazily initialized map that is exposed via {@link #asMap}. */
     private ForwardingMap<Key<?>, Service> asMap;
@@ -192,13 +193,13 @@ public final class PackedServiceComposer extends ServiceComposer {
         return toServiceLocator(m, transformation);
     }
 
-    public static void transformInplace(Map<Key<?>, ? extends InternalService> services, Consumer<? super ServiceComposer> transformer) {
+    public static void transformInplace(Map<Key<?>, ? extends InternalService> services, Consumer<? super ServiceTransformer> transformer) {
         PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst);
     }
 
     public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends InternalService> services,
-            BiConsumer<? super ServiceComposer, ? super T> transformer, T attachment) {
+            BiConsumer<? super ServiceTransformer, ? super T> transformer, T attachment) {
         PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst, attachment);
     }

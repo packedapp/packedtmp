@@ -387,7 +387,7 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
     /**
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
-     * first variable. Use {@link #provide(Object)} to bind an instance of the declaring class.
+     * first variable. Use {@link #provideInstance(Object)} to bind an instance of the declaring class.
      * 
      * @param <T>
      *            the type of value returned by the method

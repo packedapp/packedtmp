@@ -139,7 +139,6 @@ public final class ContainerSetup extends ComponentSetup {
             }
         }
 
-        containerRealm.containers.add(this);
         
         // Various container tree-node management
         if (parent != null) {
@@ -251,7 +250,7 @@ public final class ContainerSetup extends ComponentSetup {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                requestedByExtension.checkUserConfigurable();
+                requestedByExtension.checkAssemblyConfigurable();
             }
 
             // make sure it is recursively installed into the root container

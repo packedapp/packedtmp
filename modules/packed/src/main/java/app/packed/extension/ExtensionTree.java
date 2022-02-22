@@ -51,7 +51,7 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         return result;
     }
 
-    /** {@return the number of extensions in the tree.} */
+    /** {@return the number of elements in the tree.} */
     default int count() {
         int size = 0;
         for (@SuppressWarnings("unused")
@@ -61,9 +61,7 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         return size;
     }
 
-    default T root() {
-        return iterator().next();
-    }
+    T root();
 
     // Ideen er at man kan faa saadan en injected ind i et mirror...
 

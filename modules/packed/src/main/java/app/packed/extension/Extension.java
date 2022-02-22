@@ -23,8 +23,6 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Modifier;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -34,7 +32,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport;
 import app.packed.component.ComponentRealm;
-import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
@@ -42,7 +39,6 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
-import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
@@ -124,13 +120,13 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegates to {@link ExtensionConfiguration#checkUserConfigurable()}.
+     * This method delegates to {@link ExtensionConfiguration#checkAssemblyConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    protected final void checkUserConfigurable() {
-        configuration().checkUserConfigurable();
+    protected final void checkAssemblyConfigurable() {
+        configuration().checkAssemblyConfigurable();
     }
 
     /**
@@ -230,38 +226,22 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     }
 
     /**
-     * Invoked by the runtime when the configuration of the container is completed.
+     * Invoked by the runtime on the root extension to finalize configuration of the extension.
      * <p>
-     * <strong>NOTE:</strong> At this stage the set of extensions used by the container are fixed. It is not possible to
-     * start using extension that have not already been used, for example, via calls to {@link #use(Class)}. Or indirectly,
-     * for example, by installing a bean that uses extensions that have not already been used.
+     * The default implementation of this method will call {@link #onApplicationClose()} on every child. Either pre-order or
+     * post-order tree iteration.
      * <p>
-     * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link BeanSupport2.BeanExtensionSupport2#link(Assembly, Wirelet...)}
+     * Packed only calls this method on the root extension so if you want to iterate over all extensions in the tree you
+     * should arrange to call <{@code super.onApplicationClose}.
+     * <p>
+     * <strong>NOTE:</strong> At this stage the set of extensions used by the container are fixed. It is not possible to add
+     * extensions that have not already been used, for example, via calls to {@link #use(Class)}. Or indirectly, for
+     * example, by installing a bean or linking a container that uses extensions that have not already been used in the
+     * extension's container. Failing to follow this rule will result in an {@link InternalExtensionException} being thrown.
      */
-
-    // Hvorfor kan vi egentlig ikke det...
-    // Det kan vi jo godt... Det er udelukkede taenkt som et
-    // Feature flag test.... UseConfig()...
-
     protected void onApplicationClose() {
-        // Time
-        // ──────────────────────────►
-        // ┌────────────┐
-        // │ Setup time │
-        // └────────────┘
-        // ┌─────────────┐
-        // │ Wiring time │
-        // └─────────────┘
-        ExtensionSetup s = setup();
-        ArrayList<ContainerSetup> list = s.container.containerChildren;
-        if (list != null) {
-            for (ContainerSetup c : list) {
-                ExtensionSetup child = c.extensions.get(s.extensionType);
-                if (child != null) {
-                    child.instance().onApplicationClose();
-                }
-            }
+        for (ExtensionSetup c = setup.firstChild; c != null; c = c.siebling) {
+            c.instance().onApplicationClose();
         }
     }
 
@@ -271,9 +251,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * <p>
      * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
      * perform post instantiation of the extension as needed.
-     * <p>
-     * The next "lifecycle" method that will be called is {@link #onAssemblyClose()}, which is called after the container
-     * has been setup and before any linkage of child containers has started.
      * 
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
@@ -296,15 +273,9 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      */
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
-        ExtensionSetup s = setup();
-        // Skal maaske have et Map<Class<Extension?, ArrayDeque<ExtensionSetup>) i containerRealm instead
-        
-        ArrayDeque<ContainerSetup> containers = s.container.containerRealm.containers;
-        ContainerSetup cs;
-        while ((cs = containers.pollLast()) != null) {
-            ExtensionSetup child = cs.extensions.get(s.extensionType);
-            if (child != null) {
-                child.instance().onAssemblyClose();
+        for (ExtensionSetup c = setup.firstChild; c != null; c = c.siebling) {
+            if (c.container.assembly == setup.container.assembly) {
+                c.instance().onApplicationClose();
             }
         }
     }
@@ -361,6 +332,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return new PackedExtensionTree(setup.applicationRootSetup(), setup.extensionType);
     }
 
+    // Kunne vaere en mode paa traet?
+    // filterOnSameLifetime();
     protected final ExtensionTree<E> treeOfLifetime() {
         throw new UnsupportedOperationException();
     }
@@ -392,60 +365,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     protected final <S extends ExtensionSupport> S use(Class<S> subtensionClass) {
         return configuration().use(subtensionClass);
     }
-
-//    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
-//        throw new Error();
-//    }
-//
-//    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
-//        throw new Error();
-//    }
-
-    // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
-    // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
-    // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
-    /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
-
-    // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
-    // onFinish cannot add new extensions...
-
-//    protected static <T extends Extension, A> void $attributeAdd(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
-//
-//    protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
-
-//    /**
-//     * Only parent extensions will be linked
-//     */
-//    // Maaske skal vi have det for begge to
-//    protected static void $connectParentOnly() {
-//        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
-//    }
-
-    // An instance of extensorType will automatically be installed whenever the extensor is used
-    // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
-    // extensorType) {}
-
-    // Hmm, er det overhoved interessant at faa en Subtension???
-    // Vil vi ikke hellere have extensionen.
-    // Og man kan vel ikke bruge hook annoteringer
-//    
-//    @SafeVarargs
-//    protected static void $cycleBreaker(Class<? extends Extension<?>>... extensions) {
-    // Man maa saette den via noget VarHandle vaerk
-
-//        // A -DependsOn(B)
-//        // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
-//
-//        // Specified extension must have a dependency on this extension
-//        // And must be in same module
-//        throw new UnsupportedOperationException();
-//    }
-
-//    protected static void $lookup(MethodHandles.Lookup lookup) {
-//        // Nej den giver sgu ikke saerlig god mening...
-//        // Men har et requirement paa app.packed.base
-//        // 
-//    }
 
     /**
      * Registers an optional dependency of this extension. The extension
@@ -530,6 +449,60 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         // Det er faktisk maaske det lettes
         // dependsOn(ClassGenExtension.class);
     }
+
+//  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
+//      throw new Error();
+//  }
+//
+//  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
+//      throw new Error();
+//  }
+
+    // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
+    // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
+    // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
+    /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
+
+    // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
+    // onFinish cannot add new extensions...
+
+//  protected static <T extends Extension, A> void $attributeAdd(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+//
+//  protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
+
+//  /**
+//   * Only parent extensions will be linked
+//   */
+//  // Maaske skal vi have det for begge to
+//  protected static void $connectParentOnly() {
+//      ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
+//  }
+
+    // An instance of extensorType will automatically be installed whenever the extensor is used
+    // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
+    // extensorType) {}
+
+    // Hmm, er det overhoved interessant at faa en Subtension???
+    // Vil vi ikke hellere have extensionen.
+    // Og man kan vel ikke bruge hook annoteringer
+//  
+//  @SafeVarargs
+//  protected static void $cycleBreaker(Class<? extends Extension<?>>... extensions) {
+    // Man maa saette den via noget VarHandle vaerk
+
+//      // A -DependsOn(B)
+//      // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
+//
+//      // Specified extension must have a dependency on this extension
+//      // And must be in same module
+//      throw new UnsupportedOperationException();
+//  }
+
+//  protected static void $lookup(MethodHandles.Lookup lookup) {
+//      // Nej den giver sgu ikke saerlig god mening...
+//      // Men har et requirement paa app.packed.base
+//      // 
+//  }
 
 //    /**
 //     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
