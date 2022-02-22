@@ -17,9 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-
 import app.packed.extension.Extension;
 
 /**
@@ -29,23 +26,25 @@ import app.packed.extension.Extension;
  * 
  * 
  */
-public final class ExtensionApplicationSetup extends RealmSetup {
+public final class ExtensionTreeSetup extends RealmSetup {
 
     /** A model of the extension/ */
     public final ExtensionModel extensionModel;
 
     /** The extension in the root container. */
-    final ExtensionSetup root;
+    private final ExtensionSetup root;
 
     public boolean closed;
 
-    public final ArrayList<ExtensionSetup> extensions = new ArrayList<>();
-
-    public final ArrayDeque<ExtensionSetup> currentExtensions = new ArrayDeque<>();
-
-    ExtensionApplicationSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
+    ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
+    }
+
+    void close() {
+        root.onApplicationClose();
+        root.realm().isClosed = true;
+        closed = true;
     }
 
     /** {@inheritDoc} */

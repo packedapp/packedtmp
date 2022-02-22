@@ -38,29 +38,32 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
         // This is turn calls recursively down Extension.onUserClose on all
         // ancestor extensions in the same realm.
 
-        // We use .pollFirst because extensions might add new extensions while closing
-        // In which we need to process them as well in the right order as determined
-        // by the order in the Treeset.
+        // We use .pollFirst because extensions might add new extensions while being closed
+        // In which case an Iterator might throw ConcurrentModificationException
 
-        if (container.parent != null) {
+        if (container.parent == null) {
+            // Root container
+            // We must also close all extensions application-wide.
+            ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
+
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
+                list.add(e.realm());
                 e.onUserClose();
                 e = extensions.pollFirst();
             }
+
+            // Close all extensions application wide
+            for (ExtensionTreeSetup extension : list) {
+                extension.close();
+            }
+
         } else {
-            // If we are the root assembly we also need to call extension.onClose()
-
-            ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
+            // Similar to above, except we do not close extensions application-wide
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
-                list.add(e);
                 e.onUserClose();
                 e = extensions.pollFirst();
-            }
-            for (ExtensionSetup extension : list) {
-                extension.onClose();
-                extension.realm().isClosed = true;
             }
         }
     }

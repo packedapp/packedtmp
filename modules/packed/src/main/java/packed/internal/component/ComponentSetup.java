@@ -36,7 +36,7 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerRealmSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionApplicationSetup;
+import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
@@ -268,7 +268,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final UserOrExtension owner() {
-            if (realm instanceof ExtensionApplicationSetup s) {
+            if (realm instanceof ExtensionTreeSetup s) {
                 return UserOrExtension.extension(s.extensionModel.type());
             }
             return UserOrExtension.user();

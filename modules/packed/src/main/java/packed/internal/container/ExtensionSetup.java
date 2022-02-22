@@ -65,17 +65,20 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Nullable
     public final ExtensionSetup parent;
 
+    /** The (nullable) first child of the extension. */
     @Nullable
     public ExtensionSetup firstChild;
 
+    /** The (nullable) last child of the extension. */
     @Nullable
     private ExtensionSetup lastChild;
 
+    /** The (nullable) siebling of the extension. */
     @Nullable
     public ExtensionSetup siebling;
 
     /** The realm this extension belongs to. */
-    private final ExtensionApplicationSetup realm;
+    private final ExtensionTreeSetup extensionTree;
 
     /** Beans, registered for this particular extension instance */
     public final ExtensionBeanServiceManager beans;
@@ -95,13 +98,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
         if (parent == null) {
-            this.realm = new ExtensionApplicationSetup(this, extensionType);
+            this.extensionTree = new ExtensionTreeSetup(this, extensionType);
             this.beans = new ExtensionBeanServiceManager(null);
         } else {
-            this.realm = parent.realm;
+            this.extensionTree = parent.extensionTree;
             this.beans = new ExtensionBeanServiceManager(parent.beans);
-            // Add this extension to the children of the parent
 
+            // Extension tree maintenance
             if (parent.firstChild == null) {
                 parent.firstChild = this;
             } else {
@@ -109,8 +112,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             }
             parent.lastChild = this;
         }
-        this.model = requireNonNull(realm.extensionModel);
-        realm.extensions.add(this);
+        this.model = requireNonNull(extensionTree.extensionModel);
     }
 
     /** {@inheritDoc} */
@@ -216,7 +218,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * <p>
      * The extension is completed once the realm the container is part of is closed.
      */
-    void onClose() {
+    void onApplicationClose() {
         try {
             MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
@@ -233,8 +235,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
-    public ExtensionApplicationSetup realm() {
-        return realm;
+    public ExtensionTreeSetup realm() {
+        return extensionTree;
     }
 
     /** {@inheritDoc} */
@@ -296,7 +298,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public NamespacePath containerPath() {
         return container.path();
     }
-    
+
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
 
         /** The root extension. */
@@ -304,7 +306,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         /** The mapper that is applied on each node. */
         private final Function<ExtensionSetup, T> mapper;
-        
+
         private ExtensionSetup next;
 
         PreOrderIterator(ExtensionSetup root, Function<ExtensionSetup, T> mapper) {
