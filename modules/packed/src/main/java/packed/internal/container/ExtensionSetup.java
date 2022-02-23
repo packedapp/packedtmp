@@ -51,37 +51,37 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The container where the extension is used. */
     public final ContainerSetup container;
 
+    /** The realm this extension belongs to. */
+    private final ExtensionApplicationRegion extensionTree;
+
     /** The type of extension that is being configured (copied form ExtenisonModel). */
     public final Class<? extends Extension<?>> extensionType;
+
+    /** The (nullable) first child of the extension. */
+    @Nullable
+    public ExtensionSetup firstChild;
+
+    /** The extension's injection manager. */
+    public final ExtensionInjectionManager injectionManager;
 
     /** The extension instance, instantiated and set in {@link #initialize()}. */
     @Nullable
     private Extension<?> instance;
 
-    /** The static model of the extension. */
+    /** The (nullable) last child of the extension. */
+    @Nullable
+    private ExtensionSetup lastChild;
+
+    /** A static model of the extension. */
     public final ExtensionModel model;
 
     /** Any parent extension this extension may have. Only the root extension in an application does not have a parent. */
     @Nullable
     public final ExtensionSetup parent;
 
-    /** The (nullable) first child of the extension. */
-    @Nullable
-    public ExtensionSetup firstChild;
-
-    /** The (nullable) last child of the extension. */
-    @Nullable
-    private ExtensionSetup lastChild;
-
     /** The (nullable) siebling of the extension. */
     @Nullable
     public ExtensionSetup siebling;
-
-    /** The realm this extension belongs to. */
-    private final ExtensionTreeSetup extensionTree;
-
-    /** Beans, registered for this particular extension instance */
-    public final ExtensionBeanServiceManager beans;
 
     /**
      * Creates a new extension setup.
@@ -98,11 +98,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
         if (parent == null) {
-            this.extensionTree = new ExtensionTreeSetup(this, extensionType);
-            this.beans = new ExtensionBeanServiceManager(null);
+            this.extensionTree = new ExtensionApplicationRegion(this, extensionType);
+            this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionTree = parent.extensionTree;
-            this.beans = new ExtensionBeanServiceManager(parent.beans);
+            this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
 
             // Extension tree maintenance
             if (parent.firstChild == null) {
@@ -121,9 +121,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.application.descriptor;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {}
+    public ExtensionSetup applicationRootSetup() {
+        ExtensionSetup s = this;
+        while (s.parent != null) {
+            s = s.parent;
+        }
+        return s;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -133,8 +137,18 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
+    public void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {}
+
+    /** {@inheritDoc} */
+    @Override
     public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
         action.build(composer);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespacePath containerPath() {
+        return container.path();
     }
 
     void initialize() {
@@ -148,7 +162,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         container.extensions.put(extensionType, this);
 
         // Hvad hvis en extension linker en af deres egne assemblies.
-        if (container.realm instanceof ContainerRealmSetup r && r.container() == container) {
+        // If the extension is added in the root container of an assembly. We need to add it there
+        if (container.realm instanceof ComponentInstaller r && r.container() == container) {
             r.extensions.add(this);
         }
 
@@ -181,22 +196,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isRootOfApplication() {
-        return parent == null;
-    }
-
-    public ExtensionSetup applicationRootSetup() {
-        ExtensionSetup s = this;
-        while (s.parent != null) {
-            s = s.parent;
-        }
-        return s;
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
+        return container.isExtensionUsed(extensionClass);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
-        return container.isExtensionUsed(extensionClass);
+    public boolean isRootOfApplication() {
+        return parent == null;
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
@@ -235,7 +242,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
-    public ExtensionTreeSetup realm() {
+    public ExtensionApplicationRegion realm() {
         return extensionTree;
     }
 
@@ -293,21 +300,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return (E) supportModel.newInstance(instance, extensionType);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public NamespacePath containerPath() {
-        return container.path();
-    }
-
+    /** A pre-order iterator for a rooted extension tree. */
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
-
-        /** The root extension. */
-        private final ExtensionSetup root;
 
         /** The mapper that is applied on each node. */
         private final Function<ExtensionSetup, T> mapper;
 
+        @Nullable
         private ExtensionSetup next;
+
+        /** The root extension. */
+        private final ExtensionSetup root;
 
         PreOrderIterator(ExtensionSetup root, Function<ExtensionSetup, T> mapper) {
             this.root = this.next = root;
@@ -331,13 +334,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             if (n.firstChild != null) {
                 next = n.firstChild;
             } else {
-                next = findNext(n);
+                next = next(n);
             }
 
             return mapper.apply(n);
         }
 
-        private ExtensionSetup findNext(ExtensionSetup current) {
+        private ExtensionSetup next(ExtensionSetup current) {
             if (current.siebling != null) {
                 return current.siebling;
             }
@@ -345,7 +348,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             if (parent == root) {
                 return null;
             } else {
-                return findNext(parent);
+                return next(parent);
             }
         }
     }

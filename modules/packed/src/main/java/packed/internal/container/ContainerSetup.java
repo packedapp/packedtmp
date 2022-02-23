@@ -61,7 +61,10 @@ public final class ContainerSetup extends ComponentSetup {
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
-    /** All extensions used by this container. */
+    /**
+     * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns
+     * deterministically.
+     */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /**
@@ -139,7 +142,6 @@ public final class ContainerSetup extends ComponentSetup {
             }
         }
 
-        
         // Various container tree-node management
         if (parent != null) {
             // Add this container to the children of the parent
@@ -177,7 +179,7 @@ public final class ContainerSetup extends ComponentSetup {
         assert name != null;
     }
 
-    /** {@return a unmodifiable view of all extension types that are in use.} */
+    /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
@@ -258,7 +260,7 @@ public final class ContainerSetup extends ComponentSetup {
 
             // Create a extension and initialize it.
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
-            
+
             extension.initialize();
         }
         return extension;

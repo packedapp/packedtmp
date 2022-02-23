@@ -26,7 +26,7 @@ import app.packed.extension.Extension;
  * 
  * 
  */
-public final class ExtensionTreeSetup extends RealmSetup {
+public final class ExtensionApplicationRegion extends RealmSetup {
 
     /** A model of the extension/ */
     public final ExtensionModel extensionModel;
@@ -36,7 +36,7 @@ public final class ExtensionTreeSetup extends RealmSetup {
 
     public boolean closed;
 
-    ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
+    ExtensionApplicationRegion(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }

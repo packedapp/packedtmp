@@ -21,7 +21,7 @@ import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionTreeSetup;
+import packed.internal.container.ExtensionApplicationRegion;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.InternalFactory;
 import packed.internal.lifetime.LifetimeSetup;
@@ -76,8 +76,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         // Does this bean belong to an extension
         // Maybe test if isExtensionBean instead
-        if (realm instanceof ExtensionTreeSetup s) {
-            container.useExtensionSetup(s.realmType(), null).beans.beans.put(Key.of(beanHandle.beanType), this);
+        if (realm instanceof ExtensionApplicationRegion s) {
+            container.useExtensionSetup(s.realmType(), null).injectionManager.extensionBeans.put(Key.of(beanHandle.beanType), this);
         }
 
         if (factory == null) {

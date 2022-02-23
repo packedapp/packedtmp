@@ -56,6 +56,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
+        // Med mindre vi laver en User->Extension, skal vi jo have noget a.la. UserOrExtension.realm();
         PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
@@ -82,7 +83,6 @@ public class BeanExtension extends Extension<BeanExtension> {
         return mirrorInitialize(new BeanExtensionMirror(tree()));
     }
 
-
     /** {@inheritDoc} */
     @Override
     protected void onAssemblyClose() {
@@ -107,7 +107,7 @@ public class BeanExtension extends Extension<BeanExtension> {
 
         cs.beans.resolve();
     }
-    
+
     /**
      * Provides every service from the specified locator.
      * 

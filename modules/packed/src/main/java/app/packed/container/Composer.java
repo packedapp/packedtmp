@@ -30,7 +30,7 @@ import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.ComposerRealmSetup;
+import packed.internal.container.ComposerComponentInstaller;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -181,7 +181,7 @@ public abstract class Composer {
         requireNonNull(composer, "composer is null");
 
         // Create a new application realm
-        ComposerRealmSetup realm = new ComposerRealmSetup(((PackedApplicationDriver<A>) driver), consumer, wirelets);
+        ComposerComponentInstaller realm = new ComposerComponentInstaller(((PackedApplicationDriver<A>) driver), consumer, wirelets);
 
         realm.build(composer, consumer);
 

@@ -30,26 +30,26 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
- *
+ * A component installer created from an {@link Assembly} instance.
  */
-public final class AssemblyRealmSetup extends ContainerRealmSetup {
+public final class AssemblyComponentInstaller extends ComponentInstaller {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            AssemblyRealmSetup.class, ContainerConfiguration.class);
+            AssemblyComponentInstaller.class, ContainerConfiguration.class);
 
-    public final AssemblyModel assemblyModel;
+    /** Or model of the assembly. */
+    private final AssemblyModel assemblyModel;
 
-    /** The assembly used to create this realm. */
+    /** The assembly used to create this installer. */
     final Assembly assembly;
-
-    private final ContainerConfiguration configuration;
 
     public final ApplicationSetup application;
 
-    // Den giver kun mening for assemblies...
     /** The root component of this realm. */
     public final ContainerSetup container;
+
+    private final PackedContainerDriver driver;
 
     /**
      * Builds an application using the specified assembly and optional wirelets.
@@ -62,17 +62,24 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
      *            optional wirelets
      * @return the application
      */
-    public AssemblyRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyComponentInstaller(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.container = application.container;
-        this.configuration = new PackedContainerDriver(container).toConfiguration(container);
+        this.driver = new PackedContainerDriver(container);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
-
         wireCommit(container);
     }
 
-    public AssemblyRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public void preBuild(ContainerConfiguration configuration) {
+        assemblyModel.preBuild(configuration);
+    }
+
+    public void postBuild(ContainerConfiguration configuration) {
+        assemblyModel.postBuild(configuration);
+    }
+
+    public AssemblyComponentInstaller(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
 
         this.assembly = requireNonNull(assembly, "assembly is null");
@@ -80,12 +87,13 @@ public final class AssemblyRealmSetup extends ContainerRealmSetup {
         // if embed do xxx
         // else create new container
         this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
-        this.configuration = driver.toConfiguration(container);
+        this.driver = driver;
     }
 
     public void build() {
         // Invoke Assembly::doBuild
         // which in turn will invoke Assembly::build
+        ContainerConfiguration configuration = driver.toConfiguration(container);
         try {
             MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, this, configuration);
         } catch (Throwable e) {

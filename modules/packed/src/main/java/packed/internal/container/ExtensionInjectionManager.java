@@ -30,23 +30,23 @@ import packed.internal.bean.BeanSetup;
  */
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
-public final class ExtensionBeanServiceManager {
+public final class ExtensionInjectionManager {
 
-    public final Map<Key<?>, BeanSetup> beans = new LinkedHashMap<>();
+    public final Map<Key<?>, BeanSetup> extensionBeans = new LinkedHashMap<>();
 
     /** The (nullable) parent. */
     @Nullable
-    final ExtensionBeanServiceManager parent;
+    final ExtensionInjectionManager parent;
 
-    ExtensionBeanServiceManager(@Nullable ExtensionBeanServiceManager parent) {
+    ExtensionInjectionManager(@Nullable ExtensionInjectionManager parent) {
         this.parent = parent;
     }
 
     @Nullable
     public BeanSetup lookup(Key<?> key) {
-        ExtensionBeanServiceManager m = this;
+        ExtensionInjectionManager m = this;
         do {
-            BeanSetup b = m.beans.get(key);
+            BeanSetup b = m.extensionBeans.get(key);
             if (b != null) {
                 return b;
             }

@@ -8,7 +8,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import packed.internal.container.AssemblyRealmSetup;
+import packed.internal.container.AssemblyComponentInstaller;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 
@@ -157,7 +157,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         PackedContainerDriver d = (PackedContainerDriver) requireNonNull(handle, "handle is null");
 
         // Create a new realm for the assembly
-        AssemblyRealmSetup newRealm = new AssemblyRealmSetup(d, container, assembly, wirelets);
+        AssemblyComponentInstaller newRealm = new AssemblyComponentInstaller(d, container, assembly, wirelets);
 
         container.realm.wirePrepare(); // check that the container is open for business
 

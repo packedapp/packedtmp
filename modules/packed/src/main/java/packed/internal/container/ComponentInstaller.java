@@ -21,10 +21,13 @@ import java.util.TreeSet;
 /**
  *
  */
-public abstract sealed class ContainerRealmSetup extends RealmSetup permits AssemblyRealmSetup,ComposerRealmSetup {
+public abstract sealed class ComponentInstaller extends RealmSetup permits AssemblyComponentInstaller,ComposerComponentInstaller {
 
-    /** An order set of extension according to the natural extension dependency order. */
+    /** All extensions that are used in the installer (if non embedded) An order set of extension according to the natural extension dependency order. */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
+
+    /** Whether or not the installer shares . */
+    final boolean isEmbedding = false;
 
     void closeRealm() {
         ContainerSetup container = container();
@@ -44,7 +47,7 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
         if (container.parent == null) {
             // Root container
             // We must also close all extensions application-wide.
-            ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
+            ArrayList<ExtensionApplicationRegion> list = new ArrayList<>(extensions.size());
 
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
@@ -54,7 +57,7 @@ public abstract sealed class ContainerRealmSetup extends RealmSetup permits Asse
             }
 
             // Close all extensions application wide
-            for (ExtensionTreeSetup extension : list) {
+            for (ExtensionApplicationRegion extension : list) {
                 extension.close();
             }
 
