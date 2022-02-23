@@ -57,15 +57,9 @@ import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
 // ServiceExtensionSetup
 public final class ContainerInjectionManager extends InjectionManager {
 
-    /** Handles everything to do with dependencies, for example, explicit requirements. */
-    private ServiceManagerRequirementsSetup dependencies;
-
     /** An error manager that is lazily initialized. */
     @Nullable
     private ServiceManagerFailureSetup em;
-
-    /** Deals with everything about exporting services to a parent container. */
-    private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
@@ -73,16 +67,23 @@ public final class ContainerInjectionManager extends InjectionManager {
     /** Any parent this composer might have. */
     @Nullable
     private final ContainerInjectionManager parent;
-
-    /** All injectors added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
+    
+    //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
+    /** All locators added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
-
+    
     /** The tree this service manager is a part of. */
     private final ApplicationInjectionManager applicationInjectionManager;
 
+    /** Handles everything to do with dependencies, for example, explicit requirements. */
+    private ServiceManagerRequirementsSetup requirements;
+
+    /** Deals with everything about exporting services to a parent container. */
+    private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
+    
     /**
      * @param root
      *            the container this service manager is a part of
@@ -113,10 +114,10 @@ public final class ContainerInjectionManager extends InjectionManager {
      * 
      * @return the dependency manager for this builder
      */
-    public ServiceManagerRequirementsSetup dependencies() {
-        ServiceManagerRequirementsSetup d = dependencies;
+    public ServiceManagerRequirementsSetup requirements() {
+        ServiceManagerRequirementsSetup d = requirements;
         if (d == null) {
-            d = dependencies = new ServiceManagerRequirementsSetup();
+            d = requirements = new ServiceManagerRequirementsSetup();
         }
         return d;
     }
@@ -155,8 +156,8 @@ public final class ContainerInjectionManager extends InjectionManager {
         }
 
         // Add requirements (mandatory or optional)
-        if (dependencies != null && dependencies.requirements != null) {
-            for (Requirement r : dependencies.requirements.values()) {
+        if (requirements != null && requirements.requirements != null) {
+            for (Requirement r : requirements.requirements.values()) {
                 if (r.isOptional) {
                     builder.requireOptional(r.key);
                 } else {
@@ -229,7 +230,7 @@ public final class ContainerInjectionManager extends InjectionManager {
 
         // Process own exports
         if (exports != null) {
-            exports.resolve();
+            exports.resolve(this);
         }
         // Add error messages if any nodes with the same key have been added multiple times
 
@@ -264,7 +265,7 @@ public final class ContainerInjectionManager extends InjectionManager {
 
         // If Processere wirelets...
 
-        ServiceManagerRequirementsSetup srm = dependencies;
+        ServiceManagerRequirementsSetup srm = requirements;
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
                 ServiceSetup sa = map.get(r.key);

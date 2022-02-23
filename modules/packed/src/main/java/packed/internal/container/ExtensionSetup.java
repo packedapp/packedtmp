@@ -83,7 +83,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The (nullable) siebling of the extension. */
     @Nullable
     public ExtensionSetup siebling;
-
+    
     /**
      * Creates a new extension setup.
      * 

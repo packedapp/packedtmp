@@ -25,6 +25,7 @@ import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.InternalFactory;
+import packed.internal.inject.manager.InjectionManager;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.LookupUtil;
@@ -67,6 +68,23 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
+    @Nullable
+    final ExtensionSetup extension;
+    private InjectionManager injectionManager;
+
+    public InjectionManager injectionManager() {
+        InjectionManager m = injectionManager;
+        if (m == null) {
+            if (extension == null) {
+                
+            } else {
+                m = injectionManager = extension.injectionManager;
+            }
+        }
+
+        return m;
+    }
+
     public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanDriver<?> beanHandle) {
         super(container.application, realm, lifetime, container);
         this.beanKind = BeanOldKind.CONTAINER_BEAN;
@@ -78,8 +96,10 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         // Does this bean belong to an extension
         // Maybe test if isExtensionBean instead
         if (realm instanceof ExtensionRealmSetup s) {
-            ExtensionSetup es = container.useExtensionSetup(s.extensionType(), null);
+            ExtensionSetup es = extension = container.useExtensionSetup(s.extensionType(), null);
             es.injectionManager.extensionBeans.put(Key.of(beanHandle.beanType), this);
+        } else {
+            this.extension = null;
         }
 
         if (factory == null) {

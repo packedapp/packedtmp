@@ -53,15 +53,6 @@ public final class ContainerBeanManager {
         return sm;
     }
 
-    public ContainerInjectionManager getServiceManagerOrCreate() {
-        ContainerInjectionManager s = sm;
-        if (s == null) {
-            container.useExtension(ServiceExtension.class);
-            s = sm;
-        }
-        return s;
-    }
-
     /**
      * This method is invoked from the constructor of a {@link ServiceExtension} to create a new
      * {@link ContainerInjectionManager}.
@@ -86,7 +77,7 @@ public final class ContainerBeanManager {
         // I think we must plug this in somewhere
 
         if (sm != null) {
-            sm.dependencies().checkForMissingDependencies(container);
+            sm.requirements().checkForMissingDependencies(container);
             sm.close(container, container.lifetime.pool);
         }
         // TODO Check any contracts we might as well catch it early

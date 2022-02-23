@@ -167,7 +167,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            services.dependencies().require(key, false /* , cs */);
+            services.requirements().require(key, false /* , cs */);
         }
     }
 
@@ -192,7 +192,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            services.dependencies().require(key, true /* , cs */);
+            services.requirements().require(key, true /* , cs */);
         }
     }
 

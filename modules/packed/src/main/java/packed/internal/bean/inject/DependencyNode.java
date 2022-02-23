@@ -154,7 +154,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                 }
             }
 
-            sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);
+            sbm.requirements().recordResolvedDependency(this, i, sd, e, false);
         }
         return e;
     }

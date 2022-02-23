@@ -165,7 +165,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
      * any point, even before the
      */
-    public void resolve() {
+    public void resolve(ContainerInjectionManager sm) {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
         // Process every exported build entry
