@@ -26,7 +26,7 @@ import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.InternalWirelet;
 import packed.internal.container.WireletWrapper;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.util.ThrowableUtil;
@@ -87,7 +87,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
      * @return a service locator for the application
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = application.container.beans.getServiceManager();
+        ContainerInjectionManager sm = application.container.beans.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
     }
 

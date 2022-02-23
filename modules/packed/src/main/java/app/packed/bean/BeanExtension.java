@@ -122,7 +122,7 @@ public class BeanExtension extends Extension<BeanExtension> {
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
-        checkAssemblyConfigurable();
+        checkConfigurable();
         container.beans.getServiceManager().provideAll(l);
     }
 

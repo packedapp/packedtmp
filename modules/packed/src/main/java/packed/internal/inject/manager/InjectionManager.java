@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package packed.internal.inject.manager;
 
-import app.packed.container.Wirelet;
+import packed.internal.inject.service.ContainerInjectionManager;
 
-/** A wirelet that is processed in a first pass. */
-public abstract class Service1stPassWirelet extends Wirelet {
-    protected abstract void process(ContainerInjectionManager sm);
+/**
+ *
+ */
+public abstract sealed class InjectionManager permits ExtensionInjectionManager, ContainerInjectionManager {
+
 }
- 

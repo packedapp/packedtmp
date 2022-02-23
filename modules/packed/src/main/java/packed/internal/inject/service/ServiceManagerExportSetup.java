@@ -58,7 +58,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     private final LinkedHashMap<Key<?>, ServiceSetup> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
-    private final ServiceManagerSetup sm;
+    private final ContainerInjectionManager sm;
 
     @Nullable
     Consumer<? super ServiceTransformer> transformer;
@@ -69,7 +69,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceManagerExportSetup(ServiceManagerSetup sm) {
+    ServiceManagerExportSetup(ContainerInjectionManager sm) {
         this.sm = requireNonNull(sm);
     }
 

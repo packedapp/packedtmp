@@ -33,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class ComposerComponentInstaller extends ComponentInstaller {
+public final class ComposerAssemblyInstaller extends AssemblySetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
@@ -49,7 +49,7 @@ public final class ComposerComponentInstaller extends ComponentInstaller {
     /** The root component of this realm. */
     public final ContainerSetup container;
     
-    public ComposerComponentInstaller(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> composer, Wirelet[] wirelets) {
+    public ComposerAssemblyInstaller(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> composer, Wirelet[] wirelets) {
         this.composer = composer;
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
         this.container = application.container;

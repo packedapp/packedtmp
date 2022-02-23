@@ -38,7 +38,7 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.bean.inject.ContainerInjectorSetup;
+import packed.internal.bean.inject.ContainerBeanManager;
 import packed.internal.component.ComponentSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
@@ -52,7 +52,7 @@ import packed.internal.util.CollectionUtil;
 public final class ContainerSetup extends ComponentSetup {
 
     /** All the beans in the container. */
-    public final ContainerInjectorSetup beans = new ContainerInjectorSetup(this);
+    public final ContainerBeanManager beans;
 
     /** Children of this node in insertion order. */
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
@@ -98,6 +98,7 @@ public final class ContainerSetup extends ComponentSetup {
             Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
+        beans = new ContainerBeanManager(this, parent == null ? null : parent.beans);
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
         // and may contained any number of CombinedWirelet instances.
@@ -157,6 +158,7 @@ public final class ContainerSetup extends ComponentSetup {
             // I think try and move some of this to ComponentNameWirelet
             String n = null;
 
+            // TODO Should only be used on the root container in the assembly
             Class<?> source = realm.realmType();
             if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
@@ -252,7 +254,7 @@ public final class ContainerSetup extends ComponentSetup {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                requestedByExtension.checkAssemblyConfigurable();
+                requestedByExtension.checkConfigurable();
             }
 
             // make sure it is recursively installed into the root container

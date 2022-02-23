@@ -26,5 +26,5 @@ import packed.internal.inject.service.build.ServiceSetup;
  *
  */
 public abstract class Service2ndPassWirelet extends Wirelet {
-    protected abstract void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, ServiceSetup> map);
+    protected abstract void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map);
 }

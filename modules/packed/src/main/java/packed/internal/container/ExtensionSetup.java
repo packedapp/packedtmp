@@ -22,6 +22,7 @@ import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
+import packed.internal.inject.manager.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -52,7 +53,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public final ContainerSetup container;
 
     /** The realm this extension belongs to. */
-    private final ExtensionApplicationRegion extensionTree;
+    private final ExtensionRealmSetup extensionTree;
 
     /** The type of extension that is being configured (copied form ExtenisonModel). */
     public final Class<? extends Extension<?>> extensionType;
@@ -98,7 +99,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
         if (parent == null) {
-            this.extensionTree = new ExtensionApplicationRegion(this, extensionType);
+            this.extensionTree = new ExtensionRealmSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionTree = parent.extensionTree;
@@ -131,13 +132,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void checkAssemblyConfigurable() {
-        container.assembly.checkOpen();
+    public void checkConfigurable() {
+        // Lots of combinations
+        // User Assembly + User Container
+        // User Assembly + Extension Container
+        // Extension Assembly + Same Extension Assembly
+        // Extension Assembly + Other Extension Assembly
+        container.realm.checkOpen();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {}
 
     /** {@inheritDoc} */
     @Override
@@ -163,7 +165,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Hvad hvis en extension linker en af deres egne assemblies.
         // If the extension is added in the root container of an assembly. We need to add it there
-        if (container.realm instanceof ComponentInstaller r && r.container() == container) {
+        if (container.realm instanceof AssemblySetup r && r.container() == container) {
             r.extensions.add(this);
         }
 
@@ -242,7 +244,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
-    public ExtensionApplicationRegion realm() {
+    public ExtensionRealmSetup realm() {
         return extensionTree;
     }
 

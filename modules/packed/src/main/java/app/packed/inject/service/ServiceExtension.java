@@ -28,7 +28,7 @@ import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionSupport;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -77,7 +77,7 @@ import packed.internal.inject.service.ServiceManagerSetup;
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
     /** The service manager. */
-    private final ServiceManagerSetup services;
+    private final ContainerInjectionManager services;
 
     /**
      * Create a new service extension.
@@ -129,7 +129,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
-        checkAssemblyConfigurable();
+        checkConfigurable();
         services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
@@ -164,7 +164,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      */
     public void require(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkAssemblyConfigurable();
+        checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
             services.dependencies().require(key, false /* , cs */);
@@ -189,7 +189,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     // They will be consumed
     public void requireOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkAssemblyConfigurable();
+        checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
             services.dependencies().require(key, true /* , cs */);

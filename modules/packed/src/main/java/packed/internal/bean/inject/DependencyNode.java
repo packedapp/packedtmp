@@ -23,15 +23,16 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import packed.internal.bean.BeanInstanceDependencyNode;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionApplicationRegion;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.ServiceDelegate;
-import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.LifetimePoolWriteable;
@@ -64,7 +65,6 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
 
     /** The method handle that is used at runtime and delegates to {@link #originalMethodHandle} */
     MethodHandle runtimeMethodHandle;
-
 
     // Field/Method hook
     protected DependencyNode(BeanSetup bean, List<InternalDependency> dependencies, MethodHandle mh, DependencyProducer[] dependencyProviders) {
@@ -100,50 +100,14 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
 
     protected abstract PoolEntryHandle poolAccessor();
 
-
-    public void resolve(ServiceManagerSetup sbm) {
+    public void resolve(ContainerInjectionManager sbm) {
         boolean buildMH = true;
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (producers[providerIndex] == null) {
                 InternalDependency sd = dependencies.get(i);
-                DependencyProducer e = null;
-                if (bean != null) {
-                    //// Checker om der er hooks der provider servicen
-                    HookModel sm = bean.hookModel;
-                    if (sm.sourceServices != null) {
-                        e = sm.sourceServices.get(sd.key());
-                    }
-                }
-
-                if (sbm != null) {
-                    if (e == null) {
-                        if (bean.realm instanceof ExtensionApplicationRegion ers) {
-                            Key<?> requiredKey = sd.key();
-                            Key<?> thisKey = Key.of(bean.hookModel.clazz);
-                            ContainerSetup parent = bean.parent;
-                            ExtensionSetup es = parent.useExtensionSetup(ers.realmType(), null);
-                            BeanSetup bs = null;
-                            if (thisKey.equals(requiredKey)) {
-                                if (es.parent != null) {
-                                    bs = es.parent.injectionManager.lookup(requiredKey);
-                                }
-                            } else {
-                                bs = es.injectionManager.lookup(requiredKey);
-                            }
-
-                            e = bs;
-
-                        } else {
-                            ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
-                            e = wrapper == null ? null : wrapper.getSingle();
-                        }
-                    }
-
-                    sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);
-                }
+                DependencyProducer e = resolve0(sbm, sd, providerIndex);
                 producers[providerIndex] = e;
-
                 if (e == null) {
                     buildMH = false;
                 }
@@ -153,6 +117,46 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         if (buildMH) {
             runtimeMethodHandle();
         }
+    }
+
+    @Nullable
+    private DependencyProducer resolve0(ContainerInjectionManager sbm, InternalDependency sd, int i) {
+        DependencyProducer e = null;
+        if (bean != null) {
+            //// Checker om der er hooks der provider servicen
+            HookModel sm = bean.hookModel;
+            if (sm.sourceServices != null) {
+                e = sm.sourceServices.get(sd.key());
+            }
+        }
+
+        if (sbm != null) {
+            if (e == null) {
+                if (bean.realm instanceof ExtensionRealmSetup ers) {
+                    Key<?> requiredKey = sd.key();
+                    Key<?> thisKey = Key.of(bean.hookModel.clazz);
+                    ContainerSetup parent = bean.parent;
+                    ExtensionSetup es = parent.useExtensionSetup(ers.extensionType(), null);
+                    BeanSetup bs = null;
+                    if (thisKey.equals(requiredKey)) {
+                        if (es.parent != null) {
+                            bs = es.parent.injectionManager.lookup(requiredKey);
+                        }
+                    } else {
+                        bs = es.injectionManager.lookup(requiredKey);
+                    }
+
+                    e = bs;
+
+                } else {
+                    ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
+                    e = wrapper == null ? null : wrapper.getSingle();
+                }
+            }
+
+            sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);
+        }
+        return e;
     }
 
     /**

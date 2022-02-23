@@ -28,7 +28,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
 import app.packed.hooks3.BeanHook;
-import packed.internal.container.AssemblyComponentInstaller;
+import packed.internal.container.AssemblyAssemblyInstaller;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -143,7 +143,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(AssemblyComponentInstaller realm, ContainerConfiguration configuration) {
+    private void doBuild(AssemblyAssemblyInstaller realm, ContainerConfiguration configuration) {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
@@ -167,10 +167,6 @@ public abstract non-sealed class Assembly implements ComponentRealm {
             // Can be this thread (recursively called) or another thread that is already using the assembly.
             throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
-    }
-
-    protected final void embed(Assembly assembly) {
-        container().embed(assembly);
     }
 
     /**
@@ -197,7 +193,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     // skal vi jo ogsaa bruge den der. IDK
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        container().container.realm.lookup(lookup);
+        container().container.assembly.lookup(lookup);
     }
 
     /**
@@ -263,3 +259,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
         return container().use(extensionType);
     }
 }
+//
+//protected final void embed(Assembly assembly) {
+//  container().embed(assembly);
+//}

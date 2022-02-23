@@ -34,9 +34,9 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
-import packed.internal.container.ComponentInstaller;
+import packed.internal.container.AssemblySetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionApplicationRegion;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
@@ -68,11 +68,13 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     @Nullable
     public final ContainerSetup parent;
 
-    /** The realm this component is a part of. */
+    /** The realm used to install this component. */
     public final RealmSetup realm;
 
-    public final ComponentInstaller assembly;
-
+    /** The assembly from where the component is being installed. */
+    public final AssemblySetup assembly;
+    
+    
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
      * 
@@ -90,9 +92,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
 
-        if (realm instanceof ComponentInstaller s) {
+        if (realm instanceof AssemblySetup s) {
             this.assembly = s;
-        } else {
+        } else /* ExtensionRealmSetup */ {
             this.assembly = parent.assembly;
         }
 
@@ -268,7 +270,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final UserOrExtension owner() {
-            if (realm instanceof ExtensionApplicationRegion s) {
+            if (realm instanceof ExtensionRealmSetup s) {
                 return UserOrExtension.extension(s.extensionModel.type());
             }
             return UserOrExtension.user();

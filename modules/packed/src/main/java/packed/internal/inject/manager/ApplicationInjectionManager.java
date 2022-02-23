@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package packed.internal.inject.manager;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,10 +24,11 @@ import app.packed.component.BuildException;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.container.ContainerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.lifetime.LifetimePoolSetup;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link ServiceManagerSetup service composers} that are
+ * A service multi-composer is responsible for managing 1 or more {@link ContainerInjectionManager service composers} that are
  * directly connected and part of the same build.
  * <p>
  * This class server two main purposes:
@@ -46,7 +47,7 @@ import packed.internal.lifetime.LifetimePoolSetup;
 
 //TODO WE NEED TO CHECK INTRA Assembly REFERENCES
 // BitMap???
-public final class ApplicationInjectorSetup {
+public final class ApplicationInjectionManager {
 
     /**
      * Tries to find a dependency cycle.

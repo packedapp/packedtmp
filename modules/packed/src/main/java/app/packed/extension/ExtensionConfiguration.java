@@ -53,8 +53,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
-    void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType);
-
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -63,7 +61,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @throws IllegalStateException
      *             if the extension is no longer configurable.
      */
-    void checkAssemblyConfigurable();
+    // Hvad med extension.newContainer()??? Det er en user realm, men giver vel ikke mening at checke
+    void checkConfigurable();
 
     /**
      * @param <C>

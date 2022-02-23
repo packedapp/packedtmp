@@ -15,23 +15,19 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.base.Nullable;
-import app.packed.container.Assembly;
-import app.packed.container.Composer;
+import app.packed.component.UserOrExtension;
 import packed.internal.component.ComponentSetup;
 
 /**
  * Configuration of a realm.
  */
 // BuildRealm???? Is this runtime at all???
-public abstract sealed class RealmSetup permits ExtensionApplicationRegion,ComponentInstaller {
+public abstract sealed class RealmSetup permits ExtensionRealmSetup,AssemblySetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
-    private RealmAccessor accessor;
+    BeanModelManager accessor;
 
     /** The current active component in the realm. */
     protected ComponentSetup currentComponent;
@@ -42,13 +38,15 @@ public abstract sealed class RealmSetup permits ExtensionApplicationRegion,Compo
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
     // Jaaa, men det klare jo ogsaa @JavaBaseSupport
-    public RealmAccessor accessor() {
-        RealmAccessor r = accessor;
+    public final BeanModelManager accessor() {
+        BeanModelManager r = accessor;
         if (r == null) {
-            this.accessor = r = RealmAccessor.defaultFor(realmType());
+            this.accessor = r = BeanModelManager.defaultFor(realmType());
         }
         return r;
     }
+    
+    public abstract UserOrExtension owner(); 
 
     public void checkOpen() {
         // Tror maaske hellere vi skal kalde newOperation
@@ -75,17 +73,6 @@ public abstract sealed class RealmSetup permits ExtensionApplicationRegion,Compo
      */
     public abstract Class<?> realmType();
 
-    /**
-     * @param lookup
-     *            the lookup to use
-     * @see Assembly#lookup(Lookup)
-     * @see Composer#lookup(Lookup)
-     */
-    public void lookup(@Nullable Lookup lookup) {
-        requireNonNull(lookup, "lookup is null");
-        this.accessor = accessor().withLookup(lookup);
-    }
-
     public void wireCommit(ComponentSetup component) {
         currentComponent = component;
 //
@@ -107,5 +94,4 @@ public abstract sealed class RealmSetup permits ExtensionApplicationRegion,Compo
             currentComponent = null;
         }
     }
-
 }

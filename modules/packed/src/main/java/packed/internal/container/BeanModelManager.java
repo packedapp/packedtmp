@@ -37,10 +37,10 @@ import packed.internal.util.LookupValue;
  */
 // Altsaa er det mere en Bean ting???
 // BeanRealm???
-public abstract sealed class RealmAccessor {
+public abstract sealed class BeanModelManager {
 
-    /** A cache of class models per accessor. */
-    private final ClassValue<HookModel> components = new ClassValue<>() {
+    /** A cache of bean models per accessor. */
+    private final ClassValue<HookModel> beanModels = new ClassValue<>() {
 
         @Override
         protected HookModel computeValue(Class<?> type) {
@@ -57,8 +57,8 @@ public abstract sealed class RealmAccessor {
         }
     }
 
-    public final HookModel modelOf(Class<?> componentType) {
-        return components.get(componentType);
+    public final HookModel beanModelOf(Class<?> beanClass) {
+        return beanModels.get(beanClass);
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract sealed class RealmAccessor {
      *            the lookup to use
      * @return the new accessor
      */
-    abstract RealmAccessor withLookup(Lookup lookup);
+    abstract BeanModelManager withLookup(Lookup lookup);
 
     /**
      * Returns a container source model for the specified type
@@ -88,7 +88,7 @@ public abstract sealed class RealmAccessor {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static RealmAccessor defaultFor(Class<?> sourceType) {
+    public static BeanModelManager defaultFor(Class<?> sourceType) {
         return ModuleOpenedAccessor.MODELS.get(sourceType);
     }
 
@@ -96,7 +96,7 @@ public abstract sealed class RealmAccessor {
      * A accessor that relies on the user explicitly providing a {@link Lookup} object, for example, via
      * Assembly#lookup(Lookup).
      */
-    private static final class ModuleLookupAccessor extends RealmAccessor {
+    private static final class ModuleLookupAccessor extends BeanModelManager {
 
         /** The parent accessor. */
         private final ModuleOpenedAccessor defaultAccessor;
@@ -110,7 +110,7 @@ public abstract sealed class RealmAccessor {
         }
 
         @Override
-        RealmAccessor withLookup(Lookup lookup) {
+        BeanModelManager withLookup(Lookup lookup) {
             return defaultAccessor.withLookup(lookup);
         }
     }
@@ -119,14 +119,14 @@ public abstract sealed class RealmAccessor {
      * An accessor that uses relies on a module being open to Packed. Either via a module descriptor, or via command line
      * arguments such as {@code add-opens}.
      */
-    private static final class ModuleOpenedAccessor extends RealmAccessor {
+    private static final class ModuleOpenedAccessor extends BeanModelManager {
 
         /** A cache of accessor. */
-        private static final ClassValue<RealmAccessor.ModuleOpenedAccessor> MODELS = new ClassValue<>() {
+        private static final ClassValue<BeanModelManager.ModuleOpenedAccessor> MODELS = new ClassValue<>() {
 
             /** {@inheritDoc} */
             @Override
-            protected RealmAccessor.ModuleOpenedAccessor computeValue(Class<?> type) {
+            protected BeanModelManager.ModuleOpenedAccessor computeValue(Class<?> type) {
                 return new ModuleOpenedAccessor(type);
             }
         };
@@ -187,7 +187,7 @@ public abstract sealed class RealmAccessor {
          * @return the new realm
          */
         @Override
-        RealmAccessor withLookup(Lookup lookup) {
+        BeanModelManager withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.

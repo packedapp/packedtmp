@@ -10,9 +10,11 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Can be used on subclasses of (ComponentRealm)
+ * Can be used on subclasses of Assembly or as a meta-annotation that can be applied to an Assembly subclass.
  * 
  * Assembly : Will be applied to all containers installed by the user
+ * 
+ * <p>
  * 
  * Composer
  * 
@@ -20,10 +22,10 @@ import java.lang.invoke.MethodHandles;
  * 
  * Is ignored on any other classes.
  */
-
 // Vi inkludere alle containere defineret i en assembly.
 // Fordi det er det vi ogsaa goer med beans hook. Det giver ingen mening ikke at goere det.
-@Target({ ElementType.TYPE })
+
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited

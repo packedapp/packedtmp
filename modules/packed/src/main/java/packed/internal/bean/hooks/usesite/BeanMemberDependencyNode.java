@@ -25,7 +25,7 @@ import app.packed.component.BuildException;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.build.BeanMemberServiceSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
@@ -49,7 +49,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
             if (!Modifier.isStatic(smm.getModifiers()) && bean.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManagerSetup sbm = bean.parent.beans.getServiceManagerOrCreate();
+            ContainerInjectionManager sbm = bean.parent.beans.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addService(sa);
         } else {

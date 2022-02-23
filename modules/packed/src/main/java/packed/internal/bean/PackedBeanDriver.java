@@ -58,7 +58,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         this.beanType = requireNonNull(beanType);
         this.source = source;
         this.factory = factory;
-        this.hookModel = realm.accessor().modelOf(beanType);
+        this.hookModel = realm.accessor().beanModelOf(beanType);
     }
 
     public void extensionBean() {

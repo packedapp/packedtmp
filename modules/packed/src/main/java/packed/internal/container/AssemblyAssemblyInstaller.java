@@ -32,11 +32,11 @@ import packed.internal.util.ThrowableUtil;
 /**
  * A component installer created from an {@link Assembly} instance.
  */
-public final class AssemblyComponentInstaller extends ComponentInstaller {
+public final class AssemblyAssemblyInstaller extends AssemblySetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            AssemblyComponentInstaller.class, ContainerConfiguration.class);
+            AssemblyAssemblyInstaller.class, ContainerConfiguration.class);
 
     /** Or model of the assembly. */
     private final AssemblyModel assemblyModel;
@@ -62,7 +62,7 @@ public final class AssemblyComponentInstaller extends ComponentInstaller {
      *            optional wirelets
      * @return the application
      */
-    public AssemblyComponentInstaller(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyAssemblyInstaller(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.container = application.container;
@@ -79,7 +79,7 @@ public final class AssemblyComponentInstaller extends ComponentInstaller {
         assemblyModel.postBuild(configuration);
     }
 
-    public AssemblyComponentInstaller(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyAssemblyInstaller(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
 
         this.assembly = requireNonNull(assembly, "assembly is null");

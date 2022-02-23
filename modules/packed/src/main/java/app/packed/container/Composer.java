@@ -30,7 +30,7 @@ import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.ComposerComponentInstaller;
+import packed.internal.container.ComposerAssemblyInstaller;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -131,7 +131,7 @@ public abstract class Composer {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        configuration().container.realm.lookup(lookup);
+        configuration().container.assembly.lookup(lookup);
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class Composer {
         requireNonNull(composer, "composer is null");
 
         // Create a new application realm
-        ComposerComponentInstaller realm = new ComposerComponentInstaller(((PackedApplicationDriver<A>) driver), consumer, wirelets);
+        ComposerAssemblyInstaller realm = new ComposerAssemblyInstaller(((PackedApplicationDriver<A>) driver), consumer, wirelets);
 
         realm.build(composer, consumer);
 

@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.UserOrExtension;
 import app.packed.extension.Extension;
 
 /**
@@ -26,7 +27,7 @@ import app.packed.extension.Extension;
  * 
  * 
  */
-public final class ExtensionApplicationRegion extends RealmSetup {
+public final class ExtensionRealmSetup extends RealmSetup {
 
     /** A model of the extension/ */
     public final ExtensionModel extensionModel;
@@ -34,22 +35,29 @@ public final class ExtensionApplicationRegion extends RealmSetup {
     /** The extension in the root container. */
     private final ExtensionSetup root;
 
-    public boolean closed;
-
-    ExtensionApplicationRegion(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
+    ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }
 
     void close() {
         root.onApplicationClose();
-        root.realm().isClosed = true;
-        closed = true;
+        isClosed = true;
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> realmType() {
         return extensionModel.type();
+    }
+    
+    public Class<? extends Extension<?>> extensionType() {
+        return extensionModel.type();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public UserOrExtension owner() {
+        return UserOrExtension.extension(extensionModel.type());
     }
 }

@@ -104,29 +104,16 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return use(BeanSupport.class);
     }
 
-    // checkExtendable...
-    /**
-     * Checks that the new extensions can be added to the container in which this extension is registered.
-     * 
-     * @see #onAssemblyClose()
-     */
-    // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
-    // af brugeren med mindre XYZ...
-    // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
-    protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
-        configuration().checkExtensionConfigurable(extensionType);
-    }
-
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegates to {@link ExtensionConfiguration#checkAssemblyConfigurable()}.
+     * This method delegates to {@link ExtensionConfiguration#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    protected final void checkAssemblyConfigurable() {
-        configuration().checkAssemblyConfigurable();
+    protected final void checkConfigurable() {
+        configuration().checkConfigurable();
     }
 
     /**
@@ -275,7 +262,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     protected void onAssemblyClose() {
         for (ExtensionSetup c = setup.firstChild; c != null; c = c.siebling) {
             if (c.container.assembly == setup.container.assembly) {
-                c.instance().onApplicationClose();
+                c.instance().onAssemblyClose();
             }
         }
     }

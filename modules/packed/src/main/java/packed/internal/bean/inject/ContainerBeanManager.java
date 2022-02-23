@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import app.packed.base.Nullable;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 
 /** This class is responsible for managing all beans in a container. */
-public final class ContainerInjectorSetup {
+public final class ContainerBeanManager {
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
@@ -20,10 +20,15 @@ public final class ContainerInjectorSetup {
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private ServiceManagerSetup sm;
+    private ContainerInjectionManager sm;
 
-    public ContainerInjectorSetup(ContainerSetup container) {
+    @Nullable
+    private final ContainerBeanManager parent;
+
+    public ContainerBeanManager(ContainerSetup container, @Nullable ContainerBeanManager parent) {
         this.container = requireNonNull(container);
+        this.parent = parent;
+        //sm = new ContainerInjectionManager(parent == null ? null : parent.sm);
     }
 
     /**
@@ -44,12 +49,12 @@ public final class ContainerInjectorSetup {
     }
 
     @Nullable
-    public ServiceManagerSetup getServiceManager() {
+    public ContainerInjectionManager getServiceManager() {
         return sm;
     }
 
-    public ServiceManagerSetup getServiceManagerOrCreate() {
-        ServiceManagerSetup s = sm;
+    public ContainerInjectionManager getServiceManagerOrCreate() {
+        ContainerInjectionManager s = sm;
         if (s == null) {
             container.useExtension(ServiceExtension.class);
             s = sm;
@@ -59,12 +64,12 @@ public final class ContainerInjectorSetup {
 
     /**
      * This method is invoked from the constructor of a {@link ServiceExtension} to create a new
-     * {@link ServiceManagerSetup}.
+     * {@link ContainerInjectionManager}.
      * 
      * @return the new service manager
      */
-    public ServiceManagerSetup newServiceManagerFromServiceExtension() {
-        return sm = new ServiceManagerSetup(sm);
+    public ContainerInjectionManager newServiceManagerFromServiceExtension() {
+        return sm = new ContainerInjectionManager(sm);
     }
 
     public void resolve() {

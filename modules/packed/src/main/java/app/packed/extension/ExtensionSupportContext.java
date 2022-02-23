@@ -19,6 +19,21 @@ package app.packed.extension;
  *
  */
 // Tror
-public /* primitive */ class ExtensionSupportContext {
-
+public interface ExtensionSupportContext {
+    Class<? extends Extension<?>> extensionType();
+    
+    void checkConfigurable();
 }
+//
+//// checkExtendable...
+///**
+// * Checks that the new extensions can be added to the container in which this extension is registered.
+// * 
+// * @see #onAssemblyClose()
+// */
+//// Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
+//// af brugeren med mindre XYZ...
+//// Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
+//protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
+//    configuration().checkExtensionConfigurable(extensionType);
+//}

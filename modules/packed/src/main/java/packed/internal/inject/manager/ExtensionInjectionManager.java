@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.inject.manager;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ import packed.internal.bean.BeanSetup;
  */
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
-public final class ExtensionInjectionManager {
+public final class ExtensionInjectionManager extends InjectionManager {
 
     public final Map<Key<?>, BeanSetup> extensionBeans = new LinkedHashMap<>();
 
@@ -38,7 +38,7 @@ public final class ExtensionInjectionManager {
     @Nullable
     final ExtensionInjectionManager parent;
 
-    ExtensionInjectionManager(@Nullable ExtensionInjectionManager parent) {
+    public ExtensionInjectionManager(@Nullable ExtensionInjectionManager parent) {
         this.parent = parent;
     }
 

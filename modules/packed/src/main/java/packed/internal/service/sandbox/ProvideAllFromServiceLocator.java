@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import app.packed.base.Key;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
@@ -39,7 +39,7 @@ public final class ProvideAllFromServiceLocator {
     final AbstractServiceLocator locator; // currently not used
 
     /** The injector builder from where the service will be provided. */
-    public final ServiceManagerSetup sm;
+    public final ContainerInjectionManager sm;
 
     /**
      * Creates a new instance.
@@ -49,7 +49,7 @@ public final class ProvideAllFromServiceLocator {
      * @param locator
      *            the locator we are importing from
      */
-    public ProvideAllFromServiceLocator(ServiceManagerSetup sm, AbstractServiceLocator locator) {
+    public ProvideAllFromServiceLocator(ContainerInjectionManager sm, AbstractServiceLocator locator) {
         this.sm = requireNonNull(sm);
         this.locator = requireNonNull(locator);
 

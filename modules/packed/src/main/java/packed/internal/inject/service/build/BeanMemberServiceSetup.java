@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.component.ComponentSetup;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -40,7 +40,7 @@ public final class BeanMemberServiceSetup extends ServiceSetup {
     @Nullable
     public final PoolEntryHandle accessor;
 
-    public BeanMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependencyNode dependant, Key<?> key, boolean isConst) {
+    public BeanMemberServiceSetup(ContainerInjectionManager im, ComponentSetup compConf, DependencyNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.consumer = requireNonNull(dependant);
         // TODO fix Object

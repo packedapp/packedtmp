@@ -15,21 +15,32 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.TreeSet;
+
+import app.packed.base.Nullable;
+import app.packed.component.UserOrExtension;
+import app.packed.container.Assembly;
+import app.packed.container.Composer;
 
 /**
  *
  */
-public abstract sealed class ComponentInstaller extends RealmSetup permits AssemblyComponentInstaller,ComposerComponentInstaller {
+public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAssemblyInstaller,ComposerAssemblyInstaller {
 
-    /** All extensions that are used in the installer (if non embedded) An order set of extension according to the natural extension dependency order. */
+    /**
+     * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
+     * extension dependency order.
+     */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
-    /** Whether or not the installer shares . */
-    final boolean isEmbedding = false;
+    @Nullable
+    final ExtensionModel model = null;
 
-    void closeRealm() {
+    final void closeRealm() {
         ContainerSetup container = container();
         if (currentComponent != null) {
             currentComponent.onWired();
@@ -47,7 +58,7 @@ public abstract sealed class ComponentInstaller extends RealmSetup permits Assem
         if (container.parent == null) {
             // Root container
             // We must also close all extensions application-wide.
-            ArrayList<ExtensionApplicationRegion> list = new ArrayList<>(extensions.size());
+            ArrayList<ExtensionRealmSetup> list = new ArrayList<>(extensions.size());
 
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
@@ -57,7 +68,7 @@ public abstract sealed class ComponentInstaller extends RealmSetup permits Assem
             }
 
             // Close all extensions application wide
-            for (ExtensionApplicationRegion extension : list) {
+            for (ExtensionRealmSetup extension : list) {
                 extension.close();
             }
 
@@ -73,4 +84,24 @@ public abstract sealed class ComponentInstaller extends RealmSetup permits Assem
 
     /** {@return the setup of the root container in the realm.} */
     public abstract ContainerSetup container();
+
+    /**
+     * @param lookup
+     *            the lookup to use
+     * @see Assembly#lookup(Lookup)
+     * @see Composer#lookup(Lookup)
+     */
+    public void lookup(@Nullable Lookup lookup) {
+        requireNonNull(lookup, "lookup is null");
+        this.accessor = accessor().withLookup(lookup);
+    }
+
+    @Override
+    public final UserOrExtension owner() {
+        if (model == null) {
+            return UserOrExtension.user();
+        } else {
+            return UserOrExtension.extension(model.type());
+        }
+    }
 }

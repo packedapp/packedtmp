@@ -10,7 +10,7 @@ import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.service.ContainerInjectionManager;
 
 /**
  * A specialized mirror for {@link ServiceExtension}.
@@ -22,9 +22,9 @@ import packed.internal.inject.service.ServiceManagerSetup;
 public final class ServiceExtensionMirror extends ExtensionMirror {
 
     /** The service manager */
-    private final ServiceManagerSetup services;
+    private final ContainerInjectionManager services;
 
-    ServiceExtensionMirror(ServiceManagerSetup services) {
+    ServiceExtensionMirror(ContainerInjectionManager services) {
         this.services = requireNonNull(services);
     }
 

@@ -8,7 +8,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import packed.internal.container.AssemblyComponentInstaller;
+import packed.internal.container.AssemblyAssemblyInstaller;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 
@@ -53,7 +53,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         container.checkIsActive();
     }
 
-    public final void embed(Assembly assembly) {
+    final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
         
@@ -157,7 +157,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         PackedContainerDriver d = (PackedContainerDriver) requireNonNull(handle, "handle is null");
 
         // Create a new realm for the assembly
-        AssemblyComponentInstaller newRealm = new AssemblyComponentInstaller(d, container, assembly, wirelets);
+        AssemblyAssemblyInstaller newRealm = new AssemblyAssemblyInstaller(d, container, assembly, wirelets);
 
         container.realm.wirePrepare(); // check that the container is open for business
 

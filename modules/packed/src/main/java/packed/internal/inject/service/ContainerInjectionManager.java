@@ -33,6 +33,8 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
+import packed.internal.inject.manager.ApplicationInjectionManager;
+import packed.internal.inject.manager.InjectionManager;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
@@ -49,11 +51,11 @@ import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
 /**
  * A service manager is responsible for managing the services for a single container at build time.
  * <p>
- * A {@link ApplicationInjectorSetup} is responsible for managing 1 or more service manager tree that are directly
+ * A {@link ApplicationInjectionManager} is responsible for managing 1 or more service manager tree that are directly
  * connected and part of the same build.
  */
 // ServiceExtensionSetup
-public final class ServiceManagerSetup {
+public final class ContainerInjectionManager extends InjectionManager {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     private ServiceManagerRequirementsSetup dependencies;
@@ -70,7 +72,7 @@ public final class ServiceManagerSetup {
 
     /** Any parent this composer might have. */
     @Nullable
-    private final ServiceManagerSetup parent;
+    private final ContainerInjectionManager parent;
 
     /** All injectors added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
@@ -79,15 +81,15 @@ public final class ServiceManagerSetup {
     public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
 
     /** The tree this service manager is a part of. */
-    private final ApplicationInjectorSetup tree;
+    private final ApplicationInjectionManager applicationInjectionManager;
 
     /**
      * @param root
      *            the container this service manager is a part of
      */
-    public ServiceManagerSetup(@Nullable ServiceManagerSetup parent) {
+    public ContainerInjectionManager(@Nullable ContainerInjectionManager parent) {
         this.parent = parent;
-        this.tree = parent == null ? new ApplicationInjectorSetup() : parent.tree;
+        this.applicationInjectionManager = parent == null ? new ApplicationInjectionManager() : parent.applicationInjectionManager;
     }
 
     public void addService(ServiceSetup service) {
@@ -102,7 +104,7 @@ public final class ServiceManagerSetup {
 
     public void close(ContainerSetup container, LifetimePoolSetup pool) {
         if (parent == null) {
-            tree.finish(pool, container);
+            applicationInjectionManager.finish(pool, container);
         }
     }
 
@@ -203,7 +205,7 @@ public final class ServiceManagerSetup {
         // Process exports from any children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup child = c.beans.getServiceManager();
+                ContainerInjectionManager child = c.beans.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
@@ -234,7 +236,7 @@ public final class ServiceManagerSetup {
         // Process child requirements to children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup m = c.beans.getServiceManager();
+                ContainerInjectionManager m = c.beans.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);
                 }
