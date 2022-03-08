@@ -18,6 +18,7 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanOldKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
@@ -43,12 +44,16 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** A model of the hooks on the bean. */
     public final HookModel hookModel;
 
-    BeanOldKind kind = BeanOldKind.CONTAINER_BEAN;
+    private final BeanKind kind;
+    BeanOldKind Oldkind = BeanOldKind.CONTAINER_BEAN;
+
     final RealmSetup realm;
 
     final Object source;
 
-    public PackedBeanDriver(ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, InternalFactory<?> factory, Object source) {
+    public PackedBeanDriver(BeanKind kind, ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, InternalFactory<?> factory,
+            Object source) {
+        this.kind = requireNonNull(kind);
         this.container = requireNonNull(container);
         if (userOrExtension.isUser()) {
             this.realm = container.realm;
@@ -61,14 +66,28 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         this.hookModel = realm.accessor().beanModelOf(beanType);
     }
 
+    public Class<?> beanClass() {
+        return beanType;
+    }
+
     public void extensionBean() {
         this.extensionBean = true;
     }
 
+    public BeanKind kind() {
+        return kind;
+    }
+
     /** {@inheritDoc} */
     public BeanSetup newSetup(ComponentConfiguration configuration) {
+        if (this.configuration != null) {
+            throw new IllegalStateException("This driver can only be bound once");
+        }
         this.configuration = requireNonNull(configuration);
         realm.wirePrepare();
+
+        // Skal lave saa mange checks som muligt inde vi laver BeanSetup
+
         BeanSetup bs = new BeanSetup(container, container.realm, container.lifetime, this);
         realm.wireCommit(bs);
         return bs;
@@ -80,23 +99,31 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 //        else if (kind != BeanType.BASE) {
 //            throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
 //        }
-        this.kind = BeanOldKind.PROTOTYPE_UNMANAGED;
+        this.Oldkind = BeanOldKind.PROTOTYPE_UNMANAGED;
     }
 
-    public static <T> PackedBeanDriver<T> ofFactory(ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
+    private static BeanKind checkKind(BeanKind kind, int type) {
+
+        return kind;
+    }
+
+    public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
         InternalFactory<T> f = InternalFactory.canonicalize(factory);
-        return new PackedBeanDriver<>(container, owner, f.rawType(), f, f);
+        return new PackedBeanDriver<>(kind, container, owner, f.rawType(), f, f);
     }
 
-    public static <T> PackedBeanDriver<T> ofInstance(ContainerSetup container, UserOrExtension owner, T instance) {
+    public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, UserOrExtension owner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
-        return new PackedBeanDriver<>(container, owner, instance.getClass(), null, instance);
+        // TODO check kind
+        // cannot be operation, managed or unmanaged, Functional
+        return new PackedBeanDriver<>(kind, container, owner, instance.getClass(), null, instance);
     }
+
 }

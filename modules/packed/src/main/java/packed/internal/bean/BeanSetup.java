@@ -91,7 +91,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         this.factory = beanHandle.factory;
         this.hookModel = beanHandle.hookModel;
         this.beanHandle = beanHandle;
-        this.singletonHandle = beanHandle.kind == BeanOldKind.CONTAINER_BEAN ? lifetime.pool.reserve(beanHandle.beanType) : null;
+        this.singletonHandle = beanHandle.kind() == BeanKind.CONTAINER ? lifetime.pool.reserve(beanHandle.beanType) : null;
 
         // Does this bean belong to an extension
         // Maybe test if isExtensionBean instead

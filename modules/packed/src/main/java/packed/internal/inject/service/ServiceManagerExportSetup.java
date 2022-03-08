@@ -226,7 +226,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
-        PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
+        PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
     }
 
     /**

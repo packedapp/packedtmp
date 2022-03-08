@@ -25,10 +25,11 @@ import app.packed.base.Key;
 public class ContainerBeanConfiguration<T> extends ProvidableBeanConfiguration<T> {
 
     /**
-     * @param maker
+     * @param driver
+     *            the bean driver to use for creating the bean
      */
-    public ContainerBeanConfiguration(BeanDriver<T> maker) {
-        super(maker);
+    public ContainerBeanConfiguration(BeanDriver<T> driver) {
+        super(driver);
     }
 
     /** {@inheritDoc} */

@@ -130,7 +130,7 @@ final class ProvideMethodBootstrap extends RealMethodSidecarBootstrap {
     /** {@inheritDoc} */
     @Override
     protected void bootstrap() {
-        serviceRegister(getAnnotation(Provide.class).constant());
+        serviceRegister(method().getAnnotation(Provide.class).constant());
         // new Factory<@Provide Long>(() -> 2L) {};
     }
 }

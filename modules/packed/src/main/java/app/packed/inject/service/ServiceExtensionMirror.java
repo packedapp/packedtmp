@@ -41,7 +41,7 @@ public final class ServiceExtensionMirror extends ExtensionMirror {
 
     // Alternativet er kun at have
     public ServiceContract contract() {
-        return services.newServiceContract();
+        return services.ios.newServiceContract();
     }
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...

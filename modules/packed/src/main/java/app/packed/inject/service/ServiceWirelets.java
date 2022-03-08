@@ -25,9 +25,9 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
-import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
 
@@ -129,7 +129,7 @@ public final class ServiceWirelets {
         return new Service1stPassWirelet() {
             @Override
             protected void process(ContainerInjectionManager child) {
-                child.exports().transform(transformation);
+                child.ios.exportsOrCreate().transform(transformation);
             }
         };
     }
@@ -147,7 +147,7 @@ public final class ServiceWirelets {
             /** {@inheritDoc} */
             @Override
             protected void process(ContainerInjectionManager child) {
-                child.exports().transform(transformation);
+                child.ios.exportsOrCreate().transform(transformation);
             }
         };
     }
@@ -183,7 +183,7 @@ public final class ServiceWirelets {
         return new Service2ndPassWirelet() {
             @Override
             protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
-                PackedServiceComposer.transformInplaceAttachment(map, transformation, child.newServiceContract());
+                PackedServiceComposer.transformInplaceAttachment(map, transformation, child.ios.newServiceContract());
             }
         };
     }

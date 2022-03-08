@@ -67,7 +67,7 @@ public final class BeanSupport extends ExtensionSupport {
 
     // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofFactory(container, UserOrExtension.extension(extensionType), BeanSupport.defaultFactoryFor(implementation));
+        PackedBeanDriver<T> m = PackedBeanDriver.ofFactory(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), BeanSupport.defaultFactoryFor(implementation));
         m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
     }
@@ -77,40 +77,49 @@ public final class BeanSupport extends ExtensionSupport {
     }
 
     public final <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(container, UserOrExtension.extension(extensionType), instance);
+        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), instance);
         m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
+    }
 
+    public final <T> BeanDriver<T> newDriver(BeanKind kind, UserOrExtension agent) {
+//        
+//
+//        /**
+//         * Creates a new bean driver for a functional bean.
+//         * <p>
+//         * Operations are added to functional beans via {@link BeanDriver#addFunction(Object)}.
+//         * 
+//         * @param agent
+//         * @return the new driver
+//         */
+//        public final BeanDriver<Void> newFunctionalDriver(UserOrExtension agent) {
+//            throw new UnsupportedOperationException();
+//        }
+        throw new UnsupportedOperationException();
     }
 
     // *********************** ***********************
     // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
-    public final <T> BeanDriver<T> newDriver(UserOrExtension agent, Class<T> implementation) {
-        return PackedBeanDriver.ofFactory(container, agent, BeanSupport.defaultFactoryFor(implementation));
+    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, UserOrExtension agent, Class<T> implementation) {
+        // Vi skal ikke wrappe i factory
+
+//      final <T> BeanDriver<T> newCustomFactoryDriver(UserOrExtension agent, Class<T> implementation) {
+//      // Ideen er lidt at man kan lave sine egne factories
+//      // Alternativ saa wrapper newDriver(UOE, Class) ikke Class i et Factory til at starte med
+//      // MEn kun hvis brugere ikke specificere deres egen factory
+//      throw new UnsupportedOperationException();
+//  }
+
+        return PackedBeanDriver.ofFactory(kind, container, agent, BeanSupport.defaultFactoryFor(implementation));
     }
 
-    public final <T> BeanDriver<T> newDriver(UserOrExtension agent, Factory<T> factory) {
-        return PackedBeanDriver.ofFactory(container, agent, factory);
+    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, UserOrExtension agent, T instance) {
+        return PackedBeanDriver.ofInstance(kind, container, agent, instance);
     }
 
-    public final <T> BeanDriver<T> newDriverInstance(UserOrExtension agent, T instance) {
-        return PackedBeanDriver.ofInstance(container, agent, instance);
-    }
-
-    public final <T> BeanDriver<T> newSyntheticDriver(UserOrExtension agent) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Creates a new bean driver for a functional bean.
-     * <p>
-     * Operations are added to functional beans via {@link BeanDriver#addFunction(Object)}.
-     * 
-     * @param agent
-     * @return the new driver
-     */
-    public final BeanDriver<Void> newFunctionalDriver(UserOrExtension agent) {
-        throw new UnsupportedOperationException();
+    public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, UserOrExtension agent, Factory<T> factory) {
+        return PackedBeanDriver.ofFactory(kind, container, agent, factory);
     }
 
     /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
@@ -121,7 +130,6 @@ public final class BeanSupport extends ExtensionSupport {
             return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
         }
     };
-
 
     /**
      * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
@@ -140,7 +148,6 @@ public final class BeanSupport extends ExtensionSupport {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 
-    
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
      * <ul>

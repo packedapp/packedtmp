@@ -17,10 +17,15 @@ package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
+
+import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceContract;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
 
 /**
  *
@@ -57,7 +62,7 @@ public class InputOutputServiceManager {
     public ServiceManagerExportSetup exportsOrCreate() {
         ServiceManagerExportSetup r = exports;
         if (r == null) {
-            r = exports = new ServiceManagerExportSetup(null);
+            r = exports = new ServiceManagerExportSetup(cim);
         }
         return r;
     }
@@ -116,5 +121,36 @@ public class InputOutputServiceManager {
             r = requirements = new ServiceManagerRequirementsSetup();
         }
         return r;
+    }
+    
+
+    /** A service locator wrapping all exported services. */
+    static final class ExportedServiceLocator extends AbstractServiceLocator {
+
+        /** All services that this injector provides. */
+        private final Map<Key<?>, ? extends Service> services;
+
+        ExportedServiceLocator(Map<Key<?>, ? extends Service> services) {
+            this.services = requireNonNull(services);
+        }
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @Override
+        public Map<Key<?>, Service> asMap() {
+            // as() + addAttribute on all services is disabled before we start the
+            // export process. So ServiceBuild can be considered as effectively final
+            return (Map) services;
+        }
+
+        @Override
+        protected String useFailedMessage(Key<?> key) {
+            // /child [ss.BaseMyAssembly] does not export a service with the specified key
+
+            // FooAssembly does not export a service with the key
+            // It has an internal service. Maybe you forgot to export it()
+            // Is that breaking encapsulation
+            // container.realm().realmType();
+            return "A service with the specified key, key = " + key;
+        }
     }
 }

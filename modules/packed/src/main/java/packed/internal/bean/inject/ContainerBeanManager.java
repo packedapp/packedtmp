@@ -77,7 +77,7 @@ public final class ContainerBeanManager {
         // I think we must plug this in somewhere
 
         if (sm != null) {
-            sm.requirements().checkForMissingDependencies(container);
+            sm.ios.requirementsOrCreate().checkForMissingDependencies(container);
             sm.close(container, container.lifetime.pool);
         }
         // TODO Check any contracts we might as well catch it early

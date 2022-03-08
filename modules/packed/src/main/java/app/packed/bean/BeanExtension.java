@@ -43,7 +43,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.defaultFactoryFor(implementation));
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, UserOrExtension.user(),
+                BeanSupport.defaultFactoryFor(implementation));
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -57,7 +58,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         // Med mindre vi laver en User->Extension, skal vi jo have noget a.la. UserOrExtension.realm();
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, UserOrExtension.user(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -73,7 +74,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(container, UserOrExtension.user(), instance);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, UserOrExtension.user(), instance);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -127,14 +128,15 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), BeanSupport.defaultFactoryFor(implementation));
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, UserOrExtension.user(),
+                BeanSupport.defaultFactoryFor(implementation));
         handle.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(container, UserOrExtension.user(), factory);
+        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, UserOrExtension.user(), factory);
         bh.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
         return sbc.provide();

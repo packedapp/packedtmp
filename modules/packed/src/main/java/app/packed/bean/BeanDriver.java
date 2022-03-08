@@ -15,6 +15,7 @@
  */
 package app.packed.bean;
 
+import java.lang.reflect.Member;
 import java.util.function.Function;
 
 import app.packed.base.Key;
@@ -25,16 +26,31 @@ import packed.internal.bean.PackedBeanDriver;
 /**
  * A bean driver must be created via {@link BeanSupport}.
  */
+//Alternativ name: BeanDefiner, Soeg videre under GraalmVM fra og med D
 @SuppressWarnings("rawtypes")
-// Alternativ name: BeanDefiner, Soeg videre under GraalmVM fra og med D
 public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
+    default FunctionalBeanOperationConfiguration addOperation() {
+        throw new UnsupportedOperationException();
+    }
+    
     // Taenker den foerst bliver commitet naar man laver en configuration???
 
-    default InvokerConfiguration factory() {
+    default FunctionalBeanOperationConfiguration addOperationFunctional(Class<?> functionType, Object function) {
         throw new UnsupportedOperationException();
     }
 
+    default void addSidecar(Class<?> clazz) {}
+
+    default void addSidecar(Factory<?> clazz) {}
+
+    //////////////// Sidecars
+    default void addSidecarInstance(Object o) {}
+
+    Class<?> beanClass();
+
+    BeanKind kind();
+    
     default void bindOperationMirror() {
         // bind(EntityMirror.class);
         // Mulighederne er uendelige, og
@@ -47,28 +63,29 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
     default void checkWiring() {}
 
-    void prototype();
-
-    //////////////// Sidecars
-    default void addSidecarInstance(Object o) {}
-
-    default void addSidecar(Class<?> clazz) {}
-
-    default void addSidecar(Factory<?> clazz) {}
+    default InvokerConfiguration factory() {
+        throw new UnsupportedOperationException();
+    }
 
     // Provide stuff, state holder, Lifecycle
 
-    default FunctionalBeanOperationConfiguration addOperationFunctional(Class<?> functionType, Object function) {
+    default InvokerConfiguration factory(Member member) {
+        // Ideen er lidt at Member er en constructor
+        // statisks field
+        // static metode
+        // Som skal returne en exact bean class
+        
+        // Men hvorfor ikke bare tage et Factory????
         throw new UnsupportedOperationException();
     }
 
-    default FunctionalBeanOperationConfiguration addOperation() {
-        throw new UnsupportedOperationException();
-    }
-    
+    void prototype();
+
     interface FunctionalBeanOperationConfiguration {
         FunctionalBeanOperationConfiguration addMirror(Class<? extends BeanOperationMirror> bomType);
+
         FunctionalBeanOperationConfiguration name(String name);
+
         FunctionalBeanOperationConfiguration prefix(String prefix); // Maaske tilfoejer vi bare automatisk et prefix, hvis der eksistere en med samme navn
         /// IDK
     }
@@ -80,6 +97,20 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
 // Inject BeanManager<T>
 // MH(ExtensionContext, )
+
+/**
+*
+*/
+class BeanZBuilder {
+
+    public BeanConfiguration build() {
+        return null;
+    }
+
+    public <C extends BeanConfiguration> C build(C configuration) {
+        return configuration;
+    }
+}
 
 /* sealed */ interface ZBuilder {
 
@@ -110,20 +141,6 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
     // reflectOn(Fields|Methods|Constructors)
     // look in declaring class
-}
-
-/**
-*
-*/
-class BeanBuilder {
-
-   public BeanConfiguration build() {
-       return null;
-   }
-
-   public <C extends BeanConfiguration> C build(C configuration) {
-       return configuration;
-   }
 }
 
 //BeanBuilder, BeanRegistrant

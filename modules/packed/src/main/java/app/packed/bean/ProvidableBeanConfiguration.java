@@ -23,8 +23,8 @@ import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.ContainerInjectionManager;
+import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 
 /**
@@ -144,7 +144,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
                 sms.addService(setup);
             }
             if (export != null) {
-                sms.exports().export(setup);
+                sms.ios.exportsOrCreate().export(setup);
             }
         }
 

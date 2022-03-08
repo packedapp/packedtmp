@@ -122,12 +122,11 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     @Nullable
     private DependencyProducer resolve0(ContainerInjectionManager sbm, InternalDependency sd, int i) {
         DependencyProducer e = null;
-        if (bean != null) {
-            //// Checker om der er hooks der provider servicen
-            HookModel sm = bean.hookModel;
-            if (sm.sourceServices != null) {
-                e = sm.sourceServices.get(sd.key());
-            }
+
+        //// Checker om der er hooks der provider servicen
+        HookModel sm = bean.hookModel;
+        if (sm.sourceServices != null) {
+            e = sm.sourceServices.get(sd.key());
         }
 
         if (sbm != null) {
@@ -154,7 +153,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                 }
             }
 
-            sbm.requirements().recordResolvedDependency(this, i, sd, e, false);
+            sbm.ios.requirementsOrCreate().recordResolvedDependency(this, i, sd, e, false);
         }
         return e;
     }

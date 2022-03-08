@@ -18,18 +18,7 @@ package app.packed.bean;
 /**
  *
  */
-// Maybethis just a lifecycle operation...
-public class BeanFactoryMirror {
-    // Den her kan jo evt. have mere info om factory...
+// Ideen er lidt man kan faa den injected i sidecars
+public final record BeanInstance<T> (T instance) {
+    // requireNonNull(instance);
 }
-
-//Should this extend Lifecycle operation????
-//Maaske er det ikke en operation??? 
-//Giver ikke mening at have error handle, eller lifecycle
-//Det er ikke en operation... IDK
-
-// Det der taler lidt imod at det er en operation er fx
-// ServiceProvide(Prototype) jo ogsaa er en operation...
-// Saa invokere vi lige pludselig 2 operationer...
-// Og hvad med ErrorHandlingen den ligger vel hos
-// ServiceProvide, lad os fx sige vi har

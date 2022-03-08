@@ -24,8 +24,6 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
@@ -54,7 +52,6 @@ import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
  * A {@link ApplicationInjectionManager} is responsible for managing 1 or more service manager tree that are directly
  * connected and part of the same build.
  */
-// ServiceExtensionSetup
 public final class ContainerInjectionManager extends InjectionManager {
 
     /** An error manager that is lazily initialized. */
@@ -67,23 +64,19 @@ public final class ContainerInjectionManager extends InjectionManager {
     /** Any parent this composer might have. */
     @Nullable
     private final ContainerInjectionManager parent;
-    
+
     //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
     /** All locators added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
-    
+
     /** The tree this service manager is a part of. */
     private final ApplicationInjectionManager applicationInjectionManager;
 
-    /** Handles everything to do with dependencies, for example, explicit requirements. */
-    private ServiceManagerRequirementsSetup requirements;
+    public final InputOutputServiceManager ios = new InputOutputServiceManager(this);
 
-    /** Deals with everything about exporting services to a parent container. */
-    private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
-    
     /**
      * @param root
      *            the container this service manager is a part of
@@ -110,19 +103,6 @@ public final class ContainerInjectionManager extends InjectionManager {
     }
 
     /**
-     * Returns the dependency manager for this builder.
-     * 
-     * @return the dependency manager for this builder
-     */
-    public ServiceManagerRequirementsSetup requirements() {
-        ServiceManagerRequirementsSetup d = requirements;
-        if (d == null) {
-            d = requirements = new ServiceManagerRequirementsSetup();
-        }
-        return d;
-    }
-
-    /**
      * Returns an error manager.
      * 
      * @return an error manager
@@ -135,45 +115,14 @@ public final class ContainerInjectionManager extends InjectionManager {
         return e;
     }
 
-    /**
-     * Returns the {@link ServiceManagerExportSetup} for this builder.
-     * 
-     * @return the service exporter for this builder
-     */
-    public ServiceManagerExportSetup exports() {
-        return exports;
-    }
-
-    /** {@return a service contract for this manager.} */
-    public ServiceContract newServiceContract() {
-        ServiceContract.Builder builder = ServiceContract.builder();
-
-        // Add exports
-        if (exports != null) {
-            for (ServiceSetup n : exports) {
-                builder.provide(n.key());
-            }
-        }
-
-        // Add requirements (mandatory or optional)
-        if (requirements != null && requirements.requirements != null) {
-            for (Requirement r : requirements.requirements.values()) {
-                if (r.isOptional) {
-                    builder.requireOptional(r.key);
-                } else {
-                    builder.require(r.key);
-                }
-            }
-        }
-
-        return builder.build();
-    }
-
     public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (ServiceSetup export : exports) {
-            runtimeEntries.put(export.key(), export.toRuntimeEntry(con));
+        if (ios.hasExports()) {
+            for (ServiceSetup export : ios.exports()) {
+                runtimeEntries.put(export.key(), export.toRuntimeEntry(con));
+            }
+
         }
 
         // make the entries immutable
@@ -183,7 +132,7 @@ public final class ContainerInjectionManager extends InjectionManager {
         if (Injector.class.isAssignableFrom(driver.applicationRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
-            return new ExportedServiceLocator(runtimeEntries);
+            return new InputOutputServiceManager.ExportedServiceLocator(runtimeEntries);
         }
     }
 
@@ -213,8 +162,8 @@ public final class ContainerInjectionManager extends InjectionManager {
                     PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
                 }
 
-                if (child != null && child.exports != null) {
-                    for (ServiceSetup a : child.exports) {
+                if (child != null && child.ios.hasExports()) {
+                    for (ServiceSetup a : child.ios.exports()) {
                         resolvedServices.computeIfAbsent(a.key(), k -> new ServiceDelegate()).resolve(this, a);
                     }
                 }
@@ -229,8 +178,8 @@ public final class ContainerInjectionManager extends InjectionManager {
         }
 
         // Process own exports
-        if (exports != null) {
-            exports.resolve(this);
+        if (ios.hasExports()) {
+            ios.exports().resolve(this);
         }
         // Add error messages if any nodes with the same key have been added multiple times
 
@@ -251,8 +200,10 @@ public final class ContainerInjectionManager extends InjectionManager {
         if (parent != null) {
             for (Entry<Key<?>, ServiceDelegate> e : parent.resolvedServices.entrySet()) {
                 // we need to remove all of our exports.
-                if (!exports().contains(e.getKey())) {
-                    map.put(e.getKey(), e.getValue().getSingle());
+                if (ios.hasExports()) {
+                    if (!ios.exports().contains(e.getKey())) {
+                        map.put(e.getKey(), e.getValue().getSingle());
+                    }
                 }
             }
         }
@@ -265,7 +216,7 @@ public final class ContainerInjectionManager extends InjectionManager {
 
         // If Processere wirelets...
 
-        ServiceManagerRequirementsSetup srm = requirements;
+        ServiceManagerRequirementsSetup srm = ios.requirements();
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
                 ServiceSetup sa = map.get(r.key);
@@ -295,33 +246,4 @@ public final class ContainerInjectionManager extends InjectionManager {
         return e;
     }
 
-    /** A service locator wrapping all exported services. */
-    private static final class ExportedServiceLocator extends AbstractServiceLocator {
-
-        /** All services that this injector provides. */
-        private final Map<Key<?>, ? extends Service> services;
-
-        private ExportedServiceLocator(Map<Key<?>, ? extends Service> services) {
-            this.services = requireNonNull(services);
-        }
-
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        @Override
-        public Map<Key<?>, Service> asMap() {
-            // as() + addAttribute on all services is disabled before we start the
-            // export process. So ServiceBuild can be considered as effectively final
-            return (Map) services;
-        }
-
-        @Override
-        protected String useFailedMessage(Key<?> key) {
-            // /child [ss.BaseMyAssembly] does not export a service with the specified key
-
-            // FooAssembly does not export a service with the key
-            // It has an internal service. Maybe you forgot to export it()
-            // Is that breaking encapsulation
-            // container.realm().realmType();
-            return "A service with the specified key, key = " + key;
-        }
-    }
 }

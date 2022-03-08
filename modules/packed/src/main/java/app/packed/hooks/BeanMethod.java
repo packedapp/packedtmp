@@ -17,16 +17,15 @@ package app.packed.hooks;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import app.packed.hooks.BeanClass.ClassHook;
+import app.packed.hooks3.MethodHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
 
@@ -101,24 +100,6 @@ public abstract class BeanMethod {
         builder().disable();
     }
 
-    /**
-     * Returns an annotated element from the method that is being bootstrapped.
-     * 
-     * @see AnnotatedElement#getAnnotation(Class)
-     */
-    // MS extends AnnotatedElement???? With meta annotations.
-    // Call method if you want without them...
-    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return builder().methodUnsafe().getAnnotation(annotationClass);
-    }
-
-    public final Annotation[] getAnnotations() {
-        return builder().methodUnsafe().getAnnotations();
-    }
-
-    public final <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return builder().methodUnsafe().getAnnotationsByType(annotationClass);
-    }
 
     /**
      * Returns the modifiers of the method.
@@ -135,19 +116,6 @@ public abstract class BeanMethod {
         return true;
     }
 
-    /**
-     * Returns true if an annotation for the specified type is <em>present</em> on the hooked method, else false.
-     * 
-     * @param annotationClass
-     *            the Class object corresponding to the annotation type
-     * @return true if an annotation for the specified annotation type is present on the hooked method, else false
-     * 
-     * @see Method#isAnnotationPresent(Class)
-     */
-    public final boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        // TODO process meta annotations...
-        return builder().methodUnsafe().isAnnotationPresent(annotationClass);
-    }
 
     /**
      * @param <T>

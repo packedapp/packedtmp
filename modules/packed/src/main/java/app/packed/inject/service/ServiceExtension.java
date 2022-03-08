@@ -130,7 +130,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        services.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     /** {@return a mirror for this extension.} */
@@ -167,7 +167,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            services.requirements().require(key, false /* , cs */);
+            services.ios.requirementsOrCreate().require(key, false /* , cs */);
         }
     }
 
@@ -192,7 +192,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            services.requirements().require(key, true /* , cs */);
+            services.ios.requirementsOrCreate().require(key, true /* , cs */);
         }
     }
 
@@ -212,7 +212,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
-        services.exports().setExportTransformer(transformer);
+        services.ios.exportsOrCreate().setExportTransformer(transformer);
     }
 
     /**

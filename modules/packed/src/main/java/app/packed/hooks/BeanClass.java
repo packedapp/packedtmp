@@ -125,18 +125,6 @@ public abstract class BeanClass {
         return builder().fields(declaredFieldsOnly, skipClasses);
     }
 
-    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return type().getAnnotation(annotationClass);
-    }
-
-    public final Annotation[] getAnnotations() {
-        return type().getAnnotations();
-    }
-
-    public final <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return type().getAnnotationsByType(annotationClass);
-    }
-
     public final boolean hasFullAccess() {
         return builder().model.allowAllAccess;
     }
