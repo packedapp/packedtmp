@@ -46,9 +46,13 @@ public interface BeanDriverSandbox {
         Set<State> states();
     }
     
+    @SuppressWarnings("unused")
     public static void main(BeanDriverSandbox bs) {
         LifecycleInvoker[] inv = bs.lifecycleRunUntil(RunState.RUNNING, RunState.TERMINATED);
+        
+        
         LifecycleInvoker asyncStart = inv[0];
+        
         LifecycleInvoker asyncStop = inv[0];
         
         // asyncStop.asyncMode
