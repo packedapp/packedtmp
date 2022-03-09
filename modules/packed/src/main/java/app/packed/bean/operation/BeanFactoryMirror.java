@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.bean.operation;
 
 /**
  *
  */
-// Maybethis just a lifecycle operation...
+// Maybethis just a bean lifecycle operation... <init>
 public class BeanFactoryMirror {
     // Den her kan jo evt. have mere info om factory...
 }

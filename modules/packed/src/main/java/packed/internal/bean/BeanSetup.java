@@ -10,18 +10,19 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanOldKind;
+import app.packed.bean.BeanSupport;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.inject.Factory;
+import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.InternalFactory;
@@ -38,17 +39,15 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
-    final PackedBeanDriver<?> beanHandle;
-
-    /** The kind of bean we are configuring. */
-    public final BeanOldKind beanKind;
-
     /**
      * Non-null if a bean instance needs to be created at runtime. This include beans that have an empty constructor (no
      * actual dependencies). Null if a functional bean, or a bean instance was specified when configuring the bean.
      */
     @Nullable
     private final DependencyNode dependencyNode;
+
+    /** The driver used to create a bean. */
+    public final PackedBeanDriver<?> driver;
 
     /**
      * Factory that was specified if this bean was created from a Factory or Class, null if created from an instance, for
@@ -61,48 +60,46 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     private final InternalFactory<?> factory;
 
     /** A model of the hooks on the bean. */
+    @Nullable
     public final HookModel hookModel;
+
+    private InjectionManager injectionManager;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     // What if managed prototype bean????
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    @Nullable
-    final ExtensionSetup extension;
-    private InjectionManager injectionManager;
+    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanDriver<?> driver) {
+        super(container.application, realm, lifetime, container);
 
-    public InjectionManager injectionManager() {
-        InjectionManager m = injectionManager;
-        if (m == null) {
-            if (extension == null) {
-                
-            } else {
-                m = injectionManager = extension.injectionManager;
-            }
+        this.driver = driver;
+        this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanType);
+
+        switch (driver.sourceType) {
+        case CLASS:
+            Factory<?> fac = BeanSupport.defaultFactoryFor((Class<?>) driver.source);
+            this.factory = InternalFactory.canonicalize(fac);
+            break;
+        case FACTORY:
+            this.factory = InternalFactory.canonicalize((Factory<?>) driver.source);
+            break;
+        case INSTANCE:
+            this.factory = null;
+            break;
+        default:
+            this.factory = null;
         }
 
-        return m;
-    }
-
-    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanDriver<?> beanHandle) {
-        super(container.application, realm, lifetime, container);
-        this.beanKind = BeanOldKind.CONTAINER_BEAN;
-        this.factory = beanHandle.factory;
-        this.hookModel = beanHandle.hookModel;
-        this.beanHandle = beanHandle;
-        this.singletonHandle = beanHandle.kind() == BeanKind.CONTAINER ? lifetime.pool.reserve(beanHandle.beanType) : null;
+        this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? lifetime.pool.reserve(driver.beanType) : null;
 
         // Does this bean belong to an extension
         // Maybe test if isExtensionBean instead
-        if (realm instanceof ExtensionRealmSetup s) {
-            ExtensionSetup es = extension = container.useExtensionSetup(s.extensionType(), null);
-            es.injectionManager.extensionBeans.put(Key.of(beanHandle.beanType), this);
-        } else {
-            this.extension = null;
+        if (driver.beanKind() == BeanKind.EXTENSION) {
+            driver.extension.injectionManager.extensionBeans.put(Key.of(driver.beanType), this);
         }
 
-        if (factory == null) {
+        if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {
             // We already have a bean instance, no need to have an injection node for creating a new bean instance.
             this.dependencyNode = null;
 
@@ -111,7 +108,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             // Ja der er helt sikker forskel paa noget der bliver initializeret naar containeren bliver initialiseret
             // og saa constant over hele applikation.
             // Skal vi overhoved have en constant pool???
-            lifetime.pool.addConstant(pool -> singletonHandle.store(pool, beanHandle.source));
+            lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
             // Or maybe just bind the instance directly in the method handles.
         } else {
             List<InternalDependency> dependencies = factory.dependencies();
@@ -125,10 +122,13 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         }
 
         // Find a hook model for the bean type and wire it
-        hookModel.onWire(this);
+        if (hookModel != null) {
+            hookModel.onWire(this);
 
-        // Set the name of the component if it have not already been set using a wirelet
-        initializeNameWithPrefix(hookModel.simpleName());
+            // Set the name of the component if it have not already been set using a wirelet
+            initializeNameWithPrefix(hookModel.simpleName());
+        }
+        // TODO naming
     }
 
     public Key<?> defaultKey() {
@@ -158,6 +158,20 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         return dependencyNode;
     }
 
+    public InjectionManager injectionManager() {
+        InjectionManager m = injectionManager;
+        if (m == null) {
+            ExtensionSetup extension = driver.extension;
+            if (extension == null) {
+
+            } else {
+                m = injectionManager = extension.injectionManager;
+            }
+        }
+
+        return m;
+    }
+
     /** {@inheritDoc} */
     @Override
     public BeanMirror mirror() {
@@ -168,7 +182,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Override
     public void onWired() {
         try {
-            MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact((ComponentConfiguration) beanHandle.configuration);
+            MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact((ComponentConfiguration) driver.configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -180,8 +194,14 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public Class<?> instanceType() {
+        public Class<?> beanClass() {
             return hookModel.clazz;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BeanKind beanKind() {
+            return driver.beanKind();
         }
 
         /** {@inheritDoc} */
@@ -193,11 +213,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         /** {@inheritDoc} */
         public final ContainerMirror container() {
             return parent.mirror();
-        }
-
-        @Override
-        public BeanKind kind() {
-            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */

@@ -26,35 +26,28 @@ import packed.internal.bean.PackedBeanDriver;
 /**
  * A bean driver must be created via {@link BeanSupport}.
  */
-//Alternativ name: BeanDefiner, Soeg videre under GraalmVM fra og med D
+// INFO (type, kind)
+// Operations (add synthetic/functional)
+// Sidecars (add)
+// Lifecycle (Custom Factory, InvocationConfigurations)
+// Services (bind, bindContext)
+
+// NamePrefixs
+// Scan (disable, do scan) ???
+// callacbks, onBound, onBuild, ...
 @SuppressWarnings("rawtypes")
 public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
-    default FunctionalBeanOperationConfiguration addOperation() {
-        throw new UnsupportedOperationException();
-    }
+    Class<?> beanClass();
     
     // Taenker den foerst bliver commitet naar man laver en configuration???
 
-    default FunctionalBeanOperationConfiguration addOperationFunctional(Class<?> functionType, Object function) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void addSidecar(Class<?> clazz) {}
-
-    default void addSidecar(Factory<?> clazz) {}
-
-    //////////////// Sidecars
-    default void addSidecarInstance(Object o) {}
-
-    Class<?> beanClass();
-
-    BeanKind kind();
-    
-    default void bindOperationMirror() {
-        // bind(EntityMirror.class);
-        // Mulighederne er uendelige, og
-    }
+    /**
+     * @return
+     * 
+     * @see BeanConfiguration#beanKind()
+     */
+    BeanKind beanKind();
 
     default <E> void bindService(Key<E> key, Class<E> implementation) {
         // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
@@ -67,8 +60,6 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
         throw new UnsupportedOperationException();
     }
 
-    // Provide stuff, state holder, Lifecycle
-
     default InvokerConfiguration factory(Member member) {
         // Ideen er lidt at Member er en constructor
         // statisks field
@@ -79,7 +70,22 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
         throw new UnsupportedOperationException();
     }
 
-    void prototype();
+    default FunctionalBeanOperationConfiguration operationAdd() {
+        throw new UnsupportedOperationException();
+    }
+
+    default FunctionalBeanOperationConfiguration operationAddFunctional(Class<?> functionType, Object function) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void sidecarAdd(Class<?> clazz) {}
+
+    default void sidecarAdd(Factory<?> clazz) {}
+
+    // Provide stuff, state holder, Lifecycle
+
+    //////////////// Sidecars
+    default void sidecarAddInstance(Object o) {}
 
     interface FunctionalBeanOperationConfiguration {
         FunctionalBeanOperationConfiguration addMirror(Class<? extends BeanOperationMirror> bomType);
@@ -90,6 +96,8 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
         /// IDK
     }
 }
+// Alternativ name: BeanDefiner, Soeg videre under GraalmVM fra og med D
+
 /// set properties
 /// Bind operation (Eller er det hooks???)
 /// make method handles, or runtime factories (maybe after build)
@@ -98,21 +106,27 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
 // Inject BeanManager<T>
 // MH(ExtensionContext, )
 
-/**
-*
-*/
-class BeanZBuilder {
-
-    public BeanConfiguration build() {
-        return null;
-    }
-
-    public <C extends BeanConfiguration> C build(C configuration) {
-        return configuration;
-    }
-}
+///**
+//*
+//*/
+//class BeanZBuilder {
+//
+//    public BeanConfiguration build() {
+//        return null;
+//    }
+//
+//    public <C extends BeanConfiguration> C build(C configuration) {
+//        return configuration;
+//    }
+//}
 
 /* sealed */ interface ZBuilder {
+
+    
+    default void bindOperationMirror() {
+        // bind(EntityMirror.class);
+        // Mulighederne er uendelige, og
+    }
 
     ZBuilder build();
 

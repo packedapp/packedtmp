@@ -60,6 +60,7 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
     // Jeg tror vi replacer den med en lambda paa BeanHandle
     protected void onConfigured() {}
 
+    // I think I would prefer a lambda on the bean driver
     protected void onWired() {}
 
     /**

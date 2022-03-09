@@ -17,72 +17,77 @@ package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.base.Nullable;
 import app.packed.bean.BeanDriver;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanOldKind;
+import app.packed.bean.BeanSupport;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.UserOrExtension;
 import app.packed.inject.Factory;
-import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.InternalFactory;
 
 /** The implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
+    /** The bean type, is typical void.class for functional beans. */
     final Class<?> beanType;
 
     public ComponentConfiguration configuration;
 
+    /** The container the bean is being installed in. */
     final ContainerSetup container;
 
-    boolean extensionBean;
-
-    final InternalFactory<?> factory;
-
-    /** A model of the hooks on the bean. */
-    public final HookModel hookModel;
-
+    /** The kind of bean. */
     private final BeanKind kind;
-    BeanOldKind Oldkind = BeanOldKind.CONTAINER_BEAN;
 
     final RealmSetup realm;
 
+    @Nullable
+    final ExtensionSetup extension;
+
+    /** The source (Null, Class, Factory, Instance) */
+    @Nullable
     final Object source;
 
+    /** The type of source the driver is created from. */
+    final SourceType sourceType;
+
     public PackedBeanDriver(BeanKind kind, ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, InternalFactory<?> factory,
-            Object source) {
+            SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind);
         this.container = requireNonNull(container);
         if (userOrExtension.isUser()) {
             this.realm = container.realm;
+            this.extension = null;
         } else {
-            this.realm = container.extensions.get(userOrExtension.extension()).realm();
+            this.extension = container.extensions.get(userOrExtension.extension());
+            this.realm = extension.realm();
         }
         this.beanType = requireNonNull(beanType);
+
         this.source = source;
-        this.factory = factory;
-        this.hookModel = realm.accessor().beanModelOf(beanType);
+        this.sourceType = sourceType;
     }
 
+    /** {@inheritDoc} */
     public Class<?> beanClass() {
         return beanType;
     }
 
-    public void extensionBean() {
-        this.extensionBean = true;
-    }
-
-    public BeanKind kind() {
+    /** {@inheritDoc} */
+    public BeanKind beanKind() {
         return kind;
     }
 
     /** {@inheritDoc} */
     public BeanSetup newSetup(ComponentConfiguration configuration) {
         if (this.configuration != null) {
-            throw new IllegalStateException("This driver can only be bound once");
+            throw new IllegalStateException("This driver can only be used once");
         }
+
         this.configuration = requireNonNull(configuration);
         realm.wirePrepare();
 
@@ -93,25 +98,34 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         return bs;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void prototype() {
-//        else if (kind != BeanType.BASE) {
-//            throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
-//        }
-        this.Oldkind = BeanOldKind.PROTOTYPE_UNMANAGED;
-    }
-
-    private static BeanKind checkKind(BeanKind kind, int type) {
+    static BeanKind checkKind(BeanKind kind, int type) {
 
         return kind;
+    }
+
+    /**
+     * @param kind2
+     * @param container2
+     * @param agent
+     * @return
+     */
+    public static BeanDriver<?> of(BeanKind kind, ContainerSetup container, UserOrExtension owner) {
+        return new PackedBeanDriver<>(kind, container, owner, void.class, null, SourceType.NONE, null);
+    }
+
+    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, UserOrExtension owner, Class<T> implementation) {
+        Factory<T> factory = BeanSupport.defaultFactoryFor(implementation);
+        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
+        InternalFactory<T> f = InternalFactory.canonicalize(factory);
+        requireNonNull(factory, "factory is null");
+        return new PackedBeanDriver<>(kind, container, owner, implementation, f, SourceType.CLASS, implementation);
     }
 
     public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
         InternalFactory<T> f = InternalFactory.canonicalize(factory);
-        return new PackedBeanDriver<>(kind, container, owner, f.rawType(), f, f);
+        return new PackedBeanDriver<>(kind, container, owner, f.rawType(), f, SourceType.FACTORY, f);
     }
 
     public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, UserOrExtension owner, T instance) {
@@ -123,7 +137,10 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         }
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanDriver<>(kind, container, owner, instance.getClass(), null, instance);
+        return new PackedBeanDriver<>(kind, container, owner, instance.getClass(), null, SourceType.INSTANCE, instance);
     }
 
+    public enum SourceType {
+        CLASS, FACTORY, INSTANCE, NONE;
+    }
 }

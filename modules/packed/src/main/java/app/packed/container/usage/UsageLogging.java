@@ -11,8 +11,8 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerHook;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHook;
 import app.packed.extension.Extension;
 import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceExtension;
@@ -41,7 +41,7 @@ class UsageLogging {
             configuration.use(ServiceExtension.class).exportAll();
             for (ComponentMirror c : configuration.mirror().children()) {
                 if (c instanceof BeanMirror b) {
-                    System.out.println("WE got a bean of type " + b.instanceType());
+                    System.out.println("WE got a bean of type " + b.beanClass());
                 }
             }
         }

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.BeanFactoryMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -28,10 +29,10 @@ public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBean
     /** {@return the type (class) of the bean.} */
     // Optional instead??? Nope, vi returnere void.class
     // What about an akka actor???
-    Class<?> instanceType(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
+    Class<?> beanClass(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
 
     /** {@return the kind of the bean.} */
-    BeanKind kind();
+    BeanKind beanKind();
 
     default Optional<BeanFactoryMirror> factory() {
         // Kunne man forstille sig at en bean havde 2 constructors??

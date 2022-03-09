@@ -28,5 +28,4 @@ public interface BeanLifecycleOperationMirrorPlan {
     List<BeanLifecycleOperationMirror> beanStarters();
 
     List<BeanLifecycleOperationMirror> beanStoppers();
-
 }

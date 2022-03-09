@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
-import app.packed.extension.ExtensionBeanConfiguration;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanDriver;
 
@@ -15,37 +14,35 @@ import packed.internal.bean.PackedBeanDriver;
  */
 public non-sealed class BeanConfiguration extends ComponentConfiguration {
 
-    /** The bean we are configuring. */
+    /** The internal configuration of the bean. */
     final BeanSetup bean;
 
     /**
-     * Create a new bean configuration using the specified driver.
+     * Create a new bean configuration using the specified bean driver.
      * 
      * @param driver
      *            the driver of the bean
      * @throws IllegalStateException
-     *             if the specified driver has already been used
+     *             if the specified driver has already been used to create a new configuration object
      */
     public BeanConfiguration(BeanDriver<?> driver) {
         PackedBeanDriver<?> d = requireNonNull((PackedBeanDriver<?>) driver, "driver is null");
         this.bean = d.newSetup(this);
     }
 
+    /**
+     * {@return the kind of bean that is being configured.}
+     * 
+     * @see BeanDriver#beanKind()
+     */
+    public final BeanKind beanKind() {
+        return bean.driver.beanKind();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected final void checkIsWiring() {
         bean.checkIsActive();
-    }
-
-    /** {@return the kind of bean that is being configured. } */
-    public final BeanKind kind() {
-        if (this instanceof ContainerBeanConfiguration) {
-            return BeanKind.CONTAINER;
-        } else if (this instanceof ExtensionBeanConfiguration) {
-            return BeanKind.EXTENSION;
-        } else {
-            return BeanKind.UNMANAGED;
-        }
     }
 
     /**

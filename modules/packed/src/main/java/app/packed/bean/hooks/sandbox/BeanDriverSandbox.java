@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.bean.hooks.sandbox;
 
 import java.util.Set;
 
-import app.packed.bean.hooks.sandbox.BeanLifecycleModel;
+import app.packed.bean.InvokerConfiguration;
 import app.packed.lifecycle.RunState;
 import app.packed.state.State;
 

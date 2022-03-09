@@ -15,8 +15,7 @@
  */
 package app.packed.bean.hooks.sandbox;
 
-import app.packed.bean.BeanDriverSandbox;
-import app.packed.bean.BeanDriverSandbox.LifecycleInvoker;
+import app.packed.bean.hooks.sandbox.BeanDriverSandbox.LifecycleInvoker;
 import app.packed.lifecycle.RunState;
 
 /**

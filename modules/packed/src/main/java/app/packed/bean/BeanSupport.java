@@ -29,16 +29,43 @@ import packed.internal.util.BasePackageAccess;
 // Maybe just BeanSupport, EntryPointSupport, WebSupport
 public final class BeanSupport extends ExtensionSupport {
 
+    /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
+    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
+        }
+    };
+
+    /**
+     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
+     * literals that are manually constructed.
+     */
+    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
+            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
+            return new ExecutableFactory<>(tl, tl.rawType());
+        }
+    };
+
+    /** A type variable extractor. */
+    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
+
     /** The container we will add beans into. */
     private final ContainerSetup container;
 
     // I think
     private final Class<? extends Extension<?>> extensionType;
 
+    
     /**
      * @param beanExtension
      */
-    /* package-private */ BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , UserOrExtension agent */) {
+    /* package-private */ BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , c agent */) {
         this.container = beanExtension.container;
         this.extensionType = (extensionType);
     }
@@ -67,86 +94,36 @@ public final class BeanSupport extends ExtensionSupport {
 
     // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofFactory(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), BeanSupport.defaultFactoryFor(implementation));
-        m.extensionBean();
-        return new ExtensionBeanConfiguration<>(m);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), implementation);
+        return new ExtensionBeanConfiguration<>(driver);
     }
 
-    public final <T> ExtensionBeanConfiguration<T> install(Factory<?> factory) {
-        throw new UnsupportedOperationException();
+    public final <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), factory);
+        return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
         PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), instance);
-        m.extensionBean();
         return new ExtensionBeanConfiguration<>(m);
     }
 
-    public final <T> BeanDriver<T> newDriver(BeanKind kind, UserOrExtension agent) {
-//        
-//
-//        /**
-//         * Creates a new bean driver for a functional bean.
-//         * <p>
-//         * Operations are added to functional beans via {@link BeanDriver#addFunction(Object)}.
-//         * 
-//         * @param agent
-//         * @return the new driver
-//         */
-//        public final BeanDriver<Void> newFunctionalDriver(UserOrExtension agent) {
-//            throw new UnsupportedOperationException();
-//        }
-        throw new UnsupportedOperationException();
+    public final BeanDriver<?> newDriver(BeanKind kind, UserOrExtension agent) {
+        return PackedBeanDriver.of(kind, container, agent);
     }
 
-    // *********************** ***********************
-    // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
     public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, UserOrExtension agent, Class<T> implementation) {
-        // Vi skal ikke wrappe i factory
-
-//      final <T> BeanDriver<T> newCustomFactoryDriver(UserOrExtension agent, Class<T> implementation) {
-//      // Ideen er lidt at man kan lave sine egne factories
-//      // Alternativ saa wrapper newDriver(UOE, Class) ikke Class i et Factory til at starte med
-//      // MEn kun hvis brugere ikke specificere deres egen factory
-//      throw new UnsupportedOperationException();
-//  }
-
-        return PackedBeanDriver.ofFactory(kind, container, agent, BeanSupport.defaultFactoryFor(implementation));
-    }
-
-    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, UserOrExtension agent, T instance) {
-        return PackedBeanDriver.ofInstance(kind, container, agent, instance);
+        // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
+        return PackedBeanDriver.ofClass(kind, container, agent, implementation);
     }
 
     public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, UserOrExtension agent, Factory<T> factory) {
         return PackedBeanDriver.ofFactory(kind, container, agent, factory);
     }
 
-    /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
-    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
-        }
-    };
-
-    /**
-     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
-     * literals that are manually constructed.
-     */
-    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
-            return new ExecutableFactory<>(tl, tl.rawType());
-        }
-    };
-
-    /** A type variable extractor. */
-    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
+    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, UserOrExtension agent, T instance) {
+        return PackedBeanDriver.ofInstance(kind, container, agent, instance);
+    }
 
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
