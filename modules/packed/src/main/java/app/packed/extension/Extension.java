@@ -227,7 +227,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * extension's container. Failing to follow this rule will result in an {@link InternalExtensionException} being thrown.
      */
     protected void onApplicationClose() {
-        for (ExtensionSetup c = setup.firstChild; c != null; c = c.siebling) {
+        for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
             c.instance().onApplicationClose();
         }
     }
@@ -260,7 +260,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      */
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
-        for (ExtensionSetup c = setup.firstChild; c != null; c = c.siebling) {
+        for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
             if (c.container.assembly == setup.container.assembly) {
                 c.instance().onAssemblyClose();
             }
@@ -316,7 +316,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionTree<E> treeOfApplication() {
         ExtensionSetup setup = setup();
-        return new PackedExtensionTree(setup.applicationRootSetup(), setup.extensionType);
+        return new PackedExtensionTree(setup.extensionTree.root, setup.extensionType);
     }
 
     // Kunne vaere en mode paa traet?

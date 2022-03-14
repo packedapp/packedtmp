@@ -55,13 +55,12 @@ public final class BeanSupport extends ExtensionSupport {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 
-    /** The container we will add beans into. */
+    /** The container we are installing beans into. */
     private final ContainerSetup container;
 
     // I think
     private final Class<? extends Extension<?>> extensionType;
 
-    
     /**
      * @param beanExtension
      */
@@ -69,30 +68,24 @@ public final class BeanSupport extends ExtensionSupport {
         this.container = beanExtension.container;
         this.extensionType = (extensionType);
     }
-//
-//    public <T, C extends BeanConfiguration<T>> C add(Object driver, C configuration, Class<? extends T> implementation) {
-//        // configuration, must be unattached
-//        throw new UnsupportedOperationException();
-//    }
 
-    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> provider) {
+    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> consumerBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> providerBean) {
 
+        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean??? Ikke noedvendigt her...
+        // Skal de vaere samme container??
+        
+        // Packed will call consumer(T, P) once provideBean has been initialized
+    }
+
+    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> consumerBean, BiConsumer<T, P> consumer, ExtensionBeanConfiguration<P> providerBean) {
+
+        // Skal vi checke provideBean depends on consumerBean
+        
         // framework will call
         // consumer(T, P) at initialization time
     }
 
-    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ExtensionBeanConfiguration<P> provider) {
-
-        // framework will call
-        // consumer(T, P) at initialization time
-    }
-
-    public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {
-        // Enten denne eller ogsaa skal vi require en annotation
-        return beanConfiguration;
-    }
-
-    // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
+    // ContainerBeanConfiguration... men den har provide.. Saa vi har en ExtensionBeanConfiguration
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), implementation);
         return new ExtensionBeanConfiguration<>(driver);
@@ -193,3 +186,15 @@ public final class BeanSupport extends ExtensionSupport {
         }
     }
 }
+//
+//public <T, C extends BeanConfiguration<T>> C add(Object driver, C configuration, Class<? extends T> implementation) {
+//  // configuration, must be unattached
+//  throw new UnsupportedOperationException();
+//}
+
+//
+//public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {
+//  // Tror vi require en annoteringen...
+//  // Enten denne eller ogsaa skal vi require en annotation
+//  return beanConfiguration;
+//}

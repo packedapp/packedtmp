@@ -29,7 +29,7 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionRealmSetup;
+import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.ServiceDelegate;
@@ -131,7 +131,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
 
         if (sbm != null) {
             if (e == null) {
-                if (bean.realm instanceof ExtensionRealmSetup ers) {
+                if (bean.realm instanceof ExtensionTreeSetup ers) {
                     Key<?> requiredKey = sd.key();
                     Key<?> thisKey = Key.of(bean.hookModel.clazz);
                     ContainerSetup parent = bean.parent;

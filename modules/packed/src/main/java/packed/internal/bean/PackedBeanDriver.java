@@ -62,7 +62,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
             this.extension = null;
         } else {
             this.extension = container.extensions.get(userOrExtension.extension());
-            this.realm = extension.realm();
+            this.realm = extension.extensionTree;
         }
         this.beanType = requireNonNull(beanType);
 

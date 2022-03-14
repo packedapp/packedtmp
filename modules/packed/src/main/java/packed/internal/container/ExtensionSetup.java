@@ -38,40 +38,44 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onApplicationClose", void.class);
 
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onAssemblyClose",
+            void.class);
+
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
-    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_USER_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onAssemblyClose",
-            void.class);
-
     /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
+    private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
             ExtensionSetup.class);
+
+    /** The (nullable) first child of the extension. */
+    @Nullable
+    public ExtensionSetup childFirst;
+
+    /** The (nullable) last child of the extension. */
+    @Nullable
+    private ExtensionSetup childLast;
+
+    /** The (nullable) siebling of the extension. */
+    @Nullable
+    public ExtensionSetup childSiebling;
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
 
-    /** The realm this extension belongs to. */
-    private final ExtensionRealmSetup extensionTree;
+    /** The extension tree this extension is part of. */
+    public final ExtensionTreeSetup extensionTree;
 
-    /** The type of extension that is being configured (copied form ExtenisonModel). */
+    /** The type of extension that is being configured. */
     public final Class<? extends Extension<?>> extensionType;
-
-    /** The (nullable) first child of the extension. */
-    @Nullable
-    public ExtensionSetup firstChild;
 
     /** The extension's injection manager. */
     public final ExtensionInjectionManager injectionManager;
 
-    /** The extension instance, instantiated and set in {@link #initialize()}. */
+    /** The extension instance exposed to users, instantiated and set in {@link #initialize()}. */
     @Nullable
     private Extension<?> instance;
-
-    /** The (nullable) last child of the extension. */
-    @Nullable
-    private ExtensionSetup lastChild;
 
     /** A static model of the extension. */
     public final ExtensionModel model;
@@ -80,10 +84,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Nullable
     public final ExtensionSetup parent;
 
-    /** The (nullable) siebling of the extension. */
-    @Nullable
-    public ExtensionSetup siebling;
-    
     /**
      * Creates a new extension setup.
      * 
@@ -99,19 +99,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
         if (parent == null) {
-            this.extensionTree = new ExtensionRealmSetup(this, extensionType);
+            this.extensionTree = new ExtensionTreeSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionTree = parent.extensionTree;
             this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
 
-            // Extension tree maintenance
-            if (parent.firstChild == null) {
-                parent.firstChild = this;
+            // Tree maintenance
+            if (parent.childFirst == null) {
+                parent.childFirst = this;
             } else {
-                parent.lastChild.siebling = this;
+                parent.childLast.childSiebling = this;
             }
-            parent.lastChild = this;
+            parent.childLast = this;
         }
         this.model = requireNonNull(extensionTree.extensionModel);
     }
@@ -120,14 +120,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public ApplicationDescriptor application() {
         return container.application.descriptor;
-    }
-
-    public ExtensionSetup applicationRootSetup() {
-        ExtensionSetup s = this;
-        while (s.parent != null) {
-            s = s.parent;
-        }
-        return s;
     }
 
     /** {@inheritDoc} */
@@ -158,7 +150,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         instance = model.newInstance(this);
 
         // Set Extension.setup = this
-        VH_EXTENSION_CONFIGURATION.set(instance, this);
+        VH_EXTENSION_SETUP.set(instance, this);
 
         // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, this);
@@ -237,15 +229,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     void onUserClose() {
         try {
-            MH_EXTENSION_ON_USER_CLOSE.invokeExact(instance);
+            MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-    }
-
-    /** {@return the realm of this extension. This method will lazy initialize it.} */
-    public ExtensionRealmSetup realm() {
-        return extensionTree;
     }
 
     /** {@inheritDoc} */
@@ -305,9 +292,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** A pre-order iterator for a rooted extension tree. */
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
 
-        /** The mapper that is applied on each node. */
+        /** A mapper that is applied to each node. */
         private final Function<ExtensionSetup, T> mapper;
 
+        /** The next extension, null if there are no next. */
         @Nullable
         private ExtensionSetup next;
 
@@ -333,8 +321,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
                 throw new NoSuchElementException();
             }
 
-            if (n.firstChild != null) {
-                next = n.firstChild;
+            if (n.childFirst != null) {
+                next = n.childFirst;
             } else {
                 next = next(n);
             }
@@ -343,8 +331,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         private ExtensionSetup next(ExtensionSetup current) {
-            if (current.siebling != null) {
-                return current.siebling;
+            if (current.childSiebling != null) {
+                return current.childSiebling;
             }
             ExtensionSetup parent = current.parent;
             if (parent == root) {

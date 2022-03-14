@@ -2,14 +2,14 @@ package app.packed.bean;
 
 public enum BeanKind {
 
-    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
-    UNMANAGED,
+    /** Lives and dies with the container it is installed into. */
+    CONTAINER,
 
     /** Will always return void as the bean type. */
     FUNCTIONAL,
-
-    /** Lives and dies with the container it is installed into. */
-    CONTAINER,
+    
+    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
+    UNMANAGED,
 
     // Instantiated by an extensions that
     // A single ideally operates within it
@@ -18,16 +18,16 @@ public enum BeanKind {
     // Instantiated and deconstructed by an extension and some point (For example,
     MANAGED,
 
-    /// Er det virkelig sin egen bean????
-    /// Eller gaelder der bare andre visibility regler for extensions...
-
-    /// Det det er, er jo at brugere er bedoevende ligeglad...
-    /// Jo faerre bean kinds jo bedre
-    
-    /// Export giver ikke mening for extensions...
-    /// Requirements giver ikke mening for extensions
-    /// Og saa alligevel maaske... Brugeren skal implementere service XYZ
-    EXTENSION,
+//    /// Er det virkelig sin egen bean????
+//    /// Eller gaelder der bare andre visibility regler for extensions...
+//
+//    /// Det det er, er jo at brugere er bedoevende ligeglad...
+//    /// Jo faerre bean kinds jo bedre
+//    
+//    /// Export giver ikke mening for extensions...
+//    /// Requirements giver ikke mening for extensions
+//    /// Og saa alligevel maaske... Brugeren skal implementere service XYZ
+//    EXTENSION,
 
 }
 // Er ikke sikker paa den her

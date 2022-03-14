@@ -19,6 +19,9 @@ import app.packed.inject.Factory;
  * @see BeanSupport#installInstance(Object)
  */
 // Har vi behov for T??? Egentlig ikke men inject/onState fra InstanceBean er rare.
+
+// Eneste grund til vi stadig har den
+
 public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**

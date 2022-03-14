@@ -13,13 +13,13 @@ import java.util.function.Function;
 public class ClassUtil {
 
     @SuppressWarnings("unchecked")
-    public static <T> Class<T> checkProperSubclass(Class<T> clazz, Class<?> clazzToCheck) {
+    public static <T> Class<T> checkProperSubclass(Class<T> expectedSuperClass, Class<?> clazzToCheck) {
         requireNonNull(clazzToCheck, "class is null");
-        if (clazzToCheck == clazz) {
-            throw new IllegalArgumentException(clazz.getSimpleName() + ".class is not a valid argument to this method.");
-        } else if (!clazz.isAssignableFrom(clazzToCheck)) {
+        if (clazzToCheck == expectedSuperClass) {
+            throw new IllegalArgumentException(expectedSuperClass.getSimpleName() + ".class is not a valid argument to this method.");
+        } else if (!expectedSuperClass.isAssignableFrom(clazzToCheck)) {
             throw new IllegalArgumentException(
-                    "The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
+                    "The specified type '" + StringFormatter.format(clazzToCheck) + "' did not extend '" + StringFormatter.format(expectedSuperClass) + "'");
         }
         return (Class<T>) clazzToCheck;
     }

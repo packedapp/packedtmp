@@ -58,17 +58,17 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
         if (container.parent == null) {
             // Root container
             // We must also close all extensions application-wide.
-            ArrayList<ExtensionRealmSetup> list = new ArrayList<>(extensions.size());
+            ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
 
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
-                list.add(e.realm());
+                list.add(e.extensionTree);
                 e.onUserClose();
                 e = extensions.pollFirst();
             }
 
             // Close all extensions application wide
-            for (ExtensionRealmSetup extension : list) {
+            for (ExtensionTreeSetup extension : list) {
                 extension.close();
             }
 
