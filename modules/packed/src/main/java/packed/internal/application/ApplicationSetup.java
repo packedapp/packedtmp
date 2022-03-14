@@ -26,10 +26,10 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifecycle.RunState;
+import app.packed.lifetime.LifetimeMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.RealmSetup;
-import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /** Build-time configuration of an application. */
@@ -69,7 +69,7 @@ public final class ApplicationSetup {
         this.descriptor = new PackedApplicationDescriptor(buildKind);
 
         // Create the root container of the application
-        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), new PackedContainerDriver(null), null, wirelets);
+        this.container = new ContainerSetup(this, realm, new PackedContainerDriver(null), null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
@@ -106,6 +106,30 @@ public final class ApplicationSetup {
         @Override
         public <T extends ExtensionMirror> T use(Class<T> type) {
             return container().useExtension(type);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeMirror lifetime() {
+            return application.container.lifetime.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof BuildTimeApplicationMirror m && m.application == application;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            return application.hashCode();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return "Application";
         }
     }
 }

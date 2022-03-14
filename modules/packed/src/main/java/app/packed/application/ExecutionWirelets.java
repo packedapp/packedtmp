@@ -10,7 +10,7 @@ import app.packed.container.Wirelet;
 import app.packed.extension.RestrictedExtensionException;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifecycleApplicationController.StopOption;
-import app.packed.lifecycle.LifecycleWirelets.ShutdownHookWirelet;
+import app.packed.lifecycle.LifetimeWirelets.ShutdownHookWirelet;
 import app.packed.lifecycle.RunState;
 
 /**

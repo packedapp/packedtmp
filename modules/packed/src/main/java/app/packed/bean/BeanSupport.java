@@ -94,17 +94,17 @@ public final class BeanSupport extends ExtensionSupport {
 
     // Kan ikke hedde install, hvis vi en dag beslutter vi godt vil have almindelige beans
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), implementation);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), implementation);
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), factory);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), factory);
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.EXTENSION, container, UserOrExtension.extension(extensionType), instance);
+        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), instance);
         return new ExtensionBeanConfiguration<>(m);
     }
 

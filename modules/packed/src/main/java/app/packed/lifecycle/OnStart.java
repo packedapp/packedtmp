@@ -77,10 +77,10 @@ import app.packed.inject.InjectionContext;
  * application failing to start. After which the application will automatically move to the shutdown phase.
  * <p>
  *
- * Normally services are not available from xx until all services have been successfully
- * started. However, by using this annotation. Services that not yet completed startup can be injected. It is up to the
- * user to make sure that invoking method on instances that injected this does not cause any problems. For example,
- * calling a method on another service that only works when the container is in the running phase.
+ * Normally services are not available from xx until all services have been successfully started. However, by using this
+ * annotation. Services that not yet completed startup can be injected. It is up to the user to make sure that invoking
+ * method on instances that injected this does not cause any problems. For example, calling a method on another service
+ * that only works when the container is in the running phase.
  *
  * @see OnInitialize
  * @see OnStop
@@ -110,8 +110,10 @@ public @interface OnStart {
 
     boolean preOrder() default true; // reverseOrder
 
+    @Deprecated(since = "bliver for grimt, men maa checke de her ting i en eller anden form for lifecycle/lifetime context")
     ManagedInstance.Mode[] mode() default {};
 
+    @Deprecated
     ManagedInstance.Mode[] notMode() default {};
 }
 

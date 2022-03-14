@@ -32,6 +32,7 @@ import app.packed.component.ComponentScope;
 import app.packed.component.UserOrExtension;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.lifetime.LifetimeMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.AssemblySetup;
@@ -73,8 +74,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
     /** The assembly from where the component is being installed. */
     public final AssemblySetup assembly;
-    
-    
+
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
      * 
@@ -87,10 +87,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
      * @param parent
      *            any parent component this component might have
      */
-    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ContainerSetup parent) {
+    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, @Nullable ContainerSetup parent) {
         this.application = requireNonNull(application);
         this.realm = requireNonNull(realm);
-        this.lifetime = requireNonNull(lifetime);
 
         if (realm instanceof AssemblySetup s) {
             this.assembly = s;
@@ -101,9 +100,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         this.parent = parent;
         if (parent == null) {
             this.depth = 0;
+            this.lifetime = new LifetimeSetup((ContainerSetup) this);
         } else {
             this.depth = parent.depth + 1;
             this.onWireAction = parent.onWireAction;
+            this.lifetime = parent.lifetime;
         }
     }
 
@@ -234,8 +235,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         public final AssemblyMirror assembly() {
             throw new UnsupportedOperationException();
         }
-        
-        protected abstract Collection<ComponentMirror> children();
+
+        public abstract Collection<ComponentMirror> children();
 
         /** {@inheritDoc} */
         public final int depth() {
@@ -251,6 +252,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         /** {@inheritDoc} */
         public final String name() {
             return name;
+        }
+
+        public final LifetimeMirror lifetime() {
+            return lifetime.mirror();
         }
 
         private ComponentSetup outer() {

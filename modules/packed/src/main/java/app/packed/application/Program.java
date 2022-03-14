@@ -23,7 +23,7 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
-import app.packed.lifecycle.LifecycleWirelets;
+import app.packed.lifecycle.LifetimeWirelets;
 import app.packed.lifecycle.RunState;
 
 /**
@@ -133,7 +133,7 @@ public interface Program extends AutoCloseable {
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use {@link LifecycleWirelets#lazyStart()}. Which will return an application in the
+     * process you can use {@link LifetimeWirelets#lazyStart()}. Which will return an application in the
      * {@link RunState#INITIALIZED} phase instead.
      * 
      * @param assembly

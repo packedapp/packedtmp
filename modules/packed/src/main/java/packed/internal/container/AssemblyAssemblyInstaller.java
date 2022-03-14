@@ -86,7 +86,7 @@ public final class AssemblyAssemblyInstaller extends AssemblySetup {
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
         // if embed do xxx
         // else create new container
-        this.container = new ContainerSetup(application, this, application.container.lifetime, driver, linkTo, wirelets);
+        this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
         this.driver = driver;
     }
 

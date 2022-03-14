@@ -57,15 +57,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
     int depth();
 
-    /** {@return any lifetime this component may be a part of.} */
-    // Tror vi er blevet enige om at alle componenter som minimum har
-    // application lifetime
-
-    // You should just never use them after an application has been shutdown.
-    // Alt har en lifetime saa
-    default Optional<LifetimeMirror> lifetime() {
-        throw new UnsupportedOperationException();
-    }
+    /** {@return the component's lifetime.} */
+    LifetimeMirror lifetime();
 
     /**
      * Returns the name of this component.

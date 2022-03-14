@@ -31,6 +31,9 @@ import app.packed.container.Wirelet;
 // Eller skal vi wrappe den i en container/bean som WebExtension'en bestemmer?
 
 
+/// Maaske er det ogsaa bare nogle method handles...
+/// Altsaa forventer ikke der er mange der bruger dem....
+
 public interface ContainerLifetimeMap<K, S> {
     
     S make(K key);

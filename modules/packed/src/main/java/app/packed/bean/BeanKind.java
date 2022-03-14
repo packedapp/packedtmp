@@ -1,8 +1,12 @@
 package app.packed.bean;
 
-// Maybe BeanKind instead
-//// Eller ogsaa snakker vi 
 public enum BeanKind {
+
+    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
+    UNMANAGED,
+
+    /** Will always return void as the bean type. */
+    FUNCTIONAL,
 
     /** Lives and dies with the container it is installed into. */
     CONTAINER,
@@ -14,16 +18,17 @@ public enum BeanKind {
     // Instantiated and deconstructed by an extension and some point (For example,
     MANAGED,
 
-    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
-    UNMANAGED,
+    /// Er det virkelig sin egen bean????
+    /// Eller gaelder der bare andre visibility regler for extensions...
 
-    /** Will always return void as the bean type. */
-    FUNCTIONAL,
-
-    EXTENSION,
+    /// Det det er, er jo at brugere er bedoevende ligeglad...
+    /// Jo faerre bean kinds jo bedre
     
-    /** Is never present in the component tree. Will typically return void as the bean type */
-    SYNTHETIC,
+    /// Export giver ikke mening for extensions...
+    /// Requirements giver ikke mening for extensions
+    /// Og saa alligevel maaske... Brugeren skal implementere service XYZ
+    EXTENSION,
+
 }
 // Er ikke sikker paa den her
 // Container == Extension paa alt paanaer injection visibility

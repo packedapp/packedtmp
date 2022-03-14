@@ -38,23 +38,38 @@ import packed.internal.bean.PackedBeanDriver;
 @SuppressWarnings("rawtypes")
 public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
+    /**
+     * @return
+     * 
+     * @see BeanConfiguration#beanClass()
+     * @see BeanMirror#beanClass()
+     */
     Class<?> beanClass();
-    
-    // Taenker den foerst bliver commitet naar man laver en configuration???
 
     /**
      * @return
      * 
+     * @see BeanMirror#beanKind()
      * @see BeanConfiguration#beanKind()
      */
     BeanKind beanKind();
+}
 
+interface BeanDriverSandbox<T> {
+
+    default void synthetic() {
+        // or hidden();
+    }
+    
     default <E> void bindService(Key<E> key, Class<E> implementation) {
         // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
         // ServiceScope.Bean
     }
 
+    // Ved ikke rigtig usecasen. Fordi den skal ikke bruges fra BeanConfiguration
+    // Der er allerede en vi kan bruge.
     default void checkWiring() {}
+
 
     default InvokerConfiguration factory() {
         throw new UnsupportedOperationException();
@@ -87,6 +102,7 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
     //////////////// Sidecars
     default void sidecarAddInstance(Object o) {}
 
+    @SuppressWarnings("exports")
     interface FunctionalBeanOperationConfiguration {
         FunctionalBeanOperationConfiguration addMirror(Class<? extends BeanOperationMirror> bomType);
 
@@ -106,20 +122,6 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
 // Inject BeanManager<T>
 // MH(ExtensionContext, )
 
-///**
-//*
-//*/
-//class BeanZBuilder {
-//
-//    public BeanConfiguration build() {
-//        return null;
-//    }
-//
-//    public <C extends BeanConfiguration> C build(C configuration) {
-//        return configuration;
-//    }
-//}
-
 /* sealed */ interface ZBuilder {
 
     
@@ -131,9 +133,6 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
     ZBuilder build();
 
     // Specific super type
-
-    // Den kan vi jo se fra Typen af configuration...
-    ZBuilder kind(BeanKind kind);
 
     ZBuilder namePrefix(Function<Class<?>, String> computeIt);
 

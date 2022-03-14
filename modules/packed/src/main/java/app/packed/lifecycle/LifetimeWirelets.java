@@ -36,7 +36,7 @@ import app.packed.container.Wirelet;
 // StateWirelets??
 // RunStateWirelets???
 // HostWirelet
-public interface LifecycleWirelets {
+public interface LifetimeWirelets {
 
 
     // foo with x = 45;

@@ -27,7 +27,6 @@ import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.InternalFactory;
 import packed.internal.inject.manager.InjectionManager;
-import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -70,8 +69,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    public BeanSetup(ContainerSetup container, RealmSetup realm, LifetimeSetup lifetime, PackedBeanDriver<?> driver) {
-        super(container.application, realm, lifetime, container);
+    public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
+        super(container.application, realm, container);
 
         this.driver = driver;
         this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanType);
@@ -93,9 +92,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? lifetime.pool.reserve(driver.beanType) : null;
 
-        // Does this bean belong to an extension
-        // Maybe test if isExtensionBean instead
-        if (driver.beanKind() == BeanKind.EXTENSION) {
+
+        if (driver.beanKind() == BeanKind.CONTAINER && driver.extension != null) {
             driver.extension.injectionManager.extensionBeans.put(Key.of(driver.beanType), this);
         }
 

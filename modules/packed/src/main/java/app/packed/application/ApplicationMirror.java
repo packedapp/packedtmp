@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.application.various.TaskListMirror;
 import app.packed.bean.mirror.BeanOperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
@@ -13,6 +12,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
@@ -50,10 +50,6 @@ public interface ApplicationMirror extends Mirror {
         container().components().forEach(action);
     }
 
-    default TaskListMirror initialization() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
      * defines the application container.}
@@ -62,6 +58,9 @@ public interface ApplicationMirror extends Mirror {
     // Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
     // Maaske vi skal have et realm mirror????
     Module module();
+
+    /** {@return the application's lifetime.} */
+    LifetimeMirror lifetime();
 
     /**
      * Returns the name of the application.
@@ -113,11 +112,11 @@ public interface ApplicationMirror extends Mirror {
     public static ApplicationMirror of(Assembly assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
-    
+
     default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
         return container().useExtension(extensionMirrorType);
     }
-    
+
     default Collection<BeanOperationMirror> operations() {
         throw new UnsupportedOperationException();
     }

@@ -5,13 +5,19 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bean.BeanMirror;
+import app.packed.bean.mirror.BeanOperationList;
 import app.packed.bean.operation.BeanLifecycleOperationMirrorPlan;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.mirror.Mirror;
+import packed.internal.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 
 // Kan man have Dependent beans... DVS beans
 
 // Component Lifetime?
+
+//// Det er maaske mere noget a.la. hvornaar maa componenten benyttes
+//// istedet for hvor lang tid den lever.
+//// Her taenker jeg specielt paa functional beans og validation beans
 
 /**
  * A component whose lifetime is managed by Packed.
@@ -25,44 +31,59 @@ import app.packed.mirror.Mirror;
  * Validator beans
  * 
  */
-public interface LifetimeMirror extends Mirror {
+//https://thesaurus.plus/related/life_cycle/lifetime
 
-    LifetimeMirror applicationRoot();
-    
+public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeMirror {
+
+    // Stable across application builds
+    List<BeanMirror> beans();
+
+    /** {@return any child lifetimes of this lifetime.} */
     Set<LifetimeMirror> children();
-    
+
+    /** {@return all components that are part of the lifetime.} */
     ComponentMirrorTree components();
 
-    boolean isSingleton(); // I relation til foraeldren
+    /** {@return the type of lifetime.} */
+    LifetimeType lifetimeType();
 
-    Optional<LifetimeMirror> parent();
-
-    BeanLifecycleOperationMirrorPlan plan();
-    
-    List<BeanMirror> beanLifecycleOrder();
-    // Noget om hvordan den bliver aktiveret???
-    //// Altsaa fx fra hvilken operation
+    /** {@return any parent lifetime this lifetime might have.} */
+    Optional<LifetimeMirror> parent(); //beanLifecycleSequence
 }
 
+//Things a lifetime does
 
-interface LifetimeMirror2  {
+//Determines a order between the components in the lifecycle when initializing/starting/stopping it it
+
+//Individual initialization / stop
+
+//Er lidt i tvivl om det her er 2 ting vi dealer med
+interface LifetimeSandbox {
+
+    // Noget om hvordan den bliver aktiveret???
+    //// Altsaa fx fra hvilken operation
+    ////
+    Set<Object> activators();
+
+    
+    /** {@return the lifetime of the application.} */
+    @Deprecated(since = "Tror bare man maa kalde application().lifetime()")
+    LifetimeMirror applicationLifetime();
+
     // Altsaa det er taenkt paa at man kan have fx application dependencies.
     // Altsaa en egentlig graph af ting der skal vaere oppe og koere.
     Set<LifetimeMirror> dependants();
-}
 
-enum LifetimeType {
-    
-    CONTAINER,
+    default BeanOperationList initialization() {
+        throw new UnsupportedOperationException();
+    }
 
-    DEPENDANT,
-    
-    LAZY,
-    
-    NON_APPLICATION_CONTAINER, // A new instance is created per operation Request
-    
-    OPERATION,
-    ;
+    boolean isCloseable();
+
+    boolean isSingleton(); // I relation til foraeldren
+
+    BeanLifecycleOperationMirrorPlan plan();
+
 }
 
 // Static functions-> Application or Empty??

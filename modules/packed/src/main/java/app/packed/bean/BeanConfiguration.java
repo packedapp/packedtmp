@@ -35,6 +35,15 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * 
      * @see BeanDriver#beanKind()
      */
+    public final Class<?> beanClass() {
+        return bean.driver.beanClass();
+    }
+    
+    /**
+     * {@return the kind of bean that is being configured.}
+     * 
+     * @see BeanDriver#beanKind()
+     */
     public final BeanKind beanKind() {
         return bean.driver.beanKind();
     }

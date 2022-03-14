@@ -40,7 +40,6 @@ import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.inject.ContainerBeanManager;
 import packed.internal.component.ComponentSetup;
-import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 
@@ -94,9 +93,9 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver handle, @Nullable ContainerSetup parent,
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
-        super(application, realm, lifetime, parent);
+        super(application, realm, parent);
 
         beans = new ContainerBeanManager(this, parent == null ? null : parent.beans);
         // The rest of the constructor is just processing any wirelets that have been specified by
