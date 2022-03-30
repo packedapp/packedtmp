@@ -36,7 +36,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     public ComponentConfiguration configuration;
 
     /** The container the bean is being installed in. */
-    final ContainerSetup container;
+    public final ContainerSetup container;
 
     /** Any extension this bean belongs to. */
     @Nullable

@@ -24,13 +24,16 @@ import app.packed.inject.Factory;
  */
 // Depends on BeanExtension, ClassGenExtension
 // Igen er problemet lidt her sikkerhed...
-public class BeanProxyExtension extends Extension<BeanProxyExtension> {
-    BeanProxyExtension() {}
+public class BeanInstrumentationExtension extends Extension<BeanInstrumentationExtension> {
+    BeanInstrumentationExtension() {}
 
     // Problemet er her provide()
     // Vi skal maaske have en provide(ApplicationBeanConfiguration)
 
     // Installs what looks like an ApplicationBean. But is lazily initialized and started
+    
+    // Maaske er der operation lazy. Og saa Bean Lazy.
+    //// Operation lazy behoever vi ikke at instrumentere klassen.
     public <T> ContainerBeanConfiguration<T> installLazy(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }

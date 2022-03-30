@@ -24,7 +24,8 @@ import app.packed.extension.Extension;
  * A single instance of this class exists per extension per application.
  * <p>
  * Since all extensions that are used throughout an application is always installed in the root container.
- * 
+ * <p>
+ * The actual tree is maintained in {@link ExtensionSetup}. This class just holds the root
  * 
  */
 public final class ExtensionTreeSetup extends RealmSetup {
@@ -45,12 +46,6 @@ public final class ExtensionTreeSetup extends RealmSetup {
         isClosed = true;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension<?>> realmType() {
-        return extensionModel.type();
-    }
-    
     public Class<? extends Extension<?>> extensionType() {
         return extensionModel.type();
     }
@@ -58,6 +53,12 @@ public final class ExtensionTreeSetup extends RealmSetup {
     /** {@inheritDoc} */
     @Override
     public UserOrExtension owner() {
-        return UserOrExtension.extension(extensionModel.type());
+        return UserOrExtension.extension(extensionType());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension<?>> realmType() {
+        return extensionModel.type();
     }
 }

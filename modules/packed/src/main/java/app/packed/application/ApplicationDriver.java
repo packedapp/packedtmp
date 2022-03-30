@@ -33,8 +33,8 @@ import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
-import app.packed.lifecycle.InitializationException;
 import app.packed.lifecycle.LifecycleApplicationController;
+import app.packed.lifecycle.LifecycleException;
 import app.packed.lifecycle.RunState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
@@ -111,7 +111,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @return the launched application instance
      * @throws BuildException
      *             if the application could not be build
-     * @throws InitializationException
+     * @throws LifecycleException
      *             if the application failed to initializing
      * @throws PanicException
      *             if the application had an executing phase and it fails

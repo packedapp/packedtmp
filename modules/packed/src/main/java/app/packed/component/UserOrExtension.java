@@ -9,11 +9,18 @@ import packed.internal.util.ClassUtil;
 // Operator, Contractor
 // ComponentOwner
 
+// ComponentUser
+// FooUser
+//// Something that ends with user
+
+
 // Hvem ejer en component
 // Hvem provider en injectable value
 
 // Er ikke paa det er en Realm... anyway
 // En AssemblyRealm
+
+
 
 public /* primitive */ final class UserOrExtension {
 

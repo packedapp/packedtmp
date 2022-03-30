@@ -29,7 +29,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.bean.InvokerConfiguration;
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.hooks3.MetaAnnotationReader;
@@ -54,7 +54,7 @@ public abstract class BeanField {
     /** The builder used by this bootstrap. Updated by {@link UseSiteFieldHookModel}. */
     private UseSiteFieldHookModel.@Nullable Builder builder;
 
-    public final <T extends BeanOperationMirror> void addOperationMirror(Class<T> mirrorType, Supplier<T> supplier) {
+    public final <T extends OperationMirror> void addOperationMirror(Class<T> mirrorType, Supplier<T> supplier) {
 
     }
 

@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror.old;
-
-import app.packed.bean.mirror.BeanOperationMirror;
-import app.packed.bean.operation.BeanOperationMirrorSelection;
-import app.packed.mirror.Mirror;
+package app.packed.base;
 
 /**
  *
  */
-public interface BeanElementMirror extends Mirror {
-    
-    boolean isSynthetic();
-    
-    BeanOperationMirrorSelection<BeanOperationMirror> operations();
-    
-    <T extends BeanOperationMirror> BeanOperationMirrorSelection<T> operations(Class<T> mirrorType);
+public class Vvv {
+
+    public static void main(String[] args) {
+        System.out.println("ASD");
+    }
 }

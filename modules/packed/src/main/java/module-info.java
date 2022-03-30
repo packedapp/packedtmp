@@ -4,8 +4,10 @@ module app.packed {
     exports app.packed.application.various;
     exports app.packed.base;
     exports app.packed.bean;
-    exports app.packed.bean.mirror;
     exports app.packed.bean.operation;
+    exports app.packed.bean.operation.lifecycle;
+    exports app.packed.bean.operation.interceptor;
+    exports app.packed.bean.operation.sandbox;
     exports app.packed.component;
     exports app.packed.contract;
     exports app.packed.container;

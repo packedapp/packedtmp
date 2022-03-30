@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.operation;
 
 /**
  *
  */
 // Tror bare vi har et enkelt interface
-public interface BeanOperationTargetMirror {
+public interface OperationTargetMirror {
 
-    public interface OfBeanInstance extends BeanOperationTargetMirror {}
+    public interface OfBeanInstance extends OperationTargetMirror {}
 
-    public interface OfMethodHandle extends BeanOperationTargetMirror {} //ofSynthetic?
-    public interface OfFunction extends BeanOperationTargetMirror {}
+    public interface OfMethodHandle extends OperationTargetMirror {} //ofSynthetic?
+    public interface OfFunction extends OperationTargetMirror {}
 
-    public interface OfConstructor extends BeanOperationTargetMirror {}
-    public interface OfField extends BeanOperationTargetMirror {}
-    public interface OfMethod extends BeanOperationTargetMirror {}
+    public interface OfConstructor extends OperationTargetMirror {}
+    public interface OfField extends OperationTargetMirror {}
+    public interface OfMethod extends OperationTargetMirror {}
 }
 // OfBeanInstance - Something that just returns the bean instance
 // OfConstructor -

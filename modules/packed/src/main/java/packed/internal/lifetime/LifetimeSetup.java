@@ -10,8 +10,11 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.OperationMirrorList;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.LifetimePhase;
 import app.packed.lifetime.LifetimeType;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -103,6 +106,30 @@ public final class LifetimeSetup {
         @Override
         public Optional<LifetimeMirror> parent() {
             return l.parent == null ? Optional.empty() : Optional.of(l.parent.mirror());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OperationMirrorList<OperationMirror> operations(LifetimePhase phase) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+            return false;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return null;
         }
     }
 

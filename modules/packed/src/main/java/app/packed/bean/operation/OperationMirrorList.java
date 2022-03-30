@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror.old;
+package app.packed.bean.operation;
 
 /**
  *
  */
-// Det er jo taenkt paa et Functional Interface...
-
-// Men kan vi slaa den sammen med noget interface/whoareyou mirror
-public class BeanFunctionMirror {
+public interface OperationMirrorList<T extends OperationMirror> extends Iterable<T> {
 
 }

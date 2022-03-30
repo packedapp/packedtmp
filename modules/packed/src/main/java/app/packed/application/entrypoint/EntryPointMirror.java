@@ -1,12 +1,12 @@
 package app.packed.application.entrypoint;
 
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  * A mirror representing a single entry point in an application. Instances of this mirror are normally acquired by
  * calling various methods on a {@link EntryPointExtensionMirror} instance.
  */
-public class EntryPointMirror extends BeanOperationMirror {
+public class EntryPointMirror extends OperationMirror {
 
     /** {@return the unique id of the entry point within the application.} */
     public final int entryPointId() {

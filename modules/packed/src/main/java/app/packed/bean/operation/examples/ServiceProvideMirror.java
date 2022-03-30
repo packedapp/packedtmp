@@ -16,12 +16,12 @@
 package app.packed.bean.operation.examples;
 
 import app.packed.base.Key;
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *
  */
-public abstract class ServiceProvideMirror extends BeanOperationMirror {
+public abstract class ServiceProvideMirror extends OperationMirror {
 
     /** {@return the key of the service.} */
     public abstract Key<?> key();

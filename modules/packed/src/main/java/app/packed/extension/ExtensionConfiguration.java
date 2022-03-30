@@ -54,7 +54,8 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
 
     /**
-     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * Checks that the extension is configurable within the assembly where it is being defined, throwing
+     * {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer user configurable after the build method of the assembly has returned.
      * 
@@ -84,7 +85,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 //        // fail
 //    }
 
-    /** {@return the path of the container where this extension instance is used.} */
+    /** {@return the path of the container where the extension is used.} */
     NamespacePath containerPath();
 
     /**
@@ -102,7 +103,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Eftersom man kan vaere fristet til at teste den
     boolean isExtensionUsed(Class<? extends Extension<?>> extensionType);
 
-    /** {@return whether or not the extension instance is used in the root container of the application.} */
+    /** {@return whether or not the extension instance is used by the root container of the application.} */
     boolean isRootOfApplication();
 
     default boolean isRootOfLifetime() {

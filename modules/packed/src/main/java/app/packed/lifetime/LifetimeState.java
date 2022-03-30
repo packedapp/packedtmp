@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.lifetime;
 
 import java.util.Optional;
+
+import app.packed.lifecycle.RunState;
 
 /**
  * The state immutable snapshot of the state of a container.
@@ -23,20 +25,20 @@ import java.util.Optional;
 // Generic StateInfo immutable class...
 //  HostInfo?
 
-// Lifetime
+// LifetimeState
 
 // Det er ikke application state. Det kunne ogsaa vaere en Session
 
 // Ved ikke om den bare skal hedde RunStateSnapshot.
 // Ved ikke hvad metoderne skal hedde hvis man har begge dele paa et App interface.
 
-public interface LifetimeRegionState {
+public interface LifetimeState {
 
     /** {@return the actual state of the entity.} */
-    RunState actual();
+    RunState currentState();
 
     /** {@return the desired state of the entity.} */
-    RunState desired();
+    RunState desiredState();
 
     boolean isFailed();
 
@@ -56,7 +58,7 @@ public interface LifetimeRegionState {
     default boolean isTransitioning() {
         // Altsaa hvad hvis vi restarter... Saa er vi altid transitioning...
         // Ja det passer vel meget godt...
-        return actual() != desired();
+        return currentState() != desiredState();
     }
 
     /**

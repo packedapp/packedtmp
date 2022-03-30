@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationController;
 import app.packed.base.Nullable;
+import app.packed.lifetime.LifetimeState;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -99,7 +100,7 @@ public interface LifecycleApplicationController extends ApplicationController {
      * 
      * @return an immutable snapshot of the component's current status
      */
-    LifetimeRegionState info();
+    LifetimeState info();
 
     /**
      * Starts and awaits the component if it has not already been started.

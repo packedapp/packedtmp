@@ -15,12 +15,16 @@
  */
 package packed.internal.inject.manager;
 
+import static packed.internal.util.StringFormatter.format;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.extension.InternalExtensionException;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.PackedBeanDriver;
 
 /**
  * Manages all beans for a single container.
@@ -40,6 +44,13 @@ public final class ExtensionInjectionManager extends InjectionManager {
 
     public ExtensionInjectionManager(@Nullable ExtensionInjectionManager parent) {
         this.parent = parent;
+    }
+
+    public void addBean(PackedBeanDriver<?> driver, BeanSetup bean) {
+        if (extensionBeans.putIfAbsent(Key.of(driver.beanClass()), bean) != null) {
+            throw new InternalExtensionException(
+                    "A bean of type '" + format(driver.beanClass()) + "' has already been installed into the container '" + driver.container.path() + "'");
+        }
     }
 
     @Nullable

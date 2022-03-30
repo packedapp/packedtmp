@@ -13,37 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.container;
+
+import app.packed.container.MyExt.MyBootstrap;
+import app.packed.extension.Extension;
+import app.packed.extension.Extension.BootstrapWith;
+import app.packed.inject.service.ServiceExtension;
 
 /**
  *
  */
+@BootstrapWith(MyBootstrap.class)
+public class MyExt extends Extension<MyExt> {
 
-// Kan modtage dependencies
+    static class MyBootstrap extends Bootstrap {
 
-// BeanOperation (Hooks)
-
-// BeanFactory
-// AutoServiceFactory
-
-// Kan vaere dependencies
-
-// UserServiceProvide (BeanInstance)X
-// BeanOperation (Kan andre end services????)
-// AutoServiceFactory
-// Binding operation
-
-
-////// ----- Fremtid
-
-//Sidecars (Sidebeans)
-
-
-
-////Kan dependences on
-////Det er jo ikke f.eks. et bean factory man kan depende paa. Men en bean
-
-
-public interface DependencyNode {
-
+        /** {@inheritDoc} */
+        @Override
+        protected void bootstrap() {
+            dependsOn(ServiceExtension.class);
+        }
+    }
 }

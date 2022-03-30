@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.operation.interceptor;
+
+import app.packed.bean.operation.OperationMirror;
+import app.packed.component.UserOrExtension;
 
 /**
  *
  */
 // GeneratedClassMirror, GeneratedBeanClassMirror
 // GeneratedBeanInterceptedBeanMirror
-
 
 // Man kan lave en class proxy
 // Eller en bean proxy
@@ -29,10 +31,31 @@ package app.packed.bean.mirror;
 ///// Kunne ogsaa bare vaere at angive at vi maaler ting???
 ///// Altsaa selve Servlet pipelinen
 ///// Det betyder nok ogsaa at vi 
-public class BeanOperationInterceptorMirror {
+public interface OperationInterceptorMirror {
+
+    boolean hasNext();
+
+    boolean hasPrevious();
+
+    OperationInterceptorMirror next();
+
+    /** {@return the operation the interceptor is part of.} */
+    OperationMirror operation();
+
+    // Optional<OperationInterceptorMirror> next();
+    // Optional<OperationInterceptorMirror> previous();
+    UserOrExtension owner();
+
+    OperationInterceptorMirror previous();
 
     // Compiled into the class or wrapper in the operation pipeline
-    
-    
+
     // isPre, isPost, isAround
 }
+
+// Har vi en BeanInterceptor ogsaa????
+// Eller har vi bare en InterceptorMirror
+// Eller har vi en sealed
+
+// sealed interface InterceptorMirror permits OperationInterceptorMirror, BeanInterceptorMirrors
+// OperationInterceptorMirror, BeanInterceptorMirror

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package app.packed.bean.operation.sandbox;
 
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *
@@ -23,6 +23,6 @@ import app.packed.bean.mirror.BeanOperationMirror;
 
 // Maaske er view et bedre ord... Taenker vi lazy evaluater
 // It is kind of like a ComponentStream. But then again ComponentStream is hierachical
-public interface BeanOperationMirrorSelection<T extends BeanOperationMirror> extends Iterable<T> {
+public interface BeanOperationMirrorSelection<T extends OperationMirror> extends Iterable<T> {
 
 }

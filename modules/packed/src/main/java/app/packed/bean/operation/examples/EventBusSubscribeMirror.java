@@ -17,13 +17,13 @@ package app.packed.bean.operation.examples;
 
 import java.util.function.Predicate;
 
-import app.packed.bean.mirror.BeanOperationMirror;
-import app.packed.bean.operation.BeanOperationMirrorSelection;
+import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.sandbox.BeanOperationMirrorSelection;
 
 /**
  *
  */
-public abstract class EventBusSubscribeMirror extends BeanOperationMirror {
+public abstract class EventBusSubscribeMirror extends OperationMirror {
 
     public abstract Class<?> eventType();
 

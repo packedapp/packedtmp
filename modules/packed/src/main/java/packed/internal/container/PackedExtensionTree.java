@@ -18,6 +18,7 @@ package packed.internal.container;
 import java.util.Iterator;
 
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionTree;
 
 /**
@@ -42,5 +43,11 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
     @Override
     public T root() {
         return extensionType.cast(extension.instance());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ExtensionConfiguration rootConfiguration() {
+        return extension;
     }
 }

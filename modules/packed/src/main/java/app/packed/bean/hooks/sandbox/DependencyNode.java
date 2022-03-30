@@ -13,11 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror.old;
+package app.packed.bean.hooks.sandbox;
 
 /**
  *
  */
-public interface BeanExecutableMirror /* extends BeanMemberMirror*/ {
+
+// Kan modtage dependencies
+
+// BeanOperation (Hooks)
+
+// BeanFactory
+// AutoServiceFactory
+
+// Kan vaere dependencies
+
+// UserServiceProvide (BeanInstance)X
+// BeanOperation (Kan andre end services????)
+// AutoServiceFactory
+// Binding operation
+
+
+////// ----- Fremtid
+
+//Sidecars (Sidebeans)
+
+
+
+////Kan dependences on
+////Det er jo ikke f.eks. et bean factory man kan depende paa. Men en bean
+
+
+public interface DependencyNode {
 
 }

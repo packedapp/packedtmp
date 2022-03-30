@@ -19,7 +19,7 @@ import java.lang.reflect.Member;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanDriver;
 
@@ -104,7 +104,7 @@ interface BeanDriverSandbox<T> {
 
     @SuppressWarnings("exports")
     interface FunctionalBeanOperationConfiguration {
-        FunctionalBeanOperationConfiguration addMirror(Class<? extends BeanOperationMirror> bomType);
+        FunctionalBeanOperationConfiguration addMirror(Class<? extends OperationMirror> bomType);
 
         FunctionalBeanOperationConfiguration name(String name);
 

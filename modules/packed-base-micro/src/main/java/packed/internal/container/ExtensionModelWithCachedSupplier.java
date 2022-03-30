@@ -32,10 +32,6 @@ import packed.internal.util.StringFormatter;
 /**
  * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
  */
-// Raekkefoelge af installeret extensions....
-// Maaske bliver vi noedt til at have @UsesExtension..
-// Saa vi kan sige X extension skal koeres foerend Y extension
-
 // Gaar fra ca 12 ns til 6 ns
 final class ExtensionModelWithCachedSupplier<T> {
 

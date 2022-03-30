@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
@@ -117,11 +117,11 @@ public interface ApplicationMirror extends Mirror {
         return container().useExtension(extensionMirrorType);
     }
 
-    default Collection<BeanOperationMirror> operations() {
+    default Collection<OperationMirror> operations() {
         throw new UnsupportedOperationException();
     }
 
-    default <T extends BeanOperationMirror> Collection<T> operations(Class<T> operationType) {
+    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
         throw new UnsupportedOperationException();
     }
 }

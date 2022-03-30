@@ -16,7 +16,7 @@
 package app.packed.bean.driver;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *
@@ -29,7 +29,7 @@ public interface BeanOperationsDriver {
         
         // Error handling?? Eller ogsaa maa man selv styre det
         
-        FunctionalBeanOperationConfiguration addMirror(Class<? extends BeanOperationMirror> bomType);
+        FunctionalBeanOperationConfiguration addMirror(Class<? extends OperationMirror> bomType);
 
         FunctionalBeanOperationConfiguration name(String name);
 

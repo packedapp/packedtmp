@@ -23,8 +23,8 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
-import app.packed.lifecycle.LifetimeWirelets;
 import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.sandbox.LifetimeWirelets;
 
 /**
  * An App (application) is a type of artifact provided by Packed.

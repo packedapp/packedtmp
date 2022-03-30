@@ -70,14 +70,10 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
      */
     String name();
 
-    /**
-     * Returns the owner of the component. This is either the user (the owner of the application) or an extension.
-     * 
-     * @return the owner of the component
-     */
+    /** {@return the owner of the component.} */
     UserOrExtension owner();
 
-    /** {@return the parent component of this component. Or empty if a root component.} */
+    /** {@return the parent component of this component. Or empty if the root container.} */
     Optional<ContainerMirror> parent();
 
     /** {@return the path of this component} */

@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package app.packed.bean.operation.lifecycle;
 
-import app.packed.mirror.Mirror;
+import java.util.List;
 
 /**
  *
  */
-// What happens if an operation fails
+// Maaske paa BeanExtension??? Eller direkte paa Component/Application/Container
 
-// passthrough
-// Could be a inner interface on BeanOperationMirror
-// Maaske er det ogsaa noget der kan bruges udover bean operations?
-public interface BeanOperationErrorHandlingMirror extends Mirror {
+// Lifetime +
+public interface BeanLifecycleMirrorPlan {
 
-    // Field Operation -> Enten har man en optional
-    // Unhandled
-    //
-    default void print() {
-        
-    }
+    List<BeanLifecycleMirror> beanInitializers();
+
+    List<BeanLifecycleMirror> beanStarters();
+
+    List<BeanLifecycleMirror> beanStoppers();
 }

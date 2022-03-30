@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.lifecycle.sandbox;
 
 import app.packed.application.App;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.lifecycle.RunState;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link App#run(Assembly, Wirelet...)}.

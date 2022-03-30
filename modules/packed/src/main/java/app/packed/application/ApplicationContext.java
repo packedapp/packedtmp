@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package app.packed.application;
 
-import java.util.List;
+import app.packed.lifetime.LifetimeState;
 
 /**
  *
  */
-// Maaske paa BeanExtension??? Eller direkte paa Component/Application/Container
-public interface BeanLifecycleOperationMirrorPlan {
+public interface ApplicationContext {
 
-    List<BeanLifecycleOperationMirror> beanInitializers();
-
-    List<BeanLifecycleOperationMirror> beanStarters();
-
-    List<BeanLifecycleOperationMirror> beanStoppers();
+    /** {@return the current state of the application.} */
+    LifetimeState state(); // state().current()
 }

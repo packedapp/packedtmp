@@ -22,8 +22,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.lifecycle.LifecycleApplicationController;
-import app.packed.lifecycle.LifetimeRegionState;
 import app.packed.lifecycle.RunState;
+import app.packed.lifetime.LifetimeState;
 
 /**
  *
@@ -96,7 +96,7 @@ public final class PackedApplicationRuntime implements LifecycleApplicationContr
 
     /** {@inheritDoc} */
     @Override
-    public LifetimeRegionState info() {
+    public LifetimeState info() {
         return null;
     }
 

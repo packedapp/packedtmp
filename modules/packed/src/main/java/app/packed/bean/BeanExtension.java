@@ -43,8 +43,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, UserOrExtension.user(), implementation);
-        return new ContainerBeanConfiguration<>(handle);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, UserOrExtension.user(), implementation);
+        return new ContainerBeanConfiguration<>(driver);
     }
 
     /**

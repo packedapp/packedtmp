@@ -17,8 +17,8 @@ package app.packed.bean.operation.examples;
 
 import java.util.List;
 
-import app.packed.bean.mirror.BeanOperationMirror;
-import app.packed.bean.operation.BeanOperationMirrorSelection;
+import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.sandbox.BeanOperationMirrorSelection;
 import app.packed.container.Assembly;
 
 /**
@@ -27,7 +27,7 @@ import app.packed.container.Assembly;
 
 // Hvis vi har noget dataflow aktie ting... Fungere den maaske ikke
 
-public abstract class ScheduleTaskMirror extends BeanOperationMirror {
+public abstract class ScheduleTaskMirror extends OperationMirror {
 
     /** {@return the key that the service is exported with.} */
     public abstract Object schedule();

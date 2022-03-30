@@ -80,11 +80,11 @@ import packed.internal.util.ThrowableUtil;
 public abstract non-sealed class Extension<E extends Extension<E>> implements ComponentRealm {
 
     /**
-     * The extension's setup that all methods delegate to.
+     * The internal configuration of the extension that all methods delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
-     * {@link #checkUserConfigurable()} at any time.
+     * {@link #checkConfigurable()} at any time.
      * <p>
      * This field should only be accessed via {@link #setup()}.
      */
@@ -95,7 +95,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     protected Extension() {}
 
     /**
-     * 
      * @return a bean support class
      * 
      * @see BaseAssembly#bean
@@ -227,22 +226,10 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * extension's container. Failing to follow this rule will result in an {@link InternalExtensionException} being thrown.
      */
     protected void onApplicationClose() {
-        for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
+        for (ExtensionSetup c = setup().childFirst; c != null; c = c.childSiebling) {
             c.instance().onApplicationClose();
         }
     }
-
-    /**
-     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned successfully),
-     * but before the new extension instance is made available to the user.
-     * <p>
-     * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
-     * perform post instantiation of the extension as needed.
-     * 
-     * @see #onAssemblyClose()
-     * @see #onApplicationClose()
-     */
-    protected void onNew() {}
 
     /**
      * Invoked (by the runtime) when.
@@ -260,12 +247,25 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      */
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
+        ExtensionSetup setup = setup();
         for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
             if (c.container.assembly == setup.container.assembly) {
                 c.instance().onAssemblyClose();
             }
         }
     }
+
+    /**
+     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned successfully),
+     * but before the new extension instance is made available to the user.
+     * <p>
+     * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
+     * perform post instantiation of the extension as needed.
+     * 
+     * @see #onAssemblyClose()
+     * @see #onApplicationClose()
+     */
+    protected void onNew() {}
 
     /**
      * Returns a selection of all wirelets of the specified type that have not already been processed.
@@ -303,7 +303,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     }
 
     protected final void shareInstance(Object instance) {
-
+        // buildWithSecret?
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -432,9 +432,13 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     protected static void $requiresClassGenFullAccessToModule() {
         // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
+
         // Det kan ogsaa bare vaere en dependency paa en extension...
         // Det er faktisk maaske det lettes
-        // dependsOn(ClassGenExtension.class);
+        // dependsOn(FullClassGenExtension.class);
+        
+        // Tror faktisk ikke vi supportere det udover annotation
+        
     }
 
 //  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
@@ -529,20 +533,50 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     }
 
     /**
-     *
+     * If an extension depends on other extensions (most do). They must annotated with this annotation, indicating exactly
+     * what extensions they depend upon. This should include dependencies that are only used in some cases.
+     * <p>
+     * Trying to use other that use other extensions that are not explicitly defined using this annotation. Will fail by
+     * throwing an {@link InternalExtensionException}. This includes both explicit usage, for example, via
+     * {@link Extension#use(Class)} or usage of hook annotations from other extensions.
+     * <p>
+     * All classes that are declared as dependencies will be loaded together with annotated extension. However, the
+     * dependency (extension) class will not be initialized before it is usage for the first time.
      */
-    // Vi goer det her fordi vi ikke vil class initialize alle extensions.
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     public @interface DependsOn {
 
-        /** {@return other extensions the annotated extension depends on} */
+        /** {@return other extensions the annotated extension depends on.} */
         Class<? extends Extension<?>>[] extensions() default {};
 
         // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
         // Den kraever bare at den allerede har vaeret listet som optionally
+        /**
+         * Extensions that are optionally used will be attempted to be resolved using the annotated extension classes class
+         * loader.
+         */
         String[] optionally() default {};
+    }
+    
+    
+    public static abstract class Bootstrap {
+        protected abstract void bootstrap();
+        
+        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
+            
+        }
+        
+        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
+            return alternative.get();
+        }
+        
+        
+    }
+    
+    public @interface BootstrapWith {
+        Class<? extends Extension.Bootstrap> value();
     }
 }
 //Static initializers

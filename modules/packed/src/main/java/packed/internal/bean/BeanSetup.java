@@ -92,9 +92,9 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? lifetime.pool.reserve(driver.beanType) : null;
 
-
-        if (driver.beanKind() == BeanKind.CONTAINER && driver.extension != null) {
-            driver.extension.injectionManager.extensionBeans.put(Key.of(driver.beanType), this);
+        // Can only register a single extension bean of a particular type
+        if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
+            driver.extension.injectionManager.addBean(driver, this);
         }
 
         if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {

@@ -3,8 +3,9 @@ package app.packed.bean;
 import java.util.Collection;
 import java.util.Optional;
 
-import app.packed.bean.mirror.BeanOperationMirror;
-import app.packed.bean.operation.BeanFactoryMirror;
+import app.packed.application.ApplicationMirror;
+import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.lifecycle.BeanFactoryOperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -14,45 +15,70 @@ import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 // Scanning class -> Hooks
 // Bean -> Operation
 /**
- * A mirror of a bean.
+ * A mirror of a single bean.
  */
 public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
-    /** {@return the container the bean belongs to. Is identical to #parent() which is never empty for a bean.} */
+    /**
+     * Returns the type (class) of the bean. If the bean does not have a proper class, for example, a functional bean.
+     * {@code void.class} is returned.
+     * 
+     * @return the type (class) of the bean.
+     */
+    Class<?> beanClass();
+
+    /** {@return the kind of the bean.} */
+    BeanKind beanKind();
+
+    /** {@return the container the bean belongs to. Is identical to #parent() which is always present for a bean.} */
     ContainerMirror container();
+
+    default Optional<BeanFactoryOperationMirror> factory() {
+        // Kunne man forstille sig at en bean havde 2 constructors??
+        // Som man valgte af paa runtime????
+        return Optional.empty();
+    }
 
     default Class<? extends Extension<?>> installedVia() {
         // The extension that performed the actual installation of the bean
         return BeanExtension.class;
     }
 
-    /** {@return the type (class) of the bean.} */
-    // Optional instead??? Nope, vi returnere void.class
-    // What about an akka actor???
-    Class<?> beanClass(); // What does a SyntheticBean return??? Object.class, Synthetic.class, Void.class, void.class
-
-    /** {@return the kind of the bean.} */
-    BeanKind beanKind();
-
-    default Optional<BeanFactoryMirror> factory() {
-        // Kunne man forstille sig at en bean havde 2 constructors??
-        // Som man valgte af paa runtime????
-        return Optional.empty();
-    }
-
-    default Collection<BeanOperationMirror> operations() {
+    /** {@return a collection of all of the operations declared by the bean.} */
+    default Collection<OperationMirror> operations() {
         throw new UnsupportedOperationException();
     }
 
-    default <T extends BeanOperationMirror> Collection<T> operations(Class<T> operationType) {
+    default Collection<OperationMirror> operations(boolean includeSynthetic) {
         throw new UnsupportedOperationException();
     }
-    // boolean isInstantiated
 
-    // Scope-> BuildConstant, RuntimeConstant, Prototype...
-
-    // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
+    /**
+     * Returns a collection of all of the operations declared by the bean of the specified type.
+     * 
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
+        throw new UnsupportedOperationException();
+    }
 }
+
+interface Zandbox {
+    /**
+     * @return
+     */
+    ApplicationMirror application();
+
+}
+// boolean isInstantiated
+
+// Scope-> BuildConstant, RuntimeConstant, Prototype...
+
+// Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
+
 ///** {@return all hooks that have been applied on the bean.} */
 //// Tror slet ikke vi skal have dem her...
 //Set<BeanElementMirror> hooks();

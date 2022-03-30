@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
 import app.packed.bean.BeanMirror;
 
 /**
- *
+ * Represents a rooted tree of extension instances.
  */
 // Maaske T extends Extension | T extends ExtensionBean... 
 // Saa kan vi ogsaa bruge den paa runtime
@@ -51,7 +51,7 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         return result;
     }
 
-    /** {@return the number of elements in the tree.} */
+    /** {@return the number of extensions in the tree.} */
     default int count() {
         int size = 0;
         for (@SuppressWarnings("unused")
@@ -61,7 +61,10 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         return size;
     }
 
+    /** {@return the root of the tree.} */
     T root();
+
+    ExtensionConfiguration rootConfiguration();
 
     // Ideen er at man kan faa saadan en injected ind i et mirror...
 
@@ -69,6 +72,14 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    /**
+     * 
+     * @param mapper
+     *            a mapper from the extension to an integer
+     * @return the sum
+     * @throws ArithmeticException
+     *             if the result overflows an int
+     */
     default int sumInt(ToIntFunction<? super T> mapper) {
         requireNonNull(mapper, "mapper is null");
         int result = 0;
@@ -92,18 +103,20 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
     static <E extends Extension<?>> ExtensionTree<E> ofSingle(E extension) {
         // Den her kan godt vaere public
         // Men dem der iterere kan ikke
+
+        // Hmm vi kan jo ikke returnere collection
         throw new UnsupportedOperationException();
     }
-    
- // Node operations
- // boolean isRoot();
- // Tree connectedTree();
- // root
- // parent
- // children
- // sieblings
- // forEachChild
- // int index.... from [0 to size-1] In order of usage????
+
+    // Node operations
+    // boolean isRoot();
+    // Tree connectedTree();
+    // root
+    // parent
+    // children
+    // sieblings
+    // forEachChild
+    // int index.... from [0 to size-1] In order of usage????
 
 }
 
@@ -120,6 +133,10 @@ class MyExtMirror {
 
     public Collection<BeanMirror> beans() {
         return es.collectList((e, c) -> c.addAll(e.beansx()));
+    }
+
+    public Collection<BeanMirror> beans2() {
+        return es.stream().flatMap(e -> e.beansx().stream()).toList();
     }
 }
 

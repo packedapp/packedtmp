@@ -18,14 +18,14 @@ package app.packed.bean.operation.examples;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.mirror.BeanOperationMirror;
-import app.packed.bean.operation.BeanOperationMirrorSelection;
+import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.sandbox.BeanOperationMirrorSelection;
 import app.packed.container.Assembly;
 
 /**
  *
  */
-public abstract class ServiceExportMirror extends BeanOperationMirror {
+public abstract class ServiceExportMirror extends OperationMirror {
 
     /** {@return the key that the service is exported with.} */
     public abstract Key<?> key();

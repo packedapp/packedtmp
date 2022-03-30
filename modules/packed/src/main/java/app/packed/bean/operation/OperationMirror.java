@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror;
+package app.packed.bean.operation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,12 +21,15 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.operation.BeanOperationErrorHandlingMirror;
+import app.packed.bean.operation.sandbox.OperationErrorHandlingMirror;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import app.packed.inject.mirror.Dependency;
 import app.packed.mirror.Mirror;
+import packed.internal.container.ExtensionSetup;
 
 /**
  *
@@ -39,11 +42,26 @@ import app.packed.mirror.Mirror;
 
 // A bean constructor is _not_ an operation... Or maybe
 
-// AnnotatedElement????? Nah, hmm...
+// AnnotatedElement????? Nah, Det er targettt der kan vaere annoteret
 
 // Attribute support. Det vil give mening at kunne attache noget information af lidt mere dynamisk karakter?
 // Fx informations annotations?? Her taenker jeg paa OpenAPI annoteringer
-public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElement */ {
+public class OperationMirror implements Mirror {
+
+    /**
+     * The internal configuration of the extension we are mirrored. Is initially null but populated via
+     * {@link #initialize(ExtensionSetup)} which must be called by extension developers via
+     * {@link Extension#mirrorInitialize(ExtensionMirror)}.
+     */
+    @Nullable
+    private ExtensionSetup extension;
+
+    /**
+     * Create a new operation mirror.
+     * <p>
+     * Subclasses should have a single package-protected constructor.
+     */
+    protected OperationMirror() {}
 
     public final List<Dependency> dependencies() {
         // ; // What are we having injected... Giver det mening for functions????
@@ -51,32 +69,59 @@ public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElemen
         // BiFunction(WebRequest, WebResponse) vs
         // foo(WebRequest req, WebResponse res)
         // Hvorfor ikke...
+        // Ja det giver mening!
+        
+        // @WebRequst
+        // (HttpRequest, HttpResponse) == (r, p) -> ....
+
+        // Req + Response -> er jo operations variable...
+        // Tjah ikke 
 
         // Men er det dependencies??? Ja det er vel fx for @Provide
         // Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
         return List.of();
     }
 
-    /** {@return the bean that declares the operation.} */
+    /** {@return the bean the operation belongs to.} */
     public final BeanMirror bean() {
         throw new UnsupportedOperationException();
     }
 
+    public final String name() {
+        //// Vi har vel 3 interessante navne
+        // Name
+        // BeanExtension#name
+        // BeanExtension.longClass#name
+
+        // Kan vi have noget container path
+        return "";
+    }
+
     /**
-     * Returns true if the invocation of the operation creates a new bean instance. Returns false otherwise.
+     * Returns whether or not a new bean instance is created every time the operation is invoked.
      * 
-     * {@return whether or not a new bean is created when the operation starts.}
+     * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
      */
     public final boolean createsNewBean() {
         // Hvad med en constructor??
+
+        // Operation
+        // Factory
+        // Operation+Factory
+
+        // Jeg tror maaske Factory ikke er operations...
+        // Men saa er de irriterende i forbindelse med injection....
+
         return false;
     }
 
-    public final BeanOperationErrorHandlingMirror errorHandling() {
+    /** {@return how errors are handle when calling the operation.} */
+    public final OperationErrorHandlingMirror errorHandling() {
         // field??? Unhandled?
         throw new UnsupportedOperationException();
     }
 
+    /** {@return any operation interceptors that are registered.} */
     public final List<Object> interceptors() {
         // decorators???
         throw new UnsupportedOperationException();
@@ -87,24 +132,34 @@ public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElemen
         throw new UnsupportedOperationException();
     }
 
+    public static void main(String[] args) throws NoSuchMethodException, SecurityException {
+        Method method = OperationMirror.class.getMethod("main", String[].class);
+        System.out.println(method.getReturnType());
+    }
+
     /**
      * <p>
      * This might not match the return type of any underlying method. For exa
      * 
      * @return the
      */
+    // why not just return void???
+    // returnType() + returnTypeToken()
     public final Optional<TypeToken<?>> resultType() {
         return Optional.empty();
     }
 
+    /**
+     * @return
+     */
     public final TargetMirror target() {
         throw new UnsupportedOperationException();
     }
-    
+
     public interface TargetMirror {
         TargetType type();
     }
-    
+
     public enum TargetType {
 
         /** The operation is based on accessing a {@link Field}. */
@@ -129,11 +184,6 @@ public abstract class BeanOperationMirror implements Mirror /* , AnnotatedElemen
 //ConfigUseMirror vs ConfigUsedMirror
 //LifecycleCallMirror vs LifecycleCalledMirror
 //ScheduleTaskMirror vs ScheduledTaskMirror
-
-///** {@return the application the operation is a part of.} */
-//public final ApplicationMirror application() {
-//  return bean().application();
-//}
 
 ///**
 //* 

@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.mirror.old;
+package app.packed.lifetime;
 
 /**
  *
  */
-public interface BeanMethodMirror extends BeanMemberMirror {
-
+// LifecyclePhase was LifetimeTransition
+public enum LifetimePhase {
+    INITIALIZATION, STARTUP, SHUTDOWN;
 }
+// Initialization - Single threaded - On Any failure
+// Startup - Potential Multi threaded - On Any failure
+// Shutdown - Potential Multi threaded - always continues (reverse order)
+
+
+// initialize(Lifesegment pre, Lifesegment segment, Lifesegment post)
+// startup(Lifesegment pre, Lifesegment segment, Lifesegment post);
+// stop(Lifesegment pre, Lifesegment segment, Lifesegment post);

@@ -15,13 +15,13 @@
  */
 package app.packed.bean.operation.examples;
 
-import app.packed.bean.mirror.BeanOperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *
  */
 // A lifecycle operation
-public abstract class LifecycleActionMirror extends BeanOperationMirror {
+public abstract class LifecycleActionMirror extends OperationMirror {
 
     // Er en del af en liste eller en graf.
 
