@@ -29,7 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -274,11 +274,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
 
         /** {@inheritDoc} */
-        public final UserOrExtension owner() {
+        public final Realm owner() {
             if (realm instanceof ExtensionTreeSetup s) {
-                return UserOrExtension.extension(s.extensionModel.type());
+                return Realm.extension(s.extensionModel.type());
             }
-            return UserOrExtension.user();
+            return Realm.application();
         }
 
         /** {@inheritDoc} */
@@ -314,7 +314,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 //        }
 //
         /** {@inheritDoc} */
-        public final Stream<ComponentMirror> components() {
+        public final Stream<ComponentMirror> componentStream() {
             return stream0(ComponentSetup.this, true);
         }
 

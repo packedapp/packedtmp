@@ -18,7 +18,6 @@ package app.packed.bean.operation.examples;
 import java.util.function.Predicate;
 
 import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.sandbox.BeanOperationMirrorSelection;
 
 /**
  *
@@ -35,14 +34,15 @@ public abstract class EventBusSubscribeMirror extends OperationMirror {
 
         // ideen er at man kan koere
         // selectAll(SubscribeEventMirror.class).filter(SubscribeEventMirror.willReceiveInstance(x));
-
+        // or just
+        // selectAll(SubscribeEventMirror.class).filter(e->e.willReceiveInstance(x));
         throw new UnsupportedOperationException();
     }
 
-    // Tror nu ikke det er noget jeg ender med at lave.. Men interessant
-    interface SubscribeEventMirrorStream extends BeanOperationMirrorSelection<EventBusSubscribeMirror> {
-        default SubscribeEventMirrorStream receivesEventOfType(Class<?> x) {
-            return this;
-        }
-    }
+//    // Tror nu ikke det er noget jeg ender med at lave.. Men interessant
+//    interface SubscribeEventMirrorStream extends BeanOperationMirrorSelection<EventBusSubscribeMirror> {
+//        default SubscribeEventMirrorStream receivesEventOfType(Class<?> x) {
+//            return this;
+//        }
+//    }
 }

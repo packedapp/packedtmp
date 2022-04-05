@@ -29,8 +29,8 @@ import app.packed.base.Nullable;
 import app.packed.hooks.BeanMethod;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.bean.inject.DependencyProducer;
+import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -41,12 +41,12 @@ import packed.internal.util.ThrowableUtil;
 public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
     /** A MethodHandle that can invoke {@link BeanMethod#bootstrap}. */
-    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethod.class,
-            "bootstrap", void.class);
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethod.class, "bootstrap",
+            void.class);
 
     /** A VarHandle that can access {@link BeanMethod#processor}. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethod.class,
-            "builder", UseSiteMethodHookModel.Builder.class);
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethod.class, "builder",
+            UseSiteMethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
     public final MethodHookBootstrapModel bootstrapModel;
@@ -109,6 +109,8 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
         private final Method unsafeMethod;
 
+        private PackedHookOperationConfiguration operation;
+
         Builder(HookModel.Builder source, MethodHookBootstrapModel model, Method method) {
             this(model, new Shared(source, method));
         }
@@ -118,6 +120,14 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             this.shared = requireNonNull(shared);
             this.model = requireNonNull(model);
             this.unsafeMethod = shared.methodUnsafe;
+        }
+
+        public PackedHookOperationConfiguration operation() {
+            PackedHookOperationConfiguration o = operation;
+            if (o == null) {
+                operation = o = new PackedHookOperationConfiguration();
+            }
+            return o;
         }
 
         /**

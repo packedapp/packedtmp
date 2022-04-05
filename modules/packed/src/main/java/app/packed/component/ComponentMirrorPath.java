@@ -19,7 +19,7 @@ package app.packed.component;
  *
  */
 // Her er taenkt paa en Path fra From to To
-// Minder maaske lidt for meget om ComponnetMirrorRelation
+// Minder maaske lidt for meget om ComponnetMirror.Relation
 public interface ComponentMirrorPath extends Iterable<ComponentMirror> {
 
     ComponentMirror from();

@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -46,7 +46,7 @@ public abstract sealed class RealmSetup permits ExtensionTreeSetup,AssemblySetup
         return r;
     }
     
-    public abstract UserOrExtension owner(); 
+    public abstract Realm owner(); 
 
     public void checkOpen() {
         // Tror maaske hellere vi skal kalde newOperation

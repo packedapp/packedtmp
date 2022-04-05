@@ -34,7 +34,8 @@ public @interface ContainerHook {
 
     /** {@return the processors that should be applied for every container the assembly defines.} */
     Class<? extends Processor>[] value();
-
+    
+    // By default the processor will be applied to all containers within a give assembly
     boolean onlyProcessTopContainer() default false;
 
     /** An annotation that allows for placing multiple assembly hook annotations on a single target. */

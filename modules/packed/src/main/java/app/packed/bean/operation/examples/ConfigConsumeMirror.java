@@ -15,13 +15,20 @@
  */
 package app.packed.bean.operation.examples;
 
-import app.packed.bean.operation.OperationMirror;
-
 /**
- *
+ * A mirror for an operation that involves consuming a Config element.
  */
 // Er det en speciel usesite mirror???
-public abstract class ConfigConsumeMirror extends OperationMirror {
 
+// Not an operation....
+// Fordi
+// @ScheduleTask
+// public void foo(@ConsumeConfig("foo.bar"))
+// Her er Schedule operation, og ConsumeConfig noget dependency knald
+
+public abstract class ConfigConsumeMirror /*extends OperationMirror */ {
+
+    public abstract String path();
+    
     public abstract Object scope();
 }

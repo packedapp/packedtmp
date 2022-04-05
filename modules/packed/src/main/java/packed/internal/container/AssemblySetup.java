@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import app.packed.base.Nullable;
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 
@@ -97,11 +97,11 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
     }
 
     @Override
-    public final UserOrExtension owner() {
+    public final Realm owner() {
         if (model == null) {
-            return UserOrExtension.user();
+            return Realm.application();
         } else {
-            return UserOrExtension.extension(model.type());
+            return Realm.extension(model.type());
         }
     }
 }

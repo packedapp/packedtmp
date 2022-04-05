@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -36,12 +37,7 @@ import app.packed.mirror.Mirror;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-// Skal laves til klasse syntes jeg
-// IDK, faar vi f.eks. en ExtensionBeanMirror???? Jeg har svaert ved at se det.
-//// EntityBeanMirror...
-//// Men er det ikke bedre med EntityMirror { BeanMirror bean()}???
-// Kommer i
-public sealed interface ComponentMirror extends Mirror permits ContainerMirror,BeanMirror {
+public sealed interface ComponentMirror extends Mirror permits ContainerMirror, BeanMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
@@ -51,8 +47,14 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
 
     /** {@return an unmodifiable view of all of the children of this component.} */
     Collection<ComponentMirror> children();
+    
+    /** {@return a component tree with this component as the root.} */
+    default ComponentMirrorTree components() {
+        throw new UnsupportedOperationException();
+    }
 
-    Stream<ComponentMirror> components();
+    // remove this
+    Stream<ComponentMirror> componentStream();
 
     /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
     int depth();
@@ -70,8 +72,29 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
      */
     String name();
 
+    /** {@return a collection of all of the operations declared by the bean.} */
+    default Collection<OperationMirror> operations() {
+        throw new UnsupportedOperationException();
+    }
+
+    default Collection<OperationMirror> operations(boolean includeSynthetic) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a collection of all of the operations declared by the bean of the specified type.
+     * 
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the owner of the component.} */
-    UserOrExtension owner();
+    Realm owner();
 
     /** {@return the parent component of this component. Or empty if the root container.} */
     Optional<ContainerMirror> parent();
@@ -212,6 +235,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
          */
         boolean inSameContainer();
 
+        // inSameLifetime
+        
         boolean isInSame(ComponentScope scope);
 
         /**
@@ -293,6 +318,13 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror,B
     // https://en.wikipedia.org/wiki/Tree_structure
     // description()? -> Same, parent, child, descendend, ancestor,
 }
+
+//Skal laves til klasse syntes jeg
+//IDK, faar vi f.eks. en ExtensionBeanMirror???? Jeg har svaert ved at se det.
+////EntityBeanMirror...
+////Men er det ikke bedre med EntityMirror { BeanMirror bean()}???
+//Kommer i
+
 
 ///**
 // * <p>

@@ -18,46 +18,45 @@ package app.packed.inject.mirror;
 import java.lang.annotation.Annotation;
 
 import app.packed.base.Key;
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 
 /**
  *
  */
-public /*sealed*/ interface ResolvedDependency extends Dependency {
+public sealed interface ResolvedDependency extends Dependency {
 
     // Er vel kun interessant for service???
     // Hooks er jo altid kun lokale
     Object injectionScope();
-    
+
     // The same value for the bean instance or the bean?? Maybe it does not make sense
     default boolean isConstant() {
         return producerSite() instanceof ProducerSite.ConstantProducerSite;
     }
 
-    default UserOrExtension producer() {
+    default Realm producer() {
         return producerSite().producer();
     }
 
     ProducerSite producerSite();
-    
-    /*non-sealed */ interface OfAnnotatedDependencyHook extends ResolvedDependency {
-        
+
+    non-sealed interface OfAnnotatedDependencyHook extends ResolvedDependency {
+
         Annotation annotation();
-        
+
         default Class<? extends Annotation> annotationType() {
             return annotation().annotationType();
         }
     }
 
-    
-    /* non-sealed */ interface OfService extends ResolvedDependency /* ServiceDependency */ {
+    non-sealed interface OfService extends ResolvedDependency /* ServiceDependency */ {
 
         /** {@return the key under which the service is provided.} */
         Key<?> key();
 
     }
 
-    /* non-sealed */ interface OfSpecial extends ResolvedDependency {}
+    non-sealed interface OfSpecial extends ResolvedDependency {}
 
-    /* non-sealed */ interface OfTypedDependencyHook  extends ResolvedDependency {}
+    non-sealed interface OfTypedDependencyHook extends ResolvedDependency {}
 }

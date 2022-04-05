@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -362,6 +363,15 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<BeanMirror> beans() {
+           // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
+            throw new UnsupportedOperationException();
+            // we need a filter on the view...
+            // size, isEmpty, is going to get a bit slower.
         }
     }
 }

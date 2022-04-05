@@ -23,7 +23,9 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
+import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.extension.ExtensionMember;
 import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanFieldHook;
@@ -131,6 +133,14 @@ final class ProvideMethodBootstrap extends RealMethodSidecarBootstrap {
     @Override
     protected void bootstrap() {
         serviceRegister(method().getAnnotation(Provide.class).constant());
+        operation().useMirror(() -> new ServiceProvideMirror() {
+
+            @Override
+            public Key<?> key() {
+                return Key.of(String.class);
+            }
+        });
+        
         // new Factory<@Provide Long>(() -> 2L) {};
     }
 }

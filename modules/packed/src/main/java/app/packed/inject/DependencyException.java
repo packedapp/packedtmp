@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-import app.packed.component.BuildException;
+import app.packed.application.BuildException;
 
 /**
  * This exception is thrown when a factory could not be created. For example, because a valid constructor or method

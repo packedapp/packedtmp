@@ -17,7 +17,8 @@ package app.packed.container;
 
 import java.util.Set;
 
-import app.packed.component.UserOrExtension;
+import app.packed.base.Key;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 
 /**
@@ -26,15 +27,19 @@ import app.packed.extension.Extension;
 // CrossContainerScope (Det er vel der den er interessant
 
 // A scope can be known under different id's in an application
-public interface ContainerScopedMirror {
+public interface ContainerScopedMirror<K> {
 
+    boolean isApplicationScope();
+    
+    Class<? extends Extension<?>> extension();
+    
     Set<ContainerMirror> containers();
     
-    Set<UserOrExtension> participants();
+    Set<Realm> participants();
     
-    Class<? extends Extension<?>> owner();
+    Realm owner();
     
-    ContainerScopedMirror aliasOf();
+    ContainerScopedMirror<K> aliasOf();
     
     Object id();
 
@@ -48,15 +53,16 @@ public interface ContainerScopedMirror {
     // more than 1 application
 }
 
-interface EventBusScopedMirror extends ContainerScopedMirror {}
+interface EventBusScopedMirror extends ContainerScopedMirror<Key<?>> {}
 
-interface ConfigScopedMirror extends ContainerScopedMirror {}
+// Scope X Key
+interface ConfigScopedMirror extends ContainerScopedMirror<Key<?>> {}
 
-interface CliScopeMirror extends ContainerScopedMirror {}
+interface CliScopeMirror extends ContainerScopedMirror<Key<?>> {}
 
-interface MetricsRepositortyScopedMirror extends ContainerScopedMirror {}
+interface MetricsRepositortyScopedMirror extends ContainerScopedMirror<Key<?>> {}
 
-interface WebServerScopedMirror extends ContainerScopedMirror {}
+interface WebServerScopedMirror extends ContainerScopedMirror<Key<?>> {}
 
 // ConfigNamespace -> A place where .path is unique
 // CliNamespace 

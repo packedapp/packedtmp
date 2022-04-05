@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import java.util.function.BiConsumer;
 
 import app.packed.base.TypeToken;
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
@@ -87,34 +87,34 @@ public final class BeanSupport extends ExtensionSupport {
 
     // ContainerBeanConfiguration... men den har provide.. Saa vi har en ExtensionBeanConfiguration
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), implementation);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, Realm.extension(extensionType), implementation);
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), factory);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, Realm.extension(extensionType), factory);
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, UserOrExtension.extension(extensionType), instance);
+        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, Realm.extension(extensionType), instance);
         return new ExtensionBeanConfiguration<>(m);
     }
 
-    public final BeanDriver<?> newDriver(BeanKind kind, UserOrExtension agent) {
+    public final BeanDriver<?> newDriver(BeanKind kind, Realm agent) {
         return PackedBeanDriver.of(kind, container, agent);
     }
 
-    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, UserOrExtension agent, Class<T> implementation) {
+    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, Realm agent, Class<T> implementation) {
         // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
         return PackedBeanDriver.ofClass(kind, container, agent, implementation);
     }
 
-    public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, UserOrExtension agent, Factory<T> factory) {
+    public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, Realm agent, Factory<T> factory) {
         return PackedBeanDriver.ofFactory(kind, container, agent, factory);
     }
 
-    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, UserOrExtension agent, T instance) {
+    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, Realm agent, T instance) {
         return PackedBeanDriver.ofInstance(kind, container, agent, instance);
     }
 

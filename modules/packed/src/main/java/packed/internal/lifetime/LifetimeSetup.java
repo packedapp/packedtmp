@@ -11,7 +11,6 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.OperationMirrorList;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimePhase;
@@ -110,7 +109,7 @@ public final class LifetimeSetup {
 
         /** {@inheritDoc} */
         @Override
-        public OperationMirrorList<OperationMirror> operations(LifetimePhase phase) {
+        public List<OperationMirror> operations(LifetimePhase phase) {
             throw new UnsupportedOperationException();
         }
 

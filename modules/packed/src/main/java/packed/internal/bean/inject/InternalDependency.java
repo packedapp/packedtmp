@@ -31,10 +31,10 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.component.BuildException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;

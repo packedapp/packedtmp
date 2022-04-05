@@ -6,12 +6,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.component.BuildException;
-import app.packed.container.ContainerHook;
+import app.packed.application.BuildException;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 
-// @MetaAnnotation(AssemblyHook.class)
+// @MetaAnnotation(ContainerHook.class)
 @ContainerHook(RandomProcX.class)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -33,7 +33,7 @@ record RandomProcX(MaximumComponentContainer pc) implements ContainerHook.Proces
 
     @Override
     public void onCompleted(ContainerMirror mirror) {
-        if (mirror.components().count() > pc.maxComponents()) {
+        if (mirror.componentStream().count() > pc.maxComponents()) {
             throw new BuildException("Cannot define a container with more than " + pc.maxComponents() + " components in a single container");
         }
     }

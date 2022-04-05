@@ -1,10 +1,12 @@
 package app.packed.container;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
@@ -13,16 +15,19 @@ import app.packed.extension.InternalExtensionException;
 import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
 
 /**
- * A mirror of a container (component).
+ * A mirror of a container.
  * <p>
  * An instance of this class is typically obtained from an {@link ApplicationMirror}.
  */
 public sealed interface ContainerMirror extends ComponentMirror permits BuildTimeContainerMirror {
 
-    /** {@return a {@link Set} view of every extension that has been used in the container.} */
+    /** {@return a {@link Collection} view of all the beans defined in the container.} */
+    Collection<BeanMirror> beans();
+
+    /** {@return a {@link Set} view of every extension that have been used in the container.} */
     Set<ExtensionMirror> extensions(); // return Map<Type, Mirror> instead???
 
-    /** {@return a {@link Set} view of every extension type that has been used in the container.} */
+    /** {@return a {@link Set} view of every extension type that have been used in the container.} */
     Set<Class<? extends Extension<?>>> extensionTypes();
 
     /**
@@ -54,6 +59,7 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
      *            the type of mirror to return
      * @return a mirror of the specified type
      * @see ContainerConfiguration#use(Class)
+     * @see ApplicationMirror#useExtension(Class)
      * @see #findExtension(Class)
      * @throws NoSuchElementException
      *             if the extension the mirror is a part of is not in use by the container

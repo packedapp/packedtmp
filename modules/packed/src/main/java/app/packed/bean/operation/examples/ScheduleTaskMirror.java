@@ -18,8 +18,6 @@ package app.packed.bean.operation.examples;
 import java.util.List;
 
 import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.sandbox.BeanOperationMirrorSelection;
-import app.packed.container.Assembly;
 
 /**
  *
@@ -34,8 +32,4 @@ public abstract class ScheduleTaskMirror extends OperationMirror {
 
     /// Hmm, Hmm, Hmm. Det er jo det her graf ting...
     public abstract List<ScheduleTaskMirror> subtasks();
-
-    public static BeanOperationMirrorSelection<ScheduleTaskMirror> selectAll(Assembly assembly) {
-        throw new UnsupportedOperationException();
-    }
 }

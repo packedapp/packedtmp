@@ -6,7 +6,6 @@ import java.util.Set;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.OperationMirrorList;
 import app.packed.bean.operation.lifecycle.BeanLifecycleMirrorPlan;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.mirror.Mirror;
@@ -40,7 +39,7 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
     // Fx 
     
     // Hvad med sync/async start/stop???
-    OperationMirrorList<OperationMirror> operations(LifetimePhase phase);
+    List<OperationMirror> operations(LifetimePhase phase);
     
     // Stable across application builds
     List<BeanMirror> beans();
@@ -81,7 +80,7 @@ interface LifetimeSandbox {
     // Altsaa en egentlig graph af ting der skal vaere oppe og koere.
     Set<LifetimeMirror> dependants();
 
-    default OperationMirrorList<?> initialization() {
+    default List<OperationMirror> initialization() {
         throw new UnsupportedOperationException();
     }
 

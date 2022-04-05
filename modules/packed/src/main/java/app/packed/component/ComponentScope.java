@@ -39,7 +39,7 @@ import app.packed.base.Qualifier;
 public enum ComponentScope {
 
     /** A scope that indicates any component in the same namespace. */
-    NAMESPACE, // -> Family
+    NAMESPACE, // -> Family // Vi kan bare sammenligne application.root.constantPool == application.root.constantPool da de er arrays
 
     /** A scope that indicates any component within the same application. */
     APPLICATION,
@@ -88,7 +88,6 @@ enum ComponentScope2 {
 
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
     REQUEST;
-
 }
 
 @Qualifier

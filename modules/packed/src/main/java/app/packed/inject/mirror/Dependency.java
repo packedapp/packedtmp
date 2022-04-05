@@ -26,22 +26,21 @@ import app.packed.base.Variable;
 // Modellere en dependecy (typisk en parameter)
 // Dependecy arguments (wrapped 
 
-public /*sealed*/ interface Dependency /*permits ResolvedDependency, UnresolvedDependency*/ {
-    
+public sealed interface Dependency permits ResolvedDependency, UnresolvedDependency {
     // Den er for composites skyld... Men hvad er forskellen paa at lave en bean som
     // Men er det i virkeligheden bare en dynamisk producer??? Composite
     // For hvad er forskellen egentlig til en prototype (record) bean????
     List<Dependency> dependencies();
-    
+
     Class<?> getExpectedType();
-    
-    // Maaske er composite en dependency type??? 
+
+    // Maaske er composite en dependency type???
     // Altsaa det er jo ikke en bean... Man kan ikke have annoteringer...
-    
+
     /**
      * {@return whether or not the dependency is satisfiable
      */
-    boolean isSatisfiable(); //isSatisfied
+    boolean isSatisfiable(); // isSatisfied
 
     Variable variable();
 }
@@ -49,5 +48,5 @@ public /*sealed*/ interface Dependency /*permits ResolvedDependency, UnresolvedD
 //Altsaa det er goer det jo lidt traels...
 // Eller maaske resolved dependency istedet for????
 interface ZCompositeDependency /* extends Dependency */ {
- 
+
 }

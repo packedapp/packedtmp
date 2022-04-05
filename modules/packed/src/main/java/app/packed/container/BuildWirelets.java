@@ -48,8 +48,6 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
-
-
     // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
     static Wirelet delayToRuntime(Function<InstantiationContext, app.packed.container.Wirelet> wireletSupplier) {
         throw new UnsupportedOperationException();

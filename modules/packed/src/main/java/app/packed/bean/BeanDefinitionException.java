@@ -1,6 +1,6 @@
 package app.packed.bean;
 
-import app.packed.component.BuildException;
+import app.packed.application.BuildException;
 
 // Ideen er lidt at vi kan smide den her, hvis der er noget problemer med Bean definitionen
 // F.eks. 2 injects...

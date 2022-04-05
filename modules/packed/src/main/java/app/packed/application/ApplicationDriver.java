@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
-import app.packed.component.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.exceptionhandling.PanicException;
@@ -168,7 +167,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     default void print(Assembly  assembly, Wirelet... wirelets) {
         ApplicationMirror b = ApplicationMirror.of(assembly, wirelets);
-        b.forEachComponent(cc -> {
+        b.container().componentStream().forEach(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append("");
             if (cc instanceof BeanMirror bm) {

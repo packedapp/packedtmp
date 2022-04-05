@@ -25,7 +25,7 @@ public interface ComponentMirrorSet extends Iterable<ComponentMirror> {
     /** {@return {@code true} if this set contains no mirrors.} */
     boolean isEmpty();
 
-    /** {@return the number of mirrors in this set.} */
+    /** {@return the number of components in this set.} */
     int size();
 
     Stream<ComponentMirrorSet> stream();

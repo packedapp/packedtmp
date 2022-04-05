@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.component.BuildException;
+import app.packed.application.BuildException;
 import app.packed.extension.ExtensionMember;
 import app.packed.hooks.BeanMethod;
 import app.packed.hooks.BeanMethodHook;

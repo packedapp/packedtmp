@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 
 /**
@@ -52,8 +52,8 @@ public final class ExtensionTreeSetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public UserOrExtension owner() {
-        return UserOrExtension.extension(extensionType());
+    public Realm owner() {
+        return Realm.extension(extensionType());
     }
 
     /** {@inheritDoc} */

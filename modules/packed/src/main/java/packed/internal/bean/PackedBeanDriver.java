@@ -21,7 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanDriver;
 import app.packed.bean.BeanKind;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -54,10 +54,13 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** The type of source the driver is created from. */
     final SourceType sourceType;
 
-    public PackedBeanDriver(BeanKind kind, ContainerSetup container, UserOrExtension userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
+    /** Manages the operations defined by the bean. */
+    public final BeanOperationManager operations = new BeanOperationManager();
+    
+    public PackedBeanDriver(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
-        if (userOrExtension.isUser()) {
+        if (userOrExtension.isApplication()) {
             this.realm = container.realm;
             this.extension = null;
         } else {
@@ -101,23 +104,23 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         return kind;
     }
 
-    public static BeanDriver<?> of(BeanKind kind, ContainerSetup container, UserOrExtension owner) {
+    public static BeanDriver<?> of(BeanKind kind, ContainerSetup container, Realm owner) {
         return new PackedBeanDriver<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 
-    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, UserOrExtension owner, Class<T> implementation) {
+    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, Realm owner, Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanDriver<>(kind, container, owner, implementation, SourceType.CLASS, implementation);
     }
 
-    public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, UserOrExtension owner, Factory<T> factory) {
+    public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, Realm owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
         return new PackedBeanDriver<>(kind, container, owner, factory.rawType(), SourceType.FACTORY, factory);
     }
 
-    public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, UserOrExtension owner, T instance) {
+    public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, Realm owner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);

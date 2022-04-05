@@ -15,6 +15,9 @@ import app.packed.inject.service.ServiceRegistry;
 // Altsaa InjectionSite er jo en slags node.
 // Hvor dependencies'ene er edges
 // Eller hva, er det en anden API
+
+// Er altid en operation...
+
 public /* sealed */ interface InjectionSite /* permits ConsumerSite,ProducerSite */ {
 
     /** {@return the services that are available at this injection site.} */

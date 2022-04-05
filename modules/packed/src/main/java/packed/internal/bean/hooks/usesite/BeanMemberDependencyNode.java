@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 
+import app.packed.application.BuildException;
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
@@ -42,8 +42,8 @@ public final class BeanMemberDependencyNode extends DependencyNode {
     @Nullable
     protected final BeanMemberServiceSetup service;
     
-    public BeanMemberDependencyNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
-        super(source, smm.dependencies, smm.methodHandle(), dependencyProviders);
+    public BeanMemberDependencyNode(BeanSetup bean, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+        super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
 
         if (smm.provideAskey != null) {
             if (!Modifier.isStatic(smm.getModifiers()) && bean.singletonHandle == null) {

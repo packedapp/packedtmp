@@ -15,7 +15,6 @@
  */
 package app.packed.application;
 
-import app.packed.component.BuildException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;

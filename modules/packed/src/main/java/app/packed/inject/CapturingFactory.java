@@ -36,7 +36,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**
- *
+ * A factory that captures return type and other stuff
  */
 public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
@@ -118,7 +118,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
             Class<?> parem1 = dependencies.get(0).rawType();
             Class<?> parem2 = dependencies.get(1).rawType();
-            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType ); // (Function, Class, Object, Object)Object -> (Object, Object)Object
+            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
         this.factory = new CanonicalizedCapturingInternalFactory<>(typeLiteral, methodHandle, dependencies);

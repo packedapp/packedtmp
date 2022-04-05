@@ -19,42 +19,44 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.operation.examples.ServiceExportMirror;
 import app.packed.bean.operation.sandbox.OperationErrorHandlingMirror;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
-import app.packed.inject.mirror.Dependency;
+import app.packed.extension.InternalExtensionException;
+import app.packed.inject.DependencyMirror;
+import app.packed.inject.service.ServiceRegistry;
 import app.packed.mirror.Mirror;
+import packed.internal.bean.OperationSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
- *
+ * A mirror for an bean operation.
+ * <p>
+ * This class can be extended to provide more detailed information about a particular type of operation. For example,
+ * the {@link app.packed.inject.service.ServiceExtension} provides details about an exported service via
+ * {@link ServiceExportMirror}.
+ * <p>
+ * NOTE: Subclasses of this class:
+ * <ul>
+ * <li>Must be annotated with {@link ExtensionMember} indicating the type of extension that the mirror belongs to.</li>
+ * <li>Must be located in the same module as the extension it is a member of (iff the extension is defined in a
+ * module).</li>
+ * </ul>
  */
-// Is invoked by an extension
-
-// A bean function
-// A bean method
-// A bean field get/set/compute
-
-// A bean constructor is _not_ an operation... Or maybe
-
-// AnnotatedElement????? Nah, Det er targettt der kan vaere annoteret
-
-// Attribute support. Det vil give mening at kunne attache noget information af lidt mere dynamisk karakter?
-// Fx informations annotations?? Her taenker jeg paa OpenAPI annoteringer
 public class OperationMirror implements Mirror {
 
     /**
-     * The internal configuration of the extension we are mirrored. Is initially null but populated via
+     * The internal configuration of the operation we are mirrored. Is initially null but populated via
      * {@link #initialize(ExtensionSetup)} which must be called by extension developers via
      * {@link Extension#mirrorInitialize(ExtensionMirror)}.
      */
     @Nullable
-    private ExtensionSetup extension;
+    private OperationSetup operation;
 
     /**
      * Create a new operation mirror.
@@ -63,38 +65,14 @@ public class OperationMirror implements Mirror {
      */
     protected OperationMirror() {}
 
-    public final List<Dependency> dependencies() {
-        // ; // What are we having injected... Giver det mening for functions????
-
-        // BiFunction(WebRequest, WebResponse) vs
-        // foo(WebRequest req, WebResponse res)
-        // Hvorfor ikke...
-        // Ja det giver mening!
-        
-        // @WebRequst
-        // (HttpRequest, HttpResponse) == (r, p) -> ....
-
-        // Req + Response -> er jo operations variable...
-        // Tjah ikke 
-
-        // Men er det dependencies??? Ja det er vel fx for @Provide
-        // Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
-        return List.of();
-    }
-
     /** {@return the bean the operation belongs to.} */
     public final BeanMirror bean() {
-        throw new UnsupportedOperationException();
+        return operation().bean.mirror();
     }
 
-    public final String name() {
-        //// Vi har vel 3 interessante navne
-        // Name
-        // BeanExtension#name
-        // BeanExtension.longClass#name
-
-        // Kan vi have noget container path
-        return "";
+    /** {@return the services that are available at this injection site.} */
+    public final ServiceRegistry availableServices() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -115,38 +93,93 @@ public class OperationMirror implements Mirror {
         return false;
     }
 
+    public final boolean createsNewThread() {
+        // synchronous (in calling thread)
+        // Spawn (er jo en slags asynchronous...)
+        // Hoere det til i noget meta data per extension???
+        return false;
+    }
+
+    public final List<DependencyMirror> dependencies() {
+        // ; // What are we having injected... Giver det mening for functions????
+
+        // BiFunction(WebRequest, WebResponse) vs
+        // foo(WebRequest req, WebResponse res)
+        // Hvorfor ikke...
+        // Ja det giver mening!
+
+        // @WebRequst
+        // (HttpRequest, HttpResponse) == (r, p) -> ....
+
+        // Req + Response -> er jo operations variable...
+        // Tjah ikke
+
+        // Men er det dependencies??? Ja det er vel fx for @Provide
+        // Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return how errors are handle when calling the operation.} */
     public final OperationErrorHandlingMirror errorHandling() {
         // field??? Unhandled?
         throw new UnsupportedOperationException();
     }
 
-    /** {@return any operation interceptors that are registered.} */
-    public final List<Object> interceptors() {
-        // decorators???
+    /** {@return any interceptors that are applied to the operation.} */
+    public final List<OperationInterceptorMirror> interceptors() {
         throw new UnsupportedOperationException();
+    }
+
+    public final String name() {
+        //// Vi har vel 3 interessante navne
+        // Name
+        // BeanExtension#name
+        // BeanExtension.longClass#name
+
+        // Kan vi have noget container path
+        return "";
+    }
+
+    /**
+     * {@return the mirrored extension's internal configuration.}
+     * 
+     * @throws InternalExtensionException
+     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
+     */
+    private OperationSetup operation() {
+        OperationSetup o = operation;
+        if (o == null) {
+            throw new InternalExtensionException(
+                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
+        }
+        return o;
     }
 
     /** {@return the extension that initiates the operation.} */
     public final Class<? extends Extension<?>> operator() {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void main(String[] args) throws NoSuchMethodException, SecurityException {
-        Method method = OperationMirror.class.getMethod("main", String[].class);
-        System.out.println(method.getReturnType());
+        return operation().operator.extensionType;
     }
 
     /**
+     * Returns the return type of the operation. If the operation does not provide {@code void.class} if the the operation
+     * does not return a result.
      * <p>
-     * This might not match the return type of any underlying method. For exa
+     * This might not match the return type of any underlying method. For examples, you might return a completable future (a
+     * wrapper) if returning the result in a wrapper. see method declaredResultType() for actual returning class??? or do we
+     * just inspect operation type
+     * 
+     * Also with regards to return type. If the operator ignores the result, this method typically just returns void.class
      * 
      * @return the
+     * 
+     * @see Method#getReturnType()
      */
     // why not just return void???
     // returnType() + returnTypeToken()
-    public final Optional<TypeToken<?>> resultType() {
-        return Optional.empty();
+    public final Class<?> resultType() {
+        // declaredResultType kan include wrapperen...
+        return void.class;
     }
 
     /**
@@ -156,28 +189,47 @@ public class OperationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
+    public static void main(String[] args) throws NoSuchMethodException, SecurityException {
+        Method method = OperationMirror.class.getMethod("main", String[].class);
+        System.out.println(method.getReturnType());
+    }
+
     public interface TargetMirror {
         TargetType type();
     }
 
     public enum TargetType {
 
-        /** The operation is based on accessing a {@link Field}. */
-        FIELD,
-
-        /** The operation is based on invoking a {@link Method}. */
-        METHOD,
-
         /** The operation is based on invoking a {@link Constructor} */
         CONSTRUCTOR,
+
+        /** The operation is based on accessing a {@link Field}. */
+        FIELD,
 
         /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
         FUNCTION,
 
-        OTHER; // Typically a MethodHandle, or an instance
-    }
+        /** The operation is based on invoking a {@link Method}. */
+        METHOD,
 
+        OTHER; // Typically a MethodHandle, or an instance
+
+        // CONSTANT;
+    }
 }
+//Is invoked by an extension
+
+//A bean function
+//A bean method
+//A bean field get/set/compute
+
+//A bean constructor is _not_ an operation... Or maybe
+
+//AnnotatedElement????? Nah, Det er targettt der kan vaere annoteret
+
+//Attribute support. Det vil give mening at kunne attache noget information af lidt mere dynamisk karakter?
+//Fx informations annotations?? Her taenker jeg paa OpenAPI annoteringer
+
 //ExportServiceMirror vs ExportedServiceMirror
 //ProvideServiceMirror vs ProvidedServiceMirror
 //SubscribeEventMirror vs SubscribedEventMirror

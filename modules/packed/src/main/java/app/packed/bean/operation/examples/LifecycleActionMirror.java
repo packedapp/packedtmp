@@ -20,16 +20,19 @@ import app.packed.bean.operation.OperationMirror;
 /**
  *
  */
-// A lifecycle operation
+// A lifecycle operation 
+// Base/Common Lifecycle operation?
 public abstract class LifecycleActionMirror extends OperationMirror {
 
     // Er en del af en liste eller en graf.
-
-    // Well should be optional... But probably not the right place to model it.
-    public abstract LifecycleActionMirror previous();
-
-    public abstract LifecycleActionMirror next();
 }
 
 // Har vi en speciel BeanOperationSelection ting som kan definere en task graph???
 // Taenker altsaa det er noget generisk noget
+
+
+//// Well should be optional... But probably not the right place to model it.
+//// Nej isaer nu ikke naar fx ConfigConsume er en del af en lifecycle
+//public abstract LifecycleActionMirror previous();
+//
+//public abstract LifecycleActionMirror next();

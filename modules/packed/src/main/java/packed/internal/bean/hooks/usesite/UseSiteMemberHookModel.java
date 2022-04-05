@@ -61,12 +61,13 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
         this.processor = builder.processor;
     }
 
-    public void onWire(BeanSetup css) {
+    public void onWire(BeanSetup bean) {
         // Register hooks, maybe move to component setup
-        DependencyNode i = new BeanMemberDependencyNode(css, this, createProviders());
-        css.parent.beans.addConsumer(i);
+        DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
+        
+        bean.parent.beans.addConsumer(node);
         if (processor != null) {
-            processor.accept(css);
+            processor.accept(bean);
         }
     }
 

@@ -19,14 +19,16 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.sandbox.BeanOperationMirrorSelection;
-import app.packed.container.Assembly;
 
 /**
  *
  */
 public abstract class ServiceExportMirror extends OperationMirror {
 
+    ServiceExportMirror(IntService is) {
+        
+    }
+    
     /** {@return the key that the service is exported with.} */
     public abstract Key<?> key();
 
@@ -35,8 +37,9 @@ public abstract class ServiceExportMirror extends OperationMirror {
     public abstract Optional<ServiceProvideMirror> service(); // Kan ikke fange alle dog
 
     // find usage of the exported service
-
-    public static BeanOperationMirrorSelection<ServiceExportMirror> selectAll(Assembly assembly) {
-        throw new UnsupportedOperationException();
+    
+    
+    static class IntService {
+        
     }
 }

@@ -18,7 +18,7 @@ package app.packed.hooks3.usage;
 import java.lang.invoke.MethodHandle;
 import java.time.LocalDate;
 
-import app.packed.component.UserOrExtension;
+import app.packed.component.Realm;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
@@ -100,7 +100,7 @@ public class LocalDateExamples {
 
         }
 
-        public final UserOrExtension realm() {
+        public final Realm realm() {
             throw new UnsupportedOperationException();
         }
         // Vi vil gerne enable convertering inde provide

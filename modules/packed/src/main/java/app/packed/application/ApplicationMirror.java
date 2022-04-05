@@ -2,11 +2,9 @@ package app.packed.application;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import app.packed.bean.operation.OperationMirror;
-import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorTree;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -14,8 +12,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
-import app.packed.mirror.SetView;
-import app.packed.mirror.TreeWalker;
 import packed.internal.application.PackedApplicationDriver;
 
 /**
@@ -31,6 +27,11 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror extends Mirror {
 
+    /** {@return all the components in the application.} */
+    default ComponentMirrorTree components() {
+        return container().components();
+    }
+
     /** {@return the root container in the application.} */
     ContainerMirror container();
 
@@ -42,25 +43,19 @@ public interface ApplicationMirror extends Mirror {
         return container().extensionTypes();
     }
 
-    default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        container().components().forEach(action);
-    }
+    /** {@return the application's lifetime.} */
+    LifetimeMirror lifetime();
 
     /**
      * {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
      * defines the application container.}
+     * 
+     * Altsaa hvis en application skal have et module... Skal container+Bean vel ogsaa
      */
     // Hmm, hvis applikation = Container specialization... Ved component
     // Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
     // Maaske vi skal have et realm mirror????
     Module module();
-
-    /** {@return the application's lifetime.} */
-    LifetimeMirror lifetime();
 
     /**
      * Returns the name of the application.
@@ -75,29 +70,14 @@ public interface ApplicationMirror extends Mirror {
         return container().name();
     }
 
-    default void print() {
-        container().print();
-    }
-
-    default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
-        throw new UnsupportedOperationException();
-    }
-
-    <T extends ExtensionMirror> T use(Class<T> type);
-
-    // Relations between to different applications
-    // Ret meget som ComponentRelation
-
-    /// Maaske flyt til ApplicationMirror.relation...
-    /// Der er ingen der kommer til at lave dem selv...
-
-    default TreeWalker<ApplicationMirror> walker() {
-        throw new UnsupportedOperationException();
-        // app.components() <-- all component in the application
-        // app.component().walker() <--- all components application or not...
-
-        // someComponent.walker().filter(c->c.application == SomeApp)...
-    }
+    /**
+     * @param <T>
+     * @param type
+     * @return
+     * 
+     * @see ContainerMirror#useExtension(Class)
+     */
+    <T extends ExtensionMirror> T useExtension(Class<T> type);
 
     /**
      * Create
@@ -113,18 +93,39 @@ public interface ApplicationMirror extends Mirror {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
 
-    default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
-        return container().useExtension(extensionMirrorType);
+    default void print() {
+        container().print();
     }
 
-    default Collection<OperationMirror> operations() {
-        throw new UnsupportedOperationException();
-    }
-
+    // Tror det ville giver mening at have OperationMirrorList her...
+    // Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...
     default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
         throw new UnsupportedOperationException();
     }
 }
+
+//default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
+//    throw new UnsupportedOperationException();
+//}
+//
+//// Relations between to different applications
+//// Ret meget som ComponentRelation
+//
+///// Maaske flyt til ApplicationMirror.relation...
+///// Der er ingen der kommer til at lave dem selv...
+//
+//default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
+//  throw new UnsupportedOperationException();
+//}
+
+//default TreeWalker<ApplicationMirror> walker() {
+//    throw new UnsupportedOperationException();
+//    // app.components() <-- all component in the application
+//    // app.component().walker() <--- all components application or not...
+//
+//    // someComponent.walker().filter(c->c.application == SomeApp)...
+//}
+
 //
 ///**
 // * Returns an immutable set containing any extensions that have been disabled.

@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayDeque;
 
+import app.packed.application.BuildException;
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.container.ContainerSetup;

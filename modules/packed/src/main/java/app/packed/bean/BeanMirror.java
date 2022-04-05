@@ -1,10 +1,7 @@
 package app.packed.bean;
 
-import java.util.Collection;
 import java.util.Optional;
 
-import app.packed.application.ApplicationMirror;
-import app.packed.bean.operation.OperationMirror;
 import app.packed.bean.operation.lifecycle.BeanFactoryOperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
@@ -27,7 +24,7 @@ public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBean
      */
     Class<?> beanClass();
 
-    /** {@return the kind of the bean.} */
+    /** {@return the bean's kind.} */
     BeanKind beanKind();
 
     /** {@return the container the bean belongs to. Is identical to #parent() which is always present for a bean.} */
@@ -36,42 +33,21 @@ public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBean
     default Optional<BeanFactoryOperationMirror> factory() {
         // Kunne man forstille sig at en bean havde 2 constructors??
         // Som man valgte af paa runtime????
+        
+        // Maaske er det bare en del af operations...
+        // operations.ofType(BeanFactoryOperationMirror.class).one();
         return Optional.empty();
-    }
-
-    default Class<? extends Extension<?>> installedVia() {
-        // The extension that performed the actual installation of the bean
-        return BeanExtension.class;
-    }
-
-    /** {@return a collection of all of the operations declared by the bean.} */
-    default Collection<OperationMirror> operations() {
-        throw new UnsupportedOperationException();
-    }
-
-    default Collection<OperationMirror> operations(boolean includeSynthetic) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a collection of all of the operations declared by the bean of the specified type.
-     * 
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
-        throw new UnsupportedOperationException();
     }
 }
 
-interface Zandbox {
-    /**
-     * @return
-     */
-    ApplicationMirror application();
+interface zandbox {
 
+    default Class<? extends Extension<?>> installedVia() {
+        // The extension that performed the actual installation of the bean
+        // Den burde ligge paa Component???
+        // Nah
+        return BeanExtension.class;
+    }
 }
 // boolean isInstantiated
 

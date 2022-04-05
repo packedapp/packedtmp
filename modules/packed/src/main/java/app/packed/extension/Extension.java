@@ -68,7 +68,7 @@ import packed.internal.util.ThrowableUtil;
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
  * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private
  * accessibility to make sure users do not try an manually instantiate it, but instead use
- * {@link BaseContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected
+ * {@link BaseContainerConfiguration#useExtension(Class)}. The extension subclass should not be declared final as it is expected
  * that future versions of Packed will supports some debug configuration that relies on extending extensions. And
  * capturing interactions with the extension.
  * 

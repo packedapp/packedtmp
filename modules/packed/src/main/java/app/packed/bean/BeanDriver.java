@@ -19,6 +19,9 @@ import java.lang.reflect.Member;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.bean.operation.OC2;
+import app.packed.bean.operation.OperationConfiguration;
+import app.packed.bean.operation.OperationDriver;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanDriver;
@@ -35,6 +38,13 @@ import packed.internal.bean.PackedBeanDriver;
 // NamePrefixs
 // Scan (disable, do scan) ???
 // callacbks, onBound, onBuild, ...
+
+//BeanInstaller  (matcher install())
+//BeanCustomizer
+//BeanProvider
+//BeanSpecializer
+//BeanBuilder
+
 @SuppressWarnings("rawtypes")
 public sealed interface BeanDriver<T> permits PackedBeanDriver {
 
@@ -53,6 +63,14 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
      * @see BeanConfiguration#beanKind()
      */
     BeanKind beanKind();
+
+    default OperationConfiguration addOperation(OperationDriver driver) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void addOperation(OC2 driver) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 interface BeanDriverSandbox<T> {
@@ -60,7 +78,7 @@ interface BeanDriverSandbox<T> {
     default void synthetic() {
         // or hidden();
     }
-    
+
     default <E> void bindService(Key<E> key, Class<E> implementation) {
         // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
         // ServiceScope.Bean
@@ -69,7 +87,6 @@ interface BeanDriverSandbox<T> {
     // Ved ikke rigtig usecasen. Fordi den skal ikke bruges fra BeanConfiguration
     // Der er allerede en vi kan bruge.
     default void checkWiring() {}
-
 
     default InvokerConfiguration factory() {
         throw new UnsupportedOperationException();
@@ -80,7 +97,7 @@ interface BeanDriverSandbox<T> {
         // statisks field
         // static metode
         // Som skal returne en exact bean class
-        
+
         // Men hvorfor ikke bare tage et Factory????
         throw new UnsupportedOperationException();
     }
@@ -124,7 +141,6 @@ interface BeanDriverSandbox<T> {
 
 /* sealed */ interface ZBuilder {
 
-    
     default void bindOperationMirror() {
         // bind(EntityMirror.class);
         // Mulighederne er uendelige, og

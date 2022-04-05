@@ -97,7 +97,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * <p>
      * A version is present if the following holds:
      * <ul>
-     * <li>The extension class is in a named module (on the module path)
+     * <li>The extension class is in a named module on the module path
      * <li>The "--module-version" option have been specified when compiling the module. Most modern build systems will
      * automatically do so.
      * </ul>

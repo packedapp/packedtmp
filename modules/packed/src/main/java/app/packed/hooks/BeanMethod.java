@@ -22,8 +22,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import app.packed.application.BuildException;
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
+import app.packed.bean.operation.OperationConfiguration;
 import app.packed.hooks.BeanClass.ClassHook;
 import app.packed.hooks3.MethodHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
@@ -66,6 +67,9 @@ public abstract class BeanMethod {
         return b;
     }
 
+    public final OperationConfiguration operation() {
+        return builder().operation();
+    }
     /**
      * Replaces this bootstrap with the specified instance at build-time (and run-time).
      * 

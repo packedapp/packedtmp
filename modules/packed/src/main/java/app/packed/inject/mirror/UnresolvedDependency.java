@@ -18,7 +18,7 @@ package app.packed.inject.mirror;
 /**
  *
  */
-public /* non-sealed */ interface UnresolvedDependency extends Dependency {
+public non-sealed interface UnresolvedDependency extends Dependency {
 
     // has default backup, nullable, or optional...
 

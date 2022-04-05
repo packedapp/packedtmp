@@ -15,6 +15,7 @@
  */
 package app.packed.bean.operation.examples;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -29,8 +30,14 @@ public class Usage extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        for (ServiceExportMirror m : ServiceExportMirror.selectAll(new Usage())) {
+        ApplicationMirror am = ApplicationMirror.of(new Usage());
+        
+        for (ServiceExportMirror m : am.operations(ServiceExportMirror.class)) {
             System.out.println(m.bean());
         }
+        
+//        for (ServiceExportMirror m : ServiceExportMirror.selectAll(new Usage())) {
+//            System.out.println(m.bean());
+//        }
     }
 }
