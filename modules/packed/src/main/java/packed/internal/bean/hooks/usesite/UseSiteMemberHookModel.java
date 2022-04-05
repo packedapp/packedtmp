@@ -22,11 +22,16 @@ import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.hooks.BeanClass;
+import app.packed.inject.service.ServiceExtension;
+import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.OperationSetup;
 import packed.internal.bean.hooks.AbstractHookModel;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.bean.inject.DependencyNode;
@@ -37,7 +42,7 @@ import packed.internal.component.ComponentSetup;
 /**
  *
  */
-public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
+public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel permits UseSiteFieldHookModel, UseSiteMethodHookModel {
 
     /** Dependencies that needs to be resolved. */
     public final List<InternalDependency> dependencies;
@@ -54,17 +59,26 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
 
+    @Nullable
+    private final Supplier<? extends OperationMirror> supplier;
+
     UseSiteMemberHookModel(Builder builder, List<InternalDependency> dependencies) {
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
         this.processor = builder.processor;
+        this.supplier = builder.operation == null ? null : builder.operation.supplier;
     }
 
     public void onWire(BeanSetup bean) {
         // Register hooks, maybe move to component setup
         DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
-        
+
+        BeanOperationManager bom = bean.driver.operations;
+        OperationSetup os = new OperationSetup(bean, ServiceExtension.class);
+        bom.operations.add(os);
+        os.mirrorSupplier = supplier;
+
         bean.parent.beans.addConsumer(node);
         if (processor != null) {
             processor.accept(bean);
@@ -84,7 +98,7 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
 
     public abstract MethodHandle methodHandle();
 
-    public static abstract class Builder extends AbstractBootstrapBuilder {
+    public static sealed abstract class Builder extends AbstractBootstrapBuilder permits UseSiteFieldHookModel.Builder, UseSiteMethodHookModel.Builder {
 
         @Nullable
         // Eneste problem er at dette ogsaa kan vaere en buildTime model..
@@ -107,6 +121,17 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
         Builder(HookModel.Builder source, AbstractHookModel<?> model) {
             super(source);
             this.buildtimeModel = model;
+        }
+
+        @Nullable
+        private PackedHookOperationConfiguration operation;
+
+        public final PackedHookOperationConfiguration operation() {
+            PackedHookOperationConfiguration o = operation;
+            if (o == null) {
+                operation = o = new PackedHookOperationConfiguration();
+            }
+            return o;
         }
 
         public final Optional<Class<?>> buildType() {

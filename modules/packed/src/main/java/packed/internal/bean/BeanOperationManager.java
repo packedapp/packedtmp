@@ -15,6 +15,8 @@
  */
 package packed.internal.bean;
 
+import java.util.ArrayList;
+
 /**
  *
  */
@@ -23,8 +25,11 @@ package packed.internal.bean;
 
 public class BeanOperationManager {
 
-    // Altsaa fx exportAll() koere alle services igennem paa all beans og laver en export... Saa det er noget vi goer sent...
-    
+    public final ArrayList<OperationSetup> operations = new ArrayList<>();
+
+    // Altsaa fx exportAll() koere alle services igennem paa all beans og laver en export... Saa det er noget vi goer
+    // sent...
+
     // Et navn er class - Mirror
     /// Hvis den ikke har et mirror laver vi et navn?
 }

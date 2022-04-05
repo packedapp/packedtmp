@@ -109,8 +109,6 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
         private final Method unsafeMethod;
 
-        private PackedHookOperationConfiguration operation;
-
         Builder(HookModel.Builder source, MethodHookBootstrapModel model, Method method) {
             this(model, new Shared(source, method));
         }
@@ -122,13 +120,6 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             this.unsafeMethod = shared.methodUnsafe;
         }
 
-        public PackedHookOperationConfiguration operation() {
-            PackedHookOperationConfiguration o = operation;
-            if (o == null) {
-                operation = o = new PackedHookOperationConfiguration();
-            }
-            return o;
-        }
 
         /**
          * @param b

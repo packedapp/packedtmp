@@ -15,9 +15,11 @@
  */
 package packed.internal.bean;
 
+import java.util.function.Supplier;
+
 import app.packed.bean.operation.OperationMirror;
+import app.packed.extension.Extension;
 import packed.internal.bean.inject.DependencyNode;
-import packed.internal.container.ExtensionSetup;
 
 /**
  *
@@ -29,18 +31,19 @@ public final class OperationSetup {
 
     public final BeanSetup bean;
     
-    public final ExtensionSetup operator;
+    public final Class<? extends Extension<?>> operator;
     
     public DependencyNode depNode;
     
+    public Supplier<? extends OperationMirror> mirrorSupplier;
     // dependencies
     
-    OperationSetup(BeanSetup bean, ExtensionSetup operator) {
+    public OperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
         this.bean = bean;
         this.operator = operator;
     }
     
     OperationMirror mirror() {
-        throw new UnsupportedOperationException();
+        return mirrorSupplier.get();
     }
 }
