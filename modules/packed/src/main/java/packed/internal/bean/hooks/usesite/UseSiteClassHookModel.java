@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.hooks.BeanClass;
-import app.packed.hooks.BeanConstructor;
-import app.packed.hooks.BeanField;
-import app.packed.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanClass;
+import app.packed.bean.hooks.BeanConstructor;
+import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanMethod;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;

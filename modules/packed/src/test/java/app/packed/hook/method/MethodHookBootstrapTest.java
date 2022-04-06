@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.App;
+import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanMethodHook;
 import app.packed.container.BaseAssembly;
-import app.packed.hooks.BeanMethod;
-import app.packed.hooks.BeanMethodHook;
 
 public class MethodHookBootstrapTest {
 

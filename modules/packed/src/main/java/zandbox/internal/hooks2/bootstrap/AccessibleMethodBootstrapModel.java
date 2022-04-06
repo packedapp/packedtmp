@@ -7,8 +7,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
+import app.packed.bean.hooks.BeanField;
 import app.packed.extension.Extension;
-import app.packed.hooks.BeanField;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;

@@ -6,15 +6,20 @@ import app.packed.bean.operation.OperationMirror;
  * A mirror representing a single entry point in an application. Instances of this mirror are normally acquired by
  * calling various methods on a {@link EntryPointExtensionMirror} instance.
  */
-public class EntryPointMirror extends OperationMirror {
+public final class EntryPointMirror extends OperationMirror {
+
+    private final int entryPointId;
+
+    EntryPointMirror(int entryPointId) {
+        this.entryPointId = entryPointId;
+    }
 
     /** {@return the unique id of the entry point within the application.} */
-    public final int entryPointId() {
-        return 0;
+    public int entryPointId() {
+        return entryPointId;
     }
 }
 // CliCommandMirror extends EntryPointMirro <---  
-
 
 //Lad os proeve bare at have en enkelt
 //Maybe final?

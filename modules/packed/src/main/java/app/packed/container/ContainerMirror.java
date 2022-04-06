@@ -17,7 +17,7 @@ import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
 /**
  * A mirror of a container.
  * <p>
- * An instance of this class is typically obtained from an {@link ApplicationMirror}.
+ * Instances of this class is typically via {@link ApplicationMirror}.
  */
 public sealed interface ContainerMirror extends ComponentMirror permits BuildTimeContainerMirror {
 
@@ -25,12 +25,19 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
     Collection<BeanMirror> beans();
 
     /** {@return a {@link Set} view of every extension that have been used in the container.} */
-    Set<ExtensionMirror> extensions(); // return Map<Type, Mirror> instead???
+    // return Map<Class<Ext>, Mirror> instead???
+    // Altsaa hvad vil bruge metoden til???
+    // Kan ikke lige umiddelbart se nogle use cases
+    // Maaske bare fjerne den
+    Set<ExtensionMirror> extensions();
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
     Set<Class<? extends Extension<?>>> extensionTypes();
 
     /**
+     * <p>
+     * If you know for certain that extension is used in the container you can use {@link #useExtension(Class)} instead.
+     * 
      * @param <T>
      *            the type of mirror
      * @param extensionMirrorType

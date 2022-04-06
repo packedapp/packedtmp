@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
+import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanFieldHook;
+import app.packed.bean.hooks.accessors.ScopedProvide;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanFieldHook;
-import app.packed.hooks.BeanField;
-import app.packed.hooks.accessors.ScopedProvide;
 
 /** A model of a {@link BeanField field bootstrap} implementation. */
 public final class FieldHookModel extends AbstractHookModel<BeanField> {

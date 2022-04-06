@@ -36,5 +36,4 @@ public class PackedHookOperationConfiguration implements OperationConfiguration 
     public void useMirror(Supplier<? extends OperationMirror> supplier) {
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
-
 }

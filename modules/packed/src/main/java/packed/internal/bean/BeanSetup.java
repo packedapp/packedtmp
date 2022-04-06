@@ -11,6 +11,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSupport;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
@@ -217,6 +218,12 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         @Override
         public Optional<Class<? extends Extension<?>>> registrant() {
             throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<OperationMirror> operations() {
+            return driver.operations.toMirrors();
         }
     }
 }

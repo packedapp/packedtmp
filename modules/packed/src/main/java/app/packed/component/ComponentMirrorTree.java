@@ -15,14 +15,16 @@
  */
 package app.packed.component;
 
+import java.util.List;
+
+import app.packed.bean.operation.OperationMirror;
+
 /**
  *
  */
 // Do we ever return empty trees? Det tror jeg ikke.
 
-
 // Fx en Lifetime er jo altid et component tree...
-
 
 // TreeView
 
@@ -30,6 +32,10 @@ package app.packed.component;
 //// TreeView<ContainerMirror>
 //// TreeView<T extends Extension<?>>
 public interface ComponentMirrorTree extends ComponentMirrorSet {
-    ComponentMirror root();  // Optional<CM> if we have empty trees.
+    ComponentMirror root(); // Optional<CM> if we have empty trees.
+
+    default List<OperationMirror> operations() {
+        throw new UnsupportedOperationException();
+    }
 }
 // interface ComponentMirrorSet

@@ -15,35 +15,55 @@
  */
 package packed.internal.bean;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.bean.operation.OperationMirror;
 import app.packed.extension.Extension;
+import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.bean.inject.DependencyNode;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
 
 // Skal vi have flere forskellige????
-
 public final class OperationSetup {
 
+    /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
+    private static final MethodHandle MH_INITIALIZE_OPERATIONS_SETUP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
+            "initialize", void.class, OperationSetup.class);
+
     public final BeanSetup bean;
-    
+
     public final Class<? extends Extension<?>> operator;
-    
+
     public DependencyNode depNode;
-    
+
     public Supplier<? extends OperationMirror> mirrorSupplier;
     // dependencies
-    
+
     public OperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
         this.bean = bean;
         this.operator = operator;
     }
-    
+
     OperationMirror mirror() {
-        return mirrorSupplier.get();
+        OperationMirror om;
+        if (mirrorSupplier == null) {
+            om = new OperationMirror();
+        } else {
+            om = mirrorSupplier.get();
+
+        }
+        try {
+            MH_INITIALIZE_OPERATIONS_SETUP.invokeExact(om, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return om;
     }
 }

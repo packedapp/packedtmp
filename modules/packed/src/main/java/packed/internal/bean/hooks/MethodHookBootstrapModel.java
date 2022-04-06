@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
+import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanMethodHook;
+import app.packed.bean.hooks.accessors.MethodAccessor;
+import app.packed.bean.hooks.accessors.RealMethodSidecarBootstrap;
+import app.packed.bean.hooks.accessors.ScopedProvide;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanMethod;
-import app.packed.hooks.BeanMethodHook;
-import app.packed.hooks.accessors.MethodAccessor;
-import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
-import app.packed.hooks.accessors.ScopedProvide;
 import app.packed.hooks3.MethodHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;

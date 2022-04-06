@@ -22,8 +22,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.Extension;
-import app.packed.hooks.BeanMethod;
 
 /**
  *

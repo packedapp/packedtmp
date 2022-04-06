@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.hooks.accessors.ScopedProvide;
+import app.packed.bean.hooks.accessors.ScopedProvide;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.lifetime.LifetimePool;

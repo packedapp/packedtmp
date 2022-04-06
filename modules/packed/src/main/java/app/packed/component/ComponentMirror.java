@@ -73,9 +73,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
     String name();
 
     /** {@return a collection of all of the operations declared by the bean.} */
-    default Collection<OperationMirror> operations() {
-        throw new UnsupportedOperationException();
-    }
+    Collection<OperationMirror> operations();
 
     default Collection<OperationMirror> operations(boolean includeSynthetic) {
         throw new UnsupportedOperationException();

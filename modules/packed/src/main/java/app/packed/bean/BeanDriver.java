@@ -64,6 +64,8 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
      */
     BeanKind beanKind();
 
+    OperationConfiguration addFunctionOperation(Object functionInstance);
+    
     default OperationConfiguration addOperation(OperationDriver driver) {
         throw new UnsupportedOperationException();
     }

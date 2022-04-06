@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
-import app.packed.hooks.BeanClass;
+import app.packed.bean.hooks.BeanClass;
 
 /**
  *

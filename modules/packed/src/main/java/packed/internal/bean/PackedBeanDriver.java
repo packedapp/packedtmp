@@ -18,9 +18,10 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanDriver;
 import app.packed.bean.BeanKind;
-import app.packed.component.ComponentConfiguration;
+import app.packed.bean.operation.OperationConfiguration;
 import app.packed.component.Realm;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
@@ -33,7 +34,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** The bean type, is typical void.class for functional beans. */
     final Class<?> beanType;
 
-    public ComponentConfiguration configuration;
+    public BeanConfiguration configuration;
 
     /** The container the bean is being installed in. */
     public final ContainerSetup container;
@@ -45,6 +46,9 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** The kind of bean. */
     private final BeanKind kind;
 
+    /** Manages the operations defined by the bean. */
+    public final BeanOperationManager operations = new BeanOperationManager();
+
     final RealmSetup realm;
 
     /** The source (Null, Class, Factory, Instance) */
@@ -54,9 +58,6 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** The type of source the driver is created from. */
     final SourceType sourceType;
 
-    /** Manages the operations defined by the bean. */
-    public final BeanOperationManager operations = new BeanOperationManager();
-    
     public PackedBeanDriver(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
@@ -73,6 +74,15 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         this.sourceType = sourceType;
     }
 
+    
+    // Maaske er den paa BeanSupport??? 
+    /** {@inheritDoc} */
+    @Override
+    public OperationConfiguration addFunctionOperation(Object functionInstance) {
+        // Problemer med at BeanDriver ikke har BeanSetup
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     public Class<?> beanClass() {
         return beanType;
@@ -84,7 +94,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     }
 
     /** {@inheritDoc} */
-    public BeanSetup newSetup(ComponentConfiguration configuration) {
+    public BeanSetup newSetup(BeanConfiguration configuration) {
         if (this.configuration != null) {
             throw new IllegalStateException("This driver can only be used once");
         }

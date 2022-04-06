@@ -31,6 +31,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public EntryPointExtensionMirror mirror() {
         return mirrorInitialize(new EntryPointExtensionMirror(tree()));
@@ -75,11 +76,15 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         }
     }
 
+    static class EntryPointConf {
+
+    }
+
     static class Shared {
         int entryPointCount;
+        final List<EntryPointConf> entrypoints = new ArrayList<>();
         MethodHandle[] entryPoints;
         Class<? extends Extension<?>> takeOver;
-        final List<EntryPointConf> entrypoints = new ArrayList<>();
 
         void takeOver(Class<? extends Extension<?>> takeOver) {
             if (this.takeOver != null) {
@@ -90,9 +95,5 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
             }
             this.takeOver = takeOver;
         }
-    }
-
-    static class EntryPointConf {
-
     }
 }

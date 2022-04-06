@@ -15,7 +15,12 @@
  */
 package packed.internal.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
+import java.util.List;
+
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *
@@ -25,8 +30,20 @@ import java.util.ArrayList;
 
 public class BeanOperationManager {
 
-    public final ArrayList<OperationSetup> operations = new ArrayList<>();
+    private final ArrayList<OperationSetup> operations = new ArrayList<>();
 
+    public void addOperation(OperationSetup os) {
+        requireNonNull(os);
+        operations.add(os);
+    }
+
+    public List<OperationMirror> toMirrors() {
+        ArrayList<OperationMirror> mirrors = new ArrayList<>();
+        for (OperationSetup os : operations) {
+            mirrors.add(os.mirror());
+        }
+        return List.copyOf(mirrors);
+    }
     // Altsaa fx exportAll() koere alle services igennem paa all beans og laver en export... Saa det er noget vi goer
     // sent...
 

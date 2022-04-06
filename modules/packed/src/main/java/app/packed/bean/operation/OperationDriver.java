@@ -16,7 +16,6 @@
 package app.packed.bean.operation;
 
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
 import app.packed.extension.Extension;
@@ -26,8 +25,6 @@ import app.packed.inject.service.ServiceExtension;
  *
  */
 public class OperationDriver {
-
-    Class<? extends OperationMirror> mirrorType = OperationMirror.class;
 
     String name;
 
@@ -47,10 +44,6 @@ public class OperationDriver {
 
     public static OperationDriver of(TypeToken<?> functionType, Class<? extends OperationMirror> mirrorType) {
         throw new UnsupportedOperationException();
-    }
-
-    public void useMirror(Supplier<? extends OperationMirror> supplier) {
-        // Sets a non-generic mirror
     }
 }
 

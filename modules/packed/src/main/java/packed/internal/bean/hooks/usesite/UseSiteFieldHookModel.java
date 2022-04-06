@@ -26,8 +26,8 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.hooks.BeanField;
-import app.packed.hooks.BeanFieldHook;
+import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanFieldHook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.inject.DependencyProducer;

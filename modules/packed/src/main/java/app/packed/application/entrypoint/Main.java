@@ -25,9 +25,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.application.BuildException;
+import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanMethodHook;
 import app.packed.extension.ExtensionMember;
-import app.packed.hooks.BeanMethod;
-import app.packed.hooks.BeanMethodHook;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
@@ -72,15 +72,16 @@ class MainBootstrap extends BeanMethod {
 
             EntryPointExtension e = c.parent.useExtension(EntryPointExtension.class);
             new EntryPointSupport(e, EntryPointExtension.class).registerEntryPoint(this);
-            
+
             e.hasMain = true;
             c.parent.useExtension(ServiceExtension.class);
             c.application.entryPoints = new EntryPointSetup();
-            
+
             MainThreadOfControl mc = c.application.entryPoints.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
             mc.cs = (BeanSetup) c;
             mc.methodHandle = mh;
         });
+        operation().useMirror(() -> new EntryPointMirror(0));
     }
 }

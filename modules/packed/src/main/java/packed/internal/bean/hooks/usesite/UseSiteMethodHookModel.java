@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanMethod;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.bean.inject.DependencyProducer;
@@ -105,7 +105,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         private final MethodHookBootstrapModel model;
 
         /** The shared context. */
-        private final Shared shared;
+        final Shared shared;
 
         private final Method unsafeMethod;
 
@@ -215,7 +215,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         private boolean isMethodUsed;
 
         /** The method we are processing. */
-        private final Method methodUnsafe;
+        final Method methodUnsafe;
 
         /** The source. */
         final HookModel.Builder source;

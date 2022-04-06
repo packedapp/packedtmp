@@ -26,8 +26,8 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bean.hooks.BeanClass;
 import app.packed.bean.operation.OperationMirror;
-import app.packed.hooks.BeanClass;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanSetup;
@@ -68,6 +68,9 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
         this.provideAskey = builder.provideAsKey;
         this.processor = builder.processor;
         this.supplier = builder.operation == null ? null : builder.operation.supplier;
+        if (builder instanceof UseSiteMethodHookModel.Builder bb) {
+            System.out.println("XXXX " + bb.shared.methodUnsafe);
+        }
     }
 
     public void onWire(BeanSetup bean) {
@@ -76,7 +79,7 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
 
         BeanOperationManager bom = bean.driver.operations;
         OperationSetup os = new OperationSetup(bean, ServiceExtension.class);
-        bom.operations.add(os);
+        bom.addOperation(os);
         os.mirrorSupplier = supplier;
 
         bean.parent.beans.addConsumer(node);

@@ -22,11 +22,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -39,6 +41,7 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.ContainerBeanManager;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.ClassUtil;
@@ -94,8 +97,7 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent,
-            Wirelet[] wirelets) {
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(application, realm, parent);
 
         beans = new ContainerBeanManager(this, parent == null ? null : parent.beans);
@@ -368,10 +370,22 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<BeanMirror> beans() {
-           // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
+            // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
             throw new UnsupportedOperationException();
             // we need a filter on the view...
             // size, isEmpty, is going to get a bit slower.
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<OperationMirror> operations() {
+            ArrayList<OperationMirror> mirrors = new ArrayList<>();
+            for (ComponentSetup cs : children.values()) {
+                if (cs instanceof BeanSetup bs) {
+                    mirrors.addAll(bs.mirror().operations());
+                }
+            }
+            return List.copyOf(mirrors);
         }
     }
 }

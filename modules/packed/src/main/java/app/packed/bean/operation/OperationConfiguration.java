@@ -20,15 +20,28 @@ import java.util.function.Supplier;
 /**
  *
  */
-// Kan godt kalde det BeanOperation... Det er ikke navne brugeren nogensinde bruger...
-// Men saa BeanOperationInterceptorMirror... May be okay.
 
-// Den her svare lidt til BeanDriver, og saa alligvl ikke
+//// Sources
+// * Fra MethodHook/FieldHook/InjectionHook
+// * Via BeanDriver <- er det altid bare en functional faetter????
+
+// Ved ikke fx med exportAll() <- her vil vi jo gerne capture alt paa ind gang, og ikke for hver bean
+//// Der tilfojere vi jo bean
+
 public interface OperationConfiguration {
     // newInstance(); <-- automatisk???
-    
+
     // sets a non-generic mirror
-    public void useMirror(Supplier<? extends OperationMirror> supplier);
+
+    // Ved ikke om vi skal have <T extends OperationMirror) useMirror(Class<T> mirrorType, Supplier<T> suppler)
+    // Som nu skal vi aktivt lave alle mirrors hvis man fx kalder ApplicationMirror.operations(EntryPointMirror.class)
+    // Ved vi ikke hvilke operationer den passer på, det kan vi først finde ud af når den er lavet
+    void useMirror(Supplier<? extends OperationMirror> supplier);
 }
+
+//Kan godt kalde det BeanOperation... Det er ikke navne brugeren nogensinde bruger...
+//Men saa BeanOperationInterceptorMirror... May be okay.
+
+//Den her svare lidt til BeanDriver, og saa alligvl ikke
 
 // addHttpRequest();

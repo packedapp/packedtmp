@@ -3,8 +3,8 @@ package packed.internal.bean.hooks.usesite;
 import java.lang.annotation.Annotation;
 
 import app.packed.base.Nullable;
-import app.packed.hooks.BeanFieldHook;
-import app.packed.hooks.BeanMethodHook;
+import app.packed.bean.hooks.BeanFieldHook;
+import app.packed.bean.hooks.BeanMethodHook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.container.ExtensionModel;

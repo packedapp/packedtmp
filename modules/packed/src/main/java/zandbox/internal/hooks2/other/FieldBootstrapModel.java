@@ -6,8 +6,8 @@ import java.lang.invoke.VarHandle;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import app.packed.bean.hooks.BeanField;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanField;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;

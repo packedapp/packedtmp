@@ -48,6 +48,9 @@ import packed.internal.container.ExtensionSetup;
  * module).</li>
  * </ul>
  */
+//Class -> members
+//Scanning class -> Hooks
+//Bean -> Operation
 public class OperationMirror implements Mirror {
 
     /**
@@ -63,18 +66,18 @@ public class OperationMirror implements Mirror {
      * <p>
      * Subclasses should have a single package-protected constructor.
      */
-    protected OperationMirror() {}
-
-    /** {@return the bean the operation belongs to.} */
-    public final BeanMirror bean() {
-        return operation().bean.mirror();
-    }
+    public OperationMirror() {}
 
     /** {@return the services that are available at this injection site.} */
     public final ServiceRegistry availableServices() {
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the bean the operation belongs to.} */
+    public final BeanMirror bean() {
+        return operation().bean.mirror();
+    }
+    
     /**
      * Returns whether or not a new bean instance is created every time the operation is invoked.
      * 
@@ -92,7 +95,7 @@ public class OperationMirror implements Mirror {
 
         return false;
     }
-
+    
     public final boolean createsNewThread() {
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)
@@ -119,10 +122,35 @@ public class OperationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other || other instanceof OperationMirror m && operation() == m.operation();
+    }
+
     /** {@return how errors are handle when calling the operation.} */
     public final OperationErrorHandlingMirror errorHandling() {
         // field??? Unhandled?
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return operation().hashCode();
+    }
+
+    /**
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
+     * 
+     * @param extension
+     *            the internal configuration of the extension to mirror
+     */
+    final void initialize(OperationSetup operation) {
+        if (this.operation != null) {
+            throw new IllegalStateException("The specified mirror has already been initialized.");
+        }
+        this.operation = operation;
     }
 
     /** {@return any interceptors that are applied to the operation.} */

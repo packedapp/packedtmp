@@ -23,6 +23,8 @@ import app.packed.extension.Extension;
 // BeanProvideHook
 
 // Not inherited
+
+// InjectionHook
 public @interface BeanDependencyHook {
     
     @SuppressWarnings("rawtypes")

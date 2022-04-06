@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.hooks.accessors.ScopedProvide;
+import app.packed.bean.hooks.accessors.ScopedProvide;
 import app.packed.inject.service.ServiceExtension;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
 

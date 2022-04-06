@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.application.BuildException;
+import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks.BeanMethod;
 
 /**
  *
