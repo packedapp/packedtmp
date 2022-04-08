@@ -17,7 +17,7 @@ package app.packed.application.entrypoint;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,25 +29,30 @@ import app.packed.extension.ExtensionTree;
 /**
  * A mirror for the {@link EntryPointExtension}.
  */
-// I don't know about Iterable 
 @ExtensionMember(EntryPointExtension.class)
-public class EntryPointExtensionMirror extends ExtensionMirror implements Iterable<EntryPointMirror> {
+public class EntryPointExtensionMirror extends ExtensionMirror {
 
-    /** The extension point extension we are mirroring. */
-    final ExtensionTree<EntryPointExtension> tree;
+    /** The extension tree we are mirroring. */
+    private final ExtensionTree<EntryPointExtension> tree;
 
     EntryPointExtensionMirror(ExtensionTree<EntryPointExtension> tree) {
         this.tree = requireNonNull(tree);
     }
 
+    /**
+     * @return
+     * 
+     * @see Main
+     */
     public boolean hasMain() {
         return tree.stream().anyMatch(e -> e.hasMain);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Iterator<EntryPointMirror> iterator() {
-        return List.<EntryPointMirror>of().iterator();
+    public Collection<EntryPointMirror> entryPoints() {
+        // Man boer jo kunne extende dem EntryPoints....
+        // Altsaa hvis jeg bruge CliExtension...
+        return List.<EntryPointMirror>of();
     }
 
     /**
@@ -66,8 +71,6 @@ public class EntryPointExtensionMirror extends ExtensionMirror implements Iterab
         //// Serverless
         return tree.root().shared().takeOver;
     }
-
-    public void overview() {}
 
     public void print() {
         // ------------------------ app.dd.EntryPointExtension ----------------------

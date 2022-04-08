@@ -27,22 +27,24 @@ import app.packed.extension.Extension;
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Documented
+//https://stackoverflow.com/questions/4797465/difference-between-hooks-and-abstract-methods-in-java
 public @interface BeanMethodHook {
 
     /**
      * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
      * <p>
-     * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+     * Methods such as {@link OldBeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
      * the value of this attribute is {@code true}.
      * 
      * @return whether or not the implementation is allowed to invoke the target method
      * 
-     * @see BeanMethod#methodHandle()
+     * @see OldBeanMethod#methodHandle()
      */
+    // maybe just invokable = true, idk og saa Field.gettable and settable
     boolean allowInvoke() default false; // allowIntercept...
 
     /** Bootstrap classes for this hook. */
-    Class<? extends BeanMethod> bootstrap();
+    Class<? extends OldBeanMethod> bootstrap();
     
     @SuppressWarnings("rawtypes")
     Class<? extends Extension> extension() default Extension.class;

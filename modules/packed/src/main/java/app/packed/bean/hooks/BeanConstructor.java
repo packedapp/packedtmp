@@ -21,11 +21,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.bean.hooks.BeanClass.ClassHook;
-
 /**
  *
+ * @apiNote There is no corresponding BeanConstructorHook for this class
  */
+// Har ikke en tilsvarende BeanConstructorHook da den kun kan laves gemmen BeanClass
 public abstract class BeanConstructor {
 
     /** Disables any further processing of the Constructor. */
@@ -51,7 +51,7 @@ public abstract class BeanConstructor {
      * @return a direct method handle to the matching method
      * @see Lookup#unreflect(Method)
      * @see BeanMethodHook#allowInvoke()
-     * @see ClassHook#allowAllAccess()
+     * @see BeanClassHook#allowAllAccess()
      * 
      * @throws UnsupportedOperationException
      *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()}

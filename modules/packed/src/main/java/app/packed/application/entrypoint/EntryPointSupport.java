@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.application.BuildException;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
@@ -59,7 +59,7 @@ public class EntryPointSupport extends ExtensionSupport {
     // for 2 forskellige extensions
 
     // return mirror?
-    public int registerEntryPoint(BeanMethod method) {
+    public int registerEntryPoint(OldBeanMethod method) {
         // BeanMethod -> Actual Java Method, or Function
 
         // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.

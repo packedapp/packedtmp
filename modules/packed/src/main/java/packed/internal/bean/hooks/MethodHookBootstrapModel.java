@@ -23,26 +23,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanMethod;
+import app.packed.bean.hooks.sandbox.MethodAccessor;
+import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
 import app.packed.bean.hooks.BeanMethodHook;
-import app.packed.bean.hooks.accessors.MethodAccessor;
-import app.packed.bean.hooks.accessors.RealMethodSidecarBootstrap;
-import app.packed.bean.hooks.accessors.ScopedProvide;
+import app.packed.bean.hooks.scrap.ScopedProvide;
 import app.packed.extension.InternalExtensionException;
-import app.packed.hooks3.MethodHook;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** A model of a {@link BeanMethod} class. */
+/** A model of a {@link OldBeanMethod} class. */
 public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
-    /** A MethodHandle that can invoke {@link BeanMethod#bootstrap}. */
-    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethod.class,
+    /** A MethodHandle that can invoke {@link OldBeanMethod#bootstrap}. */
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldBeanMethod.class,
             "bootstrap", void.class);
 
-    /** A VarHandle that can access {@link BeanMethod#processor}. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethod.class,
+    /** A VarHandle that can access {@link OldBeanMethod#processor}. */
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanMethod.class,
             "builder", UseSiteMethodHookModel.Builder.class);
 
     public final Map<Key<?>, HookedMethodProvide> keys;
@@ -64,8 +63,8 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
 
-    public BeanMethod bootstrap(UseSiteMethodHookModel.Builder builder) {
-        BeanMethod instance = (BeanMethod) newInstance();
+    public OldBeanMethod bootstrap(UseSiteMethodHookModel.Builder builder) {
+        OldBeanMethod instance = (OldBeanMethod) newInstance();
 
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, builder);
         try {
@@ -80,11 +79,11 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
     }
 
-    public static MethodHookBootstrapModel getModelForFake(Class<? extends BeanMethod> c) {
+    public static MethodHookBootstrapModel getModelForFake(Class<? extends OldBeanMethod> c) {
         return new Builder(c).build();
     }
 
-    /** A builder for method sidecar. This class is public because it used from {@link MethodHook}. */
+    /** A builder for method sidecar. This class is public because it used from {@link OldMeHok}. */
     public final static class Builder extends AbstractHookModel.Builder<RealMethodSidecarBootstrap> {
 
         Class<?> invoker;
@@ -105,7 +104,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         @Override
         public MethodHookBootstrapModel build() {
 
-            scan(false, BeanMethod.class);
+            scan(false, OldBeanMethod.class);
 
             return new MethodHookBootstrapModel(this);
         }

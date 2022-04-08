@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanMethod;
 
 /**
  *
@@ -109,7 +109,7 @@ class ZandboxValidations {
     // Maybe we can just throw ValidationException
     public final void setCheckerException(Function<String, Throwable> f) {}
 
-    static abstract class ValidatingMethodSidecar extends BeanMethod {
+    static abstract class ValidatingMethodSidecar extends OldBeanMethod {
         public final MethodChecker check() {
             throw new UnsupportedOperationException();
         };

@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.application.BuildException;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.bean.hooks.BeanMethodHook;
 import app.packed.extension.ExtensionMember;
 import app.packed.inject.service.ServiceExtension;
@@ -58,7 +58,7 @@ import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 @BeanMethodHook(bootstrap = MainBootstrap.class, extension = EntryPointExtension.class)
 public @interface Main {}
 
-class MainBootstrap extends BeanMethod {
+class MainBootstrap extends OldBeanMethod {
 
     /** {@inheritDoc} */
     @Override
@@ -82,6 +82,6 @@ class MainBootstrap extends BeanMethod {
             mc.cs = (BeanSetup) c;
             mc.methodHandle = mh;
         });
-        operation().useMirror(() -> new EntryPointMirror(0));
+        oldOperation().useMirror(() -> new EntryPointMirror(0));
     }
 }

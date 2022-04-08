@@ -29,8 +29,8 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.usesite.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.lifetime.LifetimePool;
@@ -42,6 +42,29 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
+//Kan modtage dependencies
+
+//BeanOperation (Hooks)
+
+//BeanFactory
+//AutoServiceFactory
+
+//Kan vaere dependencies
+
+//UserServiceProvide (BeanInstance)X
+//BeanOperation (Kan andre end services????)
+//AutoServiceFactory
+//Binding operation
+
+
+//////----- Fremtid
+
+//Sidecars (Sidebeans)
+
+
+
+////Kan dependences on
+////Det er jo ikke f.eks. et bean factory man kan depende paa. Men en bean
 public abstract sealed class DependencyNode implements LifetimePoolWriteable permits BeanInstanceDependencyNode,BeanMemberDependencyNode {
 
     /** The bean this dependency consumer is a part of. */

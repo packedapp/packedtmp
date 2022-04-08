@@ -21,13 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.OldBeanField;
+import app.packed.bean.hooks.scrap.ScopedProvide;
 import app.packed.bean.hooks.BeanFieldHook;
-import app.packed.bean.hooks.accessors.ScopedProvide;
 import app.packed.extension.InternalExtensionException;
 
-/** A model of a {@link BeanField field bootstrap} implementation. */
-public final class FieldHookModel extends AbstractHookModel<BeanField> {
+/** A model of a {@link OldBeanField field bootstrap} implementation. */
+public final class FieldHookModel extends AbstractHookModel<OldBeanField> {
 
     public final Map<Key<?>, HookedMethodProvide> keys;
 
@@ -49,18 +49,18 @@ public final class FieldHookModel extends AbstractHookModel<BeanField> {
     }
 
 
-    public static FieldHookModel getModelForFake(Class<? extends BeanField> c) {
+    public static FieldHookModel getModelForFake(Class<? extends OldBeanField> c) {
         return new Builder(c).build();
     }
 
     /** A builder for for a {@link FieldHookModel}. */
-    public final static class Builder extends AbstractHookModel.Builder<BeanField> {
+    public final static class Builder extends AbstractHookModel.Builder<OldBeanField> {
 
      //   private MethodHandle onInitialize;
 
         private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
-        private Builder(Class<? extends BeanField> c) {
+        private Builder(Class<? extends OldBeanField> c) {
             super(c);
         }
 
@@ -71,7 +71,7 @@ public final class FieldHookModel extends AbstractHookModel<BeanField> {
         /** {@inheritDoc} */
         @Override
         public FieldHookModel build() {
-            scan(false, BeanField.class);
+            scan(false, OldBeanField.class);
             return new FieldHookModel(this);
         }
 

@@ -28,8 +28,8 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.BeanClass;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanClass;
+import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.extension.Extension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.ClassHookModel;
@@ -101,7 +101,7 @@ public final class HookModel {
     /** A builder object for {@link HookModel}. */
     public static abstract class Builder extends MemberScanner {
 
-        final Map<Class<? extends BeanClass>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
+        final Map<Class<? extends OldBeanClass>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 
         /** Any extension this lovely fellow is a part of. */
         @Nullable
@@ -153,7 +153,7 @@ public final class HookModel {
 
         protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
 
-        UseSiteClassHookModel.Builder manageMemberBy(UseSiteMemberHookModel.Builder member, Class<? extends BeanClass> classBootStrap) {
+        UseSiteClassHookModel.Builder manageMemberBy(UseSiteMemberHookModel.Builder member, Class<? extends OldBeanClass> classBootStrap) {
             return classes.computeIfAbsent(classBootStrap, c -> new UseSiteClassHookModel.Builder(this, ClassHookModel.ofManaged(classBootStrap)));
         }
 
@@ -192,7 +192,7 @@ public final class HookModel {
                     }
                     UseSiteMethodHookModel.Builder builder = new UseSiteMethodHookModel.Builder(model, shared);
 
-                    BeanMethod bootstrap = model.bootstrap(builder);
+                    OldBeanMethod bootstrap = model.bootstrap(builder);
                     if (builder.managedBy == null) {
                         model.clearBuilder(bootstrap);
                     }

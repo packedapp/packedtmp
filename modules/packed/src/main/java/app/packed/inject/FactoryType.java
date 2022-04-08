@@ -93,7 +93,7 @@ public final class FactoryType {
         return new FactoryType(returnVar, NO_VARS);
     }
 
-    static FactoryType ofExecutable(Executable e) {
+    public static FactoryType ofExecutable(Executable e) {
         throw new UnsupportedOperationException();
     }
 

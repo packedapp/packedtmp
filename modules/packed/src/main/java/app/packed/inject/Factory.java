@@ -67,7 +67,15 @@ import packed.internal.inject.ReflectiveFactory.ExecutableFactory;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory {
+// Rename to Func I think...
+// Make into sealed interface???? Why not will make it easier to use records
+
+// toMethodHandle???
+// Altsaa hvis vi har et Factory kan vi jo altid bare registrere den et eller andet sted i Packed
+// og saa kalde Factory igennem den...
+// Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
+
+public abstract sealed class Factory<R> permits CapturingFactory, InternalFactory {
 
     /**
      * Binds the specified argument(s) to a variable with the specified index as returned by {@link #variables()}. This
@@ -244,7 +252,7 @@ public abstract sealed class Factory<R> permits CapturingFactory,InternalFactory
      * @return the raw type of the type of objects this factory provide
      * @see #typeLiteral()
      */
-    public final Class<?> rawType() {
+    public final Class<?> rawReturnType() {
         return typeLiteral().rawType();
     }
 

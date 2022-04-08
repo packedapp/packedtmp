@@ -331,11 +331,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         private ExtensionSetup next(ExtensionSetup current) {
+            requireNonNull(current);
             if (current.childSiebling != null) {
                 return current.childSiebling;
             }
             ExtensionSetup parent = current.parent;
-            if (parent == root) {
+            if (parent == root || parent == null) {
                 return null;
             } else {
                 return next(parent);

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.App;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.bean.hooks.BeanMethodHook;
 import app.packed.container.BaseAssembly;
 
@@ -48,7 +48,7 @@ public class MethodHookBootstrapTest {
         String value();
     }
 
-    static class HookTestBootstrap extends BeanMethod {
+    static class HookTestBootstrap extends OldBeanMethod {
         HookTestBootstrap() {
             TL.get().onBootstrapConstruction(this);
         }

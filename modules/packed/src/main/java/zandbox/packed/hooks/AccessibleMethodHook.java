@@ -15,11 +15,9 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
-import app.packed.inject.service.ServiceExtension;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.AccessibleMethodBootstrapModel.BootstrapContext;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
-import zandbox.packed.hooks.AccessibleMethodHook2.BootstrapType;
 
 /**
  * A hook triggered by an annotation that allows to invoke a single method.
@@ -125,27 +123,27 @@ public @interface AccessibleMethodHook {
     }
 }
 
-@interface AccessibleMethodHook2 {
-
-    /** The {@link BeanMethod} class for this hook. */
-    Class<? extends AccessibleMethodHook.Bootstrap>[] bootstrap();
-
-    /** The {@link BeanMethod} class for this hook. */
-    BootstrapType[] bootstrapTypes();
-
-    /** The extension this hook is a part of. */
-    Class<? extends Extension<?>> extension();
-
-    /** The annotation that triggers the hook. */
-    Class<? extends Annotation> onAnnotation();
-    
-    enum BootstrapType {
-        BEAN, APPLICATION, EXTENSOR;
-    }
-}
-// Den er ogsaa grim...
-@AccessibleMethodHook2(bootstrap = AccessibleMethodHook.Bootstrap.class, bootstrapTypes = BootstrapType.BEAN, onAnnotation = Usss.class, extension = ServiceExtension.class)
-@interface Usss {
-    
-    
-}
+//@interface AccessibleMethodHook2 {
+//
+//    /** The {@link BeanMethod} class for this hook. */
+//    Class<? extends AccessibleMethodHook.Bootstrap>[] bootstrap();
+//
+//    /** The {@link BeanMethod} class for this hook. */
+//    BootstrapType[] bootstrapTypes();
+//
+//    /** The extension this hook is a part of. */
+//    Class<? extends Extension<?>> extension();
+//
+//    /** The annotation that triggers the hook. */
+//    Class<? extends Annotation> onAnnotation();
+//    
+//    enum BootstrapType {
+//        BEAN, APPLICATION, EXTENSOR;
+//    }
+//}
+//// Den er ogsaa grim...
+//@AccessibleMethodHook2(bootstrap = AccessibleMethodHook.Bootstrap.class, bootstrapTypes = BootstrapType.BEAN, onAnnotation = Usss.class, extension = ServiceExtension.class)
+//@interface Usss {
+//    
+//    
+//}

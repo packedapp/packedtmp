@@ -15,7 +15,7 @@
  */
 package packed.internal.bean.hooks;
 
-import app.packed.bean.hooks.accessors.MethodAccessor;
+import app.packed.bean.hooks.sandbox.MethodAccessor;
 
 /**
  *

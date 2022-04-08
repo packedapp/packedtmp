@@ -36,6 +36,7 @@ import packed.internal.util.MethodHandleUtil;
 /**
  *
  */
+// Move TypeLiteral Out I think, then we can use records
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
     /** A var handle that can update the {@link #container()} field in this class. */
@@ -208,7 +209,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
             super(delegate.typeLiteral());
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
-            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType(), rawType()));
+            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawReturnType(), rawReturnType()));
         }
 
         /** {@inheritDoc} */
@@ -222,7 +223,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         public MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle mh = delegate.toMethodHandle(lookup);
             mh = MethodHandles.filterReturnValue(mh, consumer);
-            return MethodHandleUtil.castReturnType(mh, rawType());
+            return MethodHandleUtil.castReturnType(mh, rawReturnType());
         }
 
         @SuppressWarnings({ "unchecked", "unused", "rawtypes" })

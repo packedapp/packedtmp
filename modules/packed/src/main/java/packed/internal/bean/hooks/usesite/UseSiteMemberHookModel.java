@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.BeanClass;
+import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanOperationManager;
@@ -154,7 +154,7 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
         }
 
         @SuppressWarnings("unchecked")
-        public final <T extends BeanClass> T manageBy(Class<T> type) {
+        public final <T extends OldBeanClass> T manageBy(Class<T> type) {
             requireNonNull(type, "The specified type is null");
             checkNotDisabled();
             if (managedBy != null) {

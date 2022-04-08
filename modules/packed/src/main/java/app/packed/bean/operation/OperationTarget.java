@@ -21,17 +21,22 @@ package app.packed.bean.operation;
 // Tror bare vi har et enkelt interface
 public interface OperationTarget {
 
-    public interface OfBeanInstance extends OperationTarget {} // ofLifetimePool? Hmm
+    public interface OfBeanInstanceAccess extends OperationTarget {} // ofLifetimePool? Hmm
 
-    public interface OfMethodHandle extends OperationTarget {} // ofSynthetic?
+    public interface OfMethodHandleInvoke extends OperationTarget {} // ofSynthetic?
 
-    public interface OfFunction extends OperationTarget {}
+    public interface OfFunctionCall extends OperationTarget {}
+    
+    public interface OfInjectVariable extends OperationTarget {}
+    
+    public interface OfConstructorInvoke extends OperationTarget {}
 
-    public interface OfConstructor extends OperationTarget {}
+    public interface OfFieldAccess extends OperationTarget {
+        boolean allowRead();
+        boolean allowWrite();
+    }
 
-    public interface OfField extends OperationTarget {}
-
-    public interface OfMethod extends OperationTarget {}
+    public interface OfMethodInvoke extends OperationTarget {}
 }
 // OfBeanInstance - Something that just returns the bean instance
 // OfConstructor -

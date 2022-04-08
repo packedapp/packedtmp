@@ -24,10 +24,10 @@ import java.util.OptionalLong;
 
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
-import app.packed.bean.hooks.BeanClass;
+import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.hooks.BeanConstructor;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanField;
+import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
 
@@ -41,11 +41,11 @@ import app.packed.inject.Provider;
 // Maaske er det saa en BeanFunction....
 public abstract class BeanDependency {
 
-    static void $nestWithClass(Class<? extends BeanClass> methodType) {}
+    static void $nestWithClass(Class<? extends OldBeanClass> methodType) {}
 
-    static void $nestWithMethod(Class<? extends BeanMethod> methodType) {}
+    static void $nestWithMethod(Class<? extends OldBeanMethod> methodType) {}
 
-    static void $nestWithField(Class<? extends BeanField> methodType) {}
+    static void $nestWithField(Class<? extends OldBeanField> methodType) {}
 
     static void $nestWithConstructor(Class<? extends BeanConstructor> methodType) {}
 

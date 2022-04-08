@@ -25,10 +25,10 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.AnnotationMaker;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.OldBeanField;
+import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
 import app.packed.bean.hooks.BeanFieldHook;
 import app.packed.bean.hooks.BeanMethodHook;
-import app.packed.bean.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.extension.ExtensionMember;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
@@ -117,7 +117,7 @@ public @interface Provide {
 //ProvisionMode mode() default ProvisionMode.ON_DEMAND;
 
 /** A field sidecar for {@link Provide}. */
-final class ProvideFieldHookProcessor extends BeanField {
+final class ProvideFieldHookProcessor extends OldBeanField {
 
     /** {@inheritDoc} */
     @Override
@@ -133,7 +133,7 @@ final class ProvideMethodBootstrap extends RealMethodSidecarBootstrap {
     @Override
     protected void bootstrap() {
         serviceRegister(method().getAnnotation(Provide.class).constant());
-        operation().useMirror(() -> new ServiceProvideMirror() {
+        oldOperation().useMirror(() -> new ServiceProvideMirror() {
 
             @Override
             public Key<?> key() {

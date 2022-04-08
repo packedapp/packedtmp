@@ -12,7 +12,7 @@ public abstract class BootstrapClassNest {
 
     Object builder;
     
-    public final List<BeanClass> classes() {
+    public final List<OldBeanClass> classes() {
         throw new UnsupportedOperationException();
     }
     
@@ -20,14 +20,14 @@ public abstract class BootstrapClassNest {
      * Returns a list of methods in this nest.
      * 
      * @return a list of all methods in this nest
-     * @see BeanField#manageBy(Class)
-     * @see BeanMethod#nestWith(Class)
+     * @see OldBeanField#manageBy(Class)
+     * @see OldBeanMethod#nestWith(Class)
      */
-    public final List<BeanMethod> methods() {
-        return methods(BeanMethod.class);
+    public final List<OldBeanMethod> methods() {
+        return methods(OldBeanMethod.class);
     }
 
-    public final <T extends BeanMethod> List<T> methods(Class<T> type) {
+    public final <T extends OldBeanMethod> List<T> methods(Class<T> type) {
         throw new UnsupportedOperationException();
     }
     

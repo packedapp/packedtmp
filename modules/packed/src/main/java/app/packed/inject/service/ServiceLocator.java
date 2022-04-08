@@ -27,7 +27,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
-import app.packed.bean.hooks.accessors.ScopedProvide;
+import app.packed.bean.hooks.scrap.ScopedProvide;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;

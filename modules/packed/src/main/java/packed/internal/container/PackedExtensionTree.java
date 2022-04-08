@@ -30,7 +30,7 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
     /** {@inheritDoc} */
     @Override
     public Iterator<T> iterator() {
-        return new ExtensionSetup.PreOrderIterator<>(extension, e -> (T) extensionType.cast(e));
+        return new ExtensionSetup.PreOrderIterator<>(extension, e -> (T) extensionType.cast(e.instance()));
     }
 
     /** {@inheritDoc} */

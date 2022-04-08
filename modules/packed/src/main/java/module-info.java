@@ -1,7 +1,7 @@
 module app.packed {
     exports app.packed.application;
     exports app.packed.application.entrypoint;
-    exports app.packed.application.various;
+    exports app.packed.application.sandbox;
     exports app.packed.base;
     exports app.packed.bean;
     exports app.packed.bean.operation;
@@ -20,6 +20,7 @@ module app.packed {
     exports app.packed.lifecycle;
     exports app.packed.lifetime;
     exports app.packed.bean.hooks;
+    exports app.packed.hooks;
     exports app.packed.mirror;
     exports app.packed.state;
     exports app.packed.state.sandbox;

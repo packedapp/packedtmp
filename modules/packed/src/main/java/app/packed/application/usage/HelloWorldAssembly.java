@@ -39,7 +39,7 @@ public class HelloWorldAssembly extends BaseAssembly {
         EntryPointExtensionMirror m = mirror.useExtension(EntryPointExtensionMirror.class);
         
         System.out.println(m.hasMain());
-        
+        //System.out.println(mirror.operations());
     }
 
     public static class ExampleBean {

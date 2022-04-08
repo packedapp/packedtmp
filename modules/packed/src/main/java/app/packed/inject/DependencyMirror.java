@@ -20,6 +20,7 @@ import app.packed.bean.operation.OperationMirror;
 /**
  * A mirror for a dependency.
  */
+// Hmm den burde vel passe til BeanInjector
 public interface DependencyMirror {
 
     /** {@return the operation the dependency belongs to.} */

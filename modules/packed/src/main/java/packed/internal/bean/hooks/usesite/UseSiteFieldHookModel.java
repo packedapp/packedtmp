@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.OldBeanField;
 import app.packed.bean.hooks.BeanFieldHook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.HookedMethodProvide;
@@ -39,16 +39,16 @@ import packed.internal.util.ThrowableUtil;
 /** Represents the use site of a field hook. */
 public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link BeanField#bootstrap}. */
-    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanField.class, "bootstrap",
+    /** A MethodHandle that can invoke {@link OldBeanField#bootstrap}. */
+    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldBeanField.class, "bootstrap",
             void.class);
 
-    /** A VarHandle that can access {@link BeanField#processor}. */
-    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanField.class, "builder",
+    /** A VarHandle that can access {@link OldBeanField#processor}. */
+    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanField.class, "builder",
             UseSiteFieldHookModel.Builder.class);
 
-    /** A MethodHandle that can invoke {@link BeanField#bootstrap}. */
-    private static final MethodHandle MH_FIELD_HOOK_BUILDER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanField.class, "builder",
+    /** A MethodHandle that can invoke {@link OldBeanField#bootstrap}. */
+    private static final MethodHandle MH_FIELD_HOOK_BUILDER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldBeanField.class, "builder",
             UseSiteFieldHookModel.Builder.class);
     
     /** A direct method handle to the field. */
@@ -60,7 +60,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     /** A model of the field hooks bootstrap. */
     private final FieldHookModel hook;
 
-    public static UseSiteFieldHookModel.Builder getBuilder(BeanField field) {
+    public static UseSiteFieldHookModel.Builder getBuilder(OldBeanField field) {
         try {
             return (UseSiteFieldHookModel.Builder) MH_FIELD_HOOK_BUILDER.invokeExact(field);
         } catch (Throwable e) {

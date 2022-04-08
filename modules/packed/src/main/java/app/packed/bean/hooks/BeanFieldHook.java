@@ -37,6 +37,6 @@ public @interface BeanFieldHook {
     /** Whether or not the sidecar is allow to set the contents of a field. */
     boolean allowSet() default false;
 
-    /** The hook's {@link BeanField} class. */
-    Class<? extends BeanField> processor();
+    /** The hook's {@link OldBeanField} class. */
+    Class<? extends OldBeanField> processor();
 }

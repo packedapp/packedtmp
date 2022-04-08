@@ -24,10 +24,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.bean.hooks.BeanClass;
+import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.hooks.BeanConstructor;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanField;
+import app.packed.bean.hooks.OldBeanMethod;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
@@ -37,19 +37,19 @@ import packed.internal.util.ThrowableUtil;
 /** A model of class hook */
 public final class UseSiteClassHookModel {
 
-    /** A handle for invoking {@link BeanMethod#bootstrap()}. */
-    private static final MethodHandle MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanClass.class,
+    /** A handle for invoking {@link OldBeanMethod#bootstrap()}. */
+    private static final MethodHandle MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldBeanClass.class,
             "bootstrap", void.class);
 
-    /** A handle for accessing {@link BeanMethod#processor}. */
-    private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanClass.class,
+    /** A handle for accessing {@link OldBeanMethod#processor}. */
+    private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanClass.class,
             "builder", UseSiteClassHookModel.Builder.class);
 
     /** A builder object for a class hook */
     public static final class Builder extends AbstractBootstrapBuilder {
 
         /** The instance of bootstrap. */
-        final BeanClass instance;
+        final OldBeanClass instance;
 
         final LinkedHashSet<UseSiteMemberHookModel.Builder> managedMembers = new LinkedHashSet<>();
 
@@ -59,7 +59,7 @@ public final class UseSiteClassHookModel {
         public Builder(HookModel.Builder source, ClassHookModel model) {
             super(source);
             this.model = model;
-            this.instance = (BeanClass) model.newInstance();
+            this.instance = (OldBeanClass) model.newInstance();
         }
 
         public void complete() {
@@ -82,21 +82,21 @@ public final class UseSiteClassHookModel {
             throw new UnsupportedOperationException();
         }
 
-        public List<BeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
-            ArrayList<BeanField> list = new ArrayList<>();
+        public List<OldBeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+            ArrayList<OldBeanField> list = new ArrayList<>();
             for (Field f : source.type().getDeclaredFields()) {
                 UseSiteFieldHookModel.Builder b = new UseSiteFieldHookModel.Builder(this, ExposedFieldBootstrap.MODEL, f);
-                list.add((BeanField) b.initialize());
+                list.add((OldBeanField) b.initialize());
             }
             return List.copyOf(list);
         }
 
-        public List<BeanMethod> methods(boolean declaredFieldsOnly, Class<?>... skipClasses) {
-            ArrayList<BeanMethod> list = new ArrayList<>();
+        public List<OldBeanMethod> methods(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+            ArrayList<OldBeanMethod> list = new ArrayList<>();
             for (Method m : source.type().getDeclaredMethods()) {
                 // TODO I think we need to do some filtering on bridge and maybe synthetic methods
                 UseSiteMethodHookModel.Builder b = new UseSiteMethodHookModel.Builder(source, ExposedMethodBootstrap.MODEL, m);
-                list.add((BeanMethod) b.initialize());
+                list.add((OldBeanMethod) b.initialize());
             }
             return List.copyOf(list);
         }
@@ -105,11 +105,11 @@ public final class UseSiteClassHookModel {
             throw new UnsupportedOperationException();
         }
 
-        static class ExposedFieldBootstrap extends BeanField {
+        static class ExposedFieldBootstrap extends OldBeanField {
             static final FieldHookModel MODEL = FieldHookModel.getModelForFake(ExposedFieldBootstrap.class);
         }
 
-        static class ExposedMethodBootstrap extends BeanMethod {
+        static class ExposedMethodBootstrap extends OldBeanMethod {
             static final MethodHookBootstrapModel MODEL = MethodHookBootstrapModel.getModelForFake(ExposedMethodBootstrap.class);
         }
     }

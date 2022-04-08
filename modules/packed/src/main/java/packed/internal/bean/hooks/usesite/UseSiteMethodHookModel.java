@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.OldBeanMethod;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.bean.inject.DependencyProducer;
@@ -40,12 +40,12 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link BeanMethod#bootstrap}. */
-    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMethod.class, "bootstrap",
+    /** A MethodHandle that can invoke {@link OldBeanMethod#bootstrap}. */
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldBeanMethod.class, "bootstrap",
             void.class);
 
-    /** A VarHandle that can access {@link BeanMethod#processor}. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMethod.class, "builder",
+    /** A VarHandle that can access {@link OldBeanMethod#processor}. */
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanMethod.class, "builder",
             UseSiteMethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
@@ -193,7 +193,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             provideAsKey = key;
         }
 
-        public static void registerProcessor(BeanMethod sidecar, Consumer<? super ComponentSetup> processor) {
+        public static void registerProcessor(OldBeanMethod sidecar, Consumer<? super ComponentSetup> processor) {
             Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
             b.processor = processor;
         }

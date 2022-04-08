@@ -18,11 +18,29 @@ package app.packed.bean;
 import app.packed.classgen.ClassgenExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
+import app.packed.inject.Factory;
 
 /**
  * Ideen er at man kan lave en proxy bean ved at extende en eksisterende klasse. FX JPA
  */
 @DependsOn(extensions = { ClassgenExtension.class, BeanExtension.class })
 public class BeanInstrumentationExtension extends Extension<BeanInstrumentationExtension> {
+    BeanInstrumentationExtension() {}
+
+    // Problemet er her provide()
+    // Vi skal maaske have en provide(ApplicationBeanConfiguration)
+
+    // Installs what looks like an ApplicationBean. But is lazily initialized and started
     
+    // Maaske er der operation lazy. Og saa Bean Lazy.
+    //// Operation lazy behoever vi ikke at instrumentere klassen.
+    public <T> ContainerBeanConfiguration<T> installLazy(Class<T> clazz) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> ContainerBeanConfiguration<T> installLazy(Factory<T> clazz) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void interceptAll() {}
 }

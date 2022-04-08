@@ -27,7 +27,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
-import app.packed.hooks3.BeanHook;
 import packed.internal.container.AssemblyAssemblyInstaller;
 import packed.internal.util.LookupUtil;
 

@@ -19,12 +19,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.BeanClass;
+import app.packed.bean.hooks.OldBeanClass;
+import app.packed.bean.hooks.BeanClassHook;
 
 /**
  *
  */
-public final class ClassHookModel extends AbstractHookModel<BeanClass> {
+public final class ClassHookModel extends AbstractHookModel<OldBeanClass> {
 
     public final boolean allowAllAccess;
 
@@ -41,7 +42,7 @@ public final class ClassHookModel extends AbstractHookModel<BeanClass> {
 
         @Override
         protected ClassHookModel computeValue(Class<?> type) {
-            BeanClass.ClassHook ec = type.getAnnotation(BeanClass.ClassHook.class);
+            BeanClassHook ec = type.getAnnotation(BeanClassHook.class);
             return ec == null ? null : new Builder(ec.bootstrap(), ec.allowAllAccess()).build();
         }
     };
@@ -60,12 +61,12 @@ public final class ClassHookModel extends AbstractHookModel<BeanClass> {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
-    public static ClassHookModel ofManaged(Class<? extends BeanClass> cl) {
+    public static ClassHookModel ofManaged(Class<? extends OldBeanClass> cl) {
         return MANAGED_NOT_ANNOTATED.get(cl);
     }
 
     /** A builder for method sidecar. */
-    public final static class Builder extends AbstractHookModel.Builder<BeanClass> {
+    public final static class Builder extends AbstractHookModel.Builder<OldBeanClass> {
 
         public final boolean allowAllAccess;
 

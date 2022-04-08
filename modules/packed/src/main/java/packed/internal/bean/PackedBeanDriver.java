@@ -127,7 +127,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, Realm owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
-        return new PackedBeanDriver<>(kind, container, owner, factory.rawType(), SourceType.FACTORY, factory);
+        return new PackedBeanDriver<>(kind, container, owner, factory.rawReturnType(), SourceType.FACTORY, factory);
     }
 
     public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, Realm owner, T instance) {

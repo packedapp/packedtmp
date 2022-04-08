@@ -17,7 +17,6 @@ package various;
 
 import java.lang.StackWalker.Option;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -41,12 +40,14 @@ import org.openjdk.jmh.annotations.Warmup;
 @State(Scope.Benchmark)
 public class StackWalkerPerf {
 
+    static final StackWalker sw2 = StackWalker.getInstance();
+    
     static final StackWalker sw = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
-    @Benchmark
-    public StackWalker stackWalkerSetup() {
-        return StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-    }
+//    @Benchmark
+//    public StackWalker stackWalkerSetup() {
+//        return StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+//    }
 
     @Benchmark
     public Class<?> stackWalkerCallerClass() {
@@ -54,7 +55,17 @@ public class StackWalkerPerf {
     }
 
     @Benchmark
-    public Lookup reflectionCallerClass() {
-        return MethodHandles.lookup();
+    public Class<?> reflectionCallerClass() {
+        return MethodHandles.lookup().lookupClass();
+    }
+
+    @Benchmark
+    public int lineNumberWithoutClassRef() {
+        return sw2.walk(e->e.limit(1).toList().get(0)).getLineNumber();
+    }
+    
+    @Benchmark
+    public int lineNumberWithClassRef() {
+        return sw.walk(e->e.limit(1).toList().get(0)).getLineNumber();
     }
 }

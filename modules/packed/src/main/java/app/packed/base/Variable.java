@@ -28,8 +28,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.hooks3.CommonVarInfo;
-import app.packed.hooks3.VariableParser;
+import app.packed.hooks.sandboxinvoke.CommonVarInfo;
+import app.packed.hooks.sandboxinvoke.VariableParser;
 import packed.internal.bean.hooks.variable.FieldVariable;
 import packed.internal.bean.hooks.variable.ParameterVariable;
 import packed.internal.bean.hooks.variable.TypeVariableVariable;
@@ -144,7 +144,8 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
         requireNonNull(parameter, "parameter is null");
         return new ParameterVariable(parameter);
     }
-
+    
+    // I think you will use FunctionType here
     public static List<Variable> ofParameters(Executable executable) {
         requireNonNull(executable, "executable is null");
         Parameter[] parameters = executable.getParameters();

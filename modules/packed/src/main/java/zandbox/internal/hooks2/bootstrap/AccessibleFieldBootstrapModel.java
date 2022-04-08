@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
-import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.OldBeanField;
 import app.packed.extension.Extension;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;
@@ -22,7 +22,7 @@ public final class AccessibleFieldBootstrapModel extends AbstractBootstrapModel 
     // Maaske i virkeligheden bare have et ConcurrentHashMap<Thread, AFH>?
     private static final ThreadLocal<AccessibleFieldHook> ANNOTATION = new ThreadLocal<>();
 
-    /** A MethodHandle that can invoke {@link BeanField#bootstrap}. */
+    /** A MethodHandle that can invoke {@link OldBeanField#bootstrap}. */
     private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AccessibleFieldHook.Bootstrap.class,
             "bootstrap", void.class);
 
@@ -40,7 +40,7 @@ public final class AccessibleFieldBootstrapModel extends AbstractBootstrapModel 
 
     private static final TmpLoader<BootstrapClassLoader> TL = new TmpLoader<>(BootstrapClassLoader.class, t -> new BootstrapClassLoader());
 
-    /** A VarHandle that can access {@link BeanField#processor}. */
+    /** A VarHandle that can access {@link OldBeanField#processor}. */
     private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), AccessibleFieldHook.Bootstrap.class,
             "context", AccessibleFieldBootstrapModel.BootstrapContext.class);
 

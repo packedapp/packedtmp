@@ -15,10 +15,12 @@
  */
 package app.packed.bean.operation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
@@ -224,6 +226,11 @@ public class OperationMirror implements Mirror {
 
     public interface TargetMirror {
         TargetType type();
+    }
+    
+    public Optional<Class<? extends Annotation>> hook() {
+        // Enten Provide eller ogsaa MetaAnnotation
+        throw new UnsupportedOperationException();
     }
 
     public enum TargetType {
