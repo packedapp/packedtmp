@@ -82,7 +82,7 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
         bom.addOperation(os);
         os.mirrorSupplier = supplier;
 
-        bean.parent.beans.sm.addConsumer(node);
+        bean.parent.injectionManager.sm.addConsumer(node);
         if (processor != null) {
             processor.accept(bean);
         }

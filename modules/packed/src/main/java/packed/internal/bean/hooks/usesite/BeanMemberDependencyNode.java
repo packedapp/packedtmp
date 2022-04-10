@@ -49,7 +49,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
             if (!Modifier.isStatic(smm.getModifiers()) && bean.injectionManager.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
-            ContainerInjectionManager sbm = bean.parent.beans.getServiceManager();
+            ContainerInjectionManager sbm = bean.parent.injectionManager.getServiceManager();
             ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addService(sa);
         } else {

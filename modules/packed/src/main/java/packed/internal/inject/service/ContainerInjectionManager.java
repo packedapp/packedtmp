@@ -172,7 +172,7 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
         // Process exports from any children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ContainerInjectionManager child = c.beans.getServiceManager();
+                ContainerInjectionManager child = c.injectionManager.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
@@ -203,7 +203,7 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
         // Process child requirements to children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ContainerInjectionManager m = c.beans.getServiceManager();
+                ContainerInjectionManager m = c.injectionManager.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);
                 }

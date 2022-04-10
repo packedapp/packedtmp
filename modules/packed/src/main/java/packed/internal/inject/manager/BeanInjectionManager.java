@@ -94,7 +94,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
 
             this.dependencyNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
 
-            bean.parent.beans.sm.addConsumer(dependencyNode);
+            bean.parent.injectionManager.sm.addConsumer(dependencyNode);
         }
     }
 

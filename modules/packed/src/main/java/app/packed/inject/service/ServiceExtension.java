@@ -86,7 +86,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            an extension configuration object.
      */
     ServiceExtension(ExtensionConfiguration configuration) {
-        this.injectionManager = ((ExtensionSetup) configuration).container.beans.getServiceManager();
+        this.injectionManager = ((ExtensionSetup) configuration).container.injectionManager.getServiceManager();
     }
 
     // Validates the outward facing contract
