@@ -40,10 +40,6 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** The container the bean is being installed in. */
     public final ContainerSetup container;
 
-    /** Any extension this bean belongs to. */
-    @Nullable
-    public final ExtensionSetup extension;
-
     /** The kind of bean. */
     private final BeanKind kind;
 
@@ -64,9 +60,8 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         this.container = requireNonNull(container);
         if (userOrExtension.isApplication()) {
             this.realm = container.realm;
-            this.extension = null;
         } else {
-            this.extension = container.extensions.get(userOrExtension.extension());
+            ExtensionSetup extension = container.extensions.get(userOrExtension.extension());
             this.realm = extension.extensionTree;
         }
         this.beanClass = requireNonNull(beanType);

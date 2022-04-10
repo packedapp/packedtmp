@@ -61,9 +61,6 @@ import packed.internal.util.CollectionUtil;
  */
 public final class ContainerSetup extends ComponentSetup {
 
-    /** All the beans in the container. */
-    public final ContainerInjectionManager injectionManager;
-
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
@@ -77,6 +74,9 @@ public final class ContainerSetup extends ComponentSetup {
      * deterministically.
      */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
+
+    /** All the beans in the container. */
+    public final ContainerInjectionManager injectionManager;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -214,7 +214,7 @@ public final class ContainerSetup extends ComponentSetup {
 
     /** {@return a container mirror.} */
     @Override
-    public ContainerMirror mirror() {
+    public BuildTimeContainerMirror mirror() {
         return new BuildTimeContainerMirror(this);
     }
 

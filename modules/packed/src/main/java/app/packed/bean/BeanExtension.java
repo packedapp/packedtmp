@@ -106,6 +106,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         // Tror vi skal have vendt comparatoren
 
         cs.injectionManager.resolve();
+
     }
 
     /**

@@ -23,6 +23,7 @@ import app.packed.bean.BeanKind;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.bean.PackedBeanDriver.SourceType;
+import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.ReflectiveFactory;
@@ -43,7 +44,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     private final DependencyNode dependencyNode;
 
-    InjectionManager parent;
+    final InjectionManager parent;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     // What if managed prototype bean????
@@ -51,15 +52,19 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     public final PoolEntryHandle singletonHandle;
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
+        ContainerSetup container = bean.parent;
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
 
         // Can only register a single extension bean of a particular type
+
         if (driver.realm instanceof ExtensionTreeSetup e) {
-
-        }
-
-        if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
-            driver.extension.injectionManager.addBean(driver, bean);
+            ExtensionInjectionManager eim = e.injectionManagerOf(container);
+            if (driver.beanKind() == BeanKind.CONTAINER) {
+                eim.addBean(driver, bean);
+            }
+            parent = eim;
+        } else {
+            parent = container.injectionManager;
         }
 
         if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {

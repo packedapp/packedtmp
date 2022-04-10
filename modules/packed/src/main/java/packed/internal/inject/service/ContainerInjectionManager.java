@@ -54,12 +54,18 @@ import packed.internal.lifetime.LifetimePool;
  */
 public final class ContainerInjectionManager extends ParentableInjectionManager {
 
+
+    /** All dependants that needs to be resolved. */
+    public final ArrayList<DependencyNode> consumers = new ArrayList<>();
+
+    /** */
+    private final ContainerSetup container;
+
     /** An error manager that is lazily initialized. */
     @Nullable
     private ServiceManagerFailureSetup em;
 
-    /** All dependants that needs to be resolved. */
-    public final ArrayList<DependencyNode> consumers = new ArrayList<>();
+    public final InputOutputServiceManager ios = new InputOutputServiceManager(this);
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
@@ -75,12 +81,16 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
 
-    /** The tree this service manager is a part of. */
-    private final ApplicationInjectionManager applicationInjectionManager;
+    /**
+     * @param root
+     *            the container this service manager is a part of
+     */
+    public ContainerInjectionManager(ContainerSetup container) {
+        this.container = container;
+        // TODO Husk at checke om man har en extension realm inde
+        this.parent = container.parent == null ? null : container.parent.injectionManager;
 
-    public final InputOutputServiceManager ios = new InputOutputServiceManager(this);
-
-    public final ContainerSetup container;
+    }
 
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
@@ -93,18 +103,6 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
 
     }
 
-    /**
-     * @param root
-     *            the container this service manager is a part of
-     */
-    public ContainerInjectionManager(ContainerSetup container) {
-        this.container = container;
-        // TODO Husk at checke om man har en extension realm inde
-        this.parent = container.parent == null ? null : container.parent.injectionManager;
-
-        this.applicationInjectionManager = parent == null ? new ApplicationInjectionManager() : parent.applicationInjectionManager;
-    }
-
     public void addService(ServiceSetup service) {
         requireNonNull(service);
         localServices.add(service);
@@ -113,12 +111,6 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
     public void checkExportConfigurable() {
         // when processing wirelets
         // We should make sure some stuff is no longer configurable...
-    }
-
-    public void close() {
-        if (parent == null) {
-            applicationInjectionManager.finish(container.lifetime.pool, container);
-        }
     }
 
     /**
@@ -277,7 +269,7 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
         // I think we must plug this in somewhere
 
         ios.requirementsOrCreate().checkForMissingDependencies();
-        close();
+
         // TODO Check any contracts we might as well catch it early
     }
 }

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
+import packed.internal.inject.ExtensionInjectionManager;
 
 /**
  * A single instance of this class exists per extension per application.
@@ -39,6 +40,10 @@ public final class ExtensionTreeSetup extends RealmSetup {
     ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
+    }
+    
+    public ExtensionInjectionManager injectionManagerOf(ContainerSetup container) {
+        return container.extensions.get(extensionType()).injectionManager;
     }
 
     void close() {

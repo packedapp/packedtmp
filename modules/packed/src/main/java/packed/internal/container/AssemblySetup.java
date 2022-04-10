@@ -66,6 +66,11 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
                 e.onUserClose();
                 e = extensions.pollFirst();
             }
+            
+            
+            
+                container.application.injectionManager.finish(container.lifetime.pool, container);
+            
 
             // Close all extensions application wide
             for (ExtensionTreeSetup extension : list) {

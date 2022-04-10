@@ -78,7 +78,7 @@ public final class BeanSetup extends ComponentSetup {
 
     /** {@inheritDoc} */
     @Override
-    public BeanMirror mirror() {
+    public BuildTimeBeanMirror mirror() {
         return new BuildTimeBeanMirror(this);
     }
 

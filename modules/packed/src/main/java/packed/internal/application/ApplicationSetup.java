@@ -30,6 +30,7 @@ import app.packed.lifetime.LifetimeMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.RealmSetup;
+import packed.internal.inject.ApplicationInjectionManager;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /** Build-time configuration of an application. */
@@ -38,6 +39,9 @@ public final class ApplicationSetup {
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
+    /** The tree this service manager is a part of. */
+    public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
+    
     public final ApplicationDescriptor descriptor;
 
     /** The driver responsible for building the application. */

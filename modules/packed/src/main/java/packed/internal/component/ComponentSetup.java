@@ -109,12 +109,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
     }
 
-    //
-    public final String getName() {
-        // Dette kunne ogsaa wire componenten?
-        return name;
-    }
-
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (parent != null) {
