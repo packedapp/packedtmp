@@ -65,6 +65,7 @@ public final class ContainerSetup extends ComponentSetup {
     public final ContainerBeanManager beans;
 
     /** Children of this node in insertion order. */
+    // Maybe have an extra List just with beans? IDK
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
 
     /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */

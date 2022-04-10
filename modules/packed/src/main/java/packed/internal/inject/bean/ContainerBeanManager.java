@@ -59,7 +59,7 @@ public final class ContainerBeanManager {
      * @return the new service manager
      */
     public ContainerInjectionManager newServiceManagerFromServiceExtension() {
-        return sm = new ContainerInjectionManager(sm);
+        return sm = new ContainerInjectionManager(null);
     }
 
     public void resolve() {
