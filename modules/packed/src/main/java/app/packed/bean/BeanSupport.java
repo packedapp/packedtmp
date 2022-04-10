@@ -15,7 +15,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.ReflectiveFactory.ExecutableFactory;
+import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 

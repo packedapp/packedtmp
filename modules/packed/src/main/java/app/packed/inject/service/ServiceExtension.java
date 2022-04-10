@@ -28,7 +28,7 @@ import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionSupport;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.service.ContainerInjectionManager;
+import packed.internal.inject.factory.service.ContainerInjectionManager;
 
 /**
  * An extension that deals with the service functionality of a container.

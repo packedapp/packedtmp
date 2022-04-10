@@ -23,11 +23,11 @@ import java.lang.reflect.Modifier;
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.bean.DependencyNode;
-import packed.internal.inject.bean.DependencyProducer;
-import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.inject.service.build.BeanMemberServiceSetup;
-import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.factory.bean.DependencyNode;
+import packed.internal.inject.factory.bean.DependencyProducer;
+import packed.internal.inject.factory.service.ContainerInjectionManager;
+import packed.internal.inject.factory.service.build.BeanMemberServiceSetup;
+import packed.internal.inject.factory.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.PoolEntryHandle;
 

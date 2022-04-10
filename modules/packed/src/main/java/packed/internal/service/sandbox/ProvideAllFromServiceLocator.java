@@ -22,11 +22,11 @@ import java.util.LinkedHashMap;
 import app.packed.base.Key;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
-import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.inject.service.runtime.AbstractServiceLocator;
-import packed.internal.inject.service.runtime.RuntimeService;
+import packed.internal.inject.factory.service.ContainerInjectionManager;
+import packed.internal.inject.factory.service.build.RuntimeAdaptorServiceSetup;
+import packed.internal.inject.factory.service.build.ServiceSetup;
+import packed.internal.inject.factory.service.runtime.AbstractServiceLocator;
+import packed.internal.inject.factory.service.runtime.RuntimeService;
 
 /** Represents an invocation of {@link ServiceExtension#provideAll(ServiceLocator)}. */
 public final class ProvideAllFromServiceLocator {

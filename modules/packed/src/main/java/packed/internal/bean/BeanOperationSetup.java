@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.operation.OperationMirror;
 import app.packed.extension.Extension;
-import packed.internal.inject.bean.DependencyNode;
+import packed.internal.inject.factory.bean.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

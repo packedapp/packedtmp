@@ -23,9 +23,9 @@ import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.inject.service.InternalServiceUtil;
-import packed.internal.inject.service.build.BeanInstanceServiceSetup;
+import packed.internal.inject.factory.service.ContainerInjectionManager;
+import packed.internal.inject.factory.service.InternalServiceUtil;
+import packed.internal.inject.factory.service.build.BeanInstanceServiceSetup;
 
 /**
  * A bean which provide an instance(s) of the bean type as a service.

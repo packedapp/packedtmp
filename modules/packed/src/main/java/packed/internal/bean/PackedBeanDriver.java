@@ -27,7 +27,7 @@ import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.inject.InternalFactory;
+import packed.internal.inject.factory.InternalFactory;
 
 /** The implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<T> implements BeanDriver<T> {

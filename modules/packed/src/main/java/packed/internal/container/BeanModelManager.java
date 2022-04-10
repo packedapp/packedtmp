@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import packed.internal.bean.hooks.usesite.BootstrappedSourcedClassModel;
 import packed.internal.bean.hooks.usesite.HookModel;
-import packed.internal.inject.InternalFactory;
+import packed.internal.inject.factory.InternalFactory;
 import packed.internal.invoke.OpenClass;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;

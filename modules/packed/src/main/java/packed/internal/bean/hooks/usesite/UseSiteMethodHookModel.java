@@ -30,8 +30,8 @@ import app.packed.bean.hooks.OldBeanMethod;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.component.ComponentSetup;
-import packed.internal.inject.bean.DependencyProducer;
-import packed.internal.inject.bean.InternalDependency;
+import packed.internal.inject.factory.bean.DependencyProducer;
+import packed.internal.inject.factory.bean.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

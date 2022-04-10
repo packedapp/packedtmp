@@ -10,7 +10,7 @@ import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
-import packed.internal.inject.service.ContainerInjectionManager;
+import packed.internal.inject.factory.service.ContainerInjectionManager;
 
 /**
  * A specialized mirror for {@link ServiceExtension}.

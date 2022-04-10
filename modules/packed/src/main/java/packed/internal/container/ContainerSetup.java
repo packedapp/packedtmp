@@ -50,7 +50,7 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
-import packed.internal.inject.bean.ContainerBeanManager;
+import packed.internal.inject.factory.bean.ContainerBeanManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 
