@@ -39,38 +39,25 @@ import packed.internal.util.MethodHandleUtil;
 // Move TypeLiteral Out I think, then we can use records
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
-    /** A var handle that can update the {@link #container()} field in this class. */
-    private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "factory",
-            CanonicalizedCapturingInternalFactory.class);
-
-    
-    /** The type of objects this factory creates. */
-    private final TypeToken<R> typeLiteral;
-
-    public InternalFactory(TypeToken<R> typeLiteralOrKey) {
-        requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        this.typeLiteral = typeLiteralOrKey;
-    }
-
     public abstract List<InternalDependency> dependencies();
 
     public abstract MethodHandle toMethodHandle(Lookup lookup);
 
-    /** {@inheritDoc} */
-    @Override
-    public TypeToken<R> typeLiteral() {
-        return typeLiteral;
-    }
 
-    public static <R> InternalFactory<R> canonicalize(Factory<R> factory) {
+    public static <R> InternalFactory<R> crackFactory(Factory<R> factory) {
+        requireNonNull(factory, "factory is null");
         if (factory instanceof CapturingFactory<R> f) {
-            return (InternalFactory<R>) VH_CF_FACTORY.get(factory);
+            return (InternalFactory<R>) InternalCapturingInternalFactory.VH_CF_FACTORY.get(factory);
         } else {
             return (InternalFactory<R>) factory;
         }
     }
 
-    public static final class CanonicalizedCapturingInternalFactory<T> extends InternalFactory<T> {
+    public static final class InternalCapturingInternalFactory<R> extends InternalFactory<R> {
+
+        /** A var handle that can update the {@link #container()} field in this class. */
+        private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "factory",
+                InternalCapturingInternalFactory.class);
 
         // Ideen er lidt at saa snart vi bruger et CapturingFactory saa smider vi den ind her
 
@@ -81,11 +68,14 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
         public final MethodHandle methodHandle;
 
+        /** The type of objects this factory creates. */
+        private final TypeToken<R> typeLiteral;
+
         /**
          * @param typeLiteralOrKey
          */
-        public CanonicalizedCapturingInternalFactory(TypeToken<T> typeLiteralOrKey, MethodHandle methodHandle, List<InternalDependency> dependencies) {
-            super(typeLiteralOrKey);
+        public InternalCapturingInternalFactory(TypeToken<R> typeLiteralOrKey, MethodHandle methodHandle, List<InternalDependency> dependencies) {
+            this.typeLiteral = requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
             this.dependencies = dependencies;
             this.methodHandle = methodHandle;
         }
@@ -102,24 +92,32 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
             return methodHandle;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<R> typeLiteral() {
+            return typeLiteral;
+        }
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
     // A simple version of Binding... Maybe just only have one
-    public static final class BoundFactory<T> extends InternalFactory<T> {
+    public static final class BoundFactory<R> extends InternalFactory<R> {
 
         private final Object[] arguments;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<T> delegate;
+        private final InternalFactory<R> delegate;
 
         private final List<InternalDependency> dependencies;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
 
-        public BoundFactory(InternalFactory<T> delegate, int index, InternalDependency[] dd, Object[] arguments) {
-            super(delegate.typeLiteral());
+        /** The type of objects this factory creates. */
+        private final TypeToken<R> typeLiteral;
+
+        public BoundFactory(InternalFactory<R> delegate, int index, InternalDependency[] dd, Object[] arguments) {
+            this.typeLiteral = delegate.typeLiteral();
             this.index = index;
             this.delegate = requireNonNull(delegate);
             this.arguments = arguments;
@@ -138,17 +136,26 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
             MethodHandle mh = delegate.toMethodHandle(lookup);
             return MethodHandles.insertArguments(mh, index, arguments);
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<R> typeLiteral() {
+            return typeLiteral;
+        }
     }
 
     /** A factory that provides the same value every time, used by {@link Factory#ofConstant(Object)}. */
-    public static final class ConstantFactory<T> extends InternalFactory<T> {
+    public static final class ConstantFactory<R> extends InternalFactory<R> {
 
         /** The value that is returned every time. */
-        private final T instance;
+        private final R instance;
+
+        /** The type of objects this factory creates. */
+        private final TypeToken<R> typeLiteral;
 
         @SuppressWarnings("unchecked")
-        public ConstantFactory(T instance) {
-            super((TypeToken<T>) TypeToken.of(instance.getClass()));
+        public ConstantFactory(R instance) {
+            this.typeLiteral = (TypeToken<R>) TypeToken.of(instance.getClass());
             this.instance = instance;
         }
 
@@ -163,19 +170,28 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         public MethodHandle toMethodHandle(Lookup ignore) {
             return MethodHandles.constant(instance.getClass(), instance);
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<R> typeLiteral() {
+            return typeLiteral;
+        }
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
-    public static final class LookedUpFactory<T> extends InternalFactory<T> {
+    public static final class LookedUpFactory<R> extends InternalFactory<R> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<T> delegate;
+        private final InternalFactory<R> delegate;
 
         /** The method handle that was unreflected. */
         private final MethodHandle methodHandle;
 
-        public LookedUpFactory(InternalFactory<T> delegate, MethodHandle methodHandle) {
-            super(delegate.typeLiteral());
+        /** The type of objects this factory creates. */
+        private final TypeToken<R> typeLiteral;
+
+        public LookedUpFactory(InternalFactory<R> delegate, MethodHandle methodHandle) {
+            this.typeLiteral = delegate.typeLiteral();
             this.delegate = delegate;
             this.methodHandle = requireNonNull(methodHandle);
         }
@@ -191,10 +207,16 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         public MethodHandle toMethodHandle(Lookup ignore) {
             return methodHandle;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<R> typeLiteral() {
+            return typeLiteral;
+        }
     }
 
     /** A factory for {@link #peek(Consumer)}}. */
-    public static final class PeekableFactory<T> extends InternalFactory<T> {
+    public static final class PeekableFactory<R> extends InternalFactory<R> {
 
         /** A method handle for {@link Function#apply(Object)}. */
         private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
@@ -203,10 +225,13 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         private final MethodHandle consumer;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<T> delegate;
+        private final InternalFactory<R> delegate;
 
-        public PeekableFactory(InternalFactory<T> delegate, Consumer<? super T> action) {
-            super(delegate.typeLiteral());
+        /** The type of objects this factory creates. */
+        private final TypeToken<R> typeLiteral;
+
+        public PeekableFactory(InternalFactory<R> delegate, Consumer<? super R> action) {
+            this.typeLiteral = delegate.typeLiteral();
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
             this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawReturnType(), rawReturnType()));
@@ -230,6 +255,12 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         private static Object accept(Consumer consumer, Object object) {
             consumer.accept(object);
             return object;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<R> typeLiteral() {
+            return typeLiteral;
         }
     }
 }

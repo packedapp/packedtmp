@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import app.packed.base.TypeToken;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactory.CanonicalizedCapturingInternalFactory;
+import packed.internal.inject.factory.InternalFactory.InternalCapturingInternalFactory;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
@@ -83,7 +83,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
     };
 
     /** The type of objects this factory creates. */
-    private final CanonicalizedCapturingInternalFactory<R> factory;
+    private final InternalCapturingInternalFactory<R> factory;
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
@@ -94,9 +94,8 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
      */
     @SuppressWarnings("unchecked")
     CapturingFactory(Object function) {
-        super();
+        requireNonNull(function, "function is null"); // should have already been checked by subclasses
         TypeToken<R> typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
-        requireNonNull(function); // should have already been checked by subclasses
         // analyze();
 
         final MethodHandle methodHandle;
@@ -121,7 +120,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
             MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
-        this.factory = new CanonicalizedCapturingInternalFactory<>(typeLiteral, methodHandle, dependencies);
+        this.factory = new InternalCapturingInternalFactory<>(typeLiteral, methodHandle, dependencies);
 
     }
 
@@ -149,6 +148,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
         // check SAM interface type
 
+        // Hvorfor skal det vaere public
         MethodHandle mh;
         try {
             mh = MethodHandles.publicLookup().unreflect(m);

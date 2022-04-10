@@ -15,6 +15,8 @@
  */
 package packed.internal.inject.factory;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
@@ -38,7 +40,7 @@ import packed.internal.util.MemberScanner;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>permits ExecutableFactory,FieldFactory {
+public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>permits ExecutableFactory, FieldFactory {
 
     /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
     public static final ClassValue<ExecutableFactory<?>> DEFAULT_FACTORY = new ClassValue<>() {
@@ -49,11 +51,6 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         }
     };
 
-    
-    private ReflectiveFactory(TypeToken<T> typeLiteralOrKey) {
-        super(typeLiteralOrKey);
-    }
-  
     /** A factory that wraps a method or constructor. */
     public static final class ExecutableFactory<T> extends ReflectiveFactory<T> {
 
@@ -61,21 +58,23 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
 
         /** A factory with an executable as a target. */
         public final Executable executable;
+        /** The type of objects this factory creates. */
+        private final TypeToken<T> typeLiteral;
 
         public ExecutableFactory(ExecutableFactory<?> from, TypeToken<T> key) {
-            super(key);
+            typeLiteral = requireNonNull(key);
             this.executable = from.executable;
             this.dependencies = from.dependencies;
         }
 
         public ExecutableFactory(TypeToken<T> key, Class<?> findConstructorOn) {
-            super(key);
+            typeLiteral = requireNonNull(key);
             this.executable = MemberScanner.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
             this.dependencies = InternalDependency.fromExecutable(executable);
         }
 
         public ExecutableFactory(TypeToken<T> key, Constructor<?> constructor) {
-            super(key);
+            typeLiteral = requireNonNull(key);
             this.executable = constructor;
             this.dependencies = InternalDependency.fromExecutable(executable);
         }
@@ -116,6 +115,12 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         public String toString() {
             return executable.toString();
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<T> typeLiteral() {
+            return typeLiteral;
+        }
     }
 
     /** An invoker that can read and write fields. */
@@ -123,10 +128,13 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
 
         /** The field we invoke. */
         private final Field field;
+        
+        /** The type of objects this factory creates. */
+        private final TypeToken<T> typeLiteral;
 
         @SuppressWarnings("unchecked")
         public FieldFactory(Field field) {
-            super((TypeToken<T>) TypeToken.fromField(field));
+            typeLiteral = (TypeToken<T>) TypeToken.fromField(field);
             this.field = field;
         }
 
@@ -156,6 +164,12 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
                 throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
             return handle;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<T> typeLiteral() {
+            return typeLiteral;
         }
     }
 

@@ -252,6 +252,14 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
     }
 
     public void resolve() {
+        if (container.containerChildren != null) {
+            for (ContainerSetup c : container.containerChildren) {
+                if (c.realm == container.realm) {
+                    c.injectionManager.resolve();
+                }
+            }
+        }
+        
         // Resolve local services
         prepareDependants();
 

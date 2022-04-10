@@ -46,7 +46,7 @@ public final class BeanSetup extends ComponentSetup {
     public final BeanKind beanKind;
 
     /** The driver used to create a bean. */
-    private final PackedBeanDriver<?> driver;
+    public final PackedBeanDriver<?> driver;
 
     /** A model of the hooks on the bean. */
     @Nullable

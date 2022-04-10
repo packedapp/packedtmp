@@ -55,7 +55,7 @@ public final class BeanSupport extends ExtensionSupport {
     /**
      * @param beanExtension
      */
-    /* package-private */ BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , c agent */) {
+    /* package-private */ BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , c realm */) {
         this.container = beanExtension.container;
         this.extensionType = (extensionType);
     }
@@ -92,21 +92,21 @@ public final class BeanSupport extends ExtensionSupport {
         return new ExtensionBeanConfiguration<>(m);
     }
 
-    public final BeanDriver<?> newDriver(BeanKind kind, Realm agent) {
-        return PackedBeanDriver.ofNone(kind, container, agent);
+    public final BeanDriver<?> newDriver(BeanKind kind, Realm realm) {
+        return PackedBeanDriver.ofNone(kind, container, realm);
     }
 
-    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, Realm agent, Class<T> implementation) {
+    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, Realm realm, Class<T> implementation) {
         // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
-        return PackedBeanDriver.ofClass(kind, container, agent, implementation);
+        return PackedBeanDriver.ofClass(kind, container, realm, implementation);
     }
 
-    public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, Realm agent, Factory<T> factory) {
-        return PackedBeanDriver.ofFactory(kind, container, agent, factory);
+    public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, Realm realm, Factory<T> factory) {
+        return PackedBeanDriver.ofFactory(kind, container, realm, factory);
     }
 
-    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, Realm agent, T instance) {
-        return PackedBeanDriver.ofInstance(kind, container, agent, instance);
+    public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, Realm realm, T instance) {
+        return PackedBeanDriver.ofInstance(kind, container, realm, instance);
     }
 
     /**

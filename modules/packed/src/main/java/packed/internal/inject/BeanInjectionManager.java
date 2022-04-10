@@ -16,6 +16,7 @@
 package packed.internal.inject;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.base.Nullable;
@@ -27,6 +28,7 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.ReflectiveFactory;
+import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /**
@@ -49,7 +51,10 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
+    private final BeanSetup bean;
+
     public BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
+        this.bean = bean;
         ContainerSetup container = bean.parent;
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
 
@@ -106,7 +111,13 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     public MethodHandle dependencyAccessor() {
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
-        if (singletonHandle != null) {
+
+        if (bean.driver.sourceType == SourceType.INSTANCE) {
+            Object instance = bean.driver.source;
+            MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
+            return MethodHandles.dropArguments(mh, 0, LifetimePool.class);
+            // return MethodHandles.constant(instance.getClass(), instance);
+        } else if (singletonHandle != null) {
             return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
         } else {
             return instanceNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T

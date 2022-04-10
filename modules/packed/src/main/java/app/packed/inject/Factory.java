@@ -35,11 +35,11 @@ import app.packed.base.TypeToken;
 import app.packed.base.Variable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.ReflectiveFactory;
 import packed.internal.inject.factory.InternalFactory.BoundFactory;
 import packed.internal.inject.factory.InternalFactory.ConstantFactory;
 import packed.internal.inject.factory.InternalFactory.LookedUpFactory;
 import packed.internal.inject.factory.InternalFactory.PeekableFactory;
+import packed.internal.inject.factory.ReflectiveFactory;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 
 /**
@@ -102,7 +102,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
     public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
-        InternalFactory<R> f = InternalFactory.canonicalize(this);
+        InternalFactory<R> f = InternalFactory.crackFactory(this);
         List<InternalDependency> dependencies = f.dependencies();
         Objects.checkIndex(position, dependencies.size());
         int len = 1 + additionalArguments.length;
@@ -242,7 +242,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @return the new factory
      */
     public final Factory<R> peek(Consumer<? super R> action) {
-        return new PeekableFactory<>(InternalFactory.canonicalize(this), action);
+        return new PeekableFactory<>(InternalFactory.crackFactory(this), action);
     }
 
     /**

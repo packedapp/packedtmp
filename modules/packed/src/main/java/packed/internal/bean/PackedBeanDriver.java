@@ -116,9 +116,8 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, Realm owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
-        requireNonNull(factory, "factory is null");
-        InternalFactory<T> fac = InternalFactory.canonicalize(factory);
-        return new PackedBeanDriver<>(kind, container, owner, factory.rawReturnType(), SourceType.FACTORY, fac);
+        InternalFactory<T> fac = InternalFactory.crackFactory(factory);
+        return new PackedBeanDriver<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
     }
 
     public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, Realm owner, T instance) {

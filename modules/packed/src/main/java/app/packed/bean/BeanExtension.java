@@ -2,7 +2,6 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.Realm;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
@@ -43,7 +42,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, Realm.application(), implementation);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, container.assembly.realm(), implementation);
         return new ContainerBeanConfiguration<>(driver);
     }
 
@@ -57,7 +56,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         // Med mindre vi laver en User->Extension, skal vi jo have noget a.la. UserOrExtension.realm();
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, Realm.application(), factory);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, container.assembly.realm(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -73,7 +72,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, Realm.application(), instance);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, container.assembly.realm(), instance);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -86,27 +85,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     /** {@inheritDoc} */
     @Override
     protected void onAssemblyClose() {
-        // onRealmClose (when the realm that the extension is closed)
-        // onSelfClose (When the extension itself is closed
-        onUserClose0(container);
-    }
-
-    private void onUserClose0(ContainerSetup cs) {
-        // We recursively close all children in the same realm first
-        // We do not close individual components
-        if (cs.containerChildren != null) {
-            for (ContainerSetup c : cs.containerChildren) {
-                if (c.realm == cs.realm) {
-                    onUserClose0(c);
-                }
-            }
-        }
-        // Complete all extensions in order
-        // Vil faktisk mene det skal vaere den modsatte order...
-        // Tror vi skal have vendt comparatoren
-
-        cs.injectionManager.resolve();
-
+        container.injectionManager.resolve();
     }
 
     /**
@@ -128,14 +107,14 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofClass(BeanKind.UNMANAGED, container, Realm.application(), implementation);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofClass(BeanKind.UNMANAGED, container, container.assembly.realm(), implementation);
         // handle.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, Realm.application(), factory);
+        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, container.assembly.realm(), factory);
         // bh.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
         return sbc.provide();
