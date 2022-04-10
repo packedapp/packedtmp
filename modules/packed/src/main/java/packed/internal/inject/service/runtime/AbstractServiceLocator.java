@@ -33,16 +33,25 @@ import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceSelection;
-import packed.internal.inject.service.AbstractServiceRegistry;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 
 /**
  * An abstract implementation of {@link ServiceLocator}.
  * 
  * @implNote {@link #asMap()} must always return an immutable map, with effectively immutable (frozen) services.
  **/
-public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
+public abstract class AbstractServiceLocator implements ServiceLocator {
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @implNote we cannot create default methods for methods in java.lang.Object. So we put it here instead.
+     */
+    @Override
+    public String toString() {
+        return asMap().toString();
+    }
+    
     /** {@inheritDoc} */
     @Override
     public final <T> Optional<T> findInstance(Key<T> key) {
@@ -134,7 +143,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public final ServiceLocator spawn(ComposerAction<ServiceComposer> transformer) {
-        return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
+        return PackedServiceTransformer.transform(transformer, (Collection) asMap().values());
     }
 
     /** {@inheritDoc} */

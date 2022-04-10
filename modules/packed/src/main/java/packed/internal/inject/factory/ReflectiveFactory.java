@@ -28,6 +28,7 @@ import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.inject.factory.ReflectiveFactory.FieldFactory;
@@ -58,6 +59,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
 
         /** A factory with an executable as a target. */
         public final Executable executable;
+        
         /** The type of objects this factory creates. */
         private final TypeToken<T> typeLiteral;
 
@@ -121,6 +123,12 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         public TypeToken<T> typeLiteral() {
             return typeLiteral;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public int variableCount() {
+            return dependencies.size();
+        }
     }
 
     /** An invoker that can read and write fields. */
@@ -139,7 +147,6 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         }
 
         /** {@inheritDoc} */
-
         @Override
         public List<InternalDependency> dependencies() {
             return List.of();
@@ -171,8 +178,17 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         public TypeToken<T> typeLiteral() {
             return typeLiteral;
         }
-    }
 
+        @Override
+        public int variableCount() {
+            return 0;
+        }
+
+        @Override
+        public List<Variable> variables() {
+            return List.of();
+        }
+    }
 }
 //
 //public Factory<T> lookup() {

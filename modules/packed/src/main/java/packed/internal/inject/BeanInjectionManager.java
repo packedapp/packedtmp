@@ -61,7 +61,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         // Can only register a single extension bean of a particular type
 
         if (driver.realm instanceof ExtensionTreeSetup e) {
-            ExtensionInjectionManager eim = e.injectionManagerOf(container);
+            ExtensionInjectionManager eim = e.injectionManagerFor(bean);
             if (driver.beanKind() == BeanKind.CONTAINER) {
                 eim.addBean(driver, bean);
             }

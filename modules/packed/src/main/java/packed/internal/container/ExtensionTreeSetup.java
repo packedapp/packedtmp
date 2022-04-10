@@ -17,8 +17,11 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
+
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
+import packed.internal.bean.BeanSetup;
 import packed.internal.inject.ExtensionInjectionManager;
 
 /**
@@ -35,18 +38,28 @@ public final class ExtensionTreeSetup extends RealmSetup {
 
     /** The extension in the root container. */
     public final ExtensionSetup root;
-    
+
+    private final ArrayList<BeanSetup> beans = new ArrayList<>();
+
+    // Tror vi skal have en liste af alle extension beans...
+
     ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }
-    
-    public ExtensionInjectionManager injectionManagerOf(ContainerSetup container) {
-        return container.extensions.get(realmType()).injectionManager;
+
+    public ExtensionInjectionManager injectionManagerFor(BeanSetup bean) {
+        beans.add(bean);
+        return bean.parent.extensions.get(realmType()).injectionManager;
     }
 
     void close() {
         root.onApplicationClose();
+
+        for (BeanSetup bs : beans) {
+            System.out.println(bs);
+        }
+
         isClosed = true;
     }
 

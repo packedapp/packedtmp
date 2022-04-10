@@ -25,10 +25,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactory.InternalCapturingInternalFactory;
@@ -71,6 +74,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
             return InternalDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1);
         }
     };
+
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
     static final ClassValue<List<InternalDependency>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
 
@@ -157,6 +161,11 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         }
         System.out.println(mh);
     }
+    /** {@inheritDoc} */
+    @Override
+    public Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
+        return factory.bind(position, argument, additionalArguments);
+    }
 
     InternalFactory<R> canonicalize() {
         throw new UnsupportedOperationException();
@@ -164,8 +173,26 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
     /** {@inheritDoc} */
     @Override
+    public final Factory<R> peek(Consumer<? super R> action) {
+        return factory.peek(action);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public TypeToken<R> typeLiteral() {
         return factory.typeLiteral();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int variableCount() {
+        return factory.variableCount();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<Variable> variables() {
+        return factory.variables();
     }
 
     static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {

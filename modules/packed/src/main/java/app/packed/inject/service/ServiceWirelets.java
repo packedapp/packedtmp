@@ -28,7 +28,7 @@ import app.packed.container.Wirelet;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
@@ -183,7 +183,7 @@ public final class ServiceWirelets {
         return new Service2ndPassWirelet() {
             @Override
             protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
-                PackedServiceComposer.transformInplaceAttachment(map, transformation, child.ios.newServiceContract());
+                PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.ios.newServiceContract());
             }
         };
     }
@@ -193,7 +193,7 @@ public final class ServiceWirelets {
         return new Service2ndPassWirelet() {
             @Override
             protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
-                PackedServiceComposer.transformInplace(map, transformation);
+                PackedServiceTransformer.transformInplace(map, transformation);
             }
         };
     }

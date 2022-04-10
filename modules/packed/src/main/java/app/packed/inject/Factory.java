@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,12 +32,9 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
-import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactory.BoundFactory;
 import packed.internal.inject.factory.InternalFactory.ConstantFactory;
 import packed.internal.inject.factory.InternalFactory.LookedUpFactory;
-import packed.internal.inject.factory.InternalFactory.PeekableFactory;
 import packed.internal.inject.factory.ReflectiveFactory;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 
@@ -65,16 +61,19 @@ import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
  * 
  * <pre> {@code Factory<Long> f = new Factory<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
+ * @apiNote factory implementations does generally not implement {@link #hashCode()} or {@link #equals(Object)}.
  */
-@SuppressWarnings("rawtypes")
 // Rename to Func I think...
 // Make into sealed interface???? Why not will make it easier to use records
 
-// toMethodHandle???
+// toMethodHandle??? Ja hvorfor ikke... hvis man har et Factory, kan man jo altid bare registrere det og bruge det...
+// Skal vi tage et Lookup object??? IDK
+
 // Altsaa hvis vi har et Factory kan vi jo altid bare registrere den et eller andet sted i Packed
 // og saa kalde Factory igennem den...
 // Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
 
+@SuppressWarnings("rawtypes")
 public abstract sealed class Factory<R> permits CapturingFactory, InternalFactory {
 
     /**
@@ -100,38 +99,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      *             if the specified argument is null and the variable does not represent a reference type
      */
     // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
-    public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
-        requireNonNull(additionalArguments, "additionalArguments is null");
-        InternalFactory<R> f = InternalFactory.crackFactory(this);
-        List<InternalDependency> dependencies = f.dependencies();
-        Objects.checkIndex(position, dependencies.size());
-        int len = 1 + additionalArguments.length;
-        int newLen = dependencies.size() - len;
-        if (newLen < 0) {
-            throw new IllegalArgumentException(
-                    "Cannot specify more than " + (len - position) + " arguments for position = " + position + ", but arguments array was size " + len);
-        }
-
-        // Removing dependencies that are being replaced
-        InternalDependency[] dd = new InternalDependency[newLen];
-        for (int i = 0; i < position; i++) {
-            dd[i] = dependencies.get(i);
-        }
-        for (int i = position; i < dd.length; i++) {
-            dd[i] = dependencies.get(i + len);
-        }
-
-        // Populate final argument array
-        Object[] args = new Object[len];
-        args[0] = argument;
-        for (int i = 0; i < additionalArguments.length; i++) {
-            args[i + 1] = additionalArguments[i];
-        }
-
-        // TODO check types...
-
-        return new BoundFactory<>(f, position, dd, args);
-    }
+    public abstract Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
 
     /**
      * Binds the first variable to the specified argument.
@@ -241,9 +209,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      *            the action to run after the factory has returned an object
      * @return the new factory
      */
-    public final Factory<R> peek(Consumer<? super R> action) {
-        return new PeekableFactory<>(InternalFactory.crackFactory(this), action);
-    }
+    public abstract Factory<R> peek(Consumer<? super R> action);
 
     /**
      * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
@@ -279,14 +245,10 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     }
 
     /** {@return The number of variables this factory takes.} */
-    public final int variableCount() {
-        throw new UnsupportedOperationException();
-    }
+    public abstract int variableCount();
 
     /** {@return The variables this factory takes.} */
-    public final List<Variable> variables() {
-        throw new UnsupportedOperationException();
-    }
+    public abstract List<Variable> variables();
 
     /**
      * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
@@ -323,6 +285,8 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
 
     // open(Lookup)
     // openResult(Lookup) <---- maaske er den baa en
+    // open()????
+    // openTo(Lookup, xxx)
     public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (this instanceof ReflectiveFactory<R> f) {
@@ -330,24 +294,6 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
         }
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
-    }
-
-    /**
-     * Returns a factory that returns the specified instance every time the factory must provide a value.
-     * <p>
-     * If the specified instance makes use of field or method injection the returned factory should not be used more than
-     * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
-     * factory.
-     * 
-     * @param <T>
-     *            the type of value returned by the factory
-     * @param instance
-     *            the instance to return on every request
-     * @return the factory
-     */
-    public static <T> Factory<T> ofConstant(T instance) {
-        requireNonNull(instance, "instance is null");
-        return new ConstantFactory<T>(instance);
     }
 
     // ReflectionFactory.of
@@ -379,7 +325,27 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
         return new ExecutableFactory<>(tl, constructor);
     }
 
+    /**
+     * Returns a factory that returns the specified instance every time the factory must provide a value.
+     * <p>
+     * If the specified instance makes use of field or method injection the returned factory should not be used more than
+     * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
+     * factory.
+     * 
+     * @param <T>
+     *            the type of value returned by the factory
+     * @param instance
+     *            the instance to return on every request
+     * @return the factory
+     */
+    public static <T> Factory<T> ofInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+        return new ConstantFactory<T>(instance);
+    }
+
     // Hvad goer vi med en klasse der er mere restri
+    // If the specified instance is not a static method. An extra variable
+    // use bind(Foo) to bind the variable.
     public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
         requireNonNull(returnType, "returnType is null");
         return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
@@ -390,8 +356,6 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
         throw new UnsupportedOperationException();
     }
 
-    // If the specified instance is not a static method. An extra variable
-    // use bind(Foo) to bind the variable.
     /**
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
@@ -422,153 +386,12 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
         throw new UnsupportedOperationException();
     }
 
-    // new Factory<String>(SomeMethod);
-    // How we skal have
-    // Maaske kan vi
-
-    // If the specified method is an instance method
-    // variables will include a dependenc for it as the first
-    // parameters
-
     public static <T> Factory<T> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
-     * {@link #ofConstructor(Constructor)} method this method takes a type literal that can be used to create factories with
-     * a generic signature:
-     *
-     *
-     * 
-     * @param constructor
-     *            the constructor used from creating an instance
-     * @param type
-     *            a type literal
-     * @return the new factory
-     * @see #ofConstructor(Constructor)
-     */
-
-    public static <T> Factory<T> ofStaticFactory(Class<?> clazz, TypeToken<T> returnType) {
+    public static <T> Factory<T> ofMethodHandle(MethodHandle methodHandle, List<Variable> variables) {
+        // Variables must match the method handle
         throw new UnsupportedOperationException();
     }
-
 }
-//TODO Qualifiers on Methods, Types together with findInjectable????
-//Yes need to pick those up!!!!
-//probably rename defaultKey to key.
-
-//Split-module class hierachies, must
-
-//Factories only
-//
-//Is it the responsibility of the factory or the injector to inject fields and methods???
-//+ Factory
-//
-//+ Injector
-//Then we can disable it on a case to case basis
-//You can actually use factories without injection
-//-------------------------
-//ServiceDescriptor
-//Refereres fra InjectorDescriptor....
-//Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
-
-//Does this belong in app.packed.service????
-//No because components also uses it...
-
-//This class used to provide some bind methods...
-//But we don't do that no more. Because it was just impossible to
-//see what was what...
-////////TYPES (Raw)
-//ExactType... -> Instance, Constructor
-//LowerBoundType, Field, Method
-//PromisedType -> Fac0,Fac1,Fac2,
-
-/// TypeLiteral<- Always the promised, key must be assignable via raw type
-///////////////
-
-//TypeLiteral
-//actual type
-
-//Correctness
-//Instance -> Lowerbound correct, upper correct
-//Executable -> Lower bound maybe correct (if exposedType=return type), upper correct if final return type
-//Rest, unknown all
-//Bindable -> has no effect..
-
-//static {
-//Dependency.of(String.class);// Initializes InternalApis for InternalFactory
-//}
-
-//Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
-
-///**
-// * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
-// * annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
-// *
-// * @return stuff
-// */
-//// We should make this public...
-//// InjectableType
-//Class<? super T> scannableType() {
-//    return rawType();
-//}
-
-///** {@inheritDoc} */
-//@Override
-//public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
-//
-//  // Do we allow binding non-matching keys???
-//  // Could be useful from Prime annotations...
-//
-//  // Tror vi skal have to forskellige
-//
-//  // bindParameter(int index).... retains index....
-//  // Throws
-//
-//  // bindWithKey();
-//
-//  // bindRaw(); <---- Only takes a class, ignores nullable.....
-//
-//  // Hvordan klarer vi Foo(String firstName, String lastName)...
-//  // Eller
-//
-//  // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
-//
-//  // Det eneste der er forskel er parameter index'et...
-//  // Maaske bliver man bare noedt til at lave en statisk metoder....
-//
-//  // Skal vi have en speciel MemberFactory?????
-//
-//  //
-//
-//  // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
-//
-//  // resolveDependency()...
-//  // Its not really an argument its a dependency that we resolve...
-//
-//  // withArgumentSupplier
-//  throw new UnsupportedOperationException();
-//}
-
-///** {@inheritDoc} */
-//// Required/Optional - Key - Variable?
-//// Requirement
-//
-
-// Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
-// F.eks. for dooo(String x, String y)
-// Og det gider vi ikke....
-// Saa variables stay the same -> Why shouldn't we able to bind them...
-
-// Maaske er index ligegyldigt...
-// Og det er bare en speciel mode for MethodSidecar
-// Hvor man kan sige jeg tager denne variable ud af ligningen...
-
-// Maybe add isVariableBound(int index)
-
-// Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
-
-// Har vi en optional MemberDescriptor?????
-
-// Hvis man nu vil injecte en composite....

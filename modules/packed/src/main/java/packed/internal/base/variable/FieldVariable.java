@@ -24,30 +24,32 @@ import java.util.Optional;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
 
-/**
- *
- */
+/** A variables that wraps a field. */
 public record FieldVariable(Field field) implements Variable {
 
     public FieldVariable {
         requireNonNull(field, "field is null");
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
         return field.isAnnotationPresent(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
         return field.getAnnotationsByType(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return field.getDeclaredAnnotation(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
         return field.getDeclaredAnnotationsByType(annotationClass);

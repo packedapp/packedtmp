@@ -33,7 +33,7 @@ import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.inject.variable.BeanDependencyHook;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -282,7 +282,7 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     @Reflectable
     static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
-        return PackedServiceComposer.of(action);
+        return PackedServiceTransformer.of(action);
     }
 
     @ScopedProvide

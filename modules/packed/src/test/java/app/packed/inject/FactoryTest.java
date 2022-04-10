@@ -32,7 +32,7 @@ public class FactoryTest {
 
     @Test
     public void ofInstance() {
-        Factory<String> f = Factory.ofConstant("foo");
+        Factory<String> f = Factory.ofInstance("foo");
         checkThat(f).is(new Key<String>() {});
         // checkThat(f).hasBound(String.class, String.class);
 
@@ -42,7 +42,7 @@ public class FactoryTest {
 
         @Test
         public void testNpe() {
-            npe(Factory::ofConstant, "instance");
+            npe(Factory::ofInstance, "instance");
 
             // assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
         }

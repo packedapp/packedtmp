@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.inject.variable.BeanDependencyHook;
-import packed.internal.inject.service.AbstractServiceRegistry;
+import packed.internal.inject.service.InternalServiceUtil;
 
 /**
  * A collection of {@link Service services}, with each service having a unique {@link Service#key() key}.
@@ -168,7 +168,7 @@ public interface ServiceRegistry extends Iterable<Service> {
 
     /** {@return an immutable service registry containing no services} */
     static ServiceRegistry of() {
-        return AbstractServiceRegistry.EMPTY;
+        return InternalServiceUtil.EMPTY;
     }
 }
 // --------- NOTES --------

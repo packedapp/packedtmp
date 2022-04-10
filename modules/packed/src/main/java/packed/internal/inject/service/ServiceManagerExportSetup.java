@@ -33,7 +33,7 @@ import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceRegistry;
 import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
@@ -147,7 +147,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      */
     @Nullable
     public ServiceRegistry exportsAsServiceRegistry() {
-        return resolvedExports.isEmpty() ? null : AbstractServiceRegistry.copyOf(resolvedExports);
+        return resolvedExports.isEmpty() ? null : InternalServiceUtil.copyOf(resolvedExports);
     }
 
     public boolean hasExports() {
@@ -226,7 +226,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
-        PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
+        PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
     }
 
     /**
@@ -236,7 +236,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      *            the transformer to use
      */
     public void transform(Consumer<? super ServiceTransformer> transformer) {
-        PackedServiceComposer.transformInplace(resolvedExports, transformer);
+        PackedServiceTransformer.transformInplace(resolvedExports, transformer);
     }
 
     /**
