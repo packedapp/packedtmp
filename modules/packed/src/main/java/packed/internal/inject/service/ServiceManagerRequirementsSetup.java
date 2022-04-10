@@ -25,7 +25,6 @@ import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.container.ContainerSetup;
 import packed.internal.inject.bean.DependencyNode;
 import packed.internal.inject.bean.DependencyProducer;
 import packed.internal.inject.bean.InternalDependency;
@@ -60,7 +59,7 @@ public final class ServiceManagerRequirementsSetup {
 
     final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
 
-    public void checkForMissingDependencies(ContainerSetup node) {
+    public void checkForMissingDependencies() {
         if (unresolvedRequirements != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (ServiceDependencyRequirement e : unresolvedRequirements) {

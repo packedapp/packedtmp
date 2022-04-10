@@ -77,7 +77,7 @@ import packed.internal.inject.service.ContainerInjectionManager;
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
     /** The service manager. */
-    private final ContainerInjectionManager services;
+    private final ContainerInjectionManager injectionManager;
 
     /**
      * Create a new service extension.
@@ -86,7 +86,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            an extension configuration object.
      */
     ServiceExtension(ExtensionConfiguration configuration) {
-        this.services = ((ExtensionSetup) configuration).container.beans.getServiceManager();
+        this.injectionManager = ((ExtensionSetup) configuration).container.beans.getServiceManager();
     }
 
     // Validates the outward facing contract
@@ -130,13 +130,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        services.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        injectionManager.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror mirror() {
-        return mirrorInitialize(new ServiceExtensionMirror(services));
+        return mirrorInitialize(new ServiceExtensionMirror(injectionManager));
     }
 
     // requires bliver automatisk anchoret...
@@ -167,7 +167,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            services.ios.requirementsOrCreate().require(key, false /* , cs */);
+            injectionManager.ios.requirementsOrCreate().require(key, false /* , cs */);
         }
     }
 
@@ -192,7 +192,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            services.ios.requirementsOrCreate().require(key, true /* , cs */);
+            injectionManager.ios.requirementsOrCreate().require(key, true /* , cs */);
         }
     }
 
@@ -212,7 +212,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
-        services.ios.exportsOrCreate().setExportTransformer(transformer);
+        injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
     }
 
     /**

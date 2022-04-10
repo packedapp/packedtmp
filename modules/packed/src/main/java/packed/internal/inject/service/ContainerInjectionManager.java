@@ -42,7 +42,6 @@ import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.lifetime.LifetimePool;
-import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.service.sandbox.Injector;
 import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
 
@@ -77,11 +76,14 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
 
     public final InputOutputServiceManager ios = new InputOutputServiceManager(this);
 
+    public final ContainerSetup container;
+
     /**
      * @param root
      *            the container this service manager is a part of
      */
-    public ContainerInjectionManager(@Nullable ContainerInjectionManager parent) {
+    public ContainerInjectionManager(ContainerSetup container, @Nullable ContainerInjectionManager parent) {
+        this.container = container;
         this.parent = parent;
         this.applicationInjectionManager = parent == null ? new ApplicationInjectionManager() : parent.applicationInjectionManager;
     }
@@ -96,9 +98,9 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
         // We should make sure some stuff is no longer configurable...
     }
 
-    public void close(ContainerSetup container, LifetimePoolSetup pool) {
+    public void close() {
         if (parent == null) {
-            applicationInjectionManager.finish(pool, container);
+            applicationInjectionManager.finish(container.lifetime.pool, container);
         }
     }
 
@@ -136,7 +138,7 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
         }
     }
 
-    public void prepareDependants(ContainerSetup container) {
+    public void prepareDependants() {
         // First we take all locally defined services
         for (ServiceSetup entry : localServices) {
             resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);

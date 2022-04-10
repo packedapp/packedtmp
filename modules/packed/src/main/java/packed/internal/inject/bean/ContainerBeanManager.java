@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceExtension;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
 
@@ -15,8 +14,6 @@ public final class ContainerBeanManager {
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
 
-    /** The container that beans are managed from. */
-    private final ContainerSetup container;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     public final ContainerInjectionManager sm;
@@ -25,9 +22,8 @@ public final class ContainerBeanManager {
     private final ContainerBeanManager parent;
 
     public ContainerBeanManager(ContainerSetup container, @Nullable ContainerBeanManager parent) {
-        this.container = requireNonNull(container);
         this.parent = parent;
-        this.sm = new ContainerInjectionManager(null);
+        this.sm = new ContainerInjectionManager(container, null);
     }
 
     /**
@@ -39,12 +35,6 @@ public final class ContainerBeanManager {
     public void addConsumer(DependencyNode dependant) {
         consumers.add(requireNonNull(dependant));
 
-        // Bliver noedt til at lave noget sidecar preresolve her.
-        // I virkeligheden vil vi bare gerne checke at om man
-        // har ting der ikke kan resolves via contexts
-        if (sm == null && !dependant.dependencies.isEmpty()) {
-            container.useExtension(ServiceExtension.class);
-        }
     }
 
     public ContainerInjectionManager getServiceManager() {
@@ -55,7 +45,7 @@ public final class ContainerBeanManager {
     public void resolve() {
         // Resolve local services
         if (sm != null) {
-            sm.prepareDependants(container);
+            sm.prepareDependants();
         }
 
         for (DependencyNode i : consumers) {
@@ -66,8 +56,8 @@ public final class ContainerBeanManager {
         // I think we must plug this in somewhere
 
         if (sm != null) {
-            sm.ios.requirementsOrCreate().checkForMissingDependencies(container);
-            sm.close(container, container.lifetime.pool);
+            sm.ios.requirementsOrCreate().checkForMissingDependencies();
+            sm.close();
         }
         // TODO Check any contracts we might as well catch it early
     }
