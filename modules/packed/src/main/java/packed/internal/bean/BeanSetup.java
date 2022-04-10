@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -50,11 +49,9 @@ public final class BeanSetup extends ComponentSetup {
 
         this.driver = driver;
         this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanType);
-
         
         this.bs = new BeanSetupTmp(this);
         
-
         // Can only register a single extension bean of a particular type
         if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
             driver.extension.injectionManager.addBean(driver, this);
@@ -67,11 +64,6 @@ public final class BeanSetup extends ComponentSetup {
             // Set the name of the component if it have not already been set using a wirelet
             initializeNameWithPrefix(hookModel.simpleName());
         }
-        // TODO naming
-    }
-
-    public Key<?> defaultKey() {
-        return hookModel.defaultKey();
     }
 
     public InjectionManager injectionManager() {
@@ -84,7 +76,6 @@ public final class BeanSetup extends ComponentSetup {
                 m = injectionManager = extension.injectionManager;
             }
         }
-
         return m;
     }
 
