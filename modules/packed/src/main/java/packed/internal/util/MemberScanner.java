@@ -1,4 +1,4 @@
-package packed.internal.inject.invoke;
+package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -15,7 +15,6 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 
 import app.packed.inject.Inject;
-import packed.internal.util.StringFormatter;
 
 /**
  * An class that helps with finding members (fields, constructors and methods) on a class.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
@@ -79,7 +79,7 @@ public abstract sealed class BeanModelManager {
      *            the lookup to use
      * @return the new accessor
      */
-    abstract BeanModelManager withLookup(Lookup lookup);
+    public abstract BeanModelManager withLookup(Lookup lookup);
 
     /**
      * Returns a container source model for the specified type
@@ -110,7 +110,7 @@ public abstract sealed class BeanModelManager {
         }
 
         @Override
-        BeanModelManager withLookup(Lookup lookup) {
+        public BeanModelManager withLookup(Lookup lookup) {
             return defaultAccessor.withLookup(lookup);
         }
     }
@@ -187,7 +187,7 @@ public abstract sealed class BeanModelManager {
          * @return the new realm
          */
         @Override
-        BeanModelManager withLookup(Lookup lookup) {
+        public BeanModelManager withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.

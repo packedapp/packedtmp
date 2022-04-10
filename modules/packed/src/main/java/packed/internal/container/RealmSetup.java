@@ -18,6 +18,7 @@ package packed.internal.container;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.component.Realm;
+import packed.internal.bean.BeanModelManager;
 import packed.internal.component.ComponentSetup;
 
 /**

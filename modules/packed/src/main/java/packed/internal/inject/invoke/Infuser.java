@@ -15,6 +15,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import packed.internal.util.MemberScanner;
 
 // MemberInjector
 public final class Infuser {

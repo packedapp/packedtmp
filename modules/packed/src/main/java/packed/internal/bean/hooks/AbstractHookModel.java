@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 
-import packed.internal.inject.invoke.MemberScanner;
 import packed.internal.inject.invoke.MethodHandleBuilder;
 import packed.internal.inject.invoke.OpenClass;
+import packed.internal.util.MemberScanner;
 import packed.internal.util.ThrowableUtil;
 
 /** An abstract base class for bootstrap hook classes. */
