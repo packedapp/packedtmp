@@ -29,7 +29,7 @@ import app.packed.container.Composer;
 /**
  *
  */
-public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAssemblyInstaller,ComposerAssemblyInstaller {
+public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAssemblyInstaller, ComposerAssemblyInstaller {
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -55,6 +55,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
         // We use .pollFirst because extensions might add new extensions while being closed
         // In which case an Iterator might throw ConcurrentModificationException
 
+        // Test and see if we are closing the root container
         if (container.parent == null) {
             // Root container
             // We must also close all extensions application-wide.
@@ -66,11 +67,8 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
                 e.onUserClose();
                 e = extensions.pollFirst();
             }
-            
-            
-            
-                container.application.injectionManager.finish(container.lifetime.pool, container);
-            
+
+            container.application.injectionManager.finish(container.lifetime.pool, container);
 
             // Close all extensions application wide
             for (ExtensionTreeSetup extension : list) {

@@ -44,7 +44,8 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     private final DependencyNode dependencyNode;
 
-    final InjectionManager parent;
+    /** The parent injector. */
+    final ContainerOrExtensionInjectionManager parent;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     // What if managed prototype bean????
@@ -67,10 +68,12 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             parent = container.injectionManager;
         }
 
-        if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {
+        if (driver.sourceType == SourceType.NONE) {
+            this.dependencyNode = null;
+        } else if (driver.sourceType == SourceType.INSTANCE) {
             // We either have no bean instances or an instance was explicitly provided.
             this.dependencyNode = null;
-
+            bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
             // Store the supplied bean instance in the lifetime (constant) pool.
             // Skal vel faktisk vaere i application poolen????
             // Ja der er helt sikker forskel paa noget der bliver initializeret naar containeren bliver initialiseret
@@ -78,9 +81,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             // Skal vi overhoved have en constant pool???
 
             // functional beans will have null in driver.source
-            if (driver.source != null) {
-                bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
-            }
+
             // Or maybe just bind the instance directly in the method handles.
         } else {
             InternalFactory<?> factory;

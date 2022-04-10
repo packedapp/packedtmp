@@ -20,6 +20,6 @@ import packed.internal.inject.service.ContainerInjectionManager;
 /**
  *
  */
-public abstract sealed class ParentableInjectionManager extends InjectionManager permits ContainerInjectionManager, ExtensionInjectionManager {
+public abstract sealed class ContainerOrExtensionInjectionManager extends InjectionManager permits ContainerInjectionManager, ExtensionInjectionManager {
 
 }

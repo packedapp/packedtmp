@@ -26,7 +26,7 @@ import packed.internal.lifetime.PoolEntryHandle;
  *
  */
 // Vi laver en hvis vi har bean instanser...
-public final class BeanInstanceDependencyNode extends DependencyNode {
+public final class BeanInstanceDependencyNode extends DependencyNode implements DependencyProducer {
 
     final BeanInjectionManager bim;
 
@@ -38,5 +38,17 @@ public final class BeanInstanceDependencyNode extends DependencyNode {
     @Nullable
     protected PoolEntryHandle poolAccessor() {
         return bim.singletonHandle;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        return bim.dependencyAccessor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable DependencyNode dependencyConsumer() {
+        return bim.dependencyConsumer();
     }
 }

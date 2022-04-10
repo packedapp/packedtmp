@@ -18,6 +18,6 @@ package packed.internal.inject;
 /**
  *
  */
-public abstract sealed class InjectionManager permits ParentableInjectionManager, BeanInjectionManager {
+public abstract sealed class InjectionManager permits ContainerOrExtensionInjectionManager, BeanInjectionManager {
 
 }

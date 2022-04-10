@@ -31,9 +31,8 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
-import packed.internal.inject.ApplicationInjectionManager;
+import packed.internal.inject.ContainerOrExtensionInjectionManager;
 import packed.internal.inject.DependencyNode;
-import packed.internal.inject.ParentableInjectionManager;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
@@ -48,12 +47,8 @@ import packed.internal.lifetime.LifetimePool;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
- * <p>
- * A {@link ApplicationInjectionManager} is responsible for managing 1 or more service manager tree that are directly
- * connected and part of the same build.
  */
-public final class ContainerInjectionManager extends ParentableInjectionManager {
-
+public final class ContainerInjectionManager extends ContainerOrExtensionInjectionManager {
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();

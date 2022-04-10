@@ -34,7 +34,7 @@ import packed.internal.lifetime.LifetimePoolSetup;
  * 
  * {@link ServiceSetup} a service of some kind
  */
-public sealed interface DependencyProducer permits HookedMethodProvide, ServiceSetup, BeanInjectionManager {
+public sealed interface DependencyProducer permits HookedMethodProvide, ServiceSetup, BeanInjectionManager, BeanInstanceDependencyNode {
 
     /**
      * Returns a method handle that can be used to access a dependency. This is typically done by either having previously
