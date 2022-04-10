@@ -58,11 +58,9 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
     @Nullable
     private ServiceManagerFailureSetup em;
 
-
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
 
-    
     /** All explicit added build entries. */
     private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
 
@@ -95,7 +93,6 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
 
     }
 
-    
     /**
      * @param root
      *            the container this service manager is a part of
@@ -264,5 +261,21 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
         ServiceSetup e = new BeanInstanceServiceSetup(component, key);
         localServices.add(e);
         return e;
+    }
+
+    public void resolve() {
+        // Resolve local services
+        prepareDependants();
+
+        for (DependencyNode i : consumers) {
+            i.resolve(this);
+        }
+
+        // Now we know every dependency that we are missing
+        // I think we must plug this in somewhere
+
+        ios.requirementsOrCreate().checkForMissingDependencies();
+        close();
+        // TODO Check any contracts we might as well catch it early
     }
 }

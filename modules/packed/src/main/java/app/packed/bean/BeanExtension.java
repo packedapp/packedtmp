@@ -105,7 +105,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
 
-        cs.beans.resolve();
+        cs.beans.sm.resolve();
     }
 
     /**

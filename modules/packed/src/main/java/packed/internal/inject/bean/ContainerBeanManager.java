@@ -25,24 +25,5 @@ public final class ContainerBeanManager {
     }
 
 
-    public void resolve() {
-        // Resolve local services
-        if (sm != null) {
-            sm.prepareDependants();
-        }
-
-        for (DependencyNode i : sm.consumers) {
-            i.resolve(sm);
-        }
-
-        // Now we know every dependency that we are missing
-        // I think we must plug this in somewhere
-
-        if (sm != null) {
-            sm.ios.requirementsOrCreate().checkForMissingDependencies();
-            sm.close();
-        }
-        // TODO Check any contracts we might as well catch it early
-    }
 
 }
