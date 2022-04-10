@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.hooks.operations.dependecy;
 
 /**
  *
  */
-// Naar man skal lave operation... Skal man have en Bean Tilknyttet
-// Hvad hvis man
-
-// Vi laver saadan en per Container Instance X Realm eller som Packed nu bestemmer
-
-//Was BeanOperationInvocationContext
-//May be ExtensionContainerContext... if users cannot create method handles
-// Vi checker per build tid at den har en extension ejer...
-// Man kan ikke injecte den i interceptors eller jo men saa er det jo interceptorens
-// ejer
-public /* sealed */ interface ContainerRealmContext {
-
+public enum DependencyContextKind {
+    NONE, CONTAINER, BEAN, OPERATION;
 }

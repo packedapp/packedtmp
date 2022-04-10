@@ -40,10 +40,19 @@ import packed.internal.invoke.MemberScanner;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>permits ExecutableFactory,FieldFactory {
 
+    /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
+    public static final ClassValue<ExecutableFactory<?>> DEFAULT_FACTORY = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
+        }
+    };
+
+    
     private ReflectiveFactory(TypeToken<T> typeLiteralOrKey) {
         super(typeLiteralOrKey);
     }
-
   
     /** A factory that wraps a method or constructor. */
     public static final class ExecutableFactory<T> extends ReflectiveFactory<T> {

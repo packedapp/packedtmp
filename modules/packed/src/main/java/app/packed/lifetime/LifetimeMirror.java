@@ -51,7 +51,7 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
     ComponentMirrorTree components();
 
     /** {@return the type of lifetime.} */
-    LifetimeType lifetimeType();
+    LifetimeKind lifetimeType();
 
     /** {@return any parent lifetime this lifetime might have.} */
     Optional<LifetimeMirror> parent(); //beanLifecycleSequence

@@ -10,13 +10,11 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanSupport;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.bean.inject.DependencyNode;
@@ -27,6 +25,7 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.InternalFactory;
+import packed.internal.inject.ReflectiveFactory;
 import packed.internal.inject.manager.InjectionManager;
 import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.LookupUtil;
@@ -40,8 +39,11 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             "onWired", void.class);
 
     /**
-     * Non-null if a bean instance needs to be created at runtime. This include beans that have an empty constructor (no
-     * actual dependencies). Null if a functional bean, or a bean instance was specified when configuring the bean.
+     * A dependency node for the bean instance.
+     * <p>
+     * The node is {@code null} for functional beans, or bean instance that was specified when configuring the bean. Or
+     * non-null if a bean instance needs to be created at runtime. This include beans that have an empty constructor (no
+     * actual dependencies).
      */
     @Nullable
     private final DependencyNode dependencyNode;
@@ -49,20 +51,12 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     /** The driver used to create a bean. */
     public final PackedBeanDriver<?> driver;
 
-    /**
-     * Factory that was specified if this bean was created from a Factory or Class, null if created from an instance, for
-     * example, installInstance.
-     * <p>
-     * We only keep this around to find the default key that the bean will be exposed as if registered as a service. We lazy
-     * calculate it from {@link #provideInstance(ComponentSetup)}
-     */
-    @Nullable
-    private final InternalFactory<?> factory;
-
     /** A model of the hooks on the bean. */
     @Nullable
     public final HookModel hookModel;
 
+    /** Manages injection for bean. */
+    @Nullable
     private InjectionManager injectionManager;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
@@ -70,27 +64,17 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
+    public final BeanSetupTmp bs;
+    
     public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
         super(container.application, realm, container);
 
         this.driver = driver;
         this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanType);
 
-        switch (driver.sourceType) {
-        case CLASS:
-            Factory<?> fac = BeanSupport.defaultFactoryFor((Class<?>) driver.source);
-            this.factory = InternalFactory.canonicalize(fac);
-            break;
-        case FACTORY:
-            this.factory = InternalFactory.canonicalize((Factory<?>) driver.source);
-            break;
-        case INSTANCE:
-            this.factory = null;
-            break;
-        default:
-            this.factory = null;
-        }
-
+        
+        this.bs = null;// new BeanSetupTmp(this);
+        
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? lifetime.pool.reserve(driver.beanType) : null;
 
         // Can only register a single extension bean of a particular type
@@ -99,7 +83,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         }
 
         if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {
-            // We already have a bean instance, no need to have an injection node for creating a new bean instance.
+            // We either have no bean instances or an instance was explicitly provided.
             this.dependencyNode = null;
 
             // Store the supplied bean instance in the lifetime (constant) pool.
@@ -107,9 +91,19 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             // Ja der er helt sikker forskel paa noget der bliver initializeret naar containeren bliver initialiseret
             // og saa constant over hele applikation.
             // Skal vi overhoved have en constant pool???
-            lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
+
+            // functional beans will have null in driver.source
+            if (driver.source != null) {
+                lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
+            }
             // Or maybe just bind the instance directly in the method handles.
         } else {
+            InternalFactory<?> factory;
+            if (driver.sourceType == SourceType.CLASS) {
+                factory = ReflectiveFactory.DEFAULT_FACTORY.get((Class<?>) driver.source);
+            } else {
+                factory = (InternalFactory<?>) driver.source;
+            }
             List<InternalDependency> dependencies = factory.dependencies();
 
             // Extract a MethodHandlefrom the factory
@@ -131,11 +125,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     }
 
     public Key<?> defaultKey() {
-        if (factory != null) {
-            return Key.convertTypeLiteral(factory.typeLiteral());
-        } else {
-            return hookModel.defaultKey();
-        }
+        return hookModel.defaultKey();
     }
 
     /** {@inheritDoc} */

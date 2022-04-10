@@ -82,8 +82,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
      *            the application the component is a part of
      * @param realm
      *            the realm this component is part of
-     * @param lifetime
-     *            the lifetime this component is part of
      * @param parent
      *            any parent component this component might have
      */

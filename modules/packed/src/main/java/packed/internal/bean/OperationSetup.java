@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 
 import app.packed.bean.operation.OperationMirror;
 import app.packed.extension.Extension;
-import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -33,12 +32,14 @@ import packed.internal.util.ThrowableUtil;
 // Skal vi have flere forskellige????
 public final class OperationSetup {
 
-    /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_INITIALIZE_OPERATIONS_SETUP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
             "initialize", void.class, OperationSetup.class);
 
+    /** The bean the operation belongs to. */
     public final BeanSetup bean;
 
+    /** The operation's operator. */
     public final Class<? extends Extension<?>> operator;
 
     public DependencyNode depNode;

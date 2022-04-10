@@ -29,15 +29,6 @@ import packed.internal.util.BasePackageAccess;
 // Maybe just BeanSupport, EntryPointSupport, WebSupport
 public final class BeanSupport extends ExtensionSupport {
 
-    /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
-    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
-        }
-    };
-
     /**
      * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
      * literals that are manually constructed.
@@ -156,7 +147,7 @@ public final class BeanSupport extends ExtensionSupport {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> defaultFactoryFor(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return (Factory<T>) CLASS_CACHE.get(implementation);
+        return (Factory<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
     }
 
     /**
@@ -181,7 +172,7 @@ public final class BeanSupport extends ExtensionSupport {
         if (t instanceof Class<?> cl) {
             return (Factory<T>) BeanSupport.defaultFactoryFor(cl);
         } else {
-            ExecutableFactory<?> f = CLASS_CACHE.get(implementation.rawType());
+            ExecutableFactory<?> f = ExecutableFactory.DEFAULT_FACTORY.get(implementation.rawType());
             return new ExecutableFactory<>(f, implementation);
         }
     }

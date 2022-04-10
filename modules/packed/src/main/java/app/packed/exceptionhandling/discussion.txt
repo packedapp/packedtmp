@@ -26,7 +26,7 @@ package name
   .errorhandling
   .resilience
    https://en.wikipedia.org/wiki/Exception_handling
-   (smid den i .component)
+   (smid den i .bean)
 Vi er java.. saa  
   
   

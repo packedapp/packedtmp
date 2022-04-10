@@ -20,7 +20,7 @@ package app.packed.lifetime;
  */
 // Er closely related to bean lifecycle
 //
-public enum LifetimeType {
+public enum LifetimeKind {
 
     /** Created and destroyed together with the application. */
     APPLICATION,
@@ -30,6 +30,14 @@ public enum LifetimeType {
     
     /** Created and destroyed independently of other components */
     BEAN,
+    
+    
+    
+    /// Hmm maaske har vi flere LifetimeKind???
+    // BeanLifetimeKind [Container, OPERATION
+    // OPERATION, DEPENDANT, ...
+    
+    // Omvendt saa kan vi vel godt lave en container pga en operation????
 }
 
 

@@ -18,6 +18,7 @@ package app.packed.extension.sandbox;
 import app.packed.application.ApplicationDriver;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.extension.ExtensionContext;
 
 /**
  *

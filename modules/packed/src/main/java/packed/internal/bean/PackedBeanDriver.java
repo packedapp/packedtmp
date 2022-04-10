@@ -27,6 +27,7 @@ import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.inject.InternalFactory;
 
 /** The implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<T> implements BeanDriver<T> {
@@ -127,7 +128,8 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, Realm owner, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         requireNonNull(factory, "factory is null");
-        return new PackedBeanDriver<>(kind, container, owner, factory.rawReturnType(), SourceType.FACTORY, factory);
+        InternalFactory<T> fac = InternalFactory.canonicalize(factory);
+        return new PackedBeanDriver<>(kind, container, owner, factory.rawReturnType(), SourceType.FACTORY, fac);
     }
 
     public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, Realm owner, T instance) {

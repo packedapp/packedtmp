@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.function.Consumer;
 
+import app.packed.extension.ExtensionContext;
 import app.packed.inject.FactoryType;
 
 /**
@@ -46,7 +47,7 @@ public abstract class BeanOperation {
     public final MethodType invocationType() {
         // For entity beans... Vi returnere vi
         // MethodType.methodType(void.class, BeanOperationInvocationContext.class, FooEntityBean.class);
-        return MethodType.methodType(void.class, ContainerRealmContext.class);
+        return MethodType.methodType(void.class, ExtensionContext.class);
     }
 
     FactoryType type() {

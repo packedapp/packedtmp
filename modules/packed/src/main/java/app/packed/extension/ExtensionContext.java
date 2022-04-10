@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.extension;
 
 /**
  *
@@ -25,5 +25,23 @@ package app.packed.extension.sandbox;
 // RuntimeExtensionContext? Just to make it clear
 // Maybe even ContainerContext or BeanContext
 public interface ExtensionContext {
+
+}
+
+
+//Naar man skal lave operation... Skal man have en Bean Tilknyttet
+//Hvad hvis man
+
+//Vi laver saadan en per Container Instance X Realm eller som Packed nu bestemmer
+
+//Was BeanOperationInvocationContext
+//May be ExtensionContainerContext... if users cannot create method handles
+//Vi checker per build tid at den har en extension ejer...
+//Man kan ikke injecte den i interceptors eller jo men saa er det jo interceptorens
+//ejer
+
+//Se ogsaa ExtensionContext. Som det bliver hvis brugere ikke skal kunne invokere disse ting
+
+/* sealed */ interface ContainerRealmContext {
 
 }

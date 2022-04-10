@@ -253,6 +253,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             if (isExecutable) { // Conditional add ApplicationRuntime
                 builder.provide(LifecycleApplicationController.class).invokeExact(MH_RUNTIME, 0);
             }
+            
+            // builder(caller).addParameter(implementation).addParameter(AIC);
+            // builder.provideService(ServiceLocator.class, builder.addComputed(MH_SERVICES, 0));
+            
+            
+            
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
 
             return new PackedApplicationDriver<>(this);

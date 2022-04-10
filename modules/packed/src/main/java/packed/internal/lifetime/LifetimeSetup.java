@@ -14,7 +14,7 @@ import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimePhase;
-import app.packed.lifetime.LifetimeType;
+import app.packed.lifetime.LifetimeKind;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 
@@ -36,7 +36,7 @@ public final class LifetimeSetup {
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /** The type of lifetime. */
-    final LifetimeType lifetimeType;
+    final LifetimeKind lifetimeType;
 
     // Der er jo som saadan ikke noget vi vejen for at vi har en DAG istedet for et trae...
     @Nullable
@@ -52,17 +52,17 @@ public final class LifetimeSetup {
      *            the application's root container
      */
     public LifetimeSetup(ContainerSetup rootContainer) {
-        this(LifetimeType.APPLICATION, rootContainer, null);
+        this(LifetimeKind.APPLICATION, rootContainer, null);
     }
 
-    private LifetimeSetup(LifetimeType lifetimeType, ComponentSetup component, @Nullable LifetimeSetup parent) {
+    private LifetimeSetup(LifetimeKind lifetimeType, ComponentSetup component, @Nullable LifetimeSetup parent) {
         this.component = requireNonNull(component);
         this.lifetimeType = lifetimeType;
         this.parent = parent;
     }
 
     public LifetimeSetup addChild(ComponentSetup component) {
-        LifetimeSetup l = new LifetimeSetup(component instanceof ContainerSetup ? LifetimeType.CONTAINER : LifetimeType.BEAN, component, this);
+        LifetimeSetup l = new LifetimeSetup(component instanceof ContainerSetup ? LifetimeKind.CONTAINER : LifetimeKind.BEAN, component, this);
         if (children == null) {
             children = new ArrayList<>(1);
         }
@@ -97,7 +97,7 @@ public final class LifetimeSetup {
 
         /** {@inheritDoc} */
         @Override
-        public LifetimeType lifetimeType() {
+        public LifetimeKind lifetimeType() {
             return l.lifetimeType;
         }
 
