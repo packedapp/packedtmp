@@ -33,7 +33,7 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
-import packed.internal.inject.bean.InternalDependency;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.ReflectiveFactory;
 import packed.internal.inject.factory.InternalFactory.BoundFactory;

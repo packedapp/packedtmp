@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.manager;
+package packed.internal.inject;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -24,9 +24,6 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.container.ExtensionTreeSetup;
-import packed.internal.inject.bean.DependencyNode;
-import packed.internal.inject.bean.DependencyProducer;
-import packed.internal.inject.bean.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.ReflectiveFactory;
 import packed.internal.lifetime.PoolEntryHandle;

@@ -31,9 +31,9 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
-import packed.internal.inject.bean.DependencyNode;
-import packed.internal.inject.manager.ApplicationInjectionManager;
-import packed.internal.inject.manager.ParentableInjectionManager;
+import packed.internal.inject.ApplicationInjectionManager;
+import packed.internal.inject.DependencyNode;
+import packed.internal.inject.ParentableInjectionManager;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
@@ -42,9 +42,9 @@ import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
+import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 import packed.internal.lifetime.LifetimePool;
-import packed.internal.service.sandbox.Injector;
-import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
@@ -97,9 +97,11 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
      * @param root
      *            the container this service manager is a part of
      */
-    public ContainerInjectionManager(ContainerSetup container, @Nullable ContainerInjectionManager parent) {
+    public ContainerInjectionManager(ContainerSetup container) {
         this.container = container;
-        this.parent = parent;
+        // TODO Husk at checke om man har en extension realm inde
+        this.parent = container.parent == null ? null : container.parent.injectionManager;
+
         this.applicationInjectionManager = parent == null ? new ApplicationInjectionManager() : parent.applicationInjectionManager;
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.bean;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,6 @@ import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.ExtensionTreeSetup;
-import packed.internal.inject.manager.BeanInstanceDependencyNode;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.lifetime.LifetimePool;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.manager;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,6 @@ import java.util.ArrayDeque;
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.bean.DependencyNode;
-import packed.internal.inject.bean.DependencyProducer;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.lifetime.LifetimePoolSetup;
 

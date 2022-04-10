@@ -26,7 +26,7 @@ import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeToken;
-import packed.internal.inject.bean.InternalDependency;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.inject.factory.ReflectiveFactory.FieldFactory;
 import packed.internal.invoke.MemberScanner;

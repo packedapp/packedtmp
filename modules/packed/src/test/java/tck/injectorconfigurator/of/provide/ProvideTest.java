@@ -27,7 +27,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanSupport;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.ProvidableBeanConfiguration;
-import packed.internal.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;

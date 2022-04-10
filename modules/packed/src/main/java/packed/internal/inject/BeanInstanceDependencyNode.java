@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.manager;
+package packed.internal.inject;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
-import packed.internal.inject.bean.DependencyNode;
-import packed.internal.inject.bean.DependencyProducer;
-import packed.internal.inject.bean.InternalDependency;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /**

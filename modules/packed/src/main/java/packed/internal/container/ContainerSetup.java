@@ -107,12 +107,13 @@ public final class ContainerSetup extends ComponentSetup {
      */
     public ContainerSetup(ApplicationSetup application, RealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(application, realm, parent);
+        requireNonNull(wirelets, "wirelets is null");
 
-        injectionManager = new ContainerInjectionManager(this, parent == null ? null : parent.injectionManager);
+        this.injectionManager = new ContainerInjectionManager(this);
+
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
         // and may contained any number of CombinedWirelet instances.
-        requireNonNull(wirelets, "wirelets is null");
         Wirelet prefix = null;
         if (application.container == null) {
             prefix = application.driver.wirelet;

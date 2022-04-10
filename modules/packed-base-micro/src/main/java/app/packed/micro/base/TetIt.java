@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
-import packed.internal.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.Injector;
 
 /**
  *

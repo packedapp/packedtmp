@@ -28,7 +28,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.inject.manager.BeanInjectionManager;
+import packed.internal.inject.BeanInjectionManager;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

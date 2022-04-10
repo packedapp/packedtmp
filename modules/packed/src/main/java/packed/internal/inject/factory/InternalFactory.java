@@ -29,7 +29,7 @@ import java.util.function.Function;
 import app.packed.base.TypeToken;
 import app.packed.inject.CapturingFactory;
 import app.packed.inject.Factory;
-import packed.internal.inject.bean.InternalDependency;
+import packed.internal.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 

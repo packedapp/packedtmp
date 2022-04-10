@@ -18,7 +18,7 @@ package app.packed.inject.sandbox;
 import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.service.sandbox.InjectorComposer;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
  * A configuration object for an exported service.

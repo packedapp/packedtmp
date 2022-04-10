@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.bean;
+package packed.internal.inject;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -22,7 +22,6 @@ import app.packed.base.Nullable;
 import app.packed.inject.service.Provide;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.HookedMethodProvide;
-import packed.internal.inject.manager.BeanInjectionManager;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
 

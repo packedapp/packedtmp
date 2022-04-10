@@ -35,9 +35,9 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.AbstractHookModel;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.component.ComponentSetup;
-import packed.internal.inject.bean.DependencyNode;
-import packed.internal.inject.bean.DependencyProducer;
-import packed.internal.inject.bean.InternalDependency;
+import packed.internal.inject.DependencyNode;
+import packed.internal.inject.DependencyProducer;
+import packed.internal.inject.InternalDependency;
 
 /**
  *
