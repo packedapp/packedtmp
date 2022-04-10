@@ -26,9 +26,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import packed.internal.inject.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.BasePackageAccess.AppPackedBaseAccess;
+import packed.internal.util.typevariable.TypeVariableExtractor;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.TypeUtil;
 

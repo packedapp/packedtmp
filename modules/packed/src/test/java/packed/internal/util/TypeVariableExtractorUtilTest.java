@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.inject.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.util.typevariable.TypeVariableExtractor;
 import testutil.stubs.TypeStubs;
 
 /**

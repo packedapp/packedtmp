@@ -16,8 +16,8 @@ import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
-import packed.internal.inject.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
+import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /**
  * A bean extension support class.

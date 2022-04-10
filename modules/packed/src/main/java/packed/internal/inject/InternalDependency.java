@@ -36,11 +36,11 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.inject.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.QualifierUtil;
 import packed.internal.util.ReflectionUtil;
+import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.invoke.typevariable;
+package packed.internal.util.typevariable;
 
 import java.lang.reflect.Type;
 
