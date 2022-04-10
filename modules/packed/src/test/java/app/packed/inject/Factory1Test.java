@@ -23,8 +23,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
+import packed.internal.inject.bean.InternalDependency;
 import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.bean.InternalDependency;
 
 /** Tests {@link Factory1}. */
 public class Factory1Test {

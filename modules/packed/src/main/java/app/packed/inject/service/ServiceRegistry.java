@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.inject.variable.BeanDependencyHook;
-import packed.internal.inject.factory.service.AbstractServiceRegistry;
+import packed.internal.inject.service.AbstractServiceRegistry;
 
 /**
  * A collection of {@link Service services}, with each service having a unique {@link Service#key() key}.

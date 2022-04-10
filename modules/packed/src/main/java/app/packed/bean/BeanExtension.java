@@ -11,7 +11,7 @@ import app.packed.inject.service.ServiceLocator;
 import packed.internal.bean.PackedBeanDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.factory.service.runtime.AbstractServiceLocator;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension for creating new beans.

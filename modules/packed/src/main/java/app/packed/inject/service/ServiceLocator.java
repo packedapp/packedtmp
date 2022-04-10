@@ -33,8 +33,8 @@ import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.inject.variable.BeanDependencyHook;
-import packed.internal.inject.factory.service.build.PackedServiceComposer;
-import packed.internal.inject.factory.service.runtime.PackedInjector;
+import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.

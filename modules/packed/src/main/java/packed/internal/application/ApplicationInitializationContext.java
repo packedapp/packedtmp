@@ -26,7 +26,7 @@ import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.InternalWirelet;
 import packed.internal.container.WireletWrapper;
-import packed.internal.inject.factory.service.ContainerInjectionManager;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.util.ThrowableUtil;
