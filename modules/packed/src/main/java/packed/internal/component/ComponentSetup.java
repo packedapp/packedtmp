@@ -17,32 +17,22 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
-import app.packed.component.Realm;
-import app.packed.container.AssemblyMirror;
-import app.packed.container.ContainerMirror;
-import app.packed.lifetime.LifetimeMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.AssemblySetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
-public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
+public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -233,101 +223,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 //        throw new UnsupportedOperationException();
 //    }
 
-    /** An mirror adaptor for {@link ComponentSetup}. */
-    public abstract class AbstractBuildTimeComponentMirror {
-
-        /** {@inheritDoc} */
-        public final ApplicationMirror application() {
-            return application.mirror();
-        }
-
-        public final AssemblyMirror assembly() {
-            throw new UnsupportedOperationException();
-        }
-
-        public abstract Collection<ComponentMirror> children();
-
-        /** {@inheritDoc} */
-        public final int depth() {
-            return depth;
-        }
-
-        /** {@inheritDoc} */
-        public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
-            requireNonNull(other, "other is null");
-            return ComponentSetup.this.isInSame(scope, ((AbstractBuildTimeComponentMirror) other).outer());
-        }
-
-        /** {@inheritDoc} */
-        public final String name() {
-            return name;
-        }
-
-        public final LifetimeMirror lifetime() {
-            return lifetime.mirror();
-        }
-
-        private ComponentSetup outer() {
-            return ComponentSetup.this;
-        }
-
-        /** {@inheritDoc} */
-        public final Optional<ContainerMirror> parent() {
-            ContainerSetup parent = outer().parent;
-            return parent == null ? Optional.empty() : Optional.of(parent.mirror());
-        }
-
-        /** {@inheritDoc} */
-        public final NamespacePath path() {
-            return outer().path();
-        }
-
-        /** {@inheritDoc} */
-        public final Realm owner() {
-            if (realm instanceof ExtensionTreeSetup s) {
-                return Realm.extension(s.extensionModel.type());
-            }
-            return Realm.application();
-        }
-
-        /** {@inheritDoc} */
-        public final Relation relationTo(ComponentMirror other) {
-            requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(ComponentSetup.this, ((AbstractBuildTimeComponentMirror) other).outer());
-        }
-
-        /** {@inheritDoc} */
-        public final ComponentMirror resolve(CharSequence path) {
-            LinkedHashMap<String, ComponentSetup> map = ((ContainerSetup) outer()).children;
-            if (map != null) {
-                ComponentSetup cs = map.get(path.toString());
-                if (cs != null) {
-                    return cs.mirror();
-                }
-            }
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        public final Stream<ComponentMirror> componentStream() {
-            return stream0(ComponentSetup.this, true);
-        }
-
-        private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot) {
-            // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            Collection<AbstractBuildTimeComponentMirror> c = (Collection) children();
-            if (c != null && !c.isEmpty()) {
-                Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false));
-                return /* isRoot && option.excludeOrigin() ? s : */ Stream.concat(Stream.of(thisMirror()), s);
-                // return Stream.empty();
-            } else {
-                return /* isRoot && option.excludeOrigin() ? Stream.empty() : */ Stream.of(thisMirror());
-            }
-        }
-
-        private ComponentMirror thisMirror() {
-            return (ComponentMirror) this;
+    public static ComponentSetup crack(ComponentMirror mirror) {
+        if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
+            return m.bean();
+        } else {
+            return ((ContainerSetup.BuildTimeContainerMirror) mirror).container();
         }
     }
 }

@@ -1,5 +1,7 @@
 package packed.internal.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
@@ -185,7 +187,8 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Relation relationTo(ComponentMirror other) {
-            return ComponentSetupRelation.of(bean, other);
+            requireNonNull(other, "other is null");
+            return ComponentSetupRelation.of(bean, ComponentSetup.crack(other));
         }
 
         /** {@inheritDoc} */

@@ -25,12 +25,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import app.packed.application.ApplicationMirror;
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.component.Realm;
 import app.packed.container.Assembly;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -40,10 +45,12 @@ import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
+import app.packed.lifetime.LifetimeMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.inject.ContainerBeanManager;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.ComponentSetupRelation;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 
@@ -206,7 +213,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** {@return a container mirror.} */
     @Override
     public ContainerMirror mirror() {
-        return new BuildTimeContainerMirror();
+        return new BuildTimeContainerMirror(this);
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
@@ -270,8 +277,14 @@ public final class ContainerSetup extends ComponentSetup {
         return extension;
     }
 
-    /** A build-time container mirror. */
-    public final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
+    /**
+     * A build-time container mirror.
+     * 
+     * @apiNote previous versions had a common super class shared between BeanSetup and ContainerSetup. However, code is
+     *          much cleaner without it. So please don't reintroduce it.
+     * 
+     */
+    public record BuildTimeContainerMirror(ContainerSetup container) implements ContainerMirror {
 
         /** Extracts the extension that a given {@link ExtensionMirror} belongs to. */
         private static final ClassValue<Class<? extends Extension<?>>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
@@ -302,14 +315,14 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         public final Collection<ComponentMirror> children() {
-            return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
+            return CollectionUtil.unmodifiableView(container.children.values(), c -> c.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
         public Set<ExtensionMirror> extensions() {
             HashSet<ExtensionMirror> result = new HashSet<>();
-            for (ExtensionSetup extension : extensions.values()) {
+            for (ExtensionSetup extension : container.extensions.values()) {
                 result.add(extension.mirror());
             }
             return Set.copyOf(result);
@@ -318,7 +331,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension<?>>> extensionTypes() {
-            return ContainerSetup.this.extensionTypes();
+            return container.extensionTypes();
         }
 
         /** {@inheritDoc} */
@@ -331,7 +344,7 @@ public final class ContainerSetup extends ComponentSetup {
             Class<? extends Extension<?>> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(mirrorType);
 
             // See if the container uses the extension.
-            ExtensionSetup extension = extensions.get(cl);
+            ExtensionSetup extension = container.extensions.get(cl);
             if (extension == null) {
                 return Optional.empty();
             } else {
@@ -352,7 +365,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-            return ContainerSetup.this.isExtensionUsed(extensionType);
+            return container.isExtensionUsed(extensionType);
         }
 
         /** {@inheritDoc} */
@@ -380,12 +393,87 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public Collection<OperationMirror> operations() {
             ArrayList<OperationMirror> mirrors = new ArrayList<>();
-            for (ComponentSetup cs : children.values()) {
+            for (ComponentSetup cs : container.children.values()) {
                 if (cs instanceof BeanSetup bs) {
                     mirrors.addAll(bs.mirror().operations());
                 }
             }
             return List.copyOf(mirrors);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror application() {
+            return container.application.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public AssemblyMirror assembly() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        public final Stream<ComponentMirror> componentStream() {
+            return stream0(container, true);
+        }
+
+        private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot) {
+            // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            Collection<ContainerMirror> c = (Collection) children();
+            if (c != null && !c.isEmpty()) {
+                Stream<ComponentMirror> s = c.stream().flatMap(co -> ((BuildTimeContainerMirror) co).stream0(origin, false));
+                return /* isRoot && option.excludeOrigin() ? s : */ Stream.concat(Stream.of(this), s);
+                // return Stream.empty();
+            } else {
+                return Stream.of(this);
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int depth() {
+            return container.depth;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeMirror lifetime() {
+            return container.lifetime.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return container.name;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Realm owner() {
+            return container.realm.owner();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<ContainerMirror> parent() {
+            ContainerSetup p = container.parent;
+            return p == null ? Optional.empty() : Optional.of(p.mirror());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public NamespacePath path() {
+            return container.path();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Relation relationTo(ComponentMirror other) {
+            requireNonNull(other, "other is null");
+            return ComponentSetupRelation.of(container, ComponentSetup.crack(other));
+
         }
     }
 }
