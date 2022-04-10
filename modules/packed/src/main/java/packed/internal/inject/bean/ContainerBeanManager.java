@@ -19,8 +19,7 @@ public final class ContainerBeanManager {
     private final ContainerSetup container;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
-    @Nullable
-    private ContainerInjectionManager sm;
+    public final ContainerInjectionManager sm;
 
     @Nullable
     private final ContainerBeanManager parent;
@@ -28,6 +27,7 @@ public final class ContainerBeanManager {
     public ContainerBeanManager(ContainerSetup container, @Nullable ContainerBeanManager parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
+        this.sm = new ContainerInjectionManager(null);
     }
 
     /**
@@ -47,20 +47,10 @@ public final class ContainerBeanManager {
         }
     }
 
-    @Nullable
     public ContainerInjectionManager getServiceManager() {
         return sm;
     }
 
-    /**
-     * This method is invoked from the constructor of a {@link ServiceExtension} to create a new
-     * {@link ContainerInjectionManager}.
-     * 
-     * @return the new service manager
-     */
-    public ContainerInjectionManager newServiceManagerFromServiceExtension() {
-        return sm = new ContainerInjectionManager(null);
-    }
 
     public void resolve() {
         // Resolve local services
