@@ -31,6 +31,7 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
+import packed.internal.inject.bean.DependencyNode;
 import packed.internal.inject.manager.ApplicationInjectionManager;
 import packed.internal.inject.manager.ParentableInjectionManager;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
@@ -57,6 +58,11 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
     @Nullable
     private ServiceManagerFailureSetup em;
 
+
+    /** All dependants that needs to be resolved. */
+    public final ArrayList<DependencyNode> consumers = new ArrayList<>();
+
+    
     /** All explicit added build entries. */
     private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
 
@@ -78,6 +84,18 @@ public final class ContainerInjectionManager extends ParentableInjectionManager 
 
     public final ContainerSetup container;
 
+    /**
+     * Adds the specified injectable to list of injectables that needs to be resolved.
+     * 
+     * @param dependant
+     *            the injectable to add
+     */
+    public void addConsumer(DependencyNode dependant) {
+        consumers.add(requireNonNull(dependant));
+
+    }
+
+    
     /**
      * @param root
      *            the container this service manager is a part of

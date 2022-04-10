@@ -1,18 +1,11 @@
 package packed.internal.inject.bean;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-
 import app.packed.base.Nullable;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
 
 /** This class is responsible for managing all beans in a container. */
 public final class ContainerBeanManager {
-
-    /** All dependants that needs to be resolved. */
-    public final ArrayList<DependencyNode> consumers = new ArrayList<>();
 
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
@@ -26,16 +19,6 @@ public final class ContainerBeanManager {
         this.sm = new ContainerInjectionManager(container, null);
     }
 
-    /**
-     * Adds the specified injectable to list of injectables that needs to be resolved.
-     * 
-     * @param dependant
-     *            the injectable to add
-     */
-    public void addConsumer(DependencyNode dependant) {
-        consumers.add(requireNonNull(dependant));
-
-    }
 
     public ContainerInjectionManager getServiceManager() {
         return sm;
@@ -48,7 +31,7 @@ public final class ContainerBeanManager {
             sm.prepareDependants();
         }
 
-        for (DependencyNode i : consumers) {
+        for (DependencyNode i : sm.consumers) {
             i.resolve(sm);
         }
 

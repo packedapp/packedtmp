@@ -30,8 +30,8 @@ import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanOperationManager;
-import packed.internal.bean.BeanSetup;
 import packed.internal.bean.BeanOperationSetup;
+import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.AbstractHookModel;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.component.ComponentSetup;
@@ -82,7 +82,7 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
         bom.addOperation(os);
         os.mirrorSupplier = supplier;
 
-        bean.parent.beans.addConsumer(node);
+        bean.parent.beans.sm.addConsumer(node);
         if (processor != null) {
             processor.accept(bean);
         }
