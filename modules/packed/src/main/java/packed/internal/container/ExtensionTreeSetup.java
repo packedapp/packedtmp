@@ -27,7 +27,6 @@ import packed.internal.inject.ExtensionInjectionManager;
  * Since all extensions that are used throughout an application is always installed in the root container.
  * <p>
  * The actual tree is maintained in {@link ExtensionSetup}. This class just holds the root
- * 
  */
 public final class ExtensionTreeSetup extends RealmSetup {
 
@@ -36,14 +35,14 @@ public final class ExtensionTreeSetup extends RealmSetup {
 
     /** The extension in the root container. */
     public final ExtensionSetup root;
-
+    
     ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }
     
     public ExtensionInjectionManager injectionManagerOf(ContainerSetup container) {
-        return container.extensions.get(extensionType()).injectionManager;
+        return container.extensions.get(realmType()).injectionManager;
     }
 
     void close() {
@@ -51,14 +50,10 @@ public final class ExtensionTreeSetup extends RealmSetup {
         isClosed = true;
     }
 
-    public Class<? extends Extension<?>> extensionType() {
-        return extensionModel.type();
-    }
-
     /** {@inheritDoc} */
     @Override
-    public Realm owner() {
-        return Realm.extension(extensionType());
+    public Realm realm() {
+        return Realm.extension(realmType());
     }
 
     /** {@inheritDoc} */

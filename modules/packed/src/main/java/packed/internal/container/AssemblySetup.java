@@ -24,12 +24,16 @@ import java.util.TreeSet;
 import app.packed.base.Nullable;
 import app.packed.component.Realm;
 import app.packed.container.Assembly;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.Composer;
 
 /**
  *
  */
-public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAssemblyInstaller, ComposerAssemblyInstaller {
+public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySetupOfAssembly, AssemblySetupOfComposer {
+
+    @Nullable
+    final ExtensionTreeSetup extension = null;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -37,9 +41,11 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
-    @Nullable
-    final ExtensionModel model = null;
 
+    public AssemblyMirror mirror() {
+        throw new UnsupportedOperationException();
+    }
+    
     final void closeRealm() {
         ContainerSetup container = container();
         if (currentComponent != null) {
@@ -94,17 +100,13 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblyAs
      * @see Assembly#lookup(Lookup)
      * @see Composer#lookup(Lookup)
      */
-    public void lookup(@Nullable Lookup lookup) {
+    public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         this.accessor = accessor().withLookup(lookup);
     }
 
     @Override
-    public final Realm owner() {
-        if (model == null) {
-            return Realm.application();
-        } else {
-            return Realm.extension(model.type());
-        }
+    public final Realm realm() {
+        return extension == null ? Realm.application() : extension.realm();
     }
 }

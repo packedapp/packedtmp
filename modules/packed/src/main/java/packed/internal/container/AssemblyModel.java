@@ -9,15 +9,15 @@ import java.util.ArrayList;
 
 import app.packed.base.Key;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerHook;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerHook;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.inject.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an {@link Assembly}. */
 public final /* primitive */ class AssemblyModel {
-    
+
     private final ContainerHook.Processor[] hooks;
 
     private AssemblyModel(ContainerHook.Processor[] hooks) {
@@ -35,7 +35,7 @@ public final /* primitive */ class AssemblyModel {
                     for (Class<? extends ContainerHook.Processor> b : h.value()) {
                         if (ContainerHook.Processor.class.isAssignableFrom(b)) {
                             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), b, Class.class);
-                            builder.provide(new Key<Class<? extends Assembly >>() {}).adaptArgument(0);
+                            builder.provide(new Key<Class<? extends Assembly>>() {}).adaptArgument(0);
                             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
                             // builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
                             // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv

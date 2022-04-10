@@ -9,11 +9,14 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory1;
+import packed.internal.devtools.spi.PackedDevTools;
 
 public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
+        PackedDevTools.INSTANCE.goo();
+        
         new Exception().printStackTrace();
 
         // Det kan man ikke pga af lifecycle annotations

@@ -26,6 +26,9 @@ module app.packed {
     exports app.packed.state.sandbox;
     exports app.packed.validate;
     exports app.packed.request;
+    
+    uses packed.internal.devtools.spi.PackedDevTools;
+    exports packed.internal.devtools.spi to app.packed.devtools;
 }
 
 // requires static org.graalvm.sdk;

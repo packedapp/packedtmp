@@ -75,7 +75,7 @@ public final class ContainerSetup extends ComponentSetup {
      */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
-    /** All the beans in the container. */
+    /** The container's injection manager. */
     public final ContainerInjectionManager injectionManager;
 
     /**
@@ -412,7 +412,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public AssemblyMirror assembly() {
-            return null;
+            return container.assembly.mirror();
         }
 
         /** {@inheritDoc} */
@@ -454,7 +454,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Realm owner() {
-            return container.realm.owner();
+            return container.realm.realm();
         }
 
         /** {@inheritDoc} */

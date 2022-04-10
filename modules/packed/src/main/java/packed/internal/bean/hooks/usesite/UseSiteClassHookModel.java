@@ -24,13 +24,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.hooks.BeanConstructor;
+import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.hooks.OldBeanField;
 import app.packed.bean.hooks.OldBeanMethod;
 import packed.internal.bean.hooks.ClassHookModel;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
+import packed.internal.devtools.spi.PackedDevTools;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -42,8 +43,8 @@ public final class UseSiteClassHookModel {
             "bootstrap", void.class);
 
     /** A handle for accessing {@link OldBeanMethod#processor}. */
-    private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanClass.class,
-            "builder", UseSiteClassHookModel.Builder.class);
+    private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanClass.class, "builder",
+            UseSiteClassHookModel.Builder.class);
 
     /** A builder object for a class hook */
     public static final class Builder extends AbstractBootstrapBuilder {
@@ -64,14 +65,14 @@ public final class UseSiteClassHookModel {
 
         public void complete() {
             VH_CLASS_HOOK_BOOTSTRAP_BUILDER.set(instance, this);
-            
+
             // Invoke ClassHook.Bootstrap#bootstrap()
             try {
                 MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP.invokeExact(instance);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
-            
+
             for (UseSiteMemberHookModel.Builder b : managedMembers) {
                 b.complete();
             }
@@ -84,7 +85,12 @@ public final class UseSiteClassHookModel {
 
         public List<OldBeanField> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
             ArrayList<OldBeanField> list = new ArrayList<>();
-            for (Field f : source.type().getDeclaredFields()) {
+            Class<?> c = source.type();
+            Field[] fields = c.getDeclaredFields();
+            PackedDevTools.INSTANCE.reflectMembers(c, fields);
+
+            
+            for (Field f : fields) {
                 UseSiteFieldHookModel.Builder b = new UseSiteFieldHookModel.Builder(this, ExposedFieldBootstrap.MODEL, f);
                 list.add((OldBeanField) b.initialize());
             }
@@ -93,7 +99,11 @@ public final class UseSiteClassHookModel {
 
         public List<OldBeanMethod> methods(boolean declaredFieldsOnly, Class<?>... skipClasses) {
             ArrayList<OldBeanMethod> list = new ArrayList<>();
-            for (Method m : source.type().getDeclaredMethods()) {
+            Class<?> c = source.type();
+            Method[] methods = c.getDeclaredMethods();
+            PackedDevTools.INSTANCE.reflectMembers(c, methods);
+
+            for (Method m : methods) {
                 // TODO I think we need to do some filtering on bridge and maybe synthetic methods
                 UseSiteMethodHookModel.Builder b = new UseSiteMethodHookModel.Builder(source, ExposedMethodBootstrap.MODEL, m);
                 list.add((OldBeanMethod) b.initialize());

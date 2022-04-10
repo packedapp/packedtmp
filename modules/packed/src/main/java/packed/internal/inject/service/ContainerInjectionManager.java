@@ -95,7 +95,6 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
      */
     public void addConsumer(DependencyNode dependant) {
         consumers.add(requireNonNull(dependant));
-
     }
 
     public void addService(ServiceSetup service) {

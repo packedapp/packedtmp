@@ -140,7 +140,7 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public AssemblyMirror assembly() {
-            throw new UnsupportedOperationException();
+            return bean.assembly.mirror();
         }
 
         /** {@inheritDoc} */
@@ -170,7 +170,7 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Realm owner() {
-            return bean.realm.owner();
+            return bean.realm.realm();
         }
 
         /** {@inheritDoc} */

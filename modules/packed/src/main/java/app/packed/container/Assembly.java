@@ -27,7 +27,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentRealm;
 import app.packed.extension.Extension;
-import packed.internal.container.AssemblyAssemblyInstaller;
+import packed.internal.container.AssemblySetupOfAssembly;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -142,7 +142,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(AssemblyAssemblyInstaller realm, ContainerConfiguration configuration) {
+    private void doBuild(AssemblySetupOfAssembly realm, ContainerConfiguration configuration) {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {

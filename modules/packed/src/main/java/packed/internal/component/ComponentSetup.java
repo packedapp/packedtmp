@@ -96,6 +96,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
     }
 
+    
     public final void checkIsActive() {
         if (realm.currentComponent() != this) {
             String errorMsg;

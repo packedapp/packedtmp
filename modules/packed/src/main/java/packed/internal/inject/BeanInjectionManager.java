@@ -35,14 +35,11 @@ import packed.internal.lifetime.PoolEntryHandle;
 public final class BeanInjectionManager extends InjectionManager implements DependencyProducer {
 
     /**
-     * A dependency node for the bean instance.
-     * <p>
-     * The node is {@code null} for functional beans, or bean instance that was specified when configuring the bean. Or
-     * non-null if a bean instance needs to be created at runtime. This include beans that have an empty constructor (no
-     * actual dependencies).
+     * A dependency node representing a bean instance and its factory method. Or {@code null} for functional beans and other
+     * {@code void} beans.
      */
     @Nullable
-    private final DependencyNode dependencyNode;
+    private final DependencyNode instanceNode;
 
     /** The parent injector. */
     final ContainerOrExtensionInjectionManager parent;
@@ -69,12 +66,12 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         }
 
         if (driver.sourceType == SourceType.NONE) {
-            this.dependencyNode = null;
+            this.instanceNode = null;
         } else if (driver.sourceType == SourceType.INSTANCE) {
             Object instance = driver.source;
 
             // We either have no bean instances or an instance was explicitly provided.
-            this.dependencyNode = null;
+            this.instanceNode = null;
             bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, instance));
 
             // new BeanInstanceDependencyNode(bean, this, List.of(), MethodHandles.constant(instance.getClass(), instance));
@@ -94,14 +91,13 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             } else {
                 factory = (InternalFactory<?>) driver.source;
             }
-            List<InternalDependency> dependencies = factory.dependencies();
-
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = bean.realm.accessor().toMethodHandle(factory);
 
-            this.dependencyNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
+            List<InternalDependency> dependencies = factory.dependencies();
+            this.instanceNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
 
-            bean.parent.injectionManager.addConsumer(dependencyNode);
+            bean.parent.injectionManager.addConsumer(instanceNode);
         }
     }
 
@@ -113,7 +109,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         if (singletonHandle != null) {
             return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
         } else {
-            return dependencyNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
+            return instanceNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
         }
     }
 
@@ -121,6 +117,6 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Override
     @Nullable
     public DependencyNode dependencyConsumer() {
-        return dependencyNode;
+        return instanceNode;
     }
 }

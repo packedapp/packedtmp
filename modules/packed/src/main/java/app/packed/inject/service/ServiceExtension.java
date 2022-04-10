@@ -43,7 +43,6 @@ import packed.internal.inject.service.ContainerInjectionManager;
 //* Explicitly requiring services: require, requiOpt & Manual Requirements Management
 //* Exporting services: export, exportAll
 
-
 //// Was
 // Functionality for
 // * Explicitly requiring services: require, requiOpt & Manual Requirements Management
@@ -73,6 +72,7 @@ import packed.internal.inject.service.ContainerInjectionManager;
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
+// Rename to ExportExtension or ServiceExportExtension
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 

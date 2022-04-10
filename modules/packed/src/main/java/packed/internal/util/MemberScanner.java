@@ -15,6 +15,7 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 
 import app.packed.inject.Inject;
+import packed.internal.devtools.spi.PackedDevTools;
 
 /**
  * An class that helps with finding members (fields, constructors and methods) on a class.
@@ -69,11 +70,16 @@ public abstract class MemberScanner {
         for (Class<?> c = classToScan; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
             if (reflectOnFields) {
+                Field[] fields = c.getDeclaredFields();
+                PackedDevTools.INSTANCE.reflectMembers(c, fields);
                 for (Field field : c.getDeclaredFields()) {
                     onField(field);
                 }
             }
-            for (Method m : c.getDeclaredMethods()) {
+
+            Method[] methods = c.getDeclaredMethods();
+            PackedDevTools.INSTANCE.reflectMembers(c, methods);
+            for (Method m : methods) {
                 int mod = m.getModifiers();
                 if (Modifier.isStatic(mod)) {
                     if (c == classToScan && !Modifier.isPublic(mod)) { // we have already processed public static methods
@@ -144,6 +150,7 @@ public abstract class MemberScanner {
 
         // Get all declared constructors
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+        PackedDevTools.INSTANCE.reflectMembers(clazz, constructors);
 
         // If we only have 1 constructor, return it.
         if (constructors.length == 1) {

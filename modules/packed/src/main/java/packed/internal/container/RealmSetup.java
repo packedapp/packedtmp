@@ -25,7 +25,21 @@ import packed.internal.component.ComponentSetup;
  * Configuration of a realm.
  */
 // BuildRealm???? Is this runtime at all???
-public abstract sealed class RealmSetup permits ExtensionTreeSetup,AssemblySetup {
+
+// Tror maaske det her er 2 forskellige ting???
+
+// Hvem der ejer den som vi har en af per application!!!!
+
+//// RealmSetup :-> ApplicationRealmSetup, ExtensionRealmSetup
+
+// Maaske er det endda ApplicationSetup .. Det er kun ExtensionRealmSetup der skal kunne lukkes
+
+
+//// ContainerConfigurator : 
+
+// Og formattet Assemly vs Composer
+
+public abstract sealed class RealmSetup permits ExtensionTreeSetup, AssemblySetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     BeanModelManager accessor;
@@ -34,7 +48,7 @@ public abstract sealed class RealmSetup permits ExtensionTreeSetup,AssemblySetup
     protected ComponentSetup currentComponent;
 
     /** Whether or not this realm is closed. */
-    protected boolean isClosed;
+    boolean isClosed;
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
@@ -46,8 +60,8 @@ public abstract sealed class RealmSetup permits ExtensionTreeSetup,AssemblySetup
         }
         return r;
     }
-    
-    public abstract Realm owner(); 
+
+    public abstract Realm realm();
 
     public void checkOpen() {
         // Tror maaske hellere vi skal kalde newOperation

@@ -30,7 +30,7 @@ import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.ComposerAssemblyInstaller;
+import packed.internal.container.AssemblySetupOfComposer;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -69,7 +69,7 @@ public abstract class Composer {
      * 
      */
     protected final void checkPreBuild() {
-        configuration().container.realm.checkOpen();
+        configuration().container.assembly.checkOpen();
     }
 
     private ContainerConfiguration configuration() {
@@ -181,7 +181,7 @@ public abstract class Composer {
         requireNonNull(composer, "composer is null");
 
         // Create a new application realm
-        ComposerAssemblyInstaller realm = new ComposerAssemblyInstaller(((PackedApplicationDriver<A>) driver), consumer, wirelets);
+        AssemblySetupOfComposer realm = new AssemblySetupOfComposer(((PackedApplicationDriver<A>) driver), consumer, wirelets);
 
         realm.build(composer, consumer);
 

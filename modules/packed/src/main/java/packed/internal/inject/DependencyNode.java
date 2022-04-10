@@ -146,9 +146,9 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         DependencyProducer e = null;
 
         //// Checker om der er hooks der provider servicen
-        HookModel sm = bean.hookModel;
-        if (sm.sourceServices != null) {
-            e = sm.sourceServices.get(sd.key());
+        HookModel hookModel = bean.hookModel;
+        if (hookModel.sourceServices != null) {
+            e = hookModel.sourceServices.get(sd.key());
         }
 
         if (sbm != null) {
@@ -157,7 +157,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                     Key<?> requiredKey = sd.key();
                     Key<?> thisKey = Key.of(bean.hookModel.clazz);
                     ContainerSetup parent = bean.parent;
-                    ExtensionSetup es = parent.useExtensionSetup(ers.extensionType(), null);
+                    ExtensionSetup es = parent.useExtensionSetup(ers.realmType(), null);
                     BeanSetup bs = null;
                     if (thisKey.equals(requiredKey)) {
                         if (es.parent != null) {
