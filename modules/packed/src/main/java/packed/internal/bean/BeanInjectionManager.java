@@ -24,14 +24,16 @@ import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.bean.inject.DependencyNode;
 import packed.internal.bean.inject.DependencyProducer;
 import packed.internal.bean.inject.InternalDependency;
+import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.InternalFactory;
 import packed.internal.inject.ReflectiveFactory;
+import packed.internal.inject.manager.InjectionManager;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /**
  *
  */
-public final class BeanSetupTmp implements DependencyProducer {
+public final class BeanInjectionManager extends InjectionManager implements DependencyProducer {
 
     /**
      * A dependency node for the bean instance.
@@ -48,10 +50,22 @@ public final class BeanSetupTmp implements DependencyProducer {
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    BeanSetupTmp(BeanSetup bean) {
-        this.singletonHandle = bean.driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(bean.driver.beanType) : null;
+    InjectionManager parent;
+    
+    BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
+        this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass) : null;
 
-        if (bean.driver.sourceType == SourceType.INSTANCE || bean.driver.sourceType == SourceType.NONE) {
+        // Can only register a single extension bean of a particular type
+        if (driver.realm instanceof ExtensionTreeSetup e) {
+            
+        }
+        
+        if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
+            driver.extension.injectionManager.addBean(driver, bean);
+        }
+        
+        
+        if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {
             // We either have no bean instances or an instance was explicitly provided.
             this.dependencyNode = null;
 
@@ -62,16 +76,16 @@ public final class BeanSetupTmp implements DependencyProducer {
             // Skal vi overhoved have en constant pool???
 
             // functional beans will have null in driver.source
-            if (bean.driver.source != null) {
-                bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, bean.driver.source));
+            if (driver.source != null) {
+                bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
             }
             // Or maybe just bind the instance directly in the method handles.
         } else {
             InternalFactory<?> factory;
-            if (bean.driver.sourceType == SourceType.CLASS) {
-                factory = ReflectiveFactory.DEFAULT_FACTORY.get((Class<?>) bean.driver.source);
+            if (driver.sourceType == SourceType.CLASS) {
+                factory = ReflectiveFactory.DEFAULT_FACTORY.get((Class<?>) driver.source);
             } else {
-                factory = (InternalFactory<?>) bean.driver.source;
+                factory = (InternalFactory<?>) driver.source;
             }
             List<InternalDependency> dependencies = factory.dependencies();
 

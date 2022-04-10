@@ -36,6 +36,6 @@ public final class BeanInstanceDependencyNode extends DependencyNode {
 
     @Nullable
     protected PoolEntryHandle poolAccessor() {
-        return bean.bs.singletonHandle;
+        return bean.injectionManager.singletonHandle;
     }
 }

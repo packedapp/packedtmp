@@ -93,7 +93,7 @@ public final class BeanSupport extends ExtensionSupport {
     }
 
     public final BeanDriver<?> newDriver(BeanKind kind, Realm agent) {
-        return PackedBeanDriver.of(kind, container, agent);
+        return PackedBeanDriver.ofNone(kind, container, agent);
     }
 
     public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, Realm agent, Class<T> implementation) {

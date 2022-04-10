@@ -221,6 +221,17 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         }
         return name;
     }
+//    
+//    public final ComponentSetup resolve() {
+//        LinkedHashMap<String, ComponentSetup> map = children;
+//        if (map != null) {
+//            ComponentSetup cs = map.get(path.toString());
+//            if (cs != null) {
+//                return cs.mirror();
+//            }
+//        }
+//        throw new UnsupportedOperationException();
+//    }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
     public abstract class AbstractBuildTimeComponentMirror {
@@ -262,13 +273,13 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final Optional<ContainerMirror> parent() {
-            ContainerSetup parent = ComponentSetup.this.parent;
+            ContainerSetup parent = outer().parent;
             return parent == null ? Optional.empty() : Optional.of(parent.mirror());
         }
 
         /** {@inheritDoc} */
         public final NamespacePath path() {
-            return ComponentSetup.this.path();
+            return outer().path();
         }
 
         /** {@inheritDoc} */
@@ -287,7 +298,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         public final ComponentMirror resolve(CharSequence path) {
-            LinkedHashMap<String, ComponentSetup> map = ((ContainerSetup) ComponentSetup.this).children;
+            LinkedHashMap<String, ComponentSetup> map = ((ContainerSetup) outer()).children;
             if (map != null) {
                 ComponentSetup cs = map.get(path.toString());
                 if (cs != null) {
@@ -297,20 +308,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             throw new UnsupportedOperationException();
         }
 
-//
-//        /** {@inheritDoc} */
-//        public final ContainerMirror root() {
-//            ContainerSetup c = parent;
-//            if (c == null) {
-//                return (ContainerMirror) this;
-//            } else {
-//                while (c.parent != null) {
-//                    c = c.parent;
-//                }
-//                return c.mirror();
-//            }
-//        }
-//
         /** {@inheritDoc} */
         public final Stream<ComponentMirror> componentStream() {
             return stream0(ComponentSetup.this, true);

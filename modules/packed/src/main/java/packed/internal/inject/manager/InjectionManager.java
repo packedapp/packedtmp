@@ -15,11 +15,12 @@
  */
 package packed.internal.inject.manager;
 
+import packed.internal.bean.BeanInjectionManager;
 import packed.internal.inject.service.ContainerInjectionManager;
 
 /**
  *
  */
-public abstract sealed class InjectionManager permits ExtensionInjectionManager, ContainerInjectionManager {
+public abstract sealed class InjectionManager permits ContainerInjectionManager, BeanInjectionManager, ExtensionInjectionManager {
 
 }

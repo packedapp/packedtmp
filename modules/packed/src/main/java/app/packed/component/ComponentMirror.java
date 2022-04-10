@@ -149,7 +149,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
     // Now that we have parents...
     // add Optional<Component> tryResolve(CharSequence path);
     // Syntes ikke vi skal have baade tryResolve or resolve...
-    ComponentMirror resolve(CharSequence path);
+  //  ComponentMirror resolve(CharSequence path);
 
 //    /**
 //     * Returns a stream consisting of this component and all of its descendants in any order.

@@ -5,22 +5,27 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import app.packed.application.ApplicationMirror;
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
+import app.packed.component.Realm;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.lifetime.LifetimeMirror;
 import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.bean.hooks.usesite.HookModel;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.inject.manager.InjectionManager;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -31,33 +36,35 @@ public final class BeanSetup extends ComponentSetup {
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
+    /** The bean class. */
+    public final Class<?> beanClass;
+
+    /** The kind of bean. */
+    public final BeanKind beanKind;
+
     /** The driver used to create a bean. */
-    public final PackedBeanDriver<?> driver;
+    private final PackedBeanDriver<?> driver;
 
     /** A model of the hooks on the bean. */
     @Nullable
     public final HookModel hookModel;
 
-    /** Manages injection for bean. */
-    @Nullable
-    private InjectionManager injectionManager;
+    /** The bean's injection manager. */
+    public final BeanInjectionManager injectionManager;
 
-    public final BeanSetupTmp bs;
-    
+    /** Manages the operations defined by the bean. */
+    public final BeanOperationManager operations;
+
     public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
         super(container.application, realm, container);
-
         this.driver = driver;
-        this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanType);
-        
-        this.bs = new BeanSetupTmp(this);
-        
-        // Can only register a single extension bean of a particular type
-        if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
-            driver.extension.injectionManager.addBean(driver, this);
-        }
+        this.beanKind = driver.beanKind();
+        this.beanClass = driver.beanClass();
+        this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(beanClass);
+        this.operations = driver.operations;
+        this.injectionManager = new BeanInjectionManager(this, driver);
 
-        // Find a hook model for the bean type and wire it
+        // Wire the hook model
         if (hookModel != null) {
             hookModel.onWire(this);
 
@@ -66,23 +73,10 @@ public final class BeanSetup extends ComponentSetup {
         }
     }
 
-    public InjectionManager injectionManager() {
-        InjectionManager m = injectionManager;
-        if (m == null) {
-            ExtensionSetup extension = driver.extension;
-            if (extension == null) {
-
-            } else {
-                m = injectionManager = extension.injectionManager;
-            }
-        }
-        return m;
-    }
-
     /** {@inheritDoc} */
     @Override
     public BeanMirror mirror() {
-        return new BuildTimeBeanMirror();
+        return new BuildTimeBeanMirror(this);
     }
 
     /** {@inheritDoc} */
@@ -95,20 +89,20 @@ public final class BeanSetup extends ComponentSetup {
         }
         super.onWired();
     }
-
+    
     /** A build-time bean mirror. */
-    public final class BuildTimeBeanMirror extends AbstractBuildTimeComponentMirror implements BeanMirror {
+    public record BuildTimeBeanMirror(BeanSetup bean) implements BeanMirror {
 
         /** {@inheritDoc} */
         @Override
         public Class<?> beanClass() {
-            return hookModel.clazz;
+            return bean.beanClass;
         }
 
         /** {@inheritDoc} */
         @Override
         public BeanKind beanKind() {
-            return driver.beanKind();
+            return bean.beanKind;
         }
 
         /** {@inheritDoc} */
@@ -119,7 +113,7 @@ public final class BeanSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         public final ContainerMirror container() {
-            return parent.mirror();
+            return bean.parent.mirror();
         }
 
         /** {@inheritDoc} */
@@ -131,7 +125,73 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<OperationMirror> operations() {
-            return driver.operations.toMirrors();
+            return bean.operations.toMirrors();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror application() {
+            return bean.application.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public AssemblyMirror assembly() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Stream<ComponentMirror> componentStream() {
+            return Stream.of(this);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int depth() {
+            return bean.depth;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeMirror lifetime() {
+            return bean.lifetime.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return bean.name;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Realm owner() {
+            return bean.realm.owner();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<ContainerMirror> parent() {
+            return Optional.of(bean.parent.mirror());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public NamespacePath path() {
+            return bean.path();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Relation relationTo(ComponentMirror other) {
+            return ComponentSetupRelation.of(bean, other);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return bean.toString();
         }
     }
 }

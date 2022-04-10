@@ -168,7 +168,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                         bs = es.injectionManager.lookup(requiredKey);
                     }
 
-                    e = bs.bs;
+                    e = bs.injectionManager;
 
                 } else {
                     ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());

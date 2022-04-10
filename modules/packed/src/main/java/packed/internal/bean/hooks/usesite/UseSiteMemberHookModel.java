@@ -77,7 +77,7 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
         // Register hooks, maybe move to component setup
         DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
 
-        BeanOperationManager bom = bean.driver.operations;
+        BeanOperationManager bom = bean.operations;
         OperationSetup os = new OperationSetup(bean, ServiceExtension.class);
         bom.addOperation(os);
         os.mirrorSupplier = supplier;

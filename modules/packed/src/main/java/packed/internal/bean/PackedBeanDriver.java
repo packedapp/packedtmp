@@ -32,8 +32,8 @@ import packed.internal.inject.InternalFactory;
 /** The implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
-    /** The bean type, is typical void.class for functional beans. */
-    final Class<?> beanType;
+    /** The bean class, is typical void.class for functional beans. */
+    final Class<?> beanClass;
 
     public BeanConfiguration configuration;
 
@@ -69,7 +69,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
             this.extension = container.extensions.get(userOrExtension.extension());
             this.realm = extension.extensionTree;
         }
-        this.beanType = requireNonNull(beanType);
+        this.beanClass = requireNonNull(beanType);
 
         this.source = source;
         this.sourceType = sourceType;
@@ -86,7 +86,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     /** {@inheritDoc} */
     public Class<?> beanClass() {
-        return beanType;
+        return beanClass;
     }
 
     /** {@inheritDoc} */
@@ -111,12 +111,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     }
 
     static BeanKind checkKind(BeanKind kind, int type) {
-
         return kind;
-    }
-
-    public static BeanDriver<?> of(BeanKind kind, ContainerSetup container, Realm owner) {
-        return new PackedBeanDriver<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 
     public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, Realm owner, Class<T> implementation) {
@@ -142,6 +137,10 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
         return new PackedBeanDriver<>(kind, container, owner, instance.getClass(), SourceType.INSTANCE, instance);
+    }
+
+    public static BeanDriver<?> ofNone(BeanKind kind, ContainerSetup container, Realm owner) {
+        return new PackedBeanDriver<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 
     public enum SourceType {

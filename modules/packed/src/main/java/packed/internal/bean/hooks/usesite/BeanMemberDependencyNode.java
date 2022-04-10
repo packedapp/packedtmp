@@ -46,7 +46,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
         super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && bean.bs.singletonHandle == null) {
+            if (!Modifier.isStatic(smm.getModifiers()) && bean.injectionManager.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
             ContainerInjectionManager sbm = bean.parent.beans.getServiceManager();
@@ -59,7 +59,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
         this.sourceMember = requireNonNull(smm);
 
         if (!Modifier.isStatic(smm.getModifiers())) {
-            dependencyProviders[0] = bean.bs;
+            dependencyProviders[0] = bean.injectionManager;
         }
     }
 
@@ -82,7 +82,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
     public void onAllDependenciesResolved(LifetimePoolSetup pool) {
         super.onAllDependenciesResolved(pool);
 
-        if (bean.bs.singletonHandle != null) {
+        if (bean.injectionManager.singletonHandle != null) {
             // Maybe shared with SourceAssembly
 
             if (sourceMember.provideAskey == null) {

@@ -23,6 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
+import packed.internal.bean.BeanSetup;
 
 /** Implementation of {@link Relation}. */
 public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements Relation {
@@ -86,6 +87,14 @@ public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int
     @Override
     public ComponentMirror source() {
         return from.mirror();
+    }
+
+    public static Relation of(ComponentSetup from, ComponentMirror to) {
+        if (to instanceof BeanSetup.BuildTimeBeanMirror m) {
+            return of(from, m.bean());
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
     static Relation of(ComponentSetup from, ComponentSetup to) {
