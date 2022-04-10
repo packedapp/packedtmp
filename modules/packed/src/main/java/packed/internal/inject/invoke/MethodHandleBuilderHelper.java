@@ -39,6 +39,7 @@ import packed.internal.inject.InternalDependency;
 import packed.internal.inject.service.PackedInjectionContext;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
+import packed.internal.util.OpenClass;
 
 /**
  *
@@ -145,7 +146,7 @@ class MethodHandleBuilderHelper {
                         MethodHandle transformer = entry.transformer();
                         if (sd.isOptional()) {
                             // We need to the return value of transformer to an optional
-                            transformer = MethodHandles.filterReturnValue(transformer, MethodHandleBuilderConstants.optionalOfTo(askingForType));
+                            transformer = MethodHandles.filterReturnValue(transformer, MethodHandleUtil.optionalOfTo(askingForType));
                         }
                         mh = MethodHandles.collectArguments(mh, is.size() + add, transformer);
                     } else {
@@ -162,7 +163,7 @@ class MethodHandleBuilderHelper {
                             // } // else should fail...
                         }
                         if (sd.isOptional()) {
-                            mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleBuilderConstants.optionalOfTo(askingForType));
+                            mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleUtil.optionalOfTo(askingForType));
                         }
                     }
                     is.push(entry.indexes());
@@ -188,7 +189,7 @@ class MethodHandleBuilderHelper {
                 tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
                 if (sd.isOptional()) {
                     // We need to the return value of transformer to an optional, may be null
-                    tmp = MethodHandles.filterReturnValue(tmp, MethodHandleBuilderConstants.optionalOfNullableTo(askingForType));
+                    tmp = MethodHandles.filterReturnValue(tmp, MethodHandleUtil.optionalOfNullableTo(askingForType));
                 }
 
                 mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, tmp);

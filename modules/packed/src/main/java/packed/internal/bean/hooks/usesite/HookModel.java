@@ -38,8 +38,8 @@ import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel.Shared;
 import packed.internal.container.ExtensionModel;
-import packed.internal.inject.invoke.OpenClass;
 import packed.internal.util.MemberScanner;
+import packed.internal.util.OpenClass;
 
 /** A model of a class that uses hooks. */
 public final class HookModel {

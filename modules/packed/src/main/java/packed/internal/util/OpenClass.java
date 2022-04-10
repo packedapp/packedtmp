@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.invoke;
+package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
-import packed.internal.util.StringFormatter;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.

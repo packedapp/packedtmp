@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 import app.packed.base.Key;
+import packed.internal.util.OpenClass;
 
 /**
  *
