@@ -26,22 +26,26 @@ import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.lifetime.LifetimePoolSetup;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link ContainerInjectionManager service composers} that are
- * directly connected and part of the same build.
+ * A service multi-composer is responsible for managing 1 or more {@link ContainerInjectionManager service composers}
+ * that are directly connected and part of the same build.
  * <p>
  * This class server two main purposes:
  * 
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
  * 
- * Responsible for invoking the {@link DependencyNode#onAllDependenciesResolved(LifetimePoolSetup)} callback for
- * every {@link DependencyNode}. We do this here, because we guarantee that all dependants of a dependant are always
- * invoked before the dependant itself.
+ * Responsible for invoking the {@link DependencyNode#onAllDependenciesResolved(LifetimePoolSetup)} callback for every
+ * {@link DependencyNode}. We do this here, because we guarantee that all dependants of a dependant are always invoked
+ * before the dependant itself.
  */
 // New algorithm
 // resolve + create id for each node
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
+
+// TODO vi behoever jo faktisk kun checke beans fra samme realm...
+// En ConfigBean kan jo ikke bruge en UserBean
+// Ved faktisk ikke om det goer nogen forskel
 
 //TODO WE NEED TO CHECK INTRA Assembly REFERENCES
 // BitMap???
@@ -95,18 +99,18 @@ public final class ApplicationInjectionManager {
      *            the stack of all visited dependencies so far
      * @param dependencies
      *            the stack of locally visited dependencies so far
-     * @param injectable
+     * @param node
      *            the node to visit
      * @return stuff
      * @throws BuildException
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(LifetimePoolSetup region, DependencyNode injectable, ArrayDeque<DependencyNode> stack,
+    private DependencyCycle detectCycle(LifetimePoolSetup region, DependencyNode node, ArrayDeque<DependencyNode> stack,
             ArrayDeque<DependencyNode> dependencies) {
-        DependencyProducer[] deps = injectable.producers;
+        DependencyProducer[] deps = node.producers;
         if (deps.length > 0) {
-            stack.push(injectable);
+            stack.push(node);
             for (int i = 0; i < deps.length; i++) {
                 DependencyProducer dependency = deps[i];
                 if (dependency != null) {
@@ -136,7 +140,7 @@ public final class ApplicationInjectionManager {
             stack.pop();
         }
         // Hvis vi analysere skal vi ikke lave det her...
-        injectable.onAllDependenciesResolved(region);
+        node.onAllDependenciesResolved(region);
         return null;
     }
 
