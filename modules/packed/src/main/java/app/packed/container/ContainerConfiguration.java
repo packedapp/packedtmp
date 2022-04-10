@@ -152,9 +152,9 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      *            optional wirelets
      * @return the component that was linked
      */
-    //// Har svaert ved at se at brugere vil bruge deres egen ContainerHandle...
-    public ContainerMirror link(ContainerDriver handle, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(handle, "handle is null");
+    //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
+    public ContainerMirror link(ContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
 
         // Create a new realm for the assembly
         AssemblySetupOfAssembly newRealm = new AssemblySetupOfAssembly(d, container, assembly, wirelets);
