@@ -71,9 +71,13 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         if (driver.sourceType == SourceType.NONE) {
             this.dependencyNode = null;
         } else if (driver.sourceType == SourceType.INSTANCE) {
+            Object instance = driver.source;
+
             // We either have no bean instances or an instance was explicitly provided.
             this.dependencyNode = null;
-            bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
+            bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, instance));
+
+            // new BeanInstanceDependencyNode(bean, this, List.of(), MethodHandles.constant(instance.getClass(), instance));
             // Store the supplied bean instance in the lifetime (constant) pool.
             // Skal vel faktisk vaere i application poolen????
             // Ja der er helt sikker forskel paa noget der bliver initializeret naar containeren bliver initialiseret
