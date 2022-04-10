@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
 import app.packed.inject.Inject;
-import packed.internal.bean.hooks.var2.Var;
+import packed.internal.base.variable2.Var;
 import packed.internal.util.StackWalkerUtil;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;

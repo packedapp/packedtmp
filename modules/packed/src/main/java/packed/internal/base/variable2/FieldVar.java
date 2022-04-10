@@ -1,54 +1,54 @@
-package packed.internal.bean.hooks.var2;
+package packed.internal.base.variable2;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-/** An implementation of Var by wrapping a parameter.  */
-public record ParameterVar(Parameter parameter) implements Var {
+/** A {@link Field} var. */
+public record FieldVar(Field field) implements Var {
 
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        return parameter.isAnnotationPresent(annotationClass);
+        return field.isAnnotationPresent(annotationClass);
     }
 
     @Override
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return parameter.getAnnotationsByType(annotationClass);
+        return field.getAnnotationsByType(annotationClass);
     }
 
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return parameter.getDeclaredAnnotation(annotationClass);
+        return field.getDeclaredAnnotation(annotationClass);
     }
 
     @Override
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return parameter.getDeclaredAnnotationsByType(annotationClass);
+        return field.getDeclaredAnnotationsByType(annotationClass);
     }
 
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return parameter.getAnnotation(annotationClass);
+        return field.getAnnotation(annotationClass);
     }
 
     @Override
     public Annotation[] getAnnotations() {
-        return parameter.getAnnotations();
+        return field.getAnnotations();
     }
 
     @Override
     public Annotation[] getDeclaredAnnotations() {
-        return parameter.getDeclaredAnnotations();
+        return field.getDeclaredAnnotations();
     }
 
     @Override
     public Class<?> getType() {
-        return parameter.getType();
+        return field.getType();
     }
 
     @Override
     public Type getParameterizedType() {
-        return parameter.getParameterizedType();
+        return field.getGenericType();
     }
 }

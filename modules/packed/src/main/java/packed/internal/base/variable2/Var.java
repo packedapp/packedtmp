@@ -1,4 +1,4 @@
-package packed.internal.bean.hooks.var2;
+package packed.internal.base.variable2;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;

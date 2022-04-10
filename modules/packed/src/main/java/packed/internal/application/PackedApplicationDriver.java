@@ -39,7 +39,7 @@ import app.packed.lifecycle.RunState;
 import packed.internal.container.AssemblyAssemblyInstaller;
 import packed.internal.container.CompositeWirelet;
 import packed.internal.container.WireletWrapper;
-import packed.internal.invoke.Infuser;
+import packed.internal.inject.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;

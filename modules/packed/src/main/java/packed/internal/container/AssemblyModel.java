@@ -12,7 +12,7 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.invoke.Infuser;
+import packed.internal.inject.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an {@link Assembly}. */

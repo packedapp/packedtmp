@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke.typevariable;
+package packed.internal.inject.invoke.typevariable;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

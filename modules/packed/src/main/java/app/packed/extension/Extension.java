@@ -42,7 +42,7 @@ import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
-import packed.internal.invoke.Infuser;
+import packed.internal.inject.invoke.Infuser;
 import packed.internal.util.StackWalkerUtil;
 import packed.internal.util.ThrowableUtil;
 

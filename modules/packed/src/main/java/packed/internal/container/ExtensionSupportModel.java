@@ -23,7 +23,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.invoke.Infuser;
+import packed.internal.inject.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
 /** A model for an {@link Extension.ExtensionSupport} class. Not used outside of this package. */

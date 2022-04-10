@@ -30,9 +30,9 @@ import java.util.Optional;
 
 import app.packed.hooks.sandboxinvoke.CommonVarInfo;
 import app.packed.hooks.sandboxinvoke.VariableParser;
-import packed.internal.bean.hooks.variable.FieldVariable;
-import packed.internal.bean.hooks.variable.ParameterVariable;
-import packed.internal.bean.hooks.variable.TypeVariableVariable;
+import packed.internal.base.variable.FieldVariable;
+import packed.internal.base.variable.ParameterVariable;
+import packed.internal.base.variable.TypeVariableVariable;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 

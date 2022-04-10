@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.invoke.Infuser;
+import packed.internal.inject.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 public abstract class AbstractBootstrapModel {

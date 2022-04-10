@@ -37,8 +37,8 @@ import app.packed.hooks.BeanOperation;
 import app.packed.hooks.sandboxinvoke.MetaAnnotationReader;
 import app.packed.hooks.sandboxinvoke.VarInjector;
 import app.packed.inject.Factory;
+import packed.internal.base.variable.FieldVariable;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
-import packed.internal.bean.hooks.variable.FieldVariable;
 
 // Ideen er vel man laver en operation?
 

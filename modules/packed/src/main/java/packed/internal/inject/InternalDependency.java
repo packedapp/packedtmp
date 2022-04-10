@@ -36,7 +36,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.inject.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.QualifierUtil;

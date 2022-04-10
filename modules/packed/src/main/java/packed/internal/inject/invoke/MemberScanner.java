@@ -1,4 +1,4 @@
-package packed.internal.invoke;
+package packed.internal.inject.invoke;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;

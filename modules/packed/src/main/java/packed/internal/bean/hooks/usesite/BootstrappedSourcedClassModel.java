@@ -8,7 +8,7 @@ import app.packed.bean.hooks.BeanMethodHook;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
 import packed.internal.container.ExtensionModel;
-import packed.internal.invoke.OpenClass;
+import packed.internal.inject.invoke.OpenClass;
 
 public class BootstrappedSourcedClassModel {
 

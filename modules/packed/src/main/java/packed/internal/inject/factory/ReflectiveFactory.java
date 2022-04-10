@@ -29,7 +29,7 @@ import app.packed.base.TypeToken;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.inject.factory.ReflectiveFactory.FieldFactory;
-import packed.internal.invoke.MemberScanner;
+import packed.internal.inject.invoke.MemberScanner;
 
 /**
  * A factory that needs a {@link Lookup} object.

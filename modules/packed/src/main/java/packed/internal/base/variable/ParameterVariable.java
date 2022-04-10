@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.hooks.variable;
+package packed.internal.base.variable;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Parameter;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
@@ -27,58 +29,55 @@ import app.packed.base.Variable;
 /**
  *
  */
-public record TypeVariableVariable(TypeVariable<?> typeVariable) implements Variable {
+public record ParameterVariable(Parameter parameter) implements Variable {
 
-    @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        return typeVariable.isAnnotationPresent(annotationClass);
+    public Executable getDeclaringExecutable() {
+        return parameter.getDeclaringExecutable();
     }
 
-    @Override
+    public AnnotatedType getAnnotatedType() {
+        return parameter.getAnnotatedType();
+    }
+
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return typeVariable.getAnnotation(annotationClass);
+        return parameter.getAnnotation(annotationClass);
     }
 
-    @Override
-    public Annotation[] getAnnotations() {
-        return typeVariable.getAnnotations();
-    }
-
-    @Override
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return typeVariable.getAnnotationsByType(annotationClass);
+        return parameter.getAnnotationsByType(annotationClass);
     }
 
-    @Override
-    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return typeVariable.getDeclaredAnnotation(annotationClass);
-    }
-
-    @Override
-    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return typeVariable.getDeclaredAnnotationsByType(annotationClass);
-    }
-
-    @Override
     public Annotation[] getDeclaredAnnotations() {
-        return typeVariable.getDeclaredAnnotations();
+        return parameter.getDeclaredAnnotations();
+    }
+
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return parameter.getDeclaredAnnotation(annotationClass);
+    }
+
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return parameter.getDeclaredAnnotationsByType(annotationClass);
+    }
+
+    public Annotation[] getAnnotations() {
+        return parameter.getAnnotations();
     }
 
     /**
      * @param e
      */
-    public TypeVariableVariable {
-        requireNonNull(typeVariable);
+    public ParameterVariable {
+        requireNonNull(parameter);
+    }
+
+    public Optional<String> name() {
+        return Optional.of(parameter.getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getType() {
-        return typeVariable.getGenericDeclaration().getClass();
-    }
-
-    public Optional<String> name() {
-        return Optional.of(typeVariable.getName());
+        return parameter.getType();
     }
 
     /** {@inheritDoc} */

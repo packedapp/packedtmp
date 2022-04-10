@@ -28,6 +28,7 @@ import app.packed.bean.operation.OperationMirror;
 // Taenker vi har realm order?
 // Men vi gider ikke sortere med mindre vi skal...
 
+// Den er her lige istedet for paa BeanSetup saa man kan tilfoeje operations
 public class BeanOperationManager {
 
     private final ArrayList<BeanOperationSetup> operations = new ArrayList<>();

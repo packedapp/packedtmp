@@ -13,10 +13,10 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 import app.packed.base.Nullable;
-import packed.internal.bean.hooks.var2.FieldVar;
-import packed.internal.bean.hooks.var2.Var;
-import packed.internal.invoke.MemberScanner;
-import packed.internal.invoke.OpenClass;
+import packed.internal.base.variable2.FieldVar;
+import packed.internal.base.variable2.Var;
+import packed.internal.inject.invoke.MemberScanner;
+import packed.internal.inject.invoke.OpenClass;
 import zandbox.internal.hooks2.bootstrap.VarModel.Settings;
 import zandbox.internal.hooks2.repository.HookRepository;
 import zandbox.internal.hooks2.repository.MetaHookRepository;

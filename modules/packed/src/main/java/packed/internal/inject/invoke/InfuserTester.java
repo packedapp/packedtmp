@@ -1,4 +1,4 @@
-package packed.internal.invoke;
+package packed.internal.inject.invoke;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
