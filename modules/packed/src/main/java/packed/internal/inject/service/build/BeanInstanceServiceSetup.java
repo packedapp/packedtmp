@@ -48,26 +48,26 @@ public final class BeanInstanceServiceSetup extends ServiceSetup {
     @Override
     @Nullable
     public DependencyNode dependencyConsumer() {
-        return bean.dependencyConsumer();
+        return bean.bs.dependencyConsumer();
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return bean.dependencyAccessor();
+        return bean.bs.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return bean.singletonHandle != null;
+        return bean.bs.singletonHandle != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), bean.singletonHandle.read(context.pool));
+            return RuntimeService.constant(key(), bean.bs.singletonHandle.read(context.pool));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

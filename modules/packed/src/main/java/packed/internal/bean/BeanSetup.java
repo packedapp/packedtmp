@@ -17,36 +17,20 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.bean.hooks.usesite.HookModel;
-import packed.internal.bean.inject.DependencyNode;
-import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.inject.InternalFactory;
-import packed.internal.inject.ReflectiveFactory;
 import packed.internal.inject.manager.InjectionManager;
-import packed.internal.lifetime.PoolEntryHandle;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public final class BeanSetup extends ComponentSetup implements DependencyProducer {
+public final class BeanSetup extends ComponentSetup {
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
-
-    /**
-     * A dependency node for the bean instance.
-     * <p>
-     * The node is {@code null} for functional beans, or bean instance that was specified when configuring the bean. Or
-     * non-null if a bean instance needs to be created at runtime. This include beans that have an empty constructor (no
-     * actual dependencies).
-     */
-    @Nullable
-    private final DependencyNode dependencyNode;
 
     /** The driver used to create a bean. */
     public final PackedBeanDriver<?> driver;
@@ -59,11 +43,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     private InjectionManager injectionManager;
 
-    /** A pool accessor if a single instance of this bean is created. null otherwise */
-    // What if managed prototype bean????
-    @Nullable
-    public final PoolEntryHandle singletonHandle;
-
     public final BeanSetupTmp bs;
     
     public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
@@ -73,45 +52,12 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanType);
 
         
-        this.bs = null;// new BeanSetupTmp(this);
+        this.bs = new BeanSetupTmp(this);
         
-        this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? lifetime.pool.reserve(driver.beanType) : null;
 
         // Can only register a single extension bean of a particular type
         if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
             driver.extension.injectionManager.addBean(driver, this);
-        }
-
-        if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {
-            // We either have no bean instances or an instance was explicitly provided.
-            this.dependencyNode = null;
-
-            // Store the supplied bean instance in the lifetime (constant) pool.
-            // Skal vel faktisk vaere i application poolen????
-            // Ja der er helt sikker forskel paa noget der bliver initializeret naar containeren bliver initialiseret
-            // og saa constant over hele applikation.
-            // Skal vi overhoved have en constant pool???
-
-            // functional beans will have null in driver.source
-            if (driver.source != null) {
-                lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
-            }
-            // Or maybe just bind the instance directly in the method handles.
-        } else {
-            InternalFactory<?> factory;
-            if (driver.sourceType == SourceType.CLASS) {
-                factory = ReflectiveFactory.DEFAULT_FACTORY.get((Class<?>) driver.source);
-            } else {
-                factory = (InternalFactory<?>) driver.source;
-            }
-            List<InternalDependency> dependencies = factory.dependencies();
-
-            // Extract a MethodHandlefrom the factory
-            MethodHandle mh = realm.accessor().toMethodHandle(factory);
-
-            this.dependencyNode = new BeanInstanceDependencyNode(this, dependencies, mh);
-
-            container.beans.addConsumer(dependencyNode);
         }
 
         // Find a hook model for the bean type and wire it
@@ -126,25 +72,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public Key<?> defaultKey() {
         return hookModel.defaultKey();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        // If we have a singleton accessor return a method handle that can read the single bean instance
-        // Otherwise return a method handle that can instantiate a new bean
-        if (singletonHandle != null) {
-            return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
-        } else {
-            return dependencyNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return dependencyNode;
     }
 
     public InjectionManager injectionManager() {

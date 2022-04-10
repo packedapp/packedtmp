@@ -53,7 +53,7 @@ public class EntryPointSetup {
             }
 
             try {
-                PoolEntryHandle sa = l.cs.singletonHandle;
+                PoolEntryHandle sa = l.cs.bs.singletonHandle;
                 if (sa != null && !l.isStatic) {
                     Object o = sa.read(launchContext.pool());
                     l.methodHandle.invoke(o);
