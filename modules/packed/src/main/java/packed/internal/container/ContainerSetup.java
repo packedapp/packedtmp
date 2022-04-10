@@ -48,9 +48,9 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.lifetime.LifetimeMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.inject.ContainerBeanManager;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
+import packed.internal.inject.bean.ContainerBeanManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 
@@ -314,7 +314,7 @@ public final class ContainerSetup extends ComponentSetup {
         };
 
         /** {@inheritDoc} */
-        public final Collection<ComponentMirror> children() {
+        public Collection<ComponentMirror> children() {
             return CollectionUtil.unmodifiableView(container.children.values(), c -> c.mirror());
         }
 
@@ -472,7 +472,7 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(container, ComponentSetup.crack(other));
+            return ComponentSetupRelation.of(container, ComponentSetup.crackMirror(other));
 
         }
     }

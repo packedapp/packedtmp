@@ -29,9 +29,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.inject.InternalFactory;
 import packed.internal.inject.InternalFactory.CanonicalizedCapturingInternalFactory;
+import packed.internal.inject.bean.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 

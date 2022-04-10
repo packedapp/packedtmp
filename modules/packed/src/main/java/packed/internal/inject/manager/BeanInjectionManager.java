@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean;
+package packed.internal.inject.manager;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
+import packed.internal.bean.BeanSetup;
+import packed.internal.bean.PackedBeanDriver;
 import packed.internal.bean.PackedBeanDriver.SourceType;
-import packed.internal.bean.inject.DependencyNode;
-import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.InternalFactory;
 import packed.internal.inject.ReflectiveFactory;
-import packed.internal.inject.manager.InjectionManager;
+import packed.internal.inject.bean.DependencyNode;
+import packed.internal.inject.bean.DependencyProducer;
+import packed.internal.inject.bean.InternalDependency;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /**
- *
+ * An injection manager for a bean.
  */
 public final class BeanInjectionManager extends InjectionManager implements DependencyProducer {
 
@@ -45,26 +46,25 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     private final DependencyNode dependencyNode;
 
+    InjectionManager parent;
+
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     // What if managed prototype bean????
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    InjectionManager parent;
-    
-    BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
-        this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass) : null;
+    public BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
+        this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
 
         // Can only register a single extension bean of a particular type
         if (driver.realm instanceof ExtensionTreeSetup e) {
-            
+
         }
-        
+
         if (driver.extension != null && driver.beanKind() == BeanKind.CONTAINER) {
             driver.extension.injectionManager.addBean(driver, bean);
         }
-        
-        
+
         if (driver.sourceType == SourceType.INSTANCE || driver.sourceType == SourceType.NONE) {
             // We either have no bean instances or an instance was explicitly provided.
             this.dependencyNode = null;
@@ -92,12 +92,11 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = bean.realm.accessor().toMethodHandle(factory);
 
-            this.dependencyNode = new BeanInstanceDependencyNode(bean, dependencies, mh);
+            this.dependencyNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
 
             bean.parent.beans.addConsumer(dependencyNode);
         }
     }
-    
 
     /** {@inheritDoc} */
     @Override

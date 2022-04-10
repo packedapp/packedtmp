@@ -35,7 +35,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Service;
-import packed.internal.bean.inject.InternalDependency;
+import packed.internal.inject.bean.InternalDependency;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 

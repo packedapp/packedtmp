@@ -34,7 +34,7 @@ import packed.internal.bean.PackedBeanDriver;
  */
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
-public final class ExtensionInjectionManager extends InjectionManager {
+public final class ExtensionInjectionManager extends ParentableInjectionManager {
 
     public final Map<Key<?>, BeanSetup> extensionBeans = new LinkedHashMap<>();
 

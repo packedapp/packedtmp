@@ -28,6 +28,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.inject.manager.BeanInjectionManager;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -188,7 +189,7 @@ public final class BeanSetup extends ComponentSetup {
         @Override
         public Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(bean, ComponentSetup.crack(other));
+            return ComponentSetupRelation.of(bean, ComponentSetup.crackMirror(other));
         }
 
         /** {@inheritDoc} */

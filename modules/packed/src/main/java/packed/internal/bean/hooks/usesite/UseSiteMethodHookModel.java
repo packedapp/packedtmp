@@ -29,9 +29,9 @@ import app.packed.base.Nullable;
 import app.packed.bean.hooks.OldBeanMethod;
 import packed.internal.bean.hooks.HookedMethodProvide;
 import packed.internal.bean.hooks.MethodHookBootstrapModel;
-import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
+import packed.internal.inject.bean.DependencyProducer;
+import packed.internal.inject.bean.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

@@ -33,7 +33,7 @@ import packed.internal.inject.InternalFactory;
 public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     /** The bean class, is typical void.class for functional beans. */
-    final Class<?> beanClass;
+    private final Class<?> beanClass;
 
     public BeanConfiguration configuration;
 
@@ -42,7 +42,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     /** Any extension this bean belongs to. */
     @Nullable
-    final ExtensionSetup extension;
+    public final ExtensionSetup extension;
 
     /** The kind of bean. */
     private final BeanKind kind;
@@ -50,14 +50,14 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** Manages the operations defined by the bean. */
     public final BeanOperationManager operations = new BeanOperationManager();
 
-    final RealmSetup realm;
+    public final RealmSetup realm;
 
     /** The source (Null, Class, Factory, Instance) */
     @Nullable
-    final Object source;
+    public final Object source;
 
     /** The type of source the driver is created from. */
-    final SourceType sourceType;
+    public final SourceType sourceType;
 
     public PackedBeanDriver(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
@@ -75,8 +75,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         this.sourceType = sourceType;
     }
 
-    
-    // Maaske er den paa BeanSupport??? 
+    // Maaske er den paa BeanSupport???
     /** {@inheritDoc} */
     @Override
     public OperationConfiguration addFunctionOperation(Object functionInstance) {

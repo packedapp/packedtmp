@@ -1,4 +1,4 @@
-package packed.internal.bean.inject;
+package packed.internal.inject.bean;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,6 @@ public final class ContainerBeanManager {
     public ContainerBeanManager(ContainerSetup container, @Nullable ContainerBeanManager parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
-        //sm = new ContainerInjectionManager(parent == null ? null : parent.sm);
     }
 
     /**

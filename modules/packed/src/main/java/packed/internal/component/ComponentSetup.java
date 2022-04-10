@@ -37,6 +37,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     /** The application this component is a part of. */
     public final ApplicationSetup application;
 
+    /** The assembly from where the component is being installed. */
+    public final AssemblySetup assembly;
+
     /** The depth of the component in the application tree. */
     public final int depth;
 
@@ -61,9 +64,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
-
-    /** The assembly from where the component is being installed. */
-    public final AssemblySetup assembly;
 
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
@@ -223,7 +223,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 //        throw new UnsupportedOperationException();
 //    }
 
-    public static ComponentSetup crack(ComponentMirror mirror) {
+    public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
             return m.bean();
         } else {

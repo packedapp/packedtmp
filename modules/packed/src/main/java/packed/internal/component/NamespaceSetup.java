@@ -9,6 +9,7 @@ package packed.internal.component;
  * This class is never exposed out to end-users.
  */
 // FamilySetup
+// Not currently used, maybe if we get app-on-app
 public final class NamespaceSetup {
 
     // Et build kan ikke laves ovenpaa et existerede build.

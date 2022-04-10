@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import packed.internal.container.ContainerSetup;
 
 /** The default implementation of {@link NamespacePath}. */
 public final class PackedNamespacePath implements NamespacePath {
@@ -37,7 +36,7 @@ public final class PackedNamespacePath implements NamespacePath {
     private int hash;
 
     /** String representation, created lazily */
-    private volatile String string;
+    private volatile String string; // we should need the volatile
 
     PackedNamespacePath(String... elements) {
         this.elements = requireNonNull(elements);
@@ -141,25 +140,7 @@ public final class PackedNamespacePath implements NamespacePath {
             s = string = sj.toString();
         }
         return s;
-
     }
-//
-//    public static NamespacePath of(RuntimeComponentMirror component) {
-//        int depth = component.depth();
-//        return switch (depth) {
-//        case 0 -> ROOT;
-//        case 1 -> new PackedNamespacePath(component.name());
-//        default -> {
-//            String[] paths = new String[depth];
-//            RuntimeComponentMirror acc = component;
-//            for (int i = depth - 1; i >= 0; i--) {
-//                paths[i] = acc.name();
-//                acc = acc.parent;
-//            }
-//            yield new PackedNamespacePath(paths);
-//        }
-//        };
-//    }
 
     static NamespacePath of(ComponentSetup cc) {
         int depth = cc.depth;
@@ -169,23 +150,6 @@ public final class PackedNamespacePath implements NamespacePath {
         default -> {
             String[] paths = new String[depth];
             ComponentSetup acc = cc;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
-                acc = acc.parent;
-            }
-            yield new PackedNamespacePath(paths);
-        }
-        };
-    }
-
-    public static NamespacePath of(ContainerSetup cc) {
-        int depth = cc.depth;
-        return switch (depth) {
-        case 0 -> ROOT;
-        case 1 -> new PackedNamespacePath(cc.name);
-        default -> {
-            String[] paths = new String[depth];
-            ContainerSetup acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.parent;

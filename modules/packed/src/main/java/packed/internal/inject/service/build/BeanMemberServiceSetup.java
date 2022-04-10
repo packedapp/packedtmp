@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.bean.inject.DependencyNode;
 import packed.internal.component.ComponentSetup;
+import packed.internal.inject.bean.DependencyNode;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;

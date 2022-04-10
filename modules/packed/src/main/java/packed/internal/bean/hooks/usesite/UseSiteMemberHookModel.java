@@ -31,13 +31,13 @@ import app.packed.bean.operation.OperationMirror;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.OperationSetup;
+import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.hooks.AbstractHookModel;
 import packed.internal.bean.hooks.ClassHookModel;
-import packed.internal.bean.inject.DependencyNode;
-import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.component.ComponentSetup;
+import packed.internal.inject.bean.DependencyNode;
+import packed.internal.inject.bean.DependencyProducer;
+import packed.internal.inject.bean.InternalDependency;
 
 /**
  *
@@ -78,7 +78,7 @@ public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel
         DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
 
         BeanOperationManager bom = bean.operations;
-        OperationSetup os = new OperationSetup(bean, ServiceExtension.class);
+        BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
         bom.addOperation(os);
         os.mirrorSupplier = supplier;
 

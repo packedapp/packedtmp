@@ -21,20 +21,19 @@ import java.util.function.Supplier;
 
 import app.packed.bean.operation.OperationMirror;
 import app.packed.extension.Extension;
-import packed.internal.bean.inject.DependencyNode;
+import packed.internal.inject.bean.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
+// Skal vi have flere forskellige???? fx Functional, Member ect... 
+public final class BeanOperationSetup {
 
-// Skal vi have flere forskellige????
-public final class OperationSetup {
-
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
     private static final MethodHandle MH_INITIALIZE_OPERATIONS_SETUP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
-            "initialize", void.class, OperationSetup.class);
+            "initialize", void.class, BeanOperationSetup.class);
 
     /** The bean the operation belongs to. */
     public final BeanSetup bean;
@@ -47,7 +46,7 @@ public final class OperationSetup {
     public Supplier<? extends OperationMirror> mirrorSupplier;
     // dependencies
 
-    public OperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
+    public BeanOperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
         this.bean = bean;
         this.operator = operator;
     }

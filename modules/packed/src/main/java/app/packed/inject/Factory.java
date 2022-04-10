@@ -33,7 +33,6 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
-import packed.internal.bean.inject.InternalDependency;
 import packed.internal.inject.InternalFactory;
 import packed.internal.inject.InternalFactory.BoundFactory;
 import packed.internal.inject.InternalFactory.ConstantFactory;
@@ -41,6 +40,7 @@ import packed.internal.inject.InternalFactory.LookedUpFactory;
 import packed.internal.inject.InternalFactory.PeekableFactory;
 import packed.internal.inject.ReflectiveFactory;
 import packed.internal.inject.ReflectiveFactory.ExecutableFactory;
+import packed.internal.inject.bean.InternalDependency;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an

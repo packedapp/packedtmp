@@ -32,7 +32,7 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedWireletSelection;
 import packed.internal.container.WireletWrapper;
 import packed.internal.inject.manager.ApplicationInjectionManager;
-import packed.internal.inject.manager.InjectionManager;
+import packed.internal.inject.manager.ParentableInjectionManager;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
@@ -52,7 +52,7 @@ import packed.internal.service.sandbox.ProvideAllFromServiceLocator;
  * A {@link ApplicationInjectionManager} is responsible for managing 1 or more service manager tree that are directly
  * connected and part of the same build.
  */
-public final class ContainerInjectionManager extends InjectionManager {
+public final class ContainerInjectionManager extends ParentableInjectionManager {
 
     /** An error manager that is lazily initialized. */
     @Nullable
@@ -245,5 +245,4 @@ public final class ContainerInjectionManager extends InjectionManager {
         localServices.add(e);
         return e;
     }
-
 }

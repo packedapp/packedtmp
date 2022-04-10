@@ -30,16 +30,16 @@ import app.packed.bean.operation.OperationMirror;
 
 public class BeanOperationManager {
 
-    private final ArrayList<OperationSetup> operations = new ArrayList<>();
+    private final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
 
-    public void addOperation(OperationSetup os) {
+    public void addOperation(BeanOperationSetup os) {
         requireNonNull(os);
         operations.add(os);
     }
 
     public List<OperationMirror> toMirrors() {
         ArrayList<OperationMirror> mirrors = new ArrayList<>();
-        for (OperationSetup os : operations) {
+        for (BeanOperationSetup os : operations) {
             mirrors.add(os.mirror());
         }
         return List.copyOf(mirrors);

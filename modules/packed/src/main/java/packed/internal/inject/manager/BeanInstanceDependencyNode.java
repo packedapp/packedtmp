@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean;
+package packed.internal.inject.manager;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import packed.internal.bean.inject.DependencyNode;
-import packed.internal.bean.inject.DependencyProducer;
-import packed.internal.bean.inject.InternalDependency;
+import packed.internal.bean.BeanSetup;
+import packed.internal.inject.bean.DependencyNode;
+import packed.internal.inject.bean.DependencyProducer;
+import packed.internal.inject.bean.InternalDependency;
 import packed.internal.lifetime.PoolEntryHandle;
 
 /**
@@ -30,12 +31,15 @@ import packed.internal.lifetime.PoolEntryHandle;
 // Vi laver en hvis vi har bean instanser...
 public final class BeanInstanceDependencyNode extends DependencyNode {
 
-    public BeanInstanceDependencyNode(BeanSetup source, List<InternalDependency> dependencies, MethodHandle mh) {
-        super(source, dependencies, mh, new DependencyProducer[mh.type().parameterCount()]);
+    final BeanInjectionManager bim;
+
+    public BeanInstanceDependencyNode(BeanSetup bean, BeanInjectionManager bim, List<InternalDependency> dependencies, MethodHandle mh) {
+        super(bean, dependencies, mh, new DependencyProducer[mh.type().parameterCount()]);
+        this.bim = bim;
     }
 
     @Nullable
     protected PoolEntryHandle poolAccessor() {
-        return bean.injectionManager.singletonHandle;
+        return bim.singletonHandle;
     }
 }
