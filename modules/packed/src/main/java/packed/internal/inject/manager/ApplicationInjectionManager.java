@@ -72,7 +72,7 @@ public final class ApplicationInjectionManager {
 
     private DependencyCycle dependencyCyclesFind(ArrayDeque<DependencyNode> stack, ArrayDeque<DependencyNode> dependencies, LifetimePoolSetup region,
             ContainerSetup container) {
-        for (DependencyNode node : container.injectionManager.sm.consumers) {
+        for (DependencyNode node : container.injectionManager.consumers) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {

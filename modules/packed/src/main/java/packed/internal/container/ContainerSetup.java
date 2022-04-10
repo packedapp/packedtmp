@@ -50,7 +50,7 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
-import packed.internal.inject.bean.ContainerBeanManager;
+import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 
@@ -62,7 +62,7 @@ import packed.internal.util.CollectionUtil;
 public final class ContainerSetup extends ComponentSetup {
 
     /** All the beans in the container. */
-    public final ContainerBeanManager injectionManager;
+    public final ContainerInjectionManager injectionManager;
 
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
@@ -108,7 +108,7 @@ public final class ContainerSetup extends ComponentSetup {
     public ContainerSetup(ApplicationSetup application, RealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(application, realm, parent);
 
-        injectionManager = new ContainerBeanManager(this, parent == null ? null : parent.injectionManager);
+        injectionManager = new ContainerInjectionManager(this, parent == null ? null : parent.injectionManager);
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
         // and may contained any number of CombinedWirelet instances.

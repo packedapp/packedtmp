@@ -105,7 +105,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
 
-        cs.injectionManager.sm.resolve();
+        cs.injectionManager.resolve();
     }
 
     /**
@@ -123,7 +123,7 @@ public class BeanExtension extends Extension<BeanExtension> {
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        container.injectionManager.getServiceManager().provideAll(l);
+        container.injectionManager.provideAll(l);
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {

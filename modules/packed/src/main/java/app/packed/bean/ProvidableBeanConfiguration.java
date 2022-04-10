@@ -138,7 +138,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
             if (provide == null && export == null) {
                 return;
             }
-            ContainerInjectionManager sms = bean.parent.injectionManager.getServiceManager();
+            ContainerInjectionManager sms = bean.parent.injectionManager;
             BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean, provide);
             if (provide != null) {
                 sms.addService(setup);
