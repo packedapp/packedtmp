@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -53,6 +52,7 @@ import packed.internal.component.ComponentSetupRelation;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
+import packed.internal.util.StreamUtil;
 
 /**
  * Build-time configuration of a container.
@@ -222,6 +222,12 @@ public final class ContainerSetup extends ComponentSetup {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Stream<ComponentSetup> stream() {
+        return Stream.concat(Stream.of(this), children.values().stream().flatMap(c -> c.stream()));
+    }
+
     @SuppressWarnings("unchecked")
     public <E extends Extension<?>> E useExtension(Class<E> extensionClass) {
         ExtensionSetup extension = useExtensionSetup(extensionClass, /* requested by the user, not another extension */ null);
@@ -300,7 +306,10 @@ public final class ContainerSetup extends ComponentSetup {
                     throw new InternalExtensionException(implementation + " must be annotated with @ExtensionMember");
                 }
                 Class<? extends Extension<?>> extensionType = em.value();
-                ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
+                ClassUtil.checkProperSubclass(Extension.class, extensionType); // move
+                                                                               // into
+                                                                               // type
+                                                                               // extractor?
 
                 // Den
                 ClassUtil.checkProperSubclass(Extension.class, extensionType, InternalExtensionException::new); // move into type extractor?
@@ -393,14 +402,8 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Collection<OperationMirror> operations() {
-            ArrayList<OperationMirror> mirrors = new ArrayList<>();
-            for (ComponentSetup cs : container.children.values()) {
-                if (cs instanceof BeanSetup bs) {
-                    mirrors.addAll(bs.mirror().operations());
-                }
-            }
-            return List.copyOf(mirrors);
+        public Stream<OperationMirror> operations() {
+            return StreamUtil.filterAssignable(BeanSetup.class, container.children.values().stream()).flatMap(b -> b.operations.toMirrorsStream());
         }
 
         /** {@inheritDoc} */
@@ -416,21 +419,8 @@ public final class ContainerSetup extends ComponentSetup {
         }
 
         /** {@inheritDoc} */
-        public final Stream<ComponentMirror> componentStream() {
-            return stream0(container, true);
-        }
-
-        private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot) {
-            // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            Collection<ContainerMirror> c = (Collection) children();
-            if (c != null && !c.isEmpty()) {
-                Stream<ComponentMirror> s = c.stream().flatMap(co -> ((BuildTimeContainerMirror) co).stream0(origin, false));
-                return /* isRoot && option.excludeOrigin() ? s : */ Stream.concat(Stream.of(this), s);
-                // return Stream.empty();
-            } else {
-                return Stream.of(this);
-            }
+        public final Stream<ComponentMirror> stream() {
+            return container.stream().map(c -> c.mirror());
         }
 
         /** {@inheritDoc} */

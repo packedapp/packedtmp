@@ -7,10 +7,10 @@ import java.util.function.BiConsumer;
 
 import app.packed.base.TypeToken;
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
+import app.packed.extension.ExtensionSupportContext;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanDriver;
@@ -27,6 +27,13 @@ import packed.internal.util.typevariable.TypeVariableExtractor;
  */
 @ExtensionMember(BeanExtension.class)
 // Maybe just BeanSupport, EntryPointSupport, WebSupport
+
+// 3 use cases
+
+// installation af egne bean
+// drivere for installation af assembly beans
+// drivere for installation af andre extensions beans
+
 public final class BeanSupport extends ExtensionSupport {
 
     /**
@@ -50,45 +57,45 @@ public final class BeanSupport extends ExtensionSupport {
     private final ContainerSetup container;
 
     // I think
-    private final Class<? extends Extension<?>> extensionType;
+    private final ExtensionSupportContext context;
 
     /**
      * @param beanExtension
      */
-    /* package-private */ BeanSupport(BeanExtension beanExtension, Class<? extends Extension<?>> extensionType /* , c realm */) {
+    /* package-private */ BeanSupport(BeanExtension beanExtension, ExtensionSupportContext context) {
         this.container = beanExtension.container;
-        this.extensionType = (extensionType);
+        this.context = context;
     }
 
     public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> consumerBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> providerBean) {
 
         // Skal vi checke at consumerBean bliver initialiseret foerend provider bean??? Ikke noedvendigt her...
         // Skal de vaere samme container??
-        
+
         // Packed will call consumer(T, P) once provideBean has been initialized
     }
 
     public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> consumerBean, BiConsumer<T, P> consumer, ExtensionBeanConfiguration<P> providerBean) {
 
         // Skal vi checke provideBean depends on consumerBean
-        
+
         // framework will call
         // consumer(T, P) at initialization time
     }
 
     // ContainerBeanConfiguration... men den har provide.. Saa vi har en ExtensionBeanConfiguration
     public final <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, Realm.extension(extensionType), implementation);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, context.realm(), implementation);
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, Realm.extension(extensionType), factory);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, context.realm(), factory);
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public final <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, Realm.extension(extensionType), instance);
+        PackedBeanDriver<T> m = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, context.realm(), instance);
         return new ExtensionBeanConfiguration<>(m);
     }
 
@@ -96,17 +103,18 @@ public final class BeanSupport extends ExtensionSupport {
         return PackedBeanDriver.ofNone(kind, container, realm);
     }
 
-    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, Realm realm, Class<T> implementation) {
+    // Vi skal have 2 versioner inde for ejeren af assemblien og en for support klasses
+    public final <T> BeanDriver<T> newDriverFromClass(BeanKind kind, Class<T> implementation) {
         // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
-        return PackedBeanDriver.ofClass(kind, container, realm, implementation);
+        return PackedBeanDriver.ofClass(kind, container, context.realm(), implementation);
     }
 
     public final <T> BeanDriver<T> newDriverFromFactory(BeanKind kind, Realm realm, Factory<T> factory) {
-        return PackedBeanDriver.ofFactory(kind, container, realm, factory);
+        return PackedBeanDriver.ofFactory(kind, container, context.realm(), factory);
     }
 
     public final <T> BeanDriver<T> newDriverFromInstance(BeanKind kind, Realm realm, T instance) {
-        return PackedBeanDriver.ofInstance(kind, container, realm, instance);
+        return PackedBeanDriver.ofInstance(kind, container, context.realm(), instance);
     }
 
     /**

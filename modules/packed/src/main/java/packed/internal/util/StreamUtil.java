@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.classgen;
+package packed.internal.util;
+
+import java.util.stream.Stream;
 
 /**
  *
  */
+public class StreamUtil {
 
-// Supports sharing across containers...
-
-// Som udgangspunkt supportere vi kun class keys.
-public interface CodegenCache<K> {
-    // Class<?> generate(K key, Classgen classgen);
+    @SuppressWarnings("unchecked")
+    public static <F, T extends F> Stream<T> filterAssignable(Class<T> assignableType, Stream<F> stream) {
+        return (Stream<T>) stream.filter(f -> assignableType.isAssignableFrom(f.getClass()));
+    }
 }
-
-// som alternativ
-
-// static {
-//  CodegenCache.installClassCache(MethodHandles.lookup(), "RepositoryGen");
-//  CodegenCache.provideStatic(MethodHandles.lookup(), "RepositoryGen");
-//}
-
-// Den er saa tilgaengelig for alle extension klasser...
-
-// ComponentData <---- statisk paa componenten ligesom classdata

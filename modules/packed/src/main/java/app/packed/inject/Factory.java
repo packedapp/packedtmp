@@ -61,7 +61,7 @@ import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
  * 
  * <pre> {@code Factory<Long> f = new Factory<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
- * @apiNote factory implementations does generally not implement {@link #hashCode()} or {@link #equals(Object)}.
+ * @apiNote Factory implementations does generally not implement {@link #hashCode()} or {@link #equals(Object)}.
  */
 // Rename to Func I think...
 // Make into sealed interface???? Why not will make it easier to use records
@@ -78,8 +78,8 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
 
     /**
      * Binds the specified argument(s) to a variable with the specified index as returned by {@link #variables()}. This
-     * method is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
-     * sufficient. A typical example is a constructor with two parameters of the same type.
+     * method is typically used to bind arguments to parameters on a method or constructors. A typical example is a
+     * constructor with two parameters of the same type.
      * 
      * @param position
      *            the index of the variable to bind
@@ -98,7 +98,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @throws NullPointerException
      *             if the specified argument is null and the variable does not represent a reference type
      */
-    // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
+    // Smid CCE istedet for NPE?
     public abstract Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
 
     /**
@@ -108,14 +108,19 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @param argument
      *            the argument to bind.
      * @return a new factory
+     * 
+     * @throws ClassCastException
+     *             if the argument does not match the leading variable type.
+     * @throws UnsupportedOperationException
+     *             if the factory does not have a leading variable
+     * @throws NullPointerException
+     *             if the specified argument is null and the variable does not represent a reference type
      */
-    // bindConstant like sidecar???
-    // bindRaw
     public final Factory<R> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
 
-    final Factory<R> bindSupplier(int index, Supplier<?> supplier) {
+    final Factory<R> bindSupplier(int position, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
     }
 

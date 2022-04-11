@@ -46,6 +46,11 @@ public /* primitive */ final class Realm {
         return extension == Extension.class;
     }
 
+    /** {@inheritDoc} */
+    public String toString() {
+        return isApplication() ? "Application" : extension.getSimpleName();
+    }
+
     public boolean isExtension() {
         return extension != Extension.class;
     }

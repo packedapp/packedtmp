@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import app.packed.bean.operation.OperationMirror;
 
@@ -36,6 +37,10 @@ public class BeanOperationManager {
     public void addOperation(BeanOperationSetup os) {
         requireNonNull(os);
         operations.add(os);
+    }
+
+    public Stream<OperationMirror> toMirrorsStream() {
+        return operations.stream().map(BeanOperationSetup::mirror);
     }
 
     public List<OperationMirror> toMirrors() {

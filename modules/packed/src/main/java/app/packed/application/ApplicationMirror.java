@@ -2,10 +2,12 @@ package app.packed.application;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import app.packed.bean.operation.OperationMirror;
-import app.packed.component.ComponentMirrorTree;
+import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -27,9 +29,14 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror extends Mirror {
 
-    /** {@return all the components in the application.} */
-    default ComponentMirrorTree components() {
-        return container().components();
+    /** {@return a mirror for the assembly that defines the application.} */
+    default AssemblyMirror assembly() {
+        return container().assembly();
+    }
+
+    /** {@return a stream containing all components in the application.} */
+    default Stream<ComponentMirror> components() {
+        return container().stream();
     }
 
     /** {@return the root container in the application.} */
@@ -70,6 +77,16 @@ public interface ApplicationMirror extends Mirror {
         return container().name();
     }
 
+    // Tror det ville giver mening at have OperationMirrorList her...
+    // Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...
+    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void print() {
+        container().print();
+    }
+
     /**
      * @param <T>
      * @param type
@@ -91,16 +108,6 @@ public interface ApplicationMirror extends Mirror {
     // IDK om vi bare altid bruger en Application Launcher class...
     public static ApplicationMirror of(Assembly assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
-    }
-
-    default void print() {
-        container().print();
-    }
-
-    // Tror det ville giver mening at have OperationMirrorList her...
-    // Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...
-    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
-        throw new UnsupportedOperationException();
     }
 }
 

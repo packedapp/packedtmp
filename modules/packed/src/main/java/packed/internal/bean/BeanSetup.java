@@ -39,12 +39,6 @@ public final class BeanSetup extends ComponentSetup {
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
-    /** The bean class. */
-    public final Class<?> beanClass;
-
-    /** The kind of bean. */
-    public final BeanKind beanKind;
-
     /** The driver used to create a bean. */
     public final PackedBeanDriver<?> driver;
 
@@ -61,9 +55,7 @@ public final class BeanSetup extends ComponentSetup {
     public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
         super(container.application, realm, container);
         this.driver = driver;
-        this.beanKind = driver.beanKind();
-        this.beanClass = driver.beanClass();
-        this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(beanClass);
+        this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanClass());
         this.operations = driver.operations;
         this.injectionManager = new BeanInjectionManager(this, driver);
 
@@ -92,6 +84,11 @@ public final class BeanSetup extends ComponentSetup {
         }
         super.onWired();
     }
+
+    @Override
+    public Stream<ComponentSetup> stream() {
+        return Stream.of(this);
+    }
     
     /** A build-time bean mirror. */
     public record BuildTimeBeanMirror(BeanSetup bean) implements BeanMirror {
@@ -99,13 +96,13 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Class<?> beanClass() {
-            return bean.beanClass;
+            return bean.driver.beanClass();
         }
 
         /** {@inheritDoc} */
         @Override
         public BeanKind beanKind() {
-            return bean.beanKind;
+            return bean.driver.beanKind();
         }
 
         /** {@inheritDoc} */
@@ -127,8 +124,8 @@ public final class BeanSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Collection<OperationMirror> operations() {
-            return bean.operations.toMirrors();
+        public Stream<OperationMirror> operations() {
+            return bean.operations.toMirrorsStream();
         }
 
         /** {@inheritDoc} */
@@ -145,7 +142,7 @@ public final class BeanSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Stream<ComponentMirror> componentStream() {
+        public Stream<ComponentMirror> stream() {
             return Stream.of(this);
         }
 

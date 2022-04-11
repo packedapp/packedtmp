@@ -15,24 +15,25 @@
  */
 package app.packed.classgen;
 
+import java.util.stream.Stream;
+
+import app.packed.extension.ExtensionMember;
+import app.packed.extension.ExtensionMirror;
+import app.packed.extension.ExtensionTree;
+
 /**
  *
  */
+@ExtensionMember(ClassgenExtension.class)
+public class ClassgenExtensionMirror extends ExtensionMirror {
+    final ExtensionTree<ClassgenExtension> tree;
 
-// Supports sharing across containers...
+    ClassgenExtensionMirror(ExtensionTree<ClassgenExtension> tree) {
+        this.tree = tree;
+    }
 
-// Som udgangspunkt supportere vi kun class keys.
-public interface CodegenCache<K> {
-    // Class<?> generate(K key, Classgen classgen);
+    /** {@return a stream containing mirrors for every generated class.} */
+    public Stream<GeneratedClassMirror> generatedClasses() {
+        return tree.stream().flatMap(c -> c.generated.stream());
+    }
 }
-
-// som alternativ
-
-// static {
-//  CodegenCache.installClassCache(MethodHandles.lookup(), "RepositoryGen");
-//  CodegenCache.provideStatic(MethodHandles.lookup(), "RepositoryGen");
-//}
-
-// Den er saa tilgaengelig for alle extension klasser...
-
-// ComponentData <---- statisk paa componenten ligesom classdata

@@ -33,7 +33,7 @@ record RandomProcX(MaximumComponentContainer pc) implements ContainerHook.Proces
 
     @Override
     public void onCompleted(ContainerMirror mirror) {
-        if (mirror.componentStream().count() > pc.maxComponents()) {
+        if (mirror.stream().count() > pc.maxComponents()) {
             throw new BuildException("Cannot define a container with more than " + pc.maxComponents() + " components in a single container");
         }
     }

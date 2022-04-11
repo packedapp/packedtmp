@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.concurrent;
-
-import app.packed.extension.Extension;
+package app.packed.inject;
 
 /**
  *
  */
-public class ThreadExtension extends Extension<ThreadExtension> {
-    ThreadExtension() {}
+public class XFactoryType2 {
+    
+    private final String xreturnVar;
+
+    private XFactoryType2(String returnVar) {
+        this.xreturnVar = returnVar;
+    }
+    
+    public void foo() {
+        
+    }
 }

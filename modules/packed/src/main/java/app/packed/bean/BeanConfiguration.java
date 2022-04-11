@@ -36,7 +36,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @see BeanDriver#beanKind()
      */
     public final Class<?> beanClass() {
-        return bean.beanClass;
+        return bean.driver.beanClass();
     }
     
     /**
@@ -45,7 +45,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @see BeanDriver#beanKind()
      */
     public final BeanKind beanKind() {
-        return bean.beanKind;
+        return bean.driver.beanKind();
     }
 
     /** {@inheritDoc} */

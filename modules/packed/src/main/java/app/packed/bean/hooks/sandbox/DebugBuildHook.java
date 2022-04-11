@@ -30,6 +30,10 @@ package app.packed.bean.hooks.sandbox;
 
 // Ideen er lidt man kan smide den paa et bean, bean method, class, ...
 // Og saa skriver den ting ud omkring den metode paa build time
+
+
+// Maaske skal den ligge over i DevTools...
+
 public @interface DebugBuildHook {
 
     // String logger() default "System.out"

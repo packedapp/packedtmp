@@ -19,13 +19,20 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.Composer;
+import app.packed.container.ContainerHook.Processor;
+import app.packed.container.ContainerMirror;
+import packed.internal.component.ComponentSetup;
 
 /**
  *
@@ -41,11 +48,6 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
-
-    public AssemblyMirror mirror() {
-        throw new UnsupportedOperationException();
-    }
-    
     final void closeRealm() {
         ContainerSetup container = container();
         if (currentComponent != null) {
@@ -105,8 +107,79 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
         this.accessor = accessor().withLookup(lookup);
     }
 
+    /** {@return a mirror for this assembly.} */
+    public AssemblyMirror mirror() {
+        return new BuildtimeAssemblyMirror(this);
+    }
+
+    /** {@inheritDoc} */
     @Override
     public final Realm realm() {
         return extension == null ? Realm.application() : extension.realm();
+    }
+
+    public record BuildtimeAssemblyMirror(AssemblySetup assembly) implements AssemblyMirror {
+
+        /** {@inheritDoc} */
+        @Override
+        public List<Class<? extends Processor>> containerHooks() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Realm owner() {
+            return assembly.realm();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContainerMirror root() {
+            return assembly.container().mirror();
+        }
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends Assembly> type() {
+            // Probably does not work for composer
+            // Needs to check isAssignable
+            return (Class<? extends Assembly>) assembly.realmType();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Stream<ComponentMirror> components() {
+            return assembly.container().stream().filter(c -> c.assembly == assembly).map(ComponentSetup::mirror);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<AssemblyMirror> parent() {
+            ContainerSetup org = assembly.container();
+            for (ContainerSetup p = org.parent; p != null; p = p.parent) {
+                if (org.assembly != p.assembly) {
+                    return Optional.of(p.assembly.mirror());
+                }
+            }
+            return Optional.empty();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Stream<AssemblyMirror> children() {
+            return children(assembly, assembly.container(), new ArrayList<>()).stream();
+        }
+
+        private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
+            if (assembly == cs.assembly) {
+                for (ContainerSetup c : cs.containerChildren) {
+                    children(assembly, c, list);
+                }
+            } else {
+                list.add(cs.assembly.mirror());
+            }
+            return list;
+        }
     }
 }

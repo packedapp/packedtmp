@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.classgen;
+package app.packed.inject;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 /**
  *
  */
+public class Foo {
 
-// Supports sharing across containers...
-
-// Som udgangspunkt supportere vi kun class keys.
-public interface CodegenCache<K> {
-    // Class<?> generate(K key, Classgen classgen);
+    public static void main(String[] args) throws Exception {
+        MethodHandle f = MethodHandles.lookup().findStatic(Foo.class, "foo", MethodType.methodType(void.class));
+            
+        f.bindTo("asd");
+    }
+    
+    
+    public static void foo() {
+        
+    }
 }
-
-// som alternativ
-
-// static {
-//  CodegenCache.installClassCache(MethodHandles.lookup(), "RepositoryGen");
-//  CodegenCache.provideStatic(MethodHandles.lookup(), "RepositoryGen");
-//}
-
-// Den er saa tilgaengelig for alle extension klasser...
-
-// ComponentData <---- statisk paa componenten ligesom classdata

@@ -270,7 +270,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         // Finds the subtension's model and its extension class
         ExtensionSupportModel supportModel = ExtensionSupportModel.of(supportClass);
         Class<? extends Extension<?>> supportExtensionType = supportModel.extensionType();
-
+        
         // Check that the requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(supportExtensionType)) {
             // Special message if you try to use your own subtension
@@ -284,9 +284,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Get the extension instance (create it if needed) that the subtension needs
         Extension<?> instance = container.useExtensionSetup(supportExtensionType, this).instance;
-
+        
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
-        return (E) supportModel.newInstance(instance, extensionType);
+        return (E) supportModel.newInstance(instance, new PackedExtensionSupportContext(extensionTree));
     }
 
     /** A pre-order iterator for a rooted extension tree. */

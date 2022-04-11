@@ -15,10 +15,34 @@
  */
 package app.packed.container;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import app.packed.component.ComponentMirror;
+import app.packed.component.Realm;
+import packed.internal.container.AssemblySetup;
+
 /**
  *
  */
-public interface AssemblyMirror {
+public sealed interface AssemblyMirror permits AssemblySetup.BuildtimeAssemblyMirror {
+
+    /** {@return a stream of all assemblies that have been linked from this assembly.} */
+    Stream<AssemblyMirror> children();
+
+    /** {@return a stream of all components defined by the assembly.} */
+    Stream<ComponentMirror> components();
+
+    List<Class<? extends ContainerHook.Processor>> containerHooks();
+
+    Realm owner();
+
+    Optional<AssemblyMirror> parent();
+
+    /** {@return the root container defined by this assembly.} */
+    ContainerMirror root();
 
     Class<? extends Assembly> type();
+
 }

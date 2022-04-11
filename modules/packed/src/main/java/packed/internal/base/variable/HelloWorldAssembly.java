@@ -42,7 +42,7 @@ public class HelloWorldAssembly extends BaseAssembly {
         
         System.out.println(am.container().operations());
         
-        for (OperationMirror m : am.container().operations()) {
+        for (OperationMirror m : am.container().operations().toList()) {
             System.out.println(m.bean().path());
         }
     }

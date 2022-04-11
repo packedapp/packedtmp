@@ -167,7 +167,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     default void print(Assembly  assembly, Wirelet... wirelets) {
         ApplicationMirror b = ApplicationMirror.of(assembly, wirelets);
-        b.container().componentStream().forEach(cc -> {
+        b.container().stream().forEach(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append("");
             if (cc instanceof BeanMirror bm) {

@@ -1,5 +1,6 @@
 package app.packed.lifetime;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,13 +37,14 @@ import packed.internal.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeMirror {
 
     // Eneste ting er fx noget med en Grund fordi operationer ikke har en LifetimeState
-    // Fx 
-    
+    // Fx
+
     // Hvad med sync/async start/stop???
     List<OperationMirror> operations(LifetimePhase phase);
-    
+
     // Stable across application builds
-    List<BeanMirror> beans();
+    /** {@return a collection view of all beans that are part of the lifetime.} */
+    /* Sequenced */ Collection<BeanMirror> beans();
 
     /** {@return any child lifetimes of this lifetime.} */
     Set<LifetimeMirror> children();
@@ -54,7 +56,7 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
     LifetimeKind lifetimeType();
 
     /** {@return any parent lifetime this lifetime might have.} */
-    Optional<LifetimeMirror> parent(); //beanLifecycleSequence
+    Optional<LifetimeMirror> parent(); // beanLifecycleSequence
 }
 
 //Things a lifetime does
@@ -71,7 +73,6 @@ interface LifetimeSandbox {
     ////
     Set<Object> activators();
 
-    
     /** {@return the lifetime of the application.} */
     @Deprecated(since = "Tror bare man maa kalde application().lifetime()")
     LifetimeMirror applicationLifetime();

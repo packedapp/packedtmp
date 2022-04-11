@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -96,7 +97,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
     }
 
-    
     public final void checkIsActive() {
         if (realm.currentComponent() != this) {
             String errorMsg;
@@ -206,17 +206,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
         return name;
     }
-//    
-//    public final ComponentSetup resolve() {
-//        LinkedHashMap<String, ComponentSetup> map = children;
-//        if (map != null) {
-//            ComponentSetup cs = map.get(path.toString());
-//            if (cs != null) {
-//                return cs.mirror();
-//            }
-//        }
-//        throw new UnsupportedOperationException();
-//    }
 
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
@@ -225,4 +214,19 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             return ((ContainerSetup.BuildTimeContainerMirror) mirror).container();
         }
     }
+    
+    
+    public abstract Stream<ComponentSetup> stream();
+    
+//  
+//  public final ComponentSetup resolve() {
+//      LinkedHashMap<String, ComponentSetup> map = children;
+//      if (map != null) {
+//          ComponentSetup cs = map.get(path.toString());
+//          if (cs != null) {
+//              return cs.mirror();
+//          }
+//      }
+//      throw new UnsupportedOperationException();
+//  }
 }

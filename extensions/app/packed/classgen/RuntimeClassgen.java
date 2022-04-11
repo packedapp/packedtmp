@@ -15,24 +15,17 @@
  */
 package app.packed.classgen;
 
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodHandles.Lookup.ClassOption;
+
 /**
  *
  */
+// Skal vi ogsaa bare smide AOP ind her...
+// Det er jo en liden hemmelighed at vi genere klasser.
+// Eller dynamiske proxies
 
-// Supports sharing across containers...
-
-// Som udgangspunkt supportere vi kun class keys.
-public interface CodegenCache<K> {
-    // Class<?> generate(K key, Classgen classgen);
+//@Packlet(extension = ClassgenExtension.class)
+public interface RuntimeClassgen {
+    Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException;
 }
-
-// som alternativ
-
-// static {
-//  CodegenCache.installClassCache(MethodHandles.lookup(), "RepositoryGen");
-//  CodegenCache.provideStatic(MethodHandles.lookup(), "RepositoryGen");
-//}
-
-// Den er saa tilgaengelig for alle extension klasser...
-
-// ComponentData <---- statisk paa componenten ligesom classdata

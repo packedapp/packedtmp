@@ -36,6 +36,9 @@ import packed.internal.lifetime.PoolEntryHandle;
  */
 public final class BeanInjectionManager extends InjectionManager implements DependencyProducer {
 
+    /** The bean this injection manager belongs to. */
+    private final BeanSetup bean;
+
     /**
      * A dependency node representing a bean instance and its factory method. Or {@code null} for functional beans and other
      * {@code void} beans.
@@ -50,8 +53,6 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     // What if managed prototype bean????
     @Nullable
     public final PoolEntryHandle singletonHandle;
-
-    private final BeanSetup bean;
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
         this.bean = bean;

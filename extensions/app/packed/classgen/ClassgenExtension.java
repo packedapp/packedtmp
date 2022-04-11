@@ -17,9 +17,10 @@ package app.packed.classgen;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodHandles.Lookup.ClassOption;
+import java.util.ArrayList;
 
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionSupport;
 
 /**
  *
@@ -44,55 +45,31 @@ import app.packed.extension.ExtensionSupport;
 // Det er vel det foerste eksempel paa global state for extensions...
 public final class ClassgenExtension extends Extension<ClassgenExtension> {
 
-    // Hvis den skal virke recursivt paa nye extension.
-    // Bliver vi noedt til at have en runtime classe...
-    // Som kan huske svaret... Og saa konnecte via @ExtensionLinked
-
-    // D
     // void resolveINDYsImmediatly()...
 
     // void disableRuntime();
 
     // Hvis man bruger graal er den automatiske disabled...
 
+    final ArrayList<PackedGeneratedClass> generated = new ArrayList<>();
+
+    @Override
+    protected ClassgenExtensionMirror mirror() {
+        return mirrorInitialize(new ClassgenExtensionMirror(tree()));
+    }
+
     public Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException {
-        throw new UnsupportedOperationException();
+        return defineHiddenClass(Realm.application(), caller, bytes, initialize, options);
+    }
+
+    Lookup defineHiddenClass(Realm realm, Lookup caller, byte[] bytes, boolean initialize, ClassOption... options)
+            throws IllegalAccessException {
+        Lookup lookup = caller.defineHiddenClass(bytes, initialize, options);
+        generated.add(new PackedGeneratedClass(realm, lookup.lookupClass()));
+        return lookup;
     }
 
     // Or event handler API... ClassDefined
     public void addListener() {}
-//
-//    
-//    /**
-//     * Provides a Classgen
-//     * @return stuff
-//     */
-//    @Provide
-//    Classgen provide() {
-//        throw new UnsupportedOperationException();        //System.out.println(context.extension);
-//
-//    }
-//    
-//    interface ClassOption {}
 
-    public final class Sub extends ExtensionSupport {
-
-        public Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException {
-            throw new UnsupportedOperationException();
-        }
-
-        // require runtime
-        
-        // require buildtime
-        
-//        public BeanConfiguration<Classgen> runtime() {
-//            throw new UnsupportedOperationException();
-//        }
-//        
-//        @Provide
-//        Classgen provide(ProvideContext context) {
-//            //System.out.println(context.extension);
-//            throw new UnsupportedOperationException();
-//        }
-    }
 }

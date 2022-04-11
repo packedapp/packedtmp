@@ -94,6 +94,10 @@ public final class HookModel {
         String s = simpleName;
         if (s == null) {
             s = simpleName = clazz.getSimpleName();
+            // TODO Some things to do for anonymous classes
+            if (s.length() == 0) {
+                s = simpleName = "Anon";
+            }
         }
         return s;
     }

@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import app.packed.bean.operation.OperationMirror;
@@ -32,10 +34,22 @@ import app.packed.bean.operation.OperationMirror;
 //// TreeView<ContainerMirror>
 //// TreeView<T extends Extension<?>>
 public interface ComponentMirrorTree extends ComponentMirrorSet {
-    ComponentMirror root(); // Optional<CM> if we have empty trees.
 
+    /**
+     * @return
+     * 
+     * @see ComponentMirror#operations()
+     */
     default List<OperationMirror> operations() {
-        throw new UnsupportedOperationException();
+        ArrayList<OperationMirror> operations = new ArrayList<>();
+//        for (ComponentMirror cm : this) {
+//            if (cm instanceof BeanMirror m) {
+//                operations.addAll(m.operations());
+//            }
+//        }
+        return Collections.unmodifiableList(operations);
     }
+
+    /** {@return the root of the tree.} */
+    ComponentMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
 }
-// interface ComponentMirrorSet

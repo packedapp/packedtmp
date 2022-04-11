@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -28,6 +30,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
+import packed.internal.util.StreamUtil;
 
 /**
  * A mirror of a component.
@@ -42,19 +45,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
-    /** {@return the component's assembly.} */
+    /** {@return the assembly where the component is defined.} */
     AssemblyMirror assembly();
 
     /** {@return an unmodifiable view of all of the children of this component.} */
-    Collection<ComponentMirror> children();
-    
-    /** {@return a component tree with this component as the root.} */
-    default ComponentMirrorTree components() {
-        throw new UnsupportedOperationException();
-    }
-
-    // remove this
-    Stream<ComponentMirror> componentStream();
+    /* Sequenced */ Collection<ComponentMirror> children();
 
     /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
     int depth();
@@ -72,12 +67,8 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
      */
     String name();
 
-    /** {@return a collection of all of the operations declared by the bean.} */
-    Collection<OperationMirror> operations();
-
-    default Collection<OperationMirror> operations(boolean includeSynthetic) {
-        throw new UnsupportedOperationException();
-    }
+    /** {@return a stream of all of the operations declared by the bean.} */
+    Stream<OperationMirror> operations();
 
     /**
      * Returns a collection of all of the operations declared by the bean of the specified type.
@@ -87,14 +78,19 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
      *            the type of operations to include
      * @return a collection of all of the operations declared by the bean of the specified type.
      */
-    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
-        throw new UnsupportedOperationException();
+    default <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return StreamUtil.filterAssignable(operationType, operations());
     }
 
     /** {@return the owner of the component.} */
     Realm owner();
 
-    /** {@return the parent component of this component. Or empty if the root container.} */
+    /**
+     * {@return the parent component of this component. Or empty if the root container.}
+     * 
+     * @see BeanMirror#container()
+     */
     Optional<ContainerMirror> parent();
 
     /** {@return the path of this component} */
@@ -146,10 +142,13 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
      */
     ComponentMirror.Relation relationTo(ComponentMirror other);
 
+    /** {@return a stream containing this mirror and all descendents.} */
+    Stream<ComponentMirror> stream();
+
     // Now that we have parents...
     // add Optional<Component> tryResolve(CharSequence path);
     // Syntes ikke vi skal have baade tryResolve or resolve...
-  //  ComponentMirror resolve(CharSequence path);
+    // ComponentMirror resolve(CharSequence path);
 
 //    /**
 //     * Returns a stream consisting of this component and all of its descendants in any order.
@@ -234,7 +233,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
         boolean inSameContainer();
 
         // inSameLifetime
-        
+
         boolean isInSame(ComponentScope scope);
 
         /**
@@ -316,67 +315,3 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
     // https://en.wikipedia.org/wiki/Tree_structure
     // description()? -> Same, parent, child, descendend, ancestor,
 }
-
-//Skal laves til klasse syntes jeg
-//IDK, faar vi f.eks. en ExtensionBeanMirror???? Jeg har svaert ved at se det.
-////EntityBeanMirror...
-////Men er det ikke bedre med EntityMirror { BeanMirror bean()}???
-//Kommer i
-
-
-///**
-// * <p>
-// * This operation does not allocate any objects internally.
-// * 
-// * @implNote Implementations of this method should never generate object (which is a bit difficult
-// * @param action
-// *            oops
-// */
-// We want to take some options I think. But not as a options
-// Well it is more or less the same options....
-// Tror vi laver options om til en klasse. Og saa har to metoder.
-// Og dropper varargs..
-// void traverse(Consumer<? super Component> action);
-
-// Naah feature er vel readonly...
-// use kan komme paa ComponentContext og maaske ComponentConfiguration?
-
-// To maader,
-/// Et service object der tager en ComponentContext...
-///// Det betyder jo ogsaa at vi ikke kan have attributemap paa Component
-///// Fordi man ikke skal kunne f.eks. schedulere uden component context'en
-
-//// En ComponentContext.use(XXXX class)
-
-///**
-//* Returns the type of component.
-//* 
-//* @return the type of component
-//*/
-//ComponentDescriptor model();
-
-//  /**
-//* Registers an action that will be performed whenever a name is assigned to the component.
-//* <p>
-//* This method is mainly used by extensions.
-//* 
-//* @param action
-//*            the action to be performed when the name of the component is finalized
-//*/
-//default void onNamed(Consumer<? super ComponentConfiguration> action) {
-//throw new UnsupportedOperationException();
-//}
-// SystemView/Descriptor
-// Contracts...
-// {
-// Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
-// F.eks. All dependencies for a component... Is this really a feature??
-// Dependencies for a component is the once only the component uses. For a container it is all
-// required dependencies for the module
-// Features vs en selvstaendig komponent....
-//// Altsaa det ser jo dumt ud hvis vi har
-//// /Foo
-//// /Foo/Service<String>
-//// /Foo/AnotherComponent
-
-///// Dvs ogsaa scheduled jobs bliver lagt paa som meta data, som en feature

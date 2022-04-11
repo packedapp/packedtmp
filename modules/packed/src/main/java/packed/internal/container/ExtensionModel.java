@@ -30,6 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
+import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
@@ -77,6 +78,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
     private final String name;
 
+    private final Realm realm;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -85,6 +88,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
+        this.realm = Realm.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.depth = builder.depth;
         this.dependencies = ExtensionDependencySet.of(builder.dependencies);
@@ -176,6 +180,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return name;
     }
 
+    public Realm realm() {
+        return realm;
+    }
+    
     /**
      * Creates a new extension instance.
      * 
@@ -257,7 +265,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             if (depende != null) {
                 dependsOn(false, depende.extensions());
             }
-            
+
             for (Class<? extends Extension<?>> dependencyType : pendingLoadDependencies) {
                 ExtensionModel model = Loader.load(dependencyType, loader);
                 depth = Math.max(depth, model.depth + 1);

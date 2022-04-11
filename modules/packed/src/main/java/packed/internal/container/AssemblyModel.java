@@ -18,13 +18,7 @@ import packed.internal.util.ThrowableUtil;
 /** A model of an {@link Assembly}. */
 public final /* primitive */ class AssemblyModel {
 
-    private final ContainerHook.Processor[] hooks;
-
-    private AssemblyModel(ContainerHook.Processor[] hooks) {
-        this.hooks = requireNonNull(hooks);
-    }
-
-    /** Cached models. */
+    /** Cached models of assembly classes. */
     private final static ClassValue<AssemblyModel> MODELS = new ClassValue<>() {
 
         @Override
@@ -62,15 +56,22 @@ public final /* primitive */ class AssemblyModel {
         }
     };
 
-    public void preBuild(ContainerConfiguration configuration) {
-        for (ContainerHook.Processor h : hooks) {
-            h.beforeBuild(configuration);
-        }
+    /** Any hooks that have been specified on the assembly. */
+    private final ContainerHook.Processor[] hooks;
+
+    private AssemblyModel(ContainerHook.Processor[] hooks) {
+        this.hooks = requireNonNull(hooks);
     }
 
     public void postBuild(ContainerConfiguration configuration) {
         for (ContainerHook.Processor h : hooks) {
             h.afterBuild(configuration);
+        }
+    }
+
+    public void preBuild(ContainerConfiguration configuration) {
+        for (ContainerHook.Processor h : hooks) {
+            h.beforeBuild(configuration);
         }
     }
 

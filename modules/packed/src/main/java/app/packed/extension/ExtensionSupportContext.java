@@ -15,14 +15,21 @@
  */
 package app.packed.extension;
 
+import app.packed.component.Realm;
+import packed.internal.container.PackedExtensionSupportContext;
+
 /**
  *
  */
-// Tror
-public interface ExtensionSupportContext {
-    Class<? extends Extension<?>> extensionType();
-    
+// Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
+// Men at vi binder den til en container...
+public sealed interface ExtensionSupportContext permits PackedExtensionSupportContext{
+
     void checkConfigurable();
+
+    Class<? extends Extension<?>> extensionType();
+
+    Realm realm();
 }
 //
 //// checkExtendable...

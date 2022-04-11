@@ -15,17 +15,16 @@
  */
 package app.packed.classgen;
 
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodHandles.Lookup.ClassOption;
+import app.packed.component.Realm;
 
 /**
  *
  */
-// Skal vi ogsaa bare smide AOP ind her...
-// Det er jo en liden hemmelighed at vi genere klasser.
-// Eller dynamiske proxies
-
-//@Packlet(extension = ClassgenExtension.class)
-public interface Classgen {
-    Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException;
+public interface GeneratedClassMirror {
+    
+    Realm generatedBy();
+    
+    Class<?> generatedClass();
 }
+
+// GenereatedFor??
