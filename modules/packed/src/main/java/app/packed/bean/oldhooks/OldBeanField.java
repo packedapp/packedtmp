@@ -134,8 +134,6 @@ public abstract class OldBeanField {
      * 
      * @return the variable
      * @see Lookup#unreflectVarHandle(Field)
-     * @see OldBeanFieldHook#allowGet()
-     * @see OldBeanFieldHook#allowSet()
      * @throws UnsupportedOperationException
      *             if the extension field has not both get and set access
      */
@@ -236,8 +234,6 @@ class ZeanFieldProcessorOldCrap {
      * 
      * @param argument
      *            the argument to set
-     * @throws UnsupportedOperationException
-     *             if {@link OldBeanFieldHook#allowSet()} is false
      * @throws ClassCastException
      *             if the specified argument is not assignable to the field
      */

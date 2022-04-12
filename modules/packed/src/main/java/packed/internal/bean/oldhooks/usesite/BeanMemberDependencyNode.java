@@ -23,6 +23,8 @@ import java.lang.reflect.Modifier;
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.hooks.DependencyHolder;
+import packed.internal.bean.hooks.KeyProvidable;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.service.ContainerInjectionManager;
@@ -37,12 +39,33 @@ import packed.internal.lifetime.PoolEntryHandle;
 public final class BeanMemberDependencyNode extends DependencyNode {
 
     @Nullable
-    protected final UseSiteMemberHookModel sourceMember;
+    protected final KeyProvidable sourceMember;
 
     @Nullable
     protected final BeanMemberServiceSetup service;
     
     public BeanMemberDependencyNode(BeanSetup bean, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+        super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
+
+        if (smm.provideAskey != null) {
+            if (!Modifier.isStatic(smm.getModifiers()) && bean.injectionManager.singletonHandle == null) {
+                throw new BuildException("Not okay)");
+            }
+            ContainerInjectionManager sbm = bean.parent.injectionManager;
+            ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
+            sbm.addService(sa);
+        } else {
+            this.service = null;
+        }
+        
+        this.sourceMember = requireNonNull(smm);
+
+        if (!Modifier.isStatic(smm.getModifiers())) {
+            dependencyProviders[0] = bean.injectionManager;
+        }
+    }
+    
+    public BeanMemberDependencyNode(BeanSetup bean, DependencyHolder smm, DependencyProducer[] dependencyProviders) {
         super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
 
         if (smm.provideAskey != null) {

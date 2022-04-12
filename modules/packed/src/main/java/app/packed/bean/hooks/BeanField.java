@@ -29,7 +29,6 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Variable;
 import app.packed.bean.oldhooks.OldBeanField;
-import app.packed.bean.oldhooks.OldBeanFieldHook;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 
@@ -81,8 +80,8 @@ public interface BeanField {
      * 
      * @return the variable
      * @see Lookup#unreflectVarHandle(Field)
-     * @see OldBeanFieldHook#allowGet()
-     * @see OldBeanFieldHook#allowSet()
+     * @see BeanField.Hook#allowGet()
+     * @see BeanField.Hook#allowSet()
      * @throws UnsupportedOperationException
      *             if the extension field has not both get and set access
      */
@@ -115,4 +114,10 @@ public interface BeanField {
         // Class<Supplier<? extends BeanMethod>> bootstrap();
     }
 
+}
+interface Sandbox {
+    
+    // Can only read stuff...
+    // Then we can just passe it off to anyone
+    BeanField immutable();
 }

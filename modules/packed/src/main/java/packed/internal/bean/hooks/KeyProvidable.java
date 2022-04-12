@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.internal.bean.hooks;
+
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 
 /**
  *
  */
-public class XFactoryType2 {
+public abstract class KeyProvidable {
     
-    final String xreturnVar;
+    @Nullable
+    public final Key<?> provideAskey;
 
-    private XFactoryType2(String returnVar) {
-        this.xreturnVar = returnVar;
-    }
-    
-    public void foo() {
-        
+    protected KeyProvidable(Key<?> provideAskey) {
+        this.provideAskey = provideAskey;
     }
 }

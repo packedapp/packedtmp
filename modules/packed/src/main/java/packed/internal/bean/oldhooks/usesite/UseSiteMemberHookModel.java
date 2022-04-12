@@ -32,6 +32,7 @@ import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.hooks.KeyProvidable;
 import packed.internal.bean.oldhooks.AbstractHookModel;
 import packed.internal.bean.oldhooks.ClassHookModel;
 import packed.internal.component.ComponentSetup;
@@ -42,18 +43,15 @@ import packed.internal.inject.InternalDependency;
 /**
  *
  */
-public sealed abstract class UseSiteMemberHookModel  permits UseSiteFieldHookModel, UseSiteMethodHookModel {
+public sealed abstract class UseSiteMemberHookModel extends KeyProvidable permits UseSiteFieldHookModel, UseSiteMethodHookModel {
 
     /** Dependencies that needs to be resolved. */
     public final List<InternalDependency> dependencies;
-
-    @Nullable
-    public final Consumer<? super ComponentSetup> processor;
+//
+//    @Nullable
+//    public final Consumer<? super ComponentSetup> processor = null;
 
     public final boolean provideAsConstant;
-
-    @Nullable
-    public final Key<?> provideAskey;
 
     // Jeg tror man loeber alle parameterene igennem og ser om der
     // er en sidecar provide der passer dem
@@ -63,10 +61,10 @@ public sealed abstract class UseSiteMemberHookModel  permits UseSiteFieldHookMod
     private final Supplier<? extends OperationMirror> supplier;
 
     UseSiteMemberHookModel(Builder builder, List<InternalDependency> dependencies) {
+        super(builder.provideAsKey);
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = builder.provideAsConstant;
-        this.provideAskey = builder.provideAsKey;
-        this.processor = builder.processor;
+        // this.processor = builder.processor;
         this.supplier = builder.operation == null ? null : builder.operation.supplier;
         if (builder instanceof UseSiteMethodHookModel.Builder bb) {
             System.out.println("XXXX " + bb.shared.methodUnsafe);
@@ -83,9 +81,11 @@ public sealed abstract class UseSiteMemberHookModel  permits UseSiteFieldHookMod
         os.mirrorSupplier = supplier;
 
         bean.parent.injectionManager.addConsumer(node);
-        if (processor != null) {
-            processor.accept(bean);
-        }
+        
+        
+//        if (processor != null) {
+//            processor.accept(bean);
+//        }
     }
 
     public abstract DependencyProducer[] createProviders();

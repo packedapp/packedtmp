@@ -25,6 +25,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.AnnotationMaker;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.oldhooks.OldBeanField;
 import app.packed.bean.oldhooks.OldBeanFieldHook;
@@ -83,9 +84,13 @@ import packed.internal.bean.oldhooks.usesite.UseSiteFieldHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(BeanExtension.class)
+
 @OldBeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
 @OldBeanMethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+
 @BeanMethod.Hook(allowInvoke = true, extension = BeanExtension.class)
+@BeanField.Hook(allowGet = true, extension = BeanExtension.class)
+
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);

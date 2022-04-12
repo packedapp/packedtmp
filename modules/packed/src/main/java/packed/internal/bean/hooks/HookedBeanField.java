@@ -31,7 +31,7 @@ import packed.internal.base.variable.FieldVariable;
  */
 public class HookedBeanField implements BeanField {
 
-    private final BeanScanner scanner;
+    public final BeanScanner scanner;
     
     private final Field field;
 

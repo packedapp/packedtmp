@@ -2,21 +2,33 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
+
+import app.packed.bean.hooks.BeanField;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
+import packed.internal.bean.BeanOperationManager;
+import packed.internal.bean.BeanOperationSetup;
+import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanDriver;
+import packed.internal.bean.hooks.BeanScanner;
+import packed.internal.bean.hooks.FieldHelper;
+import packed.internal.bean.hooks.HookedBeanField;
+import packed.internal.bean.oldhooks.usesite.BeanMemberDependencyNode;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.inject.DependencyNode;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension for creating new beans.
  */
 public class BeanExtension extends Extension<BeanExtension> {
-    
+
     /** The container we are installing beans into. */
     final ContainerSetup container;
 
@@ -28,6 +40,27 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     /* package-private */ BeanExtension(ExtensionConfiguration configuration) {
         this.container = ((ExtensionSetup) configuration).container;
+    }
+
+    @Override
+    protected void hookOnBeanField(Class<? extends Annotation> annotation, BeanField field) {
+        if (true) {
+            return;
+        }
+        BeanScanner f = ((HookedBeanField) field).scanner;
+        BeanSetup bean = f.bean;
+        //new FieldHelper(null, null);
+        FieldHelper fh = null;
+        DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+
+        BeanOperationManager bom = bean.operations;
+        BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
+        bom.addOperation(os);
+        // os.mirrorSupplier = supplier;
+
+        bean.parent.injectionManager.addConsumer(node);
+
+        super.hookOnBeanField(annotation, field);
     }
 
     /**

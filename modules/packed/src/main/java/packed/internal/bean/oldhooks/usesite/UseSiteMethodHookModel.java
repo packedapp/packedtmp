@@ -22,14 +22,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.oldhooks.OldBeanMethod;
 import packed.internal.bean.oldhooks.HookedMethodProvide;
 import packed.internal.bean.oldhooks.MethodHookBootstrapModel;
-import packed.internal.component.ComponentSetup;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
@@ -193,10 +191,10 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             provideAsKey = key;
         }
 
-        public static void registerProcessor(OldBeanMethod sidecar, Consumer<? super ComponentSetup> processor) {
-            Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
-            b.processor = processor;
-        }
+//        public static void registerProcessor(OldBeanMethod sidecar, Consumer<? super ComponentSetup> processor) {
+//            Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
+//            b.processor = processor;
+//        }
     }
 
     /**
