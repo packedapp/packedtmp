@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
 import app.packed.bean.hooks.OldBeanClass;
-import app.packed.bean.hooks.BeanClassHook;
+import app.packed.bean.hooks.OldBeanClassHook;
 
 /**
  *
@@ -42,7 +42,7 @@ public final class ClassHookModel extends AbstractHookModel<OldBeanClass> {
 
         @Override
         protected ClassHookModel computeValue(Class<?> type) {
-            BeanClassHook ec = type.getAnnotation(BeanClassHook.class);
+            OldBeanClassHook ec = type.getAnnotation(OldBeanClassHook.class);
             return ec == null ? null : new Builder(ec.bootstrap(), ec.allowAllAccess()).build();
         }
     };

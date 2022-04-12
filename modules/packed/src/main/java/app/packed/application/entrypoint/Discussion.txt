@@ -1,2 +1,8 @@
 Q) Skal vi ligge under .application? eller under .entrypoint
 
+Q) Hvad goer vi med fx CliArgumentMirror??? 
+   Er det CliArgumentMirror extends EntryPointMirror
+   Eller EntryPointMirror->CliArgument
+   Det vil give mening at extende EntryPointMirror
+   Saaledes at man slipper for at have en peger fra
+   EntryPointMirror->CliArgument og CliArgument->EntryPointMirror

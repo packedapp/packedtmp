@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Documented
-public @interface BeanClassHook {
+public @interface OldBeanClassHook {
 
     // Maybe we allow injection of a Lookup object.
     // Eller ogsaa har vi metoderne direkte paa Bootstrap. Jaa
@@ -59,7 +59,7 @@ public @interface BeanClassHook {
     // Tror det er noget med vi kan filtere fields/constructor/method/...
     public interface MemberOption {
 
-        public static BeanClassHook.MemberOption declaredOnly() {
+        public static OldBeanClassHook.MemberOption declaredOnly() {
             throw new UnsupportedOperationException();
         }
     }

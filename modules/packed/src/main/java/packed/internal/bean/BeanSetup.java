@@ -14,6 +14,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.hooks.sandbox.BeanInfo;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
@@ -28,12 +29,13 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.hooks.impl.BeanScanner;
 import packed.internal.inject.BeanInjectionManager;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public final class BeanSetup extends ComponentSetup {
+public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
@@ -58,6 +60,10 @@ public final class BeanSetup extends ComponentSetup {
         this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanClass());
         this.operations = driver.operations;
         this.injectionManager = new BeanInjectionManager(this, driver);
+
+        if (driver.sourceType != SourceType.NONE) {
+            new BeanScanner(this, driver.beanClass()).scan();
+        }
 
         // Wire the hook model
         if (hookModel != null) {
@@ -89,7 +95,7 @@ public final class BeanSetup extends ComponentSetup {
     public Stream<ComponentSetup> stream() {
         return Stream.of(this);
     }
-    
+
     /** A build-time bean mirror. */
     public record BuildTimeBeanMirror(BeanSetup bean) implements BeanMirror {
 
@@ -194,5 +200,29 @@ public final class BeanSetup extends ComponentSetup {
         public String toString() {
             return bean.toString();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> beanClass() {
+        return driver.beanClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanKind beanKind() {
+        return driver.beanKind();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension<?>> operator() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Realm owner() {
+        return driver.realm.realm();
     }
 }

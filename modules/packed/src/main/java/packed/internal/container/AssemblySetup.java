@@ -30,7 +30,7 @@ import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.Composer;
-import app.packed.container.ContainerHook.Processor;
+import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.ComponentSetup;
 
@@ -122,7 +122,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
 
         /** {@inheritDoc} */
         @Override
-        public List<Class<? extends Processor>> containerHooks() {
+        public List<Class<? extends ContainerHook>> containerHooks() {
             throw new UnsupportedOperationException();
         }
 
@@ -141,7 +141,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public Class<? extends Assembly> type() {
+        public Class<? extends Assembly> assemblyType() {
             // Probably does not work for composer
             // Needs to check isAssignable
             return (Class<? extends Assembly>) assembly.realmType();

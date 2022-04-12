@@ -63,7 +63,7 @@ public class VarUseCases {
         /** {@inheritDoc} */
         @Override
         protected void build() {
-            String name = beanInfo().beanType().getCanonicalName();
+            String name = beanInfo().beanClass().getCanonicalName();
             injector().inject(new Factory1<RuntimeLoggerManager, Logger>(l -> l.newLogger(name)) {});
         }
 
@@ -86,8 +86,8 @@ public class VarUseCases {
         /** {@inheritDoc} */
         @Override
         protected void build() {
-            String name = beanInfo().beanType().getCanonicalName();
-            Module module = beanInfo().beanType().getModule();
+            String name = beanInfo().beanClass().getCanonicalName();
+            Module module = beanInfo().beanClass().getModule();
             injector().inject(new Factory0<Logger>(() -> LoggerFinder.getLoggerFinder().getLogger(name, module)) {});
         }
 

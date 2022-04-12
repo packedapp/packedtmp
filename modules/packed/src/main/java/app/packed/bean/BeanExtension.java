@@ -16,8 +16,8 @@ import packed.internal.inject.service.runtime.AbstractServiceLocator;
  * An extension for creating new beans.
  */
 public class BeanExtension extends Extension<BeanExtension> {
-
-    /** The container we installing beans into. */
+    
+    /** The container we are installing beans into. */
     final ContainerSetup container;
 
     /**

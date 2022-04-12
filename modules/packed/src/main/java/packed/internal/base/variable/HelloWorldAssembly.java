@@ -15,6 +15,7 @@
  */
 package packed.internal.base.variable;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.entrypoint.Main;
 import app.packed.bean.operation.OperationMirror;
@@ -33,7 +34,7 @@ public class HelloWorldAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-//        App.run(new HelloWorldAssembly());
+        App.run(new HelloWorldAssembly());
 //
 //        System.out.println();
 //        App.driver().print(new HelloWorldAssembly());

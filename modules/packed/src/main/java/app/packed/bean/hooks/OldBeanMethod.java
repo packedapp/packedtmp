@@ -24,7 +24,6 @@ import java.util.Optional;
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import app.packed.bean.operation.OperationConfiguration;
-import app.packed.hooks.BeanMethod;
 import app.packed.inject.FactoryType;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
@@ -34,7 +33,7 @@ import packed.internal.util.StackWalkerUtil;
  * <p>
  * Implementations must have a no-args constructor.
  */
-public abstract class OldBeanMethod extends BeanMethod {
+public abstract class OldBeanMethod {
 
     /** The builder used for bootstrapping. Updated by {@link UseSiteMethodHookModel}. */
     private UseSiteMethodHookModel.@Nullable Builder builder;
@@ -132,11 +131,11 @@ public abstract class OldBeanMethod extends BeanMethod {
     public final MethodHandle methodHandle() {
         return builder().methodHandle();
     }
-
-    public final <T extends BootstrapClassNest> T nestWith(Class<T> classBootstrap) {
-        // Must be in the same module as...
-        throw new UnsupportedOperationException();
-    }
+//
+//    public final <T extends BootstrapClassNest> T nestWith(Class<T> classBootstrap) {
+//        // Must be in the same module as...
+//        throw new UnsupportedOperationException();
+//    }
 
     public final OperationConfiguration oldOperation() {
         return builder().operation();
@@ -161,7 +160,6 @@ public abstract class OldBeanMethod extends BeanMethod {
     // Extension
     // ExtensionContext
 
-    @Override
     public final FactoryType type() {
         return FactoryType.ofExecutable(method());
     }

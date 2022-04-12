@@ -17,8 +17,8 @@ package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.ApplicationDescriptor;
-import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
+import app.packed.application.ApplicationInfo;
+import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
@@ -42,7 +42,7 @@ public final class ApplicationSetup {
     /** The tree this service manager is a part of. */
     public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
     
-    public final ApplicationDescriptor descriptor;
+    public final ApplicationInfo descriptor;
 
     /** The driver responsible for building the application. */
     public final PackedApplicationDriver<?> driver;
@@ -102,7 +102,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationDescriptor descriptor() {
+        public ApplicationInfo descriptor() {
             return application.descriptor;
         }
 

@@ -1,9 +1,9 @@
 package app.packed.lifetime;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.OperationMirror;
@@ -35,19 +35,12 @@ import packed.internal.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 //https://thesaurus.plus/related/life_cycle/lifetime
 
 public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeMirror {
-
-    // Eneste ting er fx noget med en Grund fordi operationer ikke har en LifetimeState
-    // Fx
-
-    // Hvad med sync/async start/stop???
-    List<OperationMirror> operations(LifetimePhase phase);
-
-    // Stable across application builds
+    
     /** {@return a collection view of all beans that are part of the lifetime.} */
-    /* Sequenced */ Collection<BeanMirror> beans();
+    Stream<BeanMirror> beans();
 
     /** {@return any child lifetimes of this lifetime.} */
-    Set<LifetimeMirror> children();
+    Stream<LifetimeMirror> children();
 
     /** {@return all components that are part of the lifetime.} */
     ComponentMirrorTree components();
@@ -55,8 +48,11 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
     /** {@return the type of lifetime.} */
     LifetimeKind lifetimeType();
 
+    // Hvad med sync/async start/stop???
+    List<OperationMirror> operations(LifetimePhase phase);
+
     /** {@return any parent lifetime this lifetime might have.} */
-    Optional<LifetimeMirror> parent(); // beanLifecycleSequence
+    Optional<LifetimeMirror> parent();
 }
 
 //Things a lifetime does

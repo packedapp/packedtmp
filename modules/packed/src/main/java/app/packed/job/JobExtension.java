@@ -8,7 +8,4 @@ public class JobExtension extends Extension<JobExtension> {
     // Set result type
     // parseAssembly()
     
-//    static {
-//        $dependsOnAlways(ApplicationRuntimeExtension.class);
-//    }
 }

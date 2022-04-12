@@ -19,6 +19,10 @@ package app.packed.hooks;
  *
  */
 // Provides objects for member injection (parameter, field)
-public abstract class BeanInjector {
+public interface BeanVarInjector {
 
+    
+    public @interface Hook {
+        
+    }
 }

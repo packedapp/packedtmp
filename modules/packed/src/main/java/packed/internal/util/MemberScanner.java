@@ -52,6 +52,9 @@ public abstract class MemberScanner {
         HashSet<Package> packages = new HashSet<>();
         HashMap<Helper, HashSet<Package>> types = new HashMap<>();
 
+        // Hmm, skal skrive noget om de kan komme i enhver order
+        // Lige nu kommer metoder foerend fields
+        
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
         for (Method m : classToScan.getMethods()) {

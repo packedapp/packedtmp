@@ -28,7 +28,9 @@ import app.packed.extension.Extension;
 @Retention(RUNTIME)
 @Documented
 //https://stackoverflow.com/questions/4797465/difference-between-hooks-and-abstract-methods-in-java
-public @interface BeanMethodHook {
+
+@Deprecated
+public @interface OldBeanMethodHook {
 
     /**
      * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.

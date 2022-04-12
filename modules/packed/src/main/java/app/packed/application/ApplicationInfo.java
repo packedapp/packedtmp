@@ -12,7 +12,8 @@ import packed.internal.application.PackedApplicationDescriptor;
 /**
  * An immutable descriptor of an application.
  */
-public sealed interface ApplicationDescriptor permits PackedApplicationDescriptor {
+// Or Descriptor
+public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
 //
 //    boolean isMirror();
 //    

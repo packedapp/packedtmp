@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationInfo;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentRealm;
@@ -79,7 +79,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     private ContainerConfiguration configuration;
 
     /** {@return a descriptor for the application being built.} */
-    protected final ApplicationDescriptor application() {
+    protected final ApplicationInfo application() {
         return container().container.application.descriptor;
     }
 

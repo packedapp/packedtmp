@@ -24,6 +24,7 @@ import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
+import app.packed.extension.ExtensionSupportContext;
 import app.packed.extension.InternalExtensionException;
 
 /**
@@ -36,11 +37,11 @@ public class EntryPointSupport extends ExtensionSupport {
     final EntryPointExtension extension;
 
     /** The extension using the this class. */
-    final Class<? extends Extension<?>> extensionType;
+    final ExtensionSupportContext context;
 
-    EntryPointSupport(EntryPointExtension extension, Class<? extends Extension<?>> extensionType) {
+    EntryPointSupport(EntryPointExtension extension, ExtensionSupportContext context) {
         this.extension = requireNonNull(extension);
-        this.extensionType = requireNonNull(extensionType);
+        this.context = context;
     }
 
     public Optional<Class<? extends Extension<?>>> managedBy() {
@@ -59,6 +60,24 @@ public class EntryPointSupport extends ExtensionSupport {
     // for 2 forskellige extensions
 
     // return mirror?
+    
+    public int registerEntryPoint(boolean isMain) {
+
+        // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
+        // Saa det er kun selve invokationen der sker her
+
+        // method.reserveMethodHandle(EC);
+        // Grim kode pfa ExtensoinSupportContest i constructoren
+        if (context == null) {
+            extension.shared().takeOver(EntryPointExtension.class);
+        } else {
+            extension.shared().takeOver(context.extensionType());
+        }
+        if (isMain) {
+            extension.hasMain = true;
+        }
+        return 0;
+    }
     public int registerEntryPoint(OldBeanMethod method) {
         // BeanMethod -> Actual Java Method, or Function
 
@@ -66,9 +85,11 @@ public class EntryPointSupport extends ExtensionSupport {
         // Saa det er kun selve invokationen der sker her
 
         // method.reserveMethodHandle(EC);
-        extension.shared().takeOver(extensionType);
-        if (method instanceof MainBootstrap) {
-            extension.hasMain = true;
+        // Grim kode pfa ExtensoinSupportContest i constructoren
+        if (context == null) {
+            extension.shared().takeOver(EntryPointExtension.class);
+        } else {
+            extension.shared().takeOver(context.extensionType());
         }
         return 0;
     }

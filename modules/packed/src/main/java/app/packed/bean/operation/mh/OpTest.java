@@ -31,6 +31,7 @@ public class OpTest {
     static final MethodHandle PRINT;
     static final MethodHandle TIMES_TWO;
     static final MethodHandle before, after, hi;
+    
     static {
         Lookup l = MethodHandles.lookup();
         try {

@@ -24,7 +24,7 @@ import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
+import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;

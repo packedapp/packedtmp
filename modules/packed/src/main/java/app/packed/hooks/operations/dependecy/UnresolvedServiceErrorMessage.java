@@ -18,7 +18,6 @@ package app.packed.hooks.operations.dependecy;
 /**
  *
  */
-// Idelt set kunne vi maaske kalde noget fra en static {}
 
 
 // Hmm det den ikke daekker er fx. @ExtractHeader

@@ -23,7 +23,7 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.bean.hooks.OldBeanField;
 import app.packed.bean.hooks.scrap.ScopedProvide;
-import app.packed.bean.hooks.BeanFieldHook;
+import app.packed.bean.hooks.OldBeanFieldHook;
 import app.packed.extension.InternalExtensionException;
 
 /** A model of a {@link OldBeanField field bootstrap} implementation. */
@@ -64,7 +64,7 @@ public final class FieldHookModel extends AbstractHookModel<OldBeanField> {
             super(c);
         }
 
-        public Builder(BeanFieldHook afs) {
+        public Builder(OldBeanFieldHook afs) {
             super(afs.processor());
         }
 

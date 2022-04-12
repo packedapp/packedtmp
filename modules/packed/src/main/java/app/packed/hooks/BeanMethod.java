@@ -15,21 +15,27 @@
  */
 package app.packed.hooks;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.hooks.BeanClassHook;
-import app.packed.bean.hooks.BeanMethodHook;
+import app.packed.bean.hooks.OldBeanClassHook;
+import app.packed.bean.hooks.OldBeanField;
+import app.packed.bean.hooks.OldBeanMethod;
+import app.packed.bean.hooks.OldBeanMethodHook;
+import app.packed.extension.Extension;
 import app.packed.inject.FactoryType;
 
 /**
  *
  */
-public abstract class BeanMethod {
-
-    /** Create a new bean method instance. */
-    protected BeanMethod() {}
+public interface BeanMethod {
 
     /**
      * Returns the modifiers of the method.
@@ -38,16 +44,16 @@ public abstract class BeanMethod {
      * @see Method#getModifiers()
      * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
      */
-    public abstract int getModifiers();
+    int getModifiers();
 
-    public abstract boolean hasInvokeAccess();
+    boolean hasInvokeAccess();
 
     /**
      * Returns the underlying method.
      * 
      * @return the underlying method
      */
-    public abstract Method method();
+    Method method();
 
     /**
      * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
@@ -55,17 +61,41 @@ public abstract class BeanMethod {
      * 
      * @return a direct method handle to the underlying method
      * @see Lookup#unreflect(Method)
-     * @see BeanMethodHook#allowInvoke()
-     * @see BeanClassHook#allowAllAccess()
+     * @see OldBeanMethodHook#allowInvoke()
+     * @see OldBeanClassHook#allowAllAccess()
      * 
      * @throws UnsupportedOperationException
-     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or BeanClassHook#allowAllAccess()
+     *             if invocation access has not been granted via {@link OldBeanMethodHook#allowInvoke()} or BeanClassHook#allowAllAccess()
      */
-    public abstract MethodHandle methodHandle();
+    MethodHandle methodHandle();
     
-    public BeanOperation operation() {
-        throw new UnsupportedOperationException();
+    BeanOperation operation();
+    
+    FactoryType type();
+    
+    
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface Hook {
+
+        /**
+         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+         * <p>
+         * Methods such as {@link OldBeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+         * the value of this attribute is {@code true}.
+         * 
+         * @return whether or not the implementation is allowed to invoke the target method
+         * 
+         * @see OldBeanMethod#methodHandle()
+         */
+        // maybe just invokable = true, idk og saa Field.gettable and settable
+        boolean allowInvoke() default false; // allowIntercept...
+
+        /** The hook's {@link OldBeanField} class. */
+        Class<? extends Extension<?>> extension();
+
+        // Altsaa vi har jo ikke lukket for at vi senere kan goere nogle andre ting...
+        // Class<Supplier<? extends BeanMethod>> bootstrap();
     }
-    
-    public abstract FactoryType type();
 }

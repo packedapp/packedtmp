@@ -19,6 +19,6 @@ package app.packed.hooks;
  *
  */
 // Like BeanMethod... Only creatable via BeanClass
-public class BeanConstructor {
+public interface BeanConstructor {
 
 }

@@ -20,19 +20,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import app.packed.application.BuildException;
-import app.packed.bean.hooks.OldBeanMethod;
-import app.packed.bean.hooks.BeanMethodHook;
-import app.packed.extension.ExtensionMember;
-import app.packed.inject.service.ServiceExtension;
-import packed.internal.application.EntryPointSetup;
-import packed.internal.application.EntryPointSetup.MainThreadOfControl;
-import packed.internal.bean.BeanSetup;
-import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
+import app.packed.hooks.BeanMethod;
 
 /**
  * Trying to build an application with more than a single method annotated with this annotation will fail with
@@ -47,41 +37,14 @@ import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
  * <p>
  * Annotated methods will never be invoked more than once??? Well if we have some retry mechanism
  */
+
 // A single method. Will be executed.
 // and then shutdown container down again
 // Panic if it fails???? or do we not wrap exception??? I think we wrap...
 // We always wrap in container panic exception
+
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionMember(EntryPointExtension.class)
-@BeanMethodHook(bootstrap = MainBootstrap.class, extension = EntryPointExtension.class)
+@BeanMethod.Hook(allowInvoke = true, extension = EntryPointExtension.class)
 public @interface Main {}
-
-class MainBootstrap extends OldBeanMethod {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void bootstrap() {
-        MethodHandle mh = methodHandle();
-        Method m = method();
-        UseSiteMethodHookModel.Builder.registerProcessor(this, c -> {
-            // Okay we do not automatically
-            // Der er noget constant pool thingeling der ikke bliver kaldt
-            // ordentligt hvis der ikke er registered en ServiceManagerSetup
-
-            EntryPointExtension e = c.parent.useExtension(EntryPointExtension.class);
-            new EntryPointSupport(e, EntryPointExtension.class).registerEntryPoint(this);
-
-            e.hasMain = true;
-            c.parent.useExtension(ServiceExtension.class);
-            c.application.entryPoints = new EntryPointSetup();
-
-            MainThreadOfControl mc = c.application.entryPoints.mainThread();
-            mc.isStatic = Modifier.isStatic(m.getModifiers());
-            mc.cs = (BeanSetup) c;
-            mc.methodHandle = mh;
-        });
-        oldOperation().useMirror(() -> new EntryPointMirror(0));
-    }
-}

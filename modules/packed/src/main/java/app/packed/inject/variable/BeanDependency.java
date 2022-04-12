@@ -25,7 +25,7 @@ import java.util.OptionalLong;
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.bean.hooks.OldBeanClass;
-import app.packed.bean.hooks.BeanConstructor;
+import app.packed.bean.hooks.OldBeanConstructor;
 import app.packed.bean.hooks.OldBeanField;
 import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.inject.Factory;
@@ -47,7 +47,7 @@ public abstract class BeanDependency {
 
     static void $nestWithField(Class<? extends OldBeanField> methodType) {}
 
-    static void $nestWithConstructor(Class<? extends BeanConstructor> methodType) {}
+    static void $nestWithConstructor(Class<? extends OldBeanConstructor> methodType) {}
 
     // VariablsActivatableHook
 

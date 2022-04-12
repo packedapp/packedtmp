@@ -26,9 +26,9 @@ import app.packed.base.AnnotationMaker;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.OldBeanField;
+import app.packed.bean.hooks.OldBeanFieldHook;
+import app.packed.bean.hooks.OldBeanMethodHook;
 import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
-import app.packed.bean.hooks.BeanFieldHook;
-import app.packed.bean.hooks.BeanMethodHook;
 import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.extension.ExtensionMember;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
@@ -82,8 +82,8 @@ import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(BeanExtension.class)
-@BeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
-@BeanMethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+@OldBeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
+@OldBeanMethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);

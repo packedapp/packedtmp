@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import app.packed.bean.hooks.OldBeanMethod;
 import app.packed.bean.hooks.sandbox.MethodAccessor;
 import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
-import app.packed.bean.hooks.BeanMethodHook;
+import app.packed.bean.hooks.OldBeanMethodHook;
 import app.packed.bean.hooks.scrap.ScopedProvide;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
@@ -96,7 +96,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
             super(c);
         }
 
-        public Builder(BeanMethodHook ams) {
+        public Builder(OldBeanMethodHook ams) {
             super(ams.bootstrap());
         }
 

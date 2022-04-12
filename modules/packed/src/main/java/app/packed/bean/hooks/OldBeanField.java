@@ -31,8 +31,8 @@ import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.bean.hooks.sandbox.MethodAccessor;
 import app.packed.bean.operation.OperationMirror;
+import app.packed.component.Realm;
 import app.packed.extension.ExtensionConfiguration;
-import app.packed.hooks.BeanField;
 import app.packed.hooks.BeanOperation;
 import app.packed.hooks.sandboxinvoke.MetaAnnotationReader;
 import app.packed.hooks.sandboxinvoke.VarInjector;
@@ -51,7 +51,7 @@ import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 //// Ingen af delene
 
 // BeanFieldProcessor??? BeanFieldBuilder
-public abstract class OldBeanField extends BeanField {
+public abstract class OldBeanField {
 
     /** The builder used by this bootstrap. Updated by {@link UseSiteFieldHookModel}. */
     private UseSiteFieldHookModel.@Nullable Builder builder;
@@ -60,7 +60,10 @@ public abstract class OldBeanField extends BeanField {
 
     }
 
-    @Override
+    public Realm realm() {
+        throw new UnsupportedOperationException();
+    }
+
     public int getModifiers() {
         return field().getModifiers();
     }
@@ -86,17 +89,13 @@ public abstract class OldBeanField extends BeanField {
         return builder().field();
     }
 
-    @Override
     public BeanOperation operation(AccessMode accessMode) {
         return null;
     }
-
-    @Override
     public BeanOperation operationGetter() {
         return null;
     }
 
-    @Override
     public BeanOperation operationSetter() {
         return null;
     }
@@ -135,8 +134,8 @@ public abstract class OldBeanField extends BeanField {
      * 
      * @return the variable
      * @see Lookup#unreflectVarHandle(Field)
-     * @see BeanFieldHook#allowGet()
-     * @see BeanFieldHook#allowSet()
+     * @see OldBeanFieldHook#allowGet()
+     * @see OldBeanFieldHook#allowSet()
      * @throws UnsupportedOperationException
      *             if the extension field has not both get and set access
      */
@@ -238,7 +237,7 @@ class ZeanFieldProcessorOldCrap {
      * @param argument
      *            the argument to set
      * @throws UnsupportedOperationException
-     *             if {@link BeanFieldHook#allowSet()} is false
+     *             if {@link OldBeanFieldHook#allowSet()} is false
      * @throws ClassCastException
      *             if the specified argument is not assignable to the field
      */

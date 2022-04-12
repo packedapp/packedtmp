@@ -15,6 +15,7 @@
  */
 package app.packed.extension;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,12 +32,17 @@ import app.packed.application.ApplicationDriver;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanSupport;
+import app.packed.bean.hooks.sandbox.BeanInfo;
 import app.packed.component.ComponentRealm;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.hooks.BeanClass;
+import app.packed.hooks.BeanField;
+import app.packed.hooks.BeanMethod;
+import app.packed.hooks.BeanVarInjector;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionModel;
@@ -68,9 +74,9 @@ import packed.internal.util.ThrowableUtil;
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
  * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private
  * accessibility to make sure users do not try an manually instantiate it, but instead use
- * {@link BaseContainerConfiguration#useExtension(Class)}. The extension subclass should not be declared final as it is expected
- * that future versions of Packed will supports some debug configuration that relies on extending extensions. And
- * capturing interactions with the extension.
+ * {@link BaseContainerConfiguration#useExtension(Class)}. The extension subclass should not be declared final as it is
+ * expected that future versions of Packed will supports some debug configuration that relies on extending extensions.
+ * And capturing interactions with the extension.
  * 
  * @see ExtensionDescriptor
  * 
@@ -211,6 +217,16 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return mirror;
     }
 
+    protected void hookOnBeanBegin(BeanInfo beanInfo) {}
+    protected void hookOnBeanClass(Class<? extends Annotation> annotation, BeanClass clazz) {}
+    // beanField.forEachAnnotation(Class<A>..., Consumer<A>);
+    //// Saa slipper vi for at meta synthesisere annoteringer senere...
+    
+    protected void hookOnBeanField(Class<? extends Annotation> annotation, BeanField field) {}
+    protected void hookOnBeanMethod(Class<? extends Annotation> annotation, BeanMethod method) {}
+    protected void hookOnBeanVarInjector(Class<?> clazzOrAnnotation, BeanVarInjector injector) {}
+    protected void hookOnBeanEnd(BeanInfo beanInfo) {}
+    
     /**
      * Invoked by the runtime on the root extension to finalize configuration of the extension.
      * <p>
@@ -386,6 +402,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @throws IllegalArgumentException
      *             if the specified bootstrap class resolves to an inner class and not a static class
      */
+    // Vi kan sagtens lave den en normal metode taenker jeg maaske paa en utility klasse...
+    // Og saa et Lookup object som parameter...
     protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
         Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
         // Attempt to load an extension with the specified name
@@ -419,6 +437,66 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         }
     }
 
+
+    /**
+     * If an extension depends on other extensions (most do). They must annotated with this annotation, indicating exactly
+     * what extensions they depend upon. This should include dependencies that are only used in some cases.
+     * <p>
+     * Trying to use other that use other extensions that are not explicitly defined using this annotation. Will fail by
+     * throwing an {@link InternalExtensionException}. This includes both explicit usage, for example, via
+     * {@link Extension#use(Class)} or usage of hook annotations from other extensions.
+     * <p>
+     * All classes that are declared as dependencies will be loaded together with annotated extension. However, the
+     * dependency (extension) class will not be initialized before it is usage for the first time.
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public @interface DependsOn {
+
+        /** {@return other extensions the annotated extension depends on.} */
+        Class<? extends Extension<?>>[] extensions() default {};
+
+        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
+        // Den kraever bare at den allerede har vaeret listet som optionally
+        /**
+         * Extensions that are optionally used will be attempted to be resolved using the annotated extension classes class
+         * loader.
+         */
+        String[] optionally() default {};
+    }
+
+    public static abstract class Bootstrap {
+        protected abstract void bootstrap();
+
+        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
+
+        }
+
+        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
+            return alternative.get();
+        }
+
+    }
+
+    public @interface BootstrapWith {
+        Class<? extends Extension.Bootstrap> value();
+    }
+}
+//Static initializers
+////Dependencies
+////Attributes
+////Connections 
+////LibraryInfo
+
+//bootstrapConfig
+////dependsOn(Codegen)
+
+//////Problemet er den lazy extension thingy can enable andre extensions 
+//Configurable -> Parent -> 
+
+class Zarchive {
+
     static void $libraryFor(Module module) {
         // Will fail if the module, class does not have version
         // protected static void $libraryVersion(Module|Class m);
@@ -436,9 +514,9 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         // Det kan ogsaa bare vaere en dependency paa en extension...
         // Det er faktisk maaske det lettes
         // dependsOn(FullClassGenExtension.class);
-        
+
         // Tror faktisk ikke vi supportere det udover annotation
-        
+
     }
 
 //  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
@@ -531,68 +609,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         // }
         // Her vil man nok ikke vaelge at
     }
-
-    /**
-     * If an extension depends on other extensions (most do). They must annotated with this annotation, indicating exactly
-     * what extensions they depend upon. This should include dependencies that are only used in some cases.
-     * <p>
-     * Trying to use other that use other extensions that are not explicitly defined using this annotation. Will fail by
-     * throwing an {@link InternalExtensionException}. This includes both explicit usage, for example, via
-     * {@link Extension#use(Class)} or usage of hook annotations from other extensions.
-     * <p>
-     * All classes that are declared as dependencies will be loaded together with annotated extension. However, the
-     * dependency (extension) class will not be initialized before it is usage for the first time.
-     */
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    public @interface DependsOn {
-
-        /** {@return other extensions the annotated extension depends on.} */
-        Class<? extends Extension<?>>[] extensions() default {};
-
-        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
-        // Den kraever bare at den allerede har vaeret listet som optionally
-        /**
-         * Extensions that are optionally used will be attempted to be resolved using the annotated extension classes class
-         * loader.
-         */
-        String[] optionally() default {};
-    }
-    
-    
-    public static abstract class Bootstrap {
-        protected abstract void bootstrap();
-        
-        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
-            
-        }
-        
-        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
-            return alternative.get();
-        }
-        
-        
-    }
-    
-    public @interface BootstrapWith {
-        Class<? extends Extension.Bootstrap> value();
-    }
-}
-//Static initializers
-////Dependencies
-////Attributes
-////Connections 
-////LibraryInfo
-
-//bootstrapConfig
-////dependsOn(Codegen)
-
-//////Problemet er den lazy extension thingy can enable andre extensions 
-//Configurable -> Parent -> 
-
-class Zarchive {
-
     /**
      * @param extensionType
      *            the extension type to test
@@ -621,79 +637,5 @@ class Zarchive {
     }
 
     // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
-    /**
-     * Depends on 1 or more extensions always. By always we mean that whenever
-     * 
-     * @param extensions
-     *            the extensions to always depends on
-     */
-    @SafeVarargs
-    // Er ikke sikker paa jeg vil have den her??? Semantikken er ikke helt klar...
-    // svare det til man kalder use(DooSupport.class)????
-    // dependsOnAlways(ConfigException.class) -> Application or Container scope???
-
-    static void $dependsOnAlways(Class<? extends Extension<?>>... extensions) {
-        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
-    }
-
 }
-//
-///**
-// * Adds one or more extensions to the set of dependencies of this extension.
-// * <p>
-// * Every extension that another extension directly uses must be explicitly registered. Even if the extension is only
-// * used on a rare occasions.
-// * 
-// * @param extensions
-// *            the dependencies to add
-// * @throws InternalExtensionException
-// *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-// *             the extension graph.
-// * @throws UnsupportedOperationException
-// *             if this method is called from outside of an extension's class initializer
-// * @see #$dependsOnIfAvailable(String)
-// * @see #$dependsOnIfAvailable(String, String, Supplier)
-// */
-//// dependencyAdd
-//@Deprecated
-//@SafeVarargs
-//protected static void $dependsOn(Class<? extends Extension<?>>... extensions) {}
 
-//// Ved ikke praecis hvad vi skal bruge den til...
-//// Er det close/open world check?
-// Er containers... eller er det child extensions
-//protected final void isLeafContainer() {
-// Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
-// Maaske vi skal tage info'en med der istedet for
-// throw new UnsupportedOperationException();
-//}
-
-///// Vi supportere ikke bare ikke lookup objekter paa extensions...
-///// Vil bliver alt for kompliceret
-//
-//protected final void lookup(MethodHandles.Lookup lookup) {
-//  ((ExtensionSetup) configuration()).lookup(lookup);
-//}
-
-// Tror den her er rimlig gamle
-//// checkInNoSubContainers
-//protected final void checkUnconnected() {
-//  // This method cannot be invoked after ServiceExtension has been installed in any sub containers
-//
-//  // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
-//  // anden setting op fra parent'en
-//}
-
-//* <p>
-//* The main reason for prohibiting most configuration from the constructor is. Is to avoid situations.. that users might then link
-//* other components that in turn requires access to the actual extension instance. Which is not possible since it is
-//* still being instantiated. While this is rare in practice. Too be on the safe side we prohibit it.
-//* <p>
-//* Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
-//* anywhere where we can get a hold of the actual extension instance...
-//* 
-//* But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
-//* installed a component that uses other extensions....????? IDK
-//* 
-//* most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
-//* from this method. Is typically used to add new runtime components.

@@ -155,7 +155,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
      * <p>
-     * The {@link ApplicationDescriptor application descriptor} will returns XXX at build time.
+     * The {@link ApplicationInfo application descriptor} will returns XXX at build time.
      * 
      * @param assembly
      *            the assembly to create an application mirror from
@@ -535,7 +535,7 @@ interface ApplicationDriverSandbox<A> {
         }
 
         @SuppressWarnings("exports")
-        default <E extends Extension<E>> Builder2 enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationDescriptor, E> onInit) {
+        default <E extends Extension<E>> Builder2 enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationInfo, E> onInit) {
             return this;
         }
 

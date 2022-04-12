@@ -43,7 +43,7 @@ public interface ApplicationMirror extends Mirror {
     ContainerMirror container();
 
     /** {@return a descriptor for the application.} */
-    ApplicationDescriptor descriptor();
+    ApplicationInfo descriptor();
 
     /** {@return a {@link Set} view of every extension type that has been used in the container.} */
     default Set<Class<? extends Extension<?>>> extensionTypes() {

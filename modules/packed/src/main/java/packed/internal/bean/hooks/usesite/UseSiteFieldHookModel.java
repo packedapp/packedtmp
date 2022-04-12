@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanFieldHook;
+import app.packed.bean.hooks.OldBeanFieldHook;
 import app.packed.bean.hooks.OldBeanField;
 import packed.internal.bean.hooks.FieldHookModel;
 import packed.internal.bean.hooks.HookedMethodProvide;
@@ -106,7 +106,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     }
 
     /**
-     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link BeanFieldHook#processor()}.
+     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link OldBeanFieldHook#processor()}.
      */
     public static final class Builder extends UseSiteMemberHookModel.Builder {
 

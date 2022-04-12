@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationDescriptor.ApplicationBuildType;
+import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;

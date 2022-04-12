@@ -17,7 +17,7 @@ package app.packed.extension;
 
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationInfo;
 import app.packed.base.NamespacePath;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
@@ -51,7 +51,7 @@ import packed.internal.container.ExtensionSetup;
 public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /** {@return a descriptor for the application the extension is a part of.} */
-    ApplicationDescriptor application(); // Why not mirror for this but for container??? IDK
+    ApplicationInfo application(); // Why not mirror for this but for container??? IDK
 
     /**
      * Checks that the extension is configurable within the assembly where it is being defined, throwing

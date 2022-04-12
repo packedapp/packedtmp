@@ -42,7 +42,7 @@ import packed.internal.inject.InternalDependency;
 /**
  *
  */
-public sealed abstract class UseSiteMemberHookModel extends JavaHookElementModel permits UseSiteFieldHookModel, UseSiteMethodHookModel {
+public sealed abstract class UseSiteMemberHookModel  permits UseSiteFieldHookModel, UseSiteMethodHookModel {
 
     /** Dependencies that needs to be resolved. */
     public final List<InternalDependency> dependencies;

@@ -18,6 +18,7 @@ package app.packed.application;
 /**
  *
  */
+// ApplicationPanicException
 public class UnhandledApplicationException extends RuntimeException {
 
     /** */

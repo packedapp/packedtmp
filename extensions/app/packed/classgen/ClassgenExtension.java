@@ -43,7 +43,7 @@ import app.packed.extension.Extension;
 // Vi gider jo aergelig talt ikke generere FooRepositori i hver eneste test
 
 // Det er vel det foerste eksempel paa global state for extensions...
-public final class ClassgenExtension extends Extension<ClassgenExtension> {
+public class ClassgenExtension extends Extension<ClassgenExtension> {
 
     // void resolveINDYsImmediatly()...
 

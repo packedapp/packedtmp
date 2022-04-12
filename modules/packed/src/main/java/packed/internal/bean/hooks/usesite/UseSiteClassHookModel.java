@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.bean.hooks.BeanConstructor;
+import app.packed.bean.hooks.OldBeanConstructor;
 import app.packed.bean.hooks.OldBeanClass;
 import app.packed.bean.hooks.OldBeanField;
 import app.packed.bean.hooks.OldBeanMethod;
@@ -79,7 +79,7 @@ public final class UseSiteClassHookModel {
             VH_CLASS_HOOK_BOOTSTRAP_BUILDER.set(instance, null);
         }
 
-        public List<BeanConstructor> constructors() {
+        public List<OldBeanConstructor> constructors() {
             throw new UnsupportedOperationException();
         }
 

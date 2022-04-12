@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
  * @apiNote There is no corresponding BeanConstructorHook for this class
  */
 // Har ikke en tilsvarende BeanConstructorHook da den kun kan laves gemmen BeanClass
-public abstract class BeanConstructor {
+public abstract class OldBeanConstructor {
 
     /** Disables any further processing of the Constructor. */
     public final void disable() {}
@@ -50,11 +50,11 @@ public abstract class BeanConstructor {
      * 
      * @return a direct method handle to the matching method
      * @see Lookup#unreflect(Method)
-     * @see BeanMethodHook#allowInvoke()
-     * @see BeanClassHook#allowAllAccess()
+     * @see OldBeanMethodHook#allowInvoke()
+     * @see OldBeanClassHook#allowAllAccess()
      * 
      * @throws UnsupportedOperationException
-     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()}
+     *             if invocation access has not been granted via {@link OldBeanMethodHook#allowInvoke()}
      */
     public final MethodHandle methodHandle() {
         throw new UnsupportedOperationException();

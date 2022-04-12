@@ -6,15 +6,15 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirrorTree;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimePhase;
-import app.packed.lifetime.LifetimeKind;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 
@@ -39,6 +39,7 @@ public final class LifetimeSetup {
     final LifetimeKind lifetimeType;
 
     // Der er jo som saadan ikke noget vi vejen for at vi har en DAG istedet for et trae...
+    /** Any parent of this lifetime. The root lifetime always being identical to the application lifetime. */
     @Nullable
     final LifetimeSetup parent;
 
@@ -78,13 +79,13 @@ public final class LifetimeSetup {
 
         /** {@inheritDoc} */
         @Override
-        public List<BeanMirror> beans() {
+        public Stream<BeanMirror> beans() {
             return null;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Set<LifetimeMirror> children() {
+        public Stream<LifetimeMirror> children() {
             throw new UnsupportedOperationException();
         }
 

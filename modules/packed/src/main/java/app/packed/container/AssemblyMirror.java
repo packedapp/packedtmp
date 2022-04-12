@@ -21,12 +21,15 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
+import app.packed.mirror.Mirror;
 import packed.internal.container.AssemblySetup;
 
 /**
  *
  */
-public sealed interface AssemblyMirror permits AssemblySetup.BuildtimeAssemblyMirror {
+public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.BuildtimeAssemblyMirror {
+
+    Class<? extends Assembly> assemblyType();
 
     /** {@return a stream of all assemblies that have been linked from this assembly.} */
     Stream<AssemblyMirror> children();
@@ -34,15 +37,15 @@ public sealed interface AssemblyMirror permits AssemblySetup.BuildtimeAssemblyMi
     /** {@return a stream of all components defined by the assembly.} */
     Stream<ComponentMirror> components();
 
-    List<Class<? extends ContainerHook.Processor>> containerHooks();
+    /** {@return a list of hooks that are applied to containers defined by the assembly.} */
+    List<Class<? extends ContainerHook>> containerHooks();
 
     Realm owner();
 
+    /** {@return any assembly that linked this assembly, if present.} */
     Optional<AssemblyMirror> parent();
 
     /** {@return the root container defined by this assembly.} */
     ContainerMirror root();
-
-    Class<? extends Assembly> type();
 
 }

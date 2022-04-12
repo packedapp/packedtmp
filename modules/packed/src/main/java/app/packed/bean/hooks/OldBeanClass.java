@@ -29,7 +29,7 @@ import packed.internal.bean.hooks.usesite.UseSiteClassHookModel;
  * <p>
  * Implementations of this class must have a no-argument constructor.
  * 
- * @see BeanClassHook#bootstrap()
+ * @see OldBeanClassHook#bootstrap()
  */
 public abstract class OldBeanClass {
 
@@ -55,11 +55,11 @@ public abstract class OldBeanClass {
 
     /**
      * Returns a list of bootstraps for all of the constructors of the hooked class. If {@link #hasFullAccess()} is true,
-     * {@link ConstructorHook.BeanConstructor#methodHandle()} returns a valid method handle for the constructor.
+     * {@link OldBeanConstructor.BeanConstructor#methodHandle()} returns a valid method handle for the constructor.
      * 
      * @return a list of bootstraps for all of the constructors of the hooked class
      */
-    protected final List<BeanConstructor> constructors() {
+    protected final List<OldBeanConstructor> constructors() {
         throw new UnsupportedOperationException();
     }
 

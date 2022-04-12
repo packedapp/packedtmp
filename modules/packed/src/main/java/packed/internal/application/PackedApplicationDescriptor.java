@@ -1,9 +1,9 @@
 package packed.internal.application;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationInfo;
 import app.packed.container.Assembly;
 
-public final class PackedApplicationDescriptor implements ApplicationDescriptor {
+public final class PackedApplicationDescriptor implements ApplicationInfo {
 
     public PackedApplicationDescriptor(ApplicationBuildType buildKind) {
 
