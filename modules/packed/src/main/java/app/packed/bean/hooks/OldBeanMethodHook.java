@@ -29,7 +29,7 @@ import app.packed.extension.Extension;
 @Documented
 //https://stackoverflow.com/questions/4797465/difference-between-hooks-and-abstract-methods-in-java
 
-@Deprecated
+//@Deprecated
 public @interface OldBeanMethodHook {
 
     /**

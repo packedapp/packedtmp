@@ -31,6 +31,7 @@ import app.packed.bean.hooks.OldBeanMethodHook;
 import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
 import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.extension.ExtensionMember;
+import app.packed.hooks.BeanMethod;
 import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 
 /**
@@ -84,6 +85,7 @@ import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
 @ExtensionMember(BeanExtension.class)
 @OldBeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
 @OldBeanMethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+@BeanMethod.Hook(allowInvoke = true, extension = BeanExtension.class)
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
