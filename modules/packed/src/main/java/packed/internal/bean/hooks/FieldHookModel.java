@@ -15,16 +15,13 @@
  */
 package packed.internal.bean.hooks;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.bean.hooks.OldBeanField;
-import app.packed.bean.hooks.scrap.ScopedProvide;
 import app.packed.bean.hooks.OldBeanFieldHook;
-import app.packed.extension.InternalExtensionException;
 
 /** A model of a {@link OldBeanField field bootstrap} implementation. */
 public final class FieldHookModel extends AbstractHookModel<OldBeanField> {
@@ -77,14 +74,14 @@ public final class FieldHookModel extends AbstractHookModel<OldBeanField> {
 
         @Override
         protected void onMethod(Method method) {
-            ScopedProvide ap = method.getAnnotation(ScopedProvide.class);
-            if (ap != null) {
-                MethodHandle mh = oc.unreflect(method);
-                HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
-                if (providing.putIfAbsent(b.key, b) != null) {
-                    throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
-                }
-            }
+//            ScopedProvide ap = method.getAnnotation(ScopedProvide.class);
+//            if (ap != null) {
+//                MethodHandle mh = oc.unreflect(method);
+//                HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
+//                if (providing.putIfAbsent(b.key, b) != null) {
+//                    throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
+//                }
+//            }
 
 //            OnInitialize oi = method.getAnnotation(OnInitialize.class);
 //            if (oi != null) {

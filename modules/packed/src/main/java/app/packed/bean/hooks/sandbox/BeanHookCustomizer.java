@@ -15,11 +15,6 @@
  */
 package app.packed.bean.hooks.sandbox;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-
-import app.packed.bean.hooks.scrap.ScrapBeanMethod;
-
 /**
  *
  */
@@ -27,9 +22,9 @@ public abstract class BeanHookCustomizer {
 
     protected abstract void build();
 
-    protected final void mapMethodAnnotation(Class<? extends Annotation> annotation, Class<ScrapBeanMethod> methodHook) {
-        throw new UnsupportedOperationException();
-    }
+//    protected final void mapMethodAnnotation(Class<? extends Annotation> annotation, Class<ScrapBeanMethod> methodHook) {
+//        throw new UnsupportedOperationException();
+//    }
     
     //// Using another implementation of Hooks...
     // clearMethodAnnotationHooksFor(Schedule.class)
@@ -43,6 +38,6 @@ class Usage extends BeanHookCustomizer {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        mapMethodAnnotation(Documented.class, null);
+      //  mapMethodAnnotation(Documented.class, null);
     }
 }

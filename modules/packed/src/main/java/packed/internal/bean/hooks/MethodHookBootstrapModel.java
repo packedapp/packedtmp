@@ -24,11 +24,9 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.bean.hooks.OldBeanMethod;
+import app.packed.bean.hooks.OldBeanMethodHook;
 import app.packed.bean.hooks.sandbox.MethodAccessor;
 import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
-import app.packed.bean.hooks.OldBeanMethodHook;
-import app.packed.bean.hooks.scrap.ScopedProvide;
-import app.packed.extension.InternalExtensionException;
 import packed.internal.bean.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -111,14 +109,14 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
 
         @Override
         protected void onMethod(Method method) {
-            ScopedProvide ap = method.getAnnotation(ScopedProvide.class);
-            if (ap != null) {
-                MethodHandle mh = oc.unreflect(method);
-                HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
-                if (providing.putIfAbsent(b.key, b) != null) {
-                    throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
-                }
-            }
+//            ScopedProvide ap = method.getAnnotation(ScopedProvide.class);
+//            if (ap != null) {
+//                MethodHandle mh = oc.unreflect(method);
+//                HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
+//                if (providing.putIfAbsent(b.key, b) != null) {
+//                    throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
+//                }
+//            }
 
 //            OnInitialize oi = method.getAnnotation(OnInitialize.class);
 //            if (oi != null) {

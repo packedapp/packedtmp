@@ -27,7 +27,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
-import app.packed.bean.hooks.scrap.ScopedProvide;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
@@ -285,11 +284,11 @@ public interface ServiceLocator extends ServiceRegistry {
         return PackedServiceTransformer.of(action);
     }
 
-    @ScopedProvide
-    private static ServiceLocator provide() {
-        // I think we need to mark somewhere that we need to create a ServiceLocator
-        return ServiceLocator.of();
-    }
+//    //@ScopedProvide
+//    private static ServiceLocator provide() {
+//        // I think we need to mark somewhere that we need to create a ServiceLocator
+//        return ServiceLocator.of();
+//    }
 
     @Reflectable
     static ApplicationImage<ServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
