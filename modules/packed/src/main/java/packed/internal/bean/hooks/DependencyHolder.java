@@ -29,7 +29,6 @@ import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.oldhooks.usesite.BeanMemberDependencyNode;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;

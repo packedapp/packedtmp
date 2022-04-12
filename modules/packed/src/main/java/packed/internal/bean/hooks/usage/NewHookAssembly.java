@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 
 import app.packed.application.App;
 import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.oldhooks.sandbox.BeanInfo;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BuildWirelets;
 import app.packed.extension.Extension;

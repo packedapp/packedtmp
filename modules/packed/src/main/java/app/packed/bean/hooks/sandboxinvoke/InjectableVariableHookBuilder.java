@@ -16,7 +16,7 @@
 package app.packed.bean.hooks.sandboxinvoke;
 
 import app.packed.base.Variable;
-import app.packed.bean.oldhooks.sandbox.BeanInfo;
+import app.packed.bean.hooks.BeanInfo;
 
 /**
  *

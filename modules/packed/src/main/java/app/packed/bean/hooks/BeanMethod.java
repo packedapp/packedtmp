@@ -25,10 +25,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.oldhooks.OldBeanClassHook;
-import app.packed.bean.oldhooks.OldBeanField;
-import app.packed.bean.oldhooks.OldBeanMethod;
-import app.packed.bean.oldhooks.OldBeanMethodHook;
 import app.packed.extension.Extension;
 import app.packed.inject.FactoryType;
 
@@ -61,11 +57,11 @@ public interface BeanMethod {
      * 
      * @return a direct method handle to the underlying method
      * @see Lookup#unreflect(Method)
-     * @see OldBeanMethodHook#allowInvoke()
-     * @see OldBeanClassHook#allowAllAccess()
+     * @see BeanMethodHook#allowInvoke()
+     * @see BeanClassHook#allowAllAccess()
      * 
      * @throws UnsupportedOperationException
-     *             if invocation access has not been granted via {@link OldBeanMethodHook#allowInvoke()} or BeanClassHook#allowAllAccess()
+     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or BeanClassHook#allowAllAccess()
      */
     MethodHandle methodHandle();
     
@@ -82,17 +78,17 @@ public interface BeanMethod {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link OldBeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+         * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
          * the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see OldBeanMethod#methodHandle()
+         * @see BeanMethod#methodHandle()
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...
 
-        /** The hook's {@link OldBeanField} class. */
+        /** The hook's {@link BeanField} class. */
         Class<? extends Extension<?>> extension();
 
         // Altsaa vi har jo ikke lukket for at vi senere kan goere nogle andre ting...

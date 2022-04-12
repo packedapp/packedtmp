@@ -14,7 +14,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.oldhooks.sandbox.BeanInfo;
+import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;

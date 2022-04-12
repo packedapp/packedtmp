@@ -28,7 +28,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.base.Variable;
-import app.packed.bean.oldhooks.OldBeanField;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 
@@ -107,7 +106,7 @@ public interface BeanField {
         /** Whether or not the sidecar is allow to set the contents of a field. */
         boolean allowSet() default false;
 
-        /** The hook's {@link OldBeanField} class. */
+        /** The hook's {@link BeanField} class. */
         Class<? extends Extension<?>> extension();
 
         // Altsaa vi har jo ikke lukket for at vi senere kan goere nogle andre ting...

@@ -23,8 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import packed.internal.bean.oldhooks.usesite.BootstrappedSourcedClassModel;
-import packed.internal.bean.oldhooks.usesite.HookModel;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
@@ -39,13 +37,17 @@ import packed.internal.util.OpenClass;
 // BeanRealm???
 public abstract sealed class BeanModelManager {
 
+    record HookModel() {}
+    
     /** A cache of bean models per accessor. */
     private final ClassValue<HookModel> beanModels = new ClassValue<>() {
 
         @Override
         protected HookModel computeValue(Class<?> type) {
-            OpenClass oc = OpenClass.of(lookup(), type);
-            return BootstrappedSourcedClassModel.newModel(oc, null);
+            OpenClass.of(lookup(), type);
+            
+            return new HookModel();
+            //return BootstrappedSourcedClassModel.newModel(oc, null);
         }
     };
 

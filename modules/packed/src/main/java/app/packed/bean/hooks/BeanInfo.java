@@ -13,11 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.oldhooks;
+package app.packed.bean.hooks;
+
+import app.packed.bean.BeanKind;
+import app.packed.component.Realm;
+import app.packed.extension.Extension;
 
 /**
  *
  */
-public class ConstructorHookModel {
+// int beanApplicationId();
+// int beanContainerId();
 
+// BeanDescriptor??? Vi har ogsaa ApplicationInfo (var ApplicationDescriptor)
+public interface BeanInfo {
+
+    Class<?> beanClass();
+
+    BeanKind beanKind();
+
+    Class<? extends Extension<?>> operator();
+
+    Realm owner();
 }

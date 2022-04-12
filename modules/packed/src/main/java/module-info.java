@@ -19,7 +19,6 @@ module app.packed {
     exports app.packed.inject.variable;
     exports app.packed.lifecycle;
     exports app.packed.lifetime;
-    exports app.packed.bean.oldhooks;
     exports app.packed.bean.hooks;
     exports app.packed.mirror;
     exports app.packed.state;

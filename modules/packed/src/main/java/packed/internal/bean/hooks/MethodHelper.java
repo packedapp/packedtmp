@@ -46,6 +46,7 @@ public class MethodHelper extends DependencyHolder {
     @Override
     public DependencyProducer[] createProviders() {
         DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
+
         // System.out.println("RESOLVING " + directMethodHandle);
 //        for (int i = 0; i < dependencies.size(); i++) {
 //            InternalDependency d = dependencies.get(i);

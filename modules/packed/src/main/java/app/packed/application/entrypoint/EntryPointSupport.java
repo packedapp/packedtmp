@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.application.BuildException;
-import app.packed.bean.oldhooks.OldBeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
@@ -78,21 +77,21 @@ public class EntryPointSupport extends ExtensionSupport {
         }
         return 0;
     }
-    public int registerEntryPoint(OldBeanMethod method) {
-        // BeanMethod -> Actual Java Method, or Function
-
-        // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
-        // Saa det er kun selve invokationen der sker her
-
-        // method.reserveMethodHandle(EC);
-        // Grim kode pfa ExtensoinSupportContest i constructoren
-        if (context == null) {
-            extension.shared().takeOver(EntryPointExtension.class);
-        } else {
-            extension.shared().takeOver(context.extensionType());
-        }
-        return 0;
-    }
+//    public int registerEntryPoint(OldBeanMethod method) {
+//        // BeanMethod -> Actual Java Method, or Function
+//
+//        // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
+//        // Saa det er kun selve invokationen der sker her
+//
+//        // method.reserveMethodHandle(EC);
+//        // Grim kode pfa ExtensoinSupportContest i constructoren
+//        if (context == null) {
+//            extension.shared().takeOver(EntryPointExtension.class);
+//        } else {
+//            extension.shared().takeOver(context.extensionType());
+//        }
+//        return 0;
+//    }
 
     /**
      * Selects

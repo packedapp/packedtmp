@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.oldhooks.usesite;
+package packed.internal.bean.hooks;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.hooks.DependencyHolder;
-import packed.internal.bean.hooks.KeyProvidable;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.service.ContainerInjectionManager;
@@ -43,28 +40,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
 
     @Nullable
     protected final BeanMemberServiceSetup service;
-    
-    public BeanMemberDependencyNode(BeanSetup bean, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
-        super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
 
-        if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && bean.injectionManager.singletonHandle == null) {
-                throw new BuildException("Not okay)");
-            }
-            ContainerInjectionManager sbm = bean.parent.injectionManager;
-            ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
-            sbm.addService(sa);
-        } else {
-            this.service = null;
-        }
-        
-        this.sourceMember = requireNonNull(smm);
-
-        if (!Modifier.isStatic(smm.getModifiers())) {
-            dependencyProviders[0] = bean.injectionManager;
-        }
-    }
-    
     public BeanMemberDependencyNode(BeanSetup bean, DependencyHolder smm, DependencyProducer[] dependencyProviders) {
         super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
 
@@ -109,23 +85,23 @@ public final class BeanMemberDependencyNode extends DependencyNode {
             // Maybe shared with SourceAssembly
 
             if (sourceMember.provideAskey == null) {
-                MethodHandle mh1 = runtimeMethodHandle();
+                runtimeMethodHandle();
 
                 // RuntimeRegionInvoker
                 // the method on the sidecar: sourceMember.model.onInitialize
 
                 // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                if (sourceMember instanceof UseSiteMethodHookModel msm) {
-                    System.out.println(mh1);
-//                    if (msm.bootstrapModel.onInitialize != null) {
-//                        // System.out.println(msm.model.onInitialize);
-//                        MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
-//
-//                        mh2 = mh2.bindTo(mh1);
-//
-//                        bean.application.container.lifetime.initializers.add(mh2);
-//                    }
-                }
+//                if (sourceMember instanceof UseSiteMethodHookModel msm) {
+//                    System.out.println(mh1);
+////                    if (msm.bootstrapModel.onInitialize != null) {
+////                        // System.out.println(msm.model.onInitialize);
+////                        MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
+////
+////                        mh2 = mh2.bindTo(mh1);
+////
+////                        bean.application.container.lifetime.initializers.add(mh2);
+////                    }
+//                }
             }
         }
     }

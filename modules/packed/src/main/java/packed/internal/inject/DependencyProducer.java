@@ -19,9 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
-import app.packed.inject.service.Provide;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.oldhooks.HookedMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
 
@@ -30,11 +28,10 @@ import packed.internal.lifetime.LifetimePoolSetup;
  * 
  * {@link BeanSetup} for methods or fields that needs an instance of the component source
  * 
- * {@link HookedMethodProvide} for methods annotated with {@link Provide}
  * 
  * {@link ServiceSetup} a service of some kind
  */
-public sealed interface DependencyProducer permits HookedMethodProvide, ServiceSetup, BeanInjectionManager, BeanInstanceDependencyNode {
+public interface DependencyProducer {
 
     /**
      * Returns a method handle that can be used to access a dependency. This is typically done by either having previously

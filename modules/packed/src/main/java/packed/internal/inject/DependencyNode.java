@@ -25,7 +25,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.oldhooks.usesite.BeanMemberDependencyNode;
+import packed.internal.bean.hooks.BeanMemberDependencyNode;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.ExtensionTreeSetup;
