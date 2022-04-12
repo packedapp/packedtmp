@@ -29,9 +29,7 @@ import app.packed.base.Key;
 import app.packed.bean.oldhooks.OldBeanField;
 import app.packed.bean.oldhooks.OldBeanFieldHook;
 import packed.internal.bean.oldhooks.FieldHookModel;
-import packed.internal.bean.oldhooks.HookedMethodProvide;
 import packed.internal.inject.DependencyProducer;
-import packed.internal.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;
@@ -51,8 +49,8 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldBeanField.class, "builder",
             UseSiteFieldHookModel.Builder.class);
     
-    /** A model of the field hooks bootstrap. */
-    private final FieldHookModel hook;
+//    /** A model of the field hooks bootstrap. */
+//    private final FieldHookModel hook;
 
     /** The modifiers of the field. */
     private final int modifiers;
@@ -63,7 +61,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     UseSiteFieldHookModel(Builder builder, VarHandle mh) {
         super(builder, List.of());
         this.modifiers = requireNonNull(builder.field.getModifiers());
-        this.hook = requireNonNull(builder.hook);
+   //     this.hook = requireNonNull(builder.hook);
         this.varHandle = requireNonNull(mh);
     }
 
@@ -71,16 +69,18 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     public DependencyProducer[] createProviders() {
         DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
         // System.out.println("RESOLVING " + directMethodHandle);
-        for (int i = 0; i < dependencies.size(); i++) {
-            InternalDependency d = dependencies.get(i);
-            HookedMethodProvide dp = hook.keys.get(d.key());
-            if (dp != null) {
-                // System.out.println("MAtches for " + d.key());
-                int index = i + (Modifier.isStatic(modifiers) ? 0 : 1);
-                providers[index] = dp;
-                // System.out.println("SEtting provider " + dp.dependencyAccessor());
-            }
-        }
+//        for (int i = 0; i < dependencies.size(); i++) {
+//            InternalDependency d = dependencies.get(i);
+//            HookedMethodProvide dp = hook.keys.get(d.key());
+//            if (dp != null) {
+//                
+//                // System.out.println("MAtches for " + d.key());
+//                int index = i + (Modifier.isStatic(modifiers) ? 0 : 1);
+//                providers[index] = dp;
+//                // System.out.println("SEtting provider " + dp.dependencyAccessor());
+//                throw new Error();
+//            }
+//        }
 
         return providers;
     }

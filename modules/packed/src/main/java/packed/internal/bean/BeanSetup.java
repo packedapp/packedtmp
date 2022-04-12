@@ -25,7 +25,6 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import packed.internal.bean.PackedBeanDriver.SourceType;
 import packed.internal.bean.hooks.BeanScanner;
-import packed.internal.bean.oldhooks.usesite.HookModel;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.ContainerSetup;
@@ -46,7 +45,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
     /** A model of the hooks on the bean. */
     @Nullable
-    public final HookModel hookModel;
+    public final BaseHookModel hookModel;
 
     /** The bean's injection manager. */
     public final BeanInjectionManager injectionManager;
@@ -57,7 +56,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
         super(container.application, realm, container);
         this.driver = driver;
-        this.hookModel = driver.sourceType == SourceType.NONE ? null : realm.accessor().beanModelOf(driver.beanClass());
+        this.hookModel = driver.sourceType == SourceType.NONE ? null : new BaseHookModel(driver.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
         this.operations = driver.operations;
         this.injectionManager = new BeanInjectionManager(this, driver);
 
@@ -67,7 +66,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
         // Wire the hook model
         if (hookModel != null) {
-            hookModel.onWire(this);
+            //hookModel.onWire(this);
 
             // Set the name of the component if it have not already been set using a wirelet
             initializeNameWithPrefix(hookModel.simpleName());

@@ -75,6 +75,8 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
                 providers[index] = dp;
                 // System.out.println("SEtting provider " + dp.dependencyAccessor());
             }
+            throw new Error();
+
         }
 
         return providers;

@@ -4,11 +4,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.base.Key;
 import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
+import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.bean.BeanOperationManager;
@@ -18,6 +21,8 @@ import packed.internal.bean.PackedBeanDriver;
 import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.bean.hooks.FieldHelper;
 import packed.internal.bean.hooks.HookedBeanField;
+import packed.internal.bean.hooks.HookedBeanMethod;
+import packed.internal.bean.hooks.MethodHelper;
 import packed.internal.bean.oldhooks.usesite.BeanMemberDependencyNode;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -44,13 +49,11 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     @Override
     protected void hookOnBeanField(Class<? extends Annotation> annotation, BeanField field) {
-        if (true) {
-            return;
-        }
         BeanScanner f = ((HookedBeanField) field).scanner;
         BeanSetup bean = f.bean;
-        //new FieldHelper(null, null);
-        FieldHelper fh = null;
+        Key<?> key = Key.convertField(field.field());
+        boolean constant = field.field().getAnnotation(Provide.class).constant();
+        FieldHelper fh = new FieldHelper(field, field.varHandle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
         BeanOperationManager bom = bean.operations;
@@ -59,8 +62,23 @@ public class BeanExtension extends Extension<BeanExtension> {
         // os.mirrorSupplier = supplier;
 
         bean.parent.injectionManager.addConsumer(node);
+    }
 
-        super.hookOnBeanField(annotation, field);
+    @Override
+    protected void hookOnBeanMethod(Class<? extends Annotation> annotation, BeanMethod method) {
+        BeanScanner f = ((HookedBeanMethod) method).scanner;
+        BeanSetup bean = f.bean;
+        Key<?> key = Key.convertMethodReturnType(method.method());
+        boolean constant = method.method().getAnnotation(Provide.class).constant();
+        MethodHelper fh = new MethodHelper(method, method.methodHandle(), constant, key);
+        DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+
+        BeanOperationManager bom = bean.operations;
+        BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
+        bom.addOperation(os);
+        // os.mirrorSupplier = supplier;
+
+        bean.parent.injectionManager.addConsumer(node);
     }
 
     /**

@@ -23,17 +23,9 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
-import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.oldhooks.OldBeanField;
-import app.packed.bean.oldhooks.OldBeanFieldHook;
-import app.packed.bean.oldhooks.OldBeanMethodHook;
-import app.packed.bean.oldhooks.sandbox.RealMethodSidecarBootstrap;
-import app.packed.bean.operation.examples.ServiceProvideMirror;
-import app.packed.extension.ExtensionMember;
-import packed.internal.bean.oldhooks.usesite.UseSiteFieldHookModel;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -83,14 +75,8 @@ import packed.internal.bean.oldhooks.usesite.UseSiteFieldHookModel;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionMember(BeanExtension.class)
-
-@OldBeanFieldHook(allowGet = true, processor = ProvideFieldHookProcessor.class)
-@OldBeanMethodHook(allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
-
 @BeanMethod.Hook(allowInvoke = true, extension = BeanExtension.class)
 @BeanField.Hook(allowGet = true, extension = BeanExtension.class)
-
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
@@ -114,40 +100,4 @@ public @interface Provide {
     /// Maaske har vi slet ikke constant....
     //// Maaske har vi en @ConstantProvide istedet for??? Eller Scope(Constant);
     boolean constant() default false;
-}
-
-///**
-//* @return the provision mode being used
-//* 
-//* @implNote
-//*/
-//ProvisionMode mode() default ProvisionMode.ON_DEMAND;
-
-/** A field sidecar for {@link Provide}. */
-final class ProvideFieldHookProcessor extends OldBeanField {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void bootstrap() {
-        UseSiteFieldHookModel.getBuilder(this).provideAsService(variable().getAnnotation(Provide.class).constant());
-    }
-}
-
-/** A method sidecar for {@link Provide}. */
-final class ProvideMethodBootstrap extends RealMethodSidecarBootstrap {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void bootstrap() {
-        serviceRegister(method().getAnnotation(Provide.class).constant());
-        oldOperation().useMirror(() -> new ServiceProvideMirror() {
-
-            @Override
-            public Key<?> key() {
-                return Key.of(String.class);
-            }
-        });
-        
-        // new Factory<@Provide Long>(() -> 2L) {};
-    }
 }

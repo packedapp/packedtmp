@@ -30,7 +30,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.oldhooks.OldBeanClass;
 import app.packed.bean.oldhooks.OldBeanMethod;
-import app.packed.extension.Extension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.oldhooks.ClassHookModel;
 import packed.internal.bean.oldhooks.FieldHookModel;
@@ -46,10 +45,6 @@ public final class HookModel {
 
     /** The class of the model. */
     public final Class<?> clazz;
-
-    /** Any extension this model is a part of. */
-    @Nullable
-    public final Class<? extends Extension<?>> extensionClass;
 
     /** All hooks. */
     private final List<UseSiteMemberHookModel> models;
@@ -71,7 +66,7 @@ public final class HookModel {
         this.clazz = builder.oc.type();
         this.models = List.copyOf(builder.models);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
-        this.extensionClass = builder.extension == null ? null : builder.extension.type();
+    //    this.extensionClass = builder.extension == null ? null : builder.extension.type();
     }
 
     public Key<?> defaultKey() {

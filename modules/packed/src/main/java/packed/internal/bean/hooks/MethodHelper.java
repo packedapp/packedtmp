@@ -18,32 +18,27 @@ package packed.internal.bean.hooks;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanMethod;
 import packed.internal.inject.DependencyProducer;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.inject.InternalDependency;
 
 /**
  *
  */
-public class FieldHelper extends DependencyHolder {
+public class MethodHelper extends DependencyHolder {
 
     /** The modifiers of the field. */
     private final int modifiers;
 
     /** A direct method handle to the field. */
-    public final VarHandle varHandle;
+    public final MethodHandle varHandle;
     
-//    /** A model of the field hooks bootstrap. */
-//    private final FieldHookModel hook;
-    
-    public FieldHelper(BeanField field, VarHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
-        super(List.of(), provideAsConstant, provideAsKey);
-        this.modifiers = requireNonNull(field.getModifiers());
+    public MethodHelper(BeanMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
+        super(InternalDependency.fromExecutable(method.method()), provideAsConstant, provideAsKey);
+        this.modifiers = requireNonNull(method.getModifiers());
 //        this.hook = null;// requireNonNull(builder.hook);
         this.varHandle = requireNonNull(mh);
     }
@@ -75,6 +70,6 @@ public class FieldHelper extends DependencyHolder {
     /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
-        return MethodHandleUtil.getFromField(modifiers, varHandle);
+        return varHandle;
     }
 }
