@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.BuildException;
-import app.packed.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanMethod;
 
 /**
  * Trying to build an application with more than a single method annotated with this annotation will fail with

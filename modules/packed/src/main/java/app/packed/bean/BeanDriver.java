@@ -19,11 +19,11 @@ import java.lang.reflect.Member;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.bean.hooks.sandboxinvoke.InvokerConfiguration;
 import app.packed.bean.operation.OC2;
 import app.packed.bean.operation.OperationConfiguration;
 import app.packed.bean.operation.OperationDriver;
 import app.packed.bean.operation.OperationMirror;
-import app.packed.hooks.sandboxinvoke.InvokerConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanDriver;
 

@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.Extension;
-import app.packed.hooks.BeanMethod;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.bean.BeanSetup;
-import packed.internal.hooks.impl.HookedBeanMethod;
+import packed.internal.bean.hooks.HookedBeanMethod;
 
 // Cannot use both @app.packed.application.Main and the CLI extension at the same time.
 /**

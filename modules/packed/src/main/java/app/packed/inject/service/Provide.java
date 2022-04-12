@@ -25,14 +25,14 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.AnnotationMaker;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.hooks.OldBeanField;
-import app.packed.bean.hooks.OldBeanFieldHook;
-import app.packed.bean.hooks.OldBeanMethodHook;
-import app.packed.bean.hooks.sandbox.RealMethodSidecarBootstrap;
+import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.oldhooks.OldBeanField;
+import app.packed.bean.oldhooks.OldBeanFieldHook;
+import app.packed.bean.oldhooks.OldBeanMethodHook;
+import app.packed.bean.oldhooks.sandbox.RealMethodSidecarBootstrap;
 import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.extension.ExtensionMember;
-import app.packed.hooks.BeanMethod;
-import packed.internal.bean.hooks.usesite.UseSiteFieldHookModel;
+import packed.internal.bean.oldhooks.usesite.UseSiteFieldHookModel;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

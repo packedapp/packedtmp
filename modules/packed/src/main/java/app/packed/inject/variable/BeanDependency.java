@@ -24,10 +24,10 @@ import java.util.OptionalLong;
 
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
-import app.packed.bean.hooks.OldBeanClass;
-import app.packed.bean.hooks.OldBeanConstructor;
-import app.packed.bean.hooks.OldBeanField;
-import app.packed.bean.hooks.OldBeanMethod;
+import app.packed.bean.oldhooks.OldBeanClass;
+import app.packed.bean.oldhooks.OldBeanConstructor;
+import app.packed.bean.oldhooks.OldBeanField;
+import app.packed.bean.oldhooks.OldBeanMethod;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
 

@@ -23,8 +23,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import packed.internal.bean.hooks.usesite.BootstrappedSourcedClassModel;
-import packed.internal.bean.hooks.usesite.HookModel;
+import packed.internal.bean.oldhooks.usesite.BootstrappedSourcedClassModel;
+import packed.internal.bean.oldhooks.usesite.HookModel;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;

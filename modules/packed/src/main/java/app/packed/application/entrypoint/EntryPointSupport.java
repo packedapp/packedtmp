@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.application.BuildException;
-import app.packed.bean.hooks.OldBeanMethod;
+import app.packed.bean.oldhooks.OldBeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;

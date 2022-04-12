@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.App;
-import app.packed.bean.hooks.OldBeanMethod;
-import app.packed.bean.hooks.OldBeanMethodHook;
+import app.packed.bean.oldhooks.OldBeanMethod;
+import app.packed.bean.oldhooks.OldBeanMethodHook;
 import app.packed.container.BaseAssembly;
 
 public class MethodHookBootstrapTest {

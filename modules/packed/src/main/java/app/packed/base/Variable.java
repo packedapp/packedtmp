@@ -28,8 +28,8 @@ import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.hooks.sandboxinvoke.CommonVarInfo;
-import app.packed.hooks.sandboxinvoke.VariableParser;
+import app.packed.bean.hooks.sandboxinvoke.CommonVarInfo;
+import app.packed.bean.hooks.sandboxinvoke.VariableParser;
 import packed.internal.base.variable.FieldVariable;
 import packed.internal.base.variable.ParameterVariable;
 import packed.internal.base.variable.TypeVariableVariable;
