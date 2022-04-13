@@ -39,7 +39,7 @@ import app.packed.lifecycle.RunState;
 import packed.internal.container.AssemblySetupOfAssembly;
 import packed.internal.container.CompositeWirelet;
 import packed.internal.container.WireletWrapper;
-import packed.internal.inject.invoke.Infuser;
+import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -246,7 +246,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
 
             // Find a method handle for the application shell's constructor
-            Infuser.Builder builder = Infuser.builder(caller, implementation, ApplicationInitializationContext.class);
+            InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);

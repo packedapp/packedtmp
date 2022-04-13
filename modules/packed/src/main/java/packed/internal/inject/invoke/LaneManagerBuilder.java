@@ -33,6 +33,7 @@ public class LaneManagerBuilder {
 
     final ArrayList<Class<?>> parameterTypes = new ArrayList<>(4);
 
+    // Hvornaar vil man aendre denne?
     Class<?> returnType = void.class;
 
     public int addParameterLane(Class<?> parameterType) {

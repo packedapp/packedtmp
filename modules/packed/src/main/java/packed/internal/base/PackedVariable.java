@@ -22,7 +22,7 @@ import app.packed.base.TypeToken;
 import app.packed.base.Variable;
 
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
-public record PackedVariable(AnnotatedElement annotatedElement, TypeWrapper typeWrapper) implements Variable {
+public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrapper typeWrapper) implements Variable {
 
     /** {@inheritDoc} */
     @Override

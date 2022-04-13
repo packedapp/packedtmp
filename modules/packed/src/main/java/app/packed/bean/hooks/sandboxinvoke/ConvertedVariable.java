@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bean.hooks.sandboxinvoke;
+
+import java.lang.reflect.Type;
 
 /**
  *
  */
+public interface ConvertedVariable {
 
-// Ideen er lidt at vi har en meget barebone extension...
-// Her putter vi ogsaa fx java.util.system.Logger-> LoggingExtension
-// @JavaBaseSupport
+    //// For Parameterized types
+    // ConvertedVariable convertMore(int index);
 
-// Tror vi tillader at man kan registrere en String istedet for en class
-// Der er ingen grund til at loade classer som man ikke noedvendigvis vil bruge.
-// Jo vi skal jo kende @DependsOn
-abstract class BaseExtension<E extends Extension<E>> extends Extension<E> {
+    Type readType(); // raw class or array type
 
+    Class<?> readClass(); // raw class or array type
 }
+
+// Type-Based injection... we kender ligesom "raw" typen, Det vi er interesseret i er parameterene...
+// Map<K,V> -> Maa vaere en Converter<Variable, ConvertedVariable[]>
+
+// 

@@ -69,7 +69,6 @@ public interface BeanMethod {
     
     FactoryType type();
     
-    
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented

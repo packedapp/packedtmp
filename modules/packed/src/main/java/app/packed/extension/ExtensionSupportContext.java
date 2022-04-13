@@ -21,13 +21,16 @@ import packed.internal.container.PackedExtensionSupportContext;
 /**
  *
  */
-// Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
-// Men at vi binder den til en container...
-
-// ExtensionSupportUSer???
-
 public sealed interface ExtensionSupportContext permits PackedExtensionSupportContext {
 
+    default void checkInSameContainerAs(Extension<?> extension) {
+     // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
+     // Men at vi binder den til en container...
+
+        // IDK
+     // ExtensionSupportUSer???
+    }
+    
     void checkConfigurable();
 
     Class<? extends Extension<?>> extensionType();

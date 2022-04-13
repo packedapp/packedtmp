@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bean.hooks.sandboxinvoke;
 
 /**
  *
  */
-
-// Ideen er lidt at vi har en meget barebone extension...
-// Her putter vi ogsaa fx java.util.system.Logger-> LoggingExtension
-// @JavaBaseSupport
-
-// Tror vi tillader at man kan registrere en String istedet for en class
-// Der er ingen grund til at loade classer som man ikke noedvendigvis vil bruge.
-// Jo vi skal jo kende @DependsOn
-abstract class BaseExtension<E extends Extension<E>> extends Extension<E> {
-
+public class Enums {
+    
+    // FUNCTIONHOOK??? Vi har ikke behov for annotering... eftersom de altid er programmatic
+    enum HOOKTYPE { CLASS, METHOD, CONSTRUCTOR, FIELD, DEPENDENCY }
+    
+    enum STATEFULLNESS {STATELESS, STATEFULL}
+    
+    enum STAGE { BOOTSTRAP, BUILD, RUNTIME }
+    
+    enum SCOPE {CLASS, CLASS_INSTANCE, BEAN, BEAN_INSTANCE}
+    enum SCOPE2 {COMPONENT, COMPONENT_INSTANCE}
+    
+    enum FUNCTIONALITY { PROVIDE_VALUE, ON_LIFECYCLE, STORE_DATA}
+    
+    // COMMUNICATION Extension|ExtensionBean<->Hooks<->Hooks<->UserBean
 }

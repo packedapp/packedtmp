@@ -23,7 +23,6 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Executable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import app.packed.base.Key;
 import packed.internal.util.OpenClass;
@@ -41,7 +40,7 @@ public final class MethodHandleBuilder {
 
     final HashMap<Class<? extends Annotation>, AnnoClassEntry> annoations = new HashMap<>();
 
-    final HashMap<Key<?>, Infuser.Entry> keys = new HashMap<>();
+    final HashMap<Key<?>, InternalInfuser.Entry> keys = new HashMap<>();
 
     /** Used for figuring out where the receiver is if instance method. -1 we only static methods. TODO implement */
     int receiverIndex = 0;
@@ -52,32 +51,8 @@ public final class MethodHandleBuilder {
         this.targetType = requireNonNull(targetType);
     }
 
-    private void add(Key<?> key, MethodHandle transformer, int... indexes) {
-        for (int i = 0; i < indexes.length; i++) {
-            Objects.checkFromIndexSize(indexes[i], 0, targetType.parameterCount());
-        }
-        // Check the various types matches...
-        if (keys.putIfAbsent(key, new Infuser.Entry(transformer, false, false, indexes)) != null) {
-            throw new IllegalArgumentException("The specified key " + key + " has already been added");
-        }
-    }
-
-    public <T> void addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
-        annoations.put(annotationType, new AnnoClassEntry(annotationType, index, mh));
-    }
-    
-    public void add(Infuser infuser) {
+    public void add(InternalInfuser infuser) {
         keys.putAll(infuser.services);
-    }
-
-    public void addKey(Class<?> key, int index) {
-        addKey(Key.of(key), index);
-    }
-
-    public void addKey(Key<?> key, int index) {
-        // Check that we can perform upcast?
-        // if (targetType.parameterType(index))
-        add(key, null, index);
     }
 
     public MethodHandle build(OpenClass oc, Executable e) {
@@ -100,21 +75,7 @@ public final class MethodHandleBuilder {
     }
 
     public static MethodHandleBuilder of(Class<?> returnType, List<Class<?>> parameterTypes) {
-        return of(MethodType.methodType(returnType, parameterTypes));
-    }
-    public static MethodHandleBuilder of(Class<?> returnType, Class<?>... parameterTypes) {
-        return of(MethodType.methodType(returnType, parameterTypes));
-    }
-
-    /**
-     * Creates a new builder.
-     * 
-     * @param targetType
-     *            the type of the method handle being build
-     * @return a builder
-     */
-    public static MethodHandleBuilder of(MethodType targetType) {
-        return new MethodHandleBuilder(targetType);
+        return new MethodHandleBuilder(MethodType.methodType(returnType, parameterTypes));
     }
 
     static class AnnoClassEntry {

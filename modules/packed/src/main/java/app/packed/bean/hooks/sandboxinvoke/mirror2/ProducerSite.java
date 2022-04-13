@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
+
+import app.packed.component.Realm;
 
 /**
  *
  */
+public /*non-sealed*/ interface ProducerSite extends InjectionSite {
+    
+    Realm producer();
 
-// Ideen er lidt at vi har en meget barebone extension...
-// Her putter vi ogsaa fx java.util.system.Logger-> LoggingExtension
-// @JavaBaseSupport
+    
+    interface MethodProducerSite extends ProducerSite {
+        
+    }
+    
+    interface ConstantProducerSite extends ProducerSite {
 
-// Tror vi tillader at man kan registrere en String istedet for en class
-// Der er ingen grund til at loade classer som man ikke noedvendigvis vil bruge.
-// Jo vi skal jo kende @DependsOn
-abstract class BaseExtension<E extends Extension<E>> extends Extension<E> {
-
+        // Er det ikke en implementerings detalje vi er ligeglade med?
+        
+        boolean isBuildTimeConstant();
+        // no dependencies
+    }
 }

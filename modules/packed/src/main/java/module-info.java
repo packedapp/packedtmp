@@ -13,10 +13,9 @@ module app.packed {
     exports app.packed.conversion;
     exports app.packed.extension;
     exports app.packed.inject;
-    exports app.packed.inject.mirror;
+    exports app.packed.bean.hooks.sandboxinvoke.mirror2;
     exports app.packed.inject.sandbox;
     exports app.packed.inject.service;
-    exports app.packed.inject.variable;
     exports app.packed.lifecycle;
     exports app.packed.lifetime;
     exports app.packed.bean.hooks;
@@ -24,7 +23,6 @@ module app.packed {
     exports app.packed.state;
     exports app.packed.state.sandbox;
     exports app.packed.validate;
-    exports app.packed.request;
     
     uses packed.internal.devtools.spi.PackedDevTools;
     exports packed.internal.devtools.spi to app.packed.devtools;

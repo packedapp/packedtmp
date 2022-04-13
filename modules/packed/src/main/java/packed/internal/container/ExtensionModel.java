@@ -36,7 +36,7 @@ import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.inject.invoke.Infuser;
+import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
 
@@ -272,7 +272,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 dependencies.add(dependencyType);
             }
 
-            Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
+            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
             builder.provide(ExtensionConfiguration.class).adaptArgument(0);
 
             // Find a method handle for the extension's constructor

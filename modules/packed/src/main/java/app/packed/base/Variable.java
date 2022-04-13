@@ -21,14 +21,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
 import app.packed.bean.hooks.sandboxinvoke.CommonVarInfo;
 import app.packed.bean.hooks.sandboxinvoke.VariableParser;
 import packed.internal.base.PackedVariable;
-import packed.internal.base.TypeWrapper;
+import packed.internal.base.VariableTypeWrapper;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 
@@ -57,27 +56,6 @@ import packed.internal.base.TypeWrapper;
  */
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
-    default Object getDeclaringElement() {
-        // return Field
-        // return Parameter
-        // return Method
-        // return FunctionType??? Ideen er jo lidt man kan kravle tilbage til "hele" functionen...
-        // return parameterizedType
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the raw type (Class) of the variable.
-     * 
-     * @return the raw type of the variable
-     * 
-     * @see Field#getGenericType()
-     * @see Parameter#getParameterizedType()
-     */
-    default Type getPa() {
-        return getType();
-    }
-
     /**
      * Returns the raw type (Class) of the variable.
      * 
@@ -90,7 +68,6 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      */
     Class<?> getType();
 
-    // variable().parse()
     @SuppressWarnings("exports")
     default CommonVarInfo parse() {
         return parse(CommonVarInfo.DEFAULT);
@@ -114,11 +91,11 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return a variable representing the field
      */
     static Variable ofField(Field field) {
-        return new PackedVariable(field, new TypeWrapper.OfField(field));
+        return new PackedVariable(field, new VariableTypeWrapper.OfField(field));
     }
 
     static Variable ofConstructor(Constructor<?> constructor) {
-        return new PackedVariable(constructor, new TypeWrapper.OfConstructor(constructor));
+        return new PackedVariable(constructor, new VariableTypeWrapper.OfConstructor(constructor));
     }
     
     /**
@@ -129,7 +106,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofMethodReturnType(Method method) {
-        return new PackedVariable(method, new TypeWrapper.OfMethodReturnType(method));
+        return new PackedVariable(method, new VariableTypeWrapper.OfMethodReturnType(method));
     }
 
     /**
@@ -140,11 +117,11 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      * @return the variable
      */
     static Variable ofParameter(Parameter parameter) {
-        return new PackedVariable(parameter, new TypeWrapper.OfParameter(parameter));
+        return new PackedVariable(parameter, new VariableTypeWrapper.OfParameter(parameter));
     }
 
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
-        return new PackedVariable(typeVariable, new TypeWrapper.OfTypeVariable(typeVariable));
+        return new PackedVariable(typeVariable, new VariableTypeWrapper.OfTypeVariable(typeVariable));
     }
 
 }

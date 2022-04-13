@@ -15,6 +15,13 @@
  */
 package app.packed.bean.hooks;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import app.packed.extension.Extension;
 
 /**
@@ -23,9 +30,15 @@ import app.packed.extension.Extension;
 // Provides objects for member injection (parameter, field)
 public interface BeanVarInjector {
 
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Retention(RUNTIME)
+    @Documented
     public @interface Hook {
-        /** The hook's {@link BeanField} class. */
+
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
 
+        // HttpRequestContext... requireAllContexts, requireAnyContexts
+        Class<?>[] requiresContext() default {};
     }
 }

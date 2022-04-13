@@ -23,7 +23,7 @@ import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionSupport;
 import app.packed.extension.ExtensionSupportContext;
 import app.packed.extension.InternalExtensionException;
-import packed.internal.inject.invoke.Infuser;
+import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
 
 /** A model for an {@link Extension.ExtensionSupport} class. Not used outside of this package. */
@@ -57,7 +57,7 @@ record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, Method
             // Create an infuser exposing two services:
             // 1. An instance of the extension that the subtension is a part of
             // 2. The class of the extension that wants to use the subtension
-            Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, ExtensionSupportContext.class);
+            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, ExtensionSupportContext.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
             builder.provide(ExtensionSupportContext.class).adaptArgument(1); // Extension instance of the subtension
 

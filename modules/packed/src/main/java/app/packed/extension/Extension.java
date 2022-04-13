@@ -15,7 +15,6 @@
  */
 package app.packed.extension;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -48,7 +47,7 @@ import app.packed.inject.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
-import packed.internal.inject.invoke.Infuser;
+import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.StackWalkerUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -146,9 +145,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     protected void hookOnBeanBegin(BeanInfo beanInfo) {}
 
-    protected void hookOnBeanClass(Class<? extends Annotation> annotation, BeanClass clazz) {}
-    // beanField.forEachAnnotation(Class<A>..., Consumer<A>);
-    //// Saa slipper vi for at meta synthesisere annoteringer senere...
+    protected void hookOnBeanClass(BeanClass clazz) {}
 
     /**
      * <p>
@@ -161,7 +158,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     protected void hookOnBeanMethod(BeanMethod method) {}
 
-    protected void hookOnBeanVarInjector(Class<?> clazzOrAnnotation, BeanVarInjector injector) {}
+    protected void hookOnBeanVarInjector(BeanVarInjector injector) {}
 
     protected void hookOnBeanEnd(BeanInfo beanInfo) {}
 
@@ -440,7 +437,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         }
 
         // Create and return a single instance of the bootstrap class
-        Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), c);
+        InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), c);
         MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
         try {
             return (T) mh.invoke();

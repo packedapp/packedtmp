@@ -6,3 +6,6 @@ Q) Hvad goer vi med fx CliArgumentMirror???
    Det vil give mening at extende EntryPointMirror
    Saaledes at man slipper for at have en peger fra
    EntryPointMirror->CliArgument og CliArgument->EntryPointMirror
+   
+   Vi skal ihvertfald undgaa at have 2 Entry Points for hver actual entry point.
+   Saa det giver naermest kun mening at overskrive

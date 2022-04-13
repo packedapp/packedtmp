@@ -21,12 +21,14 @@ import java.lang.reflect.Member;
  *
  */
 public enum InjectionScope {
-
+    
+    INHERITED, //?
+    
     CONTAINER,
 
     CLASS,
 
-    MEMBER_OR_FUNCTION;
+    OPERATION;
 
 }
 // Hvad har Wirelet af scope??? Protortpe eller Singleton taenker jeg

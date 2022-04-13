@@ -126,7 +126,7 @@ class MethodHandleBuilderHelper {
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section
                     HashSet<Key<?>> keys = new HashSet<>();
                     Map<Key<?>, Service> services = new HashMap<>();
-                    for (Entry<Key<?>, Infuser.Entry> e : aa.keys.entrySet()) {
+                    for (Entry<Key<?>, InternalInfuser.Entry> e : aa.keys.entrySet()) {
                         if (!e.getValue().isHidden()) {
                             keys.add(e.getKey());
                             services.put(e.getKey(), ServiceSetup.simple(e.getKey(), false));
@@ -134,11 +134,11 @@ class MethodHandleBuilderHelper {
                     }
 
                     PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Map.copyOf(services));
-                    Infuser.Entry e = new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false, false, new int[0]);
+                    InternalInfuser.Entry e = new InternalInfuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false, false, new int[0]);
                     aa.keys.putIfAbsent(kk, e);
                 }
 
-                Infuser.Entry entry = aa.keys.get(kk);
+                InternalInfuser.Entry entry = aa.keys.get(kk);
                 if (entry != null) {
                     // Vi have an explicit registered service.
 
