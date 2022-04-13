@@ -23,6 +23,7 @@ import app.packed.bean.BeanDriver;
 import app.packed.bean.BeanKind;
 import app.packed.bean.operation.OperationConfiguration;
 import app.packed.component.Realm;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -108,7 +109,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         return kind;
     }
 
-    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, Realm owner, Class<T> implementation) {
+    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanDriver<>(kind, container, owner, implementation, SourceType.CLASS, implementation);

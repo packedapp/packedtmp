@@ -1,6 +1,5 @@
 package packed.internal.bean.hooks.usage;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -51,14 +50,12 @@ public class NewHookAssembly extends BaseAssembly {
         }
 
         @Override
-        protected void hookOnBeanField(Class<? extends Annotation> annotation, BeanField field) {
-            System.out.println(annotation);
+        protected void hookOnBeanField(BeanField field) {
             System.out.println("Reading field " + field.varHandle().get());
         }
 
         @Override
-        protected void hookOnBeanMethod(Class<? extends Annotation> annotation, BeanMethod method) {
-            System.out.println(annotation);
+        protected void hookOnBeanMethod(BeanMethod method) {
             System.out.println("Reading Method " + method.methodHandle());
         }
 

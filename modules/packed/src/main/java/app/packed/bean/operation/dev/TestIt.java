@@ -26,7 +26,6 @@ import app.packed.bean.operation.dev.TestItPublic.HttpMethodOperationMirror;
 import app.packed.bean.operation.dev.TestItPublic.HttpRequest;
 import app.packed.bean.operation.dev.TestItPublic.HttpResponse;
 import app.packed.bean.operation.dev.TestItPublic.Router;
-import app.packed.component.Realm;
 import app.packed.extension.Extension;
 
 /**
@@ -41,7 +40,7 @@ public class TestIt extends Extension<TestIt> {
     private BeanDriver<?> fb() {
         BeanDriver<?> fb = functionalBean;
         if (fb == null) {
-            functionalBean = fb = bean().newDriver(BeanKind.FUNCTIONAL, Realm.application());
+            functionalBean = fb = bean().newApplicationBeanDriver(BeanKind.FUNCTIONAL);
             // fb.setPrefix("fWeb")
         }
         return fb;

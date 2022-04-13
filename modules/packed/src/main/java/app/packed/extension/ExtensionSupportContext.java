@@ -23,7 +23,10 @@ import packed.internal.container.PackedExtensionSupportContext;
  */
 // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
 // Men at vi binder den til en container...
-public sealed interface ExtensionSupportContext permits PackedExtensionSupportContext{
+
+// ExtensionSupportUSer???
+
+public sealed interface ExtensionSupportContext permits PackedExtensionSupportContext {
 
     void checkConfigurable();
 

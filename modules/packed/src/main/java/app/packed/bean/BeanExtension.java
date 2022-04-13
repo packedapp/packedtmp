@@ -2,8 +2,6 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
-
 import app.packed.base.Key;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
@@ -48,7 +46,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     @Override
-    protected void hookOnBeanField(Class<? extends Annotation> annotation, BeanField field) {
+    protected void hookOnBeanField(BeanField field) {
         BeanScanner f = ((HookedBeanField) field).scanner;
         BeanSetup bean = f.bean;
         Key<?> key = Key.convertField(field.field());
@@ -65,7 +63,8 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     @Override
-    protected void hookOnBeanMethod(Class<? extends Annotation> annotation, BeanMethod method) {
+    protected void hookOnBeanMethod(BeanMethod method) {
+        //new Exception().printStackTrace();
         BeanScanner f = ((HookedBeanMethod) method).scanner;
         BeanSetup bean = f.bean;
         Key<?> key = Key.convertMethodReturnType(method.method());
@@ -93,7 +92,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, container.assembly.realm(), implementation);
+        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), implementation);
         return new ContainerBeanConfiguration<>(driver);
     }
 
@@ -158,7 +157,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofClass(BeanKind.UNMANAGED, container, container.assembly.realm(), implementation);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofClass(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), implementation);
         // handle.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();

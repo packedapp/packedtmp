@@ -21,9 +21,7 @@ import java.lang.annotation.Annotation;
  *
  */
 // Maaske bare AnnotationReader
-public class MetaAnnotationReader {
+public interface AnnotationReader {
 
-    public <T extends Annotation> T readRequired(Class<T> annotationType) {
-        throw new UnsupportedOperationException();
-    }
+    <T extends Annotation> T readRequired(Class<T> annotationType);
 }

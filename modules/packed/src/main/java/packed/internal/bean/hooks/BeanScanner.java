@@ -81,7 +81,7 @@ public class BeanScanner {
                 MethodHook fh = MethodHook.CACHE.get(a1Type);
                 if (fh != null) {
                     ExtensionInfo ei = getInfo(a1Type.getModule(), fh.extensionType);
-                    ei.extension.hookOnBeanMethod(a1Type, new HookedBeanMethod(BeanScanner.this, method));
+                    ei.extension.hookOnBeanMethod(new HookedBeanMethod(BeanScanner.this, method));
                 }
             }
         }
@@ -95,7 +95,7 @@ public class BeanScanner {
                 FieldHook fh = FieldHook.CACHE.get(a1Type);
                 if (fh != null) {
                     ExtensionInfo ei = getInfo(a1Type.getModule(), fh.extensionType);
-                    ei.extension.hookOnBeanField(a1Type, new HookedBeanField(BeanScanner.this, field));
+                    ei.extension.hookOnBeanField(new HookedBeanField(BeanScanner.this, field));
                 }
             }
         }

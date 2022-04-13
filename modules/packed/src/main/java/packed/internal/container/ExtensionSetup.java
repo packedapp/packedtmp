@@ -54,11 +54,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_FIELD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanField",
-            void.class, Class.class, BeanField.class);
+            void.class, BeanField.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanMethod",
-            void.class, Class.class, BeanMethod.class);
+            void.class, BeanMethod.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
@@ -270,17 +270,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
     }
 
-    public void hookOnBeanField(Class<?> clazz, BeanField field) {
+    public void hookOnBeanField(BeanField field) {
         try {
-            MH_EXTENSION_HOOK_BEAN_FIELD.invokeExact(instance, clazz, field);
+            MH_EXTENSION_HOOK_BEAN_FIELD.invokeExact(instance, field);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
     }
 
-    public void hookOnBeanMethod(Class<?> clazz, BeanMethod method) {
+    public void hookOnBeanMethod(BeanMethod method) {
         try {
-            MH_EXTENSION_HOOK_BEAN_METHOD.invokeExact(instance, clazz, method);
+            MH_EXTENSION_HOOK_BEAN_METHOD.invokeExact(instance, method);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

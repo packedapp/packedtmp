@@ -32,17 +32,20 @@ import app.packed.extension.InternalExtensionException;
 @ExtensionMember(EntryPointExtension.class)
 public class EntryPointSupport extends ExtensionSupport {
 
-    /** The entry point extension. */
-    final EntryPointExtension extension;
-
     /** The extension using the this class. */
-    final ExtensionSupportContext context;
+    private final ExtensionSupportContext context;
+
+    /** The entry point extension. */
+    private final EntryPointExtension extension;
 
     EntryPointSupport(EntryPointExtension extension, ExtensionSupportContext context) {
         this.extension = requireNonNull(extension);
-        this.context = context;
+        this.context = requireNonNull(context);
     }
 
+    /**
+     * {@return the extension that is managing the
+     */
     public Optional<Class<? extends Extension<?>>> managedBy() {
         return Optional.ofNullable(extension.shared().takeOver);
     }
@@ -61,37 +64,8 @@ public class EntryPointSupport extends ExtensionSupport {
     // return mirror?
     
     public int registerEntryPoint(boolean isMain) {
-
-        // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
-        // Saa det er kun selve invokationen der sker her
-
-        // method.reserveMethodHandle(EC);
-        // Grim kode pfa ExtensoinSupportContest i constructoren
-        if (context == null) {
-            extension.shared().takeOver(EntryPointExtension.class);
-        } else {
-            extension.shared().takeOver(context.extensionType());
-        }
-        if (isMain) {
-            extension.hasMain = true;
-        }
-        return 0;
+        return extension.registerEntryPoint(context.extensionType(), isMain);
     }
-//    public int registerEntryPoint(OldBeanMethod method) {
-//        // BeanMethod -> Actual Java Method, or Function
-//
-//        // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
-//        // Saa det er kun selve invokationen der sker her
-//
-//        // method.reserveMethodHandle(EC);
-//        // Grim kode pfa ExtensoinSupportContest i constructoren
-//        if (context == null) {
-//            extension.shared().takeOver(EntryPointExtension.class);
-//        } else {
-//            extension.shared().takeOver(context.extensionType());
-//        }
-//        return 0;
-//    }
 
     /**
      * Selects
@@ -105,6 +79,9 @@ public class EntryPointSupport extends ExtensionSupport {
     // hvis der ikke blive sat noget
 
     // @AutoService
+    // Kan injectes i enhver bean som er owner = managedBy...
+    // For andre beans smider man InjectionException?
+    
     public interface EntryPointSelector {
 
         /**
@@ -114,10 +91,14 @@ public class EntryPointSupport extends ExtensionSupport {
          *             if no entry point with the specified id exists
          * @throws IllegalStateException
          *             if the method is invoked more than once
-         * 
          * @see EntryPointMirror#id()
          */
         void selectEntryPoint(int id);
+    }
+    
+    // Her vender vi den om... og bruger ExtensionSupport#registerExtensionPoint
+    public interface EntryPointExtensionPoint {
+        int entryPoint();
     }
 }
 // Ideen er at man kan wrappe sin entrypoint wirelet..

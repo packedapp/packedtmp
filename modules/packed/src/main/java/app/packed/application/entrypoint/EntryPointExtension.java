@@ -1,21 +1,22 @@
 package app.packed.application.entrypoint;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import app.packed.base.Nullable;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.Extension;
-import app.packed.inject.service.ServiceExtension;
+import app.packed.extension.ExtensionConfiguration;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
-import packed.internal.bean.BeanSetup;
 import packed.internal.bean.hooks.HookedBeanMethod;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionSetup;
 
 // Cannot use both @app.packed.application.Main and the CLI extension at the same time.
 /**
@@ -23,11 +24,36 @@ import packed.internal.bean.hooks.HookedBeanMethod;
  */
 public class EntryPointExtension extends Extension<EntryPointExtension> {
 
+    private final ContainerSetup container;
+
     boolean hasMain;
 
     Shared shared;
 
-    /* package-private */ EntryPointExtension() {}
+    /**
+     * Create a new service extension.
+     * 
+     * @param configuration
+     *            an extension configuration object.
+     */
+    /* package-private */ EntryPointExtension(Optional<EntryPointExtension> p1, @Nullable EntryPointExtension p2, ExtensionConfiguration configuration) {
+        this.container = ((ExtensionSetup) configuration).container;
+        
+    }
+
+    @Override
+    protected void hookOnBeanMethod(BeanMethod method) {
+        registerEntryPoint(null, true);
+
+        container.application.entryPoints = new EntryPointSetup();
+
+        MainThreadOfControl mc = container.application.entryPoints.mainThread();
+        mc.isStatic = Modifier.isStatic(method.getModifiers());
+        mc.cs = ((HookedBeanMethod) method).scanner.bean;
+        mc.methodHandle = method.methodHandle();
+
+//        oldOperation().useMirror(() -> new EntryPointMirror(0));
+    }
 
     public void main(Runnable runnable) {
         // Det her er en function
@@ -47,25 +73,6 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     @Override
-    protected void hookOnBeanMethod(Class<? extends Annotation> annotation, BeanMethod method) {
-        MethodHandle mh = method.methodHandle();
-        Method m = method.method();
-        new EntryPointSupport(this, null).registerEntryPoint(true);
-        hasMain = true;
-
-        BeanSetup c = ((HookedBeanMethod) method).scanner.bean;
-        c.parent.useExtension(ServiceExtension.class);
-        c.application.entryPoints = new EntryPointSetup();
-
-        MainThreadOfControl mc = c.application.entryPoints.mainThread();
-        mc.isStatic = Modifier.isStatic(m.getModifiers());
-        mc.cs = (BeanSetup) c;
-        mc.methodHandle = mh;
-
-//        oldOperation().useMirror(() -> new EntryPointMirror(0));
-    }
-
-    @Override
     protected void onApplicationClose() {
         if (isRootOfApplication()) {
             // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
@@ -81,6 +88,24 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     protected void onNew() {
         shared = configuration().isRootOfApplication() ? new Shared() : treeOfApplication().root().shared;
+    }
+
+    int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
+
+        // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
+        // Saa det er kun selve invokationen der sker her
+
+        // method.reserveMethodHandle(EC);
+        // Grim kode pfa ExtensoinSupportContest i constructoren
+        if (extensionType == null) {
+            shared().takeOver(EntryPointExtension.class);
+        } else {
+            shared().takeOver(extensionType);
+        }
+        if (isMain) {
+            hasMain = true;
+        }
+        return 0;
     }
 
     public void setShutdownStrategy(Supplier<Throwable> maker) {
@@ -108,9 +133,12 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     }
 
+    /** An instance of this class is shared between all entry point extensions for a single application. */
     static class Shared {
-        int entryPointCount;
+        
+        /** All entry points. */
         final List<EntryPointConf> entrypoints = new ArrayList<>();
+        
         MethodHandle[] entryPoints;
         Class<? extends Extension<?>> takeOver;
 

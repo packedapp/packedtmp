@@ -144,6 +144,28 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return configuration().containerPath();
     }
 
+    protected void hookOnBeanBegin(BeanInfo beanInfo) {}
+
+    protected void hookOnBeanClass(Class<? extends Annotation> annotation, BeanClass clazz) {}
+    // beanField.forEachAnnotation(Class<A>..., Consumer<A>);
+    //// Saa slipper vi for at meta synthesisere annoteringer senere...
+
+    /**
+     * <p>
+     * This method is never invoked more than once for a single field on an extension.
+     * If there are multiple field hook annotations for the same extension
+     * @param field
+     *            the bean field
+     */
+    protected void hookOnBeanField(BeanField field) {}
+
+    protected void hookOnBeanMethod(BeanMethod method) {}
+
+    protected void hookOnBeanVarInjector(Class<?> clazzOrAnnotation, BeanVarInjector injector) {}
+
+    protected void hookOnBeanEnd(BeanInfo beanInfo) {}
+
+    
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
     // Her er det jo root container vi skal teste
@@ -217,16 +239,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return mirror;
     }
 
-    protected void hookOnBeanBegin(BeanInfo beanInfo) {}
-    protected void hookOnBeanClass(Class<? extends Annotation> annotation, BeanClass clazz) {}
-    // beanField.forEachAnnotation(Class<A>..., Consumer<A>);
-    //// Saa slipper vi for at meta synthesisere annoteringer senere...
-    
-    protected void hookOnBeanField(Class<? extends Annotation> annotation, BeanField field) {}
-    protected void hookOnBeanMethod(Class<? extends Annotation> annotation, BeanMethod method) {}
-    protected void hookOnBeanVarInjector(Class<?> clazzOrAnnotation, BeanVarInjector injector) {}
-    protected void hookOnBeanEnd(BeanInfo beanInfo) {}
-    
     /**
      * Invoked by the runtime on the root extension to finalize configuration of the extension.
      * <p>
@@ -437,6 +449,22 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         }
     }
 
+    public static abstract class Bootstrap {
+        protected abstract void bootstrap();
+
+        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
+
+        }
+
+        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
+            return alternative.get();
+        }
+
+    }
+
+    public @interface BootstrapWith {
+        Class<? extends Extension.Bootstrap> value();
+    }
 
     /**
      * If an extension depends on other extensions (most do). They must annotated with this annotation, indicating exactly
@@ -465,23 +493,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
          */
         String[] optionally() default {};
     }
-
-    public static abstract class Bootstrap {
-        protected abstract void bootstrap();
-
-        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
-
-        }
-
-        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
-            return alternative.get();
-        }
-
-    }
-
-    public @interface BootstrapWith {
-        Class<? extends Extension.Bootstrap> value();
-    }
 }
 //Static initializers
 ////Dependencies
@@ -497,26 +508,31 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
 class Zarchive {
 
-    static void $libraryFor(Module module) {
-        // Will fail if the module, class does not have version
-        // protected static void $libraryVersion(Module|Class m);
-        // protected static void $libraryWrapper(Module m);
+    /**
+     * @param extensionType
+     *            the extension type to test
+     * @return {@code true} if the extension is disabled, otherwise {@code false}
+     * 
+     * @see ApplicationDriver.Builder#disableExtension(Class...)
+     */
+    // Kan disable den paa application driver...
+    // Er det kombination af isExtensionDisabled og isUsed
+    /// Maaske bare Set<Class<? extends Extension<?>>> disabledExtensions(); disabledExtension.contains
+    /// Maaske vi skal have en selvstaedig classe.
+    /// Disabled kan ogsaa vaere hvis vi koere med whitelist
 
-        // libraryFor(
-        // Er det mere et foreignLibray???
-        // ConverterExtension er jo sin egen version
-        // will extract verions
+    /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
+    /// Maaske det er vigtigt at have de 2 options.
+    /// isExtensionUsable() , makeUnusable
+    protected final boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
+        throw new UnsupportedOperationException();
     }
 
-    protected static void $requiresClassGenFullAccessToModule() {
-        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
-
-        // Det kan ogsaa bare vaere en dependency paa en extension...
-        // Det er faktisk maaske det lettes
-        // dependsOn(FullClassGenExtension.class);
-
-        // Tror faktisk ikke vi supportere det udover annotation
-
+    protected static <T extends Extension<T>> void $addDependencyLazyInit(Class<? extends Extension<?>> dependency, Class<T> thisExtension,
+            Consumer<? super T> action) {
+        // Bliver kaldt hvis den specificeret
+        // Registeres ogsaa som dependeenc
+        // $ = Static Init (s + i = $)
     }
 
 //  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
@@ -590,6 +606,28 @@ class Zarchive {
 //        throw new UnsupportedOperationException();
 //    }
 
+    static void $libraryFor(Module module) {
+        // Will fail if the module, class does not have version
+        // protected static void $libraryVersion(Module|Class m);
+        // protected static void $libraryWrapper(Module m);
+
+        // libraryFor(
+        // Er det mere et foreignLibray???
+        // ConverterExtension er jo sin egen version
+        // will extract verions
+    }
+
+    protected static void $requiresClassGenFullAccessToModule() {
+        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
+
+        // Det kan ogsaa bare vaere en dependency paa en extension...
+        // Det er faktisk maaske det lettes
+        // dependsOn(FullClassGenExtension.class);
+
+        // Tror faktisk ikke vi supportere det udover annotation
+
+    }
+
     static final void preFinalMethod() {
         // Lav versioner der tager 1,2,3 og vargs parametere...
 
@@ -609,33 +647,6 @@ class Zarchive {
         // }
         // Her vil man nok ikke vaelge at
     }
-    /**
-     * @param extensionType
-     *            the extension type to test
-     * @return {@code true} if the extension is disabled, otherwise {@code false}
-     * 
-     * @see ApplicationDriver.Builder#disableExtension(Class...)
-     */
-    // Kan disable den paa application driver...
-    // Er det kombination af isExtensionDisabled og isUsed
-    /// Maaske bare Set<Class<? extends Extension<?>>> disabledExtensions(); disabledExtension.contains
-    /// Maaske vi skal have en selvstaedig classe.
-    /// Disabled kan ogsaa vaere hvis vi koere med whitelist
-
-    /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
-    /// Maaske det er vigtigt at have de 2 options.
-    /// isExtensionUsable() , makeUnusable
-    protected final boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected static <T extends Extension<T>> void $addDependencyLazyInit(Class<? extends Extension<?>> dependency, Class<T> thisExtension,
-            Consumer<? super T> action) {
-        // Bliver kaldt hvis den specificeret
-        // Registeres ogsaa som dependeenc
-        // $ = Static Init (s + i = $)
-    }
 
     // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
 }
-

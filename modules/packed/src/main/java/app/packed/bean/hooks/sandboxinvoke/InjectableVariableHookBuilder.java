@@ -34,7 +34,7 @@ public abstract class InjectableVariableHookBuilder {
         throw new UnsupportedOperationException();
     }
 
-    public final MetaAnnotationReader annotations() {
+    public final AnnotationReader annotations() {
         throw new UnsupportedOperationException();
     }
 

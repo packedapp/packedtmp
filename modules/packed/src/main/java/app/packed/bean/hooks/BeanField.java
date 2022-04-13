@@ -25,7 +25,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import app.packed.base.Variable;
 import app.packed.component.Realm;
@@ -37,7 +36,7 @@ import app.packed.extension.Extension;
 public interface BeanField {
 
     // BeanInfo
-    
+
     default int beanFieldId() {
         // IDeen er lidt at fields (og methods) har et unikt id...
         // Som man saa kan sammenligne med
@@ -45,34 +44,41 @@ public interface BeanField {
         // Maaske skal vi droppe Class<? extends Annotation> som parameter
         return 1;
     }
-    /**
-     * Returns the underlying field.
-     * 
-     * @return the underlying field
-     */
+
+    /** {@return the underlying field.} */
     Field field();
 
     /**
-     * Returns the modifiers of the field.
+     * {@return the modifiers of the field.}
      * 
-     * @return the modifiers of the field
      * @see Field#getModifiers()
-     * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
+     * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Field#getModifiers()}
      */
     int getModifiers();
 
     /**
+     * Returns a method handle that gives read access to the underlying field as specified by
+     * {@link Lookup#unreflectGetter(Field)}.
+     * 
      * @return a method handle getter
      */
     MethodHandle methodHandleGetter();
 
+    /**
+     * Returns a method handle that gives write access to the underlying field as specified by
+     * {@link Lookup#unreflectSetter(Field)}.
+     * 
+     * @return a method handle setter
+     */
     MethodHandle methodHandleSetter();
 
     BeanOperation operation(VarHandle.AccessMode accessMode);
 
     BeanOperation operationGetter();
-    
+
     BeanOperation operationSetter();
+
+    Realm realm();
 
     /**
      * Must have both get and set
@@ -87,14 +93,12 @@ public interface BeanField {
     VarHandle varHandle();
 
     /**
-     * {@return the underlying represented as a {@code Variable}.}
+     * {@return the underlying field represented as a {@code Variable}.}
      * 
      * @see Variable#ofField(Field)
      */
     Variable variable();
-    
-    Realm realm();
-    
+
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
@@ -114,8 +118,9 @@ public interface BeanField {
     }
 
 }
+
 interface Sandbox {
-    
+
     // Can only read stuff...
     // Then we can just passe it off to anyone
     BeanField immutable();
