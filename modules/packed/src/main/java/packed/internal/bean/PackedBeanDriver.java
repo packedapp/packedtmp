@@ -109,19 +109,21 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         return kind;
     }
 
-    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, Class<T> implementation) {
+    public static <T> PackedBeanDriver<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
+            Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanDriver<>(kind, container, owner, implementation, SourceType.CLASS, implementation);
     }
 
-    public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, Realm owner, Factory<T> factory) {
+    public static <T> PackedBeanDriver<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
+            Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
         return new PackedBeanDriver<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
     }
 
-    public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, Realm owner, T instance) {
+    public static <T> PackedBeanDriver<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -133,7 +135,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
         return new PackedBeanDriver<>(kind, container, owner, instance.getClass(), SourceType.INSTANCE, instance);
     }
 
-    public static BeanDriver<?> ofNone(BeanKind kind, ContainerSetup container, Realm owner) {
+    public static BeanDriver<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner) {
         return new PackedBeanDriver<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 

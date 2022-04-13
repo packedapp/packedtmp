@@ -64,7 +64,7 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
-        //new Exception().printStackTrace();
+        // new Exception().printStackTrace();
         BeanScanner f = ((HookedBeanMethod) method).scanner;
         BeanSetup bean = f.bean;
         Key<?> key = Key.convertMethodReturnType(method.method());
@@ -106,7 +106,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         // Med mindre vi laver en User->Extension, skal vi jo have noget a.la. UserOrExtension.realm();
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, container.assembly.realm(), factory);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -122,7 +122,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, container.assembly.realm(), instance);
+        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), instance);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -164,7 +164,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, container.assembly.realm(), factory);
+        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), factory);
         // bh.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
         return sbc.provide();
