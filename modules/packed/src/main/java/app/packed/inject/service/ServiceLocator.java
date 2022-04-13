@@ -27,11 +27,11 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
+import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
-import app.packed.inject.variable.BeanDependencyHook;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
@@ -40,7 +40,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@BeanDependencyHook(extension = ServiceExtension.class)
+@BeanVarInjector.Hook(extension = ServiceExtension.class)
 public interface ServiceLocator extends ServiceRegistry {
 
     /**

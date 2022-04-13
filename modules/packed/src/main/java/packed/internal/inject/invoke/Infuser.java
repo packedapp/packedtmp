@@ -107,6 +107,8 @@ public final class Infuser {
             private final boolean hidden;
             private final Key<?> key;
 
+            private boolean nullOptional;
+            
             ServiceEntry(Builder builder, Key<?> key, boolean hide) {
                 this.builder = builder;
                 this.key = requireNonNull(key, "key is null");
@@ -136,7 +138,21 @@ public final class Infuser {
                 // Ikke i foerst omgang taenker jeg
                 return this;
             }
+            
+            public ServiceEntry optionallyViaNullable() {
+                // Is optionally nullable, Can only be tested at runtime
+                nullOptional = true;
+                return this;
+            }
 
+            public ServiceEntry optionallyViaNullable(MethodHandle tester, int... dependencies) {
+                // Is optionally nullable..
+                // Can only be tested at runtime
+                
+                // tester is a faster way to check than original MH + null check.
+                return this;
+            }
+            
             public void invokeExact(MethodHandle methodHandle, int index) {
                 requireNonNull(methodHandle, "methodHandle is null");
                 Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
@@ -152,9 +168,9 @@ public final class Infuser {
 
 
 
-    record Entry(@Nullable MethodHandle transformer, boolean isHidden, int... indexes) {
+    record Entry(@Nullable MethodHandle transformer, boolean isNullOptional, boolean isHidden, int... indexes) {
         Entry(Builder.ServiceEntry b, @Nullable MethodHandle transformer, int... indexes) {
-            this(transformer, b.hidden,  indexes);
+            this(transformer, b.nullOptional,  b.hidden,  indexes);
         }
     }
 }

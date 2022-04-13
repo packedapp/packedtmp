@@ -15,6 +15,8 @@
  */
 package app.packed.bean.hooks;
 
+import app.packed.extension.Extension;
+
 /**
  *
  */
@@ -22,6 +24,8 @@ package app.packed.bean.hooks;
 public interface BeanVarInjector {
 
     public @interface Hook {
-        
+        /** The hook's {@link BeanField} class. */
+        Class<? extends Extension<?>> extension();
+
     }
 }
