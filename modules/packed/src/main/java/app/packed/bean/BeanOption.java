@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.variable;
-
-import java.lang.reflect.Method;
+package app.packed.bean;
 
 /**
  *
  */
-public record MethodReturnVariable(Method method) {
+// Like wirelets but for bean
+// Det der med at navnet ikke er endeligt... Er sgu lidt irriterende
+interface BeanOption {
 
+    BeanOption named(String name);
+    
+    BeanOption noScan();
 }

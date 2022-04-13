@@ -13,80 +13,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.variable;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.base;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.Optional;
+import java.lang.reflect.AnnotatedElement;
 
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
 
-/** A variables that wraps a field. */
-public record FieldVariable(Field field) implements Variable {
-
-    public FieldVariable {
-        requireNonNull(field, "field is null");
-    }
+/** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
+public record PackedVariable(AnnotatedElement annotatedElement, TypeWrapper typeWrapper) implements Variable {
 
     /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        return field.isAnnotationPresent(annotationClass);
+        return annotatedElement.isAnnotationPresent(annotationClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return field.getAnnotationsByType(annotationClass);
+        return annotatedElement.getAnnotationsByType(annotationClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return field.getDeclaredAnnotation(annotationClass);
+        return annotatedElement.getDeclaredAnnotation(annotationClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return field.getDeclaredAnnotationsByType(annotationClass);
+        return annotatedElement.getDeclaredAnnotationsByType(annotationClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return field.getAnnotation(annotationClass);
+        return annotatedElement.getAnnotation(annotationClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public Annotation[] getAnnotations() {
-        return field.getAnnotations();
+        return annotatedElement.getAnnotations();
     }
 
     /** {@inheritDoc} */
     @Override
     public Annotation[] getDeclaredAnnotations() {
-        return field.getDeclaredAnnotations();
+        return annotatedElement.getDeclaredAnnotations();
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getType() {
-        return field.getType();
-    }
-
-    /** {@inheritDoc} */
-    public Optional<String> name() {
-        return Optional.of(field.getName());
+        return typeWrapper.getType();
     }
 
     /** {@inheritDoc} */
     @Override
     public TypeToken<?> typeToken() {
-        return TypeToken.fromField(field);
+        return typeWrapper.typeToken();
     }
+
 }

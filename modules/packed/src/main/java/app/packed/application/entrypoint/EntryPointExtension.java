@@ -4,10 +4,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
-import app.packed.base.Nullable;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.Extension;
@@ -36,9 +34,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ EntryPointExtension(Optional<EntryPointExtension> p1, @Nullable EntryPointExtension p2, ExtensionConfiguration configuration) {
+    /* package-private */ EntryPointExtension(ExtensionConfiguration configuration) {
         this.container = ((ExtensionSetup) configuration).container;
-        
+        //    
     }
 
     @Override

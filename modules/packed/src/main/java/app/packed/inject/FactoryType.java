@@ -18,7 +18,10 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
@@ -183,9 +186,27 @@ public final /* primitive */ class FactoryType {
      *            the executable to return a factory type for.
      */
     public static FactoryType ofExecutable(Executable executable) {
-        throw new UnsupportedOperationException();
+        requireNonNull(executable, "executable is null");
+        if (executable instanceof Method m) {
+            return ofExecutable(Variable.ofMethodReturnType(m), executable);
+        } else {
+            return ofExecutable(Variable.ofConstructor((Constructor<?>) executable), executable);
+        }
     }
 
+    private static FactoryType ofExecutable(Variable returnVar, Executable executable) {
+        
+        Parameter[] parameters = executable.getParameters();
+        if (parameters.length == 0) {
+            return of(returnVar);
+        }
+        Variable[] vars = new Variable[parameters.length];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = Variable.ofParameter(parameters[i]);
+        }
+        return of(returnVar, vars);
+    }
+    
     static FactoryType ofMethodType(MethodType methodType) {
         throw new UnsupportedOperationException();
     }

@@ -24,7 +24,6 @@ import app.packed.base.Variable;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanOperation;
 import app.packed.component.Realm;
-import packed.internal.base.variable.FieldVariable;
 
 /**
  *
@@ -91,7 +90,7 @@ public class HookedBeanField implements BeanField {
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return new FieldVariable(field);
+        return Variable.ofField(field);
     }
 
     /** {@inheritDoc} */

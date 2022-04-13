@@ -15,24 +15,20 @@
  */
 package app.packed.base;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Executable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.hooks.sandboxinvoke.CommonVarInfo;
 import app.packed.bean.hooks.sandboxinvoke.VariableParser;
-import packed.internal.base.variable.FieldVariable;
-import packed.internal.base.variable.ParameterVariable;
-import packed.internal.base.variable.TypeVariableVariable;
+import packed.internal.base.PackedVariable;
+import packed.internal.base.TypeWrapper;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 
@@ -59,7 +55,7 @@ import packed.internal.base.variable.TypeVariableVariable;
  * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
  *          {@link TypeVariable}
  */
-public sealed interface Variable extends AnnotatedElement permits FieldVariable, ParameterVariable, TypeVariableVariable {
+public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
     default Object getDeclaringElement() {
         // return Field
@@ -82,7 +78,6 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
         return getType();
     }
 
-    
     /**
      * Returns the raw type (Class) of the variable.
      * 
@@ -94,22 +89,22 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
      * @see ParameterizedType#getRawType()
      */
     Class<?> getType();
-    
-    TypeToken<?> typeToken();
 
-    // expandMetaAnnotations(); -> Declared kept. Annotations -> Meta annotations
-    
     // variable().parse()
     @SuppressWarnings("exports")
     default CommonVarInfo parse() {
         return parse(CommonVarInfo.DEFAULT);
     }
 
+    // expandMetaAnnotations(); -> Declared kept. Annotations -> Meta annotations
+
     default <T> T parse(VariableParser<T> parser) {
         // extract???
         throw new UnsupportedOperationException();
     }
-    
+
+    TypeToken<?> typeToken();
+
     /**
      * Returns a variable from the specified field.
      * <p>
@@ -119,9 +114,13 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
      * @return a variable representing the field
      */
     static Variable ofField(Field field) {
-        return new FieldVariable(field);
+        return new PackedVariable(field, new TypeWrapper.OfField(field));
     }
 
+    static Variable ofConstructor(Constructor<?> constructor) {
+        return new PackedVariable(constructor, new TypeWrapper.OfConstructor(constructor));
+    }
+    
     /**
      * Returns a variable from the return type of the specified method.
      * 
@@ -130,7 +129,7 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
      * @return the variable
      */
     static Variable ofMethodReturnType(Method method) {
-        throw new UnsupportedOperationException();
+        return new PackedVariable(method, new TypeWrapper.OfMethodReturnType(method));
     }
 
     /**
@@ -141,34 +140,25 @@ public sealed interface Variable extends AnnotatedElement permits FieldVariable,
      * @return the variable
      */
     static Variable ofParameter(Parameter parameter) {
-        requireNonNull(parameter, "parameter is null");
-        return new ParameterVariable(parameter);
-    }
-    
-    // I think you will use FunctionType here
-    public static List<Variable> ofParameters(Executable executable) {
-        requireNonNull(executable, "executable is null");
-        Parameter[] parameters = executable.getParameters();
-        if (parameters.length == 0) {
-            return List.of();
-        }
-        Variable[] vars = new Variable[parameters.length];
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = ofParameter(parameters[i]);
-        }
-        return List.of(vars);
+        return new PackedVariable(parameter, new TypeWrapper.OfParameter(parameter));
     }
 
-    static Variable ofTypeVariable(Class<?> type, Class<?> baseType, int index) {
-        return ofTypeVariables(type, baseType, index)[0];
+    static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
+        return new PackedVariable(typeVariable, new TypeWrapper.OfTypeVariable(typeVariable));
     }
 
-    static Variable[] ofTypeVariables(Class<?> type, Class<?> baseType, int... variables) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 interface VariableRejected {
+
+//  Cool with some helper method, but probably shouldn't be here
+//    static Variable ofTypeVariable(Class<?> type, Class<?> baseType, int index) {
+//        return ofTypeVariables(type, baseType, index)[0];
+//    }
+//
+//    static Variable[] ofTypeVariables(Class<?> type, Class<?> baseType, int... variables) {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Nope via InjectionSite
     default Optional<?> source() {

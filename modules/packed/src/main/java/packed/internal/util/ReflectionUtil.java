@@ -16,6 +16,7 @@
 package packed.internal.util;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -28,13 +29,27 @@ public final class ReflectionUtil {
 
     /** Nein Nein Nein. */
     private ReflectionUtil() {}
-    
+
     public static <T> Constructor<T> copy(Constructor<T> constructor) {
         try {
             return constructor.getDeclaringClass().getDeclaredConstructor(constructor.getParameterTypes());
         } catch (NoSuchMethodException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static int getIndex(Parameter parameter) {
+        Executable e = parameter.getDeclaringExecutable();
+        if (e.getParameterCount() == 0) {
+            return 0;
+        }
+        
+        Parameter[] p = e.getParameters();
+        int i = 0;
+        while (!parameter.equals(p[i])) {
+            i++;
+        }
+        return i;
     }
 
     public static Field copy(Field field) {

@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.bean.hooks;
+
+import app.packed.bean.BeanDefinitionException;
 
 /**
  *
  */
-public class Vvv {
+public interface BeanElement {
 
-    public static void main(String[] args) {
-        System.out.println("ASD");
-    }
+    /**
+     * @param message
+     *            the message to include in the final message
+     * 
+     * @throws BeanDefinitionException
+     */
+    void failWith(String message);
 }
+// CheckRealmIsApplication
+// CheckRealmIsExtension
+
+// BeanAnnotationReader???

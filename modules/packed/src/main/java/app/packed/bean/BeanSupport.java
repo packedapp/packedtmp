@@ -208,12 +208,6 @@ public final class BeanSupport extends ExtensionSupport {
     }
 }
 //
-//public <T, C extends BeanConfiguration<T>> C add(Object driver, C configuration, Class<? extends T> implementation) {
-//  // configuration, must be unattached
-//  throw new UnsupportedOperationException();
-//}
-
-//
 //public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {
 //  // Tror vi require en annoteringen...
 //  // Enten denne eller ogsaa skal vi require en annotation
