@@ -2,7 +2,7 @@ package app.packed.inject.service;
 
 import java.util.Set;
 
-import app.packed.bean.hooks.sandboxinvoke.mirror.InjectionSite;
+import app.packed.bean.hooks.mirror.InjectionSite;
 import app.packed.bean.operation.examples.ServiceProvideMirror;
 import app.packed.component.ComponentMirror;
 

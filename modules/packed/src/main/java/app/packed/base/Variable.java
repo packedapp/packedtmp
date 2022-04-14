@@ -24,8 +24,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
-import app.packed.bean.hooks.sandboxinvoke.CommonVarInfo;
-import app.packed.bean.hooks.sandboxinvoke.VariableParser;
+import app.packed.bean.hooks.sandbox.CommonVarInfo;
+import app.packed.bean.hooks.sandbox.VariableParser;
 import packed.internal.base.PackedVariable;
 import packed.internal.base.VariableTypeWrapper;
 

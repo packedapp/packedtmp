@@ -25,9 +25,9 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
-import app.packed.bean.hooks.sandboxinvoke.AnnotationReader;
-import app.packed.bean.hooks.sandboxinvoke.CommonVarInfo;
-import app.packed.bean.hooks.sandboxinvoke.VariableParser;
+import app.packed.bean.hooks.sandbox.AnnotationReader;
+import app.packed.bean.hooks.sandbox.CommonVarInfo;
+import app.packed.bean.hooks.sandbox.VariableParser;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 
@@ -75,7 +75,7 @@ public non-sealed interface BeanVarInjector extends BeanElement {
 
     /**
      * <p>
-     * Virker ikke for raw. use provideInstance(null);
+     * For raw er det automatisk en fejl
      */
     void provideMissing();
 

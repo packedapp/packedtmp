@@ -12,7 +12,7 @@ module app.packed {
     exports app.packed.conversion;
     exports app.packed.extension;
     exports app.packed.inject;
-    exports app.packed.bean.hooks.sandboxinvoke.mirror;
+    exports app.packed.bean.hooks.mirror;
     exports app.packed.inject.sandbox;
     exports app.packed.inject.service;
     exports app.packed.lifecycle;

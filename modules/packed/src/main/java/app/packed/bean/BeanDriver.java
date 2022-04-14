@@ -19,7 +19,7 @@ import java.lang.reflect.Member;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.sandboxinvoke.InvokerConfiguration;
+import app.packed.bean.hooks.sandbox.InvokerConfiguration;
 import app.packed.bean.operation.OC2;
 import app.packed.bean.operation.OperationConfiguration;
 import app.packed.bean.operation.OperationDriver;
