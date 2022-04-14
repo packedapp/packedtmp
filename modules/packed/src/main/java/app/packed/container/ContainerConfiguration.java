@@ -47,6 +47,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     final void addCloseAction(Runnable action) {
         throw new UnsupportedOperationException();
     }
+    
     /** {@inheritDoc} */
     @Override
     protected final void checkIsWiring() {

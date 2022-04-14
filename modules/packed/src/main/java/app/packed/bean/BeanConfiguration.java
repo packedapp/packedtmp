@@ -18,16 +18,13 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
     final BeanSetup bean;
 
     /**
-     * Create a new bean configuration using the specified bean driver.
+     * Create a new bean configuration using the specified handle.
      * 
      * @param handle
      *            the bean handle
-     * @throws IllegalStateException
-     *             if the specified driver has already been used to create a new configuration object
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        PackedBeanHandle<?> d = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
-        this.bean = d.bean().addConfiguration(this);
+        this.bean = requireNonNull((PackedBeanHandle<?>) handle, "handle is null").bean();
     }
 
     /**

@@ -26,12 +26,13 @@ import app.packed.container.Wirelet;
  * This class can only be extended through one of its subclasses {@link BeanConfiguration} or
  * {@link ContainerConfiguration}.
  */
-public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration {
+public abstract sealed class ComponentConfiguration permits BeanConfiguration, ContainerConfiguration {
 
     protected abstract void checkIsWiring();
 
     /** {@return a mirror for the component/} */
     // Er det et problem.. naar den ikke er fuldt wired endnu??? Men det er den vel, paa naer navnet
+    // IDK Er ikke vild med den.. Til noeds paa Handle???
     protected abstract ComponentMirror mirror();
 
     /**
@@ -51,17 +52,6 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * @see Wirelet#named(String)
      */
     public abstract ComponentConfiguration named(String name);
-
-    /**
-     * Ivoked A callback method invoked by Packed immediatly before it is marked as no longer configurable
-     * <p>
-     * <strong>Note:</strong> This method should never be overridden with a public modifier.
-     */
-    // Jeg tror vi replacer den med en lambda paa BeanHandle
-    protected void onConfigured() {}
-
-    // I think I would prefer a lambda on the bean driver
-    protected void onWired() {}
 
     /**
      * Returns the full path of the component.

@@ -403,7 +403,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Stream<OperationMirror> operations() {
-            return StreamUtil.filterAssignable(BeanSetup.class, container.children.values().stream()).flatMap(b -> b.operations.toMirrorsStream());
+            return StreamUtil.filterAssignable(BeanSetup.class, container.children.values().stream()).flatMap(b -> b.mirror().operations());
         }
 
         /** {@inheritDoc} */

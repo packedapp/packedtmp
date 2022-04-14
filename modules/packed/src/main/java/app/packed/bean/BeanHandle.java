@@ -62,6 +62,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     Operation addFunctionOperation(Object functionInstance);
 
+    void addWiringAction(Runnable action);
+    
     default Operation addOperation(@SuppressWarnings("exports") OperationDriver driver) {
         throw new UnsupportedOperationException();
     }

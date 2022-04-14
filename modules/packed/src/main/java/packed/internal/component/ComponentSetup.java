@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -65,6 +66,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
+
+    public final ArrayList<Runnable> wiringActions = new ArrayList<>(1);
 
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
@@ -180,17 +183,23 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
         this.name = newName;
     }
-
-    public void onWired() {
+    
+    public final void onWired() {
+        for (Runnable action : wiringActions) {
+            action.run();
+        }
         if (onWireAction != null) {
             onWireAction.accept(mirror());
         }
     }
 
+
     /** {@return the path of this component} */
     public final NamespacePath path() {
         return PackedNamespacePath.of(this);
     }
+
+    public abstract Stream<ComponentSetup> stream();
 
     /**
      * Checks the name of the component.
@@ -206,7 +215,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
         return name;
     }
-
+    
+    
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
             return m.bean();
@@ -214,9 +224,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             return ((ContainerSetup.BuildTimeContainerMirror) mirror).container();
         }
     }
-    
-    
-    public abstract Stream<ComponentSetup> stream();
     
 //  
 //  public final ComponentSetup resolve() {

@@ -15,6 +15,8 @@
  */
 package packed.internal.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.operation.Operation;
@@ -42,5 +44,12 @@ public record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
     @Override
     public Operation addFunctionOperation(Object functionInstance) {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addWiringAction(Runnable action) {
+        requireNonNull(action, "action is null");
+        bean.wiringActions.add(action);
     }
 }

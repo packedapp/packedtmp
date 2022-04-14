@@ -12,7 +12,6 @@ import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
@@ -55,9 +54,8 @@ public class BeanExtension extends Extension<BeanExtension> {
         FieldHelper fh = new FieldHelper(field, field.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
-        BeanOperationManager bom = bean.operations;
         BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
-        bom.addOperation(os);
+        bean.addOperation(os);
         // os.mirrorSupplier = supplier;
 
         bean.parent.injectionManager.addConsumer(node);
@@ -73,9 +71,8 @@ public class BeanExtension extends Extension<BeanExtension> {
         MethodHelper fh = new MethodHelper(method, method.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
-        BeanOperationManager bom = bean.operations;
         BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
-        bom.addOperation(os);
+        bean.addOperation(os);
         // os.mirrorSupplier = supplier;
 
         bean.parent.injectionManager.addConsumer(node);

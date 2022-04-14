@@ -44,6 +44,8 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
     public ProvidableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
         this.sb = new ServiceableBean(bean);
+        handle.addWiringAction(() -> sb.onWired());
+
     }
 
     Key<?> defaultKey() {
@@ -68,12 +70,6 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
     public ProvidableBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
-    }
-
-    @Override
-    protected void onWired() {
-        super.onWired();
-        sb.onWired();
     }
 
     public ProvidableBeanConfiguration<T> provide() {

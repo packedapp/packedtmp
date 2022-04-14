@@ -31,7 +31,7 @@ import packed.internal.inject.factory.InternalFactory;
 /**
  *
  */
-public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
+public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
     final Class<?> beanClass;
@@ -39,11 +39,11 @@ public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     final ContainerSetup container;
 
     /** The kind of bean. */
-    public final BeanKind kind;
+    final BeanKind kind;
 
     final RealmSetup realm;
 
-    /** The source (Null, Class, Factory, Instance) */
+    /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
     public final Object source;
 
