@@ -61,6 +61,15 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
     /** The type of source the driver is created from. */
     public final SourceType sourceType;
 
+    PackedBeanHandle(PackedBeanHandleBuilder<T> builder) {
+        this.kind = builder.kind;
+        this.container = builder.container;
+        this.beanClass = builder.beanClass;
+        this.source = builder.source;
+        this.sourceType = builder.sourceType;
+        this.realm = builder.realm;
+    }
+
     public PackedBeanHandle(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
@@ -114,7 +123,7 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
         realm.wireCommit(bs);
         return bs;
     }
-    
+
     /** {@inheritDoc} */
     public BeanSetup newSetup(BeanConfiguration configuration) {
         requireNonNull(configuration);
@@ -126,21 +135,21 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
         return kind;
     }
 
-    public static <T> PackedBeanHandle<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
+    public static <T> PackedBeanHandleBuilder<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
             Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandle<>(kind, container, owner, implementation, SourceType.CLASS, implementation);
+        return new PackedBeanHandleBuilder<>(kind, container, owner, implementation, SourceType.CLASS, implementation);
     }
 
-    public static <T> PackedBeanHandle<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
+    public static <T> PackedBeanHandleBuilder<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
             Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
-        return new PackedBeanHandle<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
+        return new PackedBeanHandleBuilder<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
     }
 
-    public static <T> PackedBeanHandle<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, T instance) {
+    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -149,11 +158,11 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
         }
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandle<>(kind, container, owner, instance.getClass(), SourceType.INSTANCE, instance);
+        return new PackedBeanHandleBuilder<>(kind, container, owner, instance.getClass(), SourceType.INSTANCE, instance);
     }
 
-    public static BeanHandle<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner) {
-        return new PackedBeanHandle<>(kind, container, owner, void.class, SourceType.NONE, null);
+    public static PackedBeanHandleBuilder<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner) {
+        return new PackedBeanHandleBuilder<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 
     public enum SourceType {

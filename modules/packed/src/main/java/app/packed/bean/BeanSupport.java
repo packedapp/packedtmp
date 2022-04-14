@@ -92,50 +92,50 @@ public final class BeanSupport extends ExtensionSupport {
 
     // ContainerBeanConfiguration... men den har provide.. Saa vi har en ExtensionBeanConfiguration
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandle<T> driver = PackedBeanHandle.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), implementation);
+        PackedBeanHandle<T> driver = PackedBeanHandle.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), implementation).build();
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanHandle<T> driver = PackedBeanHandle.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), factory);
+        PackedBeanHandle<T> driver = PackedBeanHandle.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), factory).build();
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanHandle<T> m = PackedBeanHandle.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), instance);
+        PackedBeanHandle<T> m = PackedBeanHandle.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), instance).build();
         return new ExtensionBeanConfiguration<>(m);
     }
 
-    public BeanHandle<?> builder(BeanKind kind) {
+    public BeanHandle.Builder<?> builder(BeanKind kind) {
         return PackedBeanHandle.ofNone(kind, container, context.extensionType(), Realm.application());
     }
 
     // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
-    public <T> BeanHandle<T> newApplicationBeanFromClass(BeanKind kind, Class<T> implementation) {
+    public <T> BeanHandle.Builder<T> newApplicationBeanFromClass(BeanKind kind, Class<T> implementation) {
         return PackedBeanHandle.ofClass(kind, container, context.extensionType(), Realm.application(), implementation);
     }
 
-    public <T> BeanHandle<T> newApplicationBeanFromFactory(BeanKind kind, Factory<T> factory) {
+    public <T> BeanHandle.Builder<T> newApplicationBeanFromFactory(BeanKind kind, Factory<T> factory) {
         return PackedBeanHandle.ofFactory(kind, container, context.extensionType(), context.realm(), factory);
     }
 
-    public <T> BeanHandle<T> newApplicationBeanFromInstance(BeanKind kind, Realm realm, T instance) {
+    public <T> BeanHandle.Builder<T> newApplicationBeanFromInstance(BeanKind kind, Realm realm, T instance) {
         return PackedBeanHandle.ofInstance(kind, container, context.extensionType(), context.realm(), instance);
     }
 
-    public BeanHandle<?> newExtensionBean(BeanKind kind, ExtensionSupportContext context) {
+    public BeanHandle.Builder<?> newExtensionBean(BeanKind kind, ExtensionSupportContext context) {
         return PackedBeanHandle.ofNone(kind, container, this.context.extensionType(), context.realm());
     }
 
-    public <T> BeanHandle<T> newExtensionBeanFromClass(BeanKind kind, ExtensionSupportContext context, Class<T> implementation) {
+    public <T> BeanHandle.Builder<T> newExtensionBeanFromClass(BeanKind kind, ExtensionSupportContext context, Class<T> implementation) {
         return PackedBeanHandle.ofClass(kind, container, this.context.extensionType(), Realm.application(), implementation);
     }
 
-    public <T> BeanHandle<T> newExtensionBeanFromFactory(BeanKind kind, ExtensionSupportContext context, Factory<T> factory) {
+    public <T> BeanHandle.Builder<T> newExtensionBeanFromFactory(BeanKind kind, ExtensionSupportContext context, Factory<T> factory) {
         return PackedBeanHandle.ofFactory(kind, container, this.context.extensionType(), context.realm(), factory);
     }
 
-    public <T> BeanHandle<T> newExtensionBeanFromInstance(BeanKind kind, ExtensionSupportContext context, Realm realm, T instance) {
+    public <T> BeanHandle.Builder<T> newExtensionBeanFromInstance(BeanKind kind, ExtensionSupportContext context, Realm realm, T instance) {
         return PackedBeanHandle.ofInstance(kind, container, this.context.extensionType(), context.realm(), instance);
     }
 

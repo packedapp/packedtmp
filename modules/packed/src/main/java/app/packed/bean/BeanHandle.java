@@ -75,6 +75,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     interface Builder<T> {
 
+        BeanHandle<T> build();
     }
 }
 
