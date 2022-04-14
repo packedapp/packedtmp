@@ -15,10 +15,39 @@
  */
 package app.packed.bean.hooks;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Constructor;
+
+import app.packed.bean.operation.InjectableOperation;
+import app.packed.bean.operation.RawOperation;
+import app.packed.inject.FactoryType;
+
 /**
  *
+ * <p>
+ * Unlike BeanField and BeanMethod. There is no way to define hooks on constructors. Instead they must be defined on a
+ * bean driver or a bean class. Which determines how constructors are processed.
  */
-// Like BeanMethod... Only creatable via BeanClass
+// Do we need a BeanExecutable??? Not sure we have a use case
 public non-sealed interface BeanConstructor extends BeanElement {
 
+    InjectableOperation operation();
+
+    RawOperation<MethodHandle> rawOperation();
+    
+    /** {@return a factory type for this method.} */
+    FactoryType factoryType();
+    
+    /** {@return the underlying constructor.} */
+    Constructor<?> constructor();
+
+    /**
+     * Returns the modifiers of the constructor.
+     * 
+     * @return the modifiers of the constructor
+     * @see Constructor#getModifiers()
+     * @apiNote the method is named getModifiers instead of modifiers to be consistent with
+     *          {@link Constructor#getModifiers()}
+     */
+    int getModifiers();
 }

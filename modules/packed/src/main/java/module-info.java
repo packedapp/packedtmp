@@ -5,6 +5,8 @@ module app.packed {
     exports app.packed.base;
     exports app.packed.bean;
     exports app.packed.bean.operation;
+    exports app.packed.bean.operation.interceptor;
+    exports app.packed.bean.operation.mirror;
     exports app.packed.bean.operation.lifecycle;
     exports app.packed.component;
     exports app.packed.contract;
@@ -12,7 +14,7 @@ module app.packed {
     exports app.packed.conversion;
     exports app.packed.extension;
     exports app.packed.inject;
-    exports app.packed.bean.hooks.mirror;
+    exports app.packed.bean.operation.mirror.ig;
     exports app.packed.inject.sandbox;
     exports app.packed.inject.service;
     exports app.packed.lifecycle;

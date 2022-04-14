@@ -17,11 +17,13 @@ package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
+
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanDriver;
 import app.packed.bean.BeanKind;
-import app.packed.bean.operation.OperationConfiguration;
+import app.packed.bean.operation.Operation;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -33,10 +35,11 @@ import packed.internal.inject.factory.InternalFactory;
 /** The implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
+    @Nullable
+    private BeanSetup bean;
+
     /** The bean class, is typical void.class for functional beans. */
     private final Class<?> beanClass;
-
-    public BeanConfiguration configuration;
 
     /** The container the bean is being installed in. */
     public final ContainerSetup container;
@@ -56,6 +59,8 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     /** The type of source the driver is created from. */
     public final SourceType sourceType;
 
+    final ArrayList<BeanConfiguration> configurations = new ArrayList<>(1);
+
     public PackedBeanDriver(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
@@ -74,7 +79,7 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
     // Maaske er den paa BeanSupport???
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration addFunctionOperation(Object functionInstance) {
+    public Operation addFunctionOperation(Object functionInstance) {
         // Problemer med at BeanDriver ikke har BeanSetup
         throw new UnsupportedOperationException();
     }
@@ -91,16 +96,17 @@ public final class PackedBeanDriver<T> implements BeanDriver<T> {
 
     /** {@inheritDoc} */
     public BeanSetup newSetup(BeanConfiguration configuration) {
-        if (this.configuration != null) {
-            throw new IllegalStateException("This driver can only be used once");
+        requireNonNull(configuration);
+        configurations.add(configuration);
+        if (bean != null) {
+            return bean;
         }
 
-        this.configuration = requireNonNull(configuration);
         realm.wirePrepare();
 
         // Skal lave saa mange checks som muligt inde vi laver BeanSetup
 
-        BeanSetup bs = new BeanSetup(container, container.realm, this);
+        BeanSetup bs = bean = new BeanSetup(container, container.realm, this);
         realm.wireCommit(bs);
         return bs;
     }

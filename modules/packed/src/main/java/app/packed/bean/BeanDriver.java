@@ -20,10 +20,10 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.bean.hooks.sandbox.InvokerConfiguration;
-import app.packed.bean.operation.OC2;
-import app.packed.bean.operation.OperationConfiguration;
-import app.packed.bean.operation.OperationDriver;
-import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.Operation;
+import app.packed.bean.operation.driver.OperationDriver;
+import app.packed.bean.operation.driver.OperationDriver2;
+import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanDriver;
 
@@ -65,13 +65,13 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
      */
     BeanKind beanKind();
 
-    OperationConfiguration addFunctionOperation(Object functionInstance);
+    Operation addFunctionOperation(Object functionInstance);
     
-    default OperationConfiguration addOperation(OperationDriver driver) {
+    default Operation addOperation(@SuppressWarnings("exports") OperationDriver driver) {
         throw new UnsupportedOperationException();
     }
 
-    default void addOperation(OC2 driver) {
+    default void addOperation(@SuppressWarnings("exports") OperationDriver2 driver) {
         throw new UnsupportedOperationException();
     }
 }

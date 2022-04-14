@@ -15,7 +15,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.BeanInfo;
-import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
@@ -66,7 +66,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
         // Wire the hook model
         if (hookModel != null) {
-            //hookModel.onWire(this);
+            // hookModel.onWire(this);
 
             // Set the name of the component if it have not already been set using a wirelet
             initializeNameWithPrefix(hookModel.simpleName());
@@ -82,10 +82,12 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public void onWired() {
-        try {
-            MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact((ComponentConfiguration) driver.configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
+        for (ComponentConfiguration cc : driver.configurations) {
+            try {
+                MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact(cc);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
         super.onWired();
     }

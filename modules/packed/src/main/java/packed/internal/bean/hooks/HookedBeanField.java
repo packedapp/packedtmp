@@ -22,17 +22,18 @@ import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
 import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanOperation;
+import app.packed.bean.operation.InjectableOperation;
+import app.packed.bean.operation.RawOperation;
 import app.packed.component.Realm;
 
 /**
  *
  */
-public class HookedBeanField implements BeanField {
+public final class HookedBeanField implements BeanField {
 
-    public final BeanScanner scanner;
-    
     private final Field field;
+    
+    public final BeanScanner scanner;
 
     HookedBeanField(BeanScanner scanner, Field field) {
         this.scanner = scanner;
@@ -53,44 +54,32 @@ public class HookedBeanField implements BeanField {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle methodHandleGetter() {
-        return scanner.oc.unreflectGetter(field);
+    public RawOperation<MethodHandle> rawGetterOperation() {
+        return new PackedRawOperation<>(scanner.oc.unreflectGetter(field));
     }
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle methodHandleSetter() {
-        return scanner.oc.unreflectSetter(field);
+    public RawOperation<MethodHandle> rawSetterOperation() {
+        return new PackedRawOperation<>(scanner.oc.unreflectSetter(field));
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperation operation(AccessMode accessMode) {
+    public InjectableOperation operation(AccessMode accessMode) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperation operationGetter() {
+    public InjectableOperation operationGetter() {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperation operationSetter() {
+    public InjectableOperation operationSetter() {
         return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public VarHandle varHandle() {
-        return scanner.oc.unreflectVarHandle(field);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Variable variable() {
-        return Variable.ofField(field);
     }
 
     /** {@inheritDoc} */
@@ -99,4 +88,15 @@ public class HookedBeanField implements BeanField {
         return scanner.bean.realm.realm();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public RawOperation<VarHandle> rawOperation() {
+        return new PackedRawOperation<>(scanner.oc.unreflectVarHandle(field));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Variable variable() {
+        return Variable.ofField(field);
+    }
 }

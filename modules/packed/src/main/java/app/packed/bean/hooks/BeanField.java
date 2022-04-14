@@ -27,22 +27,15 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
+import app.packed.bean.operation.InjectableOperation;
+import app.packed.bean.operation.RawOperation;
 import app.packed.extension.Extension;
+import packed.internal.bean.hooks.HookedBeanField;
 
 /**
  *
  */
-public non-sealed interface BeanField extends BeanElement {
-
-    // BeanInfo
-
-    default int beanFieldId() {
-        // IDeen er lidt at fields (og methods) har et unikt id...
-        // Som man saa kan sammenligne med
-        // Problemet er metoder med baade @ScheduleAtFixedRate og @ScheduleAtVariableRate
-        // Maaske skal vi droppe Class<? extends Annotation> som parameter
-        return 1;
-    }
+public sealed interface BeanField extends BeanElement permits HookedBeanField {
 
     /** {@return the underlying field.} */
     Field field();
@@ -55,28 +48,19 @@ public non-sealed interface BeanField extends BeanElement {
      */
     int getModifiers();
 
+    InjectableOperation operation(VarHandle.AccessMode accessMode);
+
+    InjectableOperation operationGetter();
+
+    InjectableOperation operationSetter();
+
     /**
      * Returns a method handle that gives read access to the underlying field as specified by
      * {@link Lookup#unreflectGetter(Field)}.
      * 
      * @return a method handle getter
      */
-    MethodHandle methodHandleGetter();
-
-    /**
-     * Returns a method handle that gives write access to the underlying field as specified by
-     * {@link Lookup#unreflectSetter(Field)}.
-     * 
-     * @return a method handle setter
-     */
-    MethodHandle methodHandleSetter();
-
-    BeanOperation operation(VarHandle.AccessMode accessMode);
-
-    BeanOperation operationGetter();
-
-    BeanOperation operationSetter();
-
+    RawOperation<MethodHandle> rawGetterOperation();
 
     /**
      * Must have both get and set
@@ -88,8 +72,16 @@ public non-sealed interface BeanField extends BeanElement {
      * @throws UnsupportedOperationException
      *             if the extension field has not both get and set access
      */
-    VarHandle varHandle();
+    RawOperation<VarHandle> rawOperation();
 
+    /**
+     * Returns a method handle that gives write access to the underlying field as specified by
+     * {@link Lookup#unreflectSetter(Field)}.
+     * 
+     * @return a method handle setter
+     */
+    RawOperation<MethodHandle> rawSetterOperation();
+    
     /**
      * {@return the underlying field represented as a {@code Variable}.}
      * 
@@ -119,7 +111,17 @@ public non-sealed interface BeanField extends BeanElement {
 
 interface Sandbox {
 
+    // BeanInfo
+
+    default int beanFieldId() {
+        // IDeen er lidt at fields (og methods) har et unikt id...
+        // Som man saa kan sammenligne med
+        // Problemet er metoder med baade @ScheduleAtFixedRate og @ScheduleAtVariableRate
+        // Maaske skal vi droppe Class<? extends Annotation> som parameter
+        return 1;
+    }
     // Can only read stuff...
     // Then we can just passe it off to anyone
-    BeanField immutable();
+    // IDK know about usecases
+    BeanField unmodifiable();
 }

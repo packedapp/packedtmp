@@ -25,7 +25,12 @@ import app.packed.extension.Extension;
 // int beanApplicationId();
 // int beanContainerId();
 
-// BeanDescriptor??? Vi har ogsaa ApplicationInfo (var ApplicationDescriptor)
+// BeanDescriptor??? Vi har ogsaa ApplicationInfo (var ApplicationDescriptor) og ExtensionDescriptor
+
+// Tror vi skal have defineret hvor vi skal bruge den fra...
+// Er ikke sikker paa vi kan noejes med en
+
+
 public interface BeanInfo {
 
     Class<?> beanClass();

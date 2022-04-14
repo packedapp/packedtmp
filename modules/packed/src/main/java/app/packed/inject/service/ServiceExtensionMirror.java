@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.bean.operation.examples.ServiceExportMirror;
-import app.packed.bean.operation.examples.ServiceProvideMirror;
+import app.packed.bean.operation.usage.ServiceExportMirror;
+import app.packed.bean.operation.usage.ServiceProvideMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;

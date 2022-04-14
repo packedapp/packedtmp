@@ -19,7 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.hooks.BeanOperation;
+import app.packed.bean.operation.InjectableOperation;
+import app.packed.bean.operation.RawOperation;
 import app.packed.inject.FactoryType;
 
 /**
@@ -56,19 +57,19 @@ public class HookedBeanMethod implements BeanMethod {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle methodHandle() {
-        return scanner.oc.unreflect(method);
+    public RawOperation<MethodHandle> rawOperation() {
+        return new PackedRawOperation<MethodHandle>(scanner.oc.unreflect(method));
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanOperation operation() {
+    public InjectableOperation operation() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public FactoryType type() {
+    public FactoryType factoryType() {
         return FactoryType.ofExecutable(method);
     }
 

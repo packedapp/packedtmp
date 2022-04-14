@@ -2,7 +2,7 @@ package app.packed.bean.operation.lifecycle;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.entrypoint.EntryPointExtensionMirror;
-import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.lifecycle.RunState;
 
 /**

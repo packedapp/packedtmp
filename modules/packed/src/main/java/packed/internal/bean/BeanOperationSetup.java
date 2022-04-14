@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.extension.Extension;
 import packed.internal.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
@@ -46,6 +46,8 @@ public final class BeanOperationSetup {
     public Supplier<? extends OperationMirror> mirrorSupplier;
     // dependencies
 
+    public final boolean isRaw = false;
+    
     public BeanOperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
         this.bean = bean;
         this.operator = operator;

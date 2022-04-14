@@ -25,13 +25,18 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
+import app.packed.bean.operation.InjectableOperation;
+import app.packed.bean.operation.RawOperation;
 import app.packed.extension.Extension;
 import app.packed.inject.FactoryType;
 
 /**
  *
  */
-public non-sealed interface BeanMethod extends BeanElement{
+public non-sealed interface BeanMethod extends BeanElement {
+
+    /** {@return a factory type for this method.} */
+    FactoryType factoryType();
 
     /**
      * Returns the modifiers of the method.
@@ -44,12 +49,10 @@ public non-sealed interface BeanMethod extends BeanElement{
 
     boolean hasInvokeAccess();
 
-    /**
-     * Returns the underlying method.
-     * 
-     * @return the underlying method
-     */
+    /** {@return the underlying method.} */
     Method method();
+
+    InjectableOperation operation();
 
     /**
      * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
@@ -61,14 +64,11 @@ public non-sealed interface BeanMethod extends BeanElement{
      * @see BeanClassHook#allowAllAccess()
      * 
      * @throws UnsupportedOperationException
-     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or BeanClassHook#allowAllAccess()
+     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
+     *             BeanClassHook#allowAllAccess()
      */
-    MethodHandle methodHandle();
-    
-    BeanOperation operation();
-    
-    FactoryType type();
-    
+    RawOperation<MethodHandle> rawOperation();
+
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
@@ -77,12 +77,12 @@ public non-sealed interface BeanMethod extends BeanElement{
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanMethod#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+         * Methods such as {@link BeanMethod#rawOperation()} and... will fail with {@link UnsupportedOperationException} unless
          * the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanMethod#methodHandle()
+         * @see BeanMethod#rawOperation()
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...

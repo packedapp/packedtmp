@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.mirror.OperationMirror;
 
 /**
  *
@@ -29,7 +29,7 @@ import app.packed.bean.operation.OperationMirror;
 // Taenker vi har realm order?
 // Men vi gider ikke sortere med mindre vi skal...
 
-// Den er her lige istedet for paa BeanSetup saa man kan tilfoeje operations
+// Den er her lige istedet for paa BeanSetup saa man kan tilfoeje operations paa tvaers af driver osv.
 public class BeanOperationManager {
 
     private final ArrayList<BeanOperationSetup> operations = new ArrayList<>();

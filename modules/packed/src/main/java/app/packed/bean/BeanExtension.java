@@ -51,7 +51,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanSetup bean = f.bean;
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
-        FieldHelper fh = new FieldHelper(field, field.varHandle(), constant, key);
+        FieldHelper fh = new FieldHelper(field, field.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
         BeanOperationManager bom = bean.operations;
@@ -69,7 +69,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanSetup bean = f.bean;
         Key<?> key = Key.convertMethodReturnType(method.method());
         boolean constant = method.method().getAnnotation(Provide.class).constant();
-        MethodHelper fh = new MethodHelper(method, method.methodHandle(), constant, key);
+        MethodHelper fh = new MethodHelper(method, method.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
         BeanOperationManager bom = bean.operations;

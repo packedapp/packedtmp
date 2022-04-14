@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
