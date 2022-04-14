@@ -22,8 +22,8 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanDriver;
-import packed.internal.bean.PackedBeanDriver.SourceType;
+import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanHandle.SourceType;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.factory.InternalFactory;
@@ -54,7 +54,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    public BeanInjectionManager(BeanSetup bean, PackedBeanDriver<?> driver) {
+    public BeanInjectionManager(BeanSetup bean, PackedBeanHandle<?> driver) {
         this.bean = bean;
         ContainerSetup container = bean.parent;
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass()) : null;

@@ -41,7 +41,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
 
     private final ServiceableBean sb;
 
-    public ProvidableBeanConfiguration(BeanDriver<T> handle) {
+    public ProvidableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
         this.sb = new ServiceableBean(bean);
     }

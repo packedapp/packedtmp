@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanDriver;
+import packed.internal.bean.PackedBeanHandle;
 
 /**
  * The base class for the configuration of a bean.
@@ -25,15 +25,15 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @throws IllegalStateException
      *             if the specified driver has already been used to create a new configuration object
      */
-    public BeanConfiguration(BeanDriver<?> driver) {
-        PackedBeanDriver<?> d = requireNonNull((PackedBeanDriver<?>) driver, "driver is null");
+    public BeanConfiguration(BeanHandle<?> driver) {
+        PackedBeanHandle<?> d = requireNonNull((PackedBeanHandle<?>) driver, "driver is null");
         this.bean = d.newSetup(this);
     }
 
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanDriver#beanKind()
+     * @see BeanHandle#beanKind()
      */
     public final Class<?> beanClass() {
         return bean.driver.beanClass();
@@ -42,7 +42,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanDriver#beanKind()
+     * @see BeanHandle#beanKind()
      */
     public final BeanKind beanKind() {
         return bean.driver.beanKind();

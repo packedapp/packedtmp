@@ -25,7 +25,7 @@ import app.packed.bean.operation.driver.OperationDriver;
 import app.packed.bean.operation.driver.OperationDriver2;
 import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.inject.Factory;
-import packed.internal.bean.PackedBeanDriver;
+import packed.internal.bean.PackedBeanHandle;
 
 /**
  * A bean driver must be created via {@link BeanSupport}.
@@ -40,14 +40,12 @@ import packed.internal.bean.PackedBeanDriver;
 // Scan (disable, do scan) ???
 // callacbks, onBound, onBuild, ...
 
-//BeanInstaller  (matcher install())
-//BeanCustomizer
-//BeanProvider
-//BeanSpecializer
-//BeanBuilder
-
+// Add Builder???
 @SuppressWarnings("rawtypes")
-public sealed interface BeanDriver<T> permits PackedBeanDriver {
+public sealed interface BeanHandle<T> permits PackedBeanHandle {
+
+    // Make into build method???
+    BeanHandle<T> commit();
 
     /**
      * @return
@@ -55,7 +53,7 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
      * @see BeanConfiguration#beanClass()
      * @see BeanMirror#beanClass()
      */
-    Class<?> beanClass();
+    Class<?> beanClass(); // vs BeanClass??? // beanSource instead??
 
     /**
      * @return
@@ -66,13 +64,17 @@ public sealed interface BeanDriver<T> permits PackedBeanDriver {
     BeanKind beanKind();
 
     Operation addFunctionOperation(Object functionInstance);
-    
+
     default Operation addOperation(@SuppressWarnings("exports") OperationDriver driver) {
         throw new UnsupportedOperationException();
     }
 
     default void addOperation(@SuppressWarnings("exports") OperationDriver2 driver) {
         throw new UnsupportedOperationException();
+    }
+
+    interface Builder<T> {
+
     }
 }
 

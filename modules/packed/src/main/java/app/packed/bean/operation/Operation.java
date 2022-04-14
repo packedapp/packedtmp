@@ -23,6 +23,7 @@ import app.packed.bean.operation.mirror.OperationMirror;
  *
  */
 @SuppressWarnings("rawtypes")
+// OperationHandle??? Hvis vi vil have
 public sealed interface Operation permits InjectableOperation, RawOperation {
 
     // newInstance(); <-- automatisk???

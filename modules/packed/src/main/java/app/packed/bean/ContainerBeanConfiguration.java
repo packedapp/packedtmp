@@ -28,7 +28,7 @@ public class ContainerBeanConfiguration<T> extends ProvidableBeanConfiguration<T
      * @param driver
      *            the bean driver to use for creating the bean
      */
-    public ContainerBeanConfiguration(BeanDriver<T> driver) {
+    public ContainerBeanConfiguration(BeanHandle<T> driver) {
         super(driver);
     }
 

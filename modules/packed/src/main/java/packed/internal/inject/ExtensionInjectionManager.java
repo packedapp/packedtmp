@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanDriver;
+import packed.internal.bean.PackedBeanHandle;
 
 /**
  * Manages all beans for a single container.
@@ -46,7 +46,7 @@ public final class ExtensionInjectionManager extends ContainerOrExtensionInjecti
         this.parent = parent;
     }
 
-    public void addBean(PackedBeanDriver<?> driver, BeanSetup bean) {
+    public void addBean(PackedBeanHandle<?> driver, BeanSetup bean) {
         if (extensionBeans.putIfAbsent(Key.of(driver.beanClass()), bean) != null) {
             throw new InternalExtensionException(
                     "A bean of type '" + format(driver.beanClass()) + "' has already been installed into the container '" + driver.container.path() + "'");

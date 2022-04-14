@@ -18,7 +18,7 @@ package app.packed.bean.operation.usage;
 import java.util.function.BiConsumer;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.operation.driver.OperationDriver;
 import app.packed.bean.operation.driver.OperationDriver2;
@@ -33,14 +33,14 @@ import app.packed.extension.Extension;
  */
 public class TestIt extends Extension<TestIt> {
 
-    BeanDriver<?> functionalBean;
+    BeanHandle<?> functionalBean;
 
     static final OperationDriver D = OperationDriver.of(new TypeToken<BiConsumer<HttpRequest, HttpResponse>>() {}, null);
 
-    private BeanDriver<?> fb() {
-        BeanDriver<?> fb = functionalBean;
+    private BeanHandle<?> fb() {
+        BeanHandle<?> fb = functionalBean;
         if (fb == null) {
-            functionalBean = fb = bean().newApplicationBeanDriver(BeanKind.FUNCTIONAL);
+            functionalBean = fb = bean().builder(BeanKind.FUNCTIONAL);
             // fb.setPrefix("fWeb")
         }
         return fb;

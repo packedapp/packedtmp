@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanSupport;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
@@ -28,7 +28,7 @@ public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfigurati
     /**
      * @param handle
      */
-    public ExtensionBeanConfiguration(BeanDriver<T> handle) {
+    public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
 

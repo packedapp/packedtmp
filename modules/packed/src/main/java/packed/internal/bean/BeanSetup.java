@@ -23,7 +23,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import packed.internal.bean.PackedBeanDriver.SourceType;
+import packed.internal.bean.PackedBeanHandle.SourceType;
 import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
@@ -41,7 +41,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
             "onWired", void.class);
 
     /** The driver used to create a bean. */
-    public final PackedBeanDriver<?> driver;
+    public final PackedBeanHandle<?> driver;
 
     /** A model of the hooks on the bean. */
     @Nullable
@@ -53,7 +53,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** Manages the operations defined by the bean. */
     public final BeanOperationManager operations;
 
-    public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanDriver<?> driver) {
+    public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanHandle<?> driver) {
         super(container.application, realm, container);
         this.driver = driver;
         this.hookModel = driver.sourceType == SourceType.NONE ? null : new BaseHookModel(driver.beanClass());// realm.accessor().beanModelOf(driver.beanClass());

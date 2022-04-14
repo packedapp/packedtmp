@@ -15,7 +15,7 @@ import app.packed.inject.service.ServiceLocator;
 import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanDriver;
+import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.hooks.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.bean.hooks.FieldHelper;
@@ -92,7 +92,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanDriver<T> driver = PackedBeanDriver.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), implementation);
+        PackedBeanHandle<T> driver = PackedBeanHandle.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), implementation);
         return new ContainerBeanConfiguration<>(driver);
     }
 
@@ -106,7 +106,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         // Med mindre vi laver en User->Extension, skal vi jo have noget a.la. UserOrExtension.realm();
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), factory);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), factory);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -122,7 +122,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), instance);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), instance);
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -157,14 +157,14 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanDriver<T> handle = PackedBeanDriver.ofClass(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), implementation);
+        PackedBeanHandle<T> handle = PackedBeanHandle.ofClass(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), implementation);
         // handle.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanDriver<T> bh = PackedBeanDriver.ofFactory(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), factory);
+        PackedBeanHandle<T> bh = PackedBeanHandle.ofFactory(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), factory);
         // bh.prototype();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
         return sbc.provide();
