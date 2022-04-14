@@ -13,34 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.tmp;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import app.packed.base.Key;
-import app.packed.bean.BeanMirror;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
 
 /**
  *
  */
-// Ligesom vi har hidden beans, har vi hidden operations!!!!!!!!
-public interface Ig2 {
 
-    List<Node> nodes();
+// Ideen er at sige, hvornaar resolver vi variablen...
 
-    sealed interface Node {
-        
-        BeanMirror bean();
-
-        List<Node> dependencies();
-    }
-
-    non-sealed interface ServiceNode extends Node {
-        Key<?> key();
-    }
-
-    non-sealed interface PrimeAnnoNode extends Node {
-        Class<? extends Annotation> annotationType();
-    }
+public enum DependencyResolveTimeKind {
+    AT_BUILD_TIME, AT_LIFETIME_INITIALIZATION, PER_OPERATION_INVOCATION; // AT_BEAN_CREATION???
 }

@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.function.Consumer;
 
-import app.packed.extension.ExtensionContext;
 import app.packed.inject.FactoryType;
 
 /**
@@ -32,9 +31,7 @@ import app.packed.inject.FactoryType;
 
 // Kan laves fra et Field eller Method
 // og kan invokere en metoder/constructor, lase/skrive/update et field
-public abstract class BeanOperation {
-
-    BeanOperation() {}
+public interface BeanOperation {
 
     /**
      * Specifies an action that is invoked whenever the methodhandle has been build by the runtime.
@@ -42,18 +39,12 @@ public abstract class BeanOperation {
      * @param action
      *            the action
      */
-    public void onReady(Consumer<MethodHandle> action) {}
+    void onReady(Consumer<MethodHandle> action);
 
-    public final MethodType invocationType() {
-        // For entity beans... Vi returnere vi
-        // MethodType.methodType(void.class, BeanOperationInvocationContext.class, FooEntityBean.class);
-        return MethodType.methodType(void.class, ExtensionContext.class);
-    }
+    MethodType invocationType();
 
-    FactoryType type() {
-        // Hvad goer vi med annoteringer paa Field/Update???
-        // Putter paa baade Variable og ReturnType???? Det vil jeg mene
+    // Hvad goer vi med annoteringer paa Field/Update???
+    // Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
-        throw new UnsupportedOperationException();
-    }
+    FactoryType type();
 }

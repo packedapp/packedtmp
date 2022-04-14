@@ -13,22 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.tmp;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
+
+import app.packed.base.Key;
+import app.packed.bean.BeanMirror;
 
 /**
  *
  */
-public enum DependencyFormKind {
-    
-    // Key
-    KEY, 
-    
-    // AnnotationType + AnnotationValue
-    ANNOTATION, 
-    
-    // Class (TypeToken?)
-    AUTO,
-    
-    OTHER // For example, positional
-    ;
+// Ligesom vi har hidden beans, har vi hidden operations!!!!!!!!
+public interface Ig2 {
+
+    List<Node> nodes();
+
+    sealed interface Node {
+        
+        BeanMirror bean();
+
+        List<Node> dependencies();
+    }
+
+    non-sealed interface ServiceNode extends Node {
+        Key<?> key();
+    }
+
+    non-sealed interface PrimeAnnoNode extends Node {
+        Class<? extends Annotation> annotationType();
+    }
 }

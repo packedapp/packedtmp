@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
 
 /**
  *
  */
-public @interface InjectableVariableHook {
-    Class<? extends InjectableVariableHookBuilder> processor();
+public class DependencyForm {
+
 }

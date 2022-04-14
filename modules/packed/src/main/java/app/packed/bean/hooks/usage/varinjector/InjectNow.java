@@ -13,24 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation.sandbox;
+package app.packed.bean.hooks.usage.varinjector;
 
-import app.packed.mirror.Mirror;
+import java.time.LocalDate;
+
+import app.packed.bean.hooks.BeanVarInjector;
+import app.packed.extension.Extension;
+import app.packed.inject.Factory0;
 
 /**
  *
  */
-// What happens if an operation fails
+public class InjectNow {
+    @BeanVarInjector.Hook(extension = MyExtNow.class)
+    @interface OnNow {}
 
-// passthrough
-// Could be a inner interface on BeanOperationMirror
-// Maaske er det ogsaa noget der kan bruges udover bean operations?
-public interface OperationErrorHandlingMirror extends Mirror {
+    static class MyExtNow extends Extension<MyExtNow> {
 
-    // Field Operation -> Enten har man en optional
-    // Unhandled
-    //
-    default void print() {
-        
+        @Override
+        protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+            // injector checkType
+
+            injector.provide(new Factory0<LocalDate>(() -> LocalDate.now()) {});
+        }
     }
-}
+    }

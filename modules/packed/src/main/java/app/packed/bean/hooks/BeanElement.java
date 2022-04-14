@@ -16,11 +16,12 @@
 package app.packed.bean.hooks;
 
 import app.packed.bean.BeanDefinitionException;
+import app.packed.component.Realm;
 
 /**
  *
  */
-public interface BeanElement {
+public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVarInjector {
 
     /**
      * @param message
@@ -28,7 +29,17 @@ public interface BeanElement {
      * 
      * @throws BeanDefinitionException
      */
-    void failWith(String message);
+    default void failWith(String message) {
+
+    }
+
+    default BeanInfo beanInfo() {
+        throw new UnsupportedOperationException();
+    }
+
+    default Realm realm() {
+        throw new UnsupportedOperationException();
+    }
 }
 // CheckRealmIsApplication
 // CheckRealmIsExtension

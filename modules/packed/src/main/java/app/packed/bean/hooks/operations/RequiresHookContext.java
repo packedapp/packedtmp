@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.operations.dependecy;
+package app.packed.bean.hooks.operations;
 
-import app.packed.bean.hooks.operations.dependecy.RequiresHookContext.Kind;
+import app.packed.bean.hooks.operations.RequiresHookContext.Kind;
 
 /**
  *

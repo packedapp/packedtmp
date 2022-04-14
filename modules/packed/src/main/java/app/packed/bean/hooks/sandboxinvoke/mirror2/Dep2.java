@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.tmp;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
 
 import java.util.Optional;
 

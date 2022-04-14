@@ -25,7 +25,6 @@ import java.util.Optional;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.examples.ServiceExportMirror;
-import app.packed.bean.operation.sandbox.OperationErrorHandlingMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.usage;
+package app.packed.bean.hooks.usage.varinjector;
 
 import java.lang.invoke.MethodHandle;
 import java.time.LocalDate;
 
+import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.component.Realm;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
@@ -48,6 +50,7 @@ public class LocalDateExamples {
         // installeret i rod containeren
         class AppStarted extends AutoService {
 
+            
             class AppStartBean {
                 volatile LocalDate started;
 
@@ -63,6 +66,34 @@ public class LocalDateExamples {
                 // Det er jo det samme for hele applikationen... Men access patterned
                 // for AppStartBean kan jo variere
                 provide(new Factory1<AppStartBean, LocalDate>(b -> b.started) {});
+            }
+        }
+    }
+    
+
+    @interface OnNow {
+        
+    }
+    void applicationStartedAlt() {
+        
+        class MyExt extends Extension<MyExt> {
+
+            @Override
+            protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+                injector.provide(new Factory1<AppStartBean, LocalDate>(b -> b.started) {});
+            }
+            
+            protected final void onNew() {
+                bean().install(AppStartBean.class);
+            }
+            
+            class AppStartBean {
+                volatile LocalDate started;
+
+                @OnStart
+                public void set() {
+                    started = LocalDate.now();
+                }
             }
         }
     }

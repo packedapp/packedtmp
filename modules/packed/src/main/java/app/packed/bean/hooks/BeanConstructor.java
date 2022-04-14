@@ -19,6 +19,6 @@ package app.packed.bean.hooks;
  *
  */
 // Like BeanMethod... Only creatable via BeanClass
-public interface BeanConstructor {
+public non-sealed interface BeanConstructor extends BeanElement {
 
 }

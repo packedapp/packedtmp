@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.tmp;
-
-import java.util.List;
-
-import app.packed.base.Key;
+package app.packed.bean.hooks.operations;
 
 /**
  *
  */
-public interface Ig1 {
-
-    List<Node> nodes();
-    
-    interface Node {
-        Key<?> key();
-        List<Node> dependencies();
-    }
+public enum DependencyContextKind {
+    NONE, CONTAINER, BEAN, OPERATION;
 }

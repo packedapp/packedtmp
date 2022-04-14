@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.tmp;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
+
+import java.util.List;
+
+import app.packed.base.Key;
 
 /**
  *
  */
+public interface Ig1 {
 
-// Ideen er at sige, hvornaar resolver vi variablen...
-
-public enum DependencyResolveTimeKind {
-    AT_BUILD_TIME, AT_LIFETIME_INITIALIZATION, PER_OPERATION_INVOCATION; // AT_BEAN_CREATION???
+    List<Node> nodes();
+    
+    interface Node {
+        Key<?> key();
+        List<Node> dependencies();
+    }
 }

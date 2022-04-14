@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.mirror2;
-
-import java.util.Optional;
-
-import app.packed.bean.BeanMirror;
-import app.packed.component.Realm;
+package app.packed.bean.hooks.sandboxinvoke.mirror;
 
 /**
  *
  */
-public interface Node {
+public non-sealed interface UnresolvedDependency extends Dependency {
 
-    Optional<BeanMirror> bean();
-    
-    boolean isConstant(); // <--- build time constant?, runtime constant, Instance constant
-    
-    Object providedBy();
-    
-    Realm realm();
+    // has default backup, nullable, or optional...
+
+    Class<?> fallbackType(); // Optional, Nullable, DefaultValue()
 }

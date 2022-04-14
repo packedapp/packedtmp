@@ -18,9 +18,17 @@ package app.packed.bean.hooks.sandboxinvoke.mirror2;
 /**
  *
  */
-public non-sealed interface UnresolvedDependency extends Dependency {
-
-    // has default backup, nullable, or optional...
-
-    Class<?> fallbackType(); // Optional, Nullable, DefaultValue()
+public enum DependencyFormKind {
+    
+    // Key
+    KEY, 
+    
+    // AnnotationType + AnnotationValue
+    ANNOTATION, 
+    
+    // Class (TypeToken?)
+    AUTO,
+    
+    OTHER // For example, positional
+    ;
 }

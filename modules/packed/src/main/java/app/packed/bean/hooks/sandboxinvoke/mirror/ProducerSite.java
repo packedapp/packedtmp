@@ -13,11 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.operations.dependecy;
+package app.packed.bean.hooks.sandboxinvoke.mirror;
+
+import app.packed.component.Realm;
 
 /**
  *
  */
-public enum DependencyContextKind {
-    NONE, CONTAINER, BEAN, OPERATION;
+public /*non-sealed*/ interface ProducerSite extends InjectionSite {
+    
+    Realm producer();
+
+    
+    interface MethodProducerSite extends ProducerSite {
+        
+    }
+    
+    interface ConstantProducerSite extends ProducerSite {
+
+        // Er det ikke en implementerings detalje vi er ligeglade med?
+        
+        boolean isBuildTimeConstant();
+        // no dependencies
+    }
 }

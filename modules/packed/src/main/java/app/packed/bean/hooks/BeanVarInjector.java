@@ -21,14 +21,73 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Nullable;
+import app.packed.base.Variable;
+import app.packed.bean.hooks.sandboxinvoke.AnnotationReader;
+import app.packed.bean.hooks.sandboxinvoke.CommonVarInfo;
+import app.packed.bean.hooks.sandboxinvoke.VariableParser;
 import app.packed.extension.Extension;
+import app.packed.inject.Factory;
 
 /**
  *
  */
 // Provides objects for member injection (parameter, field)
-public interface BeanVarInjector {
+
+// Informational om Variabele
+//// Type part
+//// Annotation part
+
+// Mirroring?
+
+// provide
+
+// modeSetting: modeRaw...
+// requireContext (<---- on BeanElement????)
+
+@SuppressWarnings("exports")
+public non-sealed interface BeanVarInjector extends BeanElement {
+
+    AnnotationReader annotations();
+
+    void provide(Factory<?> fac);
+
+    void provide(MethodHandle methodHandle);
+
+    /**
+     * <p>
+     * Vi tager Nullable med saa vi bruge raw.
+     * <p>
+     * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
+     * 
+     * @param instance
+     *            the instance to provide to the variable
+     * 
+     * @throws ClassCastException
+     *             if the type of the instance does not match the type of the variable
+     * @throws IllegalStateException
+     *             if a provide method has already been called on this injector (I think it is fine to allow it to be
+     *             overriden by itself). Or if the container has closed
+     */
+    void provideInstance(@Nullable Object obj);
+
+    /**
+     * <p>
+     * Virker ikke for raw. use provideInstance(null);
+     */
+    void provideMissing();
+
+    void requireContext(Class<?> contextType);
+
+    Variable variable();
+
+    default CommonVarInfo variableParse() {
+        return variableParse(CommonVarInfo.DEFAULT);
+    }
+
+    <T> T variableParse(VariableParser<T> parser);
 
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)
@@ -40,5 +99,17 @@ public interface BeanVarInjector {
 
         // HttpRequestContext... requireAllContexts, requireAnyContexts
         Class<?>[] requiresContext() default {};
+    }
+    
+    // Skal saettes statisk paa bootstrappe vil jeg mene??? IDK
+    enum Availability {
+        /** For example, ServiceRegistry. */
+        ALWAYS_AVAILABLE, 
+        
+        /** For example, DatabaseX */
+        KNOWN_AT_BUILDTIME,
+        
+        /** For example, Transaction (extracted from ScopeLocal) */
+        KNOWN_AT_RUNTIME // Kan den misforstaas som at naar vi er initialiseret ved vi det?? Er det i virkeligheden unknown
     }
 }

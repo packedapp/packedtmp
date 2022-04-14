@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.tmp;
+package app.packed.bean.operation;
+
+import app.packed.mirror.Mirror;
 
 /**
  *
  */
-public class DependencyForm {
+// What happens if an operation fails
 
+// passthrough
+// Could be a inner interface on BeanOperationMirror
+// Maaske er det ogsaa noget der kan bruges udover bean operations?
+public interface OperationErrorHandlingMirror extends Mirror {
+
+    // Field Operation -> Enten har man en optional
+    // Unhandled
+    //
+    default void print() {
+        
+    }
 }

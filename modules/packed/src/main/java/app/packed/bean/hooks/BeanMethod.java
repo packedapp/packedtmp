@@ -31,7 +31,7 @@ import app.packed.inject.FactoryType;
 /**
  *
  */
-public interface BeanMethod {
+public non-sealed interface BeanMethod extends BeanElement{
 
     /**
      * Returns the modifiers of the method.

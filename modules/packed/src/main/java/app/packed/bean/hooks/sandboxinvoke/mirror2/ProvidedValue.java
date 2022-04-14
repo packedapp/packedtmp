@@ -1,4 +1,4 @@
-package app.packed.bean.hooks.sandboxinvoke.tmp;
+package app.packed.bean.hooks.sandboxinvoke.mirror2;
 
 // Lidt taenkt som en advanced resultat fra
 // @Provide, 

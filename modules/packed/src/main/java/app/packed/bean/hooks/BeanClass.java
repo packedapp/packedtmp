@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 /**
  *
  */
-public interface BeanClass {
+public non-sealed interface BeanClass extends BeanElement {
 
     // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
     // Masske har vi BeanClass.Builder() istedet for???

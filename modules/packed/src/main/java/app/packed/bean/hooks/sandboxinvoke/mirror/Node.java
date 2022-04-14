@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks.sandboxinvoke.mirror2;
+package app.packed.bean.hooks.sandboxinvoke.mirror;
 
+import java.util.Optional;
+
+import app.packed.bean.BeanMirror;
 import app.packed.component.Realm;
 
 /**
  *
  */
-public /*non-sealed*/ interface ProducerSite extends InjectionSite {
-    
-    Realm producer();
+public interface Node {
 
+    Optional<BeanMirror> bean();
     
-    interface MethodProducerSite extends ProducerSite {
-        
-    }
+    boolean isConstant(); // <--- build time constant?, runtime constant, Instance constant
     
-    interface ConstantProducerSite extends ProducerSite {
-
-        // Er det ikke en implementerings detalje vi er ligeglade med?
-        
-        boolean isBuildTimeConstant();
-        // no dependencies
-    }
+    Object providedBy();
+    
+    Realm realm();
 }

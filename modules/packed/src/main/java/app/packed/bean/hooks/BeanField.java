@@ -27,13 +27,12 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
-import app.packed.component.Realm;
 import app.packed.extension.Extension;
 
 /**
  *
  */
-public interface BeanField {
+public non-sealed interface BeanField extends BeanElement {
 
     // BeanInfo
 
@@ -78,7 +77,6 @@ public interface BeanField {
 
     BeanOperation operationSetter();
 
-    Realm realm();
 
     /**
      * Must have both get and set
