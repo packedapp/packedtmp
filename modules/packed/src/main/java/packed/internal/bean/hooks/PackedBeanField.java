@@ -25,18 +25,21 @@ import app.packed.bean.hooks.BeanField;
 import app.packed.bean.operation.InjectableOperation;
 import app.packed.bean.operation.RawOperation;
 import app.packed.component.Realm;
+import app.packed.extension.Extension;
+import packed.internal.bean.operation.PackedRawOperation;
+import packed.internal.container.ExtensionSetup;
 
 /**
- *
+ * Implementation of BeanField.
+ * 
+ * @see Extension#hookOnBeanField(BeanField)
  */
-public final class HookedBeanField implements BeanField {
+public final class PackedBeanField extends PackedBeanMember implements BeanField {
 
     private final Field field;
-    
-    public final BeanScanner scanner;
 
-    HookedBeanField(BeanScanner scanner, Field field) {
-        this.scanner = scanner;
+    PackedBeanField(BeanScanner scanner, ExtensionSetup extension, Field field) {
+        super(scanner, extension);
         this.field = field;
     }
 
@@ -55,13 +58,13 @@ public final class HookedBeanField implements BeanField {
     /** {@inheritDoc} */
     @Override
     public RawOperation<MethodHandle> rawGetterOperation() {
-        return new PackedRawOperation<>(scanner.oc.unreflectGetter(field));
+        return new PackedRawOperation<>(this, scanner.oc.unreflectGetter(field));
     }
 
     /** {@inheritDoc} */
     @Override
     public RawOperation<MethodHandle> rawSetterOperation() {
-        return new PackedRawOperation<>(scanner.oc.unreflectSetter(field));
+        return new PackedRawOperation<>(this, scanner.oc.unreflectSetter(field));
     }
 
     /** {@inheritDoc} */
@@ -91,7 +94,7 @@ public final class HookedBeanField implements BeanField {
     /** {@inheritDoc} */
     @Override
     public RawOperation<VarHandle> rawOperation() {
-        return new PackedRawOperation<>(scanner.oc.unreflectVarHandle(field));
+        return new PackedRawOperation<>(this, scanner.oc.unreflectVarHandle(field));
     }
 
     /** {@inheritDoc} */

@@ -24,21 +24,9 @@ import app.packed.bean.operation.Operation;
 /**
  * The implementation of {@link BeanHandle}.
  * 
- * @apiNote we could just let {@link BeanSetup} implement BeanHandle, but we want to avoid parameterizing BeanSetup.
+ * @apiNote we could just let {@link BeanSetup} implement BeanHandle, but we choose to avoid parameterizing BeanSetup.
  */
 public record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> beanClass() {
-        return bean.beanClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind beanKind() {
-        return bean.beanKind();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -51,5 +39,17 @@ public record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
     public void addWiringAction(Runnable action) {
         requireNonNull(action, "action is null");
         bean.wiringActions.add(action);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> beanClass() {
+        return bean.beanClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanKind beanKind() {
+        return bean.beanKind();
     }
 }

@@ -23,6 +23,7 @@ import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.bean.hooks.BeanScanner;
+import packed.internal.bean.operation.OperationSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.inject.BeanInjectionManager;
@@ -41,7 +42,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     public final BeanInjectionManager injectionManager;
 
     /** Operations declared by the bean. */
-    private final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
+    private final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /**
      * Create a new bean setup.
@@ -68,7 +69,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         }
     }
 
-    public void addOperation(BeanOperationSetup os) {
+    public void addOperation(OperationSetup os) {
         requireNonNull(os);
         operations.add(os);
     }
@@ -143,7 +144,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         /** {@inheritDoc} */
         @Override
         public Stream<OperationMirror> operations() {
-            return bean.operations.stream().map(BeanOperationSetup::mirror);
+            return bean.operations.stream().map(OperationSetup::mirror);
         }
 
         /** {@inheritDoc} */

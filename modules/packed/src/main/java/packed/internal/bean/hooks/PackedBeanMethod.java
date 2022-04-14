@@ -22,18 +22,18 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.operation.InjectableOperation;
 import app.packed.bean.operation.RawOperation;
 import app.packed.inject.FactoryType;
+import packed.internal.bean.operation.PackedRawOperation;
+import packed.internal.container.ExtensionSetup;
 
 /**
  *
  */
-public class HookedBeanMethod implements BeanMethod {
-
-    public final BeanScanner scanner;
+public final class PackedBeanMethod extends PackedBeanMember implements BeanMethod {
 
     private final Method method;
 
-    HookedBeanMethod(BeanScanner scanner, Method method) {
-        this.scanner = scanner;
+    PackedBeanMethod(BeanScanner scanner, ExtensionSetup extension, Method method) {
+        super(scanner, extension);
         this.method = method;
     }
 
@@ -58,13 +58,13 @@ public class HookedBeanMethod implements BeanMethod {
     /** {@inheritDoc} */
     @Override
     public RawOperation<MethodHandle> rawOperation() {
-        return new PackedRawOperation<MethodHandle>(scanner.oc.unreflect(method));
+        return new PackedRawOperation<MethodHandle>(this, scanner.oc.unreflect(method));
     }
 
     /** {@inheritDoc} */
     @Override
     public InjectableOperation operation() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -72,5 +72,4 @@ public class HookedBeanMethod implements BeanMethod {
     public FactoryType factoryType() {
         return FactoryType.ofExecutable(method);
     }
-
 }

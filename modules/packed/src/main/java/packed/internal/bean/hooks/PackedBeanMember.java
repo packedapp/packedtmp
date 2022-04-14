@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package packed.internal.bean.hooks;
 
-import packed.internal.bean.operation.PackedRawOperation;
+import packed.internal.container.ExtensionSetup;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperation<T> extends Operation permits PackedRawOperation {
-    T handle();
+
+// We create one instance of a member per extension...
+// So we multiple extensions have annotated the same method we create multiple PBM
+public abstract sealed class PackedBeanMember permits PackedBeanField, PackedBeanMethod {
+
+    public final BeanScanner scanner;
+    public final ExtensionSetup extension;
+    PackedBeanMember(BeanScanner scanner, ExtensionSetup extension) {
+        this.scanner = scanner;
+        this.extension = extension;
+    }
+    
 }

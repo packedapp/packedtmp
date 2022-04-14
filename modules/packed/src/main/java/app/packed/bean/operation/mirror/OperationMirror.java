@@ -33,7 +33,7 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.inject.DependencyMirror;
 import app.packed.inject.service.ServiceRegistry;
 import app.packed.mirror.Mirror;
-import packed.internal.bean.BeanOperationSetup;
+import packed.internal.bean.operation.OperationSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -61,7 +61,7 @@ public class OperationMirror implements Mirror {
      * {@link Extension#mirrorInitialize(ExtensionMirror)}.
      */
     @Nullable
-    private BeanOperationSetup operation;
+    private OperationSetup operation;
 
     /**
      * Create a new operation mirror.
@@ -148,7 +148,7 @@ public class OperationMirror implements Mirror {
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(BeanOperationSetup operation) {
+    final void initialize(OperationSetup operation) {
         if (this.operation != null) {
             throw new IllegalStateException("The specified mirror has already been initialized.");
         }
@@ -177,8 +177,8 @@ public class OperationMirror implements Mirror {
      *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
      *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
      */
-    private BeanOperationSetup operation() {
-        BeanOperationSetup o = operation;
+    private OperationSetup operation() {
+        OperationSetup o = operation;
         if (o == null) {
             throw new InternalExtensionException(
                     "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");

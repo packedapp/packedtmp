@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean;
+package packed.internal.bean.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.extension.Extension;
+import packed.internal.bean.BeanSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -29,31 +30,32 @@ import packed.internal.util.ThrowableUtil;
  *
  */
 // Skal vi have flere forskellige???? fx Functional, Member ect... 
-public final class BeanOperationSetup {
+public final class OperationSetup {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
-    private static final MethodHandle MH_INITIALIZE_OPERATIONS_SETUP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
-            "initialize", void.class, BeanOperationSetup.class);
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    private static final MethodHandle MH_OPERATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
+            "initialize", void.class, OperationSetup.class);
 
-    /** The bean the operation belongs to. */
+    /** The bean the operation is a part of. */
     public final BeanSetup bean;
 
-    /** The operation's operator. */
-    public final Class<? extends Extension<?>> operator;
-
     public DependencyNode depNode;
+
+    public final boolean isRaw = false;
 
     public Supplier<? extends OperationMirror> mirrorSupplier;
     // dependencies
 
-    public final boolean isRaw = false;
-    
-    public BeanOperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
+    /** The operation's operator. */
+    public final Class<? extends Extension<?>> operator;
+
+    public OperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
         this.bean = bean;
         this.operator = operator;
     }
 
-    OperationMirror mirror() {
+    /** {@return a mirror for the operation.} */
+    public OperationMirror mirror() {
         OperationMirror om;
         if (mirrorSupplier == null) {
             om = new OperationMirror();
@@ -62,7 +64,7 @@ public final class BeanOperationSetup {
 
         }
         try {
-            MH_INITIALIZE_OPERATIONS_SETUP.invokeExact(om, this);
+            MH_OPERATION_MIRROR_INITIALIZE.invokeExact(om, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

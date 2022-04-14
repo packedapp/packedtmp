@@ -20,7 +20,7 @@ import app.packed.base.Key;
 /**
  *
  */
-public class BaseHookModel {
+public final class BaseHookModel {
 
     /** The class of the model. */
     public final Class<?> clazz;

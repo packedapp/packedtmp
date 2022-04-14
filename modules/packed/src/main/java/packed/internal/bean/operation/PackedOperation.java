@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package packed.internal.bean.operation;
 
-import packed.internal.bean.operation.PackedRawOperation;
+import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperation<T> extends Operation permits PackedRawOperation {
-    T handle();
+@SuppressWarnings("rawtypes")
+public sealed abstract class PackedOperation permits PackedRawOperation {
+
+    final PackedBeanMember member;
+    
+    public PackedOperation(PackedBeanMember member) {
+        this.member = member;
+        OperationSetup os = new OperationSetup(member.scanner.bean, member.extension.extensionType);
+        member.scanner.bean.addOperation(os);
+    }
 }

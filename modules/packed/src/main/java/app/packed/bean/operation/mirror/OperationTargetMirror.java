@@ -15,6 +15,8 @@
  */
 package app.packed.bean.operation.mirror;
 
+import java.util.Optional;
+
 /**
  * The target of an operation.
  */
@@ -22,7 +24,11 @@ public interface OperationTargetMirror {
 
     // Accessing an instance that have previously been computed
     // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
-    public interface OfInstanceAccess extends OperationTargetMirror {} // ofLifetimePool? Hmm
+    public interface OfInstanceAccess extends OperationTargetMirror {
+        // empty if the instance was provided
+        // otherwise the operation that created it, and stored it somewhere.
+        Optional<OperationTargetMirror> origin();
+    } // ofLifetimePool? Hmm
 
     public interface OfMethodHandleInvoke extends OperationTargetMirror {} // ofSynthetic?
 

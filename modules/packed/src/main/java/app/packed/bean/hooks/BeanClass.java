@@ -15,8 +15,6 @@
  */
 package app.packed.bean.hooks;
 
-import java.lang.invoke.MethodHandles;
-
 /**
  *
  */
@@ -24,7 +22,9 @@ public non-sealed interface BeanClass extends BeanElement {
 
     // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
     // Masske har vi BeanClass.Builder() istedet for???
-    static BeanClass of(MethodHandles.Lookup caller, Class<?> clazz) {
-        throw new UnsupportedOperationException();
-    }
+
+    // Cute men vi gider ikke supportere det
+//    static BeanClass of(MethodHandles.Lookup caller, Class<?> clazz) {
+//        throw new UnsupportedOperationException();
+//    }
 }

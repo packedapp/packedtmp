@@ -10,18 +10,16 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.bean.hooks.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.bean.hooks.FieldHelper;
-import packed.internal.bean.hooks.HookedBeanField;
-import packed.internal.bean.hooks.HookedBeanMethod;
 import packed.internal.bean.hooks.MethodHelper;
+import packed.internal.bean.hooks.PackedBeanField;
+import packed.internal.bean.hooks.PackedBeanMethod;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
@@ -47,33 +45,27 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     @Override
     protected void hookOnBeanField(BeanField field) {
-        BeanScanner f = ((HookedBeanField) field).scanner;
-        BeanSetup bean = f.bean;
+        BeanScanner f = ((PackedBeanField) field).scanner;
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
         FieldHelper fh = new FieldHelper(field, field.rawOperation().handle(), constant, key);
-        DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-
-        BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
-        bean.addOperation(os);
-        // os.mirrorSupplier = supplier;
-
-        bean.parent.injectionManager.addConsumer(node);
+        DependencyNode node = new BeanMemberDependencyNode(f.bean, fh, fh.createProviders());
+        field.operationSetter();
+        
+        f.bean.parent.injectionManager.addConsumer(node);
     }
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
         // new Exception().printStackTrace();
-        BeanScanner f = ((HookedBeanMethod) method).scanner;
+        BeanScanner f = ((PackedBeanMethod) method).scanner;
         BeanSetup bean = f.bean;
         Key<?> key = Key.convertMethodReturnType(method.method());
         boolean constant = method.method().getAnnotation(Provide.class).constant();
         MethodHelper fh = new MethodHelper(method, method.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
-        BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
-        bean.addOperation(os);
-        // os.mirrorSupplier = supplier;
+        method.operation();
 
         bean.parent.injectionManager.addConsumer(node);
     }

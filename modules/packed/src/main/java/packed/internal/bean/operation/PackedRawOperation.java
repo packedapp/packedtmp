@@ -13,13 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.hooks;
+package packed.internal.bean.operation;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.VarHandle;
 
 import app.packed.bean.operation.RawOperation;
+import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-public record PackedRawOperation<T>(T handle) implements RawOperation<T> {
+public final class PackedRawOperation<T> extends PackedOperation implements RawOperation<T> {
 
+    /** Either a {@link VarHandle} or {@link MethodHandle}. */
+    final T handle;
+    
+    public PackedRawOperation(PackedBeanMember member, T handle) {
+        super(member);
+        this.handle = handle;
+    }
+    
+    /** {@inheritDoc} */
+    public T handle() {
+        return handle;
+    }
 }

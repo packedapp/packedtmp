@@ -30,12 +30,12 @@ import app.packed.base.Variable;
 import app.packed.bean.operation.InjectableOperation;
 import app.packed.bean.operation.RawOperation;
 import app.packed.extension.Extension;
-import packed.internal.bean.hooks.HookedBeanField;
+import packed.internal.bean.hooks.PackedBeanField;
 
 /**
  *
  */
-public sealed interface BeanField extends BeanElement permits HookedBeanField {
+public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
     /** {@return the underlying field.} */
     Field field();

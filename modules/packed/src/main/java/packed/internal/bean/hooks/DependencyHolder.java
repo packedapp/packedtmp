@@ -26,8 +26,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.operation.OperationSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;
@@ -64,7 +64,7 @@ public abstract class DependencyHolder extends KeyProvidable{
         // Register hooks, maybe move to component setup
         DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
 
-        BeanOperationSetup os = new BeanOperationSetup(bean, ServiceExtension.class);
+        OperationSetup os = new OperationSetup(bean, ServiceExtension.class);
         bean.addOperation(os);
         os.mirrorSupplier = supplier;
 

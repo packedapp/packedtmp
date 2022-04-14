@@ -12,7 +12,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
-import packed.internal.bean.hooks.HookedBeanMethod;
+import packed.internal.bean.hooks.PackedBeanMethod;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
@@ -47,7 +47,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
         MainThreadOfControl mc = container.application.entryPoints.mainThread();
         mc.isStatic = Modifier.isStatic(method.getModifiers());
-        mc.cs = ((HookedBeanMethod) method).scanner.bean;
+        mc.cs = ((PackedBeanMethod) method).scanner.bean;
         mc.methodHandle = method.rawOperation().handle();
 
 //        oldOperation().useMirror(() -> new EntryPointMirror(0));
