@@ -21,8 +21,9 @@ import java.lang.reflect.Method;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.operation.InjectableOperation;
 import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.mirror.OperationTargetMirror;
 import app.packed.inject.FactoryType;
-import packed.internal.bean.operation.PackedRawOperation;
+import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -32,7 +33,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     private final Method method;
 
-    PackedBeanMethod(BeanScanner scanner, ExtensionSetup extension, Method method) {
+    PackedBeanMethod(BeanScanner scanner, ExtensionSetup extension, Method method, boolean allowInvoke) {
         super(scanner, extension);
         this.method = method;
     }
@@ -58,7 +59,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
     /** {@inheritDoc} */
     @Override
     public RawOperation<MethodHandle> rawOperation() {
-        return new PackedRawOperation<MethodHandle>(this, scanner.oc.unreflect(method));
+        return new RawOperationSetup<MethodHandle>(this, openClass.unreflect(method));
     }
 
     /** {@inheritDoc} */
@@ -71,5 +72,15 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
     @Override
     public FactoryType factoryType() {
         return FactoryType.ofExecutable(method);
+    }
+
+    private record BuildTimeMethodTargetMirror(PackedBeanMethod method) implements OperationTargetMirror.OfMethodInvoke {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTargetMirror mirror() {
+        return new BuildTimeMethodTargetMirror(this);
     }
 }

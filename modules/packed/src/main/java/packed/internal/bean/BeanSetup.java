@@ -69,9 +69,8 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         }
     }
 
-    public void addOperation(OperationSetup os) {
-        requireNonNull(os);
-        operations.add(os);
+    public void addOperation(OperationSetup operation) {
+        operations.add(requireNonNull(operation));
     }
 
     /** {@inheritDoc} */
@@ -88,7 +87,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
     /** {@inheritDoc} */
     @Override
-    public BuildTimeBeanMirror mirror() {
+    public BeanMirror mirror() {
         return new BuildTimeBeanMirror(this);
     }
 

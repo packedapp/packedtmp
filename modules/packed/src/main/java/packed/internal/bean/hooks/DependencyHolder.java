@@ -25,9 +25,7 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.operation.mirror.OperationMirror;
-import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.operation.OperationSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;
@@ -63,10 +61,6 @@ public abstract class DependencyHolder extends KeyProvidable{
     public void onWire(BeanSetup bean) {
         // Register hooks, maybe move to component setup
         DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
-
-        OperationSetup os = new OperationSetup(bean, ServiceExtension.class);
-        bean.addOperation(os);
-        os.mirrorSupplier = supplier;
 
         bean.parent.injectionManager.addConsumer(node);
         

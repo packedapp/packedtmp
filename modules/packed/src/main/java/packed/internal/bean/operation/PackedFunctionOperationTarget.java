@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package packed.internal.bean.operation;
 
-import packed.internal.bean.operation.RawOperationSetup;
+import app.packed.bean.operation.mirror.OperationTargetMirror;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperation<T> extends Operation permits RawOperationSetup {
-    T handle();
+public final class PackedFunctionOperationTarget extends PackedOperationTarget {
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTargetMirror mirror() {
+        return new BuildTimeMethodTargetMirror(this);
+    }
+
+
+    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget ff) implements OperationTargetMirror.OfFunctionCall {
+
+    }
 }

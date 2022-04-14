@@ -15,11 +15,9 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.bean.hooks.BeanMemberDependencyNode;
-import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.bean.hooks.FieldHelper;
 import packed.internal.bean.hooks.MethodHelper;
-import packed.internal.bean.hooks.PackedBeanField;
-import packed.internal.bean.hooks.PackedBeanMethod;
+import packed.internal.bean.hooks.PackedBeanMember;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
@@ -45,21 +43,20 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     @Override
     protected void hookOnBeanField(BeanField field) {
-        BeanScanner f = ((PackedBeanField) field).scanner;
+        BeanSetup bean = ((PackedBeanMember) field).bean;
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
         FieldHelper fh = new FieldHelper(field, field.rawOperation().handle(), constant, key);
-        DependencyNode node = new BeanMemberDependencyNode(f.bean, fh, fh.createProviders());
+        DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
         field.operationSetter();
         
-        f.bean.parent.injectionManager.addConsumer(node);
+        bean.parent.injectionManager.addConsumer(node);
     }
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
         // new Exception().printStackTrace();
-        BeanScanner f = ((PackedBeanMethod) method).scanner;
-        BeanSetup bean = f.bean;
+        BeanSetup bean = ((PackedBeanMember) method).bean;
         Key<?> key = Key.convertMethodReturnType(method.method());
         boolean constant = method.method().getAnnotation(Provide.class).constant();
         MethodHelper fh = new MethodHelper(method, method.rawOperation().handle(), constant, key);

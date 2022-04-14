@@ -32,10 +32,13 @@ public interface OperationTargetMirror {
 
     public interface OfMethodHandleInvoke extends OperationTargetMirror {} // ofSynthetic?
 
-    public interface OfFunctionCall extends OperationTargetMirror {}
-
     // Hmm???
     public interface OfInjectVariable extends OperationTargetMirror {}
+
+////////////////////////////////
+    
+
+    public interface OfFunctionCall extends OperationTargetMirror {}
     
     // Members
     

@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package packed.internal.bean.operation;
 
-import packed.internal.bean.operation.RawOperationSetup;
+import java.lang.invoke.MethodHandle;
+
+import app.packed.bean.operation.mirror.OperationTargetMirror;
+import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperation<T> extends Operation permits RawOperationSetup {
-    T handle();
+public abstract sealed class PackedOperationTarget permits PackedBeanMember, PackedFunctionOperationTarget {
+
+    public MethodHandle methodHandle() {
+        throw new UnsupportedOperationException();
+    }
+
+    public abstract OperationTargetMirror mirror();
 }

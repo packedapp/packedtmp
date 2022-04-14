@@ -16,26 +16,38 @@
 package packed.internal.bean.operation;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.VarHandle;
+import java.lang.invoke.MethodType;
+import java.util.function.Consumer;
 
-import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.InjectableOperation;
+import app.packed.inject.FactoryType;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-public final class PackedRawOperation<T> extends PackedOperation implements RawOperation<T> {
+public final class InjectableOperationSetup extends OperationSetup implements InjectableOperation {
 
-    /** Either a {@link VarHandle} or {@link MethodHandle}. */
-    final T handle;
-    
-    public PackedRawOperation(PackedBeanMember member, T handle) {
-        super(member);
-        this.handle = handle;
+    /**
+     * @param member
+     */
+    public InjectableOperationSetup(PackedBeanMember member) {
+        super(member.bean, member, member.extension);
     }
-    
+
     /** {@inheritDoc} */
-    public T handle() {
-        return handle;
+    @Override
+    public void onReady(Consumer<MethodHandle> action) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType invocationType() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public FactoryType type() {
+        return null;
     }
 }

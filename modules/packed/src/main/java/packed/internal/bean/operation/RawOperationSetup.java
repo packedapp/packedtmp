@@ -15,19 +15,27 @@
  */
 package packed.internal.bean.operation;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.VarHandle;
+
+import app.packed.bean.operation.RawOperation;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-@SuppressWarnings("rawtypes")
-public sealed abstract class PackedOperation permits PackedRawOperation {
+public final class RawOperationSetup<T> extends OperationSetup implements RawOperation<T> {
 
-    final PackedBeanMember member;
+    /** Either a {@link VarHandle} or {@link MethodHandle}. */
+    final T handle;
     
-    public PackedOperation(PackedBeanMember member) {
-        this.member = member;
-        OperationSetup os = new OperationSetup(member.scanner.bean, member.extension.extensionType);
-        member.scanner.bean.addOperation(os);
+    public RawOperationSetup(PackedBeanMember member, T handle) {
+        super(member.bean, member, member.extension);
+        this.handle = handle;
+    }
+    
+    /** {@inheritDoc} */
+    public T handle() {
+        return handle;
     }
 }

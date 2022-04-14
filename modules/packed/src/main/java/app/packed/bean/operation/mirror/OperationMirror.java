@@ -16,8 +16,6 @@
 package app.packed.bean.operation.mirror;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
@@ -188,7 +186,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the extension that initiates the operation.} */
     public final Class<? extends Extension<?>> operator() {
-        return operation().operator;
+        return operation().extension.extensionType;
     }
 
     /**
@@ -215,17 +213,13 @@ public class OperationMirror implements Mirror {
     /**
      * @return
      */
-    public final TargetMirror target() {
-        throw new UnsupportedOperationException();
+    public final OperationTargetMirror target() {
+         return operation().target.mirror();
     }
 
     public static void main(String[] args) throws NoSuchMethodException, SecurityException {
         Method method = OperationMirror.class.getMethod("main", String[].class);
         System.out.println(method.getReturnType());
-    }
-
-    public interface TargetMirror {
-        TargetType type();
     }
     
     public Optional<Class<? extends Annotation>> hook() {
@@ -233,24 +227,24 @@ public class OperationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    public enum TargetType {
-
-        /** The operation is based on invoking a {@link Constructor} */
-        CONSTRUCTOR,
-
-        /** The operation is based on accessing a {@link Field}. */
-        FIELD,
-
-        /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
-        FUNCTION,
-
-        /** The operation is based on invoking a {@link Method}. */
-        METHOD,
-
-        OTHER; // Typically a MethodHandle, or an instance
-
-        // CONSTANT;
-    }
+//    public enum TargetType {
+//
+//        /** The operation is based on invoking a {@link Constructor} */
+//        CONSTRUCTOR,
+//
+//        /** The operation is based on accessing a {@link Field}. */
+//        FIELD,
+//
+//        /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
+//        FUNCTION,
+//
+//        /** The operation is based on invoking a {@link Method}. */
+//        METHOD,
+//
+//        OTHER; // Typically a MethodHandle, or an instance
+//
+//        // CONSTANT;
+//    }
 }
 //Is invoked by an extension
 

@@ -24,9 +24,10 @@ import app.packed.base.Variable;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.operation.InjectableOperation;
 import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.mirror.OperationTargetMirror;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
-import packed.internal.bean.operation.PackedRawOperation;
+import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -38,9 +39,14 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
 
     private final Field field;
 
-    PackedBeanField(BeanScanner scanner, ExtensionSetup extension, Field field) {
+    final boolean allowGet;
+    final boolean allowSet;
+
+    PackedBeanField(BeanScanner scanner, ExtensionSetup extension, Field field, boolean allowGet, boolean allowSet) {
         super(scanner, extension);
         this.field = field;
+        this.allowGet = allowGet;
+        this.allowSet = allowSet;
     }
 
     /** {@inheritDoc} */
@@ -58,13 +64,13 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
     /** {@inheritDoc} */
     @Override
     public RawOperation<MethodHandle> rawGetterOperation() {
-        return new PackedRawOperation<>(this, scanner.oc.unreflectGetter(field));
+        return new RawOperationSetup<>(this, openClass.unreflectGetter(field));
     }
 
     /** {@inheritDoc} */
     @Override
     public RawOperation<MethodHandle> rawSetterOperation() {
-        return new PackedRawOperation<>(this, scanner.oc.unreflectSetter(field));
+        return new RawOperationSetup<>(this, openClass.unreflectSetter(field));
     }
 
     /** {@inheritDoc} */
@@ -88,18 +94,39 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
     /** {@inheritDoc} */
     @Override
     public Realm realm() {
-        return scanner.bean.realm.realm();
+        return bean.realm.realm();
     }
 
     /** {@inheritDoc} */
     @Override
     public RawOperation<VarHandle> rawOperation() {
-        return new PackedRawOperation<>(this, scanner.oc.unreflectVarHandle(field));
+        return new RawOperationSetup<>(this, openClass.unreflectVarHandle(field));
     }
 
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
         return Variable.ofField(field);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OperationTargetMirror mirror() {
+        return new BuildTimeFieldTargetMirror(this);
+    }
+    
+    private record BuildTimeFieldTargetMirror(PackedBeanField field) implements OperationTargetMirror.OfFieldAccess {
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean allowGet() {
+            return field.allowGet;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean allowSet() {
+            return field.allowSet;
+        }
     }
 }

@@ -15,13 +15,15 @@
  */
 package packed.internal.bean.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.bean.operation.mirror.OperationMirror;
-import app.packed.extension.Extension;
 import packed.internal.bean.BeanSetup;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -29,8 +31,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-// Skal vi have flere forskellige???? fx Functional, Member ect... 
-public final class OperationSetup {
+public class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_OPERATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
@@ -47,11 +48,16 @@ public final class OperationSetup {
     // dependencies
 
     /** The operation's operator. */
-    public final Class<? extends Extension<?>> operator;
+    public final ExtensionSetup extension;
 
-    public OperationSetup(BeanSetup bean, Class<? extends Extension<?>> operator) {
-        this.bean = bean;
-        this.operator = operator;
+    /** The operation's target. */
+    public final PackedOperationTarget target;
+
+    public OperationSetup(BeanSetup bean, PackedOperationTarget target, ExtensionSetup extension) {
+        this.bean = requireNonNull(bean);
+        this.target = requireNonNull(target);
+        this.extension = requireNonNull(extension);
+        bean.addOperation(this);
     }
 
     /** {@return a mirror for the operation.} */
