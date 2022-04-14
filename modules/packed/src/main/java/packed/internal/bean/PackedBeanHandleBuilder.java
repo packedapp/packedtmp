@@ -34,14 +34,14 @@ import packed.internal.inject.factory.InternalFactory;
 public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
-    public final Class<?> beanClass;
+    final Class<?> beanClass;
 
-    public final ContainerSetup container;
+    final ContainerSetup container;
 
     /** The kind of bean. */
     public final BeanKind kind;
 
-    public final RealmSetup realm;
+    final RealmSetup realm;
 
     /** The source (Null, Class, Factory, Instance) */
     @Nullable

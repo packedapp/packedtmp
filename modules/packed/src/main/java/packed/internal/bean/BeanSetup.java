@@ -40,6 +40,11 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
+    /** The builder that was used to create the bean. */
+    public final PackedBeanHandleBuilder<?> builder;
+
+    final ArrayList<BeanConfiguration> configurations = new ArrayList<>(1);
+
     /** A model of the hooks on the bean. */
     @Nullable
     public final BaseHookModel hookModel;
@@ -49,10 +54,6 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
     /** Manages the operations defined by the bean. */
     public final BeanOperationManager operations = new BeanOperationManager();
-
-    public final PackedBeanHandleBuilder<?> builder;
-
-    final ArrayList<BeanConfiguration> configurations = new ArrayList<>(1);
     
     public BeanSetup(PackedBeanHandleBuilder<?> builder) {
         super(builder.container.application, builder.realm, builder.container);
@@ -75,6 +76,25 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
 
     /** {@inheritDoc} */
+    public BeanSetup addConfiguration(BeanConfiguration configuration) {
+        requireNonNull(configuration);
+        configurations.add(configuration);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> beanClass() {
+        return builder.beanClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanKind beanKind() {
+        return builder.beanKind();
+    }
+
+    /** {@inheritDoc} */
     @Override
     public BuildTimeBeanMirror mirror() {
         return new BuildTimeBeanMirror(this);
@@ -93,10 +113,23 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         super.onWired();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension<?>> operator() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Realm owner() {
+        return builder.realm.realm();
+    }
+
     @Override
     public Stream<ComponentSetup> stream() {
         return Stream.of(this);
     }
+    
 
     /** A build-time bean mirror. */
     public record BuildTimeBeanMirror(BeanSetup bean) implements BeanMirror {
@@ -202,37 +235,5 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         public String toString() {
             return bean.toString();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> beanClass() {
-        return builder.beanClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind beanKind() {
-        return builder.beanKind();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension<?>> operator() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Realm owner() {
-        return builder.realm.realm();
-    }
-    
-
-    /** {@inheritDoc} */
-    public BeanSetup addConfiguration(BeanConfiguration configuration) {
-        requireNonNull(configuration);
-        configurations.add(configuration);
-        return this;
     }
 }
