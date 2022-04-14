@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.BeanInfo;
@@ -23,12 +25,10 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import packed.internal.bean.PackedBeanHandle.SourceType;
+import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.RealmSetup;
 import packed.internal.inject.BeanInjectionManager;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -40,9 +40,6 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     private static final MethodHandle MH_CONTAINER_CONFIGURATION_ON_WIRE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class,
             "onWired", void.class);
 
-    /** The driver used to create a bean. */
-    public final PackedBeanHandle<?> driver;
-
     /** A model of the hooks on the bean. */
     @Nullable
     public final BaseHookModel hookModel;
@@ -51,17 +48,20 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     public final BeanInjectionManager injectionManager;
 
     /** Manages the operations defined by the bean. */
-    public final BeanOperationManager operations;
+    public final BeanOperationManager operations = new BeanOperationManager();
 
-    public BeanSetup(ContainerSetup container, RealmSetup realm, PackedBeanHandle<?> driver) {
-        super(container.application, realm, container);
-        this.driver = driver;
-        this.hookModel = driver.sourceType == SourceType.NONE ? null : new BaseHookModel(driver.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
-        this.operations = driver.operations;
-        this.injectionManager = new BeanInjectionManager(this, driver);
+    public final PackedBeanHandleBuilder<?> builder;
 
-        if (driver.sourceType != SourceType.NONE) {
-            new BeanScanner(this, driver.beanClass()).scan();
+    final ArrayList<BeanConfiguration> configurations = new ArrayList<>(1);
+    
+    public BeanSetup(PackedBeanHandleBuilder<?> builder) {
+        super(builder.container.application, builder.realm, builder.container);
+        this.builder = builder;
+        this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseHookModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
+        this.injectionManager = new BeanInjectionManager(this, builder);
+
+        if (builder.sourceType != SourceType.NONE) {
+            new BeanScanner(this, builder.beanClass()).scan();
         }
 
         // Wire the hook model
@@ -73,6 +73,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         }
     }
 
+
     /** {@inheritDoc} */
     @Override
     public BuildTimeBeanMirror mirror() {
@@ -82,7 +83,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public void onWired() {
-        for (ComponentConfiguration cc : driver.configurations) {
+        for (ComponentConfiguration cc : configurations) {
             try {
                 MH_CONTAINER_CONFIGURATION_ON_WIRE.invokeExact(cc);
             } catch (Throwable e) {
@@ -103,13 +104,13 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
         /** {@inheritDoc} */
         @Override
         public Class<?> beanClass() {
-            return bean.driver.beanClass();
+            return bean.builder.beanClass();
         }
 
         /** {@inheritDoc} */
         @Override
         public BeanKind beanKind() {
-            return bean.driver.beanKind();
+            return bean.builder.beanKind();
         }
 
         /** {@inheritDoc} */
@@ -206,13 +207,13 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {
-        return driver.beanClass();
+        return builder.beanClass();
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanKind beanKind() {
-        return driver.beanKind();
+        return builder.beanKind();
     }
 
     /** {@inheritDoc} */
@@ -224,6 +225,14 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Realm owner() {
-        return driver.realm.realm();
+        return builder.realm.realm();
+    }
+    
+
+    /** {@inheritDoc} */
+    public BeanSetup addConfiguration(BeanConfiguration configuration) {
+        requireNonNull(configuration);
+        configurations.add(configuration);
+        return this;
     }
 }

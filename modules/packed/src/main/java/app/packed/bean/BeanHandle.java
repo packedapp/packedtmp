@@ -44,9 +44,6 @@ import packed.internal.bean.PackedBeanHandle;
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
-    // Make into build method???
-    BeanHandle<T> commit();
-
     /**
      * @return
      * 
@@ -75,6 +72,22 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     interface Builder<T> {
 
+        /**
+         * @return
+         * 
+         * @see BeanConfiguration#beanClass()
+         * @see BeanMirror#beanClass()
+         */
+        Class<?> beanClass(); // vs BeanClass??? // beanSource instead??
+
+        /**
+         * @return
+         * 
+         * @see BeanMirror#beanKind()
+         * @see BeanConfiguration#beanKind()
+         */
+        BeanKind beanKind();
+        
         BeanHandle<T> build();
     }
 }

@@ -23,7 +23,6 @@ import app.packed.bean.BeanKind;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import packed.internal.bean.PackedBeanHandle.SourceType;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
@@ -35,21 +34,21 @@ import packed.internal.inject.factory.InternalFactory;
 public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
-    final Class<?> beanClass;
+    public final Class<?> beanClass;
 
-    final ContainerSetup container;
+    public final ContainerSetup container;
 
     /** The kind of bean. */
-    final BeanKind kind;
+    public final BeanKind kind;
 
-    final RealmSetup realm;
+    public final RealmSetup realm;
 
     /** The source (Null, Class, Factory, Instance) */
     @Nullable
-    final Object source;
+    public final Object source;
 
     /** The type of source the driver is created from. */
-    final SourceType sourceType;
+    public final SourceType sourceType;
 
     public PackedBeanHandleBuilder(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
@@ -69,9 +68,19 @@ public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** {@inheritDoc} */
     @Override
     public PackedBeanHandle<T> build() {
-        return new PackedBeanHandle<>(this);
+
+        realm.wirePrepare();
+
+        // Skal lave saa mange checks som muligt inde vi laver BeanSetup
+
+        BeanSetup bean = new BeanSetup(this);
+        realm.wireCommit(bean);
+        return new PackedBeanHandle<>(bean);
     }
-    
+
+    static BeanKind checkKind(BeanKind kind, int type) {
+        return kind;
+    }
 
     public static <T> PackedBeanHandleBuilder<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
             Class<T> implementation) {
@@ -87,7 +96,8 @@ public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         return new PackedBeanHandleBuilder<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, T instance) {
+    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
+            T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -103,4 +113,17 @@ public class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         return new PackedBeanHandleBuilder<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 
+    public enum SourceType {
+        CLASS, FACTORY, INSTANCE, NONE;
+    }
+
+    /** {@inheritDoc} */
+    public Class<?> beanClass() {
+        return beanClass;
+    }
+
+    /** {@inheritDoc} */
+    public BeanKind beanKind() {
+        return kind;
+    }
 }

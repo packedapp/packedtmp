@@ -22,8 +22,8 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanHandle;
-import packed.internal.bean.PackedBeanHandle.SourceType;
+import packed.internal.bean.PackedBeanHandleBuilder;
+import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionTreeSetup;
 import packed.internal.inject.factory.InternalFactory;
@@ -54,24 +54,24 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    public BeanInjectionManager(BeanSetup bean, PackedBeanHandle<?> driver) {
+    public BeanInjectionManager(BeanSetup bean, PackedBeanHandleBuilder<?> driver) {
         this.bean = bean;
         ContainerSetup container = bean.parent;
         this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
 
         // Can only register a single extension bean of a particular type
 
-        if (driver.realm instanceof ExtensionTreeSetup e) {
+        if (bean.realm instanceof ExtensionTreeSetup e) {
             ExtensionInjectionManager eim = e.injectionManagerFor(bean);
             if (driver.beanKind() == BeanKind.CONTAINER) {
-                eim.addBean(driver, bean);
+                eim.addBean(bean);
             }
             parent = eim;
         } else {
             parent = container.injectionManager;
         }
 
-        if (driver.sourceType == SourceType.NONE) {
+        if (bean.builder.sourceType == SourceType.NONE) {
             this.instanceNode = null;
         } else if (driver.sourceType == SourceType.INSTANCE) {
             Object instance = driver.source;
@@ -113,8 +113,8 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
 
-        if (bean.driver.sourceType == SourceType.INSTANCE) {
-            Object instance = bean.driver.source;
+        if (bean.builder.sourceType == SourceType.INSTANCE) {
+            Object instance = bean.builder.source;
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, LifetimePool.class);
             // return MethodHandles.constant(instance.getClass(), instance);

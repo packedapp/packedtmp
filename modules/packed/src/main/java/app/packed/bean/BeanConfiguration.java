@@ -20,14 +20,14 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
     /**
      * Create a new bean configuration using the specified bean driver.
      * 
-     * @param driver
-     *            the driver of the bean
+     * @param handle
+     *            the bean handle
      * @throws IllegalStateException
      *             if the specified driver has already been used to create a new configuration object
      */
-    public BeanConfiguration(BeanHandle<?> driver) {
-        PackedBeanHandle<?> d = requireNonNull((PackedBeanHandle<?>) driver, "driver is null");
-        this.bean = d.newSetup(this);
+    public BeanConfiguration(BeanHandle<?> handle) {
+        PackedBeanHandle<?> d = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
+        this.bean = d.bean().addConfiguration(this);
     }
 
     /**
@@ -36,7 +36,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @see BeanHandle#beanKind()
      */
     public final Class<?> beanClass() {
-        return bean.driver.beanClass();
+        return bean.beanClass();
     }
     
     /**
@@ -45,7 +45,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @see BeanHandle#beanKind()
      */
     public final BeanKind beanKind() {
-        return bean.driver.beanKind();
+        return bean.beanKind();
     }
 
     /** {@inheritDoc} */
