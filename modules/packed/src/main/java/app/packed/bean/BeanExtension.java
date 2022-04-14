@@ -16,6 +16,7 @@ import packed.internal.bean.BeanOperationManager;
 import packed.internal.bean.BeanOperationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.bean.hooks.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.bean.hooks.FieldHelper;
@@ -92,7 +93,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandle<T> driver = PackedBeanHandle.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), implementation).build();
+        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), implementation).build();
         return new ContainerBeanConfiguration<>(driver);
     }
 
@@ -106,7 +107,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
         // Med mindre vi laver en User->Extension, skal vi jo have noget a.la. UserOrExtension.realm();
-        PackedBeanHandle<T> handle = PackedBeanHandle.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), factory).build();
+        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), factory).build();
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -122,7 +123,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanHandle<T> handle = PackedBeanHandle.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), instance).build();
+        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, container.assembly.realm(), instance).build();
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -157,16 +158,14 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanHandle<T> handle = PackedBeanHandle.ofClass(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), implementation).build();
-        // handle.prototype();
+        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), implementation).build();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanHandle<T> bh = PackedBeanHandle.ofFactory(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), factory).build();
-        // bh.prototype();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(bh);
+        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(BeanKind.UNMANAGED, container, BeanExtension.class, container.assembly.realm(), factory).build();
+        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 }

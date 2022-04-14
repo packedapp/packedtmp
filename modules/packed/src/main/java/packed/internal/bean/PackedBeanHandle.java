@@ -25,12 +25,9 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.operation.Operation;
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
-import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.inject.factory.InternalFactory;
 
 /** The implementation of {@link BeanHandle}. */
 public final class PackedBeanHandle<T> implements BeanHandle<T> {
@@ -133,36 +130,6 @@ public final class PackedBeanHandle<T> implements BeanHandle<T> {
 
     static BeanKind checkKind(BeanKind kind, int type) {
         return kind;
-    }
-
-    public static <T> PackedBeanHandleBuilder<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
-            Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleBuilder<>(kind, container, owner, implementation, SourceType.CLASS, implementation);
-    }
-
-    public static <T> PackedBeanHandleBuilder<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
-            Factory<T> factory) {
-        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
-        InternalFactory<T> fac = InternalFactory.crackFactory(factory);
-        return new PackedBeanHandleBuilder<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
-    }
-
-    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner, T instance) {
-        requireNonNull(instance, "instance is null");
-        if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Factory.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
-        }
-        // TODO check kind
-        // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleBuilder<>(kind, container, owner, instance.getClass(), SourceType.INSTANCE, instance);
-    }
-
-    public static PackedBeanHandleBuilder<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner) {
-        return new PackedBeanHandleBuilder<>(kind, container, owner, void.class, SourceType.NONE, null);
     }
 
     public enum SourceType {

@@ -23,7 +23,10 @@ import app.packed.bean.operation.mirror.OperationMirror;
  *
  */
 @SuppressWarnings("rawtypes")
-// OperationHandle??? Hvis vi vil have
+// OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
+// Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer
+// i nogen tilfaelde..
+// Fx 
 public sealed interface Operation permits InjectableOperation, RawOperation {
 
     // newInstance(); <-- automatisk???
