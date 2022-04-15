@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
-import app.packed.extension.ExtensionSupport;
+import app.packed.extension.ExtensionPoint;
 import testutil.util.AbstractApplicationTest;
 
 /**
@@ -53,17 +53,17 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
     static final class Ex2 extends Extension<Ex2> {
         @Override
         protected void onNew() {
-            use(Ex3.Ex3Support.class);
+            use(Ex3.Ex3ExtensionPoint.class);
         }
 
-        class Sub extends ExtensionSupport {
+        class Sub extends ExtensionPoint<Ex2> {
 
         }
     }
 
     static final class Ex3 extends Extension<Ex3> {
 
-        class Ex3Support extends ExtensionSupport {
+        class Ex3ExtensionPoint extends ExtensionPoint<Ex3> {
 
         }
     }

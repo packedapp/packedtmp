@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanSupport;
+import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.hooks.BeanClass;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanInfo;
@@ -104,8 +104,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * 
      * @see BaseAssembly#bean
      */
-    protected final BeanSupport bean() {
-        return use(BeanSupport.class);
+    protected final BeanExtensionPoint bean() {
+        return use(BeanExtensionPoint.class);
     }
 
     /**
@@ -374,7 +374,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @see ExtensionConfiguration#use(Class)
      * @see #$dependsOn(Class...)
      */
-    protected final <S extends ExtensionSupport> S use(Class<S> subtensionClass) {
+    protected final <S extends ExtensionPoint<?>> S use(Class<S> subtensionClass) {
         return configuration().use(subtensionClass);
     }
 

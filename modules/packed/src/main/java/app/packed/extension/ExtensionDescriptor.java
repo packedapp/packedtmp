@@ -67,7 +67,7 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * 
      * @return the depth of the extension
      */
-    int depth();
+    int orderingDepth();
 
     /**
      * Returns the full name of the extension.

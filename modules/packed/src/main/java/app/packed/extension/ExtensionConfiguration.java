@@ -129,7 +129,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletType);
 
     /**
-     * Returns an extension support class of the specified type.
+     * Returns an extension point of the specified type.
      * <p>
      * The specified support class's extension must be among this extension's declared dependencies.
      * <p>
@@ -137,13 +137,13 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * its support class instead.
      * 
      * @param <E>
-     *            the type of extension support class to return
-     * @param supportClass
-     *            the type of extension support class that should be returned
+     *            the type of extension point class to return
+     * @param extensionPointType
+     *            the type of extension point class that should be returned
      * @return the extension support class
      * @throws IllegalStateException
-     *             If the underlying container is no longer configurable and the extension for which the support class is a
-     *             member of has not already been used
+     *             If the underlying container is no longer configurable and the extension for which the extension point is
+     *             a member of has not already been used
      * @throws InternalExtensionException
      *             if the extension for which the support class is a member of is not a declared dependency of this
      *             extension
@@ -152,7 +152,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @see ContainerConfiguration#use(Class)
      * @see #isExtensionUsed(Class)
      */
-    <E extends ExtensionSupport> E use(Class<E> supportClass);
+    <E extends ExtensionPoint<?>> E use(Class<E> extensionPointType);
 }
 
 interface Zandbox {
@@ -172,7 +172,7 @@ interface Zandbox {
 //        throw new UnsupportedOperationException();
 //    }
 
-    default <E extends ExtensionSupport> void lazyUse(Class<E> extensionType, Consumer<E> action) {
+    default <E extends ExtensionPoint<?>> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
         // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
 

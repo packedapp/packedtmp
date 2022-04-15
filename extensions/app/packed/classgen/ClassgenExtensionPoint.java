@@ -18,19 +18,19 @@ package app.packed.classgen;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodHandles.Lookup.ClassOption;
 
-import app.packed.extension.ExtensionSupport;
-import app.packed.extension.ExtensionSupportContext;
+import app.packed.extension.ExtensionPoint;
+import app.packed.extension.ExtensionPointContext;
 
 /**
  *
  */
-public class ClassgenSupport extends ExtensionSupport {
+public class ClassgenExtensionPoint extends ExtensionPoint<ClassgenExtension> {
 
     final ClassgenExtension classgen;
 
-    final ExtensionSupportContext context;
+    final ExtensionPointContext context;
 
-    ClassgenSupport(ClassgenExtension classgen, ExtensionSupportContext context) {
+    ClassgenExtensionPoint(ClassgenExtension classgen, ExtensionPointContext context) {
         this.classgen = classgen;
         this.context = context;
     }

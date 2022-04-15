@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanSupport;
+import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
@@ -14,9 +14,9 @@ import app.packed.inject.Factory;
  * <p>
  * Lifetime / Lifecycle <> InjectionScope
  * 
- * @see BeanSupport#install(Class)
- * @see BeanSupport#install(Factory)
- * @see BeanSupport#installInstance(Object)
+ * @see BeanExtensionPoint#install(Class)
+ * @see BeanExtensionPoint#install(Factory)
+ * @see BeanExtensionPoint#installInstance(Object)
  */
 // Har vi behov for T??? Egentlig ikke men inject/onState fra InstanceBean er rare.
 

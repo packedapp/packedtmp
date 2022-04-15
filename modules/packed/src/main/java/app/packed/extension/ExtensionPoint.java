@@ -1,8 +1,8 @@
 package app.packed.extension;
 
 /**
- * Extension support classes are the main way that extensions interact without other extensions. Developers that are not
- * creating their own extensions will likely never deal with these type of classes.
+ * Extension points are the main mechanism by which an extension can use another extension. Developers that are not
+ * creating their own extensions will likely never have to deal with these type of classes.
  * <p>
  * 
  * <p>
@@ -26,15 +26,12 @@ package app.packed.extension;
  * {@code Class<? extends Extension<?>>} which is the
  * 
  * <p>
- * A new instance of the extension support class is automatically created by the runtime when requested. These instances
- * are <strong>never</strong> cached, instead a new instance is created every time it is requested.
+ * A new extension point instance is automatically created by the runtime when {@link Extension#use(Class)} or
+ * {@link ExtensionConfiguration#use(Class)} is called. These instances are <strong>never</strong> cached but created
+ * every time it is requested.
  * 
  * @see Extension#use(Class)
  * @see ExtensionConfiguration#use(Class)
+ * @see ExtensionPointContext
  */
-public abstract class ExtensionSupport {}
-
-//Syntes altid det skal vaere en seperat klasse
-//Fordi saa kan den klasse declare en masse interfaces som inner classes
-//Se fx EntryPointSupport
-//Kalder vi den bare ExtensionSupport, og Saa FileSupport, ServiceSupport
+public abstract class ExtensionPoint<E extends Extension<E>> {}

@@ -22,23 +22,23 @@ import java.util.Optional;
 import app.packed.application.BuildException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
-import app.packed.extension.ExtensionSupport;
-import app.packed.extension.ExtensionSupportContext;
+import app.packed.extension.ExtensionPoint;
+import app.packed.extension.ExtensionPointContext;
 import app.packed.extension.InternalExtensionException;
 
 /**
  *
  */
 @ExtensionMember(EntryPointExtension.class)
-public class EntryPointSupport extends ExtensionSupport {
+public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
 
     /** The extension using the this class. */
-    private final ExtensionSupportContext context;
+    private final ExtensionPointContext context;
 
     /** The entry point extension. */
     private final EntryPointExtension extension;
 
-    EntryPointSupport(EntryPointExtension extension, ExtensionSupportContext context) {
+    EntryPointExtensionPoint(EntryPointExtension extension, ExtensionPointContext context) {
         this.extension = requireNonNull(extension);
         this.context = requireNonNull(context);
     }
@@ -97,7 +97,7 @@ public class EntryPointSupport extends ExtensionSupport {
     }
     
     // Her vender vi den om... og bruger ExtensionSupport#registerExtensionPoint
-    public interface EntryPointExtensionPoint {
+    public interface EntryPointReversePoint {
         int entryPoint();
     }
 }

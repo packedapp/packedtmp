@@ -21,8 +21,8 @@ import app.packed.component.Realm;
 /**
  *
  */
-
-// For now it is a place holder... Ved ikke om vi vil beholder dent
+// For now it is a place holder... Ved ikke om vi vil beholder dent. BeanVarInjcector er ogsaa lidt sjot
+// BeanVariable bare
 public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVarInjector {
 
     /**

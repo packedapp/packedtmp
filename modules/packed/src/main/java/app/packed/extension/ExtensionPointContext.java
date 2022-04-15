@@ -16,12 +16,12 @@
 package app.packed.extension;
 
 import app.packed.component.Realm;
-import packed.internal.container.PackedExtensionSupportContext;
+import packed.internal.container.PackedExtensionPointContext;
 
 /**
- *
+ * A context object that can be injected into subclasses of {@link ExtensionPoint}.
  */
-public sealed interface ExtensionSupportContext permits PackedExtensionSupportContext {
+public sealed interface ExtensionPointContext permits PackedExtensionPointContext {
 
     default void checkInSameContainerAs(Extension<?> extension) {
      // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.

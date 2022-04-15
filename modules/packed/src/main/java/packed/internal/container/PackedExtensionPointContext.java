@@ -17,12 +17,12 @@ package packed.internal.container;
 
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionSupportContext;
+import app.packed.extension.ExtensionPointContext;
 
 /**
  *
  */
-public record PackedExtensionSupportContext(ExtensionTreeSetup tree) implements ExtensionSupportContext {
+public record PackedExtensionPointContext(ExtensionTreeSetup tree) implements ExtensionPointContext {
 
     /** {@inheritDoc} */
     @Override

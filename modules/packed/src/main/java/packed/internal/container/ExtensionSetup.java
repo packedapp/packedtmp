@@ -23,7 +23,7 @@ import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.ExtensionSupport;
+import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.inject.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
@@ -315,7 +315,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends ExtensionSupport> E use(Class<E> supportClass) {
+    public <E extends ExtensionPoint<?>> E use(Class<E> supportClass) {
         requireNonNull(supportClass, "supportClass is null");
 
         // Finds the subtension's model and its extension class
@@ -337,7 +337,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         Extension<?> instance = container.useExtensionSetup(supportExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
-        return (E) supportModel.newInstance(instance, new PackedExtensionSupportContext(extensionTree));
+        return (E) supportModel.newInstance(instance, new PackedExtensionPointContext(extensionTree));
     }
 
     /** A pre-order iterator for a rooted extension tree. */

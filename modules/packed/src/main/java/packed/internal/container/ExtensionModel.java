@@ -63,8 +63,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The direct dependencies of the extension. */
     private final ExtensionDependencySet dependencies;
 
-    /** The {@link ExtensionDescriptor#depth() depth} of this extension. */
-    private final int depth;
+    /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
+    private final int ordringDepth;
 
     /** The extension we model. */
     private final Class<? extends Extension<?>> extensionClass;
@@ -72,11 +72,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** A method handle for creating instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
-    /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
-    private final String nameFull;
-
     /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
     private final String name;
+
+    /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
+    private final String nameFull;
 
     private final Realm realm;
 
@@ -90,7 +90,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.extensionClass = builder.extensionClass;
         this.realm = Realm.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
-        this.depth = builder.depth;
+        this.ordringDepth = builder.depth;
         this.dependencies = ExtensionDependencySet.of(builder.dependencies);
 
         // Cache some frequently used strings.
@@ -126,7 +126,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // Start comparing by name
 
         // First we compare the depth of each extension
-        int d = depth - m.depth;
+        int d = ordringDepth - m.ordringDepth;
         if (d != 0) {
             return d;
         }
@@ -146,7 +146,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // We do not support this
         // Maybe not support extensions with same name independently of weather the depth is equivalent
         throw new IllegalArgumentException(
-                "Cannot compare two extensions with the same depth '" + depth + "' and fullname '" + nameFull + "' but loaded by different class loaders. "
+                "Cannot compare two extensions with the same depth '" + ordringDepth + "' and fullname '" + nameFull + "' but loaded by different class loaders. "
                         + "ClassLoader(this) = " + extensionClass.getClassLoader() + ", ClassLoader(other) = " + m.extensionClass.getClassLoader());
     }
 
@@ -154,18 +154,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     @Override
     public Set<Class<? extends Extension<?>>> dependencies() {
         return dependencies;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int depth() {
-        return depth;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension<?>> type() {
-        return extensionClass;
     }
 
     /** {@inheritDoc} */
@@ -180,10 +168,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return name;
     }
 
-    public Realm realm() {
-        return realm;
-    }
-    
     /**
      * Creates a new extension instance.
      * 
@@ -201,11 +185,27 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
+    public int orderingDepth() {
+        return ordringDepth;
+    }
+
+    public Realm realm() {
+        return realm;
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(nameFull);
         moduleVersion().ifPresent(v -> sb.append("[" + v + "]"));
         return sb.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension<?>> type() {
+        return extensionClass;
     }
 
     /**
@@ -268,7 +268,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             for (Class<? extends Extension<?>> dependencyType : pendingLoadDependencies) {
                 ExtensionModel model = Loader.load(dependencyType, loader);
-                depth = Math.max(depth, model.depth + 1);
+                depth = Math.max(depth, model.ordringDepth + 1);
                 dependencies.add(dependencyType);
             }
 

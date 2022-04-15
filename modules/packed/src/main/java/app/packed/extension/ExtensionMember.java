@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * <ul>
  * <li>{@link ExtensionMirror} subclasses. Packed uses this information to figure out what extension to call
  * {@link Extension#mirror()} on in order to get an instance of the particular extension mirror.</li>
- * <li>{@link ExtensionSupport} subclasses. Packed uses this information to instantiate the support class with the right
+ * <li>{@link ExtensionPoint} subclasses. Packed uses this information to instantiate the support class with the right
  * type of extension.</li>
  * </ul>
  */

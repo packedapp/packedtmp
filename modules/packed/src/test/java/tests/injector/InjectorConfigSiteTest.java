@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanSupport;
+import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ContainerBeanConfiguration;
 import packed.internal.config.ConfigSite;
 import packed.internal.inject.service.sandbox.Injector;
@@ -61,7 +61,7 @@ public class InjectorConfigSiteTest {
             injectorCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(2).findFirst()).get();
             conf.lookup(MethodHandles.lookup());// The letter classes are not exported
             binding0(conf.provide(A.class));
-            binding0(conf.provide(BeanSupport.defaultFactoryFor(B.class)));
+            binding0(conf.provide(BeanExtensionPoint.defaultFactoryFor(B.class)));
             binding0(conf.provideInstance(C0));
             binding0(conf.provideInstance(TypeToken.of(D.class)));
             // binding0(conf.provide(E.class).lazy());

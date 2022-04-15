@@ -1,12 +1,10 @@
 package packed.internal.container;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
-import app.packed.extension.ExtensionSupport;
+import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import testutil.stubs.Throwables;
 
@@ -35,11 +33,11 @@ public class SubtensionModelTest {
 //    }
 
     /** Tests that the subtension has an {@link Extension} as the declaring class. */
-    @Test
-    public void invalidDeclaringClass() {
-        class NoDeclaringClass extends ExtensionSupport {}
-        assertThatThrownBy(() -> ExtensionSupportModel.of(NoDeclaringClass.class)).isExactlyInstanceOf(InternalExtensionException.class);
-    }
+//    @Test
+//    public void invalidDeclaringClass() {
+//        class NoDeclaringClass extends ExtensionPoint {}
+//        assertThatThrownBy(() -> ExtensionSupportModel.of(NoDeclaringClass.class)).isExactlyInstanceOf(InternalExtensionException.class);
+//    }
 
 //    /** Tests that we wrap exceptions in {@link InternalExtensionException}. */
 //    @Test
@@ -66,10 +64,10 @@ public class SubtensionModelTest {
     static class TestExtension extends Extension<TestExtension> {
 
         @ExtensionMember(TestExtension.class)
-        class TestExtensionSupport extends ExtensionSupport {
+        class TestExtensionPoint extends ExtensionPoint<TestExtension> {
             final Class<? extends Extension<?>> requestor;
 
-            TestExtensionSupport(Class<? extends Extension<?>> requestor) {
+            TestExtensionPoint(Class<? extends Extension<?>> requestor) {
                 this.requestor = requestor;
             }
 
@@ -79,17 +77,17 @@ public class SubtensionModelTest {
         }
 
         @ExtensionMember(TestExtension.class)
-        static class SubStatic extends ExtensionSupport {}
+        static class SubStatic extends ExtensionPoint<TestExtension> {}
 
         @ExtensionMember(TestExtension.class)
-        class SubThrowingConstructor extends ExtensionSupport {
+        class SubThrowingConstructor extends ExtensionPoint<TestExtension> {
             SubThrowingConstructor() {
                 throw Throwables.RuntimeException1.INSTANCE;
             }
         }
 
         @ExtensionMember(TestExtension.class)
-        class UnresolvedConstructor extends ExtensionSupport {
+        class UnresolvedConstructor extends ExtensionPoint<TestExtension> {
             UnresolvedConstructor(String hmm) {}
         }
     }

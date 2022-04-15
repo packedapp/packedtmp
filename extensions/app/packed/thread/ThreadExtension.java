@@ -15,6 +15,8 @@
  */
 package app.packed.thread;
 
+import app.packed.extension.Extension;
+
 /**
  *
  */
@@ -26,14 +28,13 @@ package app.packed.thread;
 // Vi vil gerne have vores egne executors. Saa de bliver lukket ned
 // naar containeren bliver shutdown...
 
-public class ThreadExtension {
+public class ThreadExtension extends Extension<ThreadExtension> {
 
     // disableThis
     // disableThis+Kids
     // disableThis for everyone except LifecycleExtension
     // disableThis for user
-    
-    
+
     // Starting Threads
     // Monitoring threads
     // Thread limits

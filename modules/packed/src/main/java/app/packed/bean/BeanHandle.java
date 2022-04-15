@@ -28,7 +28,7 @@ import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanHandle;
 
 /**
- * A bean driver must be created via {@link BeanSupport}.
+ * A bean driver must be created via {@link BeanExtensionPoint}.
  */
 // INFO (type, kind)
 // Operations (add synthetic/functional)

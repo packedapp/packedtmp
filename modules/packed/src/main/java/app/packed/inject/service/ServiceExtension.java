@@ -25,7 +25,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionSupport;
+import app.packed.extension.ExtensionPoint;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
@@ -223,7 +223,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      * what is being exported out from the container.
      **/
     // Tror slet vi supportere at extension kan provide services....
-    public class ServiceExtensionSupport extends ExtensionSupport {
+    public class ServiceExtensionPoint extends ExtensionPoint<ServiceExtension> {
 
         // Require???
         // This is very limited as we can only require services from other
@@ -242,7 +242,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
          * @param requestingExtension
          *            the requesting extension
          */
-        /* package-private */ ServiceExtensionSupport(Class<? extends Extension<?>> requestingExtension) {
+        /* package-private */ ServiceExtensionPoint(Class<? extends Extension<?>> requestingExtension) {
             this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
         }
 

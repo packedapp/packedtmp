@@ -35,7 +35,7 @@ public sealed interface Operation permits InjectableOperation, RawOperation {
 
     // Ved ikke om vi skal have <T extends OperationMirror) useMirror(Class<T> mirrorType, Supplier<T> suppler)
     // Som nu skal vi aktivt lave alle mirrors hvis man fx kalder ApplicationMirror.operations(EntryPointMirror.class)
-    // Ved vi ikke hvilke operationer den passer på, det kan vi først finde ud af når den er lavet
+    // Ved vi ikke hvilke operationer den passer på, det kan vi først finde ud af når den er lavet 
     default void useMirror(Supplier<? extends OperationMirror> supplier) {
         
     }

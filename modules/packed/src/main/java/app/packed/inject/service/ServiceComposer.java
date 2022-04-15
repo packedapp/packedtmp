@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.bean.BeanSupport;
+import app.packed.bean.BeanExtensionPoint;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
@@ -120,7 +120,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     // will decorate a service injected as itself
 
     public void map(Class<?> implementation) {
-        map(BeanSupport.defaultFactoryFor(implementation));
+        map(BeanExtensionPoint.defaultFactoryFor(implementation));
     }
 
     /**
@@ -147,13 +147,13 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     public abstract void map(Factory<?> factory);
 
     public void prototype(Class<?> implementation) {
-        prototype(BeanSupport.defaultFactoryFor(implementation));
+        prototype(BeanExtensionPoint.defaultFactoryFor(implementation));
     }
 
     public abstract void prototype(Factory<?> factory);
 
     public void provide(Class<?> implementation) {
-        provide(BeanSupport.defaultFactoryFor(implementation));
+        provide(BeanExtensionPoint.defaultFactoryFor(implementation));
     }
 
     public abstract void provide(Factory<?> factory);
@@ -389,7 +389,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     }
 
     public void replace(Class<?> implementation) {
-        replace(BeanSupport.defaultFactoryFor(implementation));
+        replace(BeanExtensionPoint.defaultFactoryFor(implementation));
     }
 
     /**

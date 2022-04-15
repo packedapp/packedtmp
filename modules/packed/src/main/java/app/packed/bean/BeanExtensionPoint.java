@@ -9,8 +9,8 @@ import app.packed.base.TypeToken;
 import app.packed.component.Realm;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionMember;
-import app.packed.extension.ExtensionSupport;
-import app.packed.extension.ExtensionSupportContext;
+import app.packed.extension.ExtensionPoint;
+import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanHandle;
@@ -41,7 +41,7 @@ import packed.internal.util.typevariable.TypeVariableExtractor;
 // hvis de bare vil installere helt almindelige beans. Saa kan man bruge BeanExtension/BeanSupport
 // Direkte
 
-public final class BeanSupport extends ExtensionSupport {
+public final class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     /**
      * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
@@ -64,12 +64,12 @@ public final class BeanSupport extends ExtensionSupport {
     private final ContainerSetup container;
 
     /** The extension support context. */
-    private final ExtensionSupportContext context;
+    private final ExtensionPointContext context;
 
     /**
      * @param beanExtension
      */
-    /* package-private */ BeanSupport(BeanExtension beanExtension, ExtensionSupportContext context) {
+    BeanExtensionPoint(BeanExtension beanExtension, ExtensionPointContext context) {
         this.container = beanExtension.container;
         this.context = context;
     }
@@ -124,19 +124,19 @@ public final class BeanSupport extends ExtensionSupport {
         return PackedBeanHandleBuilder.ofInstance(kind, container, context.extensionType(), context.realm(), instance);
     }
 
-    public BeanHandle.Builder<?> newExtensionBuilder(BeanKind kind, ExtensionSupportContext context) {
+    public BeanHandle.Builder<?> newExtensionBuilder(BeanKind kind, ExtensionPointContext context) {
         return PackedBeanHandleBuilder.ofNone(kind, container, this.context.extensionType(), context.realm());
     }
 
-    public <T> BeanHandle.Builder<T> newExtensionBuilderFromClass(BeanKind kind, ExtensionSupportContext context, Class<T> implementation) {
+    public <T> BeanHandle.Builder<T> newExtensionBuilderFromClass(BeanKind kind, ExtensionPointContext context, Class<T> implementation) {
         return PackedBeanHandleBuilder.ofClass(kind, container, this.context.extensionType(), Realm.application(), implementation);
     }
 
-    public <T> BeanHandle.Builder<T> newExtensionBuilderFromFactory(BeanKind kind, ExtensionSupportContext context, Factory<T> factory) {
+    public <T> BeanHandle.Builder<T> newExtensionBuilderFromFactory(BeanKind kind, ExtensionPointContext context, Factory<T> factory) {
         return PackedBeanHandleBuilder.ofFactory(kind, container, this.context.extensionType(), context.realm(), factory);
     }
 
-    public <T> BeanHandle.Builder<T> newExtensionBuilderFromInstance(BeanKind kind, ExtensionSupportContext context, Realm realm, T instance) {
+    public <T> BeanHandle.Builder<T> newExtensionBuilderFromInstance(BeanKind kind, ExtensionPointContext context, Realm realm, T instance) {
         return PackedBeanHandleBuilder.ofInstance(kind, container, this.context.extensionType(), context.realm(), instance);
     }
 
@@ -201,7 +201,7 @@ public final class BeanSupport extends ExtensionSupport {
         }
         Type t = implementation.type();
         if (t instanceof Class<?> cl) {
-            return (Factory<T>) BeanSupport.defaultFactoryFor(cl);
+            return (Factory<T>) BeanExtensionPoint.defaultFactoryFor(cl);
         } else {
             ExecutableFactory<?> f = ExecutableFactory.DEFAULT_FACTORY.get(implementation.rawType());
             return new ExecutableFactory<>(f, implementation);
