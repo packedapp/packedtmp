@@ -1,11 +1,13 @@
 package app.packed.extension;
 
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanExtensionPoint;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
@@ -30,6 +32,30 @@ public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfigurati
      */
     public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
+    }
+
+    // interface ExtensionPoint <- skal vi have et marker interface???
+    // Det kan ogsaa vaere en metode paa EBC!!!
+    // callbackWhenInitialized
+    public <P> void extensionPoint(BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> producerBean) {
+
+        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean??? Ikke noedvendigt her...
+        // Skal de vaere samme container??
+
+        // Packed will call consumer(T, P) once provideBean has been initialized
+    }
+
+    public <P> void extensionPoint(BiConsumer<T, P> consumer, ExtensionBeanConfiguration<P> producerBean) {
+
+        // Skal vi checke provideBean depends on consumerBean
+
+        // framework will call
+        // consumer(T, P) at initialization time
+    }
+
+    public <P> ExtensionBeanConfiguration<T> extensionPoint(ContainerBeanConfiguration<P> producerBean, BiConsumer<T, P> consumer) {
+        // consumer is called when producer bean has been initialized
+        return this;
     }
 
     public <K> ExtensionBeanConfiguration<T> bindPreWiring(Class<K> key, Supplier<@Nullable K> supplier) {

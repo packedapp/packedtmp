@@ -154,6 +154,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @param field
      *            the bean field
      */
+    // onBeanFieldHook
     protected void hookOnBeanField(BeanField field) {}
 
     protected void hookOnBeanMethod(BeanMethod method) {}

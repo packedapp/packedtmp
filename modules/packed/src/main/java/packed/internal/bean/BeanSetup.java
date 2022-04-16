@@ -26,6 +26,7 @@ import packed.internal.bean.hooks.BeanScanner;
 import packed.internal.bean.operation.OperationSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
+import packed.internal.container.RealmSetup;
 import packed.internal.inject.BeanInjectionManager;
 
 /** The build-time configuration of a bean. */
@@ -44,15 +45,18 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** Operations declared by the bean. */
     private final ArrayList<OperationSetup> operations = new ArrayList<>();
 
+    private final RealmSetup owner;
+
     /**
      * Create a new bean setup.
      * 
      * @param builder
      *            the handle builder
      */
-    public BeanSetup(PackedBeanHandleBuilder<?> builder) {
-        super(builder.container.application, builder.realm, builder.container);
+    public BeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
+        super(builder.container.application, owner, builder.container);
         this.builder = builder;
+        this.owner = owner;
         this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseHookModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
         this.injectionManager = new BeanInjectionManager(this, builder);
 
@@ -100,7 +104,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Realm owner() {
-        return builder.realm.realm();
+        return owner.realm();
     }
 
     @Override

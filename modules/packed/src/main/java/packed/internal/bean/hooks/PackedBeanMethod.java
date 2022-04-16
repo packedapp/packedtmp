@@ -31,11 +31,18 @@ import packed.internal.container.ExtensionSetup;
  */
 public final class PackedBeanMethod extends PackedBeanMember implements BeanMethod {
 
+    /** The method we are wrapping. */
     private final Method method;
 
     PackedBeanMethod(BeanScanner scanner, ExtensionSetup extension, Method method, boolean allowInvoke) {
         super(scanner, extension);
         this.method = method;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public FactoryType factoryType() {
+        return FactoryType.ofExecutable(method);
     }
 
     /** {@inheritDoc} */
@@ -58,8 +65,8 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     /** {@inheritDoc} */
     @Override
-    public RawOperation<MethodHandle> rawOperation() {
-        return new RawOperationSetup<MethodHandle>(this, openClass.unreflect(method));
+    public OperationTargetMirror mirror() {
+        return new BuildTimeMethodTargetMirror(this);
     }
 
     /** {@inheritDoc} */
@@ -70,17 +77,17 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     /** {@inheritDoc} */
     @Override
-    public FactoryType factoryType() {
-        return FactoryType.ofExecutable(method);
+    public RawOperation<MethodHandle> rawOperation() {
+        return new RawOperationSetup<MethodHandle>(this, openClass.unreflect(method));
     }
 
-    private record BuildTimeMethodTargetMirror(PackedBeanMethod method) implements OperationTargetMirror.OfMethodInvoke {
+    /**  */
+    private record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationTargetMirror.OfMethodInvoke {
 
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationTargetMirror mirror() {
-        return new BuildTimeMethodTargetMirror(this);
+        /** {@inheritDoc} */
+        @Override
+        public Method method() {
+            return pbm.method;
+        }
     }
 }

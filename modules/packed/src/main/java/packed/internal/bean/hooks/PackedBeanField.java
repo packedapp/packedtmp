@@ -37,10 +37,12 @@ import packed.internal.container.ExtensionSetup;
  */
 public final class PackedBeanField extends PackedBeanMember implements BeanField {
 
-    private final Field field;
-
     final boolean allowGet;
+
     final boolean allowSet;
+    
+    /** */
+    private final Field field;
 
     PackedBeanField(BeanScanner scanner, ExtensionSetup extension, Field field, boolean allowGet, boolean allowSet) {
         super(scanner, extension);
@@ -63,14 +65,8 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
 
     /** {@inheritDoc} */
     @Override
-    public RawOperation<MethodHandle> rawGetterOperation() {
-        return new RawOperationSetup<>(this, openClass.unreflectGetter(field));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public RawOperation<MethodHandle> rawSetterOperation() {
-        return new RawOperationSetup<>(this, openClass.unreflectSetter(field));
+    public OperationTargetMirror mirror() {
+        return new BuildTimeFieldTargetMirror(this);
     }
 
     /** {@inheritDoc} */
@@ -93,8 +89,8 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
 
     /** {@inheritDoc} */
     @Override
-    public Realm realm() {
-        return bean.realm.realm();
+    public RawOperation<MethodHandle> rawGetterOperation() {
+        return new RawOperationSetup<>(this, openClass.unreflectGetter(field));
     }
 
     /** {@inheritDoc} */
@@ -105,28 +101,40 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
 
     /** {@inheritDoc} */
     @Override
-    public Variable variable() {
-        return Variable.ofField(field);
+    public RawOperation<MethodHandle> rawSetterOperation() {
+        return new RawOperationSetup<>(this, openClass.unreflectSetter(field));
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationTargetMirror mirror() {
-        return new BuildTimeFieldTargetMirror(this);
+    public Realm realm() {
+        return bean.realm.realm();
     }
-    
-    private record BuildTimeFieldTargetMirror(PackedBeanField field) implements OperationTargetMirror.OfFieldAccess {
+
+    /** {@inheritDoc} */
+    @Override
+    public Variable variable() {
+        return Variable.ofField(field);
+    }
+
+    public record BuildTimeFieldTargetMirror(PackedBeanField pbf) implements OperationTargetMirror.OfFieldAccess {
 
         /** {@inheritDoc} */
         @Override
         public boolean allowGet() {
-            return field.allowGet;
+            return pbf.allowGet;
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean allowSet() {
-            return field.allowSet;
+            return pbf.allowSet;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Field field() {
+            return pbf.field;
         }
     }
 }

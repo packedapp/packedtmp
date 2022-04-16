@@ -6,15 +6,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.extension.ExtensionMember;
-
 /**
  *
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionMember(ServiceExtension.class)
 public @interface Export {
     
     // Overrides the return type

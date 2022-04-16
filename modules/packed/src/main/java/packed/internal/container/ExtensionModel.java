@@ -69,7 +69,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The extension we model. */
     private final Class<? extends Extension<?>> extensionClass;
 
-    /** A method handle for creating instances of extensionClass. */
+    /** A method handle for creating new instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
     /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
@@ -169,7 +169,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Creates a new extension instance.
+     * Creates a new instance of the extension.
      * 
      * @param extension
      *            the setup of the extension
@@ -231,6 +231,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}. */
+    // I think we don't need to be public any more
     public static final class Builder {
 
         /** A set of extension this extension depends on (does not include transitive extensions). */

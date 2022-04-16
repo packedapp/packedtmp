@@ -29,5 +29,6 @@ public abstract sealed class PackedOperationTarget permits PackedBeanMember, Pac
         throw new UnsupportedOperationException();
     }
 
+    /** {@return a mirror representing the target.} */
     public abstract OperationTargetMirror mirror();
 }

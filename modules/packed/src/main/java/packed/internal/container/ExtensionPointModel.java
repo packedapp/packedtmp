@@ -17,47 +17,52 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Type;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPointContext;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
+import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /** A model for an {@link Extension.ExtensionPoint} class. Not used outside of this package. */
-record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
+record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
+
+    /** A type variable extractor. */
+    private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
 
     /** Models of all subtensions. */
-    private final static ClassValue<ExtensionSupportModel> MODELS = new ClassValue<>() {
+    private final static ClassValue<ExtensionPointModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected ExtensionSupportModel computeValue(Class<?> type) {
+        protected ExtensionPointModel computeValue(Class<?> type) {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             Class<? extends ExtensionPoint<?>> subtensionClass = ClassUtil.checkProperSubclass((Class) ExtensionPoint.class, type);
 
-            // Check that the subtension have an extension as declaring class
-            ExtensionMember extensionMember = subtensionClass.getAnnotation(ExtensionMember.class);
-            if (extensionMember == null) {
-                throw new InternalExtensionException(subtensionClass + " must be annotated with @ExtensionMember");
-            }
-
-            // TODO check same module
-            // Move to a common method
-            //
-//            if (declaringClass == null || !ExtensionSupport.class.isAssignableFrom(declaringClass)) {
-//                throw new InternalExtensionException(subtensionClass
-//                        + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
+            Type t = TYPE_LITERAL_EP_EXTRACTOR.extract(type);
+//            System.out.println(t);
+//            // Check that the subtension have an extension as declaring class
+//            ExtensionMember extensionMember = subtensionClass.getAnnotation(ExtensionMember.class);
+//            if (extensionMember == null) {
+//                throw new InternalExtensionException(subtensionClass + " must be annotated with @ExtensionMember");
 //            }
 
-            Class<? extends Extension<?>> extensionClass = extensionMember.value();
+
+            @SuppressWarnings("unchecked")
+            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) t;// extensionMember.value();
+            // TODO check same module
+            // Move to a common method and share it with mirror
+            //
+
+            
             ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
             // Create an infuser exposing two services:
-            // 1. An instance of the extension that the subtension is a part of
-            // 2. The class of the extension that wants to use the subtension
+            // 1. An instance of the extension that the extension point is a member of
+            // 2. An ExtensionPointContext instance
             InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, ExtensionPointContext.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
             builder.provide(ExtensionPointContext.class).adaptArgument(1); // Extension instance of the subtension
@@ -65,7 +70,7 @@ record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, Method
             // Find a method handle for the subtensions's constructor
             MethodHandle constructor = builder.findConstructor(ExtensionPoint.class, m -> new InternalExtensionException(m));
 
-            return new ExtensionSupportModel(extensionClass, constructor);
+            return new ExtensionPointModel(extensionClass, constructor);
         }
     };
 
@@ -94,7 +99,7 @@ record ExtensionSupportModel(Class<? extends Extension<?>> extensionType, Method
      *            the subtension class
      * @return a model for the subtension class
      */
-    static ExtensionSupportModel of(Class<? extends ExtensionPoint<?>> subtensionClass) {
+    static ExtensionPointModel of(Class<? extends ExtensionPoint<?>> subtensionClass) {
         return MODELS.get(subtensionClass);
     }
 }

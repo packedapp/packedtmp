@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
  * <ul>
  * <li>{@link ExtensionMirror} subclasses. Packed uses this information to figure out what extension to call
  * {@link Extension#mirror()} on in order to get an instance of the particular extension mirror.</li>
- * <li>{@link ExtensionPoint} subclasses. Packed uses this information to instantiate the support class with the right
- * type of extension.</li>
  * </ul>
  */
 @Target(ElementType.TYPE)
@@ -29,8 +27,6 @@ public @interface ExtensionMember {
      * the extension defined in this value. Otherwise an {@link InternalExtensionException} will be thrown at runtime.
      */
     Class<? extends Extension<?>> value();
-    
-    // static Set<Class<?>> findMembers(Class<? extends Extension<?>>) IDK about this
 }
 
 //Vil sige den er god til at dokumentere hvem der er hvem. Men vi behoever jo egentlig ikke en faelles klasse

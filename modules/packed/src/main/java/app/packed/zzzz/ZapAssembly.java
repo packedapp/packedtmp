@@ -8,6 +8,9 @@ import app.packed.container.BuildWirelets;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.extension.Extension.DependsOn;
+import app.packed.extension.ExtensionPoint;
+import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory1;
 import packed.internal.devtools.spi.PackedDevTools;
 
@@ -16,13 +19,15 @@ public class ZapAssembly extends BaseAssembly {
     @Override
     protected void build() {
         PackedDevTools.INSTANCE.goo();
-        
+
         new Exception().printStackTrace();
 
         // Det kan man ikke pga af lifecycle annotations
         // beanExtension.newAlias(ContainerBean.class).exportAs()
         named("asdasd");
         
+        use(MyExt2.class);
+
         install(new Factory1<String, @Tag("asd") String>(e -> e) {});
 
         link(new LinkMe(), Wirelet.named("heher"));
@@ -46,7 +51,7 @@ public class ZapAssembly extends BaseAssembly {
             installInstance("SDADs");
             install(My.class);
 
-            //install(My.class).on(RunState.RUNNING, e -> System.out.println(e + "OK"));
+            // install(My.class).on(RunState.RUNNING, e -> System.out.println(e + "OK"));
             installInstance("adasd");
             installInstance("asdasd");
 
@@ -59,7 +64,18 @@ public class ZapAssembly extends BaseAssembly {
 
     public static class My {}
 
-    public static class MyExt extends Extension<MyExt> {
+    public static class MyExt extends Extension<MyExt> {}
 
+    @DependsOn(extensions = MyExt.class)
+    public static class MyExt2 extends Extension<MyExt2> {
+        protected void onNew() {
+            use(MyExptPoint.class);
+        }
+    }
+
+    public static class MyExptPoint extends ExtensionPoint<MyExt> {
+        MyExptPoint(ExtensionPointContext c) {
+            System.out.println("XXXX"  + c.extensionType());
+        }
     }
 }

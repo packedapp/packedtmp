@@ -19,12 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandle.Builder;
 import app.packed.bean.BeanKind;
-import app.packed.component.Realm;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
+import packed.internal.container.PackedExtensionPointContext;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.factory.InternalFactory;
 
@@ -41,8 +42,6 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** The kind of bean. */
     final BeanKind kind;
 
-    final RealmSetup realm;
-
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
     public final Object source;
@@ -50,72 +49,18 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** The type of source the driver is created from. */
     public final SourceType sourceType;
 
-    public PackedBeanHandleBuilder(BeanKind kind, ContainerSetup container, Realm userOrExtension, Class<?> beanType, SourceType sourceType, Object source) {
+    private PackedBeanHandleBuilder(BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType, Object source) {
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
-        if (userOrExtension.isApplication()) {
-            this.realm = container.realm;
-        } else {
-            ExtensionSetup extension = container.extensions.get(userOrExtension.extension());
-            this.realm = extension.extensionTree;
-        }
+
         this.beanClass = requireNonNull(beanType);
 
         this.source = source;
         this.sourceType = sourceType;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public PackedBeanHandle<T> build() {
-
-        realm.wirePrepare();
-
-        // Skal lave saa mange checks som muligt inde vi laver BeanSetup
-
-        BeanSetup bean = new BeanSetup(this);
-        realm.wireCommit(bean);
-        return new PackedBeanHandle<>(bean);
-    }
-
-    static BeanKind checkKind(BeanKind kind, int type) {
-        return kind;
-    }
-
-    public static <T> PackedBeanHandleBuilder<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
-            Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleBuilder<>(kind, container, owner, implementation, SourceType.CLASS, implementation);
-    }
-
-    public static <T> PackedBeanHandleBuilder<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
-            Factory<T> factory) {
-        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
-        InternalFactory<T> fac = InternalFactory.crackFactory(factory);
-        return new PackedBeanHandleBuilder<>(kind, container, owner, fac.rawReturnType(), SourceType.FACTORY, fac);
-    }
-
-    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner,
-            T instance) {
-        requireNonNull(instance, "instance is null");
-        if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Factory.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
-        }
-        // TODO check kind
-        // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleBuilder<>(kind, container, owner, instance.getClass(), SourceType.INSTANCE, instance);
-    }
-
-    public static PackedBeanHandleBuilder<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, Realm owner) {
-        return new PackedBeanHandleBuilder<>(kind, container, owner, void.class, SourceType.NONE, null);
-    }
-
-    public enum SourceType {
-        CLASS, FACTORY, INSTANCE, NONE;
-    }
+    @Nullable
+    PackedExtensionPointContext extension;
 
     /** {@inheritDoc} */
     public Class<?> beanClass() {
@@ -125,5 +70,70 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** {@inheritDoc} */
     public BeanKind beanKind() {
         return kind;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedBeanHandle<T> build() {
+        RealmSetup realm;
+        if (extension == null) {
+            realm = container.realm;
+        } else {
+            realm = this.extension.tree();
+        }
+        // Can we call it more than once??? Why not
+        realm.wirePrepare();
+
+        // Skal lave saa mange checks som muligt inde vi laver BeanSetup
+
+        BeanSetup bean = new BeanSetup(this, realm);
+        realm.wireCommit(bean);
+        return new PackedBeanHandle<>(bean);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Builder<T> forExtension(ExtensionPointContext context) {
+        requireNonNull(context, "context is null");
+        this.extension = (@Nullable PackedExtensionPointContext) context;
+        return this;
+    }
+
+    static BeanKind checkKind(BeanKind kind, int type) {
+        return kind;
+    }
+
+    public static <T> PackedBeanHandleBuilder<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator,
+            Class<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
+        return new PackedBeanHandleBuilder<>(kind, container, implementation, SourceType.CLASS, implementation);
+    }
+
+    public static <T> PackedBeanHandleBuilder<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator,
+            Factory<T> factory) {
+        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
+        InternalFactory<T> fac = InternalFactory.crackFactory(factory);
+        return new PackedBeanHandleBuilder<>(kind, container, fac.rawReturnType(), SourceType.FACTORY, fac);
+    }
+
+    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, T instance) {
+        requireNonNull(instance, "instance is null");
+        if (Class.class.isInstance(instance)) {
+            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
+        } else if (Factory.class.isInstance(instance)) {
+            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
+        }
+        // TODO check kind
+        // cannot be operation, managed or unmanaged, Functional
+        return new PackedBeanHandleBuilder<>(kind, container, instance.getClass(), SourceType.INSTANCE, instance);
+    }
+
+    public static PackedBeanHandleBuilder<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator) {
+        return new PackedBeanHandleBuilder<>(kind, container, void.class, SourceType.NONE, null);
+    }
+
+    public enum SourceType {
+        CLASS, FACTORY, INSTANCE, NONE;
     }
 }

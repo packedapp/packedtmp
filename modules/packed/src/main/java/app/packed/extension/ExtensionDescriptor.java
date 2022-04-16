@@ -59,17 +59,6 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
     Set<Class<? extends Extension<?>>> dependencies();
 
     /**
-     * Returns the depth of the extension in the extension dependency graph.
-     * <p>
-     * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
-     * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
-     * dependencies) of an extension will always have a depth that is less than the depth of the extension itself.
-     * 
-     * @return the depth of the extension
-     */
-    int orderingDepth();
-
-    /**
      * Returns the full name of the extension.
      * <p>
      * The full name is defined as the canonical name of the {@link #type() extension type} as returned by
@@ -132,6 +121,17 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
      * @see #fullName()
      */
     String name();
+
+    /**
+     * Returns the depth of the extension in the extension dependency graph.
+     * <p>
+     * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
+     * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
+     * dependencies) of an extension will always have a depth that is less than the depth of the extension itself.
+     * 
+     * @return the depth of the extension
+     */
+    int orderingDepth();
 
     /** {@return the type of extension this descriptor describes.} */
     Class<? extends Extension<?>> type();

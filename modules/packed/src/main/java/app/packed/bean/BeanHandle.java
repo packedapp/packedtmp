@@ -24,6 +24,7 @@ import app.packed.bean.operation.Operation;
 import app.packed.bean.operation.driver.OperationDriver;
 import app.packed.bean.operation.driver.OperationDriver2;
 import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanHandle;
 
@@ -89,6 +90,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @see BeanConfiguration#beanKind()
          */
         BeanKind beanKind();
+        
+        Builder<T> forExtension(ExtensionPointContext epc);
         
         BeanHandle<T> build();
     }

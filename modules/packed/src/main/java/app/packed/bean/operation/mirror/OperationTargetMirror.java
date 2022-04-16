@@ -15,10 +15,17 @@
  */
 package app.packed.bean.operation.mirror;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Optional;
+
+import packed.internal.bean.hooks.PackedBeanField.BuildTimeFieldTargetMirror;
 
 /**
  * The target of an operation.
+ * 
+ * @see OperationMirror#target()
  */
 public interface OperationTargetMirror {
 
@@ -36,20 +43,32 @@ public interface OperationTargetMirror {
     public interface OfInjectVariable extends OperationTargetMirror {}
 
 ////////////////////////////////
-    
 
     public interface OfFunctionCall extends OperationTargetMirror {}
-    
-    // Members
-    
-    public interface OfConstructorInvoke extends OperationTargetMirror {}
 
-    public interface OfFieldAccess extends OperationTargetMirror {
-        boolean allowGet();
-        boolean allowSet();
+    // Members
+
+    public interface OfConstructorInvoke extends OperationTargetMirror {
+
+        /** {@return the underlying constructor.} */
+        Constructor<?> constructor();
     }
 
-    public interface OfMethodInvoke extends OperationTargetMirror {}
+    public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror {
+
+        boolean allowGet();
+
+        boolean allowSet();
+
+        /** {@return the underlying field.} */
+        Field field();
+    }
+
+    public interface OfMethodInvoke extends OperationTargetMirror {
+        
+        /** {@return the underlying method.} */
+        Method method();
+    }
 }
 // OfBeanInstance - Something that just returns the bean instance
 // OfConstructor -

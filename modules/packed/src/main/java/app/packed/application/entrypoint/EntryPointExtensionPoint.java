@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import app.packed.application.BuildException;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPointContext;
 import app.packed.extension.InternalExtensionException;
@@ -29,7 +28,6 @@ import app.packed.extension.InternalExtensionException;
 /**
  *
  */
-@ExtensionMember(EntryPointExtension.class)
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
 
     /** The extension using the this class. */

@@ -319,7 +319,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         requireNonNull(supportClass, "supportClass is null");
 
         // Finds the subtension's model and its extension class
-        ExtensionSupportModel supportModel = ExtensionSupportModel.of(supportClass);
+        ExtensionPointModel supportModel = ExtensionPointModel.of(supportClass);
         Class<? extends Extension<?>> supportExtensionType = supportModel.extensionType();
 
         // Check that the requested subtension's extension is a direct dependency of this extension

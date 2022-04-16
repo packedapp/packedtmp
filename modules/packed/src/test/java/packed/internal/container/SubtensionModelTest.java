@@ -8,7 +8,7 @@ import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import testutil.stubs.Throwables;
 
-/** Tests {@link ExtensionSupportModel}. */
+/** Tests {@link ExtensionPointModel}. */
 public class SubtensionModelTest {
 
     TestExtension te = new TestExtension();

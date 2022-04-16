@@ -29,13 +29,9 @@ import packed.internal.container.ExtensionSetup;
 /**
  * A configuration of an {@link Extension}.
  * <p>
- * Normally all configuration of extensions are done via the protected final methods declared on {@link Extension}.
- * However, for complex extensions where the logic cannot easily fit into a single class. This configuration can be
- * passed around in order to invoke the needed methods.
- * <p>
- * Since the extension itself defines most methods in this interface via protected final methods. This interface is
- * typically used in order to provide these methods to code that is defined outside of the actual extension
- * implementation, for example, code that is placed in another package.
+ * Normally all configuration of an extension is done via the protected methods available on {@link Extension}. However,
+ * for complex extensions where the logic cannot easily fit into a single class. This configuration can be passed around
+ * in order to invoke the needed methods.
  * <p>
  * An instance of this interface is normally acquired via {@link Extension#configuration()} or by constructor injecting
  * it into a subclass of {@link Extension}.
@@ -131,21 +127,21 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /**
      * Returns an extension point of the specified type.
      * <p>
-     * The specified support class's extension must be among this extension's declared dependencies.
+     * The extension the specified extension point is a member of must be among this extension's declared dependencies.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)} except it does not return the extension but
      * its support class instead.
      * 
      * @param <E>
-     *            the type of extension point class to return
+     *            the type of extension point to return
      * @param extensionPointType
-     *            the type of extension point class that should be returned
-     * @return the extension support class
+     *            the type of extension point that should be returned
+     * @return an extension point of the specified type
      * @throws IllegalStateException
      *             If the underlying container is no longer configurable and the extension for which the extension point is
      *             a member of has not already been used
      * @throws InternalExtensionException
-     *             if the extension for which the support class is a member of is not a declared dependency of this
+     *             if the extension for which the extension point is a member of is not a declared dependency of this
      *             extension
      * 
      * @see Extension#use(Class)

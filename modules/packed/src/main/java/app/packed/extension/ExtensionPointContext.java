@@ -31,6 +31,10 @@ public sealed interface ExtensionPointContext permits PackedExtensionPointContex
      // ExtensionSupportUSer???
     }
     
+    /**
+     * 
+     * @see Extension#checkConfigurable()
+     */
     void checkConfigurable();
 
     Class<? extends Extension<?>> extensionType();

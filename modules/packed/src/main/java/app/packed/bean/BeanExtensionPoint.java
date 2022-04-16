@@ -3,12 +3,9 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
-import java.util.function.BiConsumer;
 
 import app.packed.base.TypeToken;
-import app.packed.component.Realm;
 import app.packed.extension.ExtensionBeanConfiguration;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
@@ -29,7 +26,6 @@ import packed.internal.util.typevariable.TypeVariableExtractor;
 /**
  *
  */
-@ExtensionMember(BeanExtension.class)
 // Maybe just BeanSupport, EntryPointSupport, WebSupport
 
 // 3 use cases
@@ -67,77 +63,48 @@ public final class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     private final ExtensionPointContext context;
 
     /**
+     * Creates a new bean extension point
+     * 
      * @param beanExtension
+     *            the bean extension
+     * @param context
+     *            a context object about the user of this extension point
      */
     BeanExtensionPoint(BeanExtension beanExtension, ExtensionPointContext context) {
         this.container = beanExtension.container;
         this.context = context;
     }
 
-    // interface ExtensionPoint <- skal vi have et marker interface???
-    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> consumerBean, BiConsumer<T, P> consumer, ContainerBeanConfiguration<P> producerBean) {
-
-        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean??? Ikke noedvendigt her...
-        // Skal de vaere samme container??
-
-        // Packed will call consumer(T, P) once provideBean has been initialized
-    }
-
-    public <T, P> void extensionPoint(ExtensionBeanConfiguration<T> consumerBean, BiConsumer<T, P> consumer, ExtensionBeanConfiguration<P> producerBean) {
-
-        // Skal vi checke provideBean depends on consumerBean
-
-        // framework will call
-        // consumer(T, P) at initialization time
-    }
-
-    // ContainerBeanConfiguration... men den har provide.. Saa vi har en ExtensionBeanConfiguration
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), implementation).build();
+        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, implementation).build();
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), factory).build();
+        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, factory).build();
         return new ExtensionBeanConfiguration<>(driver);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanHandle<T> m = PackedBeanHandleBuilder.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, context.realm(), instance).build();
+        PackedBeanHandle<T> m = PackedBeanHandleBuilder.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, instance).build();
         return new ExtensionBeanConfiguration<>(m);
     }
 
     public BeanHandle.Builder<?> newBuilder(BeanKind kind) {
-        return PackedBeanHandleBuilder.ofNone(kind, container, context.extensionType(), Realm.application());
+        return PackedBeanHandleBuilder.ofNone(kind, container, context.extensionType());
     }
 
     // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
     public <T> BeanHandle.Builder<T> newBuilderFromClass(BeanKind kind, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(kind, container, context.extensionType(), Realm.application(), implementation);
+        return PackedBeanHandleBuilder.ofClass(kind, container, context.extensionType(), implementation);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromFactory(BeanKind kind, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(kind, container, context.extensionType(), context.realm(), factory);
+        return PackedBeanHandleBuilder.ofFactory(kind, container, context.extensionType(), factory);
     }
 
-    public <T> BeanHandle.Builder<T> newBuilderFromInstance(BeanKind kind, Realm realm, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(kind, container, context.extensionType(), context.realm(), instance);
-    }
-
-    public BeanHandle.Builder<?> newExtensionBuilder(BeanKind kind, ExtensionPointContext context) {
-        return PackedBeanHandleBuilder.ofNone(kind, container, this.context.extensionType(), context.realm());
-    }
-
-    public <T> BeanHandle.Builder<T> newExtensionBuilderFromClass(BeanKind kind, ExtensionPointContext context, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(kind, container, this.context.extensionType(), Realm.application(), implementation);
-    }
-
-    public <T> BeanHandle.Builder<T> newExtensionBuilderFromFactory(BeanKind kind, ExtensionPointContext context, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(kind, container, this.context.extensionType(), context.realm(), factory);
-    }
-
-    public <T> BeanHandle.Builder<T> newExtensionBuilderFromInstance(BeanKind kind, ExtensionPointContext context, Realm realm, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(kind, container, this.context.extensionType(), context.realm(), instance);
+    public <T> BeanHandle.Builder<T> newBuilderFromInstance(BeanKind kind, T instance) {
+        return PackedBeanHandleBuilder.ofInstance(kind, container, context.extensionType(), instance);
     }
 
     /**
