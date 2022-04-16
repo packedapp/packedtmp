@@ -143,7 +143,7 @@ public class OperationMirror implements Mirror {
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
      * 
-     * @param extension
+     * @param owner
      *            the internal configuration of the extension to mirror
      */
     final void initialize(OperationSetup operation) {

@@ -18,10 +18,10 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.Builder;
 import app.packed.bean.BeanKind;
-import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
@@ -29,18 +29,24 @@ import packed.internal.container.PackedExtensionPointContext;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.factory.InternalFactory;
 
-/**
- *
- */
+/** Implementation of BeanHandle.Builder. */
 public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
     final Class<?> beanClass;
 
+    /** The container the new bean will be installed into. */
     final ContainerSetup container;
 
     /** The kind of bean. */
     final BeanKind kind;
+
+    /** The operator of the bean, or {@code null} for {@link BeanExtension}. */
+    @Nullable
+    final PackedExtensionPointContext operator;
+
+    @Nullable
+    PackedExtensionPointContext owner;
 
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
@@ -49,18 +55,15 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** The type of source the driver is created from. */
     public final SourceType sourceType;
 
-    private PackedBeanHandleBuilder(BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType, Object source) {
+    private PackedBeanHandleBuilder(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
+            @Nullable Object source) {
+        this.operator = (@Nullable PackedExtensionPointContext) operator;
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
-
         this.beanClass = requireNonNull(beanType);
-
-        this.source = source;
+        this.source = requireNonNull(source);
         this.sourceType = sourceType;
     }
-
-    @Nullable
-    PackedExtensionPointContext extension;
 
     /** {@inheritDoc} */
     public Class<?> beanClass() {
@@ -76,10 +79,10 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     @Override
     public PackedBeanHandle<T> build() {
         RealmSetup realm;
-        if (extension == null) {
+        if (owner == null) {
             realm = container.realm;
         } else {
-            realm = this.extension.tree();
+            realm = this.owner.tree();
         }
         // Can we call it more than once??? Why not
         realm.wirePrepare();
@@ -95,7 +98,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     @Override
     public Builder<T> forExtension(ExtensionPointContext context) {
         requireNonNull(context, "context is null");
-        this.extension = (@Nullable PackedExtensionPointContext) context;
+        this.owner = (PackedExtensionPointContext) context;
         return this;
     }
 
@@ -103,21 +106,21 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         return kind;
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofClass(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator,
+    public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container,
             Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleBuilder<>(kind, container, implementation, SourceType.CLASS, implementation);
+        return new PackedBeanHandleBuilder<>(operator, kind, container, implementation, SourceType.CLASS, implementation);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofFactory(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator,
+    public static <T> PackedBeanHandleBuilder<T> ofFactory(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container,
             Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
-        return new PackedBeanHandleBuilder<>(kind, container, fac.rawReturnType(), SourceType.FACTORY, fac);
+        return new PackedBeanHandleBuilder<>(operator, kind, container, fac.rawReturnType(), SourceType.FACTORY, fac);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofInstance(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator, T instance) {
+    public static <T> PackedBeanHandleBuilder<T> ofInstance(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -126,11 +129,11 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         }
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleBuilder<>(kind, container, instance.getClass(), SourceType.INSTANCE, instance);
+        return new PackedBeanHandleBuilder<>(operator, kind, container, instance.getClass(), SourceType.INSTANCE, instance);
     }
 
-    public static PackedBeanHandleBuilder<?> ofNone(BeanKind kind, ContainerSetup container, Class<? extends Extension<?>> operator) {
-        return new PackedBeanHandleBuilder<>(kind, container, void.class, SourceType.NONE, null);
+    public static PackedBeanHandleBuilder<?> ofNone(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container) {
+        return new PackedBeanHandleBuilder<>(operator, kind, container, void.class, SourceType.NONE, null);
     }
 
     public enum SourceType {

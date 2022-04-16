@@ -10,7 +10,6 @@ import app.packed.extension.ExtensionPoint;
 import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
-import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
@@ -23,27 +22,16 @@ import packed.internal.util.typevariable.TypeVariableExtractor;
  * Like other extension support classes this class is mainly used developers of extensions and not application
  * developers.
  */
-/**
- *
- */
-// Maybe just BeanSupport, EntryPointSupport, WebSupport
-
-// 3 use cases
-// installation af egne bean
-// drivere for installation af assembly (application) beans
-// drivere for installation af andre extensions beans
-
-// Grunden til vi har drivere for de 2 sidste use cases og ikke bare install er
-// hvis de bare vil installere helt almindelige beans. Saa kan man bruge BeanExtension/BeanSupport
-// Direkte
-
-public final class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
+public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     /**
      * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
      * literals that are manually constructed.
      */
     private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+
+        /** A type variable extractor. */
+        private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 
         /** {@inheritDoc} */
         protected ExecutableFactory<?> computeValue(Class<?> implementation) {
@@ -52,9 +40,6 @@ public final class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
             return new ExecutableFactory<>(tl, tl.rawType());
         }
     };
-
-    /** A type variable extractor. */
-    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 
     /** The container we are installing beans into. */
     private final ContainerSetup container;
@@ -70,41 +55,40 @@ public final class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * @param context
      *            a context object about the user of this extension point
      */
-    BeanExtensionPoint(BeanExtension beanExtension, ExtensionPointContext context) {
+    /* package-private */ BeanExtensionPoint(BeanExtension beanExtension, ExtensionPointContext context) {
         this.container = beanExtension.container;
         this.context = context;
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofClass(BeanKind.CONTAINER, container, BeanExtension.class, implementation).build();
-        return new ExtensionBeanConfiguration<>(driver);
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).forExtension(context).build();
+        return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofFactory(BeanKind.CONTAINER, container, BeanExtension.class, factory).build();
-        return new ExtensionBeanConfiguration<>(driver);
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).forExtension(context).build();
+        return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanHandle<T> m = PackedBeanHandleBuilder.ofInstance(BeanKind.CONTAINER, container, BeanExtension.class, instance).build();
-        return new ExtensionBeanConfiguration<>(m);
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).forExtension(context).build();
+        return new ExtensionBeanConfiguration<>(handle);
     }
 
     public BeanHandle.Builder<?> newBuilder(BeanKind kind) {
-        return PackedBeanHandleBuilder.ofNone(kind, container, context.extensionType());
+        return PackedBeanHandleBuilder.ofNone(context, kind, container);
     }
 
-    // Agent must have a direct dependency on the class that uses the support class (maybe transitive is okay)
     public <T> BeanHandle.Builder<T> newBuilderFromClass(BeanKind kind, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(kind, container, context.extensionType(), implementation);
+        return PackedBeanHandleBuilder.ofClass(context, kind, container, implementation);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromFactory(BeanKind kind, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(kind, container, context.extensionType(), factory);
+        return PackedBeanHandleBuilder.ofFactory(context, kind, container, factory);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromInstance(BeanKind kind, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(kind, container, context.extensionType(), instance);
+        return PackedBeanHandleBuilder.ofInstance(context, kind, container, instance);
     }
 
     /**
