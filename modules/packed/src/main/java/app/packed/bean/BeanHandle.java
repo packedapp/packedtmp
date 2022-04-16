@@ -37,11 +37,7 @@ import packed.internal.bean.PackedBeanHandle;
 // Lifecycle (Custom Factory, InvocationConfigurations)
 // Services (bind, bindContext)
 
-// NamePrefixs
-// Scan (disable, do scan) ???
 // callacbks, onBound, onBuild, ...
-
-// Add Builder???
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
@@ -74,6 +70,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     }
 
     interface Builder<T> {
+     // NamePrefixs
+     // Scan (disable, do scan) ???
 
         /**
          * @return

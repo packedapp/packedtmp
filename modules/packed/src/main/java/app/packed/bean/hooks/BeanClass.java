@@ -15,10 +15,22 @@
  */
 package app.packed.bean.hooks;
 
+import java.util.function.Consumer;
+
 /**
  *
+ * <p>
+ * Members from the {@code java.lang.Object} class are never returned.
  */
+
+// Kig maaske i Maurizio Mirror thingy...
 public non-sealed interface BeanClass extends BeanElement {
+
+    boolean hasAllAccess();
+    
+    void forEachConstructor(Consumer<? super BeanConstructor> m);
+    
+    void forEachMethod(Consumer<? super BeanMethod> m);
 
     // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
     // Masske har vi BeanClass.Builder() istedet for???

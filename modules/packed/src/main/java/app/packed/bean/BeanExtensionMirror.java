@@ -11,13 +11,12 @@ import packed.internal.bean.BeanSetup;
 /**
  * A mirror for a {@link BeanExtension}.
  */
-// Ved ikke om vi bare smider det direkte ind paa containeren?
 public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
 
     /** The bean extension we are mirroring. */
     private final ExtensionTree<BeanExtension> tree;
 
-    BeanExtensionMirror(ExtensionTree<BeanExtension> tree) {
+    /* package-private */ BeanExtensionMirror(ExtensionTree<BeanExtension> tree) {
         this.tree = requireNonNull(tree);
     }
 
@@ -31,3 +30,4 @@ public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
         throw new UnsupportedOperationException();
     }
 }
+//Ved ikke hvor meget vi bare smider direkte ind paa containeren?

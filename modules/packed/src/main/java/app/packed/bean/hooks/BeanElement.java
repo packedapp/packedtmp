@@ -26,12 +26,13 @@ import app.packed.component.Realm;
 public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVarInjector {
 
     /**
-     * @param message
+     * @param postFix
      *            the message to include in the final message
      * 
      * @throws BeanDefinitionException
+     *             always thrown
      */
-    default void failWith(String message) {
+    default void failWith(String postFix) {
 
     }
 

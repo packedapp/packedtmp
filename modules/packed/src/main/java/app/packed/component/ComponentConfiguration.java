@@ -30,11 +30,6 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration, C
 
     protected abstract void checkIsWiring();
 
-    /** {@return a mirror for the component/} */
-    // Er det et problem.. naar den ikke er fuldt wired endnu??? Men det er den vel, paa naer navnet
-    // IDK Er ikke vild med den.. Til noeds paa Handle???
-    protected abstract ComponentMirror mirror();
-
     /**
      * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
      * is case sensitive.
@@ -68,44 +63,3 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration, C
      */
     public abstract NamespacePath path();
 }
-//
-///**
-//* Returns an extension configuration object. This configuration object is typically used in situations where the
-//* extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
-//* visibility rules.
-//* <p>
-//* An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
-//* subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
-//* access to the configuration object.
-//* <p>
-//* This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
-//* 
-//* @throws IllegalStateException
-//*             if invoked from the constructor of the configuration.
-//* @return a configuration object for this extension
-//*/
-//final ComponentSetup component() {
-//  ComponentSetup c = component;
-//  if (c == null) {
-//      throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
-//              + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
-//  }
-//  return c;
-//}
-// Altsaa maaske skal vi reintroducere component context...
-// Det er isaer den der BeanConfiguration.provide jeg ikke har lyst til at hardcode i BeanConfiguration...
-/// Men hvis vi saa har ServiceExtension.Sub.provide(BeanConfigurationContext bc)
-
-///**
-//* A method that can be overridden
-//* 
-//* <p>
-//* <strong>Note:</strong> This method should never be overridden with a public modifier.
-//*/
-//protected final void onNew() {}
-// I don't expect this class to have any $ methods
-// They should most likely be located in the driver instead
-// A component configuration is just a thin wrapper
-
-// Nice man kan faktisk lave en Assembly tager en component configuration med package private metoder
-// Man saa kan expose... Men uden at expose nogle metoder paa selve configurations objektet...

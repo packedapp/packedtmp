@@ -87,12 +87,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return container.isExtensionUsed(extensionType);
     }
 
-    /** {@return a mirror for the container.} */
-    @Override
-    public ContainerMirror mirror() {
-        return container.mirror();
-    }
-
     /** {@inheritDoc} */
     @Override
     public ContainerConfiguration named(String name) {

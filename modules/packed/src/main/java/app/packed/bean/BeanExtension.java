@@ -43,9 +43,10 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     @Override
     protected void hookOnBeanField(BeanField field) {
-        BeanSetup bean = ((PackedBeanMember) field).bean;
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
+
+        BeanSetup bean = ((PackedBeanMember) field).bean;
         FieldHelper fh = new FieldHelper(field, field.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
         field.operationSetter();
@@ -55,10 +56,10 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
-        // new Exception().printStackTrace();
-        BeanSetup bean = ((PackedBeanMember) method).bean;
         Key<?> key = Key.convertMethodReturnType(method.method());
         boolean constant = method.method().getAnnotation(Provide.class).constant();
+
+        BeanSetup bean = ((PackedBeanMember) method).bean;
         MethodHelper fh = new MethodHelper(method, method.rawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 

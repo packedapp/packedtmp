@@ -26,7 +26,6 @@ import packed.internal.container.ExtensionSetup;
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
- * <li>Must be annotated with {@link ExtensionMember} indicating the type of extension that is being mirrored.</li>
  * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
  * </ul>

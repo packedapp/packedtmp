@@ -27,6 +27,7 @@ import packed.internal.bean.hooks.PackedBeanField.BuildTimeFieldTargetMirror;
  * 
  * @see OperationMirror#target()
  */
+// Proev at undgaa at smid for meget information fra OperationMirror her...
 public interface OperationTargetMirror {
 
     // Accessing an instance that have previously been computed
@@ -35,6 +36,8 @@ public interface OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
         Optional<OperationTargetMirror> origin();
+        
+        // Har maaske ogsaa noget LifetimePoolMirror her????
     } // ofLifetimePool? Hmm
 
     public interface OfMethodHandleInvoke extends OperationTargetMirror {} // ofSynthetic?

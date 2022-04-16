@@ -21,6 +21,7 @@ import packed.internal.container.PackedExtensionPointContext;
 /**
  * A context object that can be injected into subclasses of {@link ExtensionPoint}.
  */
+// Svaert at have ExtensionContext (paa runtime) samtidig med denne
 public sealed interface ExtensionPointContext permits PackedExtensionPointContext {
 
     default void checkInSameContainerAs(Extension<?> extension) {

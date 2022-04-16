@@ -51,20 +51,6 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
         bean.checkIsActive();
     }
 
-    /**
-     * This method can be overridden to return a subclass of bean mirror.
-     * 
-     * {@inheritDoc}
-     * 
-     * @throws IllegalStateException
-     *             if the configuration has not been wired yet
-     */
-    @Override
-    protected final BeanMirror mirror() {
-        // Jeg taenker det er er
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration named(String name) {
