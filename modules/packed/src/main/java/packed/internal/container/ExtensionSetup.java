@@ -220,10 +220,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
-    public ExtensionMirror mirror() {
-        ExtensionMirror mirror = null;
+    public ExtensionMirror<?> mirror() {
+        ExtensionMirror<?> mirror = null;
         try {
-            mirror = (ExtensionMirror) MH_EXTENSION_MIRROR.invokeExact(instance);
+            mirror = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

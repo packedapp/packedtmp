@@ -9,7 +9,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
@@ -29,7 +28,7 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
     // Altsaa hvad vil bruge metoden til???
     // Kan ikke lige umiddelbart se nogle use cases
     // Maaske bare fjerne den
-    Set<ExtensionMirror> extensions();
+    Set<ExtensionMirror<?>> extensions();
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
     Set<Class<? extends Extension<?>>> extensionTypes();
@@ -44,7 +43,7 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
      *            the mirror type
      * @return a mirror of the specified type, or empty if the extension the mirror represents is not used in the container
      */
-    <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType);
+    <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType);
 
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
@@ -73,7 +72,7 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
      * @throws InternalExtensionException
      *             if the specified mirror class is not annotated with {@link ExtensionMember}.
      */
-    default <T extends ExtensionMirror> T useExtension(Class<T> extensionMirrorType) {
+    default <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
     }
 }

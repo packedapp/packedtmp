@@ -3,7 +3,6 @@ package packed.internal.container;
 import org.junit.jupiter.api.Test;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionPoint;
 import app.packed.extension.InternalExtensionException;
 import testutil.stubs.Throwables;
@@ -63,7 +62,6 @@ public class SubtensionModelTest {
 
     static class TestExtension extends Extension<TestExtension> {
 
-        @ExtensionMember(TestExtension.class)
         class TestExtensionPoint extends ExtensionPoint<TestExtension> {
             final Class<? extends Extension<?>> requestor;
 
@@ -76,17 +74,14 @@ public class SubtensionModelTest {
             }
         }
 
-        @ExtensionMember(TestExtension.class)
         static class SubStatic extends ExtensionPoint<TestExtension> {}
 
-        @ExtensionMember(TestExtension.class)
         class SubThrowingConstructor extends ExtensionPoint<TestExtension> {
             SubThrowingConstructor() {
                 throw Throwables.RuntimeException1.INSTANCE;
             }
         }
 
-        @ExtensionMember(TestExtension.class)
         class UnresolvedConstructor extends ExtensionPoint<TestExtension> {
             UnresolvedConstructor(String hmm) {}
         }

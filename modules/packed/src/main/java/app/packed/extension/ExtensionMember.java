@@ -20,7 +20,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface ExtensionMember {
+@Deprecated
+@interface ExtensionMember {
 
     /**
      * Returns the extension the annotated class is a member of. The annotated class must be located in the same module as

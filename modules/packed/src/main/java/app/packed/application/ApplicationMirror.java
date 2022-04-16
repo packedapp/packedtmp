@@ -94,7 +94,7 @@ public interface ApplicationMirror extends Mirror {
      * 
      * @see ContainerMirror#useExtension(Class)
      */
-    <T extends ExtensionMirror> T useExtension(Class<T> type);
+    <T extends ExtensionMirror<?>> T useExtension(Class<T> type);
 
     /**
      * Create

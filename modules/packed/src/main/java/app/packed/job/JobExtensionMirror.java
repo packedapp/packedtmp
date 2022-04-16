@@ -1,10 +1,8 @@
 package app.packed.job;
 
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 
-@ExtensionMember(JobExtension.class)
-public class JobExtensionMirror extends ExtensionMirror {
+public class JobExtensionMirror extends ExtensionMirror<JobExtension> {
 
     // giver jo kun mening for Application
     public Class<?> resultType() {

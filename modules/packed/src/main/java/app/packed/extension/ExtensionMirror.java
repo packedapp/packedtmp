@@ -31,7 +31,7 @@ import packed.internal.container.ExtensionSetup;
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
  * </ul>
  */
-public class ExtensionMirror implements Mirror {
+public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /**
      * The internal configuration of the extension we are mirrored. Is initially null but populated via
@@ -61,7 +61,7 @@ public class ExtensionMirror implements Mirror {
 
         // TODO if we have local extensions, we cannot just rely on extension=extension
 
-        return this == other || other instanceof ExtensionMirror m && extension() == m.extension();
+        return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
     }
 
     /**

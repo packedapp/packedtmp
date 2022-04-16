@@ -22,15 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionTree;
 
 /**
  * A mirror for the {@link EntryPointExtension}.
  */
-@ExtensionMember(EntryPointExtension.class)
-public class EntryPointExtensionMirror extends ExtensionMirror {
+public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
 
     /** The extension tree we are mirroring. */
     private final ExtensionTree<EntryPointExtension> tree;

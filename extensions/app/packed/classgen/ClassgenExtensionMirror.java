@@ -17,15 +17,13 @@ package app.packed.classgen;
 
 import java.util.stream.Stream;
 
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionTree;
 
 /**
  *
  */
-@ExtensionMember(ClassgenExtension.class)
-public class ClassgenExtensionMirror extends ExtensionMirror {
+public class ClassgenExtensionMirror extends ExtensionMirror<ClassgenExtension> {
     final ExtensionTree<ClassgenExtension> tree;
 
     ClassgenExtensionMirror(ExtensionTree<ClassgenExtension> tree) {

@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.stream.Stream;
 
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.ExtensionTree;
 import packed.internal.bean.BeanSetup;
@@ -13,8 +12,7 @@ import packed.internal.bean.BeanSetup;
  * A mirror for a {@link BeanExtension}.
  */
 // Ved ikke om vi bare smider det direkte ind paa containeren?
-@ExtensionMember(BeanExtension.class)
-public final class BeanExtensionMirror extends ExtensionMirror /* extends Iterable<BeanMirror> */ {
+public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
 
     /** The bean extension we are mirroring. */
     private final ExtensionTree<BeanExtension> tree;

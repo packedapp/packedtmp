@@ -8,7 +8,6 @@ import app.packed.base.Key;
 import app.packed.bean.operation.usage.ServiceExportMirror;
 import app.packed.bean.operation.usage.ServiceProvideMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import packed.internal.inject.service.ContainerInjectionManager;
 
@@ -18,8 +17,7 @@ import packed.internal.inject.service.ContainerInjectionManager;
  * @see ContainerMirror#extensions()
  * @see ContainerMirror#useExtension(Class)
  */
-@ExtensionMember(ServiceExtension.class)
-public final class ServiceExtensionMirror extends ExtensionMirror {
+public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** The service manager */
     private final ContainerInjectionManager services;

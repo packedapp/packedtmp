@@ -83,6 +83,9 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         Class<?> beanClass(); // vs BeanClass??? // beanSource instead??
 
+        default Builder<T> namePrefix(String prefix) {
+            return this;
+        }
         /**
          * @return
          * 

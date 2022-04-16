@@ -41,7 +41,6 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.lifetime.LifetimeMirror;
@@ -50,7 +49,6 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.StreamUtil;
 
@@ -299,28 +297,8 @@ public final class ContainerSetup extends ComponentSetup {
 
             /** {@inheritDoc} */
             protected Class<? extends Extension<?>> computeValue(Class<?> implementation) {
-                ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);
-
-                ExtensionMember em = implementation.getAnnotation(ExtensionMember.class);
-                if (em == null) {
-                    throw new InternalExtensionException(implementation + " must be annotated with @ExtensionMember");
-                }
-                Class<? extends Extension<?>> extensionType = em.value();
-                ClassUtil.checkProperSubclass(Extension.class, extensionType); // move
-                                                                               // into
-                                                                               // type
-                                                                               // extractor?
-
-                // Den
-                ClassUtil.checkProperSubclass(Extension.class, extensionType, InternalExtensionException::new); // move into type extractor?
-
-                // Ved ikke om den her er noedvendig??? Vi checker jo om den type extensionen
-                // returnere matcher
-                if (extensionType.getModule() != implementation.getModule()) {
-                    throw new InternalExtensionException("The extension mirror " + implementation + " must be a part of the same module ("
-                            + extensionType.getModule() + ") as " + extensionType + ", but was part of '" + implementation.getModule() + "'");
-                }
-                return extensionType;
+                
+                return ExtractExtensionType.findExtensionType(implementation);
             }
         };
 
@@ -331,8 +309,8 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Set<ExtensionMirror> extensions() {
-            HashSet<ExtensionMirror> result = new HashSet<>();
+        public Set<ExtensionMirror<?>> extensions() {
+            HashSet<ExtensionMirror<?>> result = new HashSet<>();
             for (ExtensionSetup extension : container.extensions.values()) {
                 result.add(extension.mirror());
             }
@@ -348,7 +326,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends ExtensionMirror> Optional<T> findExtension(Class<T> mirrorType) {
+        public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
             requireNonNull(mirrorType, "mirrorType is null");
 
             // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
@@ -360,7 +338,7 @@ public final class ContainerSetup extends ComponentSetup {
                 return Optional.empty();
             } else {
                 // Call the extension.mirror to create a new mirror, this method is most likely overridden
-                ExtensionMirror mirror = extension.mirror();
+                ExtensionMirror<?> mirror = extension.mirror();
                 // Fail if the type of mirror returned by the extension does not match the specified mirror type
                 if (!mirrorType.isInstance(mirror)) {
                     // Kan maaske smide en specific fejlmeddelse hvis man ikke har overskrevet metoden

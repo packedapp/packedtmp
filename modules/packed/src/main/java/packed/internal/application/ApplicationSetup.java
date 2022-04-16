@@ -108,7 +108,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public <T extends ExtensionMirror> T useExtension(Class<T> type) {
+        public <T extends ExtensionMirror<?>> T useExtension(Class<T> type) {
             return container().useExtension(type);
         }
 

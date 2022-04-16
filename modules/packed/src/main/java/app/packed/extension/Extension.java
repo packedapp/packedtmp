@@ -149,21 +149,21 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     /**
      * <p>
-     * This method is never invoked more than once for a single field on an extension.
-     * If there are multiple field hook annotations for the same extension
+     * This method is never invoked more than once for a single field. Even if there are multiple matching field hook
+     * annotations on the same field.
+     * 
      * @param field
      *            the bean field
      */
-    // onBeanFieldHook
     protected void hookOnBeanField(BeanField field) {}
 
     protected void hookOnBeanMethod(BeanMethod method) {}
 
     protected void hookOnBeanVarInjector(BeanVarInjector injector) {}
 
+    // onBeanFieldHook
     protected void hookOnBeanEnd(BeanInfo beanInfo) {}
 
-    
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
     // Her er det jo root container vi skal teste
@@ -215,8 +215,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     // boolean isApplication... Kan ikke have to metoder
     // med mindre
     //
-    protected ExtensionMirror mirror() {
-        return mirrorInitialize(new ExtensionMirror());
+    protected ExtensionMirror<?> mirror() {
+        return mirrorInitialize(new ExtensionMirror<>());
     }
 
     /**
@@ -232,7 +232,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @throws IllegalStateException
      *             if this method has already been called on the specified mirror
      */
-    protected final <M extends ExtensionMirror> M mirrorInitialize(M mirror) {
+    protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
         mirror.initialize((ExtensionSetup) configuration());
         return mirror;
     }

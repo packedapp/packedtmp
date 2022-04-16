@@ -40,8 +40,7 @@ public class TestIt extends Extension<TestIt> {
     private BeanHandle<?> fb() {
         BeanHandle<?> fb = functionalBean;
         if (fb == null) {
-            functionalBean = fb = bean().newBuilder(BeanKind.FUNCTIONAL).build();
-            // fb.setPrefix("fWeb")
+            functionalBean = fb = bean().newBuilder(BeanKind.FUNCTIONAL).namePrefix("fWeb").build();
         }
         return fb;
     }

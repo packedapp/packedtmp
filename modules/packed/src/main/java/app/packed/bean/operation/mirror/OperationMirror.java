@@ -25,7 +25,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.operation.interceptor.OperationInterceptorMirror;
 import app.packed.bean.operation.usage.ServiceExportMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.inject.DependencyMirror;
@@ -43,7 +42,6 @@ import packed.internal.container.ExtensionSetup;
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
- * <li>Must be annotated with {@link ExtensionMember} indicating the type of extension that the mirror belongs to.</li>
  * <li>Must be located in the same module as the extension it is a member of (iff the extension is defined in a
  * module).</li>
  * </ul>
