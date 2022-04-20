@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation;
+package app.packed.bean.context;
+
+import app.packed.bean.operation.OperationMirror;
+import app.packed.component.ComponentMirror;
+import app.packed.mirror.Mirror;
 
 /**
  *
  */
-public interface FunctionalOperation {
+public sealed interface ContextRootMirror extends Mirror permits ComponentMirror, OperationMirror {
 
 }

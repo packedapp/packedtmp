@@ -13,31 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.usage;
+package app.packed.bean.context;
 
-import app.packed.application.App;
-import app.packed.application.entrypoint.Main;
-import app.packed.container.BaseAssembly;
+import app.packed.mirror.Mirror;
 
 /**
  *
  */
-public class HelloWorldAssembly extends BaseAssembly {
-
-    @Override
-    protected void build() {
-        install(ExampleBean.class);
-    }
-
-    public static void main(String[] args) {
-        App.run(new HelloWorldAssembly());
-    }
-
-    public static class ExampleBean {
-
-        @Main
-        public void runMeAndExit() {
-            System.out.println("HelloWorld");
-        }
-    }
+public interface ContextMirror extends Mirror {
+    Class<?> contextClass();
+    ContextRootMirror root();
 }

@@ -27,8 +27,8 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
-import app.packed.bean.operation.InjectableOperation;
-import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.InjectableOperationHandle;
+import app.packed.bean.operation.RawOperationHandle;
 import app.packed.extension.Extension;
 import packed.internal.bean.hooks.PackedBeanField;
 
@@ -48,11 +48,11 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      */
     int getModifiers();
 
-    InjectableOperation operation(VarHandle.AccessMode accessMode);
+    InjectableOperationHandle newOperation(VarHandle.AccessMode accessMode);
 
-    InjectableOperation operationGetter();
+    InjectableOperationHandle newOperationGetter();
 
-    InjectableOperation operationSetter();
+    InjectableOperationHandle newOperationSetter();
 
     /**
      * Returns a method handle that gives read access to the underlying field as specified by
@@ -60,7 +60,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle getter
      */
-    RawOperation<MethodHandle> rawGetterOperation();
+    RawOperationHandle<MethodHandle> newRawGetterOperation();
 
     /**
      * Must have both get and set
@@ -72,7 +72,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * @throws UnsupportedOperationException
      *             if the extension field has not both get and set access
      */
-    RawOperation<VarHandle> rawOperation();
+    RawOperationHandle<VarHandle> newRawOperation();
 
     /**
      * Returns a method handle that gives write access to the underlying field as specified by
@@ -80,7 +80,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle setter
      */
-    RawOperation<MethodHandle> rawSetterOperation();
+    RawOperationHandle<MethodHandle> newRawSetterOperation();
     
     /**
      * {@return the underlying field represented as a {@code Variable}.}

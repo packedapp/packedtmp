@@ -13,31 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.usage;
-
-import app.packed.application.App;
-import app.packed.application.entrypoint.Main;
-import app.packed.container.BaseAssembly;
+package app.packed.bean.operation;
 
 /**
  *
  */
-public class HelloWorldAssembly extends BaseAssembly {
+public interface FunctionalOperationHandle {
 
-    @Override
-    protected void build() {
-        install(ExampleBean.class);
-    }
-
-    public static void main(String[] args) {
-        App.run(new HelloWorldAssembly());
-    }
-
-    public static class ExampleBean {
-
-        @Main
-        public void runMeAndExit() {
-            System.out.println("HelloWorld");
-        }
-    }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation.mirror;
+package app.packed.bean.operation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -22,7 +22,9 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.context.ContextRootMirror;
 import app.packed.bean.operation.interceptor.OperationInterceptorMirror;
+import app.packed.bean.operation.mirror.OperationErrorHandlingMirror;
 import app.packed.bean.operation.usage.ServiceExportMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -49,7 +51,7 @@ import packed.internal.container.ExtensionSetup;
 //Class -> members
 //Scanning class -> Hooks
 //Bean -> Operation
-public class OperationMirror implements Mirror {
+public non-sealed class OperationMirror implements Mirror , ContextRootMirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -75,7 +77,7 @@ public class OperationMirror implements Mirror {
     public final BeanMirror bean() {
         return operation().bean.mirror();
     }
-    
+
     /**
      * Returns whether or not a new bean instance is created every time the operation is invoked.
      * 
@@ -93,7 +95,7 @@ public class OperationMirror implements Mirror {
 
         return false;
     }
-    
+
     public final boolean createsNewThread() {
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)
@@ -138,6 +140,11 @@ public class OperationMirror implements Mirror {
         return operation().hashCode();
     }
 
+    public final Optional<Class<? extends Annotation>> hook() {
+        // Enten Provide eller ogsaa MetaAnnotation
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
      * 
@@ -167,7 +174,7 @@ public class OperationMirror implements Mirror {
     }
 
     /**
-     * {@return the mirrored extension's internal configuration.}
+     * {@return the mirrored operation's internal configuration.}
      * 
      * @throws InternalExtensionException
      *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
@@ -184,7 +191,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the extension that initiates the operation.} */
     public final Class<? extends Extension<?>> operator() {
-        return operation().extension.extensionType;
+        return operation().operator.extensionType;
     }
 
     /**
@@ -208,41 +215,10 @@ public class OperationMirror implements Mirror {
         return void.class;
     }
 
-    /**
-     * @return
-     */
+    /** {@return the target of the operation.} */
     public final OperationTargetMirror target() {
-         return operation().target.mirror();
+        return operation().target.mirror();
     }
-
-    public static void main(String[] args) throws NoSuchMethodException, SecurityException {
-        Method method = OperationMirror.class.getMethod("main", String[].class);
-        System.out.println(method.getReturnType());
-    }
-    
-    public Optional<Class<? extends Annotation>> hook() {
-        // Enten Provide eller ogsaa MetaAnnotation
-        throw new UnsupportedOperationException();
-    }
-
-//    public enum TargetType {
-//
-//        /** The operation is based on invoking a {@link Constructor} */
-//        CONSTRUCTOR,
-//
-//        /** The operation is based on accessing a {@link Field}. */
-//        FIELD,
-//
-//        /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
-//        FUNCTION,
-//
-//        /** The operation is based on invoking a {@link Method}. */
-//        METHOD,
-//
-//        OTHER; // Typically a MethodHandle, or an instance
-//
-//        // CONSTANT;
-//    }
 }
 //Is invoked by an extension
 
@@ -299,4 +275,23 @@ public class OperationMirror implements Mirror {
 //// isInitializer
 //// Ideen er at constructuren ser anderledes ud
 //return false;
+//}
+
+//public enum TargetType {
+//
+//  /** The operation is based on invoking a {@link Constructor} */
+//  CONSTRUCTOR,
+//
+//  /** The operation is based on accessing a {@link Field}. */
+//  FIELD,
+//
+//  /** The operation is based on invoking a method on a {@link FunctionalInterface}. */
+//  FUNCTION,
+//
+//  /** The operation is based on invoking a {@link Method}. */
+//  METHOD,
+//
+//  OTHER; // Typically a MethodHandle, or an instance
+//
+//  // CONSTANT;
 //}

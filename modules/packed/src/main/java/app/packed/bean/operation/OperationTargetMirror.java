@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.operation.mirror;
+package app.packed.bean.operation;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -40,6 +40,7 @@ public interface OperationTargetMirror {
         // Har maaske ogsaa noget LifetimePoolMirror her????
     } // ofLifetimePool? Hmm
 
+    // invoke exact?
     public interface OfMethodHandleInvoke extends OperationTargetMirror {} // ofSynthetic?
 
     // Hmm???
@@ -50,13 +51,14 @@ public interface OperationTargetMirror {
     public interface OfFunctionCall extends OperationTargetMirror {}
 
     // Members
-
+    /** Represents an operation that invokes a constructor. */
     public interface OfConstructorInvoke extends OperationTargetMirror {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
+    /** Represents an operation that gets, sets or updates a field. */
     public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror {
 
         boolean allowGet();
@@ -67,6 +69,7 @@ public interface OperationTargetMirror {
         Field field();
     }
 
+    /** Represents an operation that invokes a method. */
     public interface OfMethodInvoke extends OperationTargetMirror {
         
         /** {@return the underlying method.} */

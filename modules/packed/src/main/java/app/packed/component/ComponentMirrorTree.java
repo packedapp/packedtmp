@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *

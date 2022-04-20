@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Variable;
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.Realm;
 
 /**

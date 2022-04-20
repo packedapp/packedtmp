@@ -47,9 +47,9 @@ public class BeanExtension extends Extension<BeanExtension> {
         boolean constant = field.field().getAnnotation(Provide.class).constant();
 
         BeanSetup bean = ((PackedBeanMember) field).bean;
-        FieldHelper fh = new FieldHelper(field, field.rawOperation().handle(), constant, key);
+        FieldHelper fh = new FieldHelper(field, field.newRawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-        field.operationSetter();
+        field.newOperationSetter();
 
         bean.parent.injectionManager.addConsumer(node);
     }
@@ -60,10 +60,11 @@ public class BeanExtension extends Extension<BeanExtension> {
         boolean constant = method.method().getAnnotation(Provide.class).constant();
 
         BeanSetup bean = ((PackedBeanMember) method).bean;
-        MethodHelper fh = new MethodHelper(method, method.rawOperation().handle(), constant, key);
+        MethodHelper fh = new MethodHelper(method, method.newRawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
-        method.operation();
+        // Er ikke sikker paa vi har en runtime bean...
+        method.newOperation(null);
 
         bean.parent.injectionManager.addConsumer(node);
     }

@@ -48,7 +48,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         MainThreadOfControl mc = container.application.entryPoints.mainThread();
         mc.isStatic = Modifier.isStatic(method.getModifiers());
         mc.cs = ((PackedBeanMethod) method).bean;
-        mc.methodHandle = method.rawOperation().handle();
+        mc.methodHandle = method.newRawOperation().handle();
 
 //        oldOperation().useMirror(() -> new EntryPointMirror(0));
     }

@@ -22,6 +22,6 @@ import packed.internal.bean.operation.RawOperationSetup;
  */
 // record for know
 @SuppressWarnings("all")
-public sealed interface RawOperation<T> extends Operation permits RawOperationSetup {
+public sealed interface RawOperationHandle<T> extends OperationHandle permits RawOperationSetup {
     T handle();
 }

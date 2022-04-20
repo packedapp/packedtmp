@@ -17,8 +17,10 @@ package app.packed.bean.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
+import app.packed.base.Key;
+import app.packed.base.NamespacePath;
 import app.packed.inject.FactoryType;
 
 /**
@@ -31,20 +33,35 @@ import app.packed.inject.FactoryType;
 
 // Kan laves fra et Field eller Method
 // og kan invokere en metoder/constructor, lase/skrive/update et field
-public non-sealed interface InjectableOperation extends Operation {
+public non-sealed interface InjectableOperationHandle extends OperationHandle {
 
-    /**
-     * Specifies an action that is invoked whenever the methodhandle has been build by the runtime.
-     * 
-     * @param action
-     *            the action
-     */
-    void onReady(Consumer<MethodHandle> action);
+    // Ideen er lidt at hvis vi har forskel
+
+    default void filter(Function<MethodHandle, MethodHandle> filter) {
+        // MethodType of the returned function must be identical
+    }
 
     MethodType invocationType();
+
+    int packIndex();
+
+    // Used if we have for example seperate
+    void packKey(Key<? extends OperationPack> key);
+
+    // The path of the extension bean used when creating the operation
+    NamespacePath packPath();
 
     // Hvad goer vi med annoteringer paa Field/Update???
     // Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
     FactoryType type();
 }
+//
+///**
+//* Specifies an action that is invoked whenever the methodhandle has been build by the runtime.
+//* 
+//* @param action
+//*            the action
+//*/
+//// onWired??? Hmm ikke ved wirelets
+//void deliverTo(Consumer<MethodHandle> action);

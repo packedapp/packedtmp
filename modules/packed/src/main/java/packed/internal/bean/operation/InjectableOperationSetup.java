@@ -15,34 +15,64 @@
  */
 package packed.internal.bean.operation;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.util.function.Consumer;
 
-import app.packed.bean.operation.InjectableOperation;
+import app.packed.base.Key;
+import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
+import app.packed.bean.operation.InjectableOperationHandle;
+import app.packed.bean.operation.OperationPack;
 import app.packed.inject.FactoryType;
+import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-public final class InjectableOperationSetup extends OperationSetup implements InjectableOperation {
+public final class InjectableOperationSetup extends OperationSetup implements InjectableOperationHandle {
+
+    @Nullable
+    final ExtensionBeanSetup extensionBean;
+
+    Key<OperationPack> operationPackKey;
+
+    int packId = -1;
 
     /**
      * @param member
      */
-    public InjectableOperationSetup(PackedBeanMember member) {
+    public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup extensionBean) {
         super(member.bean, member, member.extension);
+        this.extensionBean = extensionBean;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void onReady(Consumer<MethodHandle> action) {}
 
     /** {@inheritDoc} */
     @Override
     public MethodType invocationType() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int packIndex() {
+        int p = packId;
+        if (p == -1) {
+            p = packId = extensionBean.operationPack(null).next();
+        }
+        return p;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void packKey(Key<? extends OperationPack> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespacePath packPath() {
+        // is only nullable for internal extensions. But they will never call this method
+        return extensionBean.path();
     }
 
     /** {@inheritDoc} */

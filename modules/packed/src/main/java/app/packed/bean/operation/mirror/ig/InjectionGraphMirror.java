@@ -18,7 +18,7 @@ package app.packed.bean.operation.mirror.ig;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *

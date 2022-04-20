@@ -17,7 +17,7 @@ package app.packed.bean.operation.mirror2.ig;
 
 import java.util.Optional;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *

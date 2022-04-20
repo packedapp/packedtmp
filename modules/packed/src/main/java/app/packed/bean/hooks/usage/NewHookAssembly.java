@@ -51,12 +51,12 @@ public class NewHookAssembly extends BaseAssembly {
 
         @Override
         protected void hookOnBeanField(BeanField field) {
-            System.out.println("Reading field " + field.rawOperation().handle().get());
+            System.out.println("Reading field " + field.newRawOperation().handle().get());
         }
 
         @Override
         protected void hookOnBeanMethod(BeanMethod method) {
-            System.out.println("Reading Method " + method.rawOperation());
+            System.out.println("Reading Method " + method.newRawOperation());
         }
 
         

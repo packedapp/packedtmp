@@ -25,13 +25,16 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.operation.InjectableOperation;
-import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.InjectableOperationHandle;
+import app.packed.bean.operation.OperationMirror;
+import app.packed.bean.operation.OperationTargetMirror;
+import app.packed.bean.operation.RawOperationHandle;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 
 /**
- *
+ * Represents a bean method.
  */
 public non-sealed interface BeanMethod extends BeanElement {
 
@@ -52,7 +55,15 @@ public non-sealed interface BeanMethod extends BeanElement {
     /** {@return the underlying method.} */
     Method method();
 
-    InjectableOperation operation();
+    /**
+     * 
+     * <p>
+     * A new mirror with {@link OperationTargetMirror.OfMethodInvoke} as the {@link OperationMirror#target()}.
+     * 
+     * @param base
+     * @return
+     */
+    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> base);
 
     /**
      * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
@@ -67,7 +78,7 @@ public non-sealed interface BeanMethod extends BeanElement {
      *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
      *             BeanClassHook#allowAllAccess()
      */
-    RawOperation<MethodHandle> rawOperation();
+    RawOperationHandle<MethodHandle> newRawOperation();
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
@@ -77,12 +88,12 @@ public non-sealed interface BeanMethod extends BeanElement {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanMethod#rawOperation()} and... will fail with {@link UnsupportedOperationException} unless
-         * the value of this attribute is {@code true}.
+         * Methods such as {@link BeanMethod#newRawOperation()} and... will fail with {@link UnsupportedOperationException}
+         * unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanMethod#rawOperation()
+         * @see BeanMethod#newRawOperation()
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...

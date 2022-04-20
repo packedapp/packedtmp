@@ -16,7 +16,7 @@
 package app.packed.bean.operation.driver;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *

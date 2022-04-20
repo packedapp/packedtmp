@@ -21,16 +21,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.base.Nullable;
+import app.packed.bean.operation.OperationMirror;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/**
- *
- */
+/** The build-time configuration of an operation. */
 public class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
@@ -44,36 +43,37 @@ public class OperationSetup {
 
     public final boolean isRaw = false;
 
-    public Supplier<? extends OperationMirror> mirrorSupplier;
-    // dependencies
+    @Nullable
+    Supplier<? extends OperationMirror> mirrorSupplier;
 
     /** The operation's operator. */
-    public final ExtensionSetup extension;
+    public final ExtensionSetup operator;
 
     /** The operation's target. */
     public final PackedOperationTarget target;
 
-    public OperationSetup(BeanSetup bean, PackedOperationTarget target, ExtensionSetup extension) {
+    public OperationSetup(BeanSetup bean, PackedOperationTarget target, ExtensionSetup operator) {
         this.bean = requireNonNull(bean);
         this.target = requireNonNull(target);
-        this.extension = requireNonNull(extension);
+        this.operator = requireNonNull(operator);
         bean.addOperation(this);
     }
 
     /** {@return a mirror for the operation.} */
     public OperationMirror mirror() {
-        OperationMirror om;
+        OperationMirror mirror;
         if (mirrorSupplier == null) {
-            om = new OperationMirror();
+            mirror = new OperationMirror();
         } else {
-            om = mirrorSupplier.get();
-
+            mirror = mirrorSupplier.get();
         }
+
+        // calls OperationMirror#initialize(OperationSetup)
         try {
-            MH_OPERATION_MIRROR_INITIALIZE.invokeExact(om, this);
+            MH_OPERATION_MIRROR_INITIALIZE.invokeExact(mirror, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-        return om;
+        return mirror;
     }
 }

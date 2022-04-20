@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.bean.operation.Operation;
+import app.packed.bean.operation.OperationHandle;
 
 /**
  * The implementation of {@link BeanHandle}.
@@ -30,15 +30,16 @@ public record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Operation addFunctionOperation(Object functionInstance) {
+    public OperationHandle addFunctionOperation(Object functionInstance) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void addWiringAction(Runnable action) {
+    public PackedBeanHandle<T> addWiringAction(Runnable action) {
         requireNonNull(action, "action is null");
         bean.wiringActions.add(action);
+        return this;
     }
 
     /** {@inheritDoc} */

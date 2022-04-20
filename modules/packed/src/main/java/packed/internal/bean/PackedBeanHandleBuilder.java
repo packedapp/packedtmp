@@ -88,8 +88,12 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         realm.wirePrepare();
 
         // Skal lave saa mange checks som muligt inde vi laver BeanSetup
-
-        BeanSetup bean = new BeanSetup(this, realm);
+        BeanSetup bean;
+        if (owner == null) {
+            bean = new BeanSetup(this, realm);
+        } else {
+            bean = new ExtensionBeanSetup(this, realm);
+        }
         realm.wireCommit(bean);
         return new PackedBeanHandle<>(bean);
     }

@@ -18,8 +18,8 @@ package app.packed.bean.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 
-import app.packed.bean.operation.InjectableOperation;
-import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.InjectableOperationHandle;
+import app.packed.bean.operation.RawOperationHandle;
 import app.packed.inject.FactoryType;
 
 /**
@@ -31,16 +31,12 @@ import app.packed.inject.FactoryType;
 // Do we need a BeanExecutable??? Not sure we have a use case
 public non-sealed interface BeanConstructor extends BeanElement {
 
-    InjectableOperation operation();
-
-    RawOperation<MethodHandle> rawOperation();
-    
-    /** {@return a factory type for this method.} */
-    FactoryType factoryType();
-    
     /** {@return the underlying constructor.} */
     Constructor<?> constructor();
 
+    /** {@return a factory type for this method.} */
+    FactoryType factoryType();
+    
     /**
      * Returns the modifiers of the constructor.
      * 
@@ -50,4 +46,8 @@ public non-sealed interface BeanConstructor extends BeanElement {
      *          {@link Constructor#getModifiers()}
      */
     int getModifiers();
+    
+    InjectableOperationHandle newOperation();
+
+    RawOperationHandle<MethodHandle> newRawOperation();
 }

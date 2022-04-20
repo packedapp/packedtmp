@@ -24,7 +24,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.context.ContextRootMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -40,7 +41,7 @@ import packed.internal.util.StreamUtil;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public sealed interface ComponentMirror extends Mirror permits ContainerMirror, BeanMirror {
+public sealed interface ComponentMirror extends Mirror, ContextRootMirror permits ContainerMirror, BeanMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
@@ -131,7 +132,14 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
     /// fx @Get paa install(Foo.class) vs requestGet(Foo.class)
     /// Vil jo have forskllig registrant...
     /// Er nok mere relevant hvem der styre lifecyclen
-    /* UserOrExtension */ Optional<Class<? extends Extension<?>>> registrant();
+    
+    // Det er vel mere operator????
+
+    
+    // !!!! Den fungere jo ikke for containere???
+    
+    // var Optional<Class<? extends Extension<?>>> registrant
+    Class<? extends Extension<?>> operator();
 
     /**
      * Computes the relation from this component to the specified component.

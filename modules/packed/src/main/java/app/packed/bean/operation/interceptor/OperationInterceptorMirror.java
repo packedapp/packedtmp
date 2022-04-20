@@ -15,7 +15,7 @@
  */
 package app.packed.bean.operation.interceptor;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.Realm;
 
 /**

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;

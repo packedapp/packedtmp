@@ -19,9 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.operation.InjectableOperation;
-import app.packed.bean.operation.RawOperation;
-import app.packed.bean.operation.mirror.OperationTargetMirror;
+import app.packed.bean.operation.InjectableOperationHandle;
+import app.packed.bean.operation.OperationTargetMirror;
+import app.packed.bean.operation.RawOperationHandle;
+import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
@@ -71,13 +72,13 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     /** {@inheritDoc} */
     @Override
-    public InjectableOperation operation() {
+    public InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> base) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public RawOperation<MethodHandle> rawOperation() {
+    public RawOperationHandle<MethodHandle> newRawOperation() {
         return new RawOperationSetup<MethodHandle>(this, openClass.unreflect(method));
     }
 

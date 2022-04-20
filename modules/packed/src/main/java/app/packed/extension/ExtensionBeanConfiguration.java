@@ -32,6 +32,7 @@ public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfigurati
      */
     public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
+        
     }
 
     // interface ExtensionPoint <- skal vi have et marker interface???

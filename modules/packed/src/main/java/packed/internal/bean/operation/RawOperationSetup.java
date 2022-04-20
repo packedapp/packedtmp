@@ -18,13 +18,13 @@ package packed.internal.bean.operation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 
-import app.packed.bean.operation.RawOperation;
+import app.packed.bean.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
  *
  */
-public final class RawOperationSetup<T> extends OperationSetup implements RawOperation<T> {
+public final class RawOperationSetup<T> extends OperationSetup implements RawOperationHandle<T> {
 
     /** Either a {@link VarHandle} or {@link MethodHandle}. */
     final T handle;

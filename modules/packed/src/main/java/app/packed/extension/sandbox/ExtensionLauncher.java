@@ -18,7 +18,7 @@ package app.packed.extension.sandbox;
 import app.packed.application.ApplicationDriver;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionBeanContext;
 
 /**
  *
@@ -38,7 +38,7 @@ public interface ExtensionLauncher<A> {
      *             if the image has already been used to launch an application and the image is not a reusable image
      * @return the application interface if available
      */
-    default A use(ExtensionContext context) {
+    default A use(ExtensionBeanContext context) {
         return use(context, new Wirelet[] {});
     }
 
@@ -53,5 +53,5 @@ public interface ExtensionLauncher<A> {
      * @return an application instance
      * @see {@link ApplicationDriver#launch(Assembly, Wirelet...)}
      */
-    A use(ExtensionContext context, Wirelet... wirelets);
+    A use(ExtensionBeanContext context, Wirelet... wirelets);
 }

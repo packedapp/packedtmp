@@ -14,7 +14,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.BeanInfo;
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
 import app.packed.container.AssemblyMirror;
@@ -30,7 +30,7 @@ import packed.internal.container.RealmSetup;
 import packed.internal.inject.BeanInjectionManager;
 
 /** The build-time configuration of a bean. */
-public final class BeanSetup extends ComponentSetup implements BeanInfo {
+public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits ExtensionBeanSetup {
 
     /** The builder that was used to create the bean. */
     public final PackedBeanHandleBuilder<?> builder;
@@ -45,7 +45,6 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** Operations declared by the bean. */
     private final ArrayList<OperationSetup> operations = new ArrayList<>();
 
-    private final RealmSetup owner;
 
     /**
      * Create a new bean setup.
@@ -56,7 +55,6 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     public BeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
         super(builder.container.application, owner, builder.container);
         this.builder = builder;
-        this.owner = owner;
         this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseHookModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
         this.injectionManager = new BeanInjectionManager(this, builder);
 
@@ -104,7 +102,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Realm owner() {
-        return owner.realm();
+        return realm.realm();
     }
 
     @Override
@@ -140,7 +138,7 @@ public final class BeanSetup extends ComponentSetup implements BeanInfo {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Class<? extends Extension<?>>> registrant() {
+        public Class<? extends Extension<?>> operator() {
             throw new UnsupportedOperationException();
         }
 

@@ -17,29 +17,55 @@ package app.packed.bean;
 
 import java.lang.reflect.Member;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.hooks.sandbox.InvokerConfiguration;
-import app.packed.bean.operation.Operation;
+import app.packed.bean.operation.OperationHandle;
+import app.packed.bean.operation.OperationMirror;
 import app.packed.bean.operation.driver.OperationDriver;
 import app.packed.bean.operation.driver.OperationDriver2;
-import app.packed.bean.operation.mirror.OperationMirror;
 import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanHandleBuilder;
 
 /**
  * A bean driver must be created via {@link BeanExtensionPoint}.
  */
 // INFO (type, kind)
+
 // Operations (add synthetic/functional)
+
 // Sidecars (add)
+
 // Lifecycle (Custom Factory, InvocationConfigurations)
+
 // Services (bind, bindContext)
 
 // callacbks, onBound, onBuild, ...
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
+
+    OperationHandle addFunctionOperation(Object functionInstance);
+
+    default OperationHandle addOperation(@SuppressWarnings("exports") OperationDriver driver) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void addOperation(@SuppressWarnings("exports") OperationDriver2 driver) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
+
+    /**
+     * Registers a wiring action to run when the bean becomes fully wired.
+     * 
+     * @param action
+     *            a {@code Runnable} to invoke when the bean is wired
+     */
+    BeanHandle<T> addWiringAction(Runnable action);
 
     /**
      * @return
@@ -47,7 +73,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * @see BeanConfiguration#beanClass()
      * @see BeanMirror#beanClass()
      */
-    Class<?> beanClass(); // vs BeanClass??? // beanSource instead??
+    Class<?> beanClass(); // beanSource instead??
 
     /**
      * @return
@@ -57,21 +83,16 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      */
     BeanKind beanKind();
 
-    Operation addFunctionOperation(Object functionInstance);
-
-    void addWiringAction(Runnable action);
-    
-    default Operation addOperation(@SuppressWarnings("exports") OperationDriver driver) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void addOperation(@SuppressWarnings("exports") OperationDriver2 driver) {
-        throw new UnsupportedOperationException();
-    }
-
-    interface Builder<T> {
-     // NamePrefixs
-     // Scan (disable, do scan) ???
+    /**
+     * A builder for a bean handle. Can only be created via {@link BeanExtensionPoint}.
+     * 
+     * @see BeanExtensionPoint#newBuilder(BeanKind)
+     * @see BeanExtensionPoint#newBuilderFromClass(BeanKind, Class)
+     * @see BeanExtensionPoint#newBuilderFromFactory(BeanKind, Factory)
+     * @see BeanExtensionPoint#newBuilderFromInstance(BeanKind, Object)
+     */
+    sealed interface Builder<T> permits PackedBeanHandleBuilder {
+        // Scan (disable, do scan) ???
 
         /**
          * @return
@@ -81,9 +102,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         Class<?> beanClass(); // vs BeanClass??? // beanSource instead??
 
-        default Builder<T> namePrefix(String prefix) {
-            return this;
-        }
         /**
          * @return
          * 
@@ -91,18 +109,36 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @see BeanConfiguration#beanKind()
          */
         BeanKind beanKind();
-        
-        Builder<T> forExtension(ExtensionPointContext epc);
-        
+
         BeanHandle<T> build();
+
+        /**
+         * Marks the bean as owned by the extension representing by specified extension point context
+         * 
+         * @param context
+         *            a context representing the owner of the bean
+         * @return this builder
+         */
+        Builder<T> forExtension(ExtensionPointContext context);
+
+        /**
+         * Sets a prefix that is used for naming the bean.
+         * <p>
+         * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
+         * the specified prefix as the name of the bean. Otherwise, it will append a postfix to specified prefix in such a way
+         * that the name of the bean is unique.
+         * 
+         * @param prefix
+         *            the prefix used for naming the bean
+         * @return this builder
+         */
+        default Builder<T> namePrefix(String prefix) {
+            return this;
+        }
     }
 }
 
-interface BeanDriverSandbox<T> {
-
-    default void synthetic() {
-        // or hidden();
-    }
+interface BeanXDriverSandbox<T> {
 
     default <E> void bindService(Key<E> key, Class<E> implementation) {
         // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
@@ -139,10 +175,14 @@ interface BeanDriverSandbox<T> {
 
     default void sidecarAdd(Factory<?> clazz) {}
 
-    // Provide stuff, state holder, Lifecycle
-
     //////////////// Sidecars
     default void sidecarAddInstance(Object o) {}
+
+    // Provide stuff, state holder, Lifecycle
+
+    default void synthetic() {
+        // or hidden();
+    }
 
     @SuppressWarnings("exports")
     interface FunctionalBeanOperationConfiguration {

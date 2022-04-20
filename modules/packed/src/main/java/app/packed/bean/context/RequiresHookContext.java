@@ -37,6 +37,11 @@ public @interface RequiresHookContext {
 
 @RequiresHookContext(kind = Kind.BEAN, contextType = EntityBeanContext.class, errorMsg = "@UsageEntityManagerMethodHook can only be used with entity beans")
 // "@ExtractHeader can only be used within the context off ");
+
+// beanElement.requireContext, EBC, "@UsageEntityManagerMethodHook can only be used with entity beans");
+
 class UsageEntityManagerMethodHook {}
 
 interface EntityBeanContext {}
+
+

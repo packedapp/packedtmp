@@ -24,10 +24,7 @@ package app.packed.extension;
 
 // RuntimeExtensionContext? Just to make it clear
 // Maybe even ContainerContext or BeanContext
-public interface ExtensionContext {
-
-}
-
+public interface ExtensionBeanContext {}
 
 //Naar man skal lave operation... Skal man have en Bean Tilknyttet
 //Hvad hvis man

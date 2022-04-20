@@ -17,29 +17,34 @@ package app.packed.bean.operation;
 
 import java.util.function.Supplier;
 
-import app.packed.bean.operation.mirror.OperationMirror;
-
 /**
  *
  */
+
+// Vi skal have en eller anden form for naming.
+// int OperationID?
+
 @SuppressWarnings("rawtypes")
-// OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
-// Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer
-// i nogen tilfaelde..
-// Fx 
-public sealed interface Operation permits InjectableOperation, RawOperation {
+public sealed interface OperationHandle permits InjectableOperationHandle, RawOperationHandle {
 
     // newInstance(); <-- automatisk???
 
-    // sets a non-generic mirror
+//    default void setOrigin(ExtensionBeanConfiguration<?> ebc) {
+//        // Vi bliver noedt til at vide hvor alle "services" kommer fra
+//    }
 
-    // Ved ikke om vi skal have <T extends OperationMirror) useMirror(Class<T> mirrorType, Supplier<T> suppler)
-    // Som nu skal vi aktivt lave alle mirrors hvis man fx kalder ApplicationMirror.operations(EntryPointMirror.class)
-    // Ved vi ikke hvilke operationer den passer på, det kan vi først finde ud af når den er lavet 
-    default void useMirror(Supplier<? extends OperationMirror> supplier) {
-        
-    }
+    /**
+     * Adds a mirror
+     * 
+     * @param supplier
+     *            a mirror supplier
+     */
+    default void addMirror(Supplier<? extends OperationMirror> supplier) {}
 }
+//OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
+//Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer
+//i nogen tilfaelde..
+//Fx 
 
 ////Sources
 //* Fra MethodHook/FieldHook/InjectionHook
@@ -54,3 +59,7 @@ public sealed interface Operation permits InjectableOperation, RawOperation {
 //Den her svare lidt til BeanDriver, og saa alligvl ikke
 
 //addHttpRequest();
+
+// Ved ikke om vi skal have <T extends OperationMirror) useMirror(Class<T> mirrorType, Supplier<T> suppler)
+// Som nu skal vi aktivt lave alle mirrors hvis man fx kalder ApplicationMirror.operations(EntryPointMirror.class)
+// Ved vi ikke hvilke operationer den passer på, det kan vi først finde ud af når den er lavet 

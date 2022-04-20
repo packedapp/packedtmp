@@ -17,7 +17,7 @@ package app.packed.bean.operation.usage;
 
 import java.util.function.Predicate;
 
-import app.packed.bean.operation.mirror.OperationMirror;
+import app.packed.bean.operation.OperationMirror;
 
 /**
  *
