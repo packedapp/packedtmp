@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.extension.InternalExtensionException;
+import app.packed.container.InternalExtensionException;
 
 public final /* primitive */ class TmpLoader<T> {
 

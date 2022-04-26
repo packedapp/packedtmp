@@ -17,7 +17,7 @@ package app.packed.bean.hooks;
 
 import app.packed.bean.BeanKind;
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

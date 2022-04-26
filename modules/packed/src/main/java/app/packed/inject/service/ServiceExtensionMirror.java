@@ -6,7 +6,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.ExtensionMirror;
+import app.packed.container.ExtensionMirror;
 import app.packed.operation.usage.ServiceExportMirror;
 import app.packed.operation.usage.ServiceProvideMirror;
 import packed.internal.inject.service.ContainerInjectionManager;

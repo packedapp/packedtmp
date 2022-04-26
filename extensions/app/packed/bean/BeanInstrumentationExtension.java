@@ -16,8 +16,8 @@
 package app.packed.bean;
 
 import app.packed.classgen.ClassgenExtension;
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
+import app.packed.container.Extension;
+import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Factory;
 
 /**

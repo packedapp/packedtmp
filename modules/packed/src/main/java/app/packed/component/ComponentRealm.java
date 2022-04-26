@@ -17,7 +17,7 @@ package app.packed.component;
 
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

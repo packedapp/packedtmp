@@ -5,7 +5,7 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /** Implementation of {@link ContainerDriver}. */
 public final class PackedContainerDriver implements ContainerDriver {

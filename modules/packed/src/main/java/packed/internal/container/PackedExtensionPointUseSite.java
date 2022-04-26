@@ -16,8 +16,8 @@
 package packed.internal.container;
 
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionPoint.UseSite;
 
 /**
  *

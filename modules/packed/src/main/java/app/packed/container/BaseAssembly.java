@@ -19,7 +19,6 @@ import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.ProvidableBeanConfiguration;
-import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;

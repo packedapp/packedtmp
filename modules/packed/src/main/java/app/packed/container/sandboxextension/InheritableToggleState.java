@@ -1,4 +1,4 @@
-package app.packed.extension.sandbox;
+package app.packed.container.sandboxextension;
 
 public enum InheritableToggleState {
     ENABLED, DISABLED, INHERITED;

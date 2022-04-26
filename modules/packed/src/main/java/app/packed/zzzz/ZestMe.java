@@ -22,8 +22,8 @@ import app.packed.application.entrypoint.EntryPointExtensionMirror;
 import app.packed.application.entrypoint.EntryPointExtensionPoint;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
+import app.packed.container.Extension;
+import app.packed.container.Extension.DependsOn;
 import app.packed.inject.service.ServiceExtension;
 
 /**
@@ -47,7 +47,7 @@ public class ZestMe extends BaseAssembly {
 
         ApplicationMirror m = App.mirrorOf(new ZestMe());
         System.out.println("-----");
-        System.out.println(m.container().useExtension(EntryPointExtensionMirror.class).managedBy());
+        System.out.println(m.container().useExtension(EntryPointExtensionMirror.class).dispatcher());
 
         // System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
     }
@@ -68,9 +68,9 @@ public class ZestMe extends BaseAssembly {
             bean().install(Habab.class);
 
             System.out.println("ADDED");
-            System.out.println(use(EntryPointExtensionPoint.class).managedBy());
+            System.out.println(use(EntryPointExtensionPoint.class).dispatcher());
             //System.out.println(use(EntryPointSupport.class).registerEntryPoint(null));
-            System.out.println(use(EntryPointExtensionPoint.class).managedBy());
+            System.out.println(use(EntryPointExtensionPoint.class).dispatcher());
         }
 
         /** {@inheritDoc} */

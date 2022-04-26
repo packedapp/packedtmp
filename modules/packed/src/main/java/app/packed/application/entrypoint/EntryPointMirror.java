@@ -8,6 +8,7 @@ import app.packed.operation.OperationMirror;
  */
 public final class EntryPointMirror extends OperationMirror {
 
+    /** The unique id of the entry point within the application. */
     private final int entryPointId;
 
     EntryPointMirror(int entryPointId) {

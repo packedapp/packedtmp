@@ -1,4 +1,4 @@
-package app.packed.extension;
+package app.packed.container.sandboxextension;
 
 import app.packed.application.ApplicationDriver;
 

@@ -2,7 +2,7 @@ package app.packed.component;
 
 import java.util.NoSuchElementException;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import packed.internal.util.ClassUtil;
 
 // Registrant

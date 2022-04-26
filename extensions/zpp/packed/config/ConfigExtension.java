@@ -15,7 +15,7 @@
  */
 package zpp.packed.config;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

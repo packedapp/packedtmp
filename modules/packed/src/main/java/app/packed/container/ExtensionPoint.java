@@ -1,4 +1,4 @@
-package app.packed.extension;
+package app.packed.container;
 
 import app.packed.component.Realm;
 import packed.internal.container.PackedExtensionPointUseSite;
@@ -29,12 +29,10 @@ import packed.internal.container.PackedExtensionPointUseSite;
  * {@code Class<? extends Extension<?>>} which is the
  * 
  * <p>
- * A new extension point instance is automatically created by the runtime when {@link Extension#use(Class)} or
- * {@link ExtensionConfiguration#use(Class)} is called. These instances are <strong>never</strong> cached but created
- * every time it is requested.
+ * A new extension point instance is automatically created by the runtime when {@link Extension#use(Class)} is called.
+ * These instances are <strong>never</strong> cached but created every time it is requested.
  * 
  * @see Extension#use(Class)
- * @see ExtensionConfiguration#use(Class)
  * @see UseSite
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
@@ -42,16 +40,15 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /** The use-site (includes the owning extension). */
     private PackedExtensionPointUseSite useSite;
 
-
     protected final void checkInSameContainerAs(Extension<?> extension) {
-        
+
         // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
         // Men at vi binder den til en container...
 
         // IDK
         // ExtensionSupportUSer???
     }
-    
+
     /**
      * 
      * @see Extension#checkConfigurable()
@@ -67,8 +64,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     }
 
     /**
-     * <p>
-     * ExtensionSetup is exposed as {@link ExtensionConfiguration} via {@link #configuration()}.
      * 
      * @return
      */
@@ -79,11 +74,11 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         }
         return c;
     }
-    
+
     protected final UseSite useSite() {
         return usesite();
     }
-    
+
     /**
      * A context object that can be injected into subclasses of {@link ExtensionPoint}.
      */
@@ -93,7 +88,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
     public sealed interface UseSite permits PackedExtensionPointUseSite {
-
 
         Class<? extends Extension<?>> extensionType();
 

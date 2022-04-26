@@ -18,7 +18,7 @@ package app.packed.bean.hooks.usage;
 import java.time.LocalDate;
 
 import app.packed.bean.hooks.BeanVariable;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.inject.Factory1;
 import app.packed.lifecycle.OnStart;
 import app.packed.operation.dependency.DependencyProvider;

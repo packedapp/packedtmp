@@ -18,7 +18,7 @@ package app.packed.classgen;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodHandles.Lookup.ClassOption;
 
-import app.packed.extension.ExtensionPoint;
+import app.packed.container.ExtensionPoint;
 
 /**
  *

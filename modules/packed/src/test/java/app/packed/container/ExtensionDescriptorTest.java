@@ -19,9 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
-import app.packed.extension.ExtensionDescriptor;
+import app.packed.container.Extension.DependsOn;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {

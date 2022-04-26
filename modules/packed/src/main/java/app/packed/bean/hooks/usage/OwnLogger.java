@@ -15,7 +15,7 @@
  */
 package app.packed.bean.hooks.usage;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.inject.Factory1;
 import app.packed.inject.Factory2;
 import app.packed.operation.dependency.DependencyProvider;

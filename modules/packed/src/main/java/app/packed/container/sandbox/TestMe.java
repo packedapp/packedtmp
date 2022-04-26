@@ -17,7 +17,7 @@ package app.packed.container.sandbox;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

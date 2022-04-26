@@ -36,12 +36,11 @@ import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
+import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionMirror;
-import app.packed.extension.InternalExtensionException;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import packed.internal.application.ApplicationSetup;
@@ -202,7 +201,6 @@ public final class ContainerSetup extends ComponentSetup {
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
      * @see ContainerConfiguration#isExtensionUsed(Class)
-     * @see ExtensionConfiguration#isExtensionUsed(Class)
      * @see ContainerMirror#isExtensionUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {

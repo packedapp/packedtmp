@@ -31,7 +31,7 @@ import app.packed.bean.hooks.BeanElement;
 import app.packed.bean.hooks.sandbox.AnnotationReader;
 import app.packed.bean.hooks.sandbox.CommonVarInfo;
 import app.packed.bean.hooks.sandbox.VariableParser;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.bean.hooks.PackedDependencyProvider;
 

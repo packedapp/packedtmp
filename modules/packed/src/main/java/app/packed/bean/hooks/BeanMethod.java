@@ -25,8 +25,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBeanConfiguration;
+import app.packed.bean.ExtensionBeanConfiguration;
+import app.packed.container.Extension;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationMirror;

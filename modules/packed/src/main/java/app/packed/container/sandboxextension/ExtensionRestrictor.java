@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.container.sandboxextension;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

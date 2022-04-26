@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.container.sandboxextension;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.container.Assembly;

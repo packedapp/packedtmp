@@ -1,7 +1,6 @@
-package app.packed.extension;
+package app.packed.container;
 
 import app.packed.base.Nullable;
-import app.packed.container.ContainerMirror;
 import app.packed.mirror.Mirror;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;

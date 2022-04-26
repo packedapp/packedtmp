@@ -3,8 +3,7 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.application.AsyncApp;
-import app.packed.extension.Extension;
-import app.packed.extension.sandbox.ExtensionLauncher;
+import app.packed.container.sandboxextension.ExtensionLauncher;
 import packed.internal.container.PackedContainerDriver;
 
 public sealed interface ContainerDriver permits PackedContainerDriver {

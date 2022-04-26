@@ -26,7 +26,6 @@ import app.packed.application.ApplicationInfo;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentRealm;
-import app.packed.extension.Extension;
 import packed.internal.container.AssemblySetupOfAssembly;
 import packed.internal.util.LookupUtil;
 
@@ -103,6 +102,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      *             if {@link #build()} has already been invoked
      * @see ContainerConfiguration#checkPreBuild()
      */
+    // Alle andre steder hedder det checkConfigurable
     protected final void checkPreBuild() {
         if (configuration != null) {
             throw new IllegalStateException("#build has already been called on the Assembly");
@@ -251,7 +251,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      *            the type of extension to return
      * @return an extension instance of the requested type
      * @throws IllegalStateException
-     *             if called after the container is no longer configurable
+     *             if the container is no longer configurable and the extension has not been created previously
      * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {

@@ -12,7 +12,7 @@ import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BuildWirelets;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 public class NewHookAssembly extends BaseAssembly {
 

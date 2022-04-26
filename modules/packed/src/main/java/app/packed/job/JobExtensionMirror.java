@@ -1,6 +1,6 @@
 package app.packed.job;
 
-import app.packed.extension.ExtensionMirror;
+import app.packed.container.ExtensionMirror;
 
 public class JobExtensionMirror extends ExtensionMirror<JobExtension> {
 

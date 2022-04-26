@@ -7,18 +7,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import app.packed.container.Wirelet;
-import app.packed.extension.RestrictedExtensionException;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifecycleApplicationController.StopOption;
-import app.packed.lifecycle.sandbox.LifetimeWirelets.ShutdownHookWirelet;
 import app.packed.lifecycle.RunState;
+import app.packed.lifecycle.sandbox.LifetimeWirelets.ShutdownHookWirelet;
 
 /**
  * Application runtime wirelet that can be specified when building or launching an application that includes the
  * {@link AcceptPendingException}. Attempt to use these wirelets
  * <p>
  * Attempting to use any of the wirelets on this class on an application that does not. Attempts to use it with a
- * non-runnable application will fail with {@link RestrictedExtensionException}.
+ * non-runnable application will fail with 
  * 
  */
 ///// ContainerWirelets??? RuntimeWirelets?? ApplicationWirelets

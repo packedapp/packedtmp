@@ -16,7 +16,7 @@
 package app.packed.bean.hooks.usage;
 
 import app.packed.base.Nullable;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.inject.Factory0;
 import app.packed.operation.dependency.DependencyProvider;
 

@@ -19,7 +19,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanExtensionMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

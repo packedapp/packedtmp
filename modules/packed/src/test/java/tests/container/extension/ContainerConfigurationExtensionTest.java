@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import testutil.util.AbstractApplicationTest;
 
 /** Tests {@link BaseContainerConfiguration#extensionsTypes()} and {@link BaseContainerConfiguration#useExtension(Class)}. */

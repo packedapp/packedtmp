@@ -1,14 +1,10 @@
-package app.packed.extension;
+package app.packed.bean;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.BeanHandle;
-import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
 /**
@@ -25,6 +21,7 @@ import app.packed.inject.Factory;
 // Eneste grund til vi stadig har den er god at angive nogle steder...
 // fx BeanSupport#extensionPoint
 
+// Maybe a generic NestedBean type???
 public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**

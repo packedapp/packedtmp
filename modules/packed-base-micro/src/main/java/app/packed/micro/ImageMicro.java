@@ -30,7 +30,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.application.App;
 import app.packed.application.ApplicationImage;
 import app.packed.container.BaseAssembly;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

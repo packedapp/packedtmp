@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.ExtensionInjectionManager;
 

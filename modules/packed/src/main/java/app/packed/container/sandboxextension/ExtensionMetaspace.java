@@ -1,4 +1,4 @@
-package app.packed.extension.sandbox;
+package app.packed.container.sandboxextension;
 
 // Ting
 // Det er en statisk ting den her...

@@ -15,10 +15,7 @@
  */
 package app.packed.mirror;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConfiguration;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
+import app.packed.container.Extension;
 
 /**
  *
@@ -38,16 +35,11 @@ import packed.internal.container.ExtensionSetup;
 // Betyder det vi ikke kan bruge den uden for en container...
 public class MirrorExtension extends Extension<MirrorExtension> {
 
-    /** The container setup. */
-    final ContainerSetup container;
-
     /**
      * Create a new mirror extension.
      * 
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ MirrorExtension(ExtensionConfiguration configuration) {
-        this.container = ((ExtensionSetup) configuration).container;
-    }
+       /* package-private */ MirrorExtension() {}
 }

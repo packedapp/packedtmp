@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.extension.sandbox.ExtensionLookup;
+import app.packed.container.sandboxextension.ExtensionLookup;
 
 /**
  *

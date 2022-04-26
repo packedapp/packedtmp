@@ -1,4 +1,4 @@
-package app.packed.extension.sandbox;
+package app.packed.container.sandboxextension;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,9 +7,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
-import app.packed.extension.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
+import app.packed.container.InternalExtensionException;
 
 /**
  * An annotation used to indicate that the annotated type belongs to a particular {@link Extension}.

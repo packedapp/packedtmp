@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.sandboxextension;
+
+import app.packed.container.Extension;
 
 /**
  *
  */
 
-// Assembly
-// scanModule().selectClassAnnotatedWith().installEach();
-// scanModule().selectClassAnnotatedWith().forEach(JPAExtension.class, (e, c) -> e.installEntity(c));
-// JPAExtension.scanModuleAndInstall(this)
+// Ideen er lidt at vi har en meget barebone extension...
+// Her putter vi ogsaa fx java.util.system.Logger-> LoggingExtension
+// @JavaBaseSupport
 
-// Der er mange muligheder...
-
-class ClassScanner {
+// Tror vi tillader at man kan registrere en String istedet for en class
+// Der er ingen grund til at loade classer som man ikke noedvendigvis vil bruge.
+// Jo vi skal jo kende @DependsOn
+abstract class BaseExtension<E extends Extension<E>> extends Extension<E> {
 
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.container;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -37,11 +37,7 @@ import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.hooks.BeanVariable;
 import app.packed.component.ComponentRealm;
-import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerMirror;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
+import app.packed.inject.Ancestral;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
 import app.packed.operation.dependency.DependencyProvider;
@@ -72,8 +68,8 @@ import packed.internal.util.ThrowableUtil;
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
- * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private
- * accessibility to make sure users do not try an manually instantiate it, but instead use
+ * taking a single parameter of type {@link Ancestral}. The constructor should have package private accessibility to
+ * make sure users do not try an manually instantiate it, but instead use
  * {@link BaseContainerConfiguration#useExtension(Class)}. The extension subclass should not be declared final as it is
  * expected that future versions of Packed will supports some debug configuration that relies on extending extensions.
  * And capturing interactions with the extension.
@@ -107,37 +103,17 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
-     * <p>
-     * This method delegates to {@link ExtensionConfiguration#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        configuration().checkConfigurable();
-    }
-
-    /**
-     * Returns a configuration object for this extension. The configuration object can be used standalone in situations
-     * where the extension needs to delegate responsibility to classes that cannot invoke the protected methods on
-     * {@code Extension}, for example, due to class-member visibility rules.
-     * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
-     * need to use an extension configuration in the constructor. You can declare {@code ExtensionConfiguration} as a
-     * parameter in the extension's constructor and the let the runtime dependency inject it into the extension instance.
-     * Another alternative is to override {@link #onNew()} to perform post initialization.
-     * 
-     * @throws IllegalStateException
-     *             if invoked from the constructor of the extension.
-     * @return a configuration object for this extension
-     */
-    protected final ExtensionConfiguration configuration() {
-        return setup();
+        setup().checkConfigurable();
     }
 
     /** {@return the path of the container that this extension belongs to.} */
     protected final NamespacePath containerPath() {
-        return configuration().containerPath();
+        return setup().container.path();
     }
 
     protected void hookOnBeanBegin(BeanInfo beanInfo) {}
@@ -171,16 +147,15 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
-     * @see ExtensionConfiguration#isExtensionUsed(Class)
      * @implNote Packed does not perform detailed tracking on what extensions use other extensions. So it cannot answer
      *           questions about what exact extension is using another extension
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return configuration().isExtensionUsed(extensionType);
+        return setup().container.isExtensionUsed(extensionType);
     }
 
     protected final boolean isRootOfApplication() {
-        return configuration().isRootOfApplication();
+        return setup().parent == null;
     }
 
     /**
@@ -305,25 +280,19 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @throws IllegalArgumentException
      *             if the specified class is not located in the same module as the extension itself. Or if the specified
      *             wirelet class is not a proper subclass of ContainerWirelet.
-     * @see ExtensionConfiguration#selectWirelets(Class)
      */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        return configuration().selectWirelets(wireletClass);
+        return setup().selectWirelets(wireletClass);
     }
 
-    /**
-     * <p>
-     * ExtensionSetup is exposed as {@link ExtensionConfiguration} via {@link #configuration()}.
-     * 
-     * @return
-     */
+    /** {@return the internal configuration of the extension.} */
     private final ExtensionSetup setup() {
-        ExtensionSetup c = setup;
-        if (c == null) {
+        ExtensionSetup s = setup;
+        if (s == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
         }
-        return c;
+        return s;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -351,9 +320,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * Only extension points of extensions that have been explicitly registered as dependencies, for example, by using
      * {@link DependsOn} may be specified as arguments to this method.
      * <p>
-     * This method cannot be called from the constructor of the extension. If you need to call it from the constructor, you
-     * can instead construct inject an instance of {@link ExtensionConfiguration} and call
-     * {@link ExtensionConfiguration#use(Class)}.
+     * This method cannot be called from the constructor of the extension.
      * 
      * @param <E>
      *            the type of extension point to return
@@ -366,10 +333,9 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @throws IllegalArgumentException
      *             If the extension to which the specified extension belongs has not been registered as a dependency of this
      *             extension
-     * @see ExtensionConfiguration#use(Class)
      */
     protected final <S extends ExtensionPoint<?>> S use(Class<S> extensionPointType) {
-        return configuration().use(extensionPointType);
+        return setup().use(extensionPointType);
     }
 
     /**
@@ -578,6 +544,24 @@ class Zarchive {
 //      // Nej den giver sgu ikke saerlig god mening...
 //      // Men har et requirement paa app.packed.base
 //      // 
+//  }
+    //
+//  /**
+//   * Returns a configuration object for this extension. The configuration object can be used standalone in situations
+//   * where the extension needs to delegate responsibility to classes that cannot invoke the protected methods on
+//   * {@code Extension}, for example, due to class-member visibility rules.
+//   * <p>
+//   * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
+//   * need to use an extension configuration in the constructor. You can declare {@code ExtensionConfiguration} as a
+//   * parameter in the extension's constructor and the let the runtime dependency inject it into the extension instance.
+//   * Another alternative is to override {@link #onNew()} to perform post initialization.
+//   * 
+//   * @throws IllegalStateException
+//   *             if invoked from the constructor of the extension.
+//   * @return a configuration object for this extension
+//   */
+//  protected final ExtensionConfiguration configuration() {
+//      return setup();
 //  }
 
 //    /**

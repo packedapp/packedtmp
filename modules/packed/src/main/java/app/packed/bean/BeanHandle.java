@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.hooks.sandbox.InvokerConfiguration;
-import app.packed.extension.ExtensionPoint.UseSite;
+import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;

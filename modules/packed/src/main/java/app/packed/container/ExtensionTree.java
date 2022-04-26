@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
 import app.packed.bean.BeanMirror;
 
 /**
- * Represents a rooted tree of extension instances.
+ * Represents a rooted tree of 1 or more extension instances.
  */
 // Maaske T extends Extension | T extends ExtensionBean... 
 // Saa kan vi ogsaa bruge den paa runtime
@@ -40,7 +40,7 @@ import app.packed.bean.BeanMirror;
 // map(extension->extension.configuration()) 
 
 // TreeView<T>
-public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
+public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
 
     default <E> List<E> collectList(BiConsumer<T, List<E>> action) {
         requireNonNull(action, "action is null");
@@ -64,7 +64,7 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
     /** {@return the root of the tree.} */
     T root();
 
-    ExtensionConfiguration rootConfiguration();
+   // ExtensionConfiguration rootConfiguration();
 
     // Ideen er at man kan faa saadan en injected ind i et mirror...
 
@@ -100,7 +100,7 @@ public interface ExtensionTree<T extends Extension<?>> extends Iterable<T> {
         return result;
     }
 
-    static <E extends Extension<?>> ExtensionTree<E> ofSingle(E extension) {
+    static <E extends Extension<E>> ExtensionTree<E> ofSingle(E extension) {
         // Den her kan godt vaere public
         // Men dem der iterere kan ikke
 

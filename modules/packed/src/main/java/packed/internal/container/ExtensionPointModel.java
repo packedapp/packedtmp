@@ -20,10 +20,10 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Type;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPoint.UseSite;
-import app.packed.extension.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionPoint;
+import app.packed.container.InternalExtensionException;
+import app.packed.container.ExtensionPoint.UseSite;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;

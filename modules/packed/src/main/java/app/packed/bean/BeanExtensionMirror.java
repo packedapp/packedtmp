@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import java.util.stream.Stream;
 
-import app.packed.extension.ExtensionMirror;
+import app.packed.container.ExtensionMirror;
 import packed.internal.bean.BeanSetup;
 
 /**
@@ -14,7 +14,7 @@ public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
 
     /** {@return the total number of installed beans.} */
     public int beanCount() {
-        return tree().sumInt(e -> (int) e.container.children.values().stream().filter(c -> c instanceof BeanSetup).count());
+        return tree().sumInt(e -> (int) e.container().children.values().stream().filter(c -> c instanceof BeanSetup).count());
     }
 
     /** {@return returns a stream of all installed beans.} */

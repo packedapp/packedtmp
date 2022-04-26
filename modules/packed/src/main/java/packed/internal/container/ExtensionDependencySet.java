@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /** Immutable implementation of {@link ExtensionDependencySet}. */
 final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension<?>>> {

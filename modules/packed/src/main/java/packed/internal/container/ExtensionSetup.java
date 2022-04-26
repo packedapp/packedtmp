@@ -10,28 +10,42 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-import app.packed.application.ApplicationInfo;
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
+import app.packed.container.ExtensionPoint;
+import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionMirror;
-import app.packed.extension.ExtensionPoint;
-import app.packed.extension.InternalExtensionException;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.inject.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** Build-time configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
-public final class ExtensionSetup implements ExtensionConfiguration {
+/** Build-time configuration of an extension. */
+public final class ExtensionSetup {
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_BEGIN = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanBegin",
+            void.class, BeanInfo.class);
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
+            void.class, BeanInfo.class);
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_FIELD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanField",
+            void.class, BeanField.class);
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "hookOnBeanMethod", void.class, BeanMethod.class);
 
     /** A handle for invoking the protected method {@link Extension#mirror()}. */
     private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
@@ -47,22 +61,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_BEGIN = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanBegin",
-            void.class, BeanInfo.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_FIELD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanField",
-            void.class, BeanField.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "hookOnBeanMethod", void.class, BeanMethod.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
-            void.class, BeanInfo.class);
 
     /** A handle for setting the private field Extension#setup. */
     private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
@@ -135,14 +133,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.model = requireNonNull(extensionTree.extensionModel);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationInfo application() {
-        return container.application.descriptor;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void checkConfigurable() {
         // Lots of combinations
         // User Assembly + User Container
@@ -151,17 +141,41 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         // Extension Assembly + Other Extension Assembly
         container.realm.checkOpen();
     }
-
-    /** {@inheritDoc} */
-    @Override
+    
     public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
         action.build(composer);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public NamespacePath containerPath() {
-        return container.path();
+    public void hookOnBeanBegin(BeanInfo beanInfo) {
+        try {
+            MH_EXTENSION_HOOK_BEAN_BEGIN.invokeExact(instance, beanInfo);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+    }
+
+    public void hookOnBeanEnd(BeanInfo beanInfo) {
+        try {
+            MH_EXTENSION_HOOK_BEAN_END.invokeExact(instance, beanInfo);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+    }
+
+    public void hookOnBeanField(BeanField field) {
+        try {
+            MH_EXTENSION_HOOK_BEAN_FIELD.invokeExact(instance, field);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+    }
+
+    public void hookOnBeanMethod(BeanMethod method) {
+        try {
+            MH_EXTENSION_HOOK_BEAN_METHOD.invokeExact(instance, method);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
     }
 
     void initialize() {
@@ -195,28 +209,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
      */
-    // This was previously a method on ExtensionConfiguration, and might become again one again if we want to extract some
-    // tree info, otherwise we should be able to ditch the method, as useExtension() always makes sure the extension
-    // instance has been properly initialized
-    // I'm not sure we want to ever expose it via ExtensionContext... Users would need to insert a cast
     public Extension<?> instance() {
         Extension<?> e = instance;
         if (e == null) {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
         }
         return e;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
-        return container.isExtensionUsed(extensionClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isRootOfApplication() {
-        return parent == null;
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
@@ -258,40 +256,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
     }
 
-    public void hookOnBeanBegin(BeanInfo beanInfo) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_BEGIN.invokeExact(instance, beanInfo);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanEnd(BeanInfo beanInfo) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_END.invokeExact(instance, beanInfo);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanField(BeanField field) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_FIELD.invokeExact(instance, field);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanMethod(BeanMethod method) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_METHOD.invokeExact(instance, method);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
@@ -316,9 +280,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return new PackedWireletSelection<>(wirelets, wireletClass);
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
     public <E extends ExtensionPoint<?>> E use(Class<E> extensionPointType) {
         requireNonNull(extensionPointType, "extensionPointType is null");
 
@@ -344,6 +306,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return (E) extensionPointModel.newInstance(extensionPoint, this);
     }
 
+    public static ExtensionSetup setupExtension(Extension<?> extension) {
+        return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
+    }
+
+    public static ContainerSetup setupContainer(Extension<?> extension) {
+        return setupExtension(extension).container;
+    }
+
+    public static ApplicationSetup setupApplication(Extension<?> extension) {
+        return setupContainer(extension).application;
+    }
+
+    
     /** A pre-order iterator for a rooted extension tree. */
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
 

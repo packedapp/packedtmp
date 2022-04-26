@@ -11,7 +11,7 @@ import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHook;
-import app.packed.extension.InternalExtensionException;
+import app.packed.container.InternalExtensionException;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ThrowableUtil;
 

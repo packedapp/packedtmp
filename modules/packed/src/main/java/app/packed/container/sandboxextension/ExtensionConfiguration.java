@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.container.sandboxextension;
 
 import java.util.function.Consumer;
 
@@ -22,9 +22,11 @@ import app.packed.base.NamespacePath;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionPoint;
+import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import packed.internal.container.ExtensionSetup;
 
 /**
  * A configuration of an {@link Extension}.
@@ -44,7 +46,10 @@ import packed.internal.container.ExtensionSetup;
 // * find family members
 // * Get extension support
 // * Get wirelets
-public sealed interface ExtensionConfiguration permits ExtensionSetup {
+
+// I sidste ende doede denne da vi fik simplificeret ServiceExtension.
+// Also, vi skulle lidt at generficere den. Hvilket egentligt saa lidt aandsvagt ud
+public interface ExtensionConfiguration {
 
     /** {@return a descriptor for the application the extension is a part of.} */
     ApplicationInfo application(); // Why not mirror for this but for container??? IDK
@@ -102,9 +107,9 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     /** {@return whether or not the extension instance is used by the root container of the application.} */
     boolean isRootOfApplication();
 
-    default boolean isRootOfLifetime() {
-        return isRootOfApplication();
-    }
+//    default boolean isRootOfLifetime() {
+//        return isRootOfApplication();
+//    }
 
     /**
      * Returns a selection of all wirelets of the specified type.

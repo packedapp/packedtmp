@@ -17,7 +17,7 @@ package app.packed.classgen;
 
 import java.util.stream.Stream;
 
-import app.packed.extension.ExtensionMirror;
+import app.packed.container.ExtensionMirror;
 
 /**
  *

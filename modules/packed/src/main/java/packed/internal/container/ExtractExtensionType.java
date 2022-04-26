@@ -17,8 +17,8 @@ package packed.internal.container;
 
 import java.lang.reflect.Type;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /**

@@ -1,6 +1,6 @@
-package app.packed.extension.sandbox;
+package app.packed.container.sandboxextension;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 // Deployment of features...
 // isStrongly connected

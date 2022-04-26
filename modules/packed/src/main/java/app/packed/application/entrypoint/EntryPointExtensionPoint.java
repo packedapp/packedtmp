@@ -18,9 +18,9 @@ package app.packed.application.entrypoint;
 import java.util.Optional;
 
 import app.packed.application.BuildException;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionPoint;
-import app.packed.extension.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionPoint;
+import app.packed.container.InternalExtensionException;
 
 /** An extension point for {@link EntryPointExtension}. */
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
@@ -30,10 +30,10 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
     /**
      * {@return the extension that is managing the
      */
-    public Optional<Class<? extends Extension<?>>> managedBy() {
-        return Optional.ofNullable(extension().shared.takeOver);
+    public Optional<Class<? extends Extension<?>>> dispatcher() {
+        return Optional.ofNullable(extension().share.dispatcher);
     }
-
+    
     /**
      * @param beanOperation
      * @return the entry point id
@@ -47,10 +47,17 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
 
     // return mirror?
 
+    // Hvordan dispatcher vi videre til extensionen?
+    // Vi kan registere en MethodHandle + Bean
+    // Sige Main fungere som dobbelt
+    // Callable er skidt syntes jeg
+    // Skal vi have noget generelt dispatch teknologi?
+    // Nå nej vi har jo entry point selectoren...
     public int registerEntryPoint(boolean isMain) {
         return extension().registerEntryPoint(useSite().extensionType(), isMain);
     }
 
+    
     /**
      * Selects
      * 

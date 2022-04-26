@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;

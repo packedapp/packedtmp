@@ -27,7 +27,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.context.ContextRootMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
 import app.packed.operation.OperationMirror;

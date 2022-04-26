@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension.sandbox;
+package app.packed.container.sandbox;
 
 /**
  *
  */
 
-// Ideen er lidt at flytte alle de $metoder her til
-abstract class ExtensionLoader {}
+// Assembly
+// scanModule().selectClassAnnotatedWith().installEach();
+// scanModule().selectClassAnnotatedWith().forEach(JPAExtension.class, (e, c) -> e.installEntity(c));
+// JPAExtension.scanModuleAndInstall(this)
 
-// @UseLoader(ServiceExtensionLoader.class)
+// Der er mange muligheder...
+
+class ClassScanner {
+
+}

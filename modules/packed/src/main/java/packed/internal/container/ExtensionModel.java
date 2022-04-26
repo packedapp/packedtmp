@@ -34,12 +34,11 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionDescriptor;
+import app.packed.container.InternalExtensionException;
+import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Ancestral;
-import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionDescriptor;
-import app.packed.extension.InternalExtensionException;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.thirdparty.guice.GTypes;
 import packed.internal.util.ClassUtil;
@@ -280,7 +279,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
 
             InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
-            builder.provide(ExtensionConfiguration.class).adaptArgument(0);
+            builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
 
             ParameterizedType pt = GTypes.newParameterizedType(Ancestral.class, extensionClass);
             TypeToken<?> tt = TypeToken.fromType(pt);

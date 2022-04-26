@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.container.sandboxextension;
 
 /**
- * Provides classes and interfaces for creating extensions.
- * <p>
+ *
  */
-package app.packed.extension;
+
+// Ideen er lidt at flytte alle de $metoder her til
+abstract class ExtensionLoader {}
+
+// @UseLoader(ServiceExtensionLoader.class)

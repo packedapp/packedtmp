@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.packed.base.Nullable;
 import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConfiguration;
+import app.packed.container.Extension;
 import app.packed.inject.Ancestral;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup;
@@ -23,11 +23,10 @@ import packed.internal.container.ExtensionSetup;
  */
 public class EntryPointExtension extends Extension<EntryPointExtension> {
 
-    private final ApplicationSetup application;
-
     boolean hasMain;
 
-    final Shared shared;
+    /** An object that is shared between all entry point extensions in the same application. */
+    final ApplicationShare share;
 
     /**
      * Create a new service extension.
@@ -35,13 +34,13 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, ExtensionConfiguration configuration) {
-        this.application = ((ExtensionSetup) configuration).container.application;
-        this.shared = parent.isRoot() ? new Shared() : parent.ancestorOrElseThrow().shared;
+    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent) {
+        this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
     }
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
+        ApplicationSetup application = ExtensionSetup.setupApplication(this);
         registerEntryPoint(null, true);
 
         application.entryPoints = new EntryPointSetup();
@@ -93,9 +92,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // method.reserveMethodHandle(EC);
         // Grim kode pfa ExtensoinSupportContest i constructoren
         if (extensionType == null) {
-            shared.takeOver(EntryPointExtension.class);
+            share.takeOver(EntryPointExtension.class);
         } else {
-            shared.takeOver(extensionType);
+            share.takeOver(extensionType);
         }
         if (isMain) {
             hasMain = true;
@@ -112,27 +111,29 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // En checked istedet ligesom TimeoutException
     }
 
-    static class EntryPointConf {
-
-    }
-
     /** An instance of this class is shared between all entry point extensions for a single application. */
-    static class Shared {
+    static class ApplicationShare {
+
+        @Nullable
+        Class<? extends Extension<?>> dispatcher;
 
         /** All entry points. */
         final List<EntryPointConf> entrypoints = new ArrayList<>();
 
         MethodHandle[] entryPoints;
-        Class<? extends Extension<?>> takeOver;
 
         void takeOver(Class<? extends Extension<?>> takeOver) {
-            if (this.takeOver != null) {
-                if (takeOver == this.takeOver) {
+            if (this.dispatcher != null) {
+                if (takeOver == this.dispatcher) {
                     return;
                 }
                 throw new IllegalStateException();
             }
-            this.takeOver = takeOver;
+            this.dispatcher = takeOver;
         }
+    }
+
+    static class EntryPointConf {
+
     }
 }

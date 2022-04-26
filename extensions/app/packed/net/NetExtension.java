@@ -15,7 +15,7 @@
  */
 package app.packed.net;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

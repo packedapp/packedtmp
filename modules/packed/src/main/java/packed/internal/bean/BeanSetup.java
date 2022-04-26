@@ -18,7 +18,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;

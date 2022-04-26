@@ -15,7 +15,7 @@
  */
 package app.packed.thread;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

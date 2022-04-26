@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
 
 /**
  * A mirror for the {@link EntryPointExtension}.
@@ -28,6 +28,22 @@ import app.packed.extension.ExtensionMirror;
 public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
 
     /* package-private */ EntryPointExtensionMirror() {}
+
+    // Optional, I think. We can add the extension
+    // But add any entry points
+    public Optional<Class<? extends Extension<?>>> dispatcher() {
+        // There is always a single extension that manages all entry points in a single application
+        // Fx
+        //// CLI
+        //// Serverless
+        return Optional.ofNullable(tree().root().share.dispatcher);
+    }
+
+    public Collection<EntryPointMirror> entryPoints() {
+        // Man boer jo kunne extende dem EntryPoints....
+        // Altsaa hvis jeg bruge CliExtension...
+        return List.of();
+    }
 
     /**
      * @return
@@ -38,28 +54,11 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
         return tree().stream().anyMatch(e -> e.hasMain);
     }
 
-    /** {@inheritDoc} */
-    public Collection<EntryPointMirror> entryPoints() {
-        // Man boer jo kunne extende dem EntryPoints....
-        // Altsaa hvis jeg bruge CliExtension...
-        return List.of();
-    }
-
     /**
      * @return stuff
      */
     public Optional<EntryPointMirror> main() {
         return Optional.empty();
-    }
-
-    // Optional, I think. We can add the extension
-    // But add any entry points
-    public Class<? extends Extension<?>> managedBy() {
-        // There is always a single extension that manages all entry points in a single application
-        // Fx
-        //// CLI
-        //// Serverless
-        return tree().root().shared.takeOver;
     }
 
     public void print() {

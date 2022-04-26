@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles.Lookup.ClassOption;
 import java.util.ArrayList;
 
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

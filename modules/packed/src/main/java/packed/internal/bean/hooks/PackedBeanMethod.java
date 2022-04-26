@@ -18,8 +18,8 @@ package packed.internal.bean.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
+import app.packed.bean.ExtensionBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationTargetMirror;

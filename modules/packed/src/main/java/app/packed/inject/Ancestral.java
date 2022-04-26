@@ -16,6 +16,9 @@
 package app.packed.inject;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 
@@ -27,6 +30,9 @@ import app.packed.base.Nullable;
 // Maybe Ancestor instead.. That is usefull for extension beans
 // RawHook... Check extensionBean...
 // Nahh taenker det er en keybased injection...
+
+// Maaske kunne vi have en general family??
+// Doo<List<Children>> idk
 public final /* value */ class Ancestral<T> {
 
     /** Common instance for {@code root()}. */
@@ -38,6 +44,28 @@ public final /* value */ class Ancestral<T> {
 
     private Ancestral(T ancestor) {
         this.ancestor = ancestor;
+    }
+
+    /**
+     * If a value is present, returns the value, otherwise returns the result produced by the supplying function.
+     *
+     * @param supplier
+     *            the supplying function that produces a value to be returned
+     * @return the value, if present, otherwise the result produced by the supplying function
+     * @throws NullPointerException
+     *             if no value is present and the supplying function is {@code null}
+     */
+    public T orElseGet(Supplier<? extends T> supplier) {
+        return ancestor != null ? ancestor : supplier.get();
+    }
+
+    public <U> Ancestral<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper);
+        if (isRoot()) {
+            return root();
+        } else {
+            return Ancestral.ofNullable(mapper.apply(ancestor));
+        }
     }
 
     public T ancestorOrElseThrow() {

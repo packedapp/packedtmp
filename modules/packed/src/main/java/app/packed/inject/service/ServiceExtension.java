@@ -22,10 +22,9 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
-import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionPoint;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionPoint;
+import app.packed.container.Extension.DependsOn;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
@@ -76,17 +75,16 @@ import packed.internal.inject.service.ContainerInjectionManager;
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
-    /** The service manager. */
-    private final ContainerInjectionManager injectionManager;
-
     /**
      * Create a new service extension.
      * 
      * @param configuration
      *            an extension configuration object.
      */
-    ServiceExtension(ExtensionConfiguration configuration) {
-        this.injectionManager = ((ExtensionSetup) configuration).container.injectionManager;
+    ServiceExtension() {}
+
+    ContainerInjectionManager injectionManager() {
+        return ExtensionSetup.setupContainer(this).injectionManager;
     }
 
     // Validates the outward facing contract
@@ -130,13 +128,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        injectionManager.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        injectionManager().ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror mirror() {
-        return mirrorInitialize(new ServiceExtensionMirror(injectionManager));
+        return mirrorInitialize(new ServiceExtensionMirror(injectionManager()));
     }
 
     // requires bliver automatisk anchoret...
@@ -167,7 +165,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            injectionManager.ios.requirementsOrCreate().require(key, false /* , cs */);
+            injectionManager().ios.requirementsOrCreate().require(key, false /* , cs */);
         }
     }
 
@@ -192,7 +190,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            injectionManager.ios.requirementsOrCreate().require(key, true /* , cs */);
+            injectionManager().ios.requirementsOrCreate().require(key, true /* , cs */);
         }
     }
 
@@ -212,12 +210,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
-        injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
+        injectionManager().ios.exportsOrCreate().setExportTransformer(transformer);
     }
 
     /**
-     * A subtension that can be used by other extensions via {@link Extension#use(Class)} or
-     * {@link ExtensionConfiguration#use(Class)}.
+     * A subtension that can be used by other extensions via {@link Extension#use(Class)}
      * <p>
      * This class does not provide any support for exporting services. The end-user is always in full control of exactly
      * what is being exported out from the container.
@@ -232,7 +229,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // SetContract
         /// This would apply locally to the extension...
         /// limited usefullness
-
 
         public void check() {
             System.out.println("Requested by " + useSite().realm());

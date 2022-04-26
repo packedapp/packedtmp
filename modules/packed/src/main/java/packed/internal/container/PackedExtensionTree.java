@@ -17,15 +17,14 @@ package packed.internal.container;
 
 import java.util.Iterator;
 
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionTree;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionTree;
 
 /**
  *
  */
 // Tree, SequencedTree
-public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionTree<T> {
+public record PackedExtensionTree<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionTree<T> {
 
     /** {@inheritDoc} */
     @Override
@@ -45,9 +44,9 @@ public record PackedExtensionTree<T extends Extension<?>> (ExtensionSetup extens
         return extensionType.cast(extension.instance());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ExtensionConfiguration rootConfiguration() {
-        return extension;
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public ExtensionConfiguration rootConfiguration() {
+//        return extension;
+//    }
 }

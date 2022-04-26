@@ -1,6 +1,6 @@
 package app.packed.thread;
 
-import app.packed.extension.ExtensionPoint;
+import app.packed.container.ExtensionPoint;
 
 public class ThreadExtensionPoint extends ExtensionPoint<ThreadExtension> {
 

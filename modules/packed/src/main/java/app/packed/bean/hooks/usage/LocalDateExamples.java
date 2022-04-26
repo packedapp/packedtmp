@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.time.LocalDate;
 
 import app.packed.component.Realm;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;

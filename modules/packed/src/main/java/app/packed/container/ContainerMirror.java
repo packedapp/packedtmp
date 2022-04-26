@@ -8,9 +8,6 @@ import java.util.Set;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
-import app.packed.extension.InternalExtensionException;
 import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
 
 /**

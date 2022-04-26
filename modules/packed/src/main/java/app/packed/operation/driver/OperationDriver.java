@@ -18,7 +18,7 @@ package app.packed.operation.driver;
 import java.util.function.BiConsumer;
 
 import app.packed.base.TypeToken;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.operation.OperationMirror;
 

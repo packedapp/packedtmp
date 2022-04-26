@@ -15,9 +15,9 @@
  */
 package app.packed.container.sandbox;
 
+import app.packed.container.Extension;
+import app.packed.container.Extension.BootstrapWith;
 import app.packed.container.sandbox.MyExt.MyBootstrap;
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.BootstrapWith;
 import app.packed.inject.service.ServiceExtension;
 
 /**

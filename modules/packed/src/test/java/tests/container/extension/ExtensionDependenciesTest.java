@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.extension.Extension;
-import app.packed.extension.Extension.DependsOn;
-import app.packed.extension.ExtensionPoint;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionPoint;
+import app.packed.container.Extension.DependsOn;
 import testutil.util.AbstractApplicationTest;
 
 /**
