@@ -27,7 +27,7 @@ import app.packed.extension.ExtensionMirror;
  */
 public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
 
-    EntryPointExtensionMirror() {}
+    /* package-private */ EntryPointExtensionMirror() {}
 
     /**
      * @return
@@ -42,7 +42,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
     public Collection<EntryPointMirror> entryPoints() {
         // Man boer jo kunne extende dem EntryPoints....
         // Altsaa hvis jeg bruge CliExtension...
-        return List.<EntryPointMirror>of();
+        return List.of();
     }
 
     /**

@@ -18,7 +18,7 @@ package packed.internal.util;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.extension.Ancestral;
+import app.packed.inject.Ancestral;
 import app.packed.inject.InjectionContext;
 
 /**

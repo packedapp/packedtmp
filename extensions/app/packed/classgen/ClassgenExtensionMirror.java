@@ -23,7 +23,7 @@ import app.packed.extension.ExtensionMirror;
  *
  */
 public class ClassgenExtensionMirror extends ExtensionMirror<ClassgenExtension> {
-    ClassgenExtensionMirror() {}
+    /* package-private */    ClassgenExtensionMirror() {}
 
     /** {@return a stream containing mirrors for every generated class.} */
     public Stream<GeneratedClassMirror> generatedClasses() {
