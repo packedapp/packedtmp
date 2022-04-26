@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Type;
 
 import app.packed.extension.Extension;
@@ -25,10 +26,15 @@ import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /** A model for an {@link Extension.ExtensionPoint} class. Not used outside of this package. */
 record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
+
+    /** A handle for setting the private field Extension#context. */
+    private static final VarHandle VH_EXTENSION_POINT_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ExtensionPoint.class, "useSite",
+            PackedExtensionPointUseSite.class);
 
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
@@ -50,19 +56,17 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
 //                throw new InternalExtensionException(subtensionClass + " must be annotated with @ExtensionMember");
 //            }
 
-
             @SuppressWarnings("unchecked")
             Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) t;// extensionMember.value();
             // TODO check same module
             // Move to a common method and share it with mirror
             //
 
-            
             ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
             // Create an infuser exposing two services:
             // 1. An instance of the extension that the extension point is a member of
-            // 2. An ExtensionPointContext instance
+            // 2. An ExtensionPoint.UseSite instance
             InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, UseSite.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
             builder.provide(UseSite.class).adaptArgument(1); // Extension instance of the subtension
@@ -83,10 +87,12 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
      *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    ExtensionPoint<?> newInstance(Extension<?> extension, UseSite context) {
+    ExtensionPoint<?> newInstance(Extension<?> extension, PackedExtensionPointUseSite context) {
         // mhConstructor = (Extension,ExtensionSupportContext)Subtension
         try {
-            return (ExtensionPoint<?>) mhConstructor.invokeExact(extension, context);
+            ExtensionPoint<?> p = (ExtensionPoint<?>) mhConstructor.invokeExact(extension, (UseSite) context);
+            VH_EXTENSION_POINT_SETUP.set(p, context);
+            return p;
         } catch (Throwable e) {
             throw new InternalExtensionException("Instantiation of " + ExtensionPoint.class + " failed", e);
         }

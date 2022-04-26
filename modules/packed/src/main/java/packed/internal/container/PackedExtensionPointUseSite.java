@@ -26,12 +26,6 @@ public record PackedExtensionPointUseSite(ExtensionSetup extension, ExtensionTre
 
     /** {@inheritDoc} */
     @Override
-    public void checkConfigurable() {
-        user.checkOpen();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Class<? extends Extension<?>> extensionType() {
         return user.extensionModel.type();
     }

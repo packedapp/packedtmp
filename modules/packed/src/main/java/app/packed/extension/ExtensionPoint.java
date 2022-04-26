@@ -39,8 +39,28 @@ import packed.internal.container.PackedExtensionPointUseSite;
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
+    /** The use-site (includes the owning extension). */
     private PackedExtensionPointUseSite useSite;
 
+
+    protected final void checkInSameContainerAs(Extension<?> extension) {
+        
+        // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
+        // Men at vi binder den til en container...
+
+        // IDK
+        // ExtensionSupportUSer???
+    }
+    
+    /**
+     * 
+     * @see Extension#checkConfigurable()
+     */
+    protected final void checkConfigurable() {
+        usesite().user().checkOpen();
+    }
+
+    /** {@return the extension point's extension.} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
         return (E) usesite().extension().instance();
@@ -59,11 +79,11 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         }
         return c;
     }
-
+    
     protected final UseSite useSite() {
         return usesite();
     }
-
+    
     /**
      * A context object that can be injected into subclasses of {@link ExtensionPoint}.
      */
@@ -74,19 +94,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
     public sealed interface UseSite permits PackedExtensionPointUseSite {
 
-        /**
-         * 
-         * @see Extension#checkConfigurable()
-         */
-        void checkConfigurable();
-
-        default void checkInSameContainerAs(Extension<?> extension) {
-            // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
-            // Men at vi binder den til en container...
-
-            // IDK
-            // ExtensionSupportUSer???
-        }
 
         Class<? extends Extension<?>> extensionType();
 

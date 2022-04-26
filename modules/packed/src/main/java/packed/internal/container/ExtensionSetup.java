@@ -64,7 +64,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
             void.class, BeanInfo.class);
 
-    /** A handle for setting the private field Extension#context. */
+    /** A handle for setting the private field Extension#setup. */
     private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
             ExtensionSetup.class);
 
