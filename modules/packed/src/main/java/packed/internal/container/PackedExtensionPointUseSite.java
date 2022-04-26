@@ -22,17 +22,17 @@ import app.packed.extension.ExtensionPoint.UseSite;
 /**
  *
  */
-public record PackedExtensionPointUseSite(ExtensionSetup extension, ExtensionTreeSetup user) implements UseSite {
+public record PackedExtensionPointUseSite(ExtensionSetup extension) implements UseSite {
 
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> extensionType() {
-        return user.extensionModel.type();
+        return extension.extensionTree.extensionModel.type();
     }
 
     /** {@inheritDoc} */
     @Override
     public Realm realm() {
-        return user.extensionModel.realm();
+        return extension.extensionTree.extensionModel.realm();
     }
 }

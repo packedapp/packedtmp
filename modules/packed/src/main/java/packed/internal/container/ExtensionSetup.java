@@ -57,8 +57,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             void.class, BeanField.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanMethod",
-            void.class, BeanMethod.class);
+    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "hookOnBeanMethod", void.class, BeanMethod.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
@@ -285,7 +285,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw ThrowableUtil.orUndeclared(t);
         }
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
@@ -315,29 +315,29 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends ExtensionPoint<?>> E use(Class<E> supportClass) {
-        requireNonNull(supportClass, "supportClass is null");
+    public <E extends ExtensionPoint<?>> E use(Class<E> extensionPointType) {
+        requireNonNull(extensionPointType, "extensionPointType is null");
 
-        // Finds the subtension's model and its extension class
-        ExtensionPointModel supportModel = ExtensionPointModel.of(supportClass);
-        Class<? extends Extension<?>> supportExtensionType = supportModel.extensionType();
+        // Finds a model of the extension point
+        ExtensionPointModel extensionPointModel = ExtensionPointModel.of(extensionPointType);
+        Class<? extends Extension<?>> extensionPointExtensionType = extensionPointModel.extensionType();
 
-        // Check that the requested subtension's extension is a direct dependency of this extension
-        if (!model.dependencies().contains(supportExtensionType)) {
-            // Special message if you try to use your own subtension
-            if (extensionType == supportExtensionType) {
-                throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own support class " + supportExtensionType.getSimpleName()
-                        + "." + supportClass.getSimpleName());
+        // Check that the requested extension point's extension is a direct dependency of this extension
+        if (!model.dependencies().contains(extensionPointExtensionType)) {
+            // Special message if you try to use your own extensionpoint
+            if (extensionType == extensionPointExtensionType) {
+                throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own extension point "
+                        + extensionPointExtensionType.getSimpleName() + "." + extensionPointType.getSimpleName());
             }
-            throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(supportExtensionType)
-                    + " as a dependency in order to use " + supportExtensionType.getSimpleName() + "." + supportClass.getSimpleName());
+            throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(extensionPointExtensionType)
+                    + " as a dependency in order to use " + extensionPointExtensionType.getSimpleName() + "." + extensionPointType.getSimpleName());
         }
 
-        // Get the extension instance (create it if needed) that the subtension needs
-        Extension<?> instance = container.useExtensionSetup(supportExtensionType, this).instance;
+        // Get the extension instance (create it if needed) that the extension point is a part of
+        Extension<?> instance = container.useExtensionSetup(extensionPointExtensionType, this).instance;
 
-        // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
-        return (E) supportModel.newInstance(instance, new PackedExtensionPointUseSite(this, extensionTree));
+        // Create the new extension point instance
+        return (E) extensionPointModel.newInstance(this, instance);
     }
 
     /** A pre-order iterator for a rooted extension tree. */

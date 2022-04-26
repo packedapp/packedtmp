@@ -81,16 +81,17 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
     /**
      * Creates a new extension support class instance.
      * 
-     * @param extension
+     * @param otherExtension
      *            an instance of the declaring extension class
      * @param requestingExtensionClass
      *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    ExtensionPoint<?> newInstance(Extension<?> extension, PackedExtensionPointUseSite context) {
+    ExtensionPoint<?> newInstance(ExtensionSetup user, Extension<?> otherExtension) {
+        PackedExtensionPointUseSite context = new PackedExtensionPointUseSite(user);
         // mhConstructor = (Extension,ExtensionSupportContext)Subtension
         try {
-            ExtensionPoint<?> p = (ExtensionPoint<?>) mhConstructor.invokeExact(extension, (UseSite) context);
+            ExtensionPoint<?> p = (ExtensionPoint<?>) mhConstructor.invokeExact(otherExtension, (UseSite) context);
             VH_EXTENSION_POINT_SETUP.set(p, context);
             return p;
         } catch (Throwable e) {

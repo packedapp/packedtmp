@@ -57,7 +57,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * @see Extension#checkConfigurable()
      */
     protected final void checkConfigurable() {
-        usesite().user().checkOpen();
+        usesite().extension().extensionTree.checkOpen();
     }
 
     /** {@return the extension point's extension.} */
