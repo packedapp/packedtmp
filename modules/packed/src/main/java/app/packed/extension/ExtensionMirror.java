@@ -63,6 +63,11 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
     }
 
+    protected ExtensionTree<E> tree() {
+        extension();
+        return tree;
+    }
+    
     /**
      * {@return the mirrored extension's internal configuration.}
      * 
@@ -114,11 +119,13 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(ExtensionSetup extension) {
+    @SuppressWarnings("unchecked")
+    final void initialize(ExtensionSetup extension, ExtensionTree<?> tree) {
         if (this.extension != null) {
             throw new IllegalStateException("The specified mirror has already been initialized.");
         }
         this.extension = extension;
+        this.tree = (PackedExtensionTree<E>) tree;
     }
 
     /** {@inheritDoc} */
@@ -126,4 +133,5 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     public String toString() {
         return extensionType().getCanonicalName();
     }
+
 }

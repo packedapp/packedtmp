@@ -55,7 +55,7 @@ public class ClassgenExtension extends Extension<ClassgenExtension> {
 
     @Override
     protected ClassgenExtensionMirror mirror() {
-        return mirrorInitialize(new ClassgenExtensionMirror(tree()));
+        return mirrorInitialize(new ClassgenExtensionMirror());
     }
 
     public Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException {

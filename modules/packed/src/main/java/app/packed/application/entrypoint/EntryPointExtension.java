@@ -67,7 +67,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     /** {@inheritDoc} */
     @Override
     public EntryPointExtensionMirror mirror() {
-        return mirrorInitialize(new EntryPointExtensionMirror(tree()));
+        return mirrorInitialize(new EntryPointExtensionMirror());
     }
 
     @Override

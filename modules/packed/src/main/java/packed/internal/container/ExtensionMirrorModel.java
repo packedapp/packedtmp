@@ -34,7 +34,10 @@ import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
-/** A model for an {@link Extension.ExtensionPoint} class. Not used outside of this package. */
+
+// Den er ikke lige i brug endnu... pga Container#extensions() vi ved jo ikke hvad for en type
+// extension mirror vi skal lave....
+
 record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
 
     /** A handle for setting the private field Extension#context. */

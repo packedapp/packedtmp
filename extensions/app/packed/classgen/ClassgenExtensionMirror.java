@@ -18,20 +18,15 @@ package app.packed.classgen;
 import java.util.stream.Stream;
 
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.ExtensionTree;
 
 /**
  *
  */
 public class ClassgenExtensionMirror extends ExtensionMirror<ClassgenExtension> {
-    final ExtensionTree<ClassgenExtension> tree;
-
-    ClassgenExtensionMirror(ExtensionTree<ClassgenExtension> tree) {
-        this.tree = tree;
-    }
+    ClassgenExtensionMirror() {}
 
     /** {@return a stream containing mirrors for every generated class.} */
     public Stream<GeneratedClassMirror> generatedClasses() {
-        return tree.stream().flatMap(c -> c.generated.stream());
+        return tree().stream().flatMap(c -> c.generated.stream());
     }
 }

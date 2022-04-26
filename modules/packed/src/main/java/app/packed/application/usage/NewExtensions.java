@@ -30,6 +30,7 @@ public class NewExtensions extends BaseAssembly {
     @Override
     protected void build() {
         installInstance("asd");
+        installInstance("asd1");
         link(new FooAss());
         use(MyExt.class);
     }

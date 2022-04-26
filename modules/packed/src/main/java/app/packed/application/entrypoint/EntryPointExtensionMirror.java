@@ -15,27 +15,19 @@
  */
 package app.packed.application.entrypoint;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.ExtensionTree;
 
 /**
  * A mirror for the {@link EntryPointExtension}.
  */
 public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
 
-    /** The extension tree we are mirroring. */
-    private final ExtensionTree<EntryPointExtension> tree;
-
-    EntryPointExtensionMirror(ExtensionTree<EntryPointExtension> tree) {
-        this.tree = requireNonNull(tree);
-    }
+    EntryPointExtensionMirror() {}
 
     /**
      * @return
@@ -43,7 +35,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
      * @see Main
      */
     public boolean hasMain() {
-        return tree.stream().anyMatch(e -> e.hasMain);
+        return tree().stream().anyMatch(e -> e.hasMain);
     }
 
     /** {@inheritDoc} */
@@ -67,7 +59,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
         // Fx
         //// CLI
         //// Serverless
-        return tree.root().shared().takeOver;
+        return tree().root().shared().takeOver;
     }
 
     public void print() {
