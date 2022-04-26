@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
@@ -54,6 +55,7 @@ import packed.internal.base.VariableTypeWrapper;
  * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
  *          {@link TypeVariable}
  */
+// extends AnnotatedType???? Is fucking annotatedType???
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
     /**
@@ -68,18 +70,9 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      */
     Class<?> getType();
 
-    @SuppressWarnings("exports")
-    default CommonVarInfo parse() {
-        return parse(CommonVarInfo.DEFAULT);
-    }
-
-    // expandMetaAnnotations(); -> Declared kept. Annotations -> Meta annotations
-
-    default <T> T parse(VariableParser<T> parser) {
-        // extract???
+    default Type getGenericType() {
         throw new UnsupportedOperationException();
     }
-
     TypeToken<?> typeToken();
 
     /**
@@ -128,6 +121,19 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
 
 interface VariableRejected {
 
+
+    default CommonVarInfo parse() {
+        return parse(CommonVarInfo.DEFAULT);
+    }
+
+    // expandMetaAnnotations(); -> Declared kept. Annotations -> Meta annotations
+
+    default <T> T parse(VariableParser<T> parser) {
+        // extract???
+        throw new UnsupportedOperationException();
+    }
+
+    
 //  Cool with some helper method, but probably shouldn't be here
 //    static Variable ofTypeVariable(Class<?> type, Class<?> baseType, int index) {
 //        return ofTypeVariables(type, baseType, index)[0];

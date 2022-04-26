@@ -20,9 +20,9 @@ import java.lang.invoke.MethodType;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.operation.InjectableOperationHandle;
-import app.packed.bean.operation.OperationPack;
 import app.packed.inject.FactoryType;
+import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.OperationPack;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.bean.hooks.PackedBeanMember;
 
@@ -42,7 +42,7 @@ public final class InjectableOperationSetup extends OperationSetup implements In
      * @param member
      */
     public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup extensionBean) {
-        super(member.bean, member, member.extension);
+        super(member.bean, member, member.operator);
         this.extensionBean = extensionBean;
     }
 

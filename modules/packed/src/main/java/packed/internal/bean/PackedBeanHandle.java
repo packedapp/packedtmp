@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
-import app.packed.bean.operation.OperationHandle;
+import app.packed.operation.OperationHandle;
 
 /**
  * The implementation of {@link BeanHandle}.

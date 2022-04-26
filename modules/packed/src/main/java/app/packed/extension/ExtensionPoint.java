@@ -1,7 +1,10 @@
 package app.packed.extension;
 
+import app.packed.component.Realm;
+import packed.internal.container.PackedExtensionPointUseSite;
+
 /**
- * Extension points are the main mechanism by which an extension can use another extension. Developers that are not
+ * Extension points are the main mechanism by which an extension can use other extensions. Developers that are not
  * creating their own extensions will likely never have to deal with these type of classes.
  * <p>
  * 
@@ -32,6 +35,74 @@ package app.packed.extension;
  * 
  * @see Extension#use(Class)
  * @see ExtensionConfiguration#use(Class)
- * @see ExtensionPointContext
+ * @see UseSite
  */
-public abstract class ExtensionPoint<E extends Extension<E>> {}
+public abstract class ExtensionPoint<E extends Extension<E>> {
+
+    private PackedExtensionPointUseSite useSite;
+
+    @SuppressWarnings("unchecked")
+    protected final E extension() {
+        return (E) usesite().extension().instance();
+    }
+
+    /**
+     * <p>
+     * ExtensionSetup is exposed as {@link ExtensionConfiguration} via {@link #configuration()}.
+     * 
+     * @return
+     */
+    private final PackedExtensionPointUseSite usesite() {
+        PackedExtensionPointUseSite c = useSite;
+        if (c == null) {
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension point.");
+        }
+        return c;
+    }
+
+    protected final UseSite useSite() {
+        return usesite();
+    }
+
+    /**
+     * A context object that can be injected into subclasses of {@link ExtensionPoint}.
+     */
+    // Svaert at have ExtensionContext (paa runtime) samtidig med denne
+
+    // Inner class: UseSite
+    //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
+    //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
+    public sealed interface UseSite permits PackedExtensionPointUseSite {
+
+        /**
+         * 
+         * @see Extension#checkConfigurable()
+         */
+        void checkConfigurable();
+
+        default void checkInSameContainerAs(Extension<?> extension) {
+            // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
+            // Men at vi binder den til en container...
+
+            // IDK
+            // ExtensionSupportUSer???
+        }
+
+        Class<? extends Extension<?>> extensionType();
+
+        Realm realm();
+    }
+    //
+    //// checkExtendable...
+    /// **
+    // * Checks that the new extensions can be added to the container in which this extension is registered.
+    // *
+    // * @see #onAssemblyClose()
+    // */
+    //// Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
+    //// af brugeren med mindre XYZ...
+    //// Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
+    // protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
+//        configuration().checkExtensionConfigurable(extensionType);
+    // }
+}

@@ -6,10 +6,10 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.bean.BeanMirror;
-import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.lifecycle.BeanLifecycleMirrorPlan;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.mirror.Mirror;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.lifecycle.BeanLifecycleMirrorPlan;
 import packed.internal.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 
 // Kan man have Dependent beans... DVS beans

@@ -27,9 +27,9 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
-import app.packed.bean.operation.InjectableOperationHandle;
-import app.packed.bean.operation.RawOperationHandle;
 import app.packed.extension.Extension;
+import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanField;
 
 /**
@@ -87,7 +87,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @see Variable#ofField(Field)
      */
-    Variable variable();
+    Variable variable(); //mayby toVariable
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)

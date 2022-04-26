@@ -15,15 +15,15 @@
  */
 package app.packed.bean.hooks.usage;
 
-import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.extension.Extension;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
  */
 public class PlusNumbers {
 
-    @BeanVarInjector.Hook(extension = MyExt.class)
+    @DependencyProvider.Hook(extension = MyExt.class)
     @interface Plus {
         int arg1();
 
@@ -34,7 +34,7 @@ public class PlusNumbers {
     static class MyExt extends Extension<MyExt> {
 
         @Override
-        protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+        protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
             // checkType
             Plus p = injector.variable().getAnnotation(Plus.class);
             injector.provideInstance(p.arg1() + p.arg2());

@@ -17,14 +17,18 @@ package app.packed.bean.hooks;
 
 import app.packed.bean.BeanDefinitionException;
 import app.packed.component.Realm;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
  */
 // For now it is a place holder... Ved ikke om vi vil beholder dent. BeanVarInjcector er ogsaa lidt sjot
 // BeanVariable bare
-public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVarInjector {
+public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, DependencyProvider, BeanVariable {
 
+    // annotationReadr()???
+    // We need it on every element
+    
     /**
      * @param postFix
      *            the message to include in the final message
@@ -33,13 +37,16 @@ public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanFiel
      *             always thrown
      */
     default void failWith(String postFix) {
-
+        throw new BeanDefinitionException("OOPS " + postFix);
     }
 
     default BeanInfo beanInfo() {
         throw new UnsupportedOperationException();
     }
 
+    // Hvem bruger den... 
+    // Er det altid det samme som fra BeanInfo???
+    // Det vil jeg mene...
     default Realm realm() {
         throw new UnsupportedOperationException();
     }

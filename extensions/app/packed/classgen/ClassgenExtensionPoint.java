@@ -19,23 +19,15 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodHandles.Lookup.ClassOption;
 
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPointContext;
 
 /**
  *
  */
 public class ClassgenExtensionPoint extends ExtensionPoint<ClassgenExtension> {
 
-    final ClassgenExtension classgen;
-
-    final ExtensionPointContext context;
-
-    ClassgenExtensionPoint(ClassgenExtension classgen, ExtensionPointContext context) {
-        this.classgen = classgen;
-        this.context = context;
-    }
+    ClassgenExtensionPoint() {}
 
     public Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException {
-        return classgen.defineHiddenClass(context.realm(), caller, bytes, initialize, options);
+        return extension().defineHiddenClass(useSite().realm(), caller, bytes, initialize, options);
     }
 }

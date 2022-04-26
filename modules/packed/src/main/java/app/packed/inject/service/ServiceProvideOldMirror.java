@@ -2,9 +2,9 @@ package app.packed.inject.service;
 
 import java.util.Set;
 
-import app.packed.bean.operation.mirror.ig.InjectionSite;
-import app.packed.bean.operation.usage.ServiceProvideMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.operation.mirror.ig.InjectionSite;
+import app.packed.operation.usage.ServiceProvideMirror;
 
 // extends ComponentFeatureMirror???
 /** A mirror of a service. */

@@ -18,13 +18,13 @@ package app.packed.bean.hooks.usage;
 import java.lang.invoke.MethodHandle;
 import java.time.LocalDate;
 
-import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
 import app.packed.lifecycle.OnStart;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
@@ -79,7 +79,7 @@ public class LocalDateExamples {
         class MyExt extends Extension<MyExt> {
 
             @Override
-            protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+            protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
                 injector.provide(new Factory1<AppStartBean, LocalDate>(b -> b.started) {});
             }
             

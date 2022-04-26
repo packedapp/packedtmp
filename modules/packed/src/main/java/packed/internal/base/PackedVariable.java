@@ -77,5 +77,4 @@ public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrap
     public TypeToken<?> typeToken() {
         return typeWrapper.typeToken();
     }
-
 }

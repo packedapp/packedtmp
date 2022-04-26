@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPointContext;
+import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
@@ -63,9 +63,9 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
             // Create an infuser exposing two services:
             // 1. An instance of the extension that the extension point is a member of
             // 2. An ExtensionPointContext instance
-            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, ExtensionPointContext.class);
+            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, UseSite.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
-            builder.provide(ExtensionPointContext.class).adaptArgument(1); // Extension instance of the subtension
+            builder.provide(UseSite.class).adaptArgument(1); // Extension instance of the subtension
 
             // Find a method handle for the subtensions's constructor
             MethodHandle constructor = builder.findConstructor(ExtensionPoint.class, m -> new InternalExtensionException(m));
@@ -83,7 +83,7 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
      *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    ExtensionPoint<?> newInstance(Extension<?> extension, ExtensionPointContext context) {
+    ExtensionPoint<?> newInstance(Extension<?> extension, UseSite context) {
         // mhConstructor = (Extension,ExtensionSupportContext)Subtension
         try {
             return (ExtensionPoint<?>) mhConstructor.invokeExact(extension, context);

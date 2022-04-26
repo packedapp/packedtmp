@@ -4,11 +4,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
-import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.extension.Extension;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;
+import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.util.LookupUtil;
 
 public class InternalInfuserTester {
@@ -55,7 +55,7 @@ public class InternalInfuserTester {
         }
     }
 
-    @BeanVarInjector.Hook(extension = ServiceExtension.class)
+    @DependencyProvider.Hook(extension = ServiceExtension.class)
     interface XX {
 
         // Det er super smart at man ikke skal lave en ny klasse...

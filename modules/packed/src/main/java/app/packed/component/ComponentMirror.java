@@ -25,12 +25,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.context.ContextRootMirror;
-import app.packed.bean.operation.OperationMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
+import app.packed.operation.OperationMirror;
 import packed.internal.util.StreamUtil;
 
 /**

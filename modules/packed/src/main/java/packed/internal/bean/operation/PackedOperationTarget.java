@@ -17,13 +17,13 @@ package packed.internal.bean.operation;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.bean.operation.OperationTargetMirror;
+import app.packed.operation.OperationTargetMirror;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /** The target of an operation. */
-public abstract sealed class PackedOperationTarget permits PackedBeanMember, PackedFunctionOperationTarget {
+public sealed interface PackedOperationTarget permits PackedBeanMember, PackedFunctionOperationTarget {
 
-    public MethodHandle methodHandle() {
+    default MethodHandle methodHandle() {
         throw new UnsupportedOperationException();
     }
 

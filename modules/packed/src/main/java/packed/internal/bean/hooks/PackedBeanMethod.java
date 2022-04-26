@@ -19,11 +19,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.operation.InjectableOperationHandle;
-import app.packed.bean.operation.OperationTargetMirror;
-import app.packed.bean.operation.RawOperationHandle;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
+import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
 

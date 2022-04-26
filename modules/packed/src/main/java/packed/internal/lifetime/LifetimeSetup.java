@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirrorTree;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimePhase;
+import app.packed.operation.OperationMirror;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 

@@ -15,24 +15,27 @@
  */
 package app.packed.bean.hooks.usage;
 
-import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory1;
+import app.packed.inject.Factory2;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
  */
 public class OwnLogger {
 
-    @BeanVarInjector.Hook(extension = MyExt.class)
+    @DependencyProvider.Hook(extension = MyExt.class)
     class Logger {}
 
     static class MyExt extends Extension<MyExt> {
 
         @Override
-        protected void hookOnBeanVarInjector(BeanVarInjector injector) {
-            String name = injector.beanInfo().beanClass().getCanonicalName();
-            injector.provide(new Factory1<RuntimeLoggerManager, Logger>(l -> l.newLogger(name)) {});
+        protected void hookOnBeanDependencyProvider(DependencyProvider provider) {
+            String name = provider.beanInfo().beanClass().getCanonicalName();
+            provider.provide(new Factory1<RuntimeLoggerManager, Logger>(l -> l.newLogger(name)) {});
+            // eller
+            provider.provide(new Factory2<String, RuntimeLoggerManager, Logger>((n, l) -> l.newLogger(n)) {}.bind(name));
         }
     }
 

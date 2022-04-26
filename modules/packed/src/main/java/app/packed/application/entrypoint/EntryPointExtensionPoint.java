@@ -15,37 +15,23 @@
  */
 package app.packed.application.entrypoint;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Optional;
 
 import app.packed.application.BuildException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPointContext;
 import app.packed.extension.InternalExtensionException;
 
-/**
- *
- */
+/** An extension point for {@link EntryPointExtension}. */
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
 
-    /** The extension using the this class. */
-    private final ExtensionPointContext context;
-
-    /** The entry point extension. */
-    private final EntryPointExtension extension;
-
-    EntryPointExtensionPoint(EntryPointExtension extension, ExtensionPointContext context) {
-        this.extension = requireNonNull(extension);
-        this.context = requireNonNull(context);
-    }
+    EntryPointExtensionPoint() {}
 
     /**
      * {@return the extension that is managing the
      */
     public Optional<Class<? extends Extension<?>>> managedBy() {
-        return Optional.ofNullable(extension.shared().takeOver);
+        return Optional.ofNullable(extension().shared().takeOver);
     }
 
     /**
@@ -60,9 +46,9 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
     // for 2 forskellige extensions
 
     // return mirror?
-    
+
     public int registerEntryPoint(boolean isMain) {
-        return extension.registerEntryPoint(context.extensionType(), isMain);
+        return extension().registerEntryPoint(useSite().extensionType(), isMain);
     }
 
     /**
@@ -79,7 +65,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
     // @AutoService
     // Kan injectes i enhver bean som er owner = managedBy...
     // For andre beans smider man InjectionException?
-    
+
     public interface EntryPointSelector {
 
         /**
@@ -93,7 +79,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
          */
         void selectEntryPoint(int id);
     }
-    
+
     // Her vender vi den om... og bruger ExtensionSupport#registerExtensionPoint
     public interface EntryPointReversePoint {
         int entryPoint();

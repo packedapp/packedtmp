@@ -25,17 +25,17 @@ import packed.internal.util.OpenClass;
  */
 // We create one instance of a member per extension...
 // So we multiple extensions have annotated the same method we create multiple PBM
-public abstract sealed class PackedBeanMember extends PackedOperationTarget permits PackedBeanField, PackedBeanMethod {
+public abstract sealed class PackedBeanMember implements PackedOperationTarget permits PackedBeanField, PackedBeanMethod {
 
     final OpenClass openClass;
 
     public final BeanSetup bean;
 
-    public final ExtensionSetup extension;
+    public final ExtensionSetup operator;
 
-    PackedBeanMember(BeanScanner scanner, ExtensionSetup extension) {
+    PackedBeanMember(BeanScanner scanner, ExtensionSetup operator) {
         this.openClass = scanner.oc;
         this.bean = scanner.bean;
-        this.extension = extension;
+        this.operator = operator;
     }
 }

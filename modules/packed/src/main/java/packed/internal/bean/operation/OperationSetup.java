@@ -22,7 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.bean.operation.OperationMirror;
+import app.packed.operation.OperationMirror;
+import packed.internal.base.PackedVariable;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
@@ -59,6 +60,10 @@ public class OperationSetup {
         bean.addOperation(this);
     }
 
+    public PackedVariable variable(int index) {
+        throw new UnsupportedOperationException();
+    }
+    
     /** {@return a mirror for the operation.} */
     public OperationMirror mirror() {
         OperationMirror mirror;

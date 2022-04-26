@@ -3,10 +3,10 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.bean.operation.lifecycle.BeanFactoryOperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.operation.lifecycle.BeanFactoryOperationMirror;
 import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 
 /**

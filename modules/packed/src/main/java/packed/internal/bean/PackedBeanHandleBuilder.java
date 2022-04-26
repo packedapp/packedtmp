@@ -22,10 +22,10 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.Builder;
 import app.packed.bean.BeanKind;
-import app.packed.extension.ExtensionPointContext;
+import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedExtensionPointContext;
+import packed.internal.container.PackedExtensionPointUseSite;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.factory.InternalFactory;
 
@@ -43,10 +43,10 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** The operator of the bean, or {@code null} for {@link BeanExtension}. */
     @Nullable
-    final PackedExtensionPointContext operator;
+    final PackedExtensionPointUseSite operator;
 
     @Nullable
-    PackedExtensionPointContext owner;
+    PackedExtensionPointUseSite owner;
 
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
@@ -55,9 +55,9 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** The type of source the driver is created from. */
     public final SourceType sourceType;
 
-    private PackedBeanHandleBuilder(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
+    private PackedBeanHandleBuilder(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
             @Nullable Object source) {
-        this.operator = (@Nullable PackedExtensionPointContext) operator;
+        this.operator = (@Nullable PackedExtensionPointUseSite) operator;
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
         this.beanClass = requireNonNull(beanType);
@@ -82,7 +82,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         if (owner == null) {
             realm = container.realm;
         } else {
-            realm = this.owner.tree();
+            realm = this.owner.user();
         }
         // Can we call it more than once??? Why not
         realm.wirePrepare();
@@ -100,9 +100,9 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Builder<T> forExtension(ExtensionPointContext context) {
+    public Builder<T> ownedBy(UseSite context) {
         requireNonNull(context, "context is null");
-        this.owner = (PackedExtensionPointContext) context;
+        this.owner = (PackedExtensionPointUseSite) context;
         return this;
     }
 
@@ -110,21 +110,21 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         return kind;
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container,
+    public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable UseSite operator, BeanKind kind, ContainerSetup container,
             Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanHandleBuilder<>(operator, kind, container, implementation, SourceType.CLASS, implementation);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofFactory(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container,
+    public static <T> PackedBeanHandleBuilder<T> ofFactory(@Nullable UseSite operator, BeanKind kind, ContainerSetup container,
             Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
         return new PackedBeanHandleBuilder<>(operator, kind, container, fac.rawReturnType(), SourceType.FACTORY, fac);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofInstance(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container, T instance) {
+    public static <T> PackedBeanHandleBuilder<T> ofInstance(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -136,7 +136,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         return new PackedBeanHandleBuilder<>(operator, kind, container, instance.getClass(), SourceType.INSTANCE, instance);
     }
 
-    public static PackedBeanHandleBuilder<?> ofNone(@Nullable ExtensionPointContext operator, BeanKind kind, ContainerSetup container) {
+    public static PackedBeanHandleBuilder<?> ofNone(@Nullable UseSite operator, BeanKind kind, ContainerSetup container) {
         return new PackedBeanHandleBuilder<>(operator, kind, container, void.class, SourceType.NONE, null);
     }
 

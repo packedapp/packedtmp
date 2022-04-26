@@ -10,8 +10,8 @@ import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory1;
+import app.packed.inject.InjectionContext;
 import packed.internal.devtools.spi.PackedDevTools;
 
 public class ZapAssembly extends BaseAssembly {
@@ -64,7 +64,11 @@ public class ZapAssembly extends BaseAssembly {
 
     public static class My {}
 
-    public static class MyExt extends Extension<MyExt> {}
+    public static class MyExt extends Extension<MyExt> {
+        void nice() {
+            System.out.println("NICEECEE");
+        }
+    }
 
     @DependsOn(extensions = MyExt.class)
     public static class MyExt2 extends Extension<MyExt2> {
@@ -74,8 +78,10 @@ public class ZapAssembly extends BaseAssembly {
     }
 
     public static class MyExptPoint extends ExtensionPoint<MyExt> {
-        MyExptPoint(ExtensionPointContext c) {
+        MyExptPoint(UseSite c, InjectionContext ic) {
             System.out.println("XXXX"  + c.extensionType());
+            System.out.println(ic.keys());
         }
+        
     }
 }

@@ -233,21 +233,9 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         /// This would apply locally to the extension...
         /// limited usefullness
 
-        /** The requesting extension. */
-        final Class<? extends Extension<?>> requestingExtension;
-
-        /**
-         * Creates a new sub.
-         * 
-         * @param requestingExtension
-         *            the requesting extension
-         */
-        /* package-private */ ServiceExtensionPoint(Class<? extends Extension<?>> requestingExtension) {
-            this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
-        }
 
         public void check() {
-            System.out.println("Requested by " + requestingExtension);
+            System.out.println("Requested by " + useSite().realm());
         }
     }
 }

@@ -16,17 +16,16 @@
 package app.packed.bean.hooks.usage;
 
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory0;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
  */
 public class TransactionCurrent {
 
-
-    @BeanVarInjector.Hook(extension = MyExt.class)
+    @DependencyProvider.Hook(extension = MyExt.class)
     static class Transaction {
 
         @Nullable
@@ -37,9 +36,9 @@ public class TransactionCurrent {
     
     static class MyExt extends Extension<MyExt> {
 
-        // Ved ikke @Nullable er for subtle
+        // Ved ikke om @Nullable er for subtle
         @Override
-        protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+        protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
             injector.provide(new Factory0<@Nullable Transaction>(() -> Transaction.current()) {});
         }
     }

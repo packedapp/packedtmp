@@ -18,9 +18,9 @@ package app.packed.bean.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 
-import app.packed.bean.operation.InjectableOperationHandle;
-import app.packed.bean.operation.RawOperationHandle;
 import app.packed.inject.FactoryType;
+import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.RawOperationHandle;
 
 /**
  *

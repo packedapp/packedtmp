@@ -7,11 +7,9 @@ import java.lang.reflect.Type;
 import app.packed.base.TypeToken;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.extension.ExtensionPoint;
-import app.packed.extension.ExtensionPointContext;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanHandleBuilder;
-import packed.internal.container.ContainerSetup;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.typevariable.TypeVariableExtractor;
@@ -41,54 +39,45 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         }
     };
 
-    /** The container we are installing beans into. */
-    private final ContainerSetup container;
-
-    /** The extension support context. */
-    private final ExtensionPointContext context;
-
     /**
      * Creates a new bean extension point
      * 
      * @param beanExtension
      *            the bean extension
      * @param context
-     *            a context object about the user of this extension point
+     *            the use site of this extension point
      */
-    /* package-private */ BeanExtensionPoint(BeanExtension beanExtension, ExtensionPointContext context) {
-        this.container = beanExtension.container;
-        this.context = context;
-    }
+       /* package-private */ BeanExtensionPoint() {}
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).forExtension(context).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).forExtension(context).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, extension().container, factory).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).forExtension(context).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, extension().container, instance).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public BeanHandle.Builder<?> newBuilder(BeanKind kind) {
-        return PackedBeanHandleBuilder.ofNone(context, kind, container);
+        return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromClass(BeanKind kind, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(context, kind, container, implementation);
+        return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromFactory(BeanKind kind, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(context, kind, container, factory);
+        return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromInstance(BeanKind kind, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(context, kind, container, instance);
+        return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container, instance);
     }
 
     /**

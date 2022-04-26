@@ -22,11 +22,11 @@ import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
 import app.packed.bean.hooks.BeanField;
-import app.packed.bean.operation.InjectableOperationHandle;
-import app.packed.bean.operation.OperationTargetMirror;
-import app.packed.bean.operation.RawOperationHandle;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
+import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
 

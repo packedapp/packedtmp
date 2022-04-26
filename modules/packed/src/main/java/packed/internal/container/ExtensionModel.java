@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,15 +30,20 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.TypeToken;
 import app.packed.component.Realm;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.DependsOn;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionDescriptor;
 import app.packed.extension.InternalExtensionException;
+import app.packed.extension.Ancestral;
 import packed.internal.inject.invoke.InternalInfuser;
+import packed.internal.thirdparty.guice.GTypes;
 import packed.internal.util.ClassUtil;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -145,9 +151,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // Same canonical name and depth but loaded with two different class loaders.
         // We do not support this
         // Maybe not support extensions with same name independently of weather the depth is equivalent
-        throw new IllegalArgumentException(
-                "Cannot compare two extensions with the same depth '" + ordringDepth + "' and fullname '" + nameFull + "' but loaded by different class loaders. "
-                        + "ClassLoader(this) = " + extensionClass.getClassLoader() + ", ClassLoader(other) = " + m.extensionClass.getClassLoader());
+        throw new IllegalArgumentException("Cannot compare two extensions with the same depth '" + ordringDepth + "' and fullname '" + nameFull
+                + "' but loaded by different class loaders. " + "ClassLoader(this) = " + extensionClass.getClassLoader() + ", ClassLoader(other) = "
+                + m.extensionClass.getClassLoader());
     }
 
     /** {@inheritDoc} */
@@ -192,7 +198,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     public Realm realm() {
         return realm;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -276,6 +282,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
             InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
             builder.provide(ExtensionConfiguration.class).adaptArgument(0);
 
+            ParameterizedType pt = GTypes.newParameterizedType(Ancestral.class, extensionClass);
+            TypeToken<?> tt = TypeToken.fromType(pt);
+            builder.provide(Key.ofTypeToken(tt)).invokeExact(MH_EXTRACT_EXTENSION, 0);
+
             // Find a method handle for the extension's constructor
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
 
@@ -286,6 +296,14 @@ public final class ExtensionModel implements ExtensionDescriptor {
             // this.pam = PackedAttributeModel.analyse(oc);
 
             return new ExtensionModel(this);
+        }
+
+        static final MethodHandle MH_EXTRACT_EXTENSION = LookupUtil.lookupStatic(MethodHandles.lookup(), "extractParent", Ancestral.class,
+                ExtensionSetup.class);
+
+        static Ancestral<?> extractParent(ExtensionSetup s) {
+            ExtensionSetup es = s.parent;
+            return es == null ? Ancestral.ofNullable(null) : Ancestral.ofNullable(es.instance());
         }
 
         /**

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.bean.operation.OperationPack;
+import app.packed.operation.OperationPack;
 
 /**
  *

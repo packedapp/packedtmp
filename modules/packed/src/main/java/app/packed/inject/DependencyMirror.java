@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-import app.packed.bean.operation.OperationMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  * A mirror for a dependency.

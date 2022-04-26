@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.operation.OperationMirror;
+import app.packed.operation.OperationMirror;
 import packed.internal.bean.BeanSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;

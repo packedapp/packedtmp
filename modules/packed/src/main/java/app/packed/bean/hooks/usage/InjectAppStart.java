@@ -17,10 +17,11 @@ package app.packed.bean.hooks.usage;
 
 import java.time.LocalDate;
 
-import app.packed.bean.hooks.BeanVarInjector;
+import app.packed.bean.hooks.BeanVariable;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory1;
 import app.packed.lifecycle.OnStart;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
@@ -28,13 +29,14 @@ import app.packed.lifecycle.OnStart;
 // Obviously... People might choose to use OnAppStart before the application is properly started
 public class InjectAppStart {
 
-    @BeanVarInjector.Hook(extension = MyExtAppStart.class)
+    @DependencyProvider.Hook(extension = MyExtAppStart.class)
+    @BeanVariable.Hook(extension = MyExtAppStart.class)
     @interface OnAppStart {}
 
     static class MyExtAppStart extends Extension<MyExtAppStart> {
 
         @Override
-        protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+        protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
             // injector checkTyoe
 
             injector.provide(new Factory1<AppStartBean, LocalDate>(b -> b.started) {});

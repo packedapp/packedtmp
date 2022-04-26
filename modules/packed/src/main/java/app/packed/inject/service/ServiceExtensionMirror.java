@@ -5,10 +5,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.bean.operation.usage.ServiceExportMirror;
-import app.packed.bean.operation.usage.ServiceProvideMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.ExtensionMirror;
+import app.packed.operation.usage.ServiceExportMirror;
+import app.packed.operation.usage.ServiceProvideMirror;
 import packed.internal.inject.service.ContainerInjectionManager;
 
 /**

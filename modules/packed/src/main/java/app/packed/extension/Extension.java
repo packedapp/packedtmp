@@ -35,7 +35,7 @@ import app.packed.bean.hooks.BeanClass;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.hooks.BeanVarInjector;
+import app.packed.bean.hooks.BeanVariable;
 import app.packed.component.ComponentRealm;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -44,6 +44,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
+import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
@@ -99,11 +100,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
-    /**
-     * @return a bean support class
-     * 
-     * @see BaseAssembly#bean
-     */
+    /** {@return a bean extension point.} */
     protected final BeanExtensionPoint bean() {
         return use(BeanExtensionPoint.class);
     }
@@ -159,9 +156,10 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     protected void hookOnBeanMethod(BeanMethod method) {}
 
-    protected void hookOnBeanVarInjector(BeanVarInjector injector) {}
+    protected void hookOnBeanVariable(BeanVariable variable) {}
 
-    // onBeanFieldHook
+    protected void hookOnBeanDependencyProvider(DependencyProvider providr) {}
+
     protected void hookOnBeanEnd(BeanInfo beanInfo) {}
 
     // Ved ikke om vi draeber den, eller bare saetter en stor warning

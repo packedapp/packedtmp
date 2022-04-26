@@ -15,12 +15,12 @@
  */
 package packed.internal.bean.operation;
 
-import app.packed.bean.operation.OperationTargetMirror;
+import app.packed.operation.OperationTargetMirror;
 
 /**
  *
  */
-public final class PackedFunctionOperationTarget extends PackedOperationTarget {
+public final class PackedFunctionOperationTarget implements PackedOperationTarget {
 
     /** {@inheritDoc} */
     @Override

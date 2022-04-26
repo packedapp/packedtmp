@@ -18,7 +18,7 @@ package packed.internal.bean.operation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 
-import app.packed.bean.operation.RawOperationHandle;
+import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /**
@@ -30,7 +30,7 @@ public final class RawOperationSetup<T> extends OperationSetup implements RawOpe
     final T handle;
     
     public RawOperationSetup(PackedBeanMember member, T handle) {
-        super(member.bean, member, member.extension);
+        super(member.bean, member, member.operator);
         this.handle = handle;
     }
     

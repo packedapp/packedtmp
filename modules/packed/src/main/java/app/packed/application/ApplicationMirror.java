@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.bean.operation.OperationMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
@@ -14,6 +13,7 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.mirror.Mirror;
+import app.packed.operation.OperationMirror;
 import packed.internal.application.PackedApplicationDriver;
 
 /**

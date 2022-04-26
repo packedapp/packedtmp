@@ -25,18 +25,19 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.operation.InjectableOperationHandle;
-import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.OperationTargetMirror;
-import app.packed.bean.operation.RawOperationHandle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
+import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.RawOperationHandle;
+import packed.internal.bean.hooks.PackedBeanMethod;
 
 /**
  * Represents a bean method.
  */
-public non-sealed interface BeanMethod extends BeanElement {
+public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
     /** {@return a factory type for this method.} */
     FactoryType factoryType();

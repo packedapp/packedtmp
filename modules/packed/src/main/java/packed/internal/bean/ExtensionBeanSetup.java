@@ -17,7 +17,9 @@ package packed.internal.bean;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.operation.OperationPack;
+import app.packed.inject.Factory0;
+import app.packed.operation.OperationPack;
+import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.bean.operation.PackedOperationPackSetup;
 import packed.internal.container.RealmSetup;
 
@@ -45,5 +47,12 @@ public final class ExtensionBeanSetup extends BeanSetup {
             p = operationPack = new PackedOperationPackSetup();
         }
         return p;
+    }
+    
+    public void provideOperationPack(DependencyProvider provider) {
+        Key<?> key = provider.readKey();
+        @SuppressWarnings("unchecked")
+        PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
+        provider.provide(new Factory0<OperationPack>(() -> s.build()) {});
     }
 }

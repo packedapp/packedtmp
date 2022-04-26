@@ -28,9 +28,9 @@ import java.lang.reflect.Type;
 
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.BasePackageAccess.AppPackedBaseAccess;
-import packed.internal.util.typevariable.TypeVariableExtractor;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.TypeUtil;
+import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
@@ -114,7 +114,8 @@ public abstract class TypeToken<T> {
      */
     @SuppressWarnings("unchecked")
     TypeToken(Type type) {
-        assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
+        // This was a test to make sure all types are canonicalized
+        //assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
         this.type = requireNonNull(type, "type is null");
         this.rawType = (Class<? super T>) TypeUtil.rawTypeOf(type);
     }

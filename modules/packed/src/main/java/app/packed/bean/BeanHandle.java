@@ -21,12 +21,12 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.hooks.sandbox.InvokerConfiguration;
-import app.packed.bean.operation.OperationHandle;
-import app.packed.bean.operation.OperationMirror;
-import app.packed.bean.operation.driver.OperationDriver;
-import app.packed.bean.operation.driver.OperationDriver2;
-import app.packed.extension.ExtensionPointContext;
+import app.packed.extension.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.driver.OperationDriver;
+import app.packed.operation.driver.OperationDriver2;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
 
@@ -44,6 +44,12 @@ import packed.internal.bean.PackedBeanHandleBuilder;
 // Services (bind, bindContext)
 
 // callacbks, onBound, onBuild, ...
+
+
+// Vigtigt at note... Vi scanner klassen naar vi kalder build()
+// Saa hvis vi provider services/contexts saa skal det vaere paa
+// builderen ellers er de ikke klar til BeanField og friends
+// som jo bliver lavet naar man invoker build()
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
@@ -110,16 +116,21 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         BeanKind beanKind();
 
+        /**
+         * Adds a new bean to the container and returns a handle for it.
+         * 
+         * @return the new handle
+         */
         BeanHandle<T> build();
 
         /**
          * Marks the bean as owned by the extension representing by specified extension point context
          * 
          * @param context
-         *            a context representing the owner of the bean
+         *            an extension point context representing the extension that owns the bean
          * @return this builder
          */
-        Builder<T> forExtension(ExtensionPointContext context);
+        Builder<T> ownedBy(UseSite context);
 
         /**
          * Sets a prefix that is used for naming the bean.

@@ -477,6 +477,10 @@ public abstract class Key<T> {
         return Key.convertTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
+    public static <T> Key<T> ofTypeToken(TypeToken<T> token) {
+        return new CanonicalizedKey<>(token.canonicalize(), (Annotation[]) null);
+    }
+
     public static Key<?>[] of(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Key<?>[] result = new Key<?>[keys.length];

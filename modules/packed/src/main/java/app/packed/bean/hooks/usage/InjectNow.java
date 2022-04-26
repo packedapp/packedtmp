@@ -17,21 +17,21 @@ package app.packed.bean.hooks.usage;
 
 import java.time.LocalDate;
 
-import app.packed.bean.hooks.BeanVarInjector;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory0;
+import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
  */
 public class InjectNow {
-    @BeanVarInjector.Hook(extension = MyExtNow.class)
+    @DependencyProvider.Hook(extension = MyExtNow.class)
     @interface OnNow {}
 
     static class MyExtNow extends Extension<MyExtNow> {
 
         @Override
-        protected void hookOnBeanVarInjector(BeanVarInjector injector) {
+        protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
             // injector checkType
 
             injector.provide(new Factory0<LocalDate>(() -> LocalDate.now()) {});
