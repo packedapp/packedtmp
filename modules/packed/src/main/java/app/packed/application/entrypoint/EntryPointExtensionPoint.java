@@ -31,7 +31,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
      * {@return the extension that is managing the
      */
     public Optional<Class<? extends Extension<?>>> managedBy() {
-        return Optional.ofNullable(extension().shared().takeOver);
+        return Optional.ofNullable(extension().shared.takeOver);
     }
 
     /**

@@ -59,7 +59,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
         // Fx
         //// CLI
         //// Serverless
-        return tree().root().shared().takeOver;
+        return tree().root().shared.takeOver;
     }
 
     public void print() {

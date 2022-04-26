@@ -67,7 +67,7 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
             // Create an infuser exposing two services:
             // 1. An instance of the extension that the extension point is a member of
             // 2. An ExtensionPoint.UseSite instance
-            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, UseSite.class);
+            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, PackedExtensionPointUseSite.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
             builder.provide(UseSite.class).adaptArgument(1); // Extension instance of the subtension
 
@@ -87,11 +87,11 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
      *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    ExtensionPoint<?> newInstance(ExtensionSetup user, Extension<?> otherExtension) {
-        PackedExtensionPointUseSite context = new PackedExtensionPointUseSite(user);
+    ExtensionPoint<?> newInstance(ExtensionSetup extension, ExtensionSetup usedBy) {
+        PackedExtensionPointUseSite context = new PackedExtensionPointUseSite(extension, usedBy);
         // mhConstructor = (Extension,ExtensionSupportContext)Subtension
         try {
-            ExtensionPoint<?> p = (ExtensionPoint<?>) mhConstructor.invokeExact(otherExtension, (UseSite) context);
+            ExtensionPoint<?> p = (ExtensionPoint<?>) mhConstructor.invokeExact(extension.instance(), context);
             VH_EXTENSION_POINT_SETUP.set(p, context);
             return p;
         } catch (Throwable e) {

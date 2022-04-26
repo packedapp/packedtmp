@@ -10,10 +10,11 @@ import app.packed.bean.ContainerBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
+import app.packed.inject.Ancestral;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup;
 import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.bean.hooks.PackedBeanMethod;
-import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
 // Cannot use both @app.packed.application.Main and the CLI extension at the same time.
@@ -22,11 +23,11 @@ import packed.internal.container.ExtensionSetup;
  */
 public class EntryPointExtension extends Extension<EntryPointExtension> {
 
-    private final ContainerSetup container;
+    private final ApplicationSetup application;
 
     boolean hasMain;
 
-    Shared shared;
+    final Shared shared;
 
     /**
      * Create a new service extension.
@@ -34,18 +35,18 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ EntryPointExtension(ExtensionConfiguration configuration) {
-        this.container = ((ExtensionSetup) configuration).container;
-        //    
+    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, ExtensionConfiguration configuration) {
+        this.application = ((ExtensionSetup) configuration).container.application;
+        this.shared = parent.isRoot() ? new Shared() : parent.ancestorOrElseThrow().shared;
     }
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
         registerEntryPoint(null, true);
 
-        container.application.entryPoints = new EntryPointSetup();
+        application.entryPoints = new EntryPointSetup();
 
-        MainThreadOfControl mc = container.application.entryPoints.mainThread();
+        MainThreadOfControl mc = application.entryPoints.mainThread();
         mc.isStatic = Modifier.isStatic(method.getModifiers());
         mc.cs = ((PackedBeanMethod) method).bean;
         mc.methodHandle = method.newRawOperation().handle();
@@ -79,13 +80,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
             // install
             // provide (visible i mxxz;ias:"?aZ.a:n aZz¸ m nl jj m ,m ;n .n ≥ en container)
             // provideShared (container + subcontainers)
-            shareInstance(new MethodHandle[0]);
+            // shareInstance(new MethodHandle[0]);
         }
         super.onApplicationClose();
-    }
-
-    protected void onNew() {
-        shared = configuration().isRootOfApplication() ? new Shared() : treeOfApplication().root().shared;
     }
 
     int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
@@ -96,9 +93,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // method.reserveMethodHandle(EC);
         // Grim kode pfa ExtensoinSupportContest i constructoren
         if (extensionType == null) {
-            shared().takeOver(EntryPointExtension.class);
+            shared.takeOver(EntryPointExtension.class);
         } else {
-            shared().takeOver(extensionType);
+            shared.takeOver(extensionType);
         }
         if (isMain) {
             hasMain = true;
@@ -115,28 +112,16 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // En checked istedet ligesom TimeoutException
     }
 
-    Shared shared() {
-        if (isRootOfApplication()) {
-            Shared s = shared;
-            if (s == null) {
-                s = shared = new Shared();
-            }
-            return s;
-        } else {
-            return treeOfApplication().root().shared();
-        }
-    }
-
     static class EntryPointConf {
 
     }
 
     /** An instance of this class is shared between all entry point extensions for a single application. */
     static class Shared {
-        
+
         /** All entry points. */
         final List<EntryPointConf> entrypoints = new ArrayList<>();
-        
+
         MethodHandle[] entryPoints;
         Class<? extends Extension<?>> takeOver;
 

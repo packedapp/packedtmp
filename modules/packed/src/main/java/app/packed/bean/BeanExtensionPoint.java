@@ -60,6 +60,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
+        System.out.println(extension().container);
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, extension().container, instance).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }

@@ -231,7 +231,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      *             if this method has already been called on the specified mirror
      */
     protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
-        mirror.initialize((ExtensionSetup) configuration(), tree());
+        mirror.initialize(setup(), tree());
         return mirror;
     }
 
@@ -324,10 +324,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
         }
         return c;
-    }
-
-    protected final void shareInstance(Object instance) {
-        // buildWithSecret?
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

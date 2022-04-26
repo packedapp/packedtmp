@@ -338,10 +338,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         // Get the extension instance (create it if needed) that the extension point is a part of
-        Extension<?> instance = container.useExtensionSetup(extensionPointExtensionType, this).instance;
+        ExtensionSetup extensionPoint = container.useExtensionSetup(extensionPointExtensionType, this);
 
         // Create the new extension point instance
-        return (E) extensionPointModel.newInstance(this, instance);
+        return (E) extensionPointModel.newInstance(extensionPoint, this);
     }
 
     /** A pre-order iterator for a rooted extension tree. */

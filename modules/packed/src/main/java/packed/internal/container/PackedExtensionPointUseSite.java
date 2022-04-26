@@ -22,7 +22,7 @@ import app.packed.extension.ExtensionPoint.UseSite;
 /**
  *
  */
-public record PackedExtensionPointUseSite(ExtensionSetup extension) implements UseSite {
+public record PackedExtensionPointUseSite(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
 
     /** {@inheritDoc} */
     @Override

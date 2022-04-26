@@ -15,7 +15,6 @@ import app.packed.operation.OperationPack;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.ExtensionBeanSetup;
-import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.bean.hooks.BeanMemberDependencyNode;
 import packed.internal.bean.hooks.FieldHelper;
@@ -80,7 +79,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     protected void hookOnBeanDependencyProvider(DependencyProvider provider) {
         // We only have a hook for OperationPack
         BeanSetup bean = ((PackedDependencyProvider) provider).operation().bean;
-        
+
         // OperationPacks can only be used with extension beans
         if (bean instanceof ExtensionBeanSetup e) {
             e.provideOperationPack(provider);
@@ -102,8 +101,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandle<T> driver = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).build();
-        return new ContainerBeanConfiguration<>(driver);
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).build();
+        return new ContainerBeanConfiguration<>(handle);
     }
 
     /**
@@ -115,7 +114,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
-        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -131,7 +130,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
-        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).build();
         return new ContainerBeanConfiguration<>(handle);
     }
 
@@ -166,13 +165,13 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        PackedBeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.UNMANAGED, container, factory).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.UNMANAGED, container, factory).build();
         ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
