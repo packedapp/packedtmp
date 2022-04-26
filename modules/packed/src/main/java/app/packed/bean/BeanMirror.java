@@ -14,6 +14,8 @@ import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
  * <p>
  * Instances of this class is typically via {@link ApplicationMirror} or {@link ContainerMirror}.
  */
+// Kan jo godt overskrives nu vi har handle...
+// EntityBeans er det eneste jeg lige kan komme paa
 public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
     /**

@@ -1,6 +1,7 @@
 package app.packed.lifecycle;
 
 // Ved ikke om vi kan dele den mellem bean og application. 
+// Er det i virkeligheden noget med lifetime at goere
 public enum ApplicationShutdownCause {
 
     /** The application is shutting down normally */

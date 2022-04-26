@@ -66,7 +66,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         extension();
         return tree;
     }
-    
+
     /**
      * {@return the mirrored extension's internal configuration.}
      * 

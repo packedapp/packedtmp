@@ -27,6 +27,8 @@ package app.packed.base;
 
 // InaccessibleRealmException or
 // InaccessibleModuleException
+
+// Maybe it is a build exception??? Skal jo helst klare det under build..
 public class InaccessibleMemberException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

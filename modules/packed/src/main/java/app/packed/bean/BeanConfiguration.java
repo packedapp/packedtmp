@@ -9,8 +9,6 @@ import packed.internal.bean.PackedBeanHandle;
 
 /**
  * The base class for the configuration of a bean.
- * <p>
- * {@code BeanConfiguration} is the superclass of the various bean configuration classes available in Packed.
  */
 public non-sealed class BeanConfiguration extends ComponentConfiguration {
 
