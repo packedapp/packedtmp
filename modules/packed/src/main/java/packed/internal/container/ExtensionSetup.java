@@ -196,8 +196,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      *             if trying to call this method from the constructor of the extension
      */
     // This was previously a method on ExtensionConfiguration, and might become again one again if we want to extract some
-    // tree info, otherwise we should be able to ditch the method, as useExtension() always makes the extension instance
-    // has been properly initialized
+    // tree info, otherwise we should be able to ditch the method, as useExtension() always makes sure the extension
+    // instance has been properly initialized
     // I'm not sure we want to ever expose it via ExtensionContext... Users would need to insert a cast
     public Extension<?> instance() {
         Extension<?> e = instance;
@@ -221,6 +221,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     public ExtensionMirror<?> mirror() {
+        if (true) {
+            
+        }
+        
         ExtensionMirror<?> mirror = null;
         try {
             mirror = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
@@ -324,7 +328,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Check that the requested extension point's extension is a direct dependency of this extension
         if (!model.dependencies().contains(extensionPointExtensionType)) {
-            // Special message if you try to use your own extensionpoint
+            // Special message if you try to use your own extension point
             if (extensionType == extensionPointExtensionType) {
                 throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own extension point "
                         + extensionPointExtensionType.getSimpleName() + "." + extensionPointType.getSimpleName());

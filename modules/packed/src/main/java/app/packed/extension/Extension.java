@@ -283,8 +283,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned successfully),
      * but before the new extension instance is made available to the user.
      * <p>
-     * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
-     * perform post instantiation of the extension as needed.
+     * Since most methods on {@code Extension} cannot be invoked from the constructor. This method can be used to perform
+     * post instantiation of the extension as needed.
      * 
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
@@ -350,31 +350,30 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     }
 
     /**
-     * Use another extension by acquiring an instance of its subtension.
+     * Returns an extension point of the specified type
      * <p>
-     * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
-     * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
+     * Only extension points of extensions that have been explicitly registered as dependencies, for example, by using
+     * {@link DependsOn} may be specified as arguments to this method.
      * <p>
      * This method cannot be called from the constructor of the extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionConfiguration} and call
+     * can instead construct inject an instance of {@link ExtensionConfiguration} and call
      * {@link ExtensionConfiguration#use(Class)}.
      * 
      * @param <E>
-     *            the type of subtension to return
-     * @param subtensionClass
-     *            the type of subtension to return
-     * @return the subtension
+     *            the type of extension point to return
+     * @param extensionPointType
+     *            the type of extension point to return
+     * @return the extension point
      * @throws IllegalStateException
-     *             If the underlying container is no longer configurable and an extension of the specified type has not
-     *             already been installed.
+     *             If the underlying container is no longer configurable and the extension to which the extension point
+     *             belongs has not already been installed.
      * @throws IllegalArgumentException
-     *             If the extension to which the specified subtension is a member of has not been registered as a dependency
-     *             of this extension
+     *             If the extension to which the specified extension belongs has not been registered as a dependency of this
+     *             extension
      * @see ExtensionConfiguration#use(Class)
-     * @see #$dependsOn(Class...)
      */
-    protected final <S extends ExtensionPoint<?>> S use(Class<S> subtensionClass) {
-        return configuration().use(subtensionClass);
+    protected final <S extends ExtensionPoint<?>> S use(Class<S> extensionPointType) {
+        return configuration().use(extensionPointType);
     }
 
     /**

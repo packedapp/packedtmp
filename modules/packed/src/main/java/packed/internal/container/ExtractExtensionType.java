@@ -29,7 +29,7 @@ class ExtractExtensionType {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
 
-   static Class<? extends Extension<?>> findExtensionType(Class<?> type) {
+    static Class<? extends Extension<?>> findExtensionType(Class<?> type) {
         Type t = TYPE_LITERAL_EP_EXTRACTOR.extract(type);
 //      System.out.println(t);
 //      // Check that the subtension have an extension as declaring class
@@ -46,7 +46,7 @@ class ExtractExtensionType {
 
         return extensionClass;
     }
-    
+
 //    
 //    
 //    ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);

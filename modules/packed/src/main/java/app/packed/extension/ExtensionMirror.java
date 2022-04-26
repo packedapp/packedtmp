@@ -1,12 +1,10 @@
 package app.packed.extension;
 
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
-import app.packed.inject.service.ServiceExtension;
-import app.packed.inject.service.ServiceExtensionMirror;
 import app.packed.mirror.Mirror;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.container.PackedExtensionTree;
 
 /**
  * Provides generic information about an extension used by a {@link #container}.
@@ -19,16 +17,15 @@ import packed.internal.container.ExtensionSetup;
  * <ul>
  * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
  * {@link ContainerMirror#findExtension(Class)}.</li>
- * <li>By calling {@link Extension#mirror()}, for example, {@link ServiceExtension#mirror()}.</li>
- * <li>By calling a factory method on the mirror class, for example,
- * {@link ServiceExtensionMirror#use(Assembly, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
  * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
- * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
  * </ul>
+ * 
+ * @param <E>
+ *            The type of the extension the mirror is a part of
  */
 public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
@@ -39,6 +36,9 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      */
     @Nullable
     private ExtensionSetup extension;
+
+    @Nullable
+    private PackedExtensionTree<E> tree;
 
     /**
      * Create a new extension mirror.
