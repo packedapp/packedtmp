@@ -54,7 +54,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
     // Skal vi have noget generelt dispatch teknologi?
     // Nå nej vi har jo entry point selectoren...
     public int registerEntryPoint(boolean isMain) {
-        return extension().registerEntryPoint(useSite().extensionType(), isMain);
+        return extension().registerEntryPoint(usedBy(), isMain);
     }
 
     

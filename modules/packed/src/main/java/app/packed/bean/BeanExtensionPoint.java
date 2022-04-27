@@ -49,34 +49,34 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
        /* package-private */ BeanExtensionPoint() {}
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container(), implementation).ownedBy(useSite()).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, extension().container(), factory).ownedBy(useSite()).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, extension().container, factory).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, extension().container(), instance).ownedBy(useSite()).build();
+        BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, extension().container, instance).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public BeanHandle.Builder<?> newBuilder(BeanKind kind) {
-        return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container());
+        return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromClass(BeanKind kind, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container(), implementation);
+        return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromFactory(BeanKind kind, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container(), factory);
+        return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
     }
 
     public <T> BeanHandle.Builder<T> newBuilderFromInstance(BeanKind kind, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container(), instance);
+        return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container, instance);
     }
 
     /**

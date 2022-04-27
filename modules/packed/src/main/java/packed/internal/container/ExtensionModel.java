@@ -35,9 +35,9 @@ import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.component.Realm;
 import app.packed.container.Extension;
+import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Ancestral;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.thirdparty.guice.GTypes;
@@ -183,7 +183,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     Extension<?> newInstance(ExtensionSetup extension) {
         try {
             return (Extension<?>) mhConstructor.invokeExact(extension);
-        } catch (Throwable e) {
+        }  catch (Throwable e) {
             throw new InternalExtensionException("An instance of the extension " + nameFull + " could not be created.", e);
         }
     }

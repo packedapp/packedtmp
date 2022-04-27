@@ -22,8 +22,8 @@ import java.lang.reflect.Type;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.ExtensionPoint.UseSite;
+import app.packed.container.InternalExtensionException;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
@@ -33,8 +33,8 @@ import packed.internal.util.typevariable.TypeVariableExtractor;
 record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
 
     /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_POINT_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ExtensionPoint.class, "useSite",
-            PackedExtensionPointUseSite.class);
+    private static final VarHandle VH_EXTENSION_POINT_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ExtensionPoint.class, "context",
+            PackedExtensionPointContext.class);
 
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
@@ -67,7 +67,7 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
             // Create an infuser exposing two services:
             // 1. An instance of the extension that the extension point is a member of
             // 2. An ExtensionPoint.UseSite instance
-            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, PackedExtensionPointUseSite.class);
+            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, PackedExtensionPointContext.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
             builder.provide(UseSite.class).adaptArgument(1); // Extension instance of the subtension
 
@@ -88,7 +88,7 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
      * @return the new subtension instance
      */
     ExtensionPoint<?> newInstance(ExtensionSetup extension, ExtensionSetup usedBy) {
-        PackedExtensionPointUseSite context = new PackedExtensionPointUseSite(extension, usedBy);
+        PackedExtensionPointContext context = new PackedExtensionPointContext(extension, usedBy);
         // mhConstructor = (Extension,ExtensionSupportContext)Subtension
         try {
             ExtensionPoint<?> p = (ExtensionPoint<?>) mhConstructor.invokeExact(extension.instance(), context);

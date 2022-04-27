@@ -82,7 +82,7 @@ import packed.internal.util.ThrowableUtil;
 public abstract non-sealed class Extension<E extends Extension<E>> implements ComponentRealm {
 
     /**
-     * The internal configuration of the extension that all methods delegate to.
+     * The internal configuration of the extension that all methods on {@code Extension} delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
@@ -121,12 +121,14 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     protected void hookOnBeanClass(BeanClass clazz) {}
 
     /**
+     * A callback method that is invoked whenever a field on a bean is encountered.
      * <p>
-     * This method is never invoked more than once for a single field. Even if there are multiple matching field hook
-     * annotations on the same field.
+     * This method is never invoked more than once for a single field. Even if there are multiple matching hook annotations
+     * on the same field. This method will only be called once.
      * 
      * @param field
      *            the bean field
+     * @see BeanField.Hook
      */
     protected void hookOnBeanField(BeanField field) {}
 
@@ -289,7 +291,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     private final ExtensionSetup setup() {
         ExtensionSetup s = setup;
         if (s == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override Extension#onNew()");
         }
         return s;

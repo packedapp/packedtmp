@@ -1,7 +1,8 @@
 package app.packed.container;
 
+import app.packed.base.Nullable;
 import app.packed.component.Realm;
-import packed.internal.container.PackedExtensionPointUseSite;
+import packed.internal.container.PackedExtensionPointContext;
 
 /**
  * Extension points are the main mechanism by which an extension can use other extensions. Developers that are not
@@ -38,45 +39,42 @@ import packed.internal.container.PackedExtensionPointUseSite;
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
     /** The use-site (includes the owning extension). */
-    private PackedExtensionPointUseSite useSite;
-
-    protected final void checkInSameContainerAs(Extension<?> extension) {
-
-        // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
-        // Men at vi binder den til en container...
-
-        // IDK
-        // ExtensionSupportUSer???
-    }
+    @Nullable
+    private PackedExtensionPointContext context;
 
     /**
+     * Checks that this extension point is still configurable.
+     * <p>
+     * An extension point is configurable as long as the extension using it is still configurable.
      * 
      * @see Extension#checkConfigurable()
      */
     protected final void checkConfigurable() {
-        usesite().extension().extensionTree.checkOpen();
+        context().extension().extensionTree.checkOpen();
+    }
+
+    /** {@return the context of the extension point.} */
+    private final PackedExtensionPointContext context() {
+        PackedExtensionPointContext c = context;
+        if (c == null) {
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension point.");
+        }
+        return c;
     }
 
     /** {@return the extension point's extension.} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
-        return (E) usesite().extension().instance();
+        return (E) context().extension().instance();
     }
 
-    /**
-     * 
-     * @return
-     */
-    private final PackedExtensionPointUseSite usesite() {
-        PackedExtensionPointUseSite c = useSite;
-        if (c == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension point.");
-        }
-        return c;
+    /** {@return the type of extension that uses the extension point.} */
+    protected final Class<? extends Extension<?>> usedBy() {
+        return context().usedBy().extensionType;
     }
 
     protected final UseSite useSite() {
-        return usesite();
+        return context();
     }
 
     /**
@@ -87,12 +85,14 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     // Inner class: UseSite
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
-    public sealed interface UseSite permits PackedExtensionPointUseSite {
-
-        Class<? extends Extension<?>> extensionType();
+    public sealed interface UseSite permits PackedExtensionPointContext {
 
         Realm realm();
     }
+}
+
+class Zandbox {
+
     //
     //// checkExtendable...
     /// **
@@ -106,4 +106,12 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     // protected final void checkExtensionConfigurable(Class<? extends Extension<?>> extensionType) {
 //        configuration().checkExtensionConfigurable(extensionType);
     // }
+    protected final void checkInSameContainerAs(Extension<?> extension) {
+
+        // Maaske vi skal lave nogle checks saa man ikke bare kan bruge den hvor man har lyst.
+        // Men at vi binder den til en container...
+
+        // IDK
+        // ExtensionSupportUSer???
+    }
 }

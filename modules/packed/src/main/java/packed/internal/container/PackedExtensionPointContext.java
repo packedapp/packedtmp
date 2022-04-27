@@ -16,19 +16,12 @@
 package packed.internal.container;
 
 import app.packed.component.Realm;
-import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
 
 /**
  *
  */
-public record PackedExtensionPointUseSite(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension<?>> extensionType() {
-        return extension.extensionTree.extensionModel.type();
-    }
+public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
 
     /** {@inheritDoc} */
     @Override

@@ -7,9 +7,9 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.BuildWirelets;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
+import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.Wirelet;
-import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Factory1;
 import app.packed.inject.InjectionContext;
 import packed.internal.devtools.spi.PackedDevTools;
@@ -78,8 +78,7 @@ public class ZapAssembly extends BaseAssembly {
     }
 
     public static class MyExptPoint extends ExtensionPoint<MyExt> {
-        MyExptPoint(UseSite c, InjectionContext ic) {
-            System.out.println("XXXX"  + c.extensionType());
+        MyExptPoint(InjectionContext ic) {
             System.out.println(ic.keys());
         }
         

@@ -25,7 +25,7 @@ import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.bean.BeanKind;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedExtensionPointUseSite;
+import packed.internal.container.PackedExtensionPointContext;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.factory.InternalFactory;
 
@@ -43,10 +43,10 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** The operator of the bean, or {@code null} for {@link BeanExtension}. */
     @Nullable
-    final PackedExtensionPointUseSite operator;
+    final PackedExtensionPointContext operator;
 
     @Nullable
-    PackedExtensionPointUseSite owner;
+    PackedExtensionPointContext owner;
 
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
@@ -57,7 +57,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     private PackedBeanHandleBuilder(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
             @Nullable Object source) {
-        this.operator = (@Nullable PackedExtensionPointUseSite) operator;
+        this.operator = (@Nullable PackedExtensionPointContext) operator;
         this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
         this.beanClass = requireNonNull(beanType);
@@ -102,7 +102,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     @Override
     public Builder<T> ownedBy(UseSite context) {
         requireNonNull(context, "context is null");
-        this.owner = (PackedExtensionPointUseSite) context;
+        this.owner = (PackedExtensionPointContext) context;
         return this;
     }
 
