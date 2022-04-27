@@ -15,34 +15,49 @@
  */
 package app.packed.bean.hooks.usage;
 
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.operation.dependency.DependencyProvider;
 
 /**
  *
  */
-public class PlusNumbers {
+public class PlusNumbers extends BaseAssembly {
 
-    @DependencyProvider.Hook(extension = MyExt.class)
-    @interface Plus {
-        int arg1();
-
-        int arg2();
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        provide(Usage.class);
     }
 
-    
-    static class MyExt extends Extension<MyExt> {
+    public static void main(String[] args) {
+        App.run(new PlusNumbers());
+    }
+
+    public static class MyExt extends Extension<MyExt> {
 
         @Override
         protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
+            System.out.println("DEV");
             // checkType
             Plus p = injector.variable().getAnnotation(Plus.class);
-            injector.provideInstance(p.arg1() + p.arg2());
+            injector.provideInstance(p.left() + p.right());
         }
 
     }
 
-    static class Usage {
-        void foo(@Plus(arg1 = 123, arg2 = 4545) int valc) {}
+    @DependencyProvider.Hook(extension = MyExt.class)
+    public @interface Plus {
+        int left();
+
+        int right();
+    }
+
+    public static class Usage {
+
+        public Usage(@Plus(left = 123, right = 4545) int valc) {
+            System.out.println(valc);
+        }
     }
 }

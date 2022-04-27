@@ -9,7 +9,6 @@ module app.packed {
     exports app.packed.operation.mirror;
     exports app.packed.operation.lifecycle;
     exports app.packed.component;
-    exports app.packed.contract;
     exports app.packed.container;
     exports app.packed.conversion;
     exports app.packed.inject;
@@ -20,8 +19,6 @@ module app.packed {
     exports app.packed.lifetime;
     exports app.packed.bean.hooks;
     exports app.packed.mirror;
-    exports app.packed.state;
-    exports app.packed.state.sandbox;
     exports app.packed.validate;
     
     uses packed.internal.devtools.spi.PackedDevTools;

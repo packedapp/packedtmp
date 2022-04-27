@@ -22,6 +22,7 @@ import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.inject.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
@@ -33,6 +34,10 @@ public final class ExtensionSetup {
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_BEGIN = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanBegin",
             void.class, BeanInfo.class);
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_DEPENDENCY_PROVIDER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "hookOnBeanDependencyProvider", void.class, DependencyProvider.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
@@ -140,7 +145,7 @@ public final class ExtensionSetup {
         // Extension Assembly + Other Extension Assembly
         container.realm.checkOpen();
     }
-    
+
     public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
         action.build(composer);
     }
@@ -164,6 +169,14 @@ public final class ExtensionSetup {
     public void hookOnBeanField(BeanField field) {
         try {
             MH_EXTENSION_HOOK_BEAN_FIELD.invokeExact(instance, field);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+    }
+
+    public void hookOnBeanDependencyProvider(DependencyProvider provider) {
+        try {
+            MH_EXTENSION_HOOK_BEAN_DEPENDENCY_PROVIDER.invokeExact(instance, provider);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -219,9 +232,9 @@ public final class ExtensionSetup {
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     public ExtensionMirror<?> mirror() {
         if (true) {
-            
+
         }
-        
+
         ExtensionMirror<?> mirror = null;
         try {
             mirror = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
@@ -304,7 +317,7 @@ public final class ExtensionSetup {
         // Create the new extension point instance
         return (E) extensionPointModel.newInstance(extensionPoint, this);
     }
-    
+
     /** A pre-order iterator for a rooted extension tree. */
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
 

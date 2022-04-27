@@ -28,7 +28,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 
 /**
@@ -70,7 +69,7 @@ import app.packed.validate.Validation;
 // This class is typically used at container level.
 
 // provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
-public final class ServiceContract extends Contract {
+public final class ServiceContract {
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());

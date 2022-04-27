@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.job;
 
 import static java.util.Objects.requireNonNull;
+
+import app.packed.base.Nullable;
 
 /**
  *
@@ -67,17 +69,17 @@ public final class Completion {
     }
 }
 
-class Result<T> {
+class XResult<T> {
     // hmmm Saa virker den ikke med primitives
     // Maaske to felter alligevel
     @Nullable
     private Object value;
 
-    public static <T> Result<T> failure(Throwable t) {
+    public static <T> XResult<T> failure(Throwable t) {
         return null;
     }
 
-    public static <T> Result<T> success(T value) {
+    public static <T> XResult<T> success(T value) {
         requireNonNull(value, "value is null");
         if (value instanceof Throwable) {
             throw new IllegalArgumentException("Cannot specify a Throwable as the value");

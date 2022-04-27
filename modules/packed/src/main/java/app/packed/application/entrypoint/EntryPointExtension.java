@@ -36,7 +36,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, ExtensionSetup setup) {
+    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, /* hidden */ ExtensionSetup setup) {
         this.application = setup.container.application;
         this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
     }
@@ -68,7 +68,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     /** {@inheritDoc} */
     @Override
-    public EntryPointExtensionMirror mirror() {
+    protected EntryPointExtensionMirror mirror() {
         return mirrorInitialize(new EntryPointExtensionMirror());
     }
 
