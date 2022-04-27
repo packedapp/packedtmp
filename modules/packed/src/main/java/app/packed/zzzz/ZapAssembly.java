@@ -12,13 +12,13 @@ import app.packed.container.ExtensionPoint;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory1;
 import app.packed.inject.InjectionContext;
-import packed.internal.devtools.spi.PackedDevTools;
+import packed.internal.integrate.devtools.PackedDevToolsIntegration;
 
 public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
-        PackedDevTools.INSTANCE.goo();
+        PackedDevToolsIntegration.INSTANCE.goo();
 
         new Exception().printStackTrace();
 

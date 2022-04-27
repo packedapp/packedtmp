@@ -15,7 +15,7 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 
 import app.packed.inject.Inject;
-import packed.internal.devtools.spi.PackedDevTools;
+import packed.internal.integrate.devtools.PackedDevToolsIntegration;
 
 /**
  * An class that helps with finding members (fields, constructors and methods) on a class.
@@ -74,14 +74,14 @@ public abstract class MemberScanner {
             // First process every field
             if (reflectOnFields) {
                 Field[] fields = c.getDeclaredFields();
-                PackedDevTools.INSTANCE.reflectMembers(c, fields);
+                PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
                 for (Field field : c.getDeclaredFields()) {
                     onField(field);
                 }
             }
 
             Method[] methods = c.getDeclaredMethods();
-            PackedDevTools.INSTANCE.reflectMembers(c, methods);
+            PackedDevToolsIntegration.INSTANCE.reflectMembers(c, methods);
             for (Method m : methods) {
                 int mod = m.getModifiers();
                 if (Modifier.isStatic(mod)) {
@@ -153,7 +153,7 @@ public abstract class MemberScanner {
 
         // Get all declared constructors
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-        PackedDevTools.INSTANCE.reflectMembers(clazz, constructors);
+        PackedDevToolsIntegration.INSTANCE.reflectMembers(clazz, constructors);
 
         // If we only have 1 constructor, return it.
         if (constructors.length == 1) {

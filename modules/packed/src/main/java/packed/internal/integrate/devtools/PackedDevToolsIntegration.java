@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.devtools.spi;
+package packed.internal.integrate.devtools;
 
 import java.lang.reflect.Member;
 import java.util.ServiceLoader;
@@ -21,19 +21,19 @@ import java.util.ServiceLoader;
 /**
  *
  */
-public abstract class PackedDevTools {
+public abstract class PackedDevToolsIntegration {
 
-    public static final PackedDevTools INSTANCE;
+    public static final PackedDevToolsIntegration INSTANCE;
 
     static {
-        INSTANCE = ServiceLoader.load(PackedDevTools.class).findFirst().orElseGet(() -> new NoDevTools());
+        INSTANCE = ServiceLoader.load(PackedDevToolsIntegration.class).findFirst().orElseGet(() -> new NoDevTools());
     }
 
     public abstract void goo();
 
     public void reflectMembers(Class<?> clazz, Member[] members) {}
     
-    static final class NoDevTools extends PackedDevTools {
+    static final class NoDevTools extends PackedDevToolsIntegration {
 
         public void goo() {
             System.out.println("No DevTools");
