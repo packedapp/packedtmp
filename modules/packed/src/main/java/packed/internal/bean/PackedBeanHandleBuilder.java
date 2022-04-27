@@ -82,7 +82,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         if (owner == null) {
             realm = container.realm;
         } else {
-            realm = this.owner.extension().extensionTree;
+            realm = this.owner.extension().extensionRealm;
         }
         // Can we call it more than once??? Why not
         realm.wirePrepare();

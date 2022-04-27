@@ -40,7 +40,7 @@ import packed.internal.component.ComponentSetup;
 public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySetupOfAssembly, AssemblySetupOfComposer {
 
     @Nullable
-    final ExtensionTreeSetup extension = null;
+    final ExtensionRealmSetup extension = null;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -67,11 +67,11 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
         if (container.parent == null) {
             // Root container
             // We must also close all extensions application-wide.
-            ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
+            ArrayList<ExtensionRealmSetup> list = new ArrayList<>(extensions.size());
 
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
-                list.add(e.extensionTree);
+                list.add(e.extensionRealm);
                 e.onUserClose();
                 e = extensions.pollFirst();
             }
@@ -79,7 +79,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
             container.application.injectionManager.finish(container.lifetime.pool, container);
 
             // Close all extensions application wide
-            for (ExtensionTreeSetup extension : list) {
+            for (ExtensionRealmSetup extension : list) {
                 extension.close();
             }
 
@@ -93,7 +93,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
         }
     }
 
-    /** {@return the setup of the root container in the realm.} */
+    /** {@return the setup of the root container of the realm.} */
     public abstract ContainerSetup container();
 
     /**
@@ -118,6 +118,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
         return extension == null ? Realm.application() : extension.realm();
     }
 
+    /** A build time mirror of an Assembly. */
     public record BuildtimeAssemblyMirror(AssemblySetup assembly) implements AssemblyMirror {
 
         /** {@inheritDoc} */

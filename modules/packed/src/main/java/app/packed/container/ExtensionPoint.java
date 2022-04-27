@@ -50,7 +50,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * @see Extension#checkConfigurable()
      */
     protected final void checkConfigurable() {
-        context().extension().extensionTree.checkOpen();
+        context().extension().extensionRealm.checkOpen();
     }
 
     /** {@return the context of the extension point.} */

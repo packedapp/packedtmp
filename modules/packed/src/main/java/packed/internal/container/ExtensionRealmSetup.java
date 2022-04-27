@@ -31,7 +31,7 @@ import packed.internal.inject.ExtensionInjectionManager;
  * <p>
  * The actual tree is maintained in {@link ExtensionSetup}. This class just holds the root
  */
-public final class ExtensionTreeSetup extends RealmSetup {
+public final class ExtensionRealmSetup extends RealmSetup {
 
     /** A model of the extension/ */
     public final ExtensionModel extensionModel;
@@ -43,7 +43,7 @@ public final class ExtensionTreeSetup extends RealmSetup {
 
     // Tror vi skal have en liste af alle extension beans...
 
-    ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
+    ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.root = requireNonNull(root);
     }

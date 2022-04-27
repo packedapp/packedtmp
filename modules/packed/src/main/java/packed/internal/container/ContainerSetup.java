@@ -52,9 +52,7 @@ import packed.internal.util.CollectionUtil;
 import packed.internal.util.StreamUtil;
 
 /**
- * Build-time configuration of a container.
- * <p>
- * This class is never exposed directly to users but instead via {@link ContainerConfiguration}.
+ * Build-time internal configuration of a container.
  */
 public final class ContainerSetup extends ComponentSetup {
 
@@ -295,7 +293,7 @@ public final class ContainerSetup extends ComponentSetup {
 
             /** {@inheritDoc} */
             protected Class<? extends Extension<?>> computeValue(Class<?> implementation) {
-                
+
                 return ExtractExtensionType.findExtensionType(implementation);
             }
         };
@@ -441,7 +439,6 @@ public final class ContainerSetup extends ComponentSetup {
         public Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetupRelation.of(container, ComponentSetup.crackMirror(other));
-
         }
     }
 }

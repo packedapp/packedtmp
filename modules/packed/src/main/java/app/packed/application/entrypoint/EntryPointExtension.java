@@ -28,19 +28,21 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     /** An object that is shared between all entry point extensions in the same application. */
     final ApplicationShare share;
 
+    final ApplicationSetup application;
+
     /**
      * Create a new service extension.
      * 
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent) {
+    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, ExtensionSetup setup) {
+        this.application = setup.container.application;
         this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
     }
 
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
-        ApplicationSetup application = ExtensionSetup.setupApplication(this);
         registerEntryPoint(null, true);
 
         application.entryPoints = new EntryPointSetup();

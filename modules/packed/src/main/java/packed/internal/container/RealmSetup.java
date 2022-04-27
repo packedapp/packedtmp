@@ -39,7 +39,7 @@ import packed.internal.component.ComponentSetup;
 
 // Og formattet Assemly vs Composer
 
-public abstract sealed class RealmSetup permits ExtensionTreeSetup, AssemblySetup {
+public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     BeanModelManager accessor;

@@ -307,7 +307,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionTree<E> treeOfApplication() {
         ExtensionSetup setup = setup();
-        return new PackedExtensionTree(setup.extensionTree.root, setup.extensionType);
+        return new PackedExtensionTree(setup.extensionRealm.root, setup.extensionType);
     }
 
     // Kunne vaere en mode paa traet?

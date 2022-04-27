@@ -25,7 +25,7 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionTreeSetup;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.ReflectiveFactory;
 import packed.internal.lifetime.LifetimePool;
@@ -61,7 +61,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
 
         // Can only register a single extension bean of a particular type
 
-        if (bean.realm instanceof ExtensionTreeSetup e) {
+        if (bean.realm instanceof ExtensionRealmSetup e) {
             ExtensionInjectionManager eim = e.injectionManagerFor(bean);
             if (driver.beanKind() == BeanKind.CONTAINER) {
                 eim.addBean(bean);

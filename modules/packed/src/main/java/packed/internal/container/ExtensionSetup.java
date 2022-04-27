@@ -22,7 +22,6 @@ import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import packed.internal.application.ApplicationSetup;
 import packed.internal.inject.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
@@ -81,8 +80,8 @@ public final class ExtensionSetup {
     /** The container where the extension is used. */
     public final ContainerSetup container;
 
-    /** The extension tree this extension is part of. */
-    public final ExtensionTreeSetup extensionTree;
+    /** The extension realm this extension is part of. */
+    public final ExtensionRealmSetup extensionRealm;
 
     /** The type of extension that is being configured. */
     public final Class<? extends Extension<?>> extensionType;
@@ -116,10 +115,10 @@ public final class ExtensionSetup {
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
         if (parent == null) {
-            this.extensionTree = new ExtensionTreeSetup(this, extensionType);
+            this.extensionRealm = new ExtensionRealmSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
-            this.extensionTree = parent.extensionTree;
+            this.extensionRealm = parent.extensionRealm;
             this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
 
             // Tree maintenance
@@ -130,7 +129,7 @@ public final class ExtensionSetup {
             }
             parent.childLast = this;
         }
-        this.model = requireNonNull(extensionTree.extensionModel);
+        this.model = requireNonNull(extensionRealm.extensionModel);
     }
 
     public void checkConfigurable() {
@@ -305,19 +304,6 @@ public final class ExtensionSetup {
         // Create the new extension point instance
         return (E) extensionPointModel.newInstance(extensionPoint, this);
     }
-
-    public static ExtensionSetup setupExtension(Extension<?> extension) {
-        return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
-    }
-
-    public static ContainerSetup setupContainer(Extension<?> extension) {
-        return setupExtension(extension).container;
-    }
-
-    public static ApplicationSetup setupApplication(Extension<?> extension) {
-        return setupContainer(extension).application;
-    }
-
     
     /** A pre-order iterator for a rooted extension tree. */
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
