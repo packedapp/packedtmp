@@ -131,7 +131,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror newExtensionMirror() {
-        return mirrorInitialize(new BeanExtensionMirror());
+        return new BeanExtensionMirror();
     }
 
     /** {@inheritDoc} */

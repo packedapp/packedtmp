@@ -71,7 +71,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     /** {@inheritDoc} */
     @Override
     protected EntryPointExtensionMirror newExtensionMirror() {
-        return mirrorInitialize(new EntryPointExtensionMirror());
+        return new EntryPointExtensionMirror();
     }
 
    int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {

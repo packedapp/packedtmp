@@ -134,7 +134,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {
-        return mirrorInitialize(new ServiceExtensionMirror(injectionManager));
+        return new ServiceExtensionMirror(injectionManager);
     }
 
     // requires bliver automatisk anchoret...

@@ -170,23 +170,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     }
 
     /**
-     * Initializes the specified extension mirror.
-     * <p>
-     * This method should be called exactly once when overriding {@link #newExtensionMirror()}.
-     * 
-     * @param <M>
-     *            the type of extension mirror
-     * @param mirror
-     *            the mirror to initialize
-     * @return the specified mirror, but now initialized
-     * @throws IllegalStateException
-     *             if this method has already been called on the specified mirror
-     */
-    protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
-        return mirror;
-    }
-
-    /**
      * Returns a mirror for the extension.
      * <p>
      * This method can be overridden to provide a customized mirror. For example, {@link ServiceExtension} overrides this
@@ -214,7 +197,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @see ContainerMirror#extensions()
      */
     protected ExtensionMirror<E> newExtensionMirror() {
-        return mirrorInitialize(new ExtensionMirror<>());
+        return new ExtensionMirror<>();
     }
 
     protected ExtensionPoint<E> newExtensionPoint() {

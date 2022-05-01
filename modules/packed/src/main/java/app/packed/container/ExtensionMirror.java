@@ -1,8 +1,9 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.base.Nullable;
 import app.packed.mirror.Mirror;
-import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
 
 /**
@@ -19,6 +20,7 @@ import packed.internal.container.PackedExtensionTree;
  * </ul>
  * <p>
  * 
+ * @see Extension#newExtensionMirror()
  * @param <E>
  *            The type of extension this extension mirror is a part of. The extension mirror must be located in the same
  *            module as the extension itself.
@@ -26,12 +28,10 @@ import packed.internal.container.PackedExtensionTree;
 public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /**
-     * The internal configuration of the extension we are mirrored. Is initially null but populated via
-     * {@link #initialize(ExtensionSetup)} which must be called by extension developers via
-     * {@link Extension#mirrorInitialize(ExtensionMirror)}.
+     * The extensions that are being mirrored. Is initially null but populated via {@link #initialize(PackedExtensionTree)}
      */
     @Nullable
-    private PackedExtensionTree<E> tree;
+    private PackedExtensionTree<E> extensions;
 
     /**
      * Create a new extension mirror.
@@ -40,33 +40,14 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      */
     protected ExtensionMirror() {}
 
-    /** {@inheritDoc} */
-    @Override
-    public final boolean equals(Object other) {
-        // Use case for equals on mirrors are
-        // FooBean.getExtension().equals(OtherBean.getExtension())...
-        // Hmm virker ikke super godt med trees...
-        // Altsaa med mindre det altid inkludere alle sub extensions
-
-        // Normally there should be no reason for subclasses to override this method...
-        // If we find a valid use case we can always remove final
-
-        // Check other.getType()==getType()????
-
-        // TODO if we have local extensions, we cannot just rely on extension=extension
-        //
-        return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
-    }
-
     /**
      * {@return the mirrored extension's internal configuration.}
      * 
      * @throws InternalExtensionException
-     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#newExtensionMirror()}.
+     *             if called from the constructor of the mirror
      */
-    private PackedExtensionTree<E> extension() {
-        PackedExtensionTree<E> e = tree;
+    private PackedExtensionTree<E> extensions() {
+        PackedExtensionTree<E> e = extensions;
         if (e == null) {
             throw new InternalExtensionException(
                     "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
@@ -79,7 +60,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() {
-        return extension().extension().model;
+        return extensions().extension().model;
     }
 
     /** {@return the full name of the extension.} */
@@ -94,13 +75,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension<?>> extensionType() {
-        return extension().extension().extensionType;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int hashCode() {
-        return extension().hashCode();
+        return extensions().extension().extensionType;
     }
 
     /**
@@ -109,11 +84,11 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(PackedExtensionTree<E> tree) {
-        if (this.tree != null) {
-            throw new IllegalStateException("The specified mirror has already been initialized.");
+    final void initialize(PackedExtensionTree<E> extensions) {
+        if (this.extensions != null) {
+            throw new IllegalStateException("This mirror has already been initialized.");
         }
-        this.tree = tree;
+        this.extensions = requireNonNull(extensions);
     }
 
     /** {@inheritDoc} */
@@ -123,7 +98,30 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     }
 
     protected ExtensionTree<E> tree() {
-        extension();
-        return tree;
+        extensions();
+        return extensions;
     }
 }
+//
+///** {@inheritDoc} */
+//@Override
+//public final boolean equals(Object other) {
+//  // Use case for equals on mirrors are
+//  // FooBean.getExtension().equals(OtherBean.getExtension())...
+//  // Hmm virker ikke super godt med trees...
+//  // Altsaa med mindre det altid inkludere alle sub extensions
+//
+//  // Normally there should be no reason for subclasses to override this method...
+//  // If we find a valid use case we can always remove final
+//
+//  // Check other.getType()==getType()????
+//
+//  // TODO if we have local extensions, we cannot just rely on extension=extension
+//  //
+//  return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
+//}
+///** {@inheritDoc} */
+//@Override
+//public final int hashCode() {
+//  return extension().hashCode();
+//}
