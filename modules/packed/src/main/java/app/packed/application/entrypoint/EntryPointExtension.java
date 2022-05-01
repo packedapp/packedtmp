@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.ExtensionBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
 import app.packed.inject.Ancestral;
@@ -48,13 +49,14 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         application.entryPoints = new EntryPointSetup();
 
         MainThreadOfControl mc = application.entryPoints.mainThread();
+        
         mc.isStatic = Modifier.isStatic(method.getModifiers());
         mc.cs = ((PackedBeanMethod) method).bean;
         mc.methodHandle = method.newRawOperation().handle();
 
 //        oldOperation().useMirror(() -> new EntryPointMirror(0));
     }
-
+    
     public void main(Runnable runnable) {
         // Det her er en function
     }
@@ -68,25 +70,11 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected EntryPointExtensionMirror mirror() {
+    protected EntryPointExtensionMirror newExtensionMirror() {
         return mirrorInitialize(new EntryPointExtensionMirror());
     }
 
-    @Override
-    protected void onApplicationClose() {
-        if (isRootOfApplication()) {
-            // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
-            // extensions'ene
-
-            // install
-            // provide (visible i mxxz;ias:"?aZ.a:n aZz¸ m nl jj m ,m ;n .n ≥ en container)
-            // provideShared (container + subcontainers)
-            // shareInstance(new MethodHandle[0]);
-        }
-        super.onApplicationClose();
-    }
-
-    int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
+   int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
 
         // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
         // Saa det er kun selve invokationen der sker her
@@ -114,7 +102,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     /** An instance of this class is shared between all entry point extensions for a single application. */
-    static class ApplicationShare {
+    class ApplicationShare {
 
         @Nullable
         Class<? extends Extension<?>> dispatcher;
@@ -124,6 +112,8 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
         MethodHandle[] entryPoints;
 
+        ExtensionBeanConfiguration<?> ebc;
+
         void takeOver(Class<? extends Extension<?>> takeOver) {
             if (this.dispatcher != null) {
                 if (takeOver == this.dispatcher) {
@@ -132,10 +122,28 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 throw new IllegalStateException();
             }
             this.dispatcher = takeOver;
+            ebc = bean().install(EntryPointDispatcher.class);
         }
+    }
+
+    static class EntryPointDispatcher {
+        EntryPointDispatcher(String s) {}
     }
 
     static class EntryPointConf {
 
     }
 }
+//@Override
+//protected void onApplicationClose() {
+//  if (isRootOfApplication()) {
+//      // Her installere vi MethodHandles der bliver shared, taenker det er bedre end at faa injected
+//      // extensions'ene
+//
+//      // install
+//      // provide (visible i mxxz;ias:"?aZ.a:n aZz¸ m nl jj m ,m ;n .n ≥ en container)
+//      // provideShared (container + subcontainers)
+//      // shareInstance(new MethodHandle[0]);
+//  }
+//  super.onApplicationClose();
+//}

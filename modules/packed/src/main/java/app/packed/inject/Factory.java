@@ -73,6 +73,7 @@ import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 // og saa kalde Factory igennem den...
 // Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
 
+// Kunne vi have CapturingFactory extends InternalFactory??? saa alt altid er InternalFactory
 @SuppressWarnings("rawtypes")
 public abstract sealed class Factory<R> permits CapturingFactory, InternalFactory {
 

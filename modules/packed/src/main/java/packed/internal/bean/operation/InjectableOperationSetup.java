@@ -18,8 +18,6 @@ package packed.internal.bean.operation;
 import java.lang.invoke.MethodType;
 
 import app.packed.base.Key;
-import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationPack;
@@ -31,8 +29,8 @@ import packed.internal.bean.hooks.PackedBeanMember;
  */
 public final class InjectableOperationSetup extends OperationSetup implements InjectableOperationHandle {
 
-    @Nullable
-    final ExtensionBeanSetup extensionBean;
+    /** The bean that invokes the operation. */
+    final ExtensionBeanSetup operator;
 
     Key<OperationPack> operationPackKey;
 
@@ -41,9 +39,9 @@ public final class InjectableOperationSetup extends OperationSetup implements In
     /**
      * @param member
      */
-    public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup extensionBean) {
+    public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup operator) {
         super(member.bean, member, member.operator);
-        this.extensionBean = extensionBean;
+        this.operator = operator;
     }
 
     /** {@inheritDoc} */
@@ -54,25 +52,22 @@ public final class InjectableOperationSetup extends OperationSetup implements In
 
     /** {@inheritDoc} */
     @Override
-    public int packIndex() {
+    public int pack() {
         int p = packId;
         if (p == -1) {
-            p = packId = extensionBean.operationPack(null).next();
+            p = packId = operator.operationPack(null).next();
         }
         return p;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void packKey(Key<? extends OperationPack> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public NamespacePath packPath() {
-        // is only nullable for internal extensions. But they will never call this method
-        return extensionBean.path();
+    public int pack(Key<OperationPack> key) {
+        int p = packId;
+        if (p == -1) {
+            p = packId = operator.operationPack(key).next();
+        }
+        return p;
     }
 
     /** {@inheritDoc} */

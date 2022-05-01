@@ -41,14 +41,13 @@ import packed.internal.util.MethodHandleUtil;
  */
 public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
-    public abstract List<InternalDependency> dependencies();
-    
+    /** {@inheritDoc} */
     public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
-        InternalFactory<R> f = InternalFactory.crackFactory(this);
-        List<InternalDependency> dependencies = f.dependencies();
+        
+        List<InternalDependency> dependencies = dependencies();
 
-        List<Variable> variables = f.variables();
+        List<Variable> variables = variables();
 
         Objects.checkIndex(position, dependencies.size());
         int len = 1 + additionalArguments.length;
@@ -80,10 +79,13 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
         // TODO check types...
 
-        return new BoundFactory<>(f, position, dd, List.of(vars), args);
+        return new BoundFactory<>(this, position, dd, List.of(vars), args);
     }
+    
+    public abstract List<InternalDependency> dependencies();
+    
     public final Factory<R> peek(Consumer<? super R> action) {
-        return new PeekableFactory<>(InternalFactory.crackFactory(this), action);
+        return new PeekableFactory<>(this, action);
     }
 
     public abstract MethodHandle toMethodHandle(Lookup lookup);

@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanExtension;
+import app.packed.bean.hooks.BeanVariable;
 import app.packed.inject.Inject;
 import app.packed.inject.InjectionContext;
 
@@ -66,6 +68,7 @@ import app.packed.inject.InjectionContext;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@BeanVariable.AnnotatedWithHook(extension = BeanExtension.class)
 public @interface OnInitialize {
 
     /**
@@ -83,6 +86,10 @@ public @interface OnInitialize {
     // Or PRE_DEPENDENCIES, ANY_TIME, POST_DEPENDENCIES;
     // Og saa scheduler vi automatisk til Pre_Dependencies
     // Ved ikke hvordan Async fungere fx med PRE_DEPENDENCIS
+    
+    // Vi skal have en Lifetime annotering istedet
+    //// @ReverseOrderLifecycle
+    // or just lifetimeOrderReversed default false();
     boolean preOrder() default true;
 
     // Maaske har vi en ENUM PRE_DEPENDENCIES, ASYNC, POST_DEPENDENCIES

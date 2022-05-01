@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
@@ -241,7 +241,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     @Reflectable
-    static ApplicationImage<ServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<ServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -291,7 +291,7 @@ public interface ServiceLocator extends ServiceRegistry {
 //    }
 
     @Reflectable
-    static ApplicationImage<ServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<ServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }
 }

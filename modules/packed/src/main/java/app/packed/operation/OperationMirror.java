@@ -26,9 +26,9 @@ import app.packed.bean.context.ContextRootMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
-import app.packed.inject.DependencyMirror;
 import app.packed.inject.service.ServiceRegistry;
 import app.packed.mirror.Mirror;
+import app.packed.operation.dependency.DependencyMirror;
 import app.packed.operation.interceptor.OperationInterceptorMirror;
 import app.packed.operation.mirror.OperationErrorHandlingMirror;
 import app.packed.operation.usage.ServiceExportMirror;
@@ -103,6 +103,7 @@ public non-sealed class OperationMirror implements Mirror , ContextRootMirror {
         return false;
     }
 
+    @SuppressWarnings("exports")
     public final List<DependencyMirror> dependencies() {
         // ; // What are we having injected... Giver det mening for functions????
 
@@ -178,7 +179,7 @@ public non-sealed class OperationMirror implements Mirror , ContextRootMirror {
      * 
      * @throws InternalExtensionException
      *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#newExtensionMirror()}.
      */
     private OperationSetup operation() {
         OperationSetup o = operation;

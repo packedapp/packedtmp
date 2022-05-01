@@ -21,8 +21,8 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.Builder;
-import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.bean.BeanKind;
+import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedExtensionPointContext;
@@ -131,6 +131,11 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
+        
+        // Optional is also not valid
+        // or Provider, Lazy, ect
+        // Ved heller ikke DependencyProvided beans
+        
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
         return new PackedBeanHandleBuilder<>(operator, kind, container, instance.getClass(), SourceType.INSTANCE, instance);

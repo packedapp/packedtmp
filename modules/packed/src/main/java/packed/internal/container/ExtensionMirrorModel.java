@@ -17,36 +17,20 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import app.packed.base.Key;
-import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.ExtensionPoint;
-import app.packed.container.ExtensionTree;
-import app.packed.container.InternalExtensionException;
-import packed.internal.inject.invoke.InternalInfuser;
-import packed.internal.thirdparty.guice.GTypes;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
+record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType) {
 
-// Den er ikke lige i brug endnu... pga Container#extensions() vi ved jo ikke hvad for en type
-// extension mirror vi skal lave....
-
-record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
-
-    /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_MIRROR_TREE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ExtensionMirror.class, "tree",
-            PackedExtensionTree.class);
-
-    /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_MIRROR_EXTENSION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ExtensionMirror.class, "extension",
-            ExtensionSetup.class);
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class,
+            "initialize", void.class, PackedExtensionTree.class);
 
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
@@ -55,10 +39,10 @@ record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType, MethodH
     private final static ClassValue<ExtensionMirrorModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
         protected ExtensionMirrorModel computeValue(Class<?> type) {
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            Class<? extends ExtensionPoint<?>> mirrorClass = ClassUtil.checkProperSubclass((Class) ExtensionPoint.class, type);
+            ClassUtil.checkProperSubclass((Class) ExtensionMirror.class, type);
 
             Type t = TYPE_LITERAL_EP_EXTRACTOR.extract(type);
 //            System.out.println(t);
@@ -68,62 +52,37 @@ record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType, MethodH
 //                throw new InternalExtensionException(subtensionClass + " must be annotated with @ExtensionMember");
 //            }
 
-            @SuppressWarnings("unchecked")
             Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) t;// extensionMember.value();
             // TODO check same module
             // Move to a common method and share it with mirror
             //
 
-            ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
-
-            // ExtensionTree<BeanExtension>
-
-            // Create an infuser exposing two services:
-            // 1. An instance of the extension that the extension point is a member of
-            // 2. An ExtensionPoint.UseSite instance
-            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), mirrorClass, Extension.class, ExtensionTree.class);
-            builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
-
-            ParameterizedType pt = GTypes.newParameterizedType(ExtensionTree.class, extensionClass);
-            TypeToken<?> tt = TypeToken.fromType(pt);
-            builder.provide(Key.ofTypeToken(tt)).adaptArgument(1);
-
-            // Find a method handle for the subtensions's constructor
-            MethodHandle constructor = builder.findConstructor(ExtensionMirror.class, m -> new InternalExtensionException(m));
-
-            return new ExtensionMirrorModel(extensionClass, constructor);
+            ExtensionModel.of(extensionClass); // Check that the extension is valid
+            return new ExtensionMirrorModel(extensionClass);
         }
     };
 
     /**
-     * Creates a new extension support class instance.
-     * 
-     * @param otherExtension
-     *            an instance of the declaring extension class
-     * @param requestingExtensionClass
-     *            the extension that is requesting an instance
-     * @return the new subtension instance
-     */
-    ExtensionMirror<?> newInstance(ExtensionSetup extension, PackedExtensionTree<?> extensionTree) {
-        // mhConstructor = (Extension,ExtensionSupportContext)Subtension
-        try {
-            ExtensionMirror<?> m = (ExtensionMirror<?>) mhConstructor.invokeExact(extension.instance(), (ExtensionTree<?>) extensionTree);
-            VH_EXTENSION_MIRROR_TREE.set(m, extensionTree);
-            VH_EXTENSION_MIRROR_EXTENSION.set(m, extension);
-            return m;
-        } catch (Throwable e) {
-            throw new InternalExtensionException("Instantiation of " + ExtensionMirror.class + " failed", e);
-        }
-    }
-
-    /**
      * Returns a model from the specified subtension class.
      * 
-     * @param subtensionClass
+     * @param mirrorClass
      *            the subtension class
      * @return a model for the subtension class
      */
-    static ExtensionMirrorModel of(Class<? extends ExtensionMirror<?>> subtensionClass) {
-        return MODELS.get(subtensionClass);
+    static ExtensionMirrorModel of(Class<?> mirrorClass) {
+        return MODELS.get(mirrorClass);
+    }
+
+    /**
+     * @param mirror
+     * @param extensionSetup
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static void initialize(ExtensionMirror<?> mirror, ExtensionSetup extensionSetup) {
+        try {
+            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, new PackedExtensionTree(extensionSetup, extensionSetup.extensionType));
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 }

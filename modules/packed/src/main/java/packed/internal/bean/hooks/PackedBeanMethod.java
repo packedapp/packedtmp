@@ -72,7 +72,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     /** {@inheritDoc} */
     @Override
-    public InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> base) {
+    public InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator) {
         return null;
     }
 

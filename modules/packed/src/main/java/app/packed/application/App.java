@@ -36,28 +36,29 @@ public final class App {
     /** Not today Satan, not today. */
     private App() {}
 
-    public static ApplicationImage<Void> build(Assembly assembly, Wirelet... wirelets) {
+    // The launcher can be used exactly once
+    public static ApplicationLauncher<Void> newLauncher(Assembly assembly, Wirelet... wirelets) {
         return DRIVER.imageOf(assembly, wirelets);
     }
 
-    public static ApplicationImage<Void> buildImage(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationLauncher<Void> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
         return DRIVER.imageOf(assembly, wirelets);
     }
 
     /** {@return the application driver used by this class.} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static ApplicationDriver<Void> driver() {
+    static ApplicationDriver<Void> driver() {
         return (ApplicationDriver) DRIVER;
     }
 
     /**
-     * Builds an application from the specified assembly and returns a mirror for it.
+     * Builds an application from the specified assembly and returns a mirror representing the application.
      * 
      * @param assembly
-     *            the assembly representing the application
+     *            the application's assembly 
      * @param wirelets
      *            optional wirelets
-     * @return a mirror for the application
+     * @return a mirror representing the application
      * @throws BuildException
      *             if the application could not be build
      */

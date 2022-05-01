@@ -28,7 +28,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -43,24 +43,24 @@ import app.packed.container.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final ApplicationImage<Void> EMPTY = App.buildImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> EMPTY = App.newReusableLauncher(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final ApplicationImage<Void> USE_EXTENSION = App.buildImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> USE_EXTENSION = App.newReusableLauncher(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final ApplicationImage<Void> INSTALL = App.buildImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL = App.newReusableLauncher(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final ApplicationImage<Void> INSTALL_AUTO_ACTIVATE = App.buildImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL_AUTO_ACTIVATE = App.newReusableLauncher(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());
@@ -69,22 +69,22 @@ public class ImageMicro {
 
     @Benchmark
     public Void empty() {
-        return EMPTY.use();
+        return EMPTY.launch();
     }
 
     @Benchmark
     public Void useExtension() {
-        return USE_EXTENSION.use();
+        return USE_EXTENSION.launch();
     }
 
     @Benchmark
     public Void install() {
-        return INSTALL.use();
+        return INSTALL.launch();
     }
 
     @Benchmark
     public Void newExtensionAutoActivate() {
-        return INSTALL_AUTO_ACTIVATE.use();
+        return INSTALL_AUTO_ACTIVATE.launch();
     }
 
     static class MyStuff {

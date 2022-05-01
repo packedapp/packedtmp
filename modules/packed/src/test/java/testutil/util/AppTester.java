@@ -18,7 +18,7 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.Program;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -38,8 +38,8 @@ public class AppTester {
         this(Program.start(source, wirelets));
     }
 
-    public AppTester(ApplicationImage<Program> img, Wirelet... wirelets) {
-        this(img.use(wirelets));
+    public AppTester(ApplicationLauncher<Program> img, Wirelet... wirelets) {
+        this(img.launch(wirelets));
     }
 
     public void assertPathExist(CharSequence s) {

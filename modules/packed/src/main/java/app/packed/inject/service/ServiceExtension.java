@@ -133,7 +133,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     /** {@return a mirror for this extension.} */
     @Override
-    protected ServiceExtensionMirror mirror() {
+    protected ServiceExtensionMirror newExtensionMirror() {
         return mirrorInitialize(new ServiceExtensionMirror(injectionManager));
     }
 

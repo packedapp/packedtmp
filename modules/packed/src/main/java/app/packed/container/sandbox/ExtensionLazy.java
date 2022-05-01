@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.container.sandbox;
 
-import java.lang.invoke.MethodHandle;
+import app.packed.container.Extension;
 
 /**
  *
  */
 
-// Den bliver provided direkte som keyed...
-// Saa den er tilgaengelig 
+// Ideen er at bruge 
 
-public interface OperationPack {
+// @Meta(lazy = OnConfigLazy)
+// public class MyExtension extends Extension<MyExtension> {}
 
-    /** {@return an array of all method handles that where prepared.} */
-    MethodHandle[] methodsHandles();
+// Lazy activation
+
+class ExtensionLazy<E extends Extension<E>> {
+
 }
+

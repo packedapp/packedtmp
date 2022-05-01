@@ -16,7 +16,7 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -24,10 +24,10 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationImage<Void> EMPTY_IMAGE = App.buildImage(empty());
-    public static final ApplicationImage<Void> ONE_COMPONENT_IMAGE = App.buildImage(oneComponent());
-    public static final ApplicationImage<Void> FIVE_CONTAINER_IMAGE = App.buildImage(fiveComponents());
-    public static final ApplicationImage<Void> ONE_CONTAINER_IMAGE = App.buildImage(oneContainer());
+    public static final ApplicationLauncher<Void> EMPTY_IMAGE = App.newReusableLauncher(empty());
+    public static final ApplicationLauncher<Void> ONE_COMPONENT_IMAGE = App.newReusableLauncher(oneComponent());
+    public static final ApplicationLauncher<Void> FIVE_CONTAINER_IMAGE = App.newReusableLauncher(fiveComponents());
+    public static final ApplicationLauncher<Void> ONE_CONTAINER_IMAGE = App.newReusableLauncher(oneContainer());
 
     public static BaseAssembly empty() {
         return new BaseAssembly() {

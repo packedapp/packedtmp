@@ -23,7 +23,6 @@ import app.packed.container.ExtensionTree;
 /**
  *
  */
-// Tree, SequencedTree
 public record PackedExtensionTree<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionTree<T> {
 
     /** {@inheritDoc} */
@@ -43,10 +42,4 @@ public record PackedExtensionTree<T extends Extension<T>> (ExtensionSetup extens
     public T root() {
         return extensionType.cast(extension.instance());
     }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    public ExtensionConfiguration rootConfiguration() {
-//        return extension;
-//    }
 }

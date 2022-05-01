@@ -288,12 +288,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
             // Find a method handle for the extension's constructor
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
 
-            // So far we scan for constructors
-            // OpenClass oc = OpenClass.of(MethodHandles.lookup(), extensionClass);
-
-            // Okay maybe we need to scan for contracts...
-            // this.pam = PackedAttributeModel.analyse(oc);
-
             return new ExtensionModel(this);
         }
 

@@ -75,8 +75,8 @@ import app.packed.bean.hooks.BeanMethod;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@BeanMethod.Hook(allowInvoke = true, extension = BeanExtension.class)
-@BeanField.Hook(allowGet = true, extension = BeanExtension.class)
+@BeanMethod.AnnotatedWithHook(allowInvoke = true, extension = BeanExtension.class)
+@BeanField.AnnotatedWithHook(allowGet = true, extension = BeanExtension.class)
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);

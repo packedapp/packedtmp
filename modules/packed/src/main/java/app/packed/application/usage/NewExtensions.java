@@ -49,6 +49,17 @@ public class NewExtensions extends BaseAssembly {
         @Override
         protected void build() {
             use(MyExt.class);
+            installInstance("asd");
+            for (int i = 0; i < 10000; i++) {
+                install(Foo.class);
+            }
+        }
+    }
+    
+    public static class Foo {
+        
+        public void foo() {
+            
         }
     }
     

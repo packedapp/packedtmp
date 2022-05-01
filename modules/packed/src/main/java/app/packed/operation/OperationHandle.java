@@ -34,7 +34,7 @@ public sealed interface OperationHandle permits InjectableOperationHandle, RawOp
 //    }
 
     /**
-     * Adds a mirror
+     * Adds a specialized mirror to the operation.
      * 
      * @param supplier
      *            a mirror supplier

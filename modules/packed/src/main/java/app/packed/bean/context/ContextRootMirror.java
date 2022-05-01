@@ -22,6 +22,7 @@ import app.packed.operation.OperationMirror;
 /**
  *
  */
+// Contextuablize
 public sealed interface ContextRootMirror extends Mirror permits ComponentMirror, OperationMirror {
 
 }

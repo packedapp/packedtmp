@@ -51,8 +51,8 @@ public final class ExtensionSetup {
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "hookOnBeanMethod", void.class, BeanMethod.class);
 
-    /** A handle for invoking the protected method {@link Extension#mirror()}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
             ExtensionMirror.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
@@ -231,10 +231,6 @@ public final class ExtensionSetup {
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     public ExtensionMirror<?> mirror() {
-        if (true) {
-
-        }
-
         ExtensionMirror<?> mirror = null;
         try {
             mirror = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
@@ -244,6 +240,8 @@ public final class ExtensionSetup {
         if (mirror == null) {
             throw new InternalExtensionException("Extension " + model.fullName() + " returned null from " + model.name() + ".mirror()");
         }
+        ExtensionMirrorModel.of(mirror.getClass());
+        ExtensionMirrorModel.initialize(mirror, this);
         return mirror;
     }
 

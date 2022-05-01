@@ -17,7 +17,7 @@ import app.packed.container.InternalExtensionException;
  * The following types must use this annotation to indicate what extension they are part of:
  * <ul>
  * <li>{@link ExtensionMirror} subclasses. Packed uses this information to figure out what extension to call
- * {@link Extension#mirror()} on in order to get an instance of the particular extension mirror.</li>
+ * {@link Extension#newExtensionMirror()} on in order to get an instance of the particular extension mirror.</li>
  * </ul>
  */
 @Target(ElementType.TYPE)

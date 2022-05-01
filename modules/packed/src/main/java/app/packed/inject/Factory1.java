@@ -17,7 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -68,7 +67,7 @@ import java.util.function.Supplier;
  *            The type of the single dependency that this factory takes
  * @param <R>
  *            the type of objects this factory constructs
- * @see Factory
+ * @see Factory0
  * @see Factory2
  */
 public abstract class Factory1<T, R> extends CapturingFactory<R> {
@@ -77,11 +76,9 @@ public abstract class Factory1<T, R> extends CapturingFactory<R> {
      * Creates a new factory, that uses the specified function to provide instances.
      *
      * @param function
-     *            the function that provide instances. The function should never return null, but should instead throw a
-     *            relevant exception if unable to provide a value
+     *            the function that provide instances.
      * @throws FactoryException
-     *             if any of type variables could not be determined. Or if R does not represent a valid key, for example,
-     *             {@link Optional}
+     *             if any of type variables could not be determined.
      */
     protected Factory1(Function<? super T, ? extends R> function) {
         super(requireNonNull(function, "function is null"));

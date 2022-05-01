@@ -20,7 +20,6 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.base.NamespacePath;
 import app.packed.inject.FactoryType;
 
 /**
@@ -43,13 +42,9 @@ public non-sealed interface InjectableOperationHandle extends OperationHandle {
 
     MethodType invocationType();
 
-    int packIndex();
+    int pack();
 
-    // Used if we have for example seperate
-    void packKey(Key<? extends OperationPack> key);
-
-    // The path of the extension bean used when creating the operation
-    NamespacePath packPath();
+    int pack(Key<OperationPack> key);
 
     // Hvad goer vi med annoteringer paa Field/Update???
     // Putter paa baade Variable og ReturnType???? Det vil jeg mene

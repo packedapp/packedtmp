@@ -29,7 +29,8 @@ import packed.internal.bean.hooks.PackedBeanField.BuildTimeFieldTargetMirror;
  */
 // Proev at undgaa at smid for meget information fra OperationMirror her...
 
-//Hvad med Factory1<>???
+// Hvad med Factory1<>??? Her taenker vi paa at der bliver fanget annoteringer...
+// Er det Saa Method invoke???Eller FunctionCall
 public interface OperationTargetMirror {
 
     // Accessing an instance that have previously been computed
@@ -38,7 +39,7 @@ public interface OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
         Optional<OperationTargetMirror> origin();
-        
+
         // Har maaske ogsaa noget LifetimePoolMirror her????
     } // ofLifetimePool? Hmm
 
@@ -73,7 +74,7 @@ public interface OperationTargetMirror {
 
     /** Represents an operation that invokes a method. */
     public interface OfMethodInvoke extends OperationTargetMirror {
-        
+
         /** {@return the underlying method.} */
         Method method();
     }

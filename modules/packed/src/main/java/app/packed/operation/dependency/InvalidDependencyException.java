@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.dependency;
 
 /**
  * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
  * could not be found.
  */
-public class UnsatisfiableDependencyException extends DependencyException {
+// @Nullable primitive
+public class InvalidDependencyException extends DependencyException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -32,7 +33,7 @@ public class UnsatisfiableDependencyException extends DependencyException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableDependencyException(String message) {
+    public InvalidDependencyException(String message) {
         super(message);
     }
 
@@ -46,7 +47,7 @@ public class UnsatisfiableDependencyException extends DependencyException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableDependencyException(String message, Throwable cause) {
+    public InvalidDependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

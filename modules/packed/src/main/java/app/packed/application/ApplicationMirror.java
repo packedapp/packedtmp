@@ -89,8 +89,10 @@ public interface ApplicationMirror extends Mirror {
 
     /**
      * @param <T>
+     *            The type of extension mirror
      * @param type
-     * @return
+     *            The type of extension mirror
+     * @return an extension mirror of the specified type
      * 
      * @see ContainerMirror#useExtension(Class)
      */

@@ -22,6 +22,9 @@ import app.packed.lifetime.LifetimeState;
  */
 public interface ApplicationContext {
 
+    // Can be restarted in some capacity
+    boolean isHosted();
+    
     /** {@return the current state of the application.} */
     LifetimeState state(); // state().current()
 }

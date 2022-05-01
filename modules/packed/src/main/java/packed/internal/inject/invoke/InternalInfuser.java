@@ -19,6 +19,15 @@ import packed.internal.util.MemberScanner;
 import packed.internal.util.OpenClass;
 
 // MemberInjector
+// Used by
+
+//// ApplicationInstance
+//// Assembly-ContainerHook
+//// Extension (ExtensionModel)
+
+//// ExtensionMirror
+//// ExtensionPoint
+
 public final class InternalInfuser {
 
     /** The services provided by this infuser. */

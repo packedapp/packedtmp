@@ -133,7 +133,7 @@ public class BeanScanner {
 
             @Override
             protected FieldHook computeValue(Class<?> type) {
-                BeanField.Hook h = type.getAnnotation(BeanField.Hook.class);
+                BeanField.AnnotatedWithHook h = type.getAnnotation(BeanField.AnnotatedWithHook.class);
                 if (h == null) {
                     return null;
                 }
@@ -154,7 +154,7 @@ public class BeanScanner {
 
             @Override
             protected MethodHook computeValue(Class<?> type) {
-                BeanMethod.Hook h = type.getAnnotation(BeanMethod.Hook.class);
+                BeanMethod.AnnotatedWithHook h = type.getAnnotation(BeanMethod.AnnotatedWithHook.class);
                 if (h == null) {
                     return null;
                 }

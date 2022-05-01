@@ -22,6 +22,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import app.packed.base.Variable;
 import app.packed.container.Extension;
 
 /**
@@ -41,14 +42,18 @@ import app.packed.container.Extension;
 // Variable den ikke goer noget med
 public non-sealed interface BeanVariable extends BeanElement {
 
+    Variable declaredVar();
+
+    Variable var();
+    
     // Whether or not a value has been provided
     boolean isProvided();
     
     RawProvider raw();
 
-    WrappingProvider wrapping(Object modes);
+    WrappingProvider unwrap(Object modes);
 
-    WrappingProvider wrapping();
+    WrappingProvider unwrap();
 
     interface RawProvider {
 
@@ -61,7 +66,7 @@ public non-sealed interface BeanVariable extends BeanElement {
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)
     @Documented
-    public @interface Hook {
+    public @interface AnnotatedWithHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();

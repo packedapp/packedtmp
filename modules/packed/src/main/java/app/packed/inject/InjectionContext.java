@@ -31,6 +31,10 @@ import app.packed.inject.service.ServiceRegistry;
  * <strong>Note:</strong> This interface should only be used doing development. As the runtime needs to retain detailed
  * information about the dependency graph. Information which is normally only available at build time.
  */
+
+// Altsaa er det mere et mirror????
+// Saa aktivere vi MirrorExtension... Men saa passer den ikke til Extension...
+
 // DependencyTrace<T>
 public /* /* sealed */ interface InjectionContext extends ServiceRegistry {
 

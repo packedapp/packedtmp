@@ -47,7 +47,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanSetup bean = ((PackedBeanMember) field).bean;
         FieldHelper fh = new FieldHelper(field, field.newRawOperation().handle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-        field.newOperationSetter();
+        field.newOperationSetter(null);
 
         bean.parent.injectionManager.addConsumer(node);
     }
@@ -130,7 +130,7 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected BeanExtensionMirror mirror() {
+    protected BeanExtensionMirror newExtensionMirror() {
         return mirrorInitialize(new BeanExtensionMirror());
     }
 

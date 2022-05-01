@@ -85,7 +85,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      *             if the image could not be build
      * @see ServiceLocator#imageOf(Assembly, Wirelet...)
      */
-    ApplicationImage<A> imageOf(Assembly  assembly, Wirelet... wirelets);
+    ApplicationLauncher<A> imageOf(Assembly  assembly, Wirelet... wirelets);
 
     /**
      * Returns whether or not applications produced by this driver have an {@link LifecycleApplicationController}.
@@ -179,7 +179,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester 
-    ApplicationImage<A> reusableImageOf(Assembly  assembly, Wirelet... wirelets);
+    ApplicationLauncher<A> reusableImageOf(Assembly  assembly, Wirelet... wirelets);
 
     /** {@return the type (typically an interface) of the application instances created by this driver.} */
     // This is not the resultType
@@ -247,6 +247,12 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
         
+        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
+            // extension must be available...
+            // An extensionBean of the specified type must be installed by the extension in the root container
+            return this;
+        }
+        
         /**
          * Creates a new artifact driver.
          * <p>
@@ -304,7 +310,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * 
          * @see ApplicationDriver#type()
          */
-        default Builder resultType(Class<?> applicationType) {
+        default Builder resultType(Class<?> resultType) {
             throw new UnsupportedOperationException();
         }
 
@@ -518,7 +524,7 @@ interface ApplicationDriverSandbox<A> {
     interface Builder2 {
         /**
          * Creates a new application driver that does not support instantiation of applications. These type of drivers are
-         * typically used if you only need to use {@link ApplicationDriver#build(Assembly, Wirelet...)} but do not need to
+         * typically used if you only need to use {@link ApplicationDriver#newLauncher(Assembly, Wirelet...)} but do not need to
          * create actual application instances.
          * 
          * @param <A>

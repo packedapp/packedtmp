@@ -27,6 +27,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
+import app.packed.bean.ExtensionBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.RawOperationHandle;
@@ -48,11 +49,11 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      */
     int getModifiers();
 
-    InjectableOperationHandle newOperation(VarHandle.AccessMode accessMode);
+    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> invoker, VarHandle.AccessMode accessMode);
 
-    InjectableOperationHandle newOperationGetter();
+    InjectableOperationHandle newOperationGetter(ExtensionBeanConfiguration<?> invoker);
 
-    InjectableOperationHandle newOperationSetter();
+    InjectableOperationHandle newOperationSetter(ExtensionBeanConfiguration<?> invoker);
 
     /**
      * Returns a method handle that gives read access to the underlying field as specified by
@@ -67,8 +68,8 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return the variable
      * @see Lookup#unreflectVarHandle(Field)
-     * @see BeanField.Hook#allowGet()
-     * @see BeanField.Hook#allowSet()
+     * @see BeanField.AnnotatedWithHook#allowGet()
+     * @see BeanField.AnnotatedWithHook#allowSet()
      * @throws UnsupportedOperationException
      *             if the extension field has not both get and set access
      */
@@ -92,7 +93,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
-    public @interface Hook {
+    public @interface AnnotatedWithHook {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
         boolean allowGet() default false;

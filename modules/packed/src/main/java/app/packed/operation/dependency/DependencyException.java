@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.dependency;
+
+import app.packed.application.BuildException;
 
 /**
  * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
  * could not be found.
  */
-// @Nullable primitive
-public class InvalidDependencyException extends DependencyException {
+public class DependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -33,7 +34,7 @@ public class InvalidDependencyException extends DependencyException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InvalidDependencyException(String message) {
+    public DependencyException(String message) {
         super(message);
     }
 
@@ -47,7 +48,7 @@ public class InvalidDependencyException extends DependencyException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InvalidDependencyException(String message, Throwable cause) {
+    public DependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

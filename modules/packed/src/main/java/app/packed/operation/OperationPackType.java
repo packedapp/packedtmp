@@ -13,17 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation;
 
-import app.packed.operation.OperationMirror;
+import app.packed.base.Key;
 
 /**
- * A mirror for a dependency.
+ *
  */
-// Hmm den burde vel passe til BeanInjector
-public interface DependencyMirror {
+public final class OperationPackType {
 
-    /** {@return the operation the dependency belongs to.} */
-    // Hvad med unresolved... Tror vi skal fejle
-    OperationMirror operation();
+    private final Key<OperationPack> key = Key.of(OperationPack.class);
+
+    public Key<OperationPack> key() {
+        return key;
+    }
+    
+    interface Meta {
+        //Capabalitites
+        //Customize
+        // Definition
+        // Define
+        // Directives
+        // Global
+        // Header
+        // Load
+        // Meta
+        // Setup
+        // Specialize
+        
+        // @Specialize + Specializer
+    }
+    
+
 }

@@ -1,4 +1,5 @@
 /*
+
  * Copyright (c) 2008 Kasper Nielsen.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.application.sandbox.ManagedInstance;
+import app.packed.bean.BeanExtension;
+import app.packed.bean.hooks.BeanVariable;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -35,13 +37,10 @@ import app.packed.application.sandbox.ManagedInstance;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@BeanVariable.AnnotatedWithHook(extension = BeanExtension.class)
 public @interface OnStop {
 
     boolean async() default false;
-
-    ManagedInstance.Mode[] mode() default {};
-
-    ManagedInstance.Mode[] notMode() default {};
 
     boolean preOrder() default false;
 }

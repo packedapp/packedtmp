@@ -15,7 +15,7 @@
  */
 package packed.internal.util;
 
-import app.packed.application.ApplicationMirror;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Ancestral;
@@ -28,7 +28,7 @@ public class KeyTst extends BaseAssembly {
 
     
     public static void main(String[] args) {
-        ApplicationMirror.of(new KeyTst());
+        App.mirrorOf(new KeyTst());
     }
 
     public static class MyExt extends Extension<MyExt> {

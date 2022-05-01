@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
-
-import java.lang.invoke.MethodHandle;
+package app.packed.container;
 
 /**
  *
  */
-
-// Den bliver provided direkte som keyed...
-// Saa den er tilgaengelig 
-
-public interface OperationPack {
-
-    /** {@return an array of all method handles that where prepared.} */
-    MethodHandle[] methodsHandles();
+// Jeg tror det er en launcher... Som man skal have konfigureret
+// Saa vi kan lave en ny af den
+interface RuntimeWirelet<L> {
+    void apply(L launcher);
 }
+
+// @Meta(runtimeWireletLauncher = Doo.class);
+// Ahh saa kan alle jo kalde den... hvis det er et interface
+
+// Hmm problemet er hvis brugere ogsaa skal bruge dem...

@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -33,6 +34,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.hooks.BeanClass;
 import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanField.AnnotatedWithHook;
 import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.hooks.BeanVariable;
@@ -93,10 +95,10 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     @Nullable
     private ExtensionSetup setup;
 
-    /** Creates a new extension. Subclasses should have a single package-protected constructor. */
+    /** Creates a new extension. Subclasses should have a single package-private constructor. */
     protected Extension() {}
 
-    /** {@return a bean extension point.} */
+    /** {@return an extension point for the bean extension.} */
     protected final BeanExtensionPoint bean() {
         return use(BeanExtensionPoint.class);
     }
@@ -120,25 +122,28 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
 
     protected void hookOnBeanClass(BeanClass clazz) {}
 
+    protected void hookOnBeanDependencyProvider(DependencyProvider providr) {}
+
+    protected void hookOnBeanEnd(BeanInfo beanInfo) {}
+
     /**
-     * A callback method that is invoked whenever a field on a bean is encountered.
+     * A callback method that is invoked for any field on a newly added bean where the field:
+     * 
+     * is annotated with an annotation that itself is annotated with {@link BeanField.AnnotatedWithHook} and where
+     * {@link AnnotatedWithHook#extension()} matches the type of this extension.
      * <p>
-     * This method is never invoked more than once for a single field. Even if there are multiple matching hook annotations
-     * on the same field. This method will only be called once.
+     * This method is never invoked more than once for a single bean field for any given extension. Even if there are
+     * multiple matching hook annotations on the same field. This method will only be called once for the field.
      * 
      * @param field
      *            the bean field
-     * @see BeanField.Hook
+     * @see BeanField.AnnotatedWithHook
      */
     protected void hookOnBeanField(BeanField field) {}
 
     protected void hookOnBeanMethod(BeanMethod method) {}
 
     protected void hookOnBeanVariable(BeanVariable variable) {}
-
-    protected void hookOnBeanDependencyProvider(DependencyProvider providr) {}
-
-    protected void hookOnBeanEnd(BeanInfo beanInfo) {}
 
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
@@ -156,8 +161,29 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return setup().container.isExtensionUsed(extensionType);
     }
 
-    protected final boolean isRootOfApplication() {
+    /**
+     * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
+     * of an application does not have a parent extension.
+     */
+    protected final boolean isRoot() {
         return setup().parent == null;
+    }
+
+    /**
+     * Initializes the specified extension mirror.
+     * <p>
+     * This method should be called exactly once when overriding {@link #newExtensionMirror()}.
+     * 
+     * @param <M>
+     *            the type of extension mirror
+     * @param mirror
+     *            the mirror to initialize
+     * @return the specified mirror, but now initialized
+     * @throws IllegalStateException
+     *             if this method has already been called on the specified mirror
+     */
+    protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
+        return mirror;
     }
 
     /**
@@ -187,29 +213,12 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * @return a mirror for the extension
      * @see ContainerMirror#extensions()
      */
-    // boolean isApplication... Kan ikke have to metoder
-    // med mindre
-    //
-    protected ExtensionMirror<?> mirror() {
+    protected ExtensionMirror<E> newExtensionMirror() {
         return mirrorInitialize(new ExtensionMirror<>());
     }
 
-    /**
-     * Initializes the specified extension mirror.
-     * <p>
-     * This method should be called exactly once when overriding {@link #mirror()}.
-     * 
-     * @param <M>
-     *            the type of extension mirror
-     * @param mirror
-     *            the mirror to initialize
-     * @return the specified mirror, but now initialized
-     * @throws IllegalStateException
-     *             if this method has already been called on the specified mirror
-     */
-    protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
-        mirror.initialize(setup(), tree());
-        return mirror;
+    protected ExtensionPoint<E> newExtensionPoint() {
+        throw new UnsupportedOperationException(getClass() + " does not define an extension point.");
     }
 
     /**
@@ -226,6 +235,7 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * example, by installing a bean or linking a container that uses extensions that have not already been used in the
      * extension's container. Failing to follow this rule will result in an {@link InternalExtensionException} being thrown.
      */
+    // Hmm InternalExtensionException hvis det er brugerens skyld??
     protected void onApplicationClose() {
         for (ExtensionSetup c = setup().childFirst; c != null; c = c.childSiebling) {
             c.instance().onApplicationClose();
@@ -303,13 +313,6 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         return new PackedExtensionTree(setup, setup.extensionType);
     }
 
-    /** {@return a tree view that spans all extension of this type in the same application.} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final ExtensionTree<E> treeOfApplication() {
-        ExtensionSetup setup = setup();
-        return new PackedExtensionTree(setup.extensionRealm.root, setup.extensionType);
-    }
-
     // Kunne vaere en mode paa traet?
     // filterOnSameLifetime();
     protected final ExtensionTree<E> treeOfLifetime() {
@@ -324,55 +327,22 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
      * <p>
      * This method cannot be called from the constructor of the extension.
      * 
-     * @param <E>
+     * @param <P>
      *            the type of extension point to return
-     * @param extensionPointType
+     * @param type
      *            the type of extension point to return
-     * @return the extension point
+     * @return the extension point instance
      * @throws IllegalStateException
-     *             If the underlying container is no longer configurable and the extension to which the extension point
-     *             belongs has not already been installed.
+     *             If the underlying container is no longer configurable and the extension which the extension point is a
+     *             part of has not previously been used.
      * @throws IllegalArgumentException
-     *             If the extension to which the specified extension belongs has not been registered as a dependency of this
-     *             extension
+     *             If the extension which the extension point is a part of has not explicitly been registered as a
+     *             dependency of this extension
      */
-    protected final <S extends ExtensionPoint<?>> S use(Class<S> extensionPointType) {
-        return setup().use(extensionPointType);
+    protected final <P extends ExtensionPoint<?>> P use(Class<P> type) {
+        return setup().use(type);
     }
 
-    /**
-     * Registers an optional dependency of this extension. The extension
-     * <p>
-     * The class loader of the caller (extension) class will be used when attempting to locate the dependency.
-     * 
-     * @param extensionName
-     *            fully qualified name of the extension class
-     * @return the extension class if the extension could be loaded, otherwise empty
-     * @throws InternalExtensionException
-     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-     *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
-     *             this method was not called directly from an extension class initializer.
-     * @see #$dependsOn(Class...)
-     * @see Class#forName(String, boolean, ClassLoader)
-     */
-    protected static Optional<Class<? extends Extension<?>>> $dependsOnIfAvailable(String extensionName) {
-        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
-    }
-
-    /**
-     * 
-     * @param <T>
-     *            sd
-     * @param extensionName
-     *            sd
-     * @param bootstrapClass
-     *            sd
-     * @param alternative
-     *            sd
-     * @return stuff
-     * @throws IllegalArgumentException
-     *             if the specified bootstrap class resolves to an inner class and not a static class
-     */
     // Vi kan sagtens lave den en normal metode taenker jeg maaske paa en utility klasse...
     // Og saa et Lookup object som parameter...
     protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
@@ -406,6 +376,12 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+    }
+
+    protected static <T> T $dependsOnIfAvailable2(Class<T> returnType, String testExistence, Lookup ifPresentLookup, String ifPresentClass,
+            Supplier<T> ifUnavailable) {
+
+        throw new UnsupportedOperationException();
     }
 
     public static abstract class Bootstrap {
@@ -582,6 +558,25 @@ class Zarchive {
 //    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
 //        throw new UnsupportedOperationException();
 //    }
+
+    /**
+     * Registers an optional dependency of this extension. The extension
+     * <p>
+     * The class loader of the caller (extension) class will be used when attempting to locate the dependency.
+     * 
+     * @param extensionName
+     *            fully qualified name of the extension class
+     * @return the extension class if the extension could be loaded, otherwise empty
+     * @throws InternalExtensionException
+     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
+     *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
+     *             this method was not called directly from an extension class initializer.
+     * @see #$dependsOn(Class...)
+     * @see Class#forName(String, boolean, ClassLoader)
+     */
+    protected static Optional<Class<? extends Extension<?>>> $dependsOnIfAvailable(String extensionName) {
+        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
+    }
 
     static void $libraryFor(Module module) {
         // Will fail if the module, class does not have version

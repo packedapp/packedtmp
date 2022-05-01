@@ -62,17 +62,17 @@ public class AppConstructionMicro {
 
     @Benchmark
     public Void emptyAppFromImage() {
-        return VariousImages.EMPTY_IMAGE.use();
+        return VariousImages.EMPTY_IMAGE.launch();
     }
 
     @Benchmark
     public Void oneComponentFromImage() {
-        return VariousImages.ONE_COMPONENT_IMAGE.use();
+        return VariousImages.ONE_COMPONENT_IMAGE.launch();
     }
 
     @Benchmark
     public Void fiveComponentsFromImage() {
-        return VariousImages.FIVE_CONTAINER_IMAGE.use();
+        return VariousImages.FIVE_CONTAINER_IMAGE.launch();
     }
 }
 

@@ -18,6 +18,7 @@ package app.packed.classgen.usage;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.classgen.ClassgenExtension;
 import app.packed.classgen.ClassgenExtensionMirror;
@@ -44,7 +45,7 @@ public class GenerateAClass extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        ApplicationMirror am = ApplicationMirror.of(new GenerateAClass());
+        ApplicationMirror am = App.mirrorOf(new GenerateAClass());
 
         am.useExtension(ClassgenExtensionMirror.class).generatedClasses().forEach(c -> System.out.println(c));
     }

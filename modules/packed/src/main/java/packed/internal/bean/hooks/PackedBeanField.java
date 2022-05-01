@@ -21,6 +21,7 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 
 import app.packed.base.Variable;
+import app.packed.bean.ExtensionBeanConfiguration;
 import app.packed.bean.hooks.BeanField;
 import app.packed.component.Realm;
 import app.packed.container.Extension;
@@ -73,19 +74,19 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
 
     /** {@inheritDoc} */
     @Override
-    public InjectableOperationHandle newOperation(AccessMode accessMode) {
+    public InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public InjectableOperationHandle newOperationGetter() {
+    public InjectableOperationHandle newOperationGetter(ExtensionBeanConfiguration<?> operator) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public InjectableOperationHandle newOperationSetter() {
+    public InjectableOperationHandle newOperationSetter(ExtensionBeanConfiguration<?> operator) {
         return null;
     }
 

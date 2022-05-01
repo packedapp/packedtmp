@@ -20,7 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.application.sandbox.ManagedInstance;
+import app.packed.bean.BeanExtension;
+import app.packed.bean.hooks.BeanVariable;
 import app.packed.inject.InjectionContext;
 
 /**
@@ -87,10 +88,7 @@ import app.packed.inject.InjectionContext;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-// @RequiresFeature(LifecycleFeature.class)
-//@WhenStarting???
-
-// Kan bruge @When naar man har en lifecycle model, ellers ikke....
+@BeanVariable.AnnotatedWithHook(extension = BeanExtension.class)
 public @interface OnStart {
 
     /**
@@ -99,6 +97,7 @@ public @interface OnStart {
      * @return {@code true} if
      */
     // Taenker at man joiner op foerend, vi begynder at koere tilbage?
+    // joinPoint
     boolean async() default false;
 
     /**
@@ -109,12 +108,6 @@ public @interface OnStart {
     boolean interruptOnStop() default false; // Maybe have an InterruptionPolicy {NEVER, DEFAULT, ALWAYS}
 
     boolean preOrder() default true; // reverseOrder
-
-    @Deprecated(since = "bliver for grimt, men maa checke de her ting i en eller anden form for lifecycle/lifetime context")
-    ManagedInstance.Mode[] mode() default {};
-
-    @Deprecated
-    ManagedInstance.Mode[] notMode() default {};
 }
 
 // order = "SomE:1"; (I forhold til andre der er bruger SomE

@@ -29,7 +29,7 @@ public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfigurati
      */
     public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
-        
+
     }
 
     // interface ExtensionPoint <- skal vi have et marker interface???
@@ -56,11 +56,14 @@ public final class ExtensionBeanConfiguration<T> extends InstanceBeanConfigurati
         return this;
     }
 
-    public <K> ExtensionBeanConfiguration<T> bindPreWiring(Class<K> key, Supplier<@Nullable K> supplier) {
-        return bindPreWiring(Key.of(key), supplier);
+    // ebc.bind(OPPack.class)
+    // Det er jo faktisk et (syncthetic) factory vi skal binde...
+    // Gerne til BeanExtension?
+    public <K> ExtensionBeanConfiguration<T> bindDelayed(Class<K> key, Supplier<@Nullable K> supplier) {
+        return bindDelayed(Key.of(key), supplier);
     }
 
-    public <K> ExtensionBeanConfiguration<T> bindPreWiring(Key<K> key, Supplier<@Nullable K> supplier) {
+    public <K> ExtensionBeanConfiguration<T> bindDelayed(Key<K> key, Supplier<@Nullable K> supplier) {
         // Ideen er at vi binder lige foer vi laver wiringen.
         throw new UnsupportedOperationException();
     }

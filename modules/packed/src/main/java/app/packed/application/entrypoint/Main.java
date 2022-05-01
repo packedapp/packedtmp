@@ -46,5 +46,5 @@ import app.packed.bean.hooks.BeanMethod;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@BeanMethod.Hook(allowInvoke = true, extension = EntryPointExtension.class)
+@BeanMethod.AnnotatedWithHook(allowInvoke = true, extension = EntryPointExtension.class)
 public @interface Main {}

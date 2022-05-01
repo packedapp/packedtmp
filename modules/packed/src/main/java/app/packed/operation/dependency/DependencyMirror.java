@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.dependency;
 
-import java.lang.invoke.MethodHandle;
+import app.packed.operation.OperationMirror;
 
 /**
- *
+ * A mirror for a dependency.
  */
+// Hmm den burde vel passe til BeanInjector
+public interface DependencyMirror {
 
-// Den bliver provided direkte som keyed...
-// Saa den er tilgaengelig 
-
-public interface OperationPack {
-
-    /** {@return an array of all method handles that where prepared.} */
-    MethodHandle[] methodsHandles();
+    /** {@return the operation the dependency belongs to.} */
+    // Hvad med unresolved... Tror vi skal fejle
+    OperationMirror operation();
 }

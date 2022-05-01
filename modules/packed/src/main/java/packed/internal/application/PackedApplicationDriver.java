@@ -24,9 +24,9 @@ import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationInfo.ApplicationBuildType;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
@@ -115,10 +115,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+    public ApplicationLauncher<A> imageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblySetupOfAssembly realm = new AssemblySetupOfAssembly(this, ApplicationBuildType.IMAGE, assembly, wirelets);
         realm.build();
-        return new PackedApplicationImage<>(this, realm.application);
+        return new PackedApplicationLauncher<>(this, realm.application);
     }
 
     /** {@inheritDoc} */
@@ -170,10 +170,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+    public ApplicationLauncher<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblySetupOfAssembly realm = new AssemblySetupOfAssembly(this, ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
         realm.build();
-        return new PackedApplicationImage<>(this, realm.application);
+        return new PackedApplicationLauncher<>(this, realm.application);
     }
 
     @Override
@@ -253,12 +253,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             if (isExecutable) { // Conditional add ApplicationRuntime
                 builder.provide(LifecycleApplicationController.class).invokeExact(MH_RUNTIME, 0);
             }
-            
+
             // builder(caller).addParameter(implementation).addParameter(AIC);
             // builder.provideService(ServiceLocator.class, builder.addComputed(MH_SERVICES, 0));
-            
-            
-            
+
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
 
             return new PackedApplicationDriver<>(this);
@@ -314,13 +312,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#imageOf(Assembly, Wirelet...)}. */
-    public final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
-            implements ApplicationImage<A> {
+    /** Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#imageOf(Assembly, Wirelet...)}. */
+    public final /* primitive */ record PackedApplicationLauncher<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
+            implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A use(Wirelet... wirelets) {
+        public A launch(Wirelet... wirelets) {
             requireNonNull(wirelets, "wirelets is null");
 
             // If launching an image, the user might have specified additional runtime wirelets

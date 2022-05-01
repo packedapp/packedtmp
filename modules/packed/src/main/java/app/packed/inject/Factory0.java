@@ -17,57 +17,23 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
- * to the function being the single dependency.
- * <p>
- * Is typically used like this:
- *
- * <pre>{@code
- *   InjectorBuilder builder = new InjectorBuilder();
- *   builder.bind(new Factory1<>(System::currentTimeMillis).setDescription("Startup Time"){};}
- * </pre>
- * <p>
- * You can also use annotations on the dependency's type parameter. For example, say you have a {@link Qualifier} that
- * can read system properties, you can use something like this:
- *
- * <pre>{@code
- *   InjectorBuilder builder = new InjectorBuilder();
- *   builder.bind(new FunctionFactory<@SystemProperty("threads") Integer, ExecutorService>(t -> Executors.newFixedThreadPool(t)){});}
- * </pre>
- *
- * <p>
- * You can also depend on a InjectionSite to get greater detail about the client requesting the service. For example,
- * there we return a different logger to each component that requests a logger, based on the components full path. For
- * example, if a component with the path {@code /jobs/MyJob} requests a logger, a logger with the name
- * {@code jobs.MyJob} is returned. If it is not a component that requests the logger, an anonymous logger is returned.
- *
- * 
- * @see Factory0
- * @see Factory2
- */
-
-//TODO fix example
-/**
- * A special {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
+ * A {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
  * <p>
  * Is typically used like this:
  *
  * <pre> {@code
- * Factory<Long> f = new Factory1<>(System::currentTimeMillis) {}};</pre>
+ * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {}};</pre>
  * <p>
  * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
  * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining
  * type information at runtime.
  * 
- * @param <T>
- *            The type of the single dependency that this factory takes
  * @param <R>
  *            the type of objects this factory constructs
- * @see Factory
+ * @see Factory1
  * @see Factory2
  */
 public abstract class Factory0<R> extends CapturingFactory<R> {
@@ -76,11 +42,9 @@ public abstract class Factory0<R> extends CapturingFactory<R> {
      * Creates a new factory, that use the specified supplier to provide values.
      *
      * @param supplier
-     *            the supplier that will provide the actual values. The supplier should never return null, but should
-     *            instead throw a relevant exception if unable to provide a value
+     *            the supplier that will provide the actual values.
      * @throws FactoryException
-     *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
-     *             {@link Optional}
+     *             if the type variable R could not be determined.
      */
     protected Factory0(Supplier<? extends R> supplier) {
         super(requireNonNull(supplier, "supplier is null"));

@@ -5,11 +5,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.application.sandbox.ManagedInstance.Mode;
-import app.packed.lifecycle.OnStart;
-import app.packed.lifecycle.OnStop;
-import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.LifecycleApplicationController.StopOption;
+import app.packed.lifecycle.OnStart;
+import app.packed.lifecycle.RunState;
 
 // Atomic State + Failure
 public interface ManagedInstance {
@@ -145,7 +143,7 @@ public interface ManagedInstance {
 
 class ZFleshWound {
 
-    @OnStop(mode = Mode.RESTARTING)
+ //   @OnStop(mode = Mode.RESTARTING)
     public void dd(Object restartContext) {
         //rc.store(ServerSocket, 80); // Altsaa sporgsmaalet om man ikke ville have en AppServerApp, hvor vi deployer en enkelt app
     }

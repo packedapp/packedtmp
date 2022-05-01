@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.bean.hooks;
 
-import java.lang.invoke.MethodHandle;
+import java.util.function.Supplier;
+
+import app.packed.base.Variable;
 
 /**
  *
  */
-
-// Den bliver provided direkte som keyed...
-// Saa den er tilgaengelig 
-
-public interface OperationPack {
-
-    /** {@return an array of all method handles that where prepared.} */
-    MethodHandle[] methodsHandles();
+public interface BeanVariable2 {
+  
+    Variable variable();
+    
+    void unresolved();
+    
+    void unresolved(Supplier<String> sup);
 }

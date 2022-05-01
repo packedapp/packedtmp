@@ -30,7 +30,7 @@ import app.packed.operation.dependency.DependencyProvider;
 public class InjectAppStart {
 
     @DependencyProvider.Hook(extension = MyExtAppStart.class)
-    @BeanVariable.Hook(extension = MyExtAppStart.class)
+    @BeanVariable.AnnotatedWithHook(extension = MyExtAppStart.class)
     @interface OnAppStart {}
 
     static class MyExtAppStart extends Extension<MyExtAppStart> {

@@ -39,7 +39,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**
- * A factory that captures return type and other stuff
+ * A abstract factory that captures the type an annotated return type and annotated type apra
  */
 public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
@@ -132,17 +132,19 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         // Altsaa jeg ved ikke om vi spiller tiden ved ikke at afvente og se hvad der kommer med generiks
 
         Class<?> t = getClass();
-        Class<?> n = t.getSuperclass();
-        while (n.getSuperclass() != CapturingFactory.class) {
-            n = n.getSuperclass();
+        Class<?> baseClass = t.getSuperclass();
+        while (baseClass.getSuperclass() != CapturingFactory.class) {
+            baseClass = baseClass.getSuperclass();
         }
-        Constructor<?>[] con = n.getDeclaredConstructors();
+        
+        
+        Constructor<?>[] con = baseClass.getDeclaredConstructors();
         if (con.length != 1) {
-            throw new Error(n + " must declare a single constructor");
+            throw new FactoryException(baseClass + " must declare a single constructor");
         }
         Constructor<?> c = con[0];
         if (c.getParameterCount() != 1) {
-            throw new Error(n + " must declare a single constructor taking a single parameter");
+            throw new FactoryException(baseClass + " must declare a single constructor taking a single parameter");
         }
 
         Parameter p = c.getParameters()[0];
@@ -157,10 +159,12 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         try {
             mh = MethodHandles.publicLookup().unreflect(m);
         } catch (IllegalAccessException e) {
-            throw new Error(m + " must be accessible via MethodHandles.publicLookup()", e);
+            throw new FactoryException(m + " must be accessible via MethodHandles.publicLookup()", e);
         }
+        
         System.out.println(mh);
     }
+
     /** {@inheritDoc} */
     @Override
     public Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {

@@ -70,7 +70,7 @@ public class NewHookAssembly extends BaseAssembly {
     @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @BeanField.Hook(extension = MyExt.class)
-    @BeanMethod.Hook(extension = MyExt.class)
+    @BeanField.AnnotatedWithHook(extension = MyExt.class)
+    @BeanMethod.AnnotatedWithHook(extension = MyExt.class)
     public @interface Kaaa {}
 }

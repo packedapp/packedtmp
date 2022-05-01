@@ -18,13 +18,10 @@ import packed.internal.container.PackedExtensionTree;
  * {@link ContainerMirror#findExtension(Class)}.</li>
  * </ul>
  * <p>
- * NOTE: Subclasses of this class:
- * <ul>
- * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
- * </ul>
  * 
  * @param <E>
- *            The type of the extension the mirror is a part of
+ *            The type of extension this extension mirror is a part of. The extension mirror must be located in the same
+ *            module as the extension itself.
  */
 public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
@@ -34,15 +31,12 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * {@link Extension#mirrorInitialize(ExtensionMirror)}.
      */
     @Nullable
-    private ExtensionSetup extension;
-
-    @Nullable
     private PackedExtensionTree<E> tree;
 
     /**
      * Create a new extension mirror.
      * <p>
-     * Subclasses should have a single package-protected constructor. Instantiated by overriding {@link Extension#mirror()}.
+     * Subclasses should have a single constructor with package access.
      */
     protected ExtensionMirror() {}
 
@@ -51,6 +45,8 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     public final boolean equals(Object other) {
         // Use case for equals on mirrors are
         // FooBean.getExtension().equals(OtherBean.getExtension())...
+        // Hmm virker ikke super godt med trees...
+        // Altsaa med mindre det altid inkludere alle sub extensions
 
         // Normally there should be no reason for subclasses to override this method...
         // If we find a valid use case we can always remove final
@@ -58,13 +54,8 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         // Check other.getType()==getType()????
 
         // TODO if we have local extensions, we cannot just rely on extension=extension
-
+        //
         return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
-    }
-
-    protected ExtensionTree<E> tree() {
-        extension();
-        return tree;
     }
 
     /**
@@ -72,10 +63,10 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * 
      * @throws InternalExtensionException
      *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#newExtensionMirror()}.
      */
-    private ExtensionSetup extension() {
-        ExtensionSetup e = extension;
+    private PackedExtensionTree<E> extension() {
+        PackedExtensionTree<E> e = tree;
         if (e == null) {
             throw new InternalExtensionException(
                     "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
@@ -88,7 +79,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() {
-        return extension().model;
+        return extension().extension().model;
     }
 
     /** {@return the full name of the extension.} */
@@ -103,7 +94,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension<?>> extensionType() {
-        return extension().extensionType;
+        return extension().extension().extensionType;
     }
 
     /** {@inheritDoc} */
@@ -118,13 +109,11 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    @SuppressWarnings("unchecked")
-    final void initialize(ExtensionSetup extension, ExtensionTree<?> tree) {
-        if (this.extension != null) {
+    final void initialize(PackedExtensionTree<E> tree) {
+        if (this.tree != null) {
             throw new IllegalStateException("The specified mirror has already been initialized.");
         }
-        this.extension = extension;
-        this.tree = (PackedExtensionTree<E>) tree;
+        this.tree = tree;
     }
 
     /** {@inheritDoc} */
@@ -133,4 +122,8 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         return extensionType().getCanonicalName();
     }
 
+    protected ExtensionTree<E> tree() {
+        extension();
+        return tree;
+    }
 }

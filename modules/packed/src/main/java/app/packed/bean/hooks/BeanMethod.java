@@ -61,10 +61,11 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      * <p>
      * A new mirror with {@link OperationTargetMirror.OfMethodInvoke} as the {@link OperationMirror#target()}.
      * 
-     * @param base
+     * @param invoker
+     *            the extension bean that will invoke the operation
      * @return
      */
-    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> base);
+    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> invoker);
 
     /**
      * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
@@ -84,7 +85,7 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
-    public @interface Hook {
+    public @interface AnnotatedWithHook {
 
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.

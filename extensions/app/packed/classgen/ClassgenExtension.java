@@ -54,7 +54,7 @@ public class ClassgenExtension extends Extension<ClassgenExtension> {
     final ArrayList<PackedGeneratedClass> generated = new ArrayList<>();
 
     @Override
-    protected ClassgenExtensionMirror mirror() {
+    protected ClassgenExtensionMirror newExtensionMirror() {
         return mirrorInitialize(new ClassgenExtensionMirror());
     }
 

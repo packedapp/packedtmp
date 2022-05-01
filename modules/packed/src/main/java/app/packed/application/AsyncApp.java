@@ -56,11 +56,11 @@ public interface AsyncApp extends AutoCloseable {
     // launching the image will result in a daemon being returned in the starting state
 
     // Should this be the app in an unitialized state instead
-    public static ApplicationImage<AsyncApp> build(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationLauncher<AsyncApp> build(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public static ApplicationImage<AsyncApp> buildImage(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationLauncher<AsyncApp> buildImage(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

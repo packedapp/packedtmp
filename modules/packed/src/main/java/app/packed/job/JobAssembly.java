@@ -2,7 +2,7 @@ package app.packed.job;
 
 import java.util.concurrent.Callable;
 
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceConfiguration;
@@ -12,7 +12,7 @@ public abstract class JobAssembly<T> extends BaseAssembly {
 
     protected final void simpleComputable(Callable<T> calculation) {}
 
-    protected final <X> ServiceConfiguration<ApplicationImage<X>> provideJobLauncher(JobAssembly<X> assembly) {
+    protected final <X> ServiceConfiguration<ApplicationLauncher<X>> provideJobLauncher(JobAssembly<X> assembly) {
         return null;
     }
 

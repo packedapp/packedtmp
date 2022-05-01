@@ -139,6 +139,7 @@ public sealed interface ComponentMirror extends Mirror, ContextRootMirror permit
     // !!!! Den fungere jo ikke for containere???
     
     // var Optional<Class<? extends Extension<?>>> registrant
+    
     Class<? extends Extension<?>> operator();
 
     /**
