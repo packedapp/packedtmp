@@ -1,12 +1,10 @@
 package app.packed.container;
 
-import app.packed.component.ComponentRealm;
-
 /**
  *
  */
 @FunctionalInterface
-public non-sealed interface ComposerAction<C extends Composer> extends ComponentRealm {
+public interface ComposerAction<C extends Composer> {
 
     /**
      * Configures the given composer.

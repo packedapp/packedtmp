@@ -22,8 +22,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import packed.internal.config.ConfigSite;
-import packed.internal.config.ConfigSiteVisitor;
+import packed.internal.bean.operation.configsite.ConfigSite;
+import packed.internal.bean.operation.configsite.ConfigSiteVisitor;
 import packed.internal.util.StringFormatter;
 
 /**

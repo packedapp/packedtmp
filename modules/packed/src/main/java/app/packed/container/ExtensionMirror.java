@@ -2,8 +2,13 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
+
 import app.packed.base.Nullable;
 import app.packed.mirror.Mirror;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
 
 /**
@@ -40,6 +45,36 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      */
     protected ExtensionMirror() {}
 
+    protected final boolean allAnyMatch(Predicate<? super E> predicate) {
+        return allStream().anyMatch(predicate);
+    }
+    
+    protected final Stream<E> allStream() {
+        return tree().stream();
+    }
+    
+    protected final int allSumInt(ToIntFunction<? super E> mapper) {
+        return tree().sumInt(mapper);
+    }
+    
+    /** {@return a descriptor for the extension this mirror is a part of.} */
+    public final ExtensionDescriptor extensionDescriptor() {
+        return extensions().extension().model;
+    }
+
+    // All methods are named extension* instead of * because subclasses might want to use method names such as descriptor,
+    // name, type
+
+    /** {@return the full name of the extension.} */
+    public final String extensionFullName() {
+        return extensionDescriptor().fullName();
+    }
+
+    /** {@return the name of the extension.} */
+    public final String extensionName() {
+        return extensionDescriptor().name();
+    }
+
     /**
      * {@return the mirrored extension's internal configuration.}
      * 
@@ -55,31 +90,13 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         return e;
     }
 
-    // All methods are named extension* instead of * because subclasses might want to use method names such as descriptor,
-    // name, type
-
-    /** {@return a descriptor for the extension this mirror is a part of.} */
-    public final ExtensionDescriptor extensionDescriptor() {
-        return extensions().extension().model;
-    }
-
-    /** {@return the full name of the extension.} */
-    public final String extensionFullName() {
-        return extensionDescriptor().fullName();
-    }
-
-    /** {@return the name of the extension.} */
-    public final String extensionName() {
-        return extensionDescriptor().name();
-    }
-
     /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension<?>> extensionType() {
         return extensions().extension().extensionType;
     }
 
     /**
-     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
+     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set the internal configuration of the extension.
      * 
      * @param extension
      *            the internal configuration of the extension to mirror
@@ -102,6 +119,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         return extensions;
     }
 }
+
 //
 ///** {@inheritDoc} */
 //@Override

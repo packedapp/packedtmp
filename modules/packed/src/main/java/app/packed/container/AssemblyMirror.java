@@ -20,15 +20,13 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentMirror;
-import app.packed.component.Realm;
 import app.packed.mirror.Mirror;
 import packed.internal.container.AssemblySetup;
 
-/**
- *
- */
+/** A mirror of an {@link Assembly}. */
 public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.BuildtimeAssemblyMirror {
 
+    /** {@return the type of the assembly.} */
     Class<? extends Assembly> assemblyType();
 
     /** {@return a stream of all assemblies that have been linked from this assembly.} */
@@ -40,12 +38,12 @@ public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.Buil
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
     List<Class<? extends ContainerHook>> containerHooks();
 
-    Realm owner();
+    /** @return whether or not this assembly defines the root container in the application.} */
+    boolean isRoot();
 
-    /** {@return any assembly that linked this assembly, if present.} */
+    /** {@return any assembly that linked this assembly, or null if this assembly defines the root container.} */
     Optional<AssemblyMirror> parent();
 
     /** {@return the root container defined by this assembly.} */
     ContainerMirror root();
-
 }

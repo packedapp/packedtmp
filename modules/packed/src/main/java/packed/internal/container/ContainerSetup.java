@@ -51,9 +51,7 @@ import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.StreamUtil;
 
-/**
- * Build-time internal configuration of a container.
- */
+/** The internal configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
 
     /** Children of this node in insertion order. */
@@ -282,21 +280,11 @@ public final class ContainerSetup extends ComponentSetup {
     /**
      * A build-time container mirror.
      * 
-     * @apiNote previous versions had a common super class shared between BeanSetup and ContainerSetup. However, code is
+     * @implNote previous versions had a common super class shared between BeanSetup and ContainerSetup. However, code is
      *          much cleaner without it. So please don't reintroduce it.
      * 
      */
     public record BuildTimeContainerMirror(ContainerSetup container) implements ContainerMirror {
-
-        /** Extracts the extension that a given {@link ExtensionMirror} belongs to. */
-        private static final ClassValue<Class<? extends Extension<?>>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
-
-            /** {@inheritDoc} */
-            protected Class<? extends Extension<?>> computeValue(Class<?> implementation) {
-
-                return ExtractExtensionType.findExtensionType(implementation);
-            }
-        };
 
         /** {@inheritDoc} */
         public Collection<ComponentMirror> children() {
@@ -326,7 +314,7 @@ public final class ContainerSetup extends ComponentSetup {
             requireNonNull(mirrorType, "mirrorType is null");
 
             // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-            Class<? extends Extension<?>> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(mirrorType);
+            Class<? extends Extension<?>> cl = ExtensionMirrorModel.of(mirrorType).extensionType();
 
             // See if the container uses the extension.
             ExtensionSetup extension = container.extensions.get(cl);

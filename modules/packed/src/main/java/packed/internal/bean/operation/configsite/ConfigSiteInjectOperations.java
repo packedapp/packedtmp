@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.config;
+package packed.internal.bean.operation.configsite;
 
 /** The names of the various config site operations for the inject extension. */
 public final class ConfigSiteInjectOperations {

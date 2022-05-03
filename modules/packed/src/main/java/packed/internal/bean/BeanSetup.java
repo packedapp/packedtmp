@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.BeanInfo;
@@ -35,16 +36,15 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     /** The builder that was used to create the bean. */
     public final PackedBeanHandleBuilder<?> builder;
 
-    /** A model of the hooks on the bean. */
+    /** A model of hooks on the bean class. Or null if no member scanning was performed. */
     @Nullable
-    public final BaseHookModel hookModel;
+    public final BaseClassModel hookModel;
 
     /** The bean's injection manager. */
     public final BeanInjectionManager injectionManager;
 
     /** Operations declared by the bean. */
     private final ArrayList<OperationSetup> operations = new ArrayList<>();
-
 
     /**
      * Create a new bean setup.
@@ -55,7 +55,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     public BeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
         super(builder.container.application, owner, builder.container);
         this.builder = builder;
-        this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseHookModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
+        this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
         this.injectionManager = new BeanInjectionManager(this, builder);
 
         if (builder.sourceType != SourceType.NONE) {
@@ -96,7 +96,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> operator() {
-        throw new UnsupportedOperationException();
+        return builder.operator == null ? BeanExtension.class : builder.operator.extension().extensionType;
     }
 
     /** {@inheritDoc} */
@@ -139,7 +139,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         /** {@inheritDoc} */
         @Override
         public Class<? extends Extension<?>> operator() {
-            throw new UnsupportedOperationException();
+            return bean.operator();
         }
 
         /** {@inheritDoc} */

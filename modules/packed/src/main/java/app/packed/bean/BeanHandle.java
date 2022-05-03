@@ -45,7 +45,6 @@ import packed.internal.bean.PackedBeanHandleBuilder;
 
 // callacbks, onBound, onBuild, ...
 
-
 // Vigtigt at note... Vi scanner klassen naar vi kalder build()
 // Saa hvis vi provider services/contexts saa skal det vaere paa
 // builderen ellers er de ikke klar til BeanField og friends
@@ -63,6 +62,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         throw new UnsupportedOperationException();
     }
 
+    // Hvis vi aabner op for specialized bean mirrors
     default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
 
     /**
@@ -82,15 +82,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     Class<?> beanClass(); // beanSource instead??
 
     /**
-     * @return
-     * 
-     * @see BeanMirror#beanKind()
-     * @see BeanConfiguration#beanKind()
-     */
-    BeanKind beanKind();
-
-    /**
-     * A builder for a bean handle. Can only be created via {@link BeanExtensionPoint}.
+     * A builder for {@link BeanHandle}. Can only be created via the various {@code newBuilder} methods on
+     * {@link BeanExtensionPoint}.
      * 
      * @see BeanExtensionPoint#newBuilder(BeanKind)
      * @see BeanExtensionPoint#newBuilderFromClass(BeanKind, Class)
@@ -101,25 +94,19 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         // Scan (disable, do scan) ???
 
         /**
-         * @return
+         * {@return the bean class.}
          * 
          * @see BeanConfiguration#beanClass()
          * @see BeanMirror#beanClass()
          */
-        Class<?> beanClass(); // vs BeanClass??? // beanSource instead??
-
-        /**
-         * @return
-         * 
-         * @see BeanMirror#beanKind()
-         * @see BeanConfiguration#beanKind()
-         */
-        BeanKind beanKind();
+        Class<?> beanClass();
 
         /**
          * Adds a new bean to the container and returns a handle for it.
          * 
          * @return the new handle
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
          */
         BeanHandle<T> build();
 
@@ -129,11 +116,13 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @param context
          *            an extension point context representing the extension that owns the bean
          * @return this builder
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
          */
         Builder<T> ownedBy(UseSite context);
 
         /**
-         * Sets a prefix that is used for naming the bean.
+         * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
          * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
          * the specified prefix as the name of the bean. Otherwise, it will append a postfix to specified prefix in such a way
@@ -142,6 +131,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @param prefix
          *            the prefix used for naming the bean
          * @return this builder
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
          */
         default Builder<T> namePrefix(String prefix) {
             return this;
@@ -222,13 +213,9 @@ interface BeanXDriverSandbox<T> {
         // Mulighederne er uendelige, og
     }
 
-    ZBuilder build();
-
     // Specific super type
 
     ZBuilder namePrefix(Function<Class<?>, String> computeIt);
-
-    ZBuilder namePrefix(String prefix);
 
     ZBuilder noInstances();
 

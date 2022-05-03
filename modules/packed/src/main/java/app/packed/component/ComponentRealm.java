@@ -15,16 +15,11 @@
  */
 package app.packed.component;
 
-import app.packed.container.Assembly;
-import app.packed.container.ComposerAction;
-import app.packed.container.Extension;
-
 /**
  *
  */
-@SuppressWarnings("rawtypes")
 // ComponentRealm
-public sealed interface ComponentRealm permits Assembly,Extension,ComposerAction {}
+interface ComponentRealm /* permits Assembly,Extension,ComposerAction */ {}
 // A realm can be closed...
 
 // Assembly realm -> when build returns

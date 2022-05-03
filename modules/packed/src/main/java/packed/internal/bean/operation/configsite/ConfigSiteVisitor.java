@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.config;
+package packed.internal.bean.operation.configsite;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;

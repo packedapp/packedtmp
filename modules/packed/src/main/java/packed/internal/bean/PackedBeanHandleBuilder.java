@@ -78,6 +78,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     /** {@inheritDoc} */
     @Override
     public PackedBeanHandle<T> build() {
+        checkNotBuild();
         RealmSetup realm;
         if (owner == null) {
             realm = container.realm;
@@ -102,12 +103,17 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     @Override
     public Builder<T> ownedBy(UseSite context) {
         requireNonNull(context, "context is null");
+        checkNotBuild();
         this.owner = (PackedExtensionPointContext) context;
         return this;
     }
 
     static BeanKind checkKind(BeanKind kind, int type) {
         return kind;
+    }
+    
+    private void checkNotBuild() {
+        
     }
 
     public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable UseSite operator, BeanKind kind, ContainerSetup container,

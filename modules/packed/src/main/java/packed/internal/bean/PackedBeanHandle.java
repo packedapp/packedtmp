@@ -18,7 +18,6 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanKind;
 import app.packed.operation.OperationHandle;
 
 /**
@@ -26,7 +25,7 @@ import app.packed.operation.OperationHandle;
  * 
  * @apiNote we could just let {@link BeanSetup} implement BeanHandle, but we choose to avoid parameterizing BeanSetup.
  */
-public record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
+public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
@@ -46,11 +45,5 @@ public record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
     @Override
     public Class<?> beanClass() {
         return bean.beanClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind beanKind() {
-        return bean.beanKind();
     }
 }

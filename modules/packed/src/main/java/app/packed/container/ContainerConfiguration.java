@@ -53,6 +53,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         container.checkIsActive();
     }
 
+    protected final void checkConfigurable() {
+        container.checkIsActive();
+    }
+
+    
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem

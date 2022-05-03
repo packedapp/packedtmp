@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
@@ -34,99 +35,99 @@ import packed.internal.util.MemberScanner;
 import packed.internal.util.OpenClass;
 
 /**
- *
+ * Scans members on a bean class.
  */
-public class BeanScanner {
+public final class BeanScanner {
 
-    final ContainerSetup container;
+    /** The bean that is being installed. */
+    final BeanSetup bean;
 
-    public final BeanSetup bean;
+    /** The class of the bean we are scanning. */
+    private final Class<?> beanClass;
+
+    /** The container the bean is being installed into. */
+    private final ContainerSetup container;
 
     // I think we need stable iteration order... AppendOnly identity map, stable iteration order
-    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionInfo> extensions = new LinkedHashMap<>();
+    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionWrapper> extensions = new LinkedHashMap<>();
 
     final OpenClass oc;
-    final Class<?> cl;
 
     public BeanScanner(BeanSetup bean, Class<?> cl) {
         this.bean = bean;
         this.container = bean.parent;
-        this.cl = cl;
+        this.beanClass = cl;
         this.oc = OpenClass.of(MethodHandles.lookup(), cl);
     }
 
+    private void onField(Field field) {
+        Annotation[] annotations = field.getAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            Annotation a1 = annotations[i];
+            Class<? extends Annotation> a1Type = a1.annotationType();
+            FieldHook fh = FieldHook.CACHE.get(a1Type);
+            if (fh != null) {
+                ExtensionWrapper ei = wrapper(a1Type.getModule(), fh.extensionType);
+                ei.extension.hookOnBeanField(
+                        new PackedBeanField(BeanScanner.this, ei.extension, field, fh.isGettable || ei.hasFullAccess, fh.isSettable || ei.hasFullAccess));
+            }
+        }
+    }
+
+    private void onMethod(Method method) {
+        Annotation[] annotations = method.getAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            Annotation a1 = annotations[i];
+            Class<? extends Annotation> a1Type = a1.annotationType();
+            MethodHook fh = MethodHook.CACHE.get(a1Type);
+            if (fh != null) {
+                ExtensionWrapper ei = wrapper(a1Type.getModule(), fh.extensionType);
+                ei.extension.hookOnBeanMethod(new PackedBeanMethod(BeanScanner.this, ei.extension, method, fh.isInvokable));
+            }
+        }
+    }
+
     public void scan() {
-        new MyScanner(cl).scan(true, Object.class);
-        for (ExtensionInfo e : extensions.values()) {
+        new MemberScanner(beanClass) {
+
+            @Override
+            protected void onField(Field field) {
+                BeanScanner.this.onField(field);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            protected void onMethod(Method method) {
+                BeanScanner.this.onMethod(method);
+            }
+        }.scan(true, Object.class);
+
+        for (ExtensionWrapper e : extensions.values()) {
             e.extension.hookOnBeanEnd(bean);
         }
     }
 
-    class MyScanner extends MemberScanner {
-
-        /**
-         * @param classToScan
-         */
-        protected MyScanner(Class<?> classToScan) {
-            super(classToScan);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void onMethod(Method method) {
-            Annotation[] annotations = method.getAnnotations();
-            for (int i = 0; i < annotations.length; i++) {
-                Annotation a1 = annotations[i];
-                Class<? extends Annotation> a1Type = a1.annotationType();
-                MethodHook fh = MethodHook.CACHE.get(a1Type);
-                if (fh != null) {
-                    ExtensionInfo ei = getInfo(a1Type.getModule(), fh.extensionType);
-                    ei.extension.hookOnBeanMethod(new PackedBeanMethod(BeanScanner.this, ei.extension, method, fh.isInvokable));
-                }
-            }
-        }
-
-        @Override
-        protected void onField(Field field) {
-            Annotation[] annotations = field.getAnnotations();
-            for (int i = 0; i < annotations.length; i++) {
-                Annotation a1 = annotations[i];
-                Class<? extends Annotation> a1Type = a1.annotationType();
-                FieldHook fh = FieldHook.CACHE.get(a1Type);
-                if (fh != null) {
-                    ExtensionInfo ei = getInfo(a1Type.getModule(), fh.extensionType);
-                    ei.extension.hookOnBeanField(
-                            new PackedBeanField(BeanScanner.this, ei.extension, field, fh.isGettable || ei.hasFullAccess, fh.isSettable || ei.hasFullAccess));
-                }
-            }
-        }
-    }
-
-    ExtensionInfo getInfo(Module owner, Class<? extends Extension<?>> clazz) {
-        ExtensionInfo ei = extensions.get(clazz);
+    private ExtensionWrapper wrapper(Module owner, Class<? extends Extension<?>> clazz) {
+        ExtensionWrapper ei = extensions.get(clazz);
         if (ei == null) {
             ExtensionSetup es = container.useExtensionSetup(clazz, null);
-            ei = new ExtensionInfo(es);
+            ei = new ExtensionWrapper(es);
             extensions.put(clazz, ei);
             ei.extension.hookOnBeanBegin(bean);
         }
         return ei;
     }
 
-    public static class ExtensionInfo {
-        boolean hasFullAccess;
+    private static class ExtensionWrapper {
         public final ExtensionSetup extension;
+        boolean hasFullAccess;
 
-        ExtensionInfo(ExtensionSetup extension) {
+        ExtensionWrapper(ExtensionSetup extension) {
             this.extension = requireNonNull(extension);
         }
     }
 
     record FieldHook(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
-
-        FieldHook {
-
-        }
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<FieldHook> CACHE = new ClassValue<>() {
@@ -140,7 +141,7 @@ public class BeanScanner {
                 @SuppressWarnings({ "rawtypes", "unchecked" })
                 Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension());
                 if (cl.getModule() != type.getModule()) {
-                    throw new Error();
+                    throw new InternalExtensionException("The annotation " + type + " and the extension " + cl + " must be located in the same module");
                 }
                 return new FieldHook(cl, h.allowGet(), h.allowSet());
             }
@@ -167,5 +168,4 @@ public class BeanScanner {
             }
         };
     }
-
 }

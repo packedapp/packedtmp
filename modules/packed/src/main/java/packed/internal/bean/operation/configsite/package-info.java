@@ -8,4 +8,4 @@
 /**
  * Provides a simple configuration framework.
  */
-package packed.internal.config;
+package packed.internal.bean.operation.configsite;

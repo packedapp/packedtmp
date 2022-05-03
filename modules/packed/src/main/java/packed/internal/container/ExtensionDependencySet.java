@@ -15,8 +15,6 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,15 +22,14 @@ import java.util.List;
 
 import app.packed.container.Extension;
 
-/** Immutable implementation of {@link ExtensionDependencySet}. */
+/** We might ditch this at some point */
 final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension<?>>> {
 
     /** The extension types this set contains */
-    // Need to changes this to a list
     final List<Class<? extends Extension<?>>> extensions;
 
     private ExtensionDependencySet(List<Class<? extends Extension<?>>> extensions) {
-        this.extensions = requireNonNull(extensions);
+        this.extensions = List.copyOf(extensions);
     }
 
     /**

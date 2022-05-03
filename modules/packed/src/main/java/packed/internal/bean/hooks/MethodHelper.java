@@ -39,7 +39,6 @@ public class MethodHelper extends DependencyHolder {
     public MethodHelper(BeanMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(InternalDependency.fromExecutable(method.method()), provideAsConstant, provideAsKey);
         this.modifiers = requireNonNull(method.getModifiers());
-//        this.hook = null;// requireNonNull(builder.hook);
         this.varHandle = requireNonNull(mh);
     }
 

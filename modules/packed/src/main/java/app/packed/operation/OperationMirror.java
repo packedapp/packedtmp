@@ -51,7 +51,7 @@ import packed.internal.container.ExtensionSetup;
 //Class -> members
 //Scanning class -> Hooks
 //Bean -> Operation
-public non-sealed class OperationMirror implements Mirror , ContextRootMirror {
+public non-sealed class OperationMirror implements Mirror, ContextRootMirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via

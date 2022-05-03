@@ -38,31 +38,15 @@ public class FieldHelper extends DependencyHolder {
     /** A direct method handle to the field. */
     public final VarHandle varHandle;
     
-//    /** A model of the field hooks bootstrap. */
-//    private final FieldHookModel hook;
-    
     public FieldHelper(BeanField field, VarHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(List.of(), provideAsConstant, provideAsKey);
         this.modifiers = requireNonNull(field.getModifiers());
-//        this.hook = null;// requireNonNull(builder.hook);
         this.varHandle = requireNonNull(mh);
     }
 
     @Override
     public DependencyProducer[] createProviders() {
         DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
-        // System.out.println("RESOLVING " + directMethodHandle);
-//        for (int i = 0; i < dependencies.size(); i++) {
-//            InternalDependency d = dependencies.get(i);
-//            HookedMethodProvide dp = hook.keys.get(d.key());
-//            if (dp != null) {
-//                // System.out.println("MAtches for " + d.key());
-//                int index = i + (Modifier.isStatic(modifiers) ? 0 : 1);
-//                providers[index] = dp;
-//                // System.out.println("SEtting provider " + dp.dependencyAccessor());
-//            }
-//        }
-
         return providers;
     }
 

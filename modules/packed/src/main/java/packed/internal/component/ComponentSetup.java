@@ -216,7 +216,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         return name;
     }
     
-    
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
             return m.bean();

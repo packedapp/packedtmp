@@ -126,7 +126,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         }
 
         public void export() {
-            export = InternalServiceUtil.checkKey(bean.hookModel.clazz, defaultKey());
+            export = InternalServiceUtil.checkKey(bean.beanClass(), defaultKey());
             bean.parent.useExtension(ServiceExtension.class);
         }
 
@@ -145,17 +145,17 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         }
 
         public void provide() {
-            provide = InternalServiceUtil.checkKey(bean.hookModel.clazz, defaultKey());
+            provide = InternalServiceUtil.checkKey(bean.beanClass(), defaultKey());
             bean.parent.useExtension(ServiceExtension.class);
         }
 
         public void provideAs(Class<?> key) {
-            provide = InternalServiceUtil.checkKey(bean.hookModel.clazz, key);
+            provide = InternalServiceUtil.checkKey(bean.beanClass(), key);
             bean.parent.useExtension(ServiceExtension.class);
         }
 
         public void provideAs(Key<?> key) {
-            provide = InternalServiceUtil.checkKey(bean.hookModel.clazz, key);
+            provide = InternalServiceUtil.checkKey(bean.beanClass(), key);
             bean.parent.useExtension(ServiceExtension.class);
         }
 

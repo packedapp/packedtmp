@@ -20,17 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.util.Set;
 
 import app.packed.application.ApplicationInfo;
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentRealm;
 import packed.internal.container.AssemblySetupOfAssembly;
 import packed.internal.util.LookupUtil;
 
 /**
- * An assembly is Packed's main way to configure applications and their parts.
+ * Assemblies are the main way that applications are configured in Packed.
  * <p>
  * The assembly configures 1 or more containers.
  * <p>
@@ -41,7 +38,6 @@ import packed.internal.util.LookupUtil;
  * is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * Assemblies are composable via linking.
- * 
  * 
  * <p>
  * Subclasses of this class supports 2 type based annotations. {@link ContainerHook} and {@link BeanHook}. Which
@@ -55,13 +51,13 @@ import packed.internal.util.LookupUtil;
  * 
  * @see BaseAssembly
  */
-public abstract non-sealed class Assembly implements ComponentRealm {
+public abstract class Assembly {
 
-    /** A var handle that can update the {@link #container()} field in this class. */
+    /** A var handle that can update the {@link #configuration} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
-     * The configuration object we delegate all calls to.
+     * The configuration object all calls to.
      * <p>
      * The value of this field goes through 3 states:
      * <p>
@@ -78,7 +74,7 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     private ContainerConfiguration configuration;
 
     /** {@return a descriptor for the application being built.} */
-    protected final ApplicationInfo application() {
+    protected final ApplicationInfo applicationInfo() {
         return container().container.application.descriptor;
     }
 
@@ -92,25 +88,22 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     protected abstract void build();
 
     /**
-     * Checks that {@link #build()} has not yet been invoked by the framework. the assembly has not already been used. This
-     * method is typically used
-     * 
-     * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions do
-     * not try to configure the extension after it has been configured.
+     * Checks that {@link #build()} has not already been invoked by the framework.
+     * <p>
+     * This method is typically used by assemblies that define methods that can used to configure the assembly before is
+     * used. Making sure that the assembly is still in a state to be configurable.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has already been invoked
-     * @see ContainerConfiguration#checkPreBuild()
      */
-    // Alle andre steder hedder det checkConfigurable
-    protected final void checkPreBuild() {
+    protected final void checkConfigurable() {
         if (configuration != null) {
             throw new IllegalStateException("#build has already been called on the Assembly");
         }
     }
 
     /**
-     * Returns the configuration of the root container of this assembly.
+     * Returns the configuration of the <strong>root</strong> container defined by this assembly.
      * <p>
      * This method must only be called from within the {@link #build()} method.
      * 
@@ -118,12 +111,6 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
-    // maybe rename to container???? and then we .realm()
-    // and .application()? where application is limited for extension realm assemblies
-    // only application().descriptor() works
-    // saa skal Extension.configuration() vel omnavngives til .extension() + .realm() IDKx
-
-    // Problemet er at vi har ContainerExtension...
     protected final ContainerConfiguration container() {
         ContainerConfiguration c = configuration;
         if (c == null) {
@@ -138,6 +125,8 @@ public abstract non-sealed class Assembly implements ComponentRealm {
      * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
      * used more than once.
      * 
+     * @param realm
+     *            the realm used to call container hooks
      * @param configuration
      *            the configuration to use for the assembling process
      */
@@ -169,18 +158,11 @@ public abstract non-sealed class Assembly implements ComponentRealm {
     }
 
     /**
-     * {@return an unmodifiable view of the extensions that are currently used.}
-     * 
-     * @see ContainerConfiguration#extensionsTypes()
-     * @see #use(Class)
-     */
-    protected final Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container().extensionTypes();
-    }
-
-    /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
+     * 
+     * <p>
+     * Lookup obejcts are used throughout any beans defined within this assembly. Not only in the root contianer
      * 
      * @param lookup
      *            the lookup object
@@ -194,71 +176,4 @@ public abstract non-sealed class Assembly implements ComponentRealm {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         container().container.assembly.lookup(lookup);
     }
-
-    /**
-     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
-     * is case sensitive.
-     * <p>
-     * This method should be called as the first thing when configuring a container.
-     * <p>
-     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way
-     * that it will have a unique name among other sibling container.
-     *
-     * @param name
-     *            the name of the container
-     * @see ContainerConfiguration#named(String)
-     * @throws IllegalArgumentException
-     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-     *             characters and '_', '-' or '.'
-     * @throws IllegalStateException
-     *             if called from outside {@link #build()}
-     */
-    protected final void named(String name) {
-        container().named(name);
-    }
-
-    /**
-     * {@return the path of the container}
-     * 
-     * @see ContainerConfiguration#path()
-     */
-    protected final NamespacePath path() {
-        return container().path();
-    }
-
-    /**
-     * 
-     * @param <W>
-     *            the type of wirelets to select
-     * @param wireletClass
-     *            the type of wirelets to select
-     * @return a wirelet selection
-     * @see ContainerConfiguration#selectWirelets(Class)
-     */
-    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return container().selectWirelets(wireletClass);
-    }
-
-    /**
-     * Returns an instance of the specified extension type.
-     * <p>
-     * The framework will lazily create a single instance of a particular extension when requested. Returning the same
-     * instance for subsequent calls.
-     * 
-     * @param <T>
-     *            the type of extension to return
-     * @param extensionType
-     *            the type of extension to return
-     * @return an extension instance of the requested type
-     * @throws IllegalStateException
-     *             if the container is no longer configurable and the extension has not been created previously
-     * @see ContainerConfiguration#use(Class)
-     */
-    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
-        return container().use(extensionType);
-    }
 }
-//
-//protected final void embed(Assembly assembly) {
-//  container().embed(assembly);
-//}

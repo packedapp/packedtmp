@@ -38,7 +38,6 @@ import app.packed.bean.hooks.BeanField.AnnotatedWithHook;
 import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.hooks.BeanVariable;
-import app.packed.component.ComponentRealm;
 import app.packed.inject.Ancestral;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
@@ -81,7 +80,7 @@ import packed.internal.util.ThrowableUtil;
  * @param <E>
  *            The type of the extension subclass
  */
-public abstract non-sealed class Extension<E extends Extension<E>> implements ComponentRealm {
+public abstract class Extension<E extends Extension<E>> {
 
     /**
      * The internal configuration of the extension that all methods on {@code Extension} delegate to.
@@ -170,26 +169,8 @@ public abstract non-sealed class Extension<E extends Extension<E>> implements Co
     }
 
     /**
-     * Returns a mirror for the extension.
-     * <p>
-     * This method can be overridden to provide a customized mirror. For example, {@link ServiceExtension} overrides this
-     * method to provide an instance of {@link ServiceExtensionMirror}.
-     * <p>
-     * If this method is overridden, {@link #mirrorInitialize(ExtensionMirror)} must be called with the new mirror instance
-     * before returning from the method: <pre>
-     * {@code
-     *   class MyExtension extends Extension {
-     *   &#64;Override
-     *   protected MyExtensionMirror mirror() {
-     *       return mirrorInitialize(new MyExtensionMirror(this));
-     *   }
-     * }
-     * }</pre>
-     * <p>
-     * NOTE: This method may be called at any point in time by the runtime. Care should be taken to make sure that a valid
-     * mirror is returned at any point in time.
-     * <p>
-     * Subclasses may choose to make this method public.
+     * This method can be overridden to provide a customized mirror for the extension. For example, {@link ServiceExtension}
+     * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
      * This method should never return null.
      * 

@@ -39,8 +39,9 @@ import packed.internal.component.ComponentSetup;
  */
 public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySetupOfAssembly, AssemblySetupOfComposer {
 
+    /** Currently we do not support that extensions create their own containers. */
     @Nullable
-    final ExtensionRealmSetup extension = null;
+    private final ExtensionRealmSetup extension = null;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -118,19 +119,13 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
         return extension == null ? Realm.application() : extension.realm();
     }
 
-    /** A build time mirror of an Assembly. */
+    /** Implementation of {@link AssemblyMirror}. */
     public record BuildtimeAssemblyMirror(AssemblySetup assembly) implements AssemblyMirror {
 
         /** {@inheritDoc} */
         @Override
         public List<Class<? extends ContainerHook>> containerHooks() {
             throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Realm owner() {
-            return assembly.realm();
         }
 
         /** {@inheritDoc} */
@@ -181,6 +176,12 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
                 list.add(cs.assembly.mirror());
             }
             return list;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isRoot() {
+            return assembly.container().parent == null;
         }
     }
 }

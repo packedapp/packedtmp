@@ -26,6 +26,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
+/** A model of an ExtensionMirror subclass. */
 record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType) {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
@@ -78,7 +79,7 @@ record ExtensionMirrorModel(Class<? extends Extension<?>> extensionType) {
      * @param extensionSetup
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void initialize(ExtensionMirror<?> mirror, ExtensionSetup extensionSetup) {
+    static void initialize(ExtensionMirror<?> mirror, ExtensionSetup extensionSetup) {
         try {
             MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, new PackedExtensionTree(extensionSetup, extensionSetup.extensionType));
         } catch (Throwable e) {

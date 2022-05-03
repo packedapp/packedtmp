@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ContainerBeanConfiguration;
-import packed.internal.config.ConfigSite;
+import packed.internal.bean.operation.configsite.ConfigSite;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;

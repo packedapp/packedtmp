@@ -51,7 +51,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
      * @see Main
      */
     public boolean hasMain() {
-        return tree().stream().anyMatch(e -> e.hasMain);
+        return allAnyMatch(e -> e.hasMain);
     }
 
     /**

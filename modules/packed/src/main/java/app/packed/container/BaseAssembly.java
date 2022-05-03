@@ -97,6 +97,48 @@ public abstract class BaseAssembly extends Assembly {
         service().exportAll();
     }
 
+
+    /**
+     * Sets the name of the root container defined by this assembly. The name must consists only of alphanumeric characters
+     * and '_', '-' or '.'. The name is case sensitive.
+     * <p>
+     * This method should be called as the first thing when configuring a container.
+     * <p>
+     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way
+     * that it will have a unique name among other sibling container.
+     *
+     * @param name
+     *            the name of the container
+     * @see ContainerConfiguration#named(String)
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     * @throws IllegalStateException
+     *             if called from outside {@link #build()}
+     */
+    protected final void named(String name) {
+        container().named(name);
+    }
+
+    /**
+     * Returns an instance of the specified extension for the root container defined by this assembly.
+     * <p>
+     * The framework will lazily create a single instance of a particular extension when requested. Returning the same
+     * instance for subsequent calls.
+     * 
+     * @param <T>
+     *            the type of extension to return
+     * @param extensionType
+     *            the type of extension to return
+     * @return an extension instance of the requested type
+     * @throws IllegalStateException
+     *             if the container is no longer configurable and the extension has not been created previously
+     * @see ContainerConfiguration#use(Class)
+     */
+    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
+        return container().use(extensionType);
+    }
+    
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -167,6 +209,20 @@ public abstract class BaseAssembly extends Assembly {
     // Why not wire + wirelets???
     protected final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         return container().link(assembly, wirelets);
+    }
+    
+
+    /**
+     * 
+     * @param <W>
+     *            the type of wirelets to select
+     * @param wireletClass
+     *            the type of wirelets to select
+     * @return a wirelet selection
+     * @see ContainerConfiguration#selectWirelets(Class)
+     */
+    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        return container().selectWirelets(wireletClass);
     }
 
     /**

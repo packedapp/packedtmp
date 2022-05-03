@@ -16,20 +16,22 @@
 package app.packed.container.sandbox;
 
 import app.packed.application.App;
+import app.packed.bean.BeanExtension;
+import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
 /**
  *
  */
-public class TestMe extends BaseAssembly {
+public class TestMe extends Assembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        use(MyExt.class);
-        installInstance("sdsd");
-        link(new Child());
+        container().use(MyExt.class);
+        container().use(BeanExtension.class).installInstance("sdsd");
+        container().link(new Child());
     }
 
     public static void main(String[] args) {

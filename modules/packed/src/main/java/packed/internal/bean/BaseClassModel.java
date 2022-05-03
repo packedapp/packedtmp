@@ -20,7 +20,9 @@ import app.packed.base.Key;
 /**
  *
  */
-public final class BaseHookModel {
+// Altsaa Vi har jo lidt brug for den i forbindelse med extension beans taenker jeg...
+// Der er ingen grund til at scanne dem flere gange...
+public final class BaseClassModel {
 
     /** The class of the model. */
     public final Class<?> clazz;
@@ -28,13 +30,15 @@ public final class BaseHookModel {
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
 
-    BaseHookModel(Class<?> clazz) {
+    BaseClassModel(Class<?> clazz) {
         this.clazz = clazz;
     }
+    
     public Key<?> defaultKey() {
         // What if instance has Qualifier???
         return Key.of(clazz);
     }
+    
     /**
      * Returns the default prefix for the source.
      * 

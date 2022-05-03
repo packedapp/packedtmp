@@ -18,15 +18,12 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import app.packed.bean.BeanMirror;
 
 /**
  * Represents a rooted tree of 1 or more extension instances.
@@ -40,6 +37,13 @@ import app.packed.bean.BeanMirror;
 // map(extension->extension.configuration()) 
 
 // TreeView<T>
+
+
+// Immutable???
+
+
+// Maybe -> Extension.TreeView Taenker aldrig det er noget man selv laver
+
 public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
 
     default <E> List<E> collectList(BiConsumer<T, List<E>> action) {
@@ -63,10 +67,6 @@ public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
 
     /** {@return the root of the tree.} */
     T root();
-
-   // ExtensionConfiguration rootConfiguration();
-
-    // Ideen er at man kan faa saadan en injected ind i et mirror...
 
     default Stream<T> stream() {
         return StreamSupport.stream(spliterator(), false);
@@ -118,35 +118,4 @@ public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
     // forEachChild
     // int index.... from [0 to size-1] In order of usage????
 
-}
-
-class MyExtMirror {
-    final ExtensionTree<TestExtension> es;
-
-    MyExtMirror(ExtensionTree<TestExtension> es) {
-        this.es = es;
-    }
-
-    public int beanCount() {
-        return es.sumInt(e -> e.count());
-    }
-
-    public Collection<BeanMirror> beans() {
-        return es.collectList((e, c) -> c.addAll(e.beansx()));
-    }
-
-    public Collection<BeanMirror> beans2() {
-        return es.stream().flatMap(e -> e.beansx().stream()).toList();
-    }
-}
-
-class TestExtension extends Extension<TestExtension> {
-
-    Collection<BeanMirror> beansx() {
-        return List.of();
-    }
-
-    int count() {
-        return 3;
-    }
 }
