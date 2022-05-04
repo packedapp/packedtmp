@@ -43,6 +43,7 @@ import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.ExtensionModel;
+import packed.internal.container.ExtensionPointHelper;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
 import packed.internal.inject.invoke.InternalInfuser;
@@ -293,18 +294,19 @@ public abstract class Extension<E extends Extension<E>> {
      * 
      * @param <P>
      *            the type of extension point to return
-     * @param type
+     * @param extensionPointType
      *            the type of extension point to return
      * @return the extension point instance
      * @throws IllegalStateException
      *             If the underlying container is no longer configurable and the extension which the extension point is a
      *             part of has not previously been used.
-     * @throws IllegalArgumentException
+     * @throws InternalExtensionException
      *             If the extension which the extension point is a part of has not explicitly been registered as a
      *             dependency of this extension
      */
-    protected final <P extends ExtensionPoint<?>> P use(Class<P> type) {
-        return setup().use(type);
+    @SuppressWarnings("unchecked")
+    protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointType) {
+        return (P) ExtensionPointHelper.newExtensionPoint(setup(), extensionPointType);
     }
 
     // Vi kan sagtens lave den en normal metode taenker jeg maaske paa en utility klasse...

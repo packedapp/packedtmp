@@ -41,7 +41,7 @@ import packed.internal.util.MemberScanner;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>permits ExecutableFactory, FieldFactory {
+public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T> permits ExecutableFactory, FieldFactory {
 
     /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
     public static final ClassValue<ExecutableFactory<?>> DEFAULT_FACTORY = new ClassValue<>() {

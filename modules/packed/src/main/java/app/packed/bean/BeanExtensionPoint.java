@@ -131,6 +131,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      */
     @SuppressWarnings("unchecked")
     // Hmm vi har jo ikke parameterized beans???
+    // Ved ikke om vi skal droppe den...
     public static <T> Factory<T> defaultFactoryFor(TypeToken<T> implementation) {
         // Can cache it with a Class[] array corresponding to type parameters...
         requireNonNull(implementation, "implementation is null");

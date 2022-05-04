@@ -297,7 +297,7 @@ public final class ContainerSetup extends ComponentSetup {
         public Set<ExtensionMirror<?>> extensions() {
             HashSet<ExtensionMirror<?>> result = new HashSet<>();
             for (ExtensionSetup extension : container.extensions.values()) {
-                result.add(ExtensionMirrorHelper.newMirror(extension));
+                result.add(ExtensionMirrorHelper.newMirrorOfUnknownType(extension));
             }
             return Set.copyOf(result);
         }
@@ -313,7 +313,7 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
             ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-            return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.getExactMirrorOrNull(container, mirrorType));
+            return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.newMirrorOrNull(container, mirrorType));
         }
 
         /** {@inheritDoc} */

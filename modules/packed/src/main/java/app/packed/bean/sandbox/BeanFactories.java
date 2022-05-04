@@ -24,6 +24,8 @@ final class BeanFactories {
     
     
     // Open up for the whole bean
+    // Tror vi skal have 2 forskellige. Inde der aabner selve funktionen
+    // og en der aabner helebeanen
     public <T> Factory<T> openUp(Factory<T> factory, Lookup lookup) {
         
         // Altsaa Factory.ofConstant(xx).lookup(Lookup)

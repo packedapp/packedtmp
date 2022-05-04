@@ -16,7 +16,6 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -264,11 +263,6 @@ public final class ExtensionSetup {
         }
 
         return new PackedWireletSelection<>(wirelets, wireletClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <E extends ExtensionPoint<?>> E use(Class<E> extensionPointType) {
-        return (E) ExtensionPointHelper.extensionPoint(this, extensionPointType);
     }
 
     /** A pre-order iterator for a rooted extension tree. */

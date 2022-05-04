@@ -26,7 +26,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
-/** A helper class for working with {@link ExtensionMirror} instances. */
+/** A helper class for creating new {@link ExtensionMirror} instances. */
 final class ExtensionMirrorHelper {
 
     /** A ExtensionMirror class to Extension class mapping. */
@@ -64,27 +64,9 @@ final class ExtensionMirrorHelper {
     /** No help for you. */
     private ExtensionMirrorHelper() {}
 
-    /**
-     * @param container
-     *            the container where the extension may be present
-     * @param mirrorClass
-     *            the type of mirror to return
-     * @return a mirror of the specified type or null if no extension of the matching type was used in the container
-     */
-    @Nullable
-    static ExtensionMirror<?> getExactMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
-        // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-        Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
-
-        // See if the container uses the extension.
-        ExtensionSetup extension = container.extensions.get(extensionClass);
-
-        return extension == null ? null : mirror(extension, mirrorClass);
-    }
-
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static ExtensionMirror<?> mirror(ExtensionSetup extension, Class<? extends ExtensionMirror<?>> expectedMirrorClass) {
+    private static ExtensionMirror<?> newMirror(ExtensionSetup extension, Class<? extends ExtensionMirror<?>> expectedMirrorClass) {
         ExtensionMirror<?> mirror = null;
         try {
             mirror = (ExtensionMirror<?>) MH_EXTENSION_NEW_EXTENSION_MIRROR.invokeExact(extension.instance());
@@ -135,9 +117,29 @@ final class ExtensionMirrorHelper {
      * 
      * @param extension
      *            the extension
-     * @return
+     * @return the new mirror
      */
-    static ExtensionMirror<?> newMirror(ExtensionSetup extension) {
-        return mirror(extension, null);
+    static ExtensionMirror<?> newMirrorOfUnknownType(ExtensionSetup extension) {
+        return newMirror(extension, null);
+    }
+
+    /**
+     * Creates a new mirror if an. Otherwise returns {@code null}
+     * 
+     * @param container
+     *            the container to test for presence extension may be present
+     * @param mirrorClass
+     *            the type of mirror to return
+     * @return a mirror of the specified type or null if no extension of the matching type was used in the container
+     */
+    @Nullable
+    static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
+        // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
+        Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
+
+        // See if the container uses the extension.
+        ExtensionSetup extension = container.extensions.get(extensionClass);
+
+        return extension == null ? null : newMirror(extension, mirrorClass);
     }
 }

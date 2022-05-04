@@ -30,8 +30,8 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
-/** A helper class for working with {@link ExtensionMirror} instances. */
-final class ExtensionPointHelper {
+/** A helper class for creating new {@link ExtensionMirror} instances. */
+public final class ExtensionPointHelper {
 
     /** A ExtensionMirror class to Extension class mapping. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -70,7 +70,7 @@ final class ExtensionPointHelper {
     private ExtensionPointHelper() {}
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
-    static ExtensionPoint<?> extensionPoint(ExtensionSetup requestingExtension, Class<?> extensionPointType) {
+    public static ExtensionPoint<?> newExtensionPoint(ExtensionSetup requestingExtension, Class<?> extensionPointType) {
         requireNonNull(extensionPointType, "extensionPointType is null");
         Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(extensionPointType); // checks proper subclass
         Class<? extends Extension<?>> requestingExtensionClass = requestingExtension.extensionType;
@@ -107,7 +107,6 @@ final class ExtensionPointHelper {
         }
 
         // Initializes the extension point
-
         PackedExtensionPointContext context = new PackedExtensionPointContext(requestingExtension, extension);
         try {
             MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(instance, context);
