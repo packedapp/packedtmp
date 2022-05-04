@@ -19,8 +19,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.ProvidableBeanConfiguration;
+import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -105,7 +104,7 @@ public final class InjectorComposer extends Composer {
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
      */
-    public <T> ContainerBeanConfiguration<T> provide(Class<T> implementation) {
+    public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
         extension();
         return configuration.use(BeanExtension.class).install(implementation).provide();
 
@@ -125,7 +124,7 @@ public final class InjectorComposer extends Composer {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
+    public <T> ProvideableBeanConfiguration<T> provide(Factory<T> factory) {
         extension();
         return configuration.use(BeanExtension.class).install(factory).provide();
 
@@ -191,18 +190,18 @@ public final class InjectorComposer extends Composer {
     // All annotations will be processed like provide() except that constructors will not be processed
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
-    public <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
+    public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
         extension();
         return configuration.use(BeanExtension.class).installInstance(instance).provide();
         
     }
 
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         extension();
         return configuration.use(BeanExtension.class).providePrototype(implementation);
     }
 
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         extension();
         return configuration.use(BeanExtension.class).providePrototype(factory);
     }

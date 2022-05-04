@@ -18,7 +18,6 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
@@ -27,43 +26,46 @@ import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
 
 /**
- * A bean which provide an instance(s) of the bean type as a service.
- * <p>
- * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
- * calling one of the install methods on, for example, {@link BaseAssembly}.
+ * A configuration of a container bean.
  */
-// Har vi 2 klasser? ServiceConfiguration + ExportableServiceContainer
-// Taenker vi kan bruge den ved composer as well.
+// Tror ikke den kan noget PBC ikke kan.
+// Men vi kan kraeve den som parameter nogle steder.
 
-// Tror vi dropper den her, og saa kun har ProvideableBeanConfiguration
-public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+// Nu har vi en.. Saa skal vi have lagt de services ting ud i handle...
+// Maaske paanaer export()??? Hoere vel til export extension
 
+public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+    
     private final ServiceableBean sb;
 
-    public ProvidableBeanConfiguration(BeanHandle<T> handle) {
+    /**
+     * @param handle
+     *            the bean driver to use for creating the bean
+     */
+    public ProvideableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
         this.sb = new ServiceableBean(beanHandle);
         handle.addWiringAction(() -> sb.onWired());
-
     }
 
-    public ProvidableBeanConfiguration<T> export() {
+
+    public ProvideableBeanConfiguration<T> export() {
         sb.export();
         return this;
     }
 
-    public ProvidableBeanConfiguration<T> exportAs(Class<? super T> key) {
+    public ProvideableBeanConfiguration<T> exportAs(Class<? super T> key) {
         sb.export();
         return this;
     }
 
-    public ProvidableBeanConfiguration<T> exportAs(Key<? super T> key) {
+    public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
         sb.export();
         return this;
     }
     
     
-    public ProvidableBeanConfiguration<T> provide() {
+    public ProvideableBeanConfiguration<T> provide() {
         sb.provide();
         return this;
     }
@@ -77,7 +79,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
      * @return this configuration
      * @see #provideAs(Key)
      */
-    public ProvidableBeanConfiguration<T> provideAs(Class<? super T> key) {
+    public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
         sb.provideAs(key);
         return this;
     }
@@ -91,7 +93,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
      * @return this configuration
      * @see #provideAs(Class)
      */
-    public ProvidableBeanConfiguration<T> provideAs(Key<? super T> key) {
+    public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
         sb.provideAs(key);
         return this;
     }
@@ -101,6 +103,12 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         return sb.providedAs();
     }
 
+    ProvideableBeanConfiguration<T> describeAs(String description) {
+        // describeExportAs
+        // describeProvisionAs
+        return this;
+    }
+    
     static final class ServiceableBean {
         final BeanSetup bean;
 
@@ -155,3 +163,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         }
     }
 }
+//
+//public <X extends Runnable & Callable<String>> X foo() {
+//  return null;
+//}

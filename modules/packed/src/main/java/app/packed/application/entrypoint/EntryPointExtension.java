@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.ExtensionBeanConfiguration;
+import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
 import app.packed.inject.Ancestral;
@@ -61,7 +61,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // Det her er en function
     }
 
-    public <T extends Runnable> ContainerBeanConfiguration<?> mainBeanInstance(T runnable) {
+    public <T extends Runnable> ProvideableBeanConfiguration<?> mainBeanInstance(T runnable) {
         // Hehe, tag den, hvad goer vi her, den ene er en bean
         // Den anden er en function.
         // Tror ikke vi skal have begge dele
@@ -112,7 +112,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
         MethodHandle[] entryPoints;
 
-        ExtensionBeanConfiguration<?> ebc;
+        InstanceBeanConfiguration<?> ebc;
 
         void takeOver(Class<? extends Extension<?>> takeOver) {
             if (this.dispatcher != null) {

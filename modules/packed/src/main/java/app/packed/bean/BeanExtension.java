@@ -94,9 +94,9 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return the configuration of the bean
      * @see BaseAssembly#install(Class)
      */
-    public <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
+    public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).build();
-        return new ContainerBeanConfiguration<>(handle);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /**
@@ -107,9 +107,9 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return the configuration of the bean
      * @see CommonContainerAssembly#install(Factory)
      */
-    public <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
+    public <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
-        return new ContainerBeanConfiguration<>(handle);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /**
@@ -123,9 +123,9 @@ public class BeanExtension extends Extension<BeanExtension> {
      *            the component instance to install
      * @return this configuration
      */
-    public <T> ContainerBeanConfiguration<T> installInstance(T instance) {
+    public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).build();
-        return new ContainerBeanConfiguration<>(handle);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /** {@inheritDoc} */
@@ -158,15 +158,15 @@ public class BeanExtension extends Extension<BeanExtension> {
         container.injectionManager.provideAll(l);
     }
 
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
+        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
-    public <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.UNMANAGED, container, factory).build();
-        ProvidableBeanConfiguration<T> sbc = new ProvidableBeanConfiguration<T>(handle);
+        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 }

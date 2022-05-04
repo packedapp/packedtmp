@@ -34,11 +34,11 @@ public class BeanInstrumentationExtension extends Extension<BeanInstrumentationE
     
     // Maaske er der operation lazy. Og saa Bean Lazy.
     //// Operation lazy behoever vi ikke at instrumentere klassen.
-    public <T> ContainerBeanConfiguration<T> installLazy(Class<T> clazz) {
+    public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }
 
-    public <T> ContainerBeanConfiguration<T> installLazy(Factory<T> clazz) {
+    public <T> ProvideableBeanConfiguration<T> installLazy(Factory<T> clazz) {
         throw new UnsupportedOperationException();
     }
 

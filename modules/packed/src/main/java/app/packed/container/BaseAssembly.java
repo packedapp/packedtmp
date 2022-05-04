@@ -17,8 +17,7 @@ package app.packed.container;
 
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.ProvidableBeanConfiguration;
+import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceExtension;
@@ -151,7 +150,7 @@ public abstract class BaseAssembly extends Assembly {
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected final <T> ContainerBeanConfiguration<T> install(Class<T> implementation) {
+    protected final <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
         return bean().install(implementation);
     }
 
@@ -164,7 +163,7 @@ public abstract class BaseAssembly extends Assembly {
      * @return the configuration of the component
      * @see BaseAssembly#install(Factory)
      */
-    protected final <T> ContainerBeanConfiguration<T> install(Factory<T> factory) {
+    protected final <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
         return bean().install(factory);
     }
 
@@ -179,7 +178,7 @@ public abstract class BaseAssembly extends Assembly {
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> ContainerBeanConfiguration<T> installInstance(T instance) {
+    protected final <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
         return bean().installInstance(instance);
     }
 
@@ -242,7 +241,7 @@ public abstract class BaseAssembly extends Assembly {
      *            the bean implementation that should be instantiated and provided as a service
      * @return a configuration object for the service bean
      */
-    protected final <T> ContainerBeanConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
         return install(implementation).provide();
     }
 
@@ -257,7 +256,7 @@ public abstract class BaseAssembly extends Assembly {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ContainerBeanConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ProvideableBeanConfiguration<T> provide(Factory<T> factory) {
         return install(factory).provide();
     }
 
@@ -278,15 +277,15 @@ public abstract class BaseAssembly extends Assembly {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    protected final <T> ContainerBeanConfiguration<T> provideInstance(T instance) {
+    protected final <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
         return installInstance(instance).provide();
     }
 
-    protected final <T> ProvidableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+    protected final <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         return bean().providePrototype(implementation);
     }
 
-    protected final <T> ProvidableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    protected final <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return bean().providePrototype(factory);
     }
 

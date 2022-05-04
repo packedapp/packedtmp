@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.ContainerBeanConfiguration;
+import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.bean.InstanceBeanConfiguration;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
@@ -44,9 +44,9 @@ public class ProvideTest {
     public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            ContainerBeanConfiguration<A> a = conf.provide(A.class);
-            ContainerBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.defaultFactoryFor(B.class));
-            ContainerBeanConfiguration<C> c = conf.provideInstance(C0);
+            ProvideableBeanConfiguration<A> a = conf.provide(A.class);
+            ProvideableBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.defaultFactoryFor(B.class));
+            ProvideableBeanConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             InstanceBeanConfiguration<H> h = conf.providePrototype(H.class);
@@ -57,7 +57,7 @@ public class ProvideTest {
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            ContainerBeanConfiguration<A> sc = e.provideInstance(A0);
+            ProvideableBeanConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, true, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -75,7 +75,7 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(ContainerBeanConfiguration<?> sc, boolean isConstant, Key<?> key) {
+    static void testConfiguration(ProvideableBeanConfiguration<?> sc, boolean isConstant, Key<?> key) {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;

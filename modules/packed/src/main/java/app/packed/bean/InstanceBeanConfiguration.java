@@ -24,10 +24,10 @@ import app.packed.lifecycle.RunState;
 /**
  * A bean that creates instances of a fixed {@link BeanConfiguration#beanClass() type}.
  * 
- * @param <E>
+ * @param <T>
  *            the type of bean instances that will be created at runtime
  */
-public class InstanceBeanConfiguration<E> extends BeanConfiguration {
+public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /**
      * Creates a new InstanceBeanConfiguration
@@ -35,17 +35,17 @@ public class InstanceBeanConfiguration<E> extends BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanHandle<E> handle) {
+    public InstanceBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
     
     // Understoetter vi altid DependencyInjection???
-    public <K> InstanceBeanConfiguration<E> bindInstance(Class<K> key, K instance) {
+    public <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {
         return bindInstance(Key.of(key), instance);
     }
 
     // Taenker den overrider
-    public <K> InstanceBeanConfiguration<E> bindInstance(Key<K> key, K instance) {
+    public <K> InstanceBeanConfiguration<T> bindInstance(Key<K> key, K instance) {
         throw new UnsupportedOperationException();
     }
 
@@ -62,25 +62,25 @@ public class InstanceBeanConfiguration<E> extends BeanConfiguration {
      * @return this configuration
      */
     // Kan vi finde en eneste usecase?
-    public InstanceBeanConfiguration<E> decorate(Function<? super E, ? extends E> decorator) {
+    public InstanceBeanConfiguration<T> decorate(Function<? super T, ? extends T> decorator) {
         handle().decorateInstance(decorator);
         return this;
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    protected BeanHandle<E> handle() {
-        return (BeanHandle<E>) super.handle();
+    protected BeanHandle<T> handle() {
+        return (BeanHandle<T>) super.handle();
     }
 
     /** {@inheritDoc} */
     @Override
-    public InstanceBeanConfiguration<E> named(String name) {
+    public InstanceBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }
 
-    public InstanceBeanConfiguration<E> peek(Consumer<? super E> consumer) {
+    public InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
         handle().peekInstance(consumer);
         return this;
     }
@@ -102,7 +102,7 @@ public class InstanceBeanConfiguration<E> extends BeanConfiguration {
     ///// fx Validator beans vil ikke virke her...
     //// Does it always have a Lifecycle??? Do we have a seperate configuration for this?
     // Maaske drop den????
-    InstanceBeanConfiguration<E> peekAt(RunState state, Consumer<E> action) {
+    InstanceBeanConfiguration<T> peekAt(RunState state, Consumer<T> action) {
         throw new UnsupportedOperationException();
     }
 }

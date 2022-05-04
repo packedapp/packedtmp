@@ -1,7 +1,10 @@
-package app.packed.bean;
+package app.packed.container;
 
 import java.util.function.BiConsumer;
 
+import app.packed.bean.BeanExtensionPoint;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
 /**
@@ -16,34 +19,36 @@ import app.packed.inject.Factory;
 // Har vi behov for T??? Egentlig ikke men inject/onState fra InstanceBean er rare.
 
 // Eneste grund til vi stadig har den er god at angive nogle steder...
-// fx BeanSupport#extensionPoint
+// er operationer som tager en EBC hvortil der skal injectes
 
-// Maybe a generic NestedBean type???
-public final class ExtensionBeanConfiguration<E> extends InstanceBeanConfiguration<E> {
+public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
      * @param handle
      */
-    public ExtensionBeanConfiguration(BeanHandle<E> handle) {
+    public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
 
-    public <P> void callbackOnInitialize(ContainerBeanConfiguration<P> beanToInitialize, BiConsumer<? super E, ? super P> consumer) {
-        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean??? Ikke noedvendigt her...
+    public <P> void callbackOnInitialize(BeanHandle<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
+        
+    }
+    // Same container I think
+    public <P> void callbackOnInitialize(InstanceBeanConfiguration<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
+        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
+        // Ja  det syntes jeg...
         // Skal de vaere samme container??
 
         // Packed will call consumer(T, P) once provideBean has been initialized
-    }
-
-    public <P> void callbackOnInitialize(ExtensionBeanConfiguration<P> beanToInitialize, BiConsumer<? super E, ? super P> consumer) {
         // Skal vi checke provideBean depends on consumerBean
         // framework will call
         // consumer(T, P) at initialization time
+        
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionBeanConfiguration<E> named(String name) {
+    public ExtensionBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
     }

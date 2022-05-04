@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Type;
 
 import app.packed.base.TypeToken;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
