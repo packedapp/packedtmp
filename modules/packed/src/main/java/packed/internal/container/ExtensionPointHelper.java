@@ -29,8 +29,8 @@ import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
-/** A model for an {@link Extension.ExtensionPoint} class. Not used outside of this package. */
-record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
+/** A helper class for working with ExtensionPoint instances. */
+record ExtensionPointHelper(Class<? extends Extension<?>> extensionType, MethodHandle mhConstructor) {
 
     /** A handle for setting the private field Extension#context. */
     private static final VarHandle VH_EXTENSION_POINT_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ExtensionPoint.class, "context",
@@ -40,13 +40,13 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
     private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
 
     /** Models of all subtensions. */
-    private final static ClassValue<ExtensionPointModel> MODELS = new ClassValue<>() {
+    private final static ClassValue<ExtensionPointHelper> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected ExtensionPointModel computeValue(Class<?> type) {
+        protected ExtensionPointHelper computeValue(Class<?> type) {
             @SuppressWarnings({ "unchecked", "rawtypes" })
-            Class<? extends ExtensionPoint<?>> subtensionClass = ClassUtil.checkProperSubclass((Class) ExtensionPoint.class, type);
+            Class<? extends ExtensionPoint<?>> subtensionClass = ClassUtil.checkProperSubclass((Class) ExtensionPoint.class, type, "type");
 
             Type t = TYPE_LITERAL_EP_EXTRACTOR.extract(type);
 //            System.out.println(t);
@@ -74,7 +74,7 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
             // Find a method handle for the subtensions's constructor
             MethodHandle constructor = builder.findConstructor(ExtensionPoint.class, m -> new InternalExtensionException(m));
 
-            return new ExtensionPointModel(extensionClass, constructor);
+            return new ExtensionPointHelper(extensionClass, constructor);
         }
     };
 
@@ -106,7 +106,7 @@ record ExtensionPointModel(Class<? extends Extension<?>> extensionType, MethodHa
      *            the subtension class
      * @return a model for the subtension class
      */
-    static ExtensionPointModel of(Class<? extends ExtensionPoint<?>> subtensionClass) {
+    static ExtensionPointHelper of(Class<? extends ExtensionPoint<?>> subtensionClass) {
         return MODELS.get(subtensionClass);
     }
 }

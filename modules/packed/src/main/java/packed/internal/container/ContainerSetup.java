@@ -48,6 +48,7 @@ import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.inject.service.ContainerInjectionManager;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.StreamUtil;
 
@@ -66,7 +67,7 @@ public final class ContainerSetup extends ComponentSetup {
      * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns
      * deterministically.
      */
-    public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
+    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /** The container's injection manager. */
     public final ContainerInjectionManager injectionManager;
@@ -281,7 +282,7 @@ public final class ContainerSetup extends ComponentSetup {
      * A build-time container mirror.
      * 
      * @implNote previous versions had a common super class shared between BeanSetup and ContainerSetup. However, code is
-     *          much cleaner without it. So please don't reintroduce it.
+     *           much cleaner without it. So please don't reintroduce it.
      * 
      */
     public record BuildTimeContainerMirror(ContainerSetup container) implements ContainerMirror {
@@ -296,7 +297,7 @@ public final class ContainerSetup extends ComponentSetup {
         public Set<ExtensionMirror<?>> extensions() {
             HashSet<ExtensionMirror<?>> result = new HashSet<>();
             for (ExtensionSetup extension : container.extensions.values()) {
-                result.add(extension.mirror());
+                result.add(ExtensionMirrorHelper.newMirror(extension));
             }
             return Set.copyOf(result);
         }
@@ -311,28 +312,8 @@ public final class ContainerSetup extends ComponentSetup {
         @SuppressWarnings("unchecked")
         @Override
         public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
-            requireNonNull(mirrorType, "mirrorType is null");
-
-            // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-            Class<? extends Extension<?>> cl = ExtensionMirrorModel.of(mirrorType).extensionType();
-
-            // See if the container uses the extension.
-            ExtensionSetup extension = container.extensions.get(cl);
-            if (extension == null) {
-                return Optional.empty();
-            } else {
-                // Call the extension.mirror to create a new mirror, this method is most likely overridden
-                ExtensionMirror<?> mirror = extension.mirror();
-                // Fail if the type of mirror returned by the extension does not match the specified mirror type
-                if (!mirrorType.isInstance(mirror)) {
-                    // Kan maaske smide en specific fejlmeddelse hvis man ikke har overskrevet metoden
-                    // if isMethodOvreriden()
-                    /// throw new (.mirror must be overridden and return an instance of Fooo
-                    throw new InternalExtensionException(cl.getSimpleName() + ".mirror() was expected to return an instance of " + mirrorType
-                            + ", but returned an instance of " + mirror.getClass());
-                }
-                return (Optional<T>) Optional.of(mirror);
-            }
+            ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
+            return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.getExactMirrorOrNull(container, mirrorType));
         }
 
         /** {@inheritDoc} */

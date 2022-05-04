@@ -19,14 +19,12 @@ import java.util.stream.Stream;
 
 import app.packed.container.ExtensionMirror;
 
-/**
- *
- */
-public class ClassgenExtensionMirror extends ExtensionMirror<ClassgenExtension> {
-    /* package-private */    ClassgenExtensionMirror() {}
+/** A specialized extension mirror for the {@link ClassgenExtension}. */
+public final class ClassgenExtensionMirror extends ExtensionMirror<ClassgenExtension> {
+    /* package-private */ ClassgenExtensionMirror() {}
 
     /** {@return a stream containing mirrors for every generated class.} */
     public Stream<GeneratedClassMirror> generatedClasses() {
-        return tree().stream().flatMap(c -> c.generated.stream());
+        return allStream().flatMap(c -> c.generated.stream());
     }
 }

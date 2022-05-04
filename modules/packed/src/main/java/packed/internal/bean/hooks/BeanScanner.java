@@ -139,7 +139,7 @@ public final class BeanScanner {
                     return null;
                 }
                 @SuppressWarnings({ "rawtypes", "unchecked" })
-                Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension());
+                Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension(), s -> new InternalExtensionException(s));
                 if (cl.getModule() != type.getModule()) {
                     throw new InternalExtensionException("The annotation " + type + " and the extension " + cl + " must be located in the same module");
                 }
@@ -160,7 +160,8 @@ public final class BeanScanner {
                     return null;
                 }
                 @SuppressWarnings({ "rawtypes", "unchecked" })
-                Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension());
+                Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension(),
+                        s -> new InternalExtensionException(s));
                 if (cl.getModule() != type.getModule()) {
                     throw new Error();
                 }

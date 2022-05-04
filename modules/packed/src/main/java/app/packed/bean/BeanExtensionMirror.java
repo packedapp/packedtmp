@@ -5,9 +5,7 @@ import java.util.stream.Stream;
 import app.packed.container.ExtensionMirror;
 import packed.internal.bean.BeanSetup;
 
-/**
- * A mirror for a {@link BeanExtension}.
- */
+/** A specialized extension mirror for the {@link BeanExtension}. */
 public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
 
     /* package-private */ BeanExtensionMirror() {}

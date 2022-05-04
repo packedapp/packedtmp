@@ -2,35 +2,57 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.mirror.Mirror;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
 
 /**
- * Provides generic information about an extension used by a {@link #container}.
+ * Provides generic information about the usage of an extension.
+ * <p>
+ * Noget omkring local mode and non-local mode.
  * <p>
  * This class can be extended by an extension to provide more detailed information about itself. For example,
- * {@link app.packed.inject.service.ServiceExtension} extends this class via
- * {@link app.packed.inject.service.ServiceExtensionMirror}.
+ * {@link app.packed.bean.BeanExtension} extends this class via {@link app.packed.bean.BeanExtensionMirror}.
  * <p>
- * Extension mirror instances are typically obtained in one of the following ways:
- * <ul>
- * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
- * {@link ContainerMirror#findExtension(Class)}.</li>
- * </ul>
+ * Extension mirror instances are typically obtained via calls to {@link ApplicationMirror#useExtension(Class)} or
+ * {@link ContainerMirror#useExtension(Class)}.
  * <p>
+ * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
+ * {@link IllegalStateException} being thrown.
  * 
- * @see Extension#newExtensionMirror()
+ * NOTE: In order to properly implement a specialized extension mirror you:
+ * <ul>
+ * <li>Must override {@link Extension#newExtensionMirror()} in order to provide a new instance of the mirror.</li>
+ * <li>Must place the mirror in the same module as the extension itself (iff the extension is defined in a module).</li>
+ * <li>Should name the mirror class {@code $NAME_OF_EXTENSION$}Mirror.</li>
+ * </ul>
+ * 
  * @param <E>
- *            The type of extension this extension mirror is a part of. The extension mirror must be located in the same
- *            module as the extension itself.
+ *            The type of extension this mirror is a part of.
+ * 
+ * @see ApplicationMirror#useExtension(Class)
+ * @see ContainerMirror#useExtension(Class)
+ * @see Extension#newExtensionMirror()
  */
 public class ExtensionMirror<E extends Extension<E>> implements Mirror {
+
+    /*
+     * When naming methods in this class try to use non-trivial names such as as {@code name}, {@code type}, {@code stream}
+     * as these are names sub-classes might want to use.
+     * 
+     * This class contains a number of all* methods. There are no exact criteria for what methods to include. Only that they
+     * should generally helpful for people writing extension mirrors.
+     */
 
     /**
      * The extensions that are being mirrored. Is initially null but populated via {@link #initialize(PackedExtensionTree)}
@@ -41,29 +63,77 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     /**
      * Create a new extension mirror.
      * <p>
-     * Subclasses should have a single constructor with package access.
+     * Subclasses should have a single constructor with package-private access.
      */
     protected ExtensionMirror() {}
 
+    /**
+     * Returns whether any extensions match the provided predicate.
+     * <p>
+     * May not evaluate the predicate on all extensions if not necessary for determining the result.
+     * 
+     * @param predicate
+     *            a predicate to apply to all extensions of this mirror
+     * @return {@code true} if any extensions of the mirror match the provided predicate, otherwise {@code false}
+     * 
+     */
     protected final boolean allAnyMatch(Predicate<? super E> predicate) {
         return allStream().anyMatch(predicate);
     }
-    
+
+    /** {@return a non-empty stream of all of the extension instances we are mirroring.} */
     protected final Stream<E> allStream() {
-        return tree().stream();
-    }
-    
-    protected final int allSumInt(ToIntFunction<? super E> mapper) {
-        return tree().sumInt(mapper);
-    }
-    
-    /** {@return a descriptor for the extension this mirror is a part of.} */
-    public final ExtensionDescriptor extensionDescriptor() {
-        return extensions().extension().model;
+        return extensions().stream();
     }
 
-    // All methods are named extension* instead of * because subclasses might want to use method names such as descriptor,
-    // name, type
+    /**
+     * @param mapper
+     *            a mapper from the extension to an integer
+     * @return the sum
+     * 
+     * @throws ArithmeticException
+     *             if the result overflows an int
+     * @see Math#addExact(int, int)
+     */
+    protected final int allSumInt(ToIntFunction<? super E> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        int result = 0;
+        for (E t : extensions()) {
+            int tmp = mapper.applyAsInt(t);
+            result = Math.addExact(result, tmp);
+        }
+        return result;
+    }
+
+    protected final long allSumLong(ToLongFunction<? super E> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        long result = 0;
+        for (E t : extensions()) {
+            long tmp = mapper.applyAsLong(t);
+            result = Math.addExact(result, tmp);
+        }
+        return result;
+    }
+
+    protected final <T> List<T> allCollectToList(BiConsumer<E, List<T>> action) {
+        requireNonNull(action, "action is null");
+        ArrayList<T> result = new ArrayList<>();
+        for (E t : extensions()) {
+            action.accept(t, result);
+        }
+        return result;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return other instanceof ExtensionMirror<?> m && getClass() == m.getClass() && extensionTree().equals(m.extensionTree());
+    }
+
+    /** {@return a descriptor for the extension this mirror is a part of.} */
+    public final ExtensionDescriptor extensionDescriptor() {
+        return extensionTree().extension().model;
+    }
 
     /** {@return the full name of the extension.} */
     public final String extensionFullName() {
@@ -75,13 +145,18 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
         return extensionDescriptor().name();
     }
 
+    /** {@return all the extensions that are being mirrored.} */
+    protected final ExtensionTree<E> extensions() {
+        return extensionTree();
+    }
+
     /**
      * {@return the mirrored extension's internal configuration.}
      * 
      * @throws InternalExtensionException
      *             if called from the constructor of the mirror
      */
-    private PackedExtensionTree<E> extensions() {
+    private PackedExtensionTree<E> extensionTree() {
         PackedExtensionTree<E> e = extensions;
         if (e == null) {
             throw new InternalExtensionException(
@@ -92,11 +167,18 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension<?>> extensionType() {
-        return extensions().extension().extensionType;
+        return extensionTree().extension().extensionType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return extensionTree().hashCode();
     }
 
     /**
-     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set the internal configuration of the extension.
+     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
+     * the internal configuration of the extension.
      * 
      * @param extension
      *            the internal configuration of the extension to mirror
@@ -113,33 +195,4 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     public String toString() {
         return extensionType().getCanonicalName();
     }
-
-    protected ExtensionTree<E> tree() {
-        extensions();
-        return extensions;
-    }
 }
-
-//
-///** {@inheritDoc} */
-//@Override
-//public final boolean equals(Object other) {
-//  // Use case for equals on mirrors are
-//  // FooBean.getExtension().equals(OtherBean.getExtension())...
-//  // Hmm virker ikke super godt med trees...
-//  // Altsaa med mindre det altid inkludere alle sub extensions
-//
-//  // Normally there should be no reason for subclasses to override this method...
-//  // If we find a valid use case we can always remove final
-//
-//  // Check other.getType()==getType()????
-//
-//  // TODO if we have local extensions, we cannot just rely on extension=extension
-//  //
-//  return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
-//}
-///** {@inheritDoc} */
-//@Override
-//public final int hashCode() {
-//  return extension().hashCode();
-//}

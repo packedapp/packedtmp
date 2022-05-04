@@ -22,10 +22,8 @@ import java.util.Optional;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 
-/**
- * A mirror for the {@link EntryPointExtension}.
- */
-public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
+/** A specialized extension mirror for the {@link EntryPointExtension}. */
+public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
 
     /* package-private */ EntryPointExtensionMirror() {}
 
@@ -36,7 +34,7 @@ public class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtensi
         // Fx
         //// CLI
         //// Serverless
-        return Optional.ofNullable(tree().root().share.dispatcher);
+        return Optional.ofNullable(extensions().root().share.dispatcher);
     }
 
     public Collection<EntryPointMirror> entryPoints() {

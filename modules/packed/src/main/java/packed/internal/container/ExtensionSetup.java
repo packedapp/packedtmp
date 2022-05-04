@@ -17,7 +17,6 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -50,10 +49,6 @@ public final class ExtensionSetup {
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "hookOnBeanMethod", void.class, BeanMethod.class);
-
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newExtensionMirror",
-            ExtensionMirror.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -229,21 +224,6 @@ public final class ExtensionSetup {
         return e;
     }
 
-    /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
-    public ExtensionMirror<?> mirror() {
-        ExtensionMirror<?> mirror = null;
-        try {
-            mirror = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        if (mirror == null) {
-            throw new InternalExtensionException("Extension " + model.fullName() + " returned null from " + model.name() + ".mirror()");
-        }
-        ExtensionMirrorModel.of(mirror.getClass());
-        ExtensionMirrorModel.initialize(mirror, this);
-        return mirror;
-    }
 
     /**
      * Invokes {@link Extension#onApplicationClose()}.
@@ -267,10 +247,8 @@ public final class ExtensionSetup {
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        requireNonNull(wireletClass, "wireletClass is null");
-
         // Check that we are a proper subclass of ExtensionWirelet
-        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass);
+        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
 
         // We only allow selection of wirelets in the same module as the extension itself
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
@@ -295,7 +273,7 @@ public final class ExtensionSetup {
         requireNonNull(extensionPointType, "extensionPointType is null");
 
         // Finds a model of the extension point
-        ExtensionPointModel extensionPointModel = ExtensionPointModel.of(extensionPointType);
+        ExtensionPointHelper extensionPointModel = ExtensionPointHelper.of(extensionPointType);
         Class<? extends Extension<?>> extensionPointExtensionType = extensionPointModel.extensionType();
 
         // Check that the requested extension point's extension is a direct dependency of this extension

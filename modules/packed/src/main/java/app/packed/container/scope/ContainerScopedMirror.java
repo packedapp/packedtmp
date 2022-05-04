@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.scope;
 
 import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.component.Realm;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
 
 /**
  *

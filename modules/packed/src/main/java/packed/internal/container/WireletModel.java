@@ -36,7 +36,7 @@ public final class WireletModel {
         /** {@inheritDoc} */
         @Override
         protected WireletModel computeValue(Class<?> type) {
-            Builder b = Builder.consume(ClassUtil.checkProperSubclass(Wirelet.class, type));
+            Builder b = Builder.consume(ClassUtil.checkProperSubclass(Wirelet.class, type, e -> new InternalExtensionException(e)));
             return new WireletModel(b);
         }
     };
@@ -56,7 +56,7 @@ public final class WireletModel {
     public static Builder bootstrap(Class<?> callerClass) {
         return Builder.m(callerClass);
     }
-    
+
     /**
      * Returns a model for the specified wirelet type.
      * 

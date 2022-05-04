@@ -13,30 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
-
-import java.util.Optional;
-
-import app.packed.component.Realm;
-import app.packed.operation.OperationMirror;
+package app.packed.container.scope;
 
 /**
- * A mirror for a dependency.
+ *
  */
-// Hmm den burde vel passe til BeanInjector
-public interface DependencyMirror {
-
-    DependencyGraphMirror graph();
-    
-    /** {@return the operation the dependency belongs to.} */
-    // Hvad med unresolved... Tror vi skal fejle
-    OperationMirror operation();
-    
-    Optional<Realm> providedBy();
-    
-    Optional<OperationMirror> providingOperation();
-    
-    boolean isResolved();
-    
-    boolean isSatisfiable();
+public enum ContainerScopeKind {
+    APPLICATION, TREE, DISJOINT, SINGLETON;
 }

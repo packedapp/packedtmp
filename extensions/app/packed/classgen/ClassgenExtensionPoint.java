@@ -23,9 +23,9 @@ import app.packed.container.ExtensionPoint;
 /**
  *
  */
-public class ClassgenExtensionPoint extends ExtensionPoint<ClassgenExtension> {
+public final class ClassgenExtensionPoint extends ExtensionPoint<ClassgenExtension> {
 
-    ClassgenExtensionPoint() {}
+    /* package-private */ ClassgenExtensionPoint() {}
 
     public Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException {
         return extension().defineHiddenClass(useSite().realm(), caller, bytes, initialize, options);

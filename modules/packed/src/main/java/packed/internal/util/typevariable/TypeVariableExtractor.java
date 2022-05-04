@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.StringJoiner;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import packed.internal.util.StringFormatter;
@@ -62,6 +63,12 @@ public final class TypeVariableExtractor {
         this.indexes = requireNonNull(indexes);
         this.typeVariables = requireNonNull(typeVariables);
         this.isInterface = Modifier.isInterface(baseType.getModifiers());
+    }
+
+    public <T extends Throwable> Class<?> extractProperSubClassOf(Class<?> from, Class<?> expectedType, Function<String, T> f) throws T {
+        Class<?> c = (Class<?>) extract(from);
+        
+        return c;
     }
 
     public Type extract(Class<?> from) {
@@ -181,12 +188,12 @@ public final class TypeVariableExtractor {
     }
 
     // If no indexes specified, choose all..
-    // Maaske returnere TypeVE<? extends Type> 
+    // Maaske returnere TypeVE<? extends Type>
     // TypeVE<Class<? extends Doo>> = of(Class<?> baseType, Class<Doo>, int index)
     // TypeVE<Class<?>[]> = of(Class<?> baseType, int... indexes)
-    
+
     // Det er jo faktisk en Variable vi extracter fra...
-    
+
     public static <T> TypeVariableExtractor of(Class<?> baseType, int... indexes) {
         requireNonNull(baseType, "baseType is null");
         requireNonNull(indexes, "indexes is null");

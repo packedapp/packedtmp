@@ -12,16 +12,15 @@ import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 /**
  * A mirror of a single bean.
  * <p>
- * Instances of this class is typically via {@link ApplicationMirror} or {@link ContainerMirror}.
+ * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-// Kan jo godt overskrives nu vi har handle...
-// EntityBeans er det eneste jeg lige kan komme paa
 public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
     /**
      * Returns the type (class) of the bean.
      * <p>
-     * If the bean does not have a proper class, for example, a functional bean. {@code void.class} is returned.
+     * Beans that do not have a proper class, for example, a functional bean. Will have {@code void.class} as their bean
+     * class.
      * 
      * @return the type (class) of the bean.
      */
@@ -30,7 +29,7 @@ public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBean
     /** {@return the bean's kind.} */
     BeanKind beanKind();
 
-    /** {@return the container the bean belongs to. Is identical to #parent() which is always present for a bean.} */
+    /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
     ContainerMirror container();
 }
 

@@ -28,21 +28,29 @@ import packed.internal.container.PackedExtensionPointContext;
  * If an extension defines classes that are only usable by other extension and not end-users. They should be declared as
  * nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
  * 
+ * NOTE: In order to properly implement an extension point you:
+ * <ul>
+ * <li>Must override {@link Extension#newExtensionPoint()} in order to provide a new instance of the extension point.</li>
+ * <li>Must place the extension point in the same module as the extension itself (iff the extension is defined in a module).</li>
+ * <li>Should name the extension point class {@code $NAME_OF_EXTENSION$}Point.</li>
+ * </ul>
+ * 
  * @see Extension#use(Class)
  * @see UseSite
  * 
  * @param <E>
- *            The type of extension this extension point is a part of. The extension point must be located in the
- *            same module as the extension itself.
+ *            The type of extension this extension point is a part of.
  * 
- * @apiNote The main reason that other extension is two fold. Hide methods that end-users should not use. Allow the
- *          application developer to be in full control.
+ * @apiNote The reason that end-users uses {@code Extension} instances and extensions uses {@code ExtensionPoint}
+ *          instances are twofold. It allows an extension to "hide" highly specialized methods that no end-users would
+ *          ever need on the extension point class. Allow the application developer to be in full control.
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
     /**
-     * A context for this extension point. Is initialized after the extension point has been constructor injected. This
-     * field must be accessed via {@link #context()}.
+     * A context for this extension point. Is initialized after the extension point has been constructor injected.
+     * <p>
+     * This field must be accessed via {@link #context()}.
      */
     @Nullable
     private PackedExtensionPointContext context;
@@ -50,7 +58,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /**
      * Create a new extension point.
      * <p>
-     * Subclasses should have a single constructor with package access.
+     * Subclasses should have constructors with package-private access.
      */
     protected ExtensionPoint() {}
 
@@ -74,13 +82,13 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         return c;
     }
 
-    /** {@return the extension this extension point is a part of.} */
+    /** {@return the extension instance that this extension point is extending.} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
         return (E) context().extension().instance();
     }
 
-    /** {@return the type of extension that uses the extension point.} */
+    /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
         return context().usedBy().extensionType;
     }
@@ -99,6 +107,3 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         Realm realm();
     }
 }
-// TODO
-// UseSite er lidt underlig. Ideen er jo at den fungere som en slags context
-// Skal vi have noget med realm udover usedBy?

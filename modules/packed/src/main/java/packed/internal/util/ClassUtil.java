@@ -13,8 +13,8 @@ import java.util.function.Function;
 public class ClassUtil {
 
     @SuppressWarnings("unchecked")
-    public static <T> Class<T> checkProperSubclass(Class<T> expectedSuperClass, Class<?> clazzToCheck) {
-        requireNonNull(clazzToCheck, "class is null");
+    public static <T> Class<T> checkProperSubclass(Class<T> expectedSuperClass, Class<?> clazzToCheck, String paramName) {
+        requireNonNull(clazzToCheck, paramName + " is null");
         if (clazzToCheck == expectedSuperClass) {
             throw new IllegalArgumentException(expectedSuperClass.getSimpleName() + ".class is not a valid argument to this method.");
         } else if (!expectedSuperClass.isAssignableFrom(clazzToCheck)) {

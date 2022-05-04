@@ -61,7 +61,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected ExtensionModel computeValue(Class<?> extensionClass) {
-            return Loader.load((Class) ClassUtil.checkProperSubclass(Extension.class, extensionClass), null);
+            ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
+            return Loader.load((Class) extensionClass, null);
         }
     };
 
@@ -183,7 +184,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     Extension<?> newInstance(ExtensionSetup extension) {
         try {
             return (Extension<?>) mhConstructor.invokeExact(extension);
-        }  catch (Throwable e) {
+        } catch (Throwable e) {
             throw new InternalExtensionException("An instance of the extension " + nameFull + " could not be created.", e);
         }
     }

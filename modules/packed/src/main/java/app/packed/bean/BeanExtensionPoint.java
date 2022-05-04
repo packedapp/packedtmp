@@ -14,7 +14,7 @@ import packed.internal.util.BasePackageAccess;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /**
- * A bean extension support class.
+ * Extend  A bean extension point class.
  * 
  * Like other extension support classes this class is mainly used developers of extensions and not application
  * developers.

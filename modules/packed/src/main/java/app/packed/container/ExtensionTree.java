@@ -15,13 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.ToIntFunction;
-import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -46,14 +39,6 @@ import java.util.stream.StreamSupport;
 
 public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
 
-    default <E> List<E> collectList(BiConsumer<T, List<E>> action) {
-        requireNonNull(action, "action is null");
-        ArrayList<E> result = new ArrayList<>();
-        for (T t : this) {
-            action.accept(t, result);
-        }
-        return result;
-    }
 
     /** {@return the number of extensions in the tree.} */
     default int count() {
@@ -70,34 +55,6 @@ public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
 
     default Stream<T> stream() {
         return StreamSupport.stream(spliterator(), false);
-    }
-
-    /**
-     * 
-     * @param mapper
-     *            a mapper from the extension to an integer
-     * @return the sum
-     * @throws ArithmeticException
-     *             if the result overflows an int
-     */
-    default int sumInt(ToIntFunction<? super T> mapper) {
-        requireNonNull(mapper, "mapper is null");
-        int result = 0;
-        for (T t : this) {
-            int tmp = mapper.applyAsInt(t);
-            result = Math.addExact(result, tmp);
-        }
-        return result;
-    }
-
-    default long sumLong(ToLongFunction<? super T> mapper) {
-        requireNonNull(mapper, "mapper is null");
-        long result = 0;
-        for (T t : this) {
-            long tmp = mapper.applyAsLong(t);
-            result = Math.addExact(result, tmp);
-        }
-        return result;
     }
 
     static <E extends Extension<E>> ExtensionTree<E> ofSingle(E extension) {

@@ -46,7 +46,7 @@ public final class ExtensionLookup {
     }
 
     public static ExtensionLookup lookup(Class<? extends Extension<?>> extensionType) {
-        ClassUtil.checkProperSubclass(Extension.class, extensionType);
+        ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
         Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
         if (callerClass.getModule() != extensionType.getModule()) {
             throw new IllegalCallerException(

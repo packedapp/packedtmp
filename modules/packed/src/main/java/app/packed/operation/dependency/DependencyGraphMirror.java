@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.operation.dependency;
 
 /**
  *
  */
-public enum ContainerScopeKind {
-    APPLICATION, TREE, DISJOINT, SINGLETON;
+// Det er vel primaert hjaelpmetoder vi skal have her?
+// Vi kan jo "deep" explore enhver operation
+
+// Giv mig alle steder vi bruger InjctionContext
+
+// resolved().isKeyBased().key == InjectionContxt();
+
+public interface DependencyGraphMirror {
+
 }

@@ -53,10 +53,8 @@ public class ClassgenExtension extends Extension<ClassgenExtension> {
 
     final ArrayList<PackedGeneratedClass> generated = new ArrayList<>();
 
-    @Override
-    protected ClassgenExtensionMirror newExtensionMirror() {
-        return new ClassgenExtensionMirror();
-    }
+    // Or event handler API... ClassDefined
+    public void addListener() {}
 
     public Lookup defineHiddenClass(Lookup caller, byte[] bytes, boolean initialize, ClassOption... options) throws IllegalAccessException {
         return defineHiddenClass(Realm.application(), caller, bytes, initialize, options);
@@ -69,7 +67,15 @@ public class ClassgenExtension extends Extension<ClassgenExtension> {
         return lookup;
     }
 
-    // Or event handler API... ClassDefined
-    public void addListener() {}
+    /** {@inheritDoc} */
+    @Override
+    protected ClassgenExtensionMirror newExtensionMirror() {
+        return new ClassgenExtensionMirror();
+    }
 
+    /** {@inheritDoc} */
+    @Override
+    protected ClassgenExtensionPoint newExtensionPoint() {
+        return new ClassgenExtensionPoint();
+    }
 }

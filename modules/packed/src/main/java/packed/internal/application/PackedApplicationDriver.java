@@ -296,8 +296,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public Builder disableExtension(Class<? extends Extension<?>> extensionType) {
-            requireNonNull(extensionType, "extensionType is null");
-            ClassUtil.checkProperSubclass(Extension.class, extensionType);
+            ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
             disabledExtensions.add(extensionType);
             return this;
         }

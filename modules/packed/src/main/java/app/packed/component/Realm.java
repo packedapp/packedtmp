@@ -70,7 +70,7 @@ public /* primitive */ final class Realm {
      *             if the specified class is not a proper subclass of Extension
      */
     public static Realm extension(Class<? extends Extension<?>> extensionType) {
-        ClassUtil.checkProperSubclass(Extension.class, extensionType);
+        ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
         return new Realm(extensionType);
     }
 }

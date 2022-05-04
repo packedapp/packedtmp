@@ -5,19 +5,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.container.ContainerMirror;
 import app.packed.container.ExtensionMirror;
 import app.packed.operation.usage.ServiceExportMirror;
 import app.packed.operation.usage.ServiceProvideMirror;
 import packed.internal.inject.service.ContainerInjectionManager;
 
-/**
- * A specialized mirror for {@link ServiceExtension}.
- * 
- * @see ContainerMirror#extensions()
- * @see ContainerMirror#useExtension(Class)
- */
-public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+/** A specialized extension mirror for the {@link ServiceExtension}. */
+public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** The service manager */
     private final ContainerInjectionManager services;
