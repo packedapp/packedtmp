@@ -42,7 +42,7 @@ import packed.internal.util.CollectionUtil.ForwardingMap;
 import packed.internal.util.CollectionUtil.ForwardingStrategy;
 
 /** Implementation of {@link ServiceComposer}. */
-public final class PackedServiceTransformer extends ServiceComposer implements ServiceTransformer {
+public final class PackedServiceComposer extends ServiceComposer implements ServiceTransformer {
 
     /** A lazily initialized map that is exposed via {@link #asMap}. */
     private ForwardingMap<Key<?>, Service> asMap;
@@ -52,7 +52,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements S
     private final Map<Key<?>, InternalService> services;
 
     @SuppressWarnings("unchecked")
-    private PackedServiceTransformer(Map<Key<?>, ? extends InternalService> services) {
+    private PackedServiceComposer(Map<Key<?>, ? extends InternalService> services) {
         this.services = (Map<Key<?>, InternalService>) requireNonNull(services);
     }
 
@@ -163,7 +163,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements S
     // No wirelets???? 
     // Add it to App
     public static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
-        return PackedServiceTransformer.toServiceLocator(new HashMap<>(), action);
+        return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
    
     }
     /**
@@ -173,7 +173,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements S
      */
     public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends InternalService> services, ComposerAction<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
-        PackedServiceTransformer psm = new PackedServiceTransformer(services);
+        PackedServiceComposer psm = new PackedServiceComposer(services);
         transformation.build(psm);
 
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
@@ -194,13 +194,13 @@ public final class PackedServiceTransformer extends ServiceComposer implements S
     }
 
     public static void transformInplace(Map<Key<?>, ? extends InternalService> services, Consumer<? super ServiceTransformer> transformer) {
-        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst);
     }
 
     public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends InternalService> services,
             BiConsumer<? super ServiceTransformer, ? super T> transformer, T attachment) {
-        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst, attachment);
     }
 }

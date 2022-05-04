@@ -26,14 +26,12 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.service.ServiceRegistry;
-import app.packed.inject.serviceexpose.ServiceConfiguration;
 import app.packed.inject.serviceexpose.ServiceContract;
 import app.packed.inject.serviceexpose.ServiceExtension;
 import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
@@ -78,19 +76,6 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     /**
-     * Registers the specified key to be exported.
-     * 
-     * @param <T>
-     *            the type of service
-     * @param key
-     *            the key of the service to export
-     * @return a service configuration that can be returned to the user
-     */
-    public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
-        return export0(new ExportedServiceSetup(key));
-    }
-
-    /**
      * Creates an export for the specified configuration.
      * 
      * @param <T>
@@ -101,13 +86,13 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public <T> ExportedServiceConfiguration<T> export(ServiceSetup entryToExport) {
+    public void export(ServiceSetup entryToExport) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another assembly.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedServiceSetup(entryToExport));
+        export0(new ExportedServiceSetup(entryToExport));
     }
 
     /**
@@ -226,7 +211,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
-        PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
+        PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
     }
 
     /**
@@ -236,29 +221,24 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      *            the transformer to use
      */
     public void transform(Consumer<? super ServiceTransformer> transformer) {
-        PackedServiceTransformer.transformInplace(resolvedExports, transformer);
+        PackedServiceComposer.transformInplace(resolvedExports, transformer);
     }
 
     /**
-     * An instance of {@link ExportedServiceConfiguration} that is returned to the user when they export a service
+     * An instance of that is returned to the user when they export a service
      * 
-     * @see ServiceConfiguration#export()
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup service) implements ExportedServiceConfiguration<T> {
+    record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup service) {
 
-        /** {@inheritDoc} */
-        @Override
-        public ExportedServiceConfiguration<T> as(@Nullable Key<? super T> key) {
+        public ExportedServiceConfigurationSetup<T> as(@Nullable Key<? super T> key) {
             // TODO, maybe it gets disabled the minute we start analyzing exports???
             // Nah, lige saa snart, vi begynder
 //            entry.sm.checkExportConfigurable();
             return this;
         }
 
-        /** {@inheritDoc} */
-        @Override
         public Key<?> key() {
             return service.key();
         }

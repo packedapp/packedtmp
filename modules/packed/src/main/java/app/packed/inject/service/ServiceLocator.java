@@ -34,7 +34,7 @@ import app.packed.inject.Provider;
 import app.packed.inject.serviceexpose.ServiceComposer;
 import app.packed.inject.serviceexpose.ServiceExtension;
 import app.packed.operation.dependency.DependencyProvider;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -283,7 +283,7 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     @Reflectable
     static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
-        return PackedServiceTransformer.of(action);
+        return PackedServiceComposer.of(action);
     }
 
 //    //@ScopedProvide

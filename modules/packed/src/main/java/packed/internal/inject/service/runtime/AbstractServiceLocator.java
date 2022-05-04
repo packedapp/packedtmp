@@ -33,7 +33,7 @@ import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceSelection;
 import app.packed.inject.serviceexpose.ServiceComposer;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
  * An abstract implementation of {@link ServiceLocator}.
@@ -143,7 +143,7 @@ public abstract class AbstractServiceLocator implements ServiceLocator {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public final ServiceLocator spawn(ComposerAction<ServiceComposer> transformer) {
-        return PackedServiceTransformer.transform(transformer, (Collection) asMap().values());
+        return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
     }
 
     /** {@inheritDoc} */
