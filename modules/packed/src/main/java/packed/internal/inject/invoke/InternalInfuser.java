@@ -25,9 +25,6 @@ import packed.internal.util.OpenClass;
 //// Assembly-ContainerHook
 //// Extension (ExtensionModel)
 
-//// ExtensionMirror
-//// ExtensionPoint
-
 public final class InternalInfuser {
 
     /** The services provided by this infuser. */

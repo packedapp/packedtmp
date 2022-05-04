@@ -26,7 +26,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.typevariable.TypeVariableExtractor;
 
-/** A helper class for working with ExtensionMirror instances. */
+/** A helper class for working with {@link ExtensionMirror} instances. */
 final class ExtensionMirrorHelper {
 
     /** A ExtensionMirror class to Extension class mapping. */
@@ -41,7 +41,7 @@ final class ExtensionMirrorHelper {
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
             // Extract the type of extension from ExtensionMirror<E>
             Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_LITERAL_EP_EXTRACTOR.extractProperSubClassOf(type,
-                    Extension.class, s -> new InternalExtensionException("The type variable on " + type + " must be a proper subclass of Extension.class"));
+                    Extension.class, InternalExtensionException::new);
 
             // Check that the mirror is in the same module as the extension itself
             if (extensionClass.getModule() != type.getModule()) {
@@ -64,13 +64,20 @@ final class ExtensionMirrorHelper {
     /** No help for you. */
     private ExtensionMirrorHelper() {}
 
+    /**
+     * @param container
+     *            the container where the extension may be present
+     * @param mirrorClass
+     *            the type of mirror to return
+     * @return a mirror of the specified type or null if no extension of the matching type was used in the container
+     */
     @Nullable
     static ExtensionMirror<?> getExactMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
         // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-        Class<? extends Extension<?>> cl = EXTENSION_TYPES.get(mirrorClass);
+        Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
 
         // See if the container uses the extension.
-        ExtensionSetup extension = container.extensions.get(cl);
+        ExtensionSetup extension = container.extensions.get(extensionClass);
 
         return extension == null ? null : mirror(extension, mirrorClass);
     }
@@ -91,21 +98,25 @@ final class ExtensionMirrorHelper {
                     "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionMirror()");
         }
 
-        if (mirror.getClass() != ExtensionMirror.class) {
-            if (expectedMirrorClass == null) {
-                // Must return a mirror for the same extension
-                Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
-                if (mirrorExtensionType != extension.extensionType) {
-                    throw new InternalExtensionException("Extension " + extension.model.fullName()
-                            + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
-                }
-            } else {
-                // Fail if the type of mirror returned by the extension does not match the specified mirror type
-                if (!expectedMirrorClass.isInstance(mirror)) {
-                    throw new InternalExtensionException(
-                            extension.extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of " + expectedMirrorClass
-                                    + ", but returned an instance of " + mirror.getClass());
-                }
+        // If we expect a mirror of a particular type, check it
+        if (expectedMirrorClass != null) {
+            // Fail if the type of mirror returned by the extension does not match the specified mirror type
+            if (!expectedMirrorClass.isInstance(mirror)) {
+                throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of "
+                        + expectedMirrorClass + ", but returned an instance of " + mirror.getClass());
+            }
+        } else if (mirror.getClass() != ExtensionMirror.class) {
+            // Extensions are are allowed to return ExtensionMirror from newExtensionMirror in which case we have no additional
+            // checks
+
+            // If expectedMirrorClass == null we don't know what type of mirror to expect. Other than it must be parameterized with
+            // the right extension
+
+            // Must return a mirror for the same extension
+            Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
+            if (mirrorExtensionType != extension.extensionType) {
+                throw new InternalExtensionException(
+                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }
 

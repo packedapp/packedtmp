@@ -1,9 +1,12 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.application.entrypoint.EntryPointExtensionPoint;
 import app.packed.base.Nullable;
 import app.packed.component.Realm;
 import app.packed.container.Extension.DependsOn;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionPointContext;
 
 /**
@@ -91,6 +94,20 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
         return context().usedBy().extensionType;
+    }
+    
+    /**
+     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
+     * the internal configuration of the extension.
+     * 
+     * @param extension
+     *            the internal configuration of the extension to mirror
+     */
+    final void initialize(PackedExtensionPointContext context) {
+        if (this.context != null) {
+            throw new IllegalStateException("This extension point has already been initialized.");
+        }
+        this.context = requireNonNull(context);
     }
 
     protected final UseSite useSite() {

@@ -182,7 +182,7 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     protected ExtensionPoint<E> newExtensionPoint() {
-        throw new UnsupportedOperationException(getClass() + " does not define an extension point.");
+        throw new UnsupportedOperationException(getClass() + " does not define any extension points.");
     }
 
     /**

@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.mirror.Mirror;
-import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
 
 /**
@@ -177,8 +176,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     }
 
     /**
-     * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
-     * the internal configuration of the extension.
+     * Invoked by a MethodHandle from ExtensionMirrorHelper to set the internal configuration of the extension.
      * 
      * @param extension
      *            the internal configuration of the extension to mirror

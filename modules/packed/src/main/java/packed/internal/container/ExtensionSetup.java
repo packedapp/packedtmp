@@ -1,7 +1,6 @@
 package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -224,7 +223,6 @@ public final class ExtensionSetup {
         return e;
     }
 
-
     /**
      * Invokes {@link Extension#onApplicationClose()}.
      * <p>
@@ -270,28 +268,7 @@ public final class ExtensionSetup {
 
     @SuppressWarnings("unchecked")
     public <E extends ExtensionPoint<?>> E use(Class<E> extensionPointType) {
-        requireNonNull(extensionPointType, "extensionPointType is null");
-
-        // Finds a model of the extension point
-        ExtensionPointHelper extensionPointModel = ExtensionPointHelper.of(extensionPointType);
-        Class<? extends Extension<?>> extensionPointExtensionType = extensionPointModel.extensionType();
-
-        // Check that the requested extension point's extension is a direct dependency of this extension
-        if (!model.dependencies().contains(extensionPointExtensionType)) {
-            // Special message if you try to use your own extension point
-            if (extensionType == extensionPointExtensionType) {
-                throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own extension point "
-                        + extensionPointExtensionType.getSimpleName() + "." + extensionPointType.getSimpleName());
-            }
-            throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(extensionPointExtensionType)
-                    + " as a dependency in order to use " + extensionPointExtensionType.getSimpleName() + "." + extensionPointType.getSimpleName());
-        }
-
-        // Get the extension instance (create it if needed) that the extension point is a part of
-        ExtensionSetup extensionPoint = container.useExtensionSetup(extensionPointExtensionType, this);
-
-        // Create the new extension point instance
-        return (E) extensionPointModel.newInstance(extensionPoint, this);
+        return (E) ExtensionPointHelper.extensionPoint(this, extensionPointType);
     }
 
     /** A pre-order iterator for a rooted extension tree. */

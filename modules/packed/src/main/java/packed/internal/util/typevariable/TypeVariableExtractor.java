@@ -66,8 +66,8 @@ public final class TypeVariableExtractor {
     }
 
     public <T extends Throwable> Class<?> extractProperSubClassOf(Class<?> from, Class<?> expectedType, Function<String, T> f) throws T {
+        // "The type variable <E> on " + type + "<E> must be a proper subclass of Extension.class")
         Class<?> c = (Class<?>) extract(from);
-        
         return c;
     }
 
