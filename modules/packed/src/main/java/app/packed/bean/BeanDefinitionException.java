@@ -14,5 +14,4 @@ public class BeanDefinitionException extends BuildException {
     public BeanDefinitionException(String message) {
         super(message);
     }
-
 }

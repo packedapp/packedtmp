@@ -93,12 +93,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     // If @Initialize -> rename to findInitializer
     // Flyt til BeanFactories
+    // InjectableFactoryOf
     @SuppressWarnings("unchecked")
-    public static <T> Factory<T> defaultFactoryFor(Class<T> implementation) {
+    public static <T> Factory<T> factoryOf(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
     }
-
 }
 
 class Sandbox {
@@ -144,7 +144,7 @@ class Sandbox {
         }
         Type t = implementation.type();
         if (t instanceof Class<?> cl) {
-            return (Factory<T>) BeanExtensionPoint.defaultFactoryFor(cl);
+            return (Factory<T>) BeanExtensionPoint.factoryOf(cl);
         } else {
             ExecutableFactory<?> f = ExecutableFactory.DEFAULT_FACTORY.get(implementation.rawType());
             return new ExecutableFactory<>(f, implementation);

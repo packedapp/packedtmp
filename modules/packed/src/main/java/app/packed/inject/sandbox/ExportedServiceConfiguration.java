@@ -17,7 +17,7 @@ package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.serviceexpose.ServiceExtension;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**

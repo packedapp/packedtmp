@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.service.Provide;
+import app.packed.bean.Provide;
 import app.packed.inject.service.Service;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.service.InternalService;

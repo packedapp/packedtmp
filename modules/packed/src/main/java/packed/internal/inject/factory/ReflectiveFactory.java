@@ -43,7 +43,7 @@ import packed.internal.util.MemberScanner;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T> permits ExecutableFactory, FieldFactory {
 
-    /** A cache of factories used by {@link #defaultFactoryFor(Class)}. */
+    /** A cache of factories used by {@link #factoryOf(Class)}. */
     public static final ClassValue<ExecutableFactory<?>> DEFAULT_FACTORY = new ClassValue<>() {
 
         /** {@inheritDoc} */

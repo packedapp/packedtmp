@@ -16,7 +16,7 @@
 package packed.internal.util;
 
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceContract;
+import app.packed.inject.serviceexpose.ServiceContract;
 
 /**
  *

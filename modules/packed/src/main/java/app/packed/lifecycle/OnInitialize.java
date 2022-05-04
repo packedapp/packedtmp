@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.BeanVariable;
 import app.packed.inject.Inject;
-import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -47,12 +46,12 @@ import app.packed.inject.InjectionContext;
  * </pre>
  * <p>
  * To find out exactly what kind of services that can be injected into an annotated method, an instance of an
- * {@link InjectionContext} can be used:
+ * {@link ServiceRegistry} can be used:
  *
  * <pre>{@code  @OnInitialize
- * public void onInit(InjectContext injector) {
+ * public void onInit(ServiceRegistry registry) {
  *   System.out.println("The following services can be injected into this method");
- *   injector.services().forEach(e -> System.out.println(e.getKey()));
+ *   registry.forEach(e -> System.out.println(e.getKey()));
  * }}
  * </pre>
  * <p>

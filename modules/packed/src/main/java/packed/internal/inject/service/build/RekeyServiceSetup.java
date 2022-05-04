@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceComposer;
+import app.packed.inject.serviceexpose.ServiceComposer;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;

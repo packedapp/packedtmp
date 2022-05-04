@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.bean;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
-import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
 

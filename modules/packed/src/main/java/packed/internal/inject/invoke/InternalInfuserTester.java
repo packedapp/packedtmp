@@ -4,10 +4,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
+import app.packed.bean.Provide;
 import app.packed.container.Extension;
-import app.packed.inject.InjectionContext;
-import app.packed.inject.service.Provide;
-import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceRegistry;
+import app.packed.inject.serviceexpose.ServiceExtension;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.util.LookupUtil;
 
@@ -17,7 +17,7 @@ public class InternalInfuserTester {
 
     static final MethodHandle MH_INT_STREAM_CHARS = LookupUtil.lookupVirtualPublic(String.class, "chars", IntStream.class);
 
-    InternalInfuserTester(IntStream i, Secret s, InjectionContext ic, Long ll) {
+    InternalInfuserTester(IntStream i, Secret s, ServiceRegistry ic, Long ll) {
         System.out.println(ic.keys());
         System.out.println(i);
         System.out.println(s);

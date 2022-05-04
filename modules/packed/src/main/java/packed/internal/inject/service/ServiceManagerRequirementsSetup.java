@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.serviceexpose.ServiceExtension;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;

@@ -1,4 +1,4 @@
-package app.packed.inject.service;
+package app.packed.inject.serviceexpose;
 
 import static java.util.Objects.requireNonNull;
 

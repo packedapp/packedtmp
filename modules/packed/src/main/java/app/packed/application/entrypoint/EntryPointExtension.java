@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
@@ -112,7 +112,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
         MethodHandle[] entryPoints;
 
-        InstanceBeanConfiguration<?> ebc;
+        BeanConfiguration ebc;
 
         void takeOver(Class<? extends Extension<?>> takeOver) {
             if (this.dispatcher != null) {

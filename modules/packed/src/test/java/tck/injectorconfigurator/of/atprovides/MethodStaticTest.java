@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.inject.service.Provide;
+import app.packed.bean.Provide;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
@@ -35,7 +35,7 @@ public class MethodStaticTest {
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
-        MixedMethodsInstantiable.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(MixedMethodsInstantiable.class)));
+        MixedMethodsInstantiable.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedMethodsInstantiable.class)));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on static methods. */
@@ -51,7 +51,7 @@ public class MethodStaticTest {
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.defaultFactoryFor(MixedMethodsNoInstantiation.class)));
+        MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.factoryOf(MixedMethodsNoInstantiation.class)));
     }
 
     /** A helper class that can be instantiated. */

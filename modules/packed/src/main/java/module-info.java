@@ -23,6 +23,7 @@ module app.packed {
     exports app.packed.operation.mirror.ig;
     exports app.packed.inject.sandbox;
     exports app.packed.inject.service;
+    exports app.packed.inject.serviceexpose;
     exports app.packed.bean.hooks;
     
     /*  Special support for DevTools project */

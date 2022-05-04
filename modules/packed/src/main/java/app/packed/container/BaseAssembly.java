@@ -17,11 +17,11 @@ package app.packed.container;
 
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.Provide;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.service.Provide;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.serviceexpose.ServiceExtension;
 import app.packed.lifecycle.OnStart;
 
 /**
@@ -229,7 +229,7 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * This method is shortcut for ....
      * <p>
-     * The runtime will use {@link Factory#defaultFactoryFor(Class)} to find a valid constructor or method to instantiate the service
+     * The runtime will use {@link Factory#factoryOf(Class)} to find a valid constructor or method to instantiate the service
      * instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with

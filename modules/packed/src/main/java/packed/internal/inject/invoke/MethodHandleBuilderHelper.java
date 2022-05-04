@@ -33,10 +33,10 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.InjectionContext;
 import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceRegistry;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.service.PackedInjectionContext;
+import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.OpenClass;
@@ -121,7 +121,7 @@ class MethodHandleBuilderHelper {
                 Key<?> kk = sd.key();
 
                 // Injection Context
-                if (kk.equalsTo(InjectionContext.class)) {
+                if (kk.equalsTo(ServiceRegistry.class)) {
                     // TODO we have a non-constant injection context, when we have a dynamic injector
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section
                     HashSet<Key<?>> keys = new HashSet<>();
@@ -133,8 +133,8 @@ class MethodHandleBuilderHelper {
                         }
                     }
 
-                    PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Map.copyOf(services));
-                    InternalInfuser.Entry e = new InternalInfuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false, false, new int[0]);
+                    ServiceRegistry pic= InternalServiceUtil.copyOf(services);
+                    InternalInfuser.Entry e = new InternalInfuser.Entry(MethodHandles.constant(ServiceRegistry.class, pic), false, false, new int[0]);
                     aa.keys.putIfAbsent(kk, e);
                 }
 

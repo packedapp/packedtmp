@@ -7,7 +7,7 @@ public enum BeanKind {
 
     /** Will always return void as the bean type. */
     FUNCTIONAL,
-    
+
     /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
     UNMANAGED,
 
@@ -16,7 +16,7 @@ public enum BeanKind {
     OPERATION,
 
     // Instantiated and deconstructed by an extension and some point (For example,
-    MANAGED,
+    MANAGED;
 
 //    /// Er det virkelig sin egen bean????
 //    /// Eller gaelder der bare andre visibility regler for extensions...
@@ -29,6 +29,9 @@ public enum BeanKind {
 //    /// Og saa alligevel maaske... Brugeren skal implementere service XYZ
 //    EXTENSION,
 
+//    public boolean hasInstances() {
+//        return this != FUNCTIONAL;
+//    }
 }
 // Er ikke sikker paa den her
 // Container == Extension paa alt paanaer injection visibility

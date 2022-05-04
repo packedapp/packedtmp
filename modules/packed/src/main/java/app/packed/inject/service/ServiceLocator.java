@@ -31,6 +31,8 @@ import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
+import app.packed.inject.serviceexpose.ServiceComposer;
+import app.packed.inject.serviceexpose.ServiceExtension;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.runtime.PackedInjector;

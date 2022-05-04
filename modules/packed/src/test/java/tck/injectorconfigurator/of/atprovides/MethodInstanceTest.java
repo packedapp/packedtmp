@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.inject.service.Provide;
+import app.packed.bean.Provide;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
@@ -39,7 +39,7 @@ public class MethodInstanceTest {
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
-        MixedMethods.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(MixedMethods.class)));
+        MixedMethods.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedMethods.class)));
     }
 
     // /** Tests lazy {@link Provide2#instantionMode()} on instance methods. */

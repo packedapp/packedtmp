@@ -19,9 +19,9 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.bean.Provide;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Extension;
-import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceLocator;
 
 /**

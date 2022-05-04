@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.inject.serviceexpose;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +29,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.inject.Factory;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceRegistry;
+import app.packed.inject.service.ServiceWirelets;
 
 /**
  *

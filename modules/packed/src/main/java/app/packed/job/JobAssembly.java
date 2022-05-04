@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.ServiceConfiguration;
+import app.packed.inject.serviceexpose.ServiceConfiguration;
 
 public abstract class JobAssembly<T> extends BaseAssembly {
 

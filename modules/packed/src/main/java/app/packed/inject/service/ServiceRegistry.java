@@ -27,7 +27,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.operation.dependency.DependencyProvider;
+import app.packed.bean.BeanExtension;
+import app.packed.bean.hooks.BeanVariable;
+import app.packed.inject.serviceexpose.ServiceComposer;
 import packed.internal.inject.service.InternalServiceUtil;
 
 /**
@@ -51,7 +53,7 @@ import packed.internal.inject.service.InternalServiceUtil;
  * If this interface is used as an auto service. The registry will contain all services that available to a given
  * component instance. It will not include auto services.
  */
-@DependencyProvider.Hook(extension = ServiceExtension.class)
+@BeanVariable.AnnotatedWithHook(extension = BeanExtension.class)
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**

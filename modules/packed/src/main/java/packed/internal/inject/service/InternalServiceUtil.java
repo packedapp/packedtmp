@@ -20,7 +20,6 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceRegistry;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.CollectionUtil;
 
 /**
@@ -35,7 +34,6 @@ public class InternalServiceUtil {
     public static Key<?> checkKey(Class<?> beanClass, Key<?> key) {
         return key;
     }
-    
 
     /** An empty service registry */
     public static final ServiceRegistry EMPTY = new UnchangeableServiceRegistry(Map.of());
@@ -47,13 +45,13 @@ public class InternalServiceUtil {
      *            the map to make an immutable copy
      * @return a new service registry
      */
-    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceSetup> map) {
+    public static ServiceRegistry copyOf(Map<Key<?>, ? extends Service> map) {
         return new UnchangeableServiceRegistry(CollectionUtil.copyOf(map, b -> b));
     }
 
     /** The registry implementation returned by {@link #copyOf(Map)}. */
     private record UnchangeableServiceRegistry(Map<Key<?>, Service> asMap) implements ServiceRegistry {
-        
+
         @Override
         public String toString() {
             return asMap().toString();

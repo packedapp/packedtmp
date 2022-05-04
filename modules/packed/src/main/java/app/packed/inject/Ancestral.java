@@ -24,6 +24,14 @@ import app.packed.base.Nullable;
 
 /**
  *
+ * This class is currently used by Packed in two places.
+ * 
+ * It allows an extension to inject a parent extension if available
+ * 
+ * It allows an extension bean to inject an ancestor extension bean of the same type as itself.
+ * 
+ * 
+ * @apiNote Something about optional having a special meaning
  */
 // Available from Extension + ExtensionBean
 
@@ -35,7 +43,7 @@ import app.packed.base.Nullable;
 // Doo<List<Children>> idk
 public final /* value */ class Ancestral<T> {
 
-    /** Common instance for {@code root()}. */
+    /** Shared instance for {@code root()}. */
     private static final Ancestral<?> ROOT = new Ancestral<>(null);
 
     /** Ancestor, or {@code null} if root. */
@@ -78,10 +86,6 @@ public final /* value */ class Ancestral<T> {
     @Nullable
     public T ancestorOrNull() {
         return ancestor;
-    }
-
-    public boolean isAncestor() {
-        return ancestor != null;
     }
 
     public boolean isRoot() {

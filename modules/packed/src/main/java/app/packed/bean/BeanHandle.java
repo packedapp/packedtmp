@@ -36,6 +36,8 @@ import packed.internal.bean.PackedBeanHandleBuilder;
  */
 // INFO (type, kind)
 
+// BeanCustomizer?? Syntes maaske handle er lidt mere runtime
+
 // Operations (add synthetic/functional)
 
 // Sidecars (add)

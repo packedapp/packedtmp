@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package app.packed.operation.dependency;
 
-import java.util.Map;
-
-import app.packed.base.Key;
-import app.packed.inject.InjectionContext;
-import app.packed.inject.service.Service;
-
-/** Implementation of {@link InjectionContext}. */
-public record PackedInjectionContext(Class<?> targetClass, Map<Key<?>, Service> asMap) implements InjectionContext {
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return "InjectionContext[" + targetClass.getCanonicalName() + "]: " + asMap.keySet();
-    }
+/**
+ *
+ */
+public enum DependencyKind {
+    SERVICE, ANNO_CLASS, CLASS, OTHER; 
 }

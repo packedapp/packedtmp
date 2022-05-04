@@ -30,9 +30,9 @@ import app.packed.base.TypeToken;
 import app.packed.container.ComposerAction;
 import app.packed.inject.Provider;
 import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceComposer;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceSelection;
+import app.packed.inject.serviceexpose.ServiceComposer;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 
 /**

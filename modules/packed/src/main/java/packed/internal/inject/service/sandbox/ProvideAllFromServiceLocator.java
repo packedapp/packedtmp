@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.serviceexpose.ServiceExtension;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
 import packed.internal.inject.service.build.ServiceSetup;

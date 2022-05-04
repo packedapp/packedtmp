@@ -24,9 +24,9 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ProvideableBeanConfiguration;
-import app.packed.bean.InstanceBeanConfiguration;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -45,12 +45,12 @@ public class ProvideTest {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ProvideableBeanConfiguration<A> a = conf.provide(A.class);
-            ProvideableBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.defaultFactoryFor(B.class));
+            ProvideableBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.factoryOf(B.class));
             ProvideableBeanConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            InstanceBeanConfiguration<H> h = conf.providePrototype(H.class);
-            InstanceBeanConfiguration<I> i = conf.providePrototype(BeanExtensionPoint.defaultFactoryFor(I.class));
+            BeanConfiguration h = conf.providePrototype(H.class);
+            BeanConfiguration i = conf.providePrototype(BeanExtensionPoint.factoryOf(I.class));
         });
     }
 

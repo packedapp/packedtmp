@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.inject.serviceexpose;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,6 +32,9 @@ import app.packed.bean.BeanExtensionPoint;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.ServiceRegistry;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -120,7 +123,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     // will decorate a service injected as itself
 
     public void map(Class<?> implementation) {
-        map(BeanExtensionPoint.defaultFactoryFor(implementation));
+        map(BeanExtensionPoint.factoryOf(implementation));
     }
 
     /**
@@ -147,13 +150,13 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     public abstract void map(Factory<?> factory);
 
     public void prototype(Class<?> implementation) {
-        prototype(BeanExtensionPoint.defaultFactoryFor(implementation));
+        prototype(BeanExtensionPoint.factoryOf(implementation));
     }
 
     public abstract void prototype(Factory<?> factory);
 
     public void provide(Class<?> implementation) {
-        provide(BeanExtensionPoint.defaultFactoryFor(implementation));
+        provide(BeanExtensionPoint.factoryOf(implementation));
     }
 
     public abstract void provide(Factory<?> factory);
@@ -389,7 +392,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     }
 
     public void replace(Class<?> implementation) {
-        replace(BeanExtensionPoint.defaultFactoryFor(implementation));
+        replace(BeanExtensionPoint.factoryOf(implementation));
     }
 
     /**

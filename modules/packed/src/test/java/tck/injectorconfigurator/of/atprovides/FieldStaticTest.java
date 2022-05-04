@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.inject.service.Provide;
+import app.packed.bean.Provide;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
@@ -38,14 +38,14 @@ public class FieldStaticTest {
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
         MixedFieldsInstantiable.test(c -> c.provide(MixedFieldsInstantiable.class));
-        MixedFieldsInstantiable.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(MixedFieldsInstantiable.class)));
+        MixedFieldsInstantiable.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedFieldsInstantiable.class)));
     }
 
     /** Tests prototype {@link Provide#constant()} on static fields. */
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
-        MixedFieldsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.defaultFactoryFor(MixedFieldsNoInstantiation.class)));
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.factoryOf(MixedFieldsNoInstantiation.class)));
     }
 
     /** A helper class that can be instantiated. */

@@ -39,7 +39,7 @@ import packed.internal.container.ExtensionSetup;
  * A mirror for an bean operation.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
- * the {@link app.packed.inject.service.ServiceExtension} provides details about an exported service via
+ * the {@link app.packed.inject.serviceexpose.ServiceExtension} provides details about an exported service via
  * {@link ServiceExportMirror}.
  * <p>
  * NOTE: Subclasses of this class:
@@ -96,6 +96,26 @@ public non-sealed class OperationMirror implements Mirror, ContextRootMirror {
         return false;
     }
 
+    public void printDependencyTree() {
+        // Det er jo bare en trae af ServiceDependency
+
+        // ResolvedVariable -> Status Unresolved but Optional.
+
+        // InjectableDependency?
+
+        // En for hver parameter...
+//        com.javadeveloperzone:maven-show-dependency-tree:jar:1.0-SNAPSHOT
+//        [INFO] \- org.springframework.boot:spring-boot-devtools:jar:1.5.4.RELEASE:compile
+//        [INFO]    +- org.springframework.boot:spring-boot:jar:1.5.4.RELEASE:compile
+//        [INFO]    |  +- org.springframework:spring-core:jar:4.3.9.RELEASE:compile
+//        [INFO]    |  |  \- commons-logging:commons-logging:jar:1.2:compile
+//        [INFO]    |  \- org.springframework:spring-context:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     +- org.springframework:spring-aop:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     +- org.springframework:spring-beans:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     \- org.springframework:spring-expression:jar:4.3.9.RELEASE:compile
+//        [INFO]    \- org.springframework.boot:spring-boot-autoconfigure:jar:1.5.4.RELEASE:compile
+    }
+    
     public final boolean createsNewThread() {
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)

@@ -8,7 +8,6 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.service.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.operation.OperationPack;
 import app.packed.operation.dependency.DependencyProvider;
@@ -41,6 +40,8 @@ public class BeanExtension extends Extension<BeanExtension> {
     /** {@inheritDoc} */
     @Override
     protected void hookOnBeanField(BeanField field) {
+        // readKey
+        
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
 
@@ -128,6 +129,10 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new ProvideableBeanConfiguration<>(handle);
     }
 
+    void installNested(Object classOrFactory) {
+        
+    }
+    
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror newExtensionMirror() {

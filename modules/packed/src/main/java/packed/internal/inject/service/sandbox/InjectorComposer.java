@@ -28,8 +28,8 @@ import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.serviceexpose.ServiceExtension;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -76,7 +76,7 @@ public final class InjectorComposer extends Composer {
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-     * together with the injector. The runtime will use {@link Factory#defaultFactoryFor(Class)} to find the constructor or method used for
+     * together with the injector. The runtime will use {@link Factory#factoryOf(Class)} to find the constructor or method used for
      * instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the

@@ -94,7 +94,7 @@ public abstract class Wirelet {
      * @return the combined wirelet
      * @see #andThen(Wirelet...)
      * @see #beforeThis(Wirelet...)
-     * @see #defaultFactoryFor(Wirelet...)
+     * @see #factoryOf(Wirelet...)
      */
     public final Wirelet andThen(Wirelet after) {
         requireNonNull(after, "after is null");
@@ -111,7 +111,7 @@ public abstract class Wirelet {
      * @return the combined wirelet
      * @see #andThen(Wirelet)
      * @see #beforeThis(Wirelet...)
-     * @see #defaultFactoryFor(Wirelet...)
+     * @see #factoryOf(Wirelet...)
      */
     public final Wirelet andThen(Wirelet... wirelets) {
         return CompositeWirelet.of(this, combine(wirelets));
@@ -127,7 +127,7 @@ public abstract class Wirelet {
      * @return the combined wirelet
      * @see #andThen(Wirelet)
      * @see #beforeThis(Wirelet...)
-     * @see #defaultFactoryFor(Wirelet...)
+     * @see #factoryOf(Wirelet...)
      */
     public final Wirelet beforeThis(Wirelet... wirelets) {
         return CompositeWirelet.of(combine(wirelets), this);

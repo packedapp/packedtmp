@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.inject.serviceexpose;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.container.ExtensionPoint;
+import app.packed.inject.service.ServiceRegistry;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
@@ -194,11 +194,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         }
     }
 
-    public ServiceRegistry services() {
-        // Why not composer? Or at least mutable Service registry
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Performs a final transformation of any exported service.
      * 
@@ -211,28 +206,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
         injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
-    }
-
-    /**
-     * A subtension that can be used by other extensions via {@link Extension#use(Class)}
-     * <p>
-     * This class does not provide any support for exporting services. The end-user is always in full control of exactly
-     * what is being exported out from the container.
-     **/
-    // Tror slet vi supportere at extension kan provide services....
-    public class ServiceExtensionPoint extends ExtensionPoint<ServiceExtension> {
-
-        // Require???
-        // This is very limited as we can only require services from other
-        // extensions that we depend on...
-
-        // SetContract
-        /// This would apply locally to the extension...
-        /// limited usefullness
-
-        public void check() {
-            System.out.println("Requested by " + useSite().realm());
-        }
     }
 }
 //

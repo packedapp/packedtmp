@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.inject.service.Provide;
+import app.packed.bean.Provide;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 import testutil.stubs.annotation.StringQualifier;

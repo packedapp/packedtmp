@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package packed.internal.inject.service;
 
 /**
  *
  */
-public enum ServiceScope {
-    CONTAINER, BEAN, OPERATION;
+/// Ideen er lidt 
+public interface DependencyTraceMirror<T> {
+
+    /// Alskins show og ballade
+    
+    T get();
 }
