@@ -21,6 +21,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.bean.BeanExtension;
+import app.packed.bean.hooks.BeanField;
+import app.packed.bean.hooks.BeanMethod;
+
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
  * <code>@Inject</code> annotations on the constructor or method that must have dependencies injected. However, in some
@@ -36,13 +40,12 @@ import java.lang.annotation.Target;
  * The annotation can also be applied to
  * 
  * <p>
- * Injection of services into static fields or method are not supported.
- * There is no general support for injecting into static fields or methods. If you absolutely need it, it is fairly easy
- * to support using sidecars... TODO example
+ * Injection of services into static fields or method are not supported. There is no general support for injecting into
+ * static fields or methods. If you absolutely need it, it is fairly easy to support using sidecars... TODO example
  */
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-//@MethodHook(matchesAnnotation = Inject.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
-// Den tilhoerer ikke ServiceExtension, men det kan godt vaere at man ender med at injecte en service
+@BeanField.AnnotatedWithHook(extension = BeanExtension.class, allowSet = true)
+@BeanMethod.AnnotatedWithHook(extension = BeanExtension.class, allowInvoke = true)
 public @interface Inject {}
