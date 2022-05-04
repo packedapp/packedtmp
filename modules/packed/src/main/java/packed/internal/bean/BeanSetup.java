@@ -40,7 +40,8 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Nullable
     public final BaseClassModel hookModel;
 
-    /** The bean's injection manager. */
+    /** The bean's injection manager. Null for functional beans, otherwise non-null */
+    @Nullable
     public final BeanInjectionManager injectionManager;
 
     /** Operations declared by the bean. */
@@ -56,7 +57,11 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         super(builder.container.application, owner, builder.container);
         this.builder = builder;
         this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
-        this.injectionManager = new BeanInjectionManager(this, builder);
+        if (beanKind() != BeanKind.FUNCTIONAL) {
+            this.injectionManager = new BeanInjectionManager(this, builder);
+        } else {
+            this.injectionManager = null;
+        }
 
         if (builder.sourceType != SourceType.NONE) {
             new BeanScanner(this, builder.beanClass()).scan();

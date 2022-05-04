@@ -26,7 +26,6 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.BuildException;
-import app.packed.base.TypeToken;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.inject.service.Provide;
 import packed.internal.inject.service.sandbox.Injector;
@@ -41,7 +40,6 @@ public class FieldInstanceTest {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
         MixedFields.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(MixedFields.class)));
-        MixedFields.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(new TypeToken<MixedFields>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */

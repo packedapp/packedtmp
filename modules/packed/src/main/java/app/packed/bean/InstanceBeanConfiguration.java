@@ -22,53 +22,66 @@ import app.packed.base.Key;
 import app.packed.lifecycle.RunState;
 
 /**
- * A bean that
+ * A bean that creates instances of a fixed {@link BeanConfiguration#beanClass() type}.
+ * 
+ * @param <E>
+ *            the type of bean instances that will be created at runtime
  */
-//// Does it always have a Lifecycle??? Do we have a seperate configuration for this?
-public class InstanceBeanConfiguration<T> extends BeanConfiguration {
+public class InstanceBeanConfiguration<E> extends BeanConfiguration {
 
     /**
-     * @param maker
+     * Creates a new InstanceBeanConfiguration
+     * 
+     * @param handle
+     *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanHandle<T> maker) {
-        super(maker);
+    public InstanceBeanConfiguration(BeanHandle<E> handle) {
+        super(handle);
     }
-
-    // Hmm, vi dekorere ikke fx ServiceLocator...
-    // Maaske er det bedre at dekorere typer???
-    //// InjectableVarSelector<T>
-    // InjectableVarSelector.keyedOf()
-    // What is the key doing here???
-    public <E> InstanceBeanConfiguration<T> decorate(Key<E> key, Function<E, E> mapper) {
-        /// Mnahhh
-        throw new UnsupportedOperationException();
-    }
-
-    // Hmm det er jo mere provide end inject..
-    // men provide(FooClass.class).provide(ddd.Class);
-    // maybe provideTo()
     
-    // inject, bind, provide
-    //// Ikke provide... vi har allerede provideAs
-    //// bind syntes jeg er fint at det er positionelt
-    public <E> InstanceBeanConfiguration<T> inject(Class<E> key, E instance) {
-        return inject(Key.of(key), instance);
+    // Understoetter vi altid DependencyInjection???
+    public <K> InstanceBeanConfiguration<E> bindInstance(Class<K> key, K instance) {
+        return bindInstance(Key.of(key), instance);
     }
 
     // Taenker den overrider
-    public <E> InstanceBeanConfiguration<T> inject(Key<E> key, E instance) {
+    public <K> InstanceBeanConfiguration<E> bindInstance(Key<K> key, K instance) {
         throw new UnsupportedOperationException();
     }
 
-    // Kunne ogsaa vaere bind
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public InstanceBeanConfiguration<T> inject(Object instance) {
-        return inject((Class) instance.getClass(), instance);
+    /**
+     * <p>
+     * The decorator must return a non-null bean instance that is assignable to {@link #beanClass()}. Failure do to so will
+     * fail with a BeanDecorationException being thrown at runtime.
+     * <p>
+     * Notice: If you return a subclass of {@link #beanClass()} and the subclass uses hooks, for example, these will be
+     * ignored. hooks are always resolved against {@link #beanClass()}
+     * 
+     * @param decorator
+     *            the decorator to apply to newly constructed bean instances
+     * @return this configuration
+     */
+    // Kan vi finde en eneste usecase?
+    public InstanceBeanConfiguration<E> decorate(Function<? super E, ? extends E> decorator) {
+        handle().decorateInstance(decorator);
+        return this;
     }
 
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    protected BeanHandle<E> handle() {
+        return (BeanHandle<E>) super.handle();
+    }
+
+    /** {@inheritDoc} */
     @Override
-    public InstanceBeanConfiguration<T> named(String name) {
+    public InstanceBeanConfiguration<E> named(String name) {
         super.named(name);
+        return this;
+    }
+
+    public InstanceBeanConfiguration<E> peek(Consumer<? super E> consumer) {
+        handle().peekInstance(consumer);
         return this;
     }
 
@@ -84,12 +97,24 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      *             if the specified state is that is managed by the user
      */
     // Ved ikke om det kan vaere problematisk, hvis instanserne ikke er styret af packed
-    ///
     // Det der er farligt her er at vi capture Assemblien. Som capture extensionen
     // Som capture alt andet
     ///// fx Validator beans vil ikke virke her...
-    public InstanceBeanConfiguration<T> on(RunState state, Consumer<T> action) {
-        // Maybe throw UOE instead of IAE
-        return this;
+    //// Does it always have a Lifecycle??? Do we have a seperate configuration for this?
+    // Maaske drop den????
+    InstanceBeanConfiguration<E> peekAt(RunState state, Consumer<E> action) {
+        throw new UnsupportedOperationException();
     }
 }
+
+// inject, bind, provide
+//// Ikke provide... vi har allerede provideAs
+//// bind syntes jeg er fint at det er positionelt
+
+// ServiceLocator sl = ServiceLocator.of(xxx) <-- return InternalServiceLocator
+// Syntes man skal angive key.. for let at goere provideInstance(serviceLocator);
+//// Kunne ogsaa vaere bind
+//@SuppressWarnings({ "unchecked", "rawtypes" })
+//public InstanceBeanConfiguration<T> provideInstance(Object instance) {
+//    return provideInstance((Class) instance.getClass(), instance);
+//}

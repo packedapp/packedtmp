@@ -29,7 +29,6 @@ import packed.internal.util.CollectionUtil;
 public class InternalServiceUtil {
 
     public static Key<?> checkKey(Class<?> beanClass, Class<?> key) {
-
         return Key.of(key);
     }
 

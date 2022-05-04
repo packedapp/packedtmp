@@ -16,6 +16,7 @@
 package app.packed.bean;
 
 import java.lang.reflect.Member;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -54,6 +55,14 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     OperationHandle addFunctionOperation(Object functionInstance);
 
+    /**
+     * @return
+     * 
+     * @throws UnsupportedOperationException if called on a bean with void.class beanKind
+     */
+    Key<?> defaultKey();
+
+    
     default OperationHandle addOperation(@SuppressWarnings("exports") OperationDriver driver) {
         throw new UnsupportedOperationException();
     }
@@ -138,6 +147,16 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
             return this;
         }
     }
+
+    /**
+     * @param decorator
+     */
+    void decorateInstance(Function<? super T, ? extends T> decorator);
+
+    /**
+     * @param consumer
+     */
+    void peekInstance(Consumer<? super T> consumer);
 }
 
 interface BeanXDriverSandbox<T> {

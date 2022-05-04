@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeToken;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.inject.service.Provide;
 import packed.internal.inject.service.sandbox.Injector;
@@ -37,7 +36,6 @@ public class MethodStaticTest {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
         MixedMethodsInstantiable.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(MixedMethodsInstantiable.class)));
-        MixedMethodsInstantiable.test(c -> c.provide(BeanExtensionPoint.defaultFactoryFor(new TypeToken<MixedMethodsInstantiable>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on static methods. */
@@ -54,7 +52,6 @@ public class MethodStaticTest {
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.defaultFactoryFor(MixedMethodsNoInstantiation.class)));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.defaultFactoryFor(new TypeToken<MixedMethodsNoInstantiation>() {})));
     }
 
     /** A helper class that can be instantiated. */

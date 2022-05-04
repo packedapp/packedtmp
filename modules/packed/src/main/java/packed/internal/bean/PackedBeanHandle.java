@@ -17,6 +17,10 @@ package packed.internal.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
 import app.packed.operation.OperationHandle;
 
@@ -45,5 +49,40 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
     @Override
     public Class<?> beanClass() {
         return bean.beanClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void decorateInstance(Function<? super T, ? extends T> decorator) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public void peekInstance(Consumer<? super T> consumer) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> defaultKey() {
+        if (beanClass() == void.class) {
+            throw new UnsupportedOperationException("Keys are not support for void bean classes");
+        }
+        return Key.of(beanClass());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return null;
     }
 }

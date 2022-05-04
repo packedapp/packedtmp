@@ -17,12 +17,17 @@ package app.packed.operation.mh;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 
 /**
  *
  */
 public class MethodHandleUtil {
 
+    public static MethodHandle peekReturnValue(MethodHandle methodHandle, Consumer<?> consumer) {
+        throw new UnsupportedOperationException();
+    }
+    
     // Also
     // https://github.com/jbosboom/bytecodelib/blob/master/src/edu/mit/streamjit/util/bytecode/methodhandles/Combinators.java
     

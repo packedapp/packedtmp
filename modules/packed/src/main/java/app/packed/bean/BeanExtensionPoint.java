@@ -10,33 +10,11 @@ import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
-import packed.internal.util.BasePackageAccess;
-import packed.internal.util.typevariable.TypeVariableExtractor;
 
 /**
- * Extend  A bean extension point class.
- * 
- * Like other extension support classes this class is mainly used developers of extensions and not application
- * developers.
+ * An extension point class for the {@link BeanExtension}.
  */
 public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
-
-    /**
-     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
-     * literals that are manually constructed.
-     */
-    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
-
-        /** A type variable extractor. */
-        private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
-
-        /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
-            return new ExecutableFactory<>(tl, tl.rawType());
-        }
-    };
 
     /**
      * Creates a new bean extension point
@@ -120,6 +98,29 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return (Factory<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
     }
 
+}
+
+class Sandbox {
+
+    // I don't think we will use it
+//
+//    /**
+//     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
+//     * literals that are manually constructed.
+//     */
+//    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+//
+//        /** A type variable extractor. */
+//        private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
+//
+//        /** {@inheritDoc} */
+//        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+//            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
+//            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
+//            return new ExecutableFactory<>(tl, tl.rawType());
+//        }
+//    };
+
     /**
      * This method is equivalent to {@link #of(Class)} except taking a type literal.
      *
@@ -137,7 +138,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         requireNonNull(implementation, "implementation is null");
         if (!implementation.isCanonicalized()) {
             // We cache factories for all "new TypeToken<>(){}"
-            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+            // return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+            throw new UnsupportedOperationException();
         }
         Type t = implementation.type();
         if (t instanceof Class<?> cl) {

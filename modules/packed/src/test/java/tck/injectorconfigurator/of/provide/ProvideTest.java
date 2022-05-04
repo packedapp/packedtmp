@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ContainerBeanConfiguration;
-import app.packed.bean.ProvidableBeanConfiguration;
+import app.packed.bean.InstanceBeanConfiguration;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -49,8 +49,8 @@ public class ProvideTest {
             ContainerBeanConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            ProvidableBeanConfiguration<H> h = conf.providePrototype(H.class);
-            ProvidableBeanConfiguration<I> i = conf.providePrototype(BeanExtensionPoint.defaultFactoryFor(I.class));
+            InstanceBeanConfiguration<H> h = conf.providePrototype(H.class);
+            InstanceBeanConfiguration<I> i = conf.providePrototype(BeanExtensionPoint.defaultFactoryFor(I.class));
         });
     }
 

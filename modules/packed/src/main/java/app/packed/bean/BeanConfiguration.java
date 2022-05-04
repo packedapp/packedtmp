@@ -4,16 +4,15 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
-import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
 
 /**
- * The base class for the configuration of a bean.
+ * The base configuration class of a single bean.
  */
 public non-sealed class BeanConfiguration extends ComponentConfiguration {
 
-    /** The internal configuration of the bean. */
-    final BeanSetup bean;
+    /** The bean handle. */
+    final PackedBeanHandle<?> beanHandle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -22,7 +21,7 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      *            the bean handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        this.bean = requireNonNull((PackedBeanHandle<?>) handle, "handle is null").bean();
+        this.beanHandle = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
     }
 
     /**
@@ -31,40 +30,45 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
      * @see BeanHandle#beanKind()
      */
     public final Class<?> beanClass() {
-        return bean.beanClass();
+        return beanHandle.beanClass();
     }
-    
+
     /**
      * {@return the kind of bean that is being configured.}
      * 
      * @see BeanHandle#beanKind()
      */
     public final BeanKind beanKind() {
-        return bean.beanKind();
+        return beanHandle.bean().beanKind();
     }
 
     /** {@inheritDoc} */
     @Override
     protected final void checkIsWiring() {
-        bean.checkIsActive();
+        beanHandle.bean().checkIsActive();
+    }
+
+    /** {@return a handle for the configuration of the bean.} */
+    protected BeanHandle<?> handle() {
+        return beanHandle;
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration named(String name) {
-        bean.named(name);
+        beanHandle.bean().named(name);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public final NamespacePath path() {
-        return bean.path();
+        return beanHandle.bean().path();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return bean.toString();
+        return beanHandle.bean().toString();
     }
 }

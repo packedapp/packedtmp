@@ -15,14 +15,13 @@
  */
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.ServiceExtension;
 import packed.internal.bean.BeanSetup;
+import packed.internal.bean.PackedBeanHandle;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
@@ -43,13 +42,9 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
 
     public ProvidableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
-        this.sb = new ServiceableBean(bean);
+        this.sb = new ServiceableBean(beanHandle);
         handle.addWiringAction(() -> sb.onWired());
 
-    }
-
-    Key<?> defaultKey() {
-        return sb.defaultKey();
     }
 
     public ProvidableBeanConfiguration<T> export() {
@@ -57,21 +52,17 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         return this;
     }
 
-//    public ServiceBeanConfiguration<T> asNone() {
-//        // Ideen er vi f.eks. kan
-    // exportOnlyAs()
-//        // asNone().exportAs(Doo.class);
-//        provideAsService(null);
-//        return this;
-//    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidableBeanConfiguration<T> named(String name) {
-        super.named(name);
+    public ProvidableBeanConfiguration<T> exportAs(Class<? super T> key) {
+        sb.export();
         return this;
     }
 
+    public ProvidableBeanConfiguration<T> exportAs(Key<? super T> key) {
+        sb.export();
+        return this;
+    }
+    
+    
     public ProvidableBeanConfiguration<T> provide() {
         sb.provide();
         return this;
@@ -110,23 +101,22 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         return sb.providedAs();
     }
 
-    private static final class ServiceableBean {
+    static final class ServiceableBean {
         final BeanSetup bean;
 
         Key<?> export;
 
         Key<?> provide;
 
-        public ServiceableBean(BeanSetup bean) {
-            this.bean = requireNonNull(bean);
-        }
+        final PackedBeanHandle<?> handle;
 
-        public Key<?> defaultKey() {
-            return bean.hookModel.defaultKey();
+        ServiceableBean(PackedBeanHandle<?> handle) {
+            this.handle = handle;
+            this.bean = handle.bean();
         }
 
         public void export() {
-            export = InternalServiceUtil.checkKey(bean.beanClass(), defaultKey());
+            export = InternalServiceUtil.checkKey(bean.beanClass(), handle.defaultKey());
             bean.parent.useExtension(ServiceExtension.class);
         }
 
@@ -145,7 +135,7 @@ public class ProvidableBeanConfiguration<T> extends InstanceBeanConfiguration<T>
         }
 
         public void provide() {
-            provide = InternalServiceUtil.checkKey(bean.beanClass(), defaultKey());
+            provide = InternalServiceUtil.checkKey(bean.beanClass(), handle.defaultKey());
             bean.parent.useExtension(ServiceExtension.class);
         }
 
