@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationInfo;
 import app.packed.base.NamespacePath;
-import app.packed.container.Composer;
+import app.packed.container.AbstractComposer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
@@ -77,7 +77,7 @@ public interface ExtensionConfiguration {
      *             if the specified composer has already been composed
      */
     // Taenker det stadig ser ud som om vi kommer fra samme assembly
-    <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
+    <C extends AbstractComposer> void compose(C composer, ComposerAction<? super C> action);
 
 //    default ExtensionConfiguration extract(Extension<?> extension) {
 //        if (extension.getExtensionType == configuration.getExtensionType) {

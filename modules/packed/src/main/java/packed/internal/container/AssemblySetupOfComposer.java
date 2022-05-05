@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.container.Assembly;
-import app.packed.container.Composer;
+import app.packed.container.AbstractComposer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -35,7 +35,7 @@ import packed.internal.util.ThrowableUtil;
 public final class AssemblySetupOfComposer extends AssemblySetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
+    private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild", void.class,
             ContainerConfiguration.class, ComposerAction.class);
 
     final ContainerConfiguration componentConfiguration;
@@ -56,7 +56,7 @@ public final class AssemblySetupOfComposer extends AssemblySetup {
         wireCommit(container);
     }
 
-    public <C extends Composer> void build(C composer, ComposerAction<? super C> consumer) {
+    public <C extends AbstractComposer> void build(C composer, ComposerAction<? super C> consumer) {
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         // This will recursively call down through any sub-containers that are linked
 

@@ -29,7 +29,7 @@ import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceLocator.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.Composer;
 
 /** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
@@ -117,7 +117,7 @@ public class MethodInstanceTest {
             return s;
         }
 
-        static void test(Consumer<? super InjectorComposer> configurator) {
+        static void test(Consumer<? super Composer> configurator) {
             ServiceLocator i = ServiceLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);

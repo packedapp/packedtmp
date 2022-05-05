@@ -29,7 +29,7 @@ import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceLocator.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.Composer;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {
@@ -120,7 +120,7 @@ public class FieldInstanceTest {
         // TODO check message
     }
 
-    private static ServiceLocator create(Consumer<? super InjectorComposer> consumer) {
+    private static ServiceLocator create(Consumer<? super Composer> consumer) {
         return ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
@@ -148,7 +148,7 @@ public class FieldInstanceTest {
         @Provide(constant = true)
         Short s = 1;
 
-        static void test(Consumer<? super InjectorComposer> configurator) {
+        static void test(Consumer<? super Composer> configurator) {
             ServiceLocator i = ServiceLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);

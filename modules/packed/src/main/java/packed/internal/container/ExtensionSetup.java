@@ -13,7 +13,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.container.Composer;
+import app.packed.container.AbstractComposer;
 import app.packed.container.ComposerAction;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -139,7 +139,7 @@ public final class ExtensionSetup {
         container.realm.checkOpen();
     }
 
-    public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
+    public <C extends AbstractComposer> void compose(C composer, ComposerAction<? super C> action) {
         action.build(composer);
     }
 

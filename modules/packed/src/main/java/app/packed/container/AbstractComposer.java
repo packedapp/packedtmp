@@ -36,7 +36,7 @@ import packed.internal.util.LookupUtil;
  */
 // -> AbstractComposer (synthetic Assembly -> Generaeted per module-per composer type???)
 // AbstractComposer og saa ServiceLocator.Composer
-public abstract class Composer {
+public abstract class AbstractComposer {
 
     /** A handle that can access #configuration. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
@@ -127,14 +127,14 @@ public abstract class Composer {
     }
 
     /**
-     * Invoked by the runtime immediately after {@link ComposerAction#configure(Composer)}.
+     * Invoked by the runtime immediately after {@link ComposerAction#configure(AbstractComposer)}.
      * <p>
-     * This method will not be called if {@link ComposerAction#configure(Composer)} throws an exception.
+     * This method will not be called if {@link ComposerAction#configure(AbstractComposer)} throws an exception.
      */
     protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
 
     /**
-     * Invoked by the runtime immediately before {@link ComposerAction#configure(Composer)}.
+     * Invoked by the runtime immediately before {@link ComposerAction#configure(AbstractComposer)}.
      */
     protected void onNew() {} // navngivningen skal alines med AssemblyHook
 
@@ -154,7 +154,7 @@ public abstract class Composer {
      *            optional wirelets
      * @return the new application instance
      * 
-     * @see Composer
+     * @see AbstractComposer
      */
     // A standalone composer...
 
@@ -162,7 +162,7 @@ public abstract class Composer {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, C composer,
+    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer,
             ComposerAction<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");

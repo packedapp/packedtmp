@@ -36,7 +36,7 @@ import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Composer;
+import app.packed.container.AbstractComposer;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -289,8 +289,8 @@ public interface ServiceLocator {
         return driver().launch(assembly, wirelets);
     }
         
-    static ServiceLocator of(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return InjectorComposer.configure2(configurator, wirelets);
+    static ServiceLocator of(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
+        return Composer.configure2(configurator, wirelets);
     }
     
     /**
@@ -302,7 +302,7 @@ public interface ServiceLocator {
      * The main difference compared assemblies is that there is no concept of encapsulation. All services are exported by
      * default.
      */
-    public static final class InjectorComposer extends Composer {
+    public static final class Composer extends AbstractComposer {
 
         private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "serviceLocator",
                 ServiceLocator.class);
@@ -311,7 +311,7 @@ public interface ServiceLocator {
 
         private boolean initialized;
 
-        InjectorComposer() {}
+        Composer() {}
 
         /**
          * Returns an instance of the injector extension.
@@ -469,8 +469,8 @@ public interface ServiceLocator {
             return configuration().use(BeanExtension.class).providePrototype(factory);
         }
 
-        static ServiceLocator configure2(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-            return compose(DRIVER, new InjectorComposer(), configurator, wirelets);
+        static ServiceLocator configure2(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
+            return compose(DRIVER, new Composer(), configurator, wirelets);
         }
     }
 }

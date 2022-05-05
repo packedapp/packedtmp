@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceLocator.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.Composer;
 
 /**
  * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
@@ -66,7 +66,7 @@ public  static class MixedFieldsInstantiable {
             assertThat(S).isEqualByComparingTo((short) 1);
         }
 
-        static void test(Consumer<? super InjectorComposer> configurator) {
+        static void test(Consumer<? super Composer> configurator) {
             // L = 1L;
             P = 1;
             S = 1;
@@ -110,7 +110,7 @@ public    static class MixedFieldsNoInstantiation {
             throw new AssertionError("Cannot instantiate");
         }
 
-        static void test(Consumer<? super InjectorComposer> configurator) {
+        static void test(Consumer<? super Composer> configurator) {
             // L = 1L;
             P = 1;
             S = 1;

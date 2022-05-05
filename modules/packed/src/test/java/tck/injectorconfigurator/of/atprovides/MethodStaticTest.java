@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceLocator.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.Composer;
 
 /** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {
@@ -84,7 +84,7 @@ public class MethodStaticTest {
             return S;
         }
 
-        static void test(Consumer<? super InjectorComposer> configurator) {
+        static void test(Consumer<? super Composer> configurator) {
             // L = 1L;
             P = 1;
             S = 1;
@@ -140,7 +140,7 @@ public class MethodStaticTest {
             return S;
         }
 
-        static void test(Consumer<? super InjectorComposer> configurator) {
+        static void test(Consumer<? super Composer> configurator) {
             // L = 1L;
             P = 1;
             S = 1;

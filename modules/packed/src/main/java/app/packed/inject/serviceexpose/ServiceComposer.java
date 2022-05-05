@@ -29,7 +29,7 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.component.ComponentMirror;
-import app.packed.container.Composer;
+import app.packed.container.AbstractComposer;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.sandbox.Service;
@@ -73,7 +73,7 @@ import packed.internal.inject.service.sandbox.Service;
 // Den configuration vi skal kalde er jo ikke helt ContainerConfiguration
 // F.eks. hvis vi bruger den i forbindelse med filterExports eller wirelets
 // Det er jo mere en slags tilretning, hvor vi gerne vil registrere nogle componenter...
-public abstract /* sealed */ class ServiceComposer extends Composer /* permits PackedServiceComposer */ {
+public abstract /* sealed */ class ServiceComposer extends AbstractComposer /* permits PackedServiceComposer */ {
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.

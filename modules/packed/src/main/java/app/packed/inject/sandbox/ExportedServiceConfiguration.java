@@ -18,13 +18,13 @@ package app.packed.inject.sandbox;
 import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.service.PublicizeExtension;
-import app.packed.inject.service.ServiceLocator.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.Composer;
 
 /**
  * A configuration object for an exported service.
  * <p>
  * An instance of this interface is usually obtained by calling the various provide or export methods located on
- * {@link PublicizeExtension}, {@link InjectorComposer} or {@link BaseAssembly}.
+ * {@link PublicizeExtension}, {@link Composer} or {@link BaseAssembly}.
  * 
  * @see PublicizeExtension#export(Class)
  */

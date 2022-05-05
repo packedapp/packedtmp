@@ -29,7 +29,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.Composer;
+import app.packed.container.AbstractComposer;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.ComponentSetup;
@@ -101,7 +101,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
      * @param lookup
      *            the lookup to use
      * @see Assembly#lookup(Lookup)
-     * @see Composer#lookup(Lookup)
+     * @see AbstractComposer#lookup(Lookup)
      */
     public void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup is null");

@@ -4,7 +4,7 @@ package app.packed.container;
  *
  */
 @FunctionalInterface
-public interface ComposerAction<C extends Composer> {
+public interface ComposerAction<C extends AbstractComposer> {
 
     /**
      * Configures the given composer.
