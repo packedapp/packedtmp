@@ -28,7 +28,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.service.OldServiceLocator;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;

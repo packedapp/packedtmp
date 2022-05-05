@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.sandbox;
+package packed.internal.inject.service;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Consumer;
 
-import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
@@ -38,9 +36,9 @@ import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.util.LookupUtil;
 
 /**
- * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link BaseAssembly}.
- * Unlike assemblies all services are automatically exported once defined. For example useful in tests.
+ * A lightweight configuration object that can be used to create injectors via. This is thought of a alternative to
+ * using a {@link BaseAssembly}. Unlike assemblies all services are automatically exported once defined. For example
+ * useful in tests.
  * 
  * <p>
  * The main difference compared assemblies is that there is no concept of encapsulation. All services are exported by
@@ -76,14 +74,14 @@ public final class InjectorComposer extends Composer {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public ComponentMirror link(Assembly  assembly, Wirelet... wirelets) {
+    public ComponentMirror link(Assembly assembly, Wirelet... wirelets) {
         return configuration.link(assembly, wirelets);
     }
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-     * together with the injector. The runtime will use {@link Factory#factoryOf(Class)} to find the constructor or method used for
-     * instantiation.
+     * together with the injector. The runtime will use {@link Factory#factoryOf(Class)} to find the constructor or method
+     * used for instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the
      * {@code implementation.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will
@@ -114,8 +112,8 @@ public final class InjectorComposer extends Composer {
         extension();
         return configuration.use(BeanExtension.class).install(implementation).provide();
 
-        //return extension().provide(implementation);
-        //return configuration.use(BeanExtension.class).install(implementation).provide();
+        // return extension().provide(implementation);
+        // return configuration.use(BeanExtension.class).install(implementation).provide();
     }
 
     /**
@@ -134,7 +132,7 @@ public final class InjectorComposer extends Composer {
         extension();
         return configuration.use(BeanExtension.class).install(factory).provide();
 
-        //return extension().provide(factory);
+        // return extension().provide(factory);
     }
 
     /**
@@ -199,7 +197,7 @@ public final class InjectorComposer extends Composer {
     public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
         extension();
         return configuration.use(BeanExtension.class).installInstance(instance).provide();
-        
+
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
@@ -212,47 +210,16 @@ public final class InjectorComposer extends Composer {
         return configuration.use(BeanExtension.class).providePrototype(factory);
     }
 
-    public static OldServiceLocator  configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(InjectorApplicationHelper.DRIVER, InjectorComposer::new, configurator, wirelets);
+    public static OldServiceLocator configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
+        return compose(DRIVER, InjectorComposer::new, configurator, wirelets);
     }
-}
-
-/** An artifact driver for creating {@link App} instances. */
-final class InjectorApplicationHelper {
-
-    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", OldServiceLocator .class, ApplicationInitializationContext.class);
+    
+    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", OldServiceLocator.class,
+            ApplicationInitializationContext.class);
 
     static final ApplicationDriver<OldServiceLocator> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), OldServiceLocator.class, CONV);
 
     static OldServiceLocator convert(ApplicationInitializationContext container) {
-        return (OldServiceLocator ) container.services();
+        return (OldServiceLocator) container.services();
     }
 }
-// addStatics(); useStatics()
-// @OnHook
-// @Provides
-// I think we should replace with
-
-// provide(Stuff).asNone();
-// providersOnly(Class<?>)<- dont register owning object, dont instantiate itif only static Provides methods...
-// provideBy
-// provideHolder
-// Class + Instance + Factory???
-// Sleezy method on ServiceConfiguration .lazy().asNone();
-// Can also be used with hooks.... <- Well @OnHook, could be used with a service???
-// .neverInstantiate(); static @OnHook...
-// noInstantiation()
-// provideStatics(Object instance)
-// <T> ServiceConfiguration<T> provideLazy(Class<T> implementation);
-
-// * @return a service configuration for the service
-// */
-// <T> ServiceConfiguration<T> provideLazy(Factory<T> factory);
-//
-// <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
-
-// <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
-// */
-// <T> ServiceConfiguration<T> providePrototype(Factory<T> factory);
-//
-// <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation);

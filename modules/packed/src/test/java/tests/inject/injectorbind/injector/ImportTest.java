@@ -28,7 +28,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory1;
 import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceWirelets;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import packed.internal.inject.service.InjectorComposer;
 
 /**
  *

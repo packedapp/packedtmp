@@ -26,7 +26,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory0;
 import app.packed.inject.service.OldServiceLocator;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import packed.internal.inject.service.InjectorComposer;
 import testutil.assertj.Assertions;
 
 /**

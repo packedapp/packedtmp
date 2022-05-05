@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.bean.Provide;
 import app.packed.inject.service.OldServiceLocator;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.annotation.StringQualifier;
 
 /**

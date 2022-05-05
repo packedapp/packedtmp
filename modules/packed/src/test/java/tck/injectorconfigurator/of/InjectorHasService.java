@@ -23,14 +23,14 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.inject.service.OldServiceLocator;
-import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import app.packed.inject.service.ServiceLocator;
+import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#findInstance(Class)} and {@link Injector#findInstance(Key)}. */
+/** Test {@link ServiceLocator#findInstance(Class)} and {@link ServiceLocator#findInstance(Key)}. */
 public class InjectorHasService {
 
     @Test

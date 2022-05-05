@@ -29,7 +29,7 @@ import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
 import app.packed.inject.service.OldServiceLocator;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import packed.internal.inject.service.InjectorComposer;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {

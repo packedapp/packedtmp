@@ -24,14 +24,14 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.Service;
-import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import app.packed.inject.service.ServiceLocator;
+import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#find(Class)} and {@link Injector#find(Key)}. */
+/** Test {@link ServiceLocator#find(Class)} and {@link ServiceLocator#find(Key)}. */
 public class InjectorGetDescriptorTest {
 
     @Test

@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.service.OldServiceLocator;
+import packed.internal.inject.service.InjectorComposer;
 import packed.internal.inject.service.runtime.RuntimeService;
-import packed.internal.inject.service.sandbox.InjectorComposer;
 import testutil.stubs.Letters.A;
 
 /**
