@@ -25,7 +25,6 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;

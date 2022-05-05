@@ -20,7 +20,7 @@ import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
 import app.packed.container.ComposerAction;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.ServiceComposer;
+import packed.internal.inject.service.build.ServiceComposer;
 import packed.internal.inject.service.runtime.OldServiceLocator;
 import packed.internal.inject.service.runtime.ServiceSelection;
 

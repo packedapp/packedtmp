@@ -240,7 +240,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
        
         // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
         // Hvilket ikke er muligt
-        default Builder addController(@SuppressWarnings("unchecked") Class<? extends ApplicationController>... controllers) {
+        @SuppressWarnings("unchecked") 
+        default Builder addController(Class<? extends ApplicationController>... controllers) {
             return this;
         }
         

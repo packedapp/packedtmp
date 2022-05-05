@@ -41,6 +41,7 @@ import packed.internal.util.LookupUtil;
  * A composer will always instantiate a single application instance
  */
 // (synthetic Assembly -> Generaeted per module-per composer type???) Men hvis man ikke kan lave mirrors???
+// Altsaa man kan vel altid faa dem injected. Med mindre vi disable MirrorExtension...
 public abstract class AbstractComposer {
 
     /** A handle that can access #configuration. */
@@ -152,7 +153,7 @@ public abstract class AbstractComposer {
     /**
      * Create a new application instance by using the specified consumer and configurator.
      * <p>
-     * This method is is rarely called directly by end-users. But indirectly through methods such as
+     * This method is is never called directly by end-users. But indirectly through methods such as
      * {@link ServiceLocator#of(Consumer)}.
      * 
      * @param <C>
@@ -163,7 +164,7 @@ public abstract class AbstractComposer {
      *            the configurator specified by the end-user for configuring the composer
      * @param wirelets
      *            optional wirelets
-     * @return the new application instance
+     * @return a new application instance
      * 
      * @see AbstractComposer
      */

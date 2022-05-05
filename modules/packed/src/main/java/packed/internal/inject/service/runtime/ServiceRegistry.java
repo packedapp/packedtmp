@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.BeanVariable;
-import app.packed.inject.serviceexpose.ServiceComposer;
 import packed.internal.inject.service.InternalServiceUtil;
+import packed.internal.inject.service.build.ServiceComposer;
 import packed.internal.inject.service.sandbox.Service;
 
 /**

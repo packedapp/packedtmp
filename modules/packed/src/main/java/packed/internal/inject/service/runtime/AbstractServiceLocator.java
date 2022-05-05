@@ -29,8 +29,8 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.ComposerAction;
 import app.packed.inject.Provider;
-import app.packed.inject.serviceexpose.ServiceComposer;
 import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.ServiceComposer;
 import packed.internal.inject.service.sandbox.Service;
 
 /**

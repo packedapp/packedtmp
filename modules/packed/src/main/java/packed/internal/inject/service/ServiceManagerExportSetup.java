@@ -28,7 +28,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.service.ServiceContract;
-import app.packed.inject.serviceexpose.ServiceTransformer;
+import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;

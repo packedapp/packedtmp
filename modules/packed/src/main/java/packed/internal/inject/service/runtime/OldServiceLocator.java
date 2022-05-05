@@ -32,8 +32,8 @@ import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.inject.service.PublicizeExtension;
-import app.packed.inject.serviceexpose.ServiceComposer;
 import app.packed.operation.dependency.DependencyProvider;
+import packed.internal.inject.service.build.ServiceComposer;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.
