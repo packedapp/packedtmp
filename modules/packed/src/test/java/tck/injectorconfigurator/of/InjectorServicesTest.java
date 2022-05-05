@@ -28,7 +28,7 @@ public class InjectorServicesTest {
 
     @Test
     public void services() {
-        assertThat(InjectorComposer.configure(c -> {}).services()).isEmpty();
+        assertThat(InjectorComposer.configure2(c -> {}).keys()).isEmpty();
     }
 
 }

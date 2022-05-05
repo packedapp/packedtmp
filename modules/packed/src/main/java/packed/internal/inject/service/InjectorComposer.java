@@ -31,6 +31,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.util.LookupUtil;
@@ -210,16 +211,30 @@ public final class InjectorComposer extends Composer {
         return configuration.use(BeanExtension.class).providePrototype(factory);
     }
 
+    @Deprecated
     public static OldServiceLocator configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return compose(DRIVER, InjectorComposer::new, configurator, wirelets);
+    }
+
+    public static ServiceLocator configure2(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
+        return compose(DRIVER2, InjectorComposer::new, configurator, wirelets);
     }
     
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", OldServiceLocator.class,
             ApplicationInitializationContext.class);
 
-    static final ApplicationDriver<OldServiceLocator> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), OldServiceLocator.class, CONV);
+    static final MethodHandle CONV2 = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert2", ServiceLocator.class, ApplicationInitializationContext.class);
 
+    static final ApplicationDriver<OldServiceLocator> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), OldServiceLocator.class, CONV);
+    
+    static final ApplicationDriver<ServiceLocator> DRIVER2 = ApplicationDriver.builder().build(MethodHandles.lookup(), ServiceLocator.class, CONV2);
+
+    
     static OldServiceLocator convert(ApplicationInitializationContext container) {
-        return (OldServiceLocator) container.services();
+        return container.services();
+    }
+
+    static ServiceLocator convert2(ApplicationInitializationContext container) {
+        return container.serviceLocator();
     }
 }

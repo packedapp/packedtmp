@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
@@ -35,7 +34,7 @@ public class InjectorHasService {
 
     @Test
     public void hasService() {
-        OldServiceLocator i = InjectorComposer.configure(c -> {
+        ServiceLocator i = InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
             c.provide(A.class).provideAs(new Key<@Left A>() {});
