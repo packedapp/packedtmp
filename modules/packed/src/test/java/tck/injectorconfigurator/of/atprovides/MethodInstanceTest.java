@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 
 /** Tests {@link Provide#constant()}. */
@@ -55,7 +55,7 @@ public class MethodInstanceTest {
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
     public void providePrototype() {
-        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> InjectorComposer.configure(c -> {
+        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(SingletonMethod.class);
@@ -118,7 +118,7 @@ public class MethodInstanceTest {
         }
 
         static void test(Consumer<? super InjectorComposer> configurator) {
-            OldServiceLocator i = InjectorComposer.configure(c -> {
+            ServiceLocator i = InjectorComposer.configure2(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

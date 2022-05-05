@@ -27,7 +27,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ProvideableBeanConfiguration;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -43,7 +43,7 @@ public class ProvideTest {
 
     @Test
     public void configSite() throws Throwable {
-        OldServiceLocator inj = InjectorComposer.configure(conf -> {
+        ServiceLocator inj = InjectorComposer.configure2(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ProvideableBeanConfiguration<A> a = conf.provide(A.class);
             ProvideableBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.factoryOf(B.class));
@@ -57,7 +57,7 @@ public class ProvideTest {
 
     @Test
     public void bindInstance() {
-        OldServiceLocator i = InjectorComposer.configure(e -> {
+        ServiceLocator i = InjectorComposer.configure2(e -> {
             ProvideableBeanConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, true, Key.of(A.class));
         });
@@ -65,7 +65,7 @@ public class ProvideTest {
 
     }
 
-    static <T> void testSingleton(OldServiceLocator i, Key<T> key, T instance) {
+    static <T> void testSingleton(ServiceLocator i, Key<T> key, T instance) {
         assertThat(i.findInstance(key)).containsSame(instance);
         assertThat(i.use(key)).isSameAs(instance);
         if (!key.hasQualifiers()) {

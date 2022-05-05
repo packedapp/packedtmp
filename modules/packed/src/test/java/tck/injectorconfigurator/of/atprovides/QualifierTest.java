@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.bean.Provide;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.annotation.StringQualifier;
 
@@ -58,7 +58,7 @@ public class QualifierTest {
         Stub.B = 1L;
         Stub.C = 1L;
         Stub.L = 1L;
-        OldServiceLocator i = create(c -> {
+        ServiceLocator i = create(c -> {
             c.provide(Stub.class);
 
         });
@@ -83,8 +83,8 @@ public class QualifierTest {
         assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
     }
 
-    private static OldServiceLocator create(Consumer<? super InjectorComposer> consumer) {
-        return InjectorComposer.configure(c -> {
+    private static ServiceLocator create(Consumer<? super InjectorComposer> consumer) {
+        return InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });

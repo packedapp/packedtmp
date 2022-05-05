@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.bean.Provide;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.annotation.StringQualifier;
 
@@ -41,14 +41,14 @@ public class MembersProvideTest {
         validate(of(c -> c.providePrototype(VisibilityStatic.class)));
     }
 
-    private static OldServiceLocator of(Consumer<? super InjectorComposer> consumer) {
-        return InjectorComposer.configure(c -> {
+    private static ServiceLocator of(Consumer<? super InjectorComposer> consumer) {
+        return InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });
     }
 
-    private static void validate(OldServiceLocator i) {
+    private static void validate(ServiceLocator i) {
         assertThat(i.use(new Key<@StringQualifier("f_package") String>() {})).isEqualTo("package_f");
         assertThat(i.use(new Key<@StringQualifier("f_private") String>() {})).isEqualTo("private_f");
         assertThat(i.use(new Key<@StringQualifier("f_protected") String>() {})).isEqualTo("protected_f");

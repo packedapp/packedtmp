@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 
 /** Tests {@link Provide#constant()} on static methods. */
@@ -88,7 +88,7 @@ public class MethodStaticTest {
             // L = 1L;
             P = 1;
             S = 1;
-            OldServiceLocator i = InjectorComposer.configure(c -> {
+            ServiceLocator i = InjectorComposer.configure2(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
@@ -144,7 +144,7 @@ public class MethodStaticTest {
             // L = 1L;
             P = 1;
             S = 1;
-            OldServiceLocator i = InjectorComposer.configure(c -> {
+            ServiceLocator i = InjectorComposer.configure2(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
