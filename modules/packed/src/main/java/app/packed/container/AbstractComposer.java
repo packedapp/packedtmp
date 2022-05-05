@@ -33,6 +33,12 @@ import packed.internal.util.LookupUtil;
 
 /**
  * Composers does not usually have any public constructors.
+ * 
+ * Unlike applications created with an assembly.
+ * 
+ * You cannot build images/launchers You cannot get a mirror
+ * 
+ * A composer will always instantiate a single application instance
  */
 // (synthetic Assembly -> Generaeted per module-per composer type???) Men hvis man ikke kan lave mirrors???
 public abstract class AbstractComposer {
@@ -73,7 +79,7 @@ public abstract class AbstractComposer {
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of a composer");
         } else if (c == ContainerConfiguration.USED) {
-            throw new IllegalStateException("This method must be called while the composer is active.");
+            throw new IllegalStateException("This method must be called from with ComposerAction::build");
         }
         return c;
     }
@@ -131,14 +137,15 @@ public abstract class AbstractComposer {
     }
 
     /**
-     * Invoked by the runtime immediately after {@link ComposerAction#configure(AbstractComposer)}.
+     * Invoked by the runtime immediately after {@link ComposerAction#build(AbstractComposer)}.
      * <p>
-     * This method will not be called if {@link ComposerAction#configure(AbstractComposer)} throws an exception.
+     * This method will not be called if {@link ComposerAction#build(AbstractComposer)} throws an exception.
      */
     protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
 
     /**
-     * Invoked by the runtime immediately before {@link ComposerAction#configure(AbstractComposer)}.
+     * Invoked by the runtime immediately before it invokes {@link ComposerAction#build(AbstractComposer)}. Used for any
+     * configuration that needs to be done before control is handed over to the composer action specified by the user.
      */
     protected void onNew() {} // navngivningen skal alines med AssemblyHook
 
@@ -160,23 +167,19 @@ public abstract class AbstractComposer {
      * 
      * @see AbstractComposer
      */
-    // A standalone composer...
-
-    // Skal have et andet sted hvor vi laver dem der er en ikke standalone
-    // F.eks. ServiceLocator som extension
-    // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
-    // assemblies.lookup)
-    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer,
-            ComposerAction<? super C> consumer, Wirelet... wirelets) {
-        requireNonNull(consumer, "consumer is null");
+    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer, ComposerAction<? super C> consumer,
+            Wirelet... wirelets) {
+        PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
         requireNonNull(composer, "composer is null");
+        requireNonNull(consumer, "consumer is null");
 
-        // Create a new application realm
-        AssemblySetupOfComposer realm = new AssemblySetupOfComposer(((PackedApplicationDriver<A>) driver), consumer, wirelets);
+        // Create a new realm
+        AssemblySetupOfComposer realm = new AssemblySetupOfComposer(d, consumer, wirelets);
 
-        realm.build(composer, consumer);
+        // Build the application
+        realm.build(composer);
 
-        // Return the launched application
-        return ApplicationInitializationContext.launch(((PackedApplicationDriver<A>) driver), realm.application, null);
+        // Return a launched application
+        return ApplicationInitializationContext.launch(d, realm.application, /* no runtime wirelets */ null);
     }
 }

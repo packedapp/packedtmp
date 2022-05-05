@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
-import app.packed.container.Assembly;
 import app.packed.container.AbstractComposer;
 import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
@@ -34,33 +33,25 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class AssemblySetupOfComposer extends AssemblySetup {
 
-    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild", void.class,
-            ContainerConfiguration.class, ComposerAction.class);
+    /** A handle that can invoke {@link AbstractComposer#doBuild(ContainerConfiguration, ComposerAction)}. */
+    private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild",
+            void.class, ContainerConfiguration.class, ComposerAction.class);
 
-    final ContainerConfiguration componentConfiguration;
-
-    final ComposerAction<?> composer;
-
+    /** The application we are building. */
     public final ApplicationSetup application;
 
-    // Den giver kun mening for assemblies...
-    /** The root component of this realm. */
-    public final ContainerSetup container;
-    
-    public AssemblySetupOfComposer(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> composer, Wirelet[] wirelets) {
-        this.composer = composer;
+    final ComposerAction<?> consumer;
+
+    public AssemblySetupOfComposer(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> consumer, Wirelet[] wirelets) {
+        this.consumer = consumer;
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
-        this.container = application.container;
-        this.componentConfiguration = new PackedContainerDriver(container).toConfiguration(container);
-        wireCommit(container);
+        wireCommit(application.container);
     }
 
-    public <C extends AbstractComposer> void build(C composer, ComposerAction<? super C> consumer) {
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        // This will recursively call down through any sub-containers that are linked
+    public <C extends AbstractComposer> void build(C composer) {
+        ContainerConfiguration componentConfiguration = new PackedContainerDriver(null).toConfiguration(application.container);
 
-        // Invoke Composer#doCompose which in turn will invoke consumer.accept
+        // Invoke AbstractComposer#doBuild which in turn will invoke consumer.accept
         try {
             MH_COMPOSER_DO_COMPOSE.invoke(composer, componentConfiguration, consumer);
         } catch (Throwable e) {
@@ -73,13 +64,13 @@ public final class AssemblySetupOfComposer extends AssemblySetup {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> realmType() {
-        return composer.getClass();
+    public ContainerSetup container() {
+        return application.container;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerSetup container() {
-        return container;
+    public Class<?> realmType() {
+        return consumer.getClass();
     }
 }
