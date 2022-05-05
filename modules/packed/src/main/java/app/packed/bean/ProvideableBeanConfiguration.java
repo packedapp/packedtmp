@@ -18,7 +18,7 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.inject.service.ContainerInjectionManager;
@@ -125,7 +125,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         public void export() {
             export = InternalServiceUtil.checkKey(bean.beanClass(), handle.defaultKey());
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.parent.useExtension(PublicizeExtension.class);
         }
 
         public void onWired() {
@@ -144,17 +144,17 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         public void provide() {
             provide = InternalServiceUtil.checkKey(bean.beanClass(), handle.defaultKey());
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.parent.useExtension(PublicizeExtension.class);
         }
 
         public void provideAs(Class<?> key) {
             provide = InternalServiceUtil.checkKey(bean.beanClass(), key);
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.parent.useExtension(PublicizeExtension.class);
         }
 
         public void provideAs(Key<?> key) {
             provide = InternalServiceUtil.checkKey(bean.beanClass(), key);
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.parent.useExtension(PublicizeExtension.class);
         }
 
         // Ser dum ud naar man laver completion

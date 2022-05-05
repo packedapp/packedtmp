@@ -26,8 +26,7 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.ServiceComposer;
+import app.packed.inject.service.OldServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.AssemblySetupOfComposer;
@@ -150,7 +149,7 @@ public abstract class Composer {
      * Create a new application instance by using the specified consumer and configurator.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
-     * {@link ServiceLocator#of(Consumer)}.
+     * {@link OldServiceLocator#of(Consumer)}.
      * 
      * @param <C>
      *            the type of composer that is exposed to the end-user
@@ -163,8 +162,6 @@ public abstract class Composer {
      * @return the new application instance
      * 
      * @see Composer
-     * @see ServiceComposer
-     * @see ServiceLocator#of(Consumer)
      */
     // A standalone composer...
 

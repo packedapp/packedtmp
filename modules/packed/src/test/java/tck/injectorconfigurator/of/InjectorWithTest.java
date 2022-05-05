@@ -25,7 +25,9 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
+import app.packed.inject.service.OldServiceLocator;
 import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
@@ -36,7 +38,7 @@ public class InjectorWithTest {
 
     @Test
     public void get() {
-        Injector i = Injector.configure(c -> {
+        OldServiceLocator i = InjectorComposer.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
             c.provide(A.class).provideAs(new Key<@Left A>() {});

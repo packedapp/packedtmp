@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -38,7 +39,7 @@ import app.packed.inject.service.ServiceWirelets;
  *
  * @see ServiceWirelets#to(java.util.function.Consumer)
  * @see ServiceWirelets#from(java.util.function.Consumer)
- * @see ServiceExtension#transformExports(java.util.function.Consumer)
+ * @see PublicizeExtension#transformExports(java.util.function.Consumer)
  */
 
 //Create services
@@ -96,7 +97,7 @@ public interface ServiceTransformer extends ServiceRegistry {
      * @see #decorate(Class, Function)
      */
     // TODO must check return type..
-    public <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
+    <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
     /**
      * <p>
@@ -120,6 +121,59 @@ public interface ServiceTransformer extends ServiceRegistry {
     // in most situations you probably want to use this one
 
     void map(Factory<?> factory);
+    
+    default <T> void peek(Class<T> key, Consumer<? super T> consumer) {
+        peek(Key.of(key), consumer);
+    }
+    
+    <T> void peek(Key<T> key, Consumer<? super T> consumer);
+
+    // provide a constant via an instance
+    /**
+     * Provides a new constant service returning the specified instance on every request.
+     * 
+     * @param <T>
+     *            the type of the service being added
+     * @param key
+     *            the key of the service
+     * @param instance
+     *            the instance to return on every request
+     * @see #provideInstance(Key, Object)
+     * @see #provideInstance(Object)
+     */
+    default <T> void provideInstance(Class<T> key, T instance) {
+        provideInstance(Key.of(key), instance);
+    }
+
+    /**
+     * <p>
+     * If an existing service with the specified key already exists this method will replace it.
+     * 
+     * @param <T>
+     *            the type
+     * @param key
+     *            the key
+     * @param instance
+     *            the instance
+     */
+    <T> void provideInstance(Key<T> key, T instance);
+
+    /**
+     * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
+     * service of the specific type as a requirement.
+     * <p>
+     * Invoking this method is identical to invoking {@code provideInstance(instance.getClass(), instance)}.
+     * 
+     * @param instance
+     *            the service to provide
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    default void provideInstance(Object instance) {
+        requireNonNull(instance, "instance is null");
+        provideInstance((Class) instance.getClass(), instance);
+    }
+
+    // auto figure out if constant or prototype
 
     /**
      * A version of
@@ -198,17 +252,6 @@ public interface ServiceTransformer extends ServiceRegistry {
         }
     }
 
-    // auto figure out if constant or prototype
-
-    default void rekeyAllWith(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        rekeyAll(s -> s.key().with(qualifier));
-    }
-
-    default void rekeyAllWithClassTag(Class<?> tag) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Rekey all service
      * 
@@ -221,6 +264,15 @@ public interface ServiceTransformer extends ServiceRegistry {
     default void rekeyAllAddTag(String tag) {
         requireNonNull(tag, "tagis null");
         rekeyAll(s -> s.key().withTag(tag));
+    }
+
+    default void rekeyAllWith(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        rekeyAll(s -> s.key().with(qualifier));
+    }
+
+    default void rekeyAllWithClassTag(Class<?> tag) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -280,51 +332,6 @@ public interface ServiceTransformer extends ServiceRegistry {
         }
     }
 
-    // provide a constant via an instance
-    /**
-     * Provides a new constant service returning the specified instance on every request.
-     * 
-     * @param <T>
-     *            the type of the service being added
-     * @param key
-     *            the key of the service
-     * @param instance
-     *            the instance to return on every request
-     * @see #provideInstance(Key, Object)
-     * @see #provideInstance(Object)
-     */
-    default <T> void provideInstance(Class<T> key, T instance) {
-        provideInstance(Key.of(key), instance);
-    }
-
-    /**
-     * <p>
-     * If an existing service with the specified key already exists this method will replace it.
-     * 
-     * @param <T>
-     *            the type
-     * @param key
-     *            the key
-     * @param instance
-     *            the instance
-     */
-    <T> void provideInstance(Key<T> key, T instance);
-
-    /**
-     * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
-     * service of the specific type as a requirement.
-     * <p>
-     * Invoking this method is identical to invoking {@code provideInstance(instance.getClass(), instance)}.
-     * 
-     * @param instance
-     *            the service to provide
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    default void provideInstance(Object instance) {
-        requireNonNull(instance, "instance is null");
-        provideInstance((Class) instance.getClass(), instance);
-    }
-
     /**
      * @param filter
      *            a predicate which returns {@code true} for services to be removed
@@ -360,6 +367,8 @@ public interface ServiceTransformer extends ServiceRegistry {
     /**
      * @param keys
      * @see #removeAll(Collection)
+     * @throws IllegalAccessError
+     *             if the collection contains elements that are not either a {@link Class} or a {@link Key}.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     default void retainAll(Collection<?> keys) {
@@ -368,8 +377,8 @@ public interface ServiceTransformer extends ServiceRegistry {
         for (int i = 0; i < a.length; i++) {
             Object o = a[i];
             requireNonNull(o, "Specified collection contains a null");
-            if (o instanceof Class) {
-                a[i] = Key.of((Class) o);
+            if (o instanceof Class c) {
+                a[i] = Key.of(c);
             } else if (!(o instanceof Key)) {
                 throw new IllegalArgumentException(
                         "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());

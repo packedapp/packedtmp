@@ -19,14 +19,14 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.OldServiceLocator;
 import packed.internal.inject.service.sandbox.Injector;
 
 /** The default implementation of {@link Injector}. */
 public final class PackedInjector extends AbstractServiceLocator implements Injector {
 
     /** An empty service locator. */
-    public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(Map.of());
+    public static final OldServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(Map.of());
 
 
     /** All services that this injector provides. */

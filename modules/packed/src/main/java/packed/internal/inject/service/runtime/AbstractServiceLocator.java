@@ -30,17 +30,17 @@ import app.packed.base.TypeToken;
 import app.packed.container.ComposerAction;
 import app.packed.inject.Provider;
 import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceSelection;
 import app.packed.inject.serviceexpose.ServiceComposer;
 import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
- * An abstract implementation of {@link ServiceLocator}.
+ * An abstract implementation of {@link OldServiceLocator}.
  * 
  * @implNote {@link #asMap()} must always return an immutable map, with effectively immutable (frozen) services.
  **/
-public abstract class AbstractServiceLocator implements ServiceLocator {
+public abstract class AbstractServiceLocator implements OldServiceLocator {
 
     /**
      * {@inheritDoc}
@@ -142,7 +142,7 @@ public abstract class AbstractServiceLocator implements ServiceLocator {
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public final ServiceLocator spawn(ComposerAction<ServiceComposer> transformer) {
+    public final OldServiceLocator spawn(ComposerAction<ServiceComposer> transformer) {
         return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
     }
 

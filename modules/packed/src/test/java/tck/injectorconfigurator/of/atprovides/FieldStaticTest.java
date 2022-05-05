@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
-import packed.internal.inject.service.sandbox.Injector;
+import app.packed.inject.service.OldServiceLocator;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
@@ -70,7 +70,7 @@ public  static class MixedFieldsInstantiable {
             // L = 1L;
             P = 1;
             S = 1;
-            Injector i = Injector.configure(c -> {
+            OldServiceLocator i = InjectorComposer.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
@@ -114,7 +114,7 @@ public    static class MixedFieldsNoInstantiation {
             // L = 1L;
             P = 1;
             S = 1;
-            Injector i = Injector.configure(c -> {
+            OldServiceLocator i = InjectorComposer.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

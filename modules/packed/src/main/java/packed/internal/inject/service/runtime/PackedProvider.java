@@ -20,7 +20,7 @@ import app.packed.inject.Provider;
 /**
  *
  */
-/* primitive */ record PackedProvider<T> (RuntimeService service) implements Provider<T> {
+public /* primitive */ record PackedProvider<T> (RuntimeService service) implements Provider<T> {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

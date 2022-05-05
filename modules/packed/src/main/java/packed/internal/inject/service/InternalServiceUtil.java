@@ -27,6 +27,9 @@ import packed.internal.util.CollectionUtil;
  */
 public class InternalServiceUtil {
 
+    /** An empty service registry */
+    public static final ServiceRegistry EMPTY = new UnchangeableServiceRegistry(Map.of());
+
     public static Key<?> checkKey(Class<?> beanClass, Class<?> key) {
         return Key.of(key);
     }
@@ -34,9 +37,6 @@ public class InternalServiceUtil {
     public static Key<?> checkKey(Class<?> beanClass, Key<?> key) {
         return key;
     }
-
-    /** An empty service registry */
-    public static final ServiceRegistry EMPTY = new UnchangeableServiceRegistry(Map.of());
 
     /**
      * Creates a new service registry by making an immutable copy of the specified map of services.

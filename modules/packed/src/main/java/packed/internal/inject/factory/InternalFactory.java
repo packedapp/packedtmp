@@ -97,10 +97,10 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
     public static <R> InternalFactory<R> crackFactory(Factory<R> factory) {
         requireNonNull(factory, "factory is null");
-        if (factory instanceof CapturingFactory<R> f) {
-            return (InternalFactory<R>) InternalCapturingInternalFactory.VH_CF_FACTORY.get(factory);
+        if (factory instanceof InternalFactory<R> f) {
+            return f;
         } else {
-            return (InternalFactory<R>) factory;
+            return (InternalFactory<R>) InternalCapturingInternalFactory.VH_CF_FACTORY.get(factory);
         }
     }
 

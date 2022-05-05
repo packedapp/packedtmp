@@ -24,8 +24,9 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
@@ -36,13 +37,11 @@ import packed.internal.inject.DependencyNode;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BeanInstanceServiceSetup;
+import packed.internal.inject.service.build.ProvideAllFromServiceLocator;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
-import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 import packed.internal.lifetime.LifetimePool;
 
 /**
@@ -70,7 +69,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
     private final ContainerInjectionManager parent;
 
     //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
-    /** All locators added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
+    /** All locators added via {@link PublicizeExtension#provideAll(OldServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
@@ -120,7 +119,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
         return e;
     }
 
-    public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
+    public OldServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         if (ios.hasExports()) {
@@ -132,15 +131,22 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
 
         // make the entries immutable
         runtimeEntries = Map.copyOf(runtimeEntries);
-
-        // A hack to support Injector
-        if (Injector.class.isAssignableFrom(driver.applicationRawType())) {
-            return new PackedInjector(runtimeEntries);
-        } else {
-            return new InputOutputServiceManager.ExportedServiceLocator(runtimeEntries);
-        }
+        return new InputOutputServiceManager.ExportedServiceLocator(runtimeEntries);
     }
 
+    public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
+        Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
+        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
+        if (ios.hasExports()) {
+            for (ServiceSetup export : ios.exports()) {
+                runtimeEntries.put(export.key(), export.toRuntimeEntry(con));
+            }
+        }
+
+        return new PackedServiceLocator(Map.copyOf(runtimeEntries));
+    }
+    
+    
     public void prepareDependants() {
         // First we take all locally defined services
         for (ServiceSetup entry : localServices) {

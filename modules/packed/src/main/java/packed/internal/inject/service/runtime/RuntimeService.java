@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
+import app.packed.inject.Provider;
 import packed.internal.inject.service.InternalService;
 
 /** Represents a service at runtime. */
@@ -54,7 +55,16 @@ public non-sealed interface RuntimeService extends InternalService {
         sb.append("[constant=").append(rs.isConstant()).append(']');
         return sb.toString();
     }
-    
+
+    default Provider<?> provider() {
+        if (isConstant()) {
+            Object constant = provideInstance();
+            return Provider.ofConstant(constant);
+        } else {
+            return new PackedProvider<>(this);
+        }
+    }
+
     static RuntimeService constant(Key<?> key, Object constant) {
         return new ConstantRuntimeService(key, constant);
     }

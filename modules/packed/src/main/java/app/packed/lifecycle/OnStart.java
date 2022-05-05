@@ -22,7 +22,6 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.BeanVariable;
-import app.packed.inject.service.ServiceRegistry;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -46,19 +45,6 @@ import app.packed.inject.service.ServiceRegistry;
  * &#064;OnStart()
  * public void hello(Container container) {
  *     System.out.println(&quot;The current state of container &quot; + container.getName() + &quot; is &quot; + container.getState());
- * }
- * </pre>
- * <p>
- * To find out exactly what kind of services that can be injected into the annotated method use an
- * {@link ServiceRegistry}.
- *
- * <pre>
- * &#064;OnStart()
- * public void showMeWhatCanBeInjected(InjectContext injector) {
- *     System.out.println(&quot;The following services can be injected into this method&quot;);
- *     for (Class&lt;?&gt; c : injector.services().keySet()) {
- *         System.out.println(c.getCanonicalName());
- *     }
  * }
  * </pre>
  * <p>

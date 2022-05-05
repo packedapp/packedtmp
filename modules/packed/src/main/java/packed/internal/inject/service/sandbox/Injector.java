@@ -15,19 +15,6 @@
  */
 package packed.internal.inject.service.sandbox;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
-import app.packed.application.App;
-import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLauncher;
-import app.packed.container.Assembly;
-import app.packed.container.ComposerAction;
-import app.packed.container.Wirelet;
-import app.packed.inject.service.ServiceLocator;
-import packed.internal.application.ApplicationInitializationContext;
-import packed.internal.util.LookupUtil;
-
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
  * An injector is typically created by populating an injector builder with the various services that needs to be
@@ -106,14 +93,8 @@ import packed.internal.util.LookupUtil;
 
 // Noget der kan injecte ting... Men ikke har en system component... 
 
-public interface Injector extends ServiceLocator {
+public interface Injector {
 
-//    /**
-//     * Returns the configuration site of this injector.
-//     * 
-//     * @return the configuration site of this injector
-//     */
-//    ConfigSite configSite();
 
     // /**
     // * Injects services into the fields and methods of the specified instance.
@@ -134,55 +115,9 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    static ApplicationLauncher<Injector> imageOf(Assembly  assembly, Wirelet... wirelets) {
-        return driver().imageOf(assembly, wirelets);
-    }
-
     // Is this useful outside of hosts???????
-    static ApplicationDriver<Injector> driver() {
-        return InjectorApplicationHelper.DRIVER;
-    }
+    
 
-    /**
-     * Creates a new injector using a configurator object.
-     *
-     * @param configurator
-     *            a consumer used for configuring the injector
-     * @param wirelets
-     *            wirelets
-     * @return the new injector
-     */
-    static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return InjectorComposer.configure(configurator, wirelets);
-    }
 
-    /**
-     * Creates a new injector from the specified assembly.
-     *
-     * @param assembly
-     *            the assembly to create the injector from
-     * @param wirelets
-     *            optional wirelets
-     * @return the new injector
-     * @throws RuntimeException
-     *             if the injector could not be created for some reason. For example, if the source defines any components
-     *             that requires a lifecycle
-     */
-    // Of er maaske fin. Saa understreger vi ligesom
-    static Injector of(Assembly  assembly, Wirelet... wirelets) {
-        return driver().launch(assembly, wirelets);
-    }
 }
 
-/** An artifact driver for creating {@link App} instances. */
-final class InjectorApplicationHelper {
-
-    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationInitializationContext.class);
-
-    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(),
-            Injector.class, CONV);
-
-    static Injector convert(ApplicationInitializationContext container) {
-        return (Injector) container.services();
-    }
-}

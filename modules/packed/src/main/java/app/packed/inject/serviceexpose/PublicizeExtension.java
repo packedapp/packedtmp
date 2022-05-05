@@ -24,8 +24,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.inject.service.ServiceRegistry;
-import app.packed.validate.Validator;
+import app.packed.inject.sandbox.ServiceConfiguration;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
 
@@ -73,7 +72,7 @@ import packed.internal.inject.service.ContainerInjectionManager;
 
 // Rename to ExportExtension or ServiceExportExtension
 @DependsOn(extensions = BeanExtension.class)
-public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
+public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExtension> {
 
     private final ContainerInjectionManager injectionManager;
 
@@ -83,17 +82,18 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      * @param configuration
      *            an extension configuration object.
      */
-    ServiceExtension(ExtensionSetup setup) {
+    PublicizeExtension(ExtensionSetup setup) {
         this.injectionManager = setup.container.injectionManager;
-    } 
-    
+    }
+
     // Validates the outward facing contract
-    public void checkContract(Validator<? super ServiceContract> validator) {
+    public void checkContract(Consumer<? super ServiceContract> validator) {
         // Hmm maaske man ville lave et unit test istedet for...
     }
 
-    public void checkExactContract(ServiceContract sc) {
-        checkContract(ServiceContractChecker.exact(sc));
+    public void checkContractExact(ServiceContract sc) {
+        // Det der er ved validator ServiceContractChecker er at man kan faa lidt mere context med
+        // checkContract(Service(c->c.checkExact(sc));// ContractChecker.exact(sc));
     }
 
     // One of 3 models...
@@ -133,8 +133,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     /** {@return a mirror for this extension.} */
     @Override
-    protected ServiceExtensionMirror newExtensionMirror() {
-        return new ServiceExtensionMirror(injectionManager);
+    protected PublicizeExtensionMirror newExtensionMirror() {
+        return new PublicizeExtensionMirror(injectionManager);
     }
 
     // requires bliver automatisk anchoret...
@@ -565,15 +565,15 @@ class ZExtraFunc {
 //        throw new UnsupportedOperationException();
 //    }
 
-    /**
-     * Returns an unmodifiable view of the services that are currently available within the container.
-     * 
-     * @return a unmodifiable view of the services that are currently available within the container
-     */
-    ServiceRegistry services() {
-        // Problemet er vel at vi resolver her...
-        throw new UnsupportedOperationException();
-    }
+//    /**
+//     * Returns an unmodifiable view of the services that are currently available within the container.
+//     * 
+//     * @return a unmodifiable view of the services that are currently available within the container
+//     */
+//    ServiceRegistry services() {
+//        // Problemet er vel at vi resolver her...
+//        throw new UnsupportedOperationException();
+//    }
     // Skal vi ogsaa supportere noget paa tvaers af containers???
     // Det er vel en slags Wirelet
     // CycleBreaker(SE, ...);

@@ -39,7 +39,7 @@ import packed.internal.container.ExtensionSetup;
  * A mirror for an bean operation.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
- * the {@link app.packed.inject.serviceexpose.ServiceExtension} provides details about an exported service via
+ * the {@link app.packed.inject.serviceexpose.PublicizeExtension} provides details about an exported service via
  * {@link ServiceExportMirror}.
  * <p>
  * NOTE: Subclasses of this class:

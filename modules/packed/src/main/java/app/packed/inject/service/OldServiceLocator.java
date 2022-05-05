@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
@@ -27,45 +26,24 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Reflectable;
-import app.packed.bean.BeanExtension;
+import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
+import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
+import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.serviceexpose.ServiceComposer;
 import app.packed.operation.dependency.DependencyProvider;
-
+import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- * 
+ * Extends {@link ServiceRegistry} with method for acquiring service instances.
  * <p>
- * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
+ * Unless otherwise specified service locators are always immutable.
  */
-@DependencyProvider.Hook(extension = BeanExtension.class)
-public interface ServiceLocator {
-
-    /**
-     * Returns {@code true} if this registry contains a service with the specified key.
-     *
-     * @param key
-     *            key whose presence in this registry is to be tested
-     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
-     * @see #contains(Key)
-     */
-    default boolean contains(Class<?> key) {
-        return contains(Key.of(key));
-    }
-    
-    /**
-     * Returns {@code true} if this registry contains a service with the specified key.
-     *
-     * @param key
-     *            key whose presence in this registry is to be tested
-     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
-     * @see #contains(Class)
-     */
-    default boolean contains(Key<?> key) {
-        requireNonNull(key, "key is null");
-        return keys().contains(key);
-    }
+@DependencyProvider.Hook(extension = PublicizeExtension.class)
+public interface OldServiceLocator extends ServiceRegistry {
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional.
@@ -97,10 +75,8 @@ public interface ServiceLocator {
      * @return an optional containing the service instance if present, or an empty optional if not present
      * @see #use(Key)
      */
-    default <T> Optional<T> findInstance(Key<T> key) {
-        return findProvider(key).map(p -> p.provide());
-    }
-    
+    <T> Optional<T> findInstance(Key<T> key);
+
     default <T> Optional<Provider<T>> findProvider(Class<T> key) {
         return findProvider(Key.of(key));
     }
@@ -138,30 +114,57 @@ public interface ServiceLocator {
         }
     }
 
-    /** {@return true if this registry contains any services, otherwise false} */
-    default boolean isEmpty() {
-        return keys().isEmpty();
-    }
-    
+    /**
+     * Returns a service selection with all of the services in this locator.
+     * 
+     * @return a service selection with all of the services in this locator
+     */
+    ServiceSelection<?> selectAll();
 
     /**
-     * Returns a set view containing the keys for every service in this registry.
+     * Returns a service selection where the raw type of every service key is assignable to the specified type.
      * <p>
-     * If this registry supports removals, the returned set will also support removal operations: {@link Set#clear()},
-     * {@link Set#remove(Object)}, {@link Set#removeAll(java.util.Collection)},
-     * {@link Set#removeIf(java.util.function.Predicate)} and {@link Set#retainAll(java.util.Collection)}. or via any set
-     * iterators. The returned map will never support insertion or update operations.
-     * <p>
-     * The returned map will retain any thread-safety guarantees provided by the registry itself.
+     * Unlike this method {@link #selectWithAnyQualifiers(Class)} this method will also select any
      * 
-     * @return a set view containing the keys for every service in this registry
+     * @param <T>
+     *            the assignable type
+     * @param type
+     *            the assignable type
+     * @return the service selection
      */
-    Set<Key<?>> keys();
+    <T> ServiceSelection<T> selectAssignableTo(Class<T> type);
 
-    /** { @return the number of services in this locator} */
-    default int size() {
-        return keys().size();
+    // Maaske drop withAnyQualifiers
+    // T????? den giver ikke rigtig mening syntes jeg...
+    //// Eller er det key delen vi selector paa?
+    //// Altsaa selectOnKeyType
+    default <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> typePart) {
+        return selectWithAnyQualifiers(TypeToken.of(typePart));
     }
+
+    /**
+     * @param <T>
+     *            the service type
+     * @param typePart
+     *            the type part of the key
+     * @return
+     */
+    <T> ServiceSelection<T> selectWithAnyQualifiers(TypeToken<T> typePart);
+
+    /**
+     * Spawns a new service locator by using a {@link ServiceComposer} to transmute this locator.
+     * <p>
+     * INSERT EXAMPLE
+     * 
+     * <p>
+     * If you
+     * 
+     * @param action
+     *            the transmutation action
+     * @return the new service locator
+     */
+    @Reflectable
+    OldServiceLocator spawn(ComposerAction<ServiceComposer> action);
 
     /**
      * Returns a service with the specified key. Or throws a {@link NoSuchElementException} if no such service is available.
@@ -225,18 +228,10 @@ public interface ServiceLocator {
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
-    private static ApplicationDriver<ServiceLocator> driver() {
+    static ApplicationDriver<OldServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
-    
 
-    // maaske har vi launcher og Image...
-    @Reflectable
-    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().mirrorOf(assembly, wirelets);
-    }
-
-    
     /**
      * Creates a new service locator image from the specified assembly and optional wirelets.
      * 
@@ -248,18 +243,19 @@ public interface ServiceLocator {
      * @see #driver()
      */
     @Reflectable
-    static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
+    // maaske har vi launcher og Image...
     @Reflectable
-    static ApplicationLauncher<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().reusableImageOf(assembly, wirelets);
+    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().mirrorOf(assembly, wirelets);
     }
 
-    /** {@return a service locator that provides no services.} */
-    static ServiceLocator of() {
-        throw new UnsupportedOperationException();
+    /** {@return a service locator that provide no services} */
+    static OldServiceLocator of() {
+        return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
 
     /**
@@ -273,8 +269,67 @@ public interface ServiceLocator {
      * @see #driver()
      */
     @Reflectable
-    static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
+    static OldServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 
+    /**
+     * Creates a new service locator via a service composer.
+     * 
+     * @param action
+     *            the composition action
+     * @return a new service locator
+     * @see #driver()
+     */
+    @Reflectable
+    static OldServiceLocator of(ComposerAction<? super ServiceComposer> action) {
+        return PackedServiceComposer.of(action);
+    }
+
+    @Reflectable
+    static ApplicationLauncher<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().reusableImageOf(assembly, wirelets);
+    }
+}
+
+interface ServiceLocatorZandbox extends OldServiceLocator {
+
+    // Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
+    // og saa faa den specificeret key.
+
+    // Kunne godt taenke mig at finde et godt navn.x
+    // Naar en noegle er en super noegle???
+
+    // may define any qualifiers
+    default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
+        // select(Number.class) will select @Named("foo") Number but not Integer
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a service selection with all of the services in this locator with a {@link Key} whose {@link Key#rawType()}
+     * is {@link Class#isAssignableFrom(Class) assignable} to the specified type.
+     * <p>
+     * Primitive types will automatically be boxed if specified.
+     * 
+     * @return a service selection with all of the services in this locator with a key whose raw type is assignable to the
+     *         specified service type
+     * @see Class#isAssignableFrom(Class)
+     * @see Key#rawType()
+     */
+    // Hmm kan vi sige noget om actual type som vi producere???
+    default <T> ServiceSelection<T> select(TypeToken<T> key) {
+        // May define additional qualifiers
+        throw new UnsupportedOperationException();
+    }
+
+    // Vi har faktisk 3.
+    // Key Delen = Foo.class; (Ignores qualifiers)
+    // Key delend.rawType = Foo.class
+    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
+
+    // All whose raw type is equal to.. Don't know if it is
+    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.sandbox;
+package packed.internal.inject.service.build;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
-import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.RuntimeService;
 
-/** Represents an invocation of {@link ServiceExtension#provideAll(ServiceLocator)}. */
+/** Represents an invocation of {@link PublicizeExtension#provideAll(OldServiceLocator)}. */
 public final class ProvideAllFromServiceLocator {
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */

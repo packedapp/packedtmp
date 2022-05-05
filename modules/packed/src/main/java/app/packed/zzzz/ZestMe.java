@@ -24,7 +24,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 
 /**
  *
@@ -56,7 +56,7 @@ public class ZestMe extends BaseAssembly {
 
     }
 
-    @DependsOn(extensions = { ServiceExtension.class, EntryPointExtension.class, BeanExtension.class })
+    @DependsOn(extensions = { PublicizeExtension.class, EntryPointExtension.class, BeanExtension.class })
     public static class MyExt extends Extension<MyExt> {
 
         MyExt() {}

@@ -24,28 +24,28 @@ import java.util.List;
 import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;
 
 /**
- * This class manages everything to do with the requirements for a {@link ServiceExtension}.
+ * This class manages everything to do with the requirements for a {@link PublicizeExtension}.
  * 
- * @see ServiceExtension#require(Key...)
- * @see ServiceExtension#requireOptionally(Key...)
+ * @see PublicizeExtension#require(Key...)
+ * @see PublicizeExtension#requireOptionally(Key...)
  */
 public final class ServiceManagerRequirementsSetup {
 
     /**
-     * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
-     * {@link ServiceExtension#requireOptionally(Key...)}.
+     * Explicit requirements, typically added via {@link PublicizeExtension#require(Key...)} or
+     * {@link PublicizeExtension#requireOptionally(Key...)}.
      */
     final ArrayList<ServiceDependencyRequirement> explicitRequirements = new ArrayList<>();
 
     /**
-     * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key...)},
-     * {@link ServiceExtension#requireOptionally(Key...)} and add contract.
+     * Whether or not the user must explicitly specify all required services. Via {@link PublicizeExtension#require(Key...)},
+     * {@link PublicizeExtension#requireOptionally(Key...)} and add contract.
      * <p>
      * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
      * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
@@ -144,8 +144,8 @@ public final class ServiceManagerRequirementsSetup {
      * @param isOptional
      *            whether or not it is optional
      * 
-     * @see ServiceExtension#require(Key...)
-     * @see ServiceExtension#requireOptionally(Key...)
+     * @see PublicizeExtension#require(Key...)
+     * @see PublicizeExtension#requireOptionally(Key...)
      */
     public void require(Key<?> key, boolean isOptional /* , ConfigSite configSite */) {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));

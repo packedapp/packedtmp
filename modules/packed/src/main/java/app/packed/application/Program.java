@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.OldServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.sandbox.LifetimeWirelets;
@@ -59,7 +59,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return the service locator for this app
      */
-    ServiceLocator services();
+    OldServiceLocator services();
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
@@ -150,7 +150,7 @@ public interface Program extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(String name, ServiceLocator services, LifecycleApplicationController runtime) implements Program {
+record ProgramImplementation(String name, OldServiceLocator services, LifecycleApplicationController runtime) implements Program {
 
     /** An driver for creating App instances. */
     static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(RunState.RUNNING).build(MethodHandles.lookup(),

@@ -25,8 +25,8 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 import app.packed.inject.serviceexpose.ServiceContract;
-import app.packed.inject.serviceexpose.ServiceExtension;
 import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.Service1stPassWirelet;
@@ -46,7 +46,7 @@ import packed.internal.inject.service.build.ServiceSetup;
  * Get some inspiration from streams
  * 
  * <p>
- * All Wirelets on this class can only be used on container components. And the container must use a {@link ServiceExtension}.
+ * All Wirelets on this class can only be used on container components. And the container must use a {@link PublicizeExtension}.
  */
 public final class ServiceWirelets {
 
@@ -58,12 +58,6 @@ public final class ServiceWirelets {
     // Fordi der laver jo bare filtrering paa de services vi ikke
     // skal bruge
 
-    // Omvendt vil vi godt have en loesning til config. Da vi ikke vil
-    // have elementer (som default) som vi ikke ved hvordan skal behandles
-    static Wirelet ignoreUnrequiredServices() {
-        throw new UnsupportedOperationException();
-    }
-
     public static Wirelet anchor(Class<?>/* ...?? why not */ key) {
         return anchor(Key.of(key));
     }
@@ -72,19 +66,19 @@ public final class ServiceWirelets {
         return anchorIf(s -> s.key().equals(key));
     }
 
-    // A service is accessible by a class or interface x. if the full key is Accessible
-
     /**
      * Anchors every accessible service exported by the child container into the parent container.
      * <p>
      * The wirelet can only be used when wiring non-root containers.
      * 
      * @return a wirelet that will anchor all services
-     * @see ServiceExtension#anchorAll()
+     * @see PublicizeExtension#anchorAll()
      */
     public static Wirelet anchorAll() {
         return anchorIf(t -> true);
     }
+
+    // A service is accessible by a class or interface x. if the full key is Accessible
 
     public static Wirelet anchorIf(Predicate<? super Service> filter) {
         throw new UnsupportedOperationException();
@@ -110,8 +104,35 @@ public final class ServiceWirelets {
     // maybe even just verify... or validate
     public static Wirelet checkContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
-        return from((t, c) -> action.accept(c));
+        return transformIn((t, c) -> action.accept(c));
     }
+
+
+    public static <T> Wirelet provideInstance(Class<T> key, T instance) {
+        return provideInstance(Key.of(key), instance);
+    }
+    /**
+     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a
+     * service of the specific type as a requirement.
+     * <p>
+     * Invoking this method is identical to invoking {@code to(t -> t.provideInstance(instance))}.
+     * 
+     * @param instance
+     *            the service to provide
+     * @return a wirelet that will provide the specified service
+     * @see ServiceTransformer#provideInstance(Object)
+     */
+    public static <T> Wirelet provideInstance(Key<T> key, T instance) {
+        requireNonNull(key, "key is null");
+        requireNonNull(instance, "instance is null");
+        return transformOut(t -> t.provideInstance(key, instance));
+    }
+
+
+//    public static Wirelet provideInstance(Object instance) {
+//        requireNonNull(instance, "instance is null");
+//        return transformTo(t -> t.provideInstance(instance));
+//    }
 
     /**
      * This method is similar to {@link #from(Consumer)} but also provides the service of the child.
@@ -127,7 +148,7 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
+    public static Wirelet transformIn(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             @Override
@@ -144,7 +165,7 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(Consumer<? super ServiceTransformer> transformation) {
+    public static Wirelet transformIn(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             /** {@inheritDoc} */
@@ -155,33 +176,7 @@ public final class ServiceWirelets {
         };
     }
 
-    public static <T> Wirelet provideInstance(Class<T> key, T instance) {
-        return provideInstance(Key.of(key), instance);
-    }
-
-    public static <T> Wirelet provideInstance(Key<T> key, T instance) {
-        requireNonNull(key, "key is null");
-        requireNonNull(instance, "instance is null");
-        return to(t -> t.provideInstance(key, instance));
-    }
-
-    /**
-     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a
-     * service of the specific type as a requirement.
-     * <p>
-     * Invoking this method is identical to invoking {@code to(t -> t.provideInstance(instance))}.
-     * 
-     * @param instance
-     *            the service to provide
-     * @return a wirelet that will provide the specified service
-     * @see ServiceTransformer#provideInstance(Object)
-     */
-    public static Wirelet provideInstance(Object instance) {
-        requireNonNull(instance, "instance is null");
-        return to(t -> t.provideInstance(instance));
-    }
-
-    public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
+    public static Wirelet transformOut(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
@@ -191,7 +186,7 @@ public final class ServiceWirelets {
         };
     }
 
-    public static Wirelet to(Consumer<? super ServiceTransformer> transformation) {
+    public static Wirelet transformOut(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
@@ -223,6 +218,11 @@ class ServiceWSandbox {
 
     // Second pass
 
+    // Omvendt vil vi godt have en loesning til config. Da vi ikke vil
+    // have elementer (som default) som vi ikke ved hvordan skal behandles
+    static Wirelet ignoreUnrequiredServices() {
+        throw new UnsupportedOperationException();
+    }
     static Wirelet anchor(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }

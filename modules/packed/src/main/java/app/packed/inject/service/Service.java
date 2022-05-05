@@ -7,11 +7,6 @@ import app.packed.base.Key;
  */
 // isLazy.. Kan vi sige noget om det.. Det vil jeg ikke mene
 
-// Er det en model???
-
-// ServiceModel...
-//// Maaske har vi en ServiceModel et sted...
-//// SM.getUsages() ->
 public /* sealed */ interface Service {
 
     /**

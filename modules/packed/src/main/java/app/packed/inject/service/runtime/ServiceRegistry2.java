@@ -14,23 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.Spliterator;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.BeanVariable;
+import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceSelection;
 import app.packed.inject.serviceexpose.ServiceComposer;
-import packed.internal.inject.service.InternalServiceUtil;
 
 /**
  * A collection of {@link Service services}, with each service having a unique {@link Service#key() key}.
@@ -52,20 +47,7 @@ import packed.internal.inject.service.InternalServiceUtil;
  * component instance. It will not include auto services.
  */
 @BeanVariable.AnnotatedWithHook(extension = BeanExtension.class)
-public interface ServiceRegistry extends Iterable<Service> {
-    
-    /**
-     * Returns a map view of every entry (key-service pair) in this registry in no particular order.
-     * <p>
-     * If this registry supports removals, the returned map will also support removal operations: {@link Map#clear()},
-     * {@link Map#remove(Object)}, and {@link Map#remove(Object, Object)} and via views on {@link Map#keySet()},
-     * {@link Map#values()} and {@link Map#entrySet()}. The returned map never supports insertion or update operations.
-     * <p>
-     * The returned map will retain any thread-safety guarantees provided by the registry itself.
-     * 
-     * @return a map view of every entry in this registry in no particular order
-     */
-    Map<Key<?>, Service> asMap();
+public interface ServiceRegistry2 {
 
     /**
      * Returns {@code true} if this registry contains a service with the specified key.
@@ -89,50 +71,11 @@ public interface ServiceRegistry extends Iterable<Service> {
      */
     default boolean contains(Key<?> key) {
         requireNonNull(key, "key is null");
-        return asMap().containsKey(key);
-    }
-
-    /**
-     * Finds and returns a service with the specified key if present. Otherwise return {@link Optional#empty()}.
-     * 
-     * @param key
-     *            the key to find a service for
-     * @return the service, or empty if no service with the specified key exist
-     * @see #find(Key)
-     */
-    default Optional<Service> find(Class<?> key) {
-        return find(Key.of(key));
-    }
-
-    /**
-     * Finds and returns a service with the specified key if present. Otherwise return {@link Optional#empty()}.
-     * 
-     * @param key
-     *            the key to find a service for
-     * @return the service, or empty if no service with the specified key exist
-     * @see #find(Class)
-     */
-    default Optional<Service> find(Key<?> key) {
-        requireNonNull(key, "key is null");
-        return Optional.ofNullable(asMap().get(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default void forEach(Consumer<? super Service> action) {
-        asMap().values().forEach(action);
+        return keys().contains(key);
     }
 
     /** {@return true if this registry contains any services, otherwise false} */
-    default boolean isEmpty() {
-        return asMap().isEmpty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default Iterator<Service> iterator() {
-        return asMap().values().iterator();
-    }
+    boolean isEmpty();
 
     /**
      * Returns a set view containing the keys for every service in this registry.
@@ -146,28 +89,10 @@ public interface ServiceRegistry extends Iterable<Service> {
      * 
      * @return a set view containing the keys for every service in this registry
      */
-    default Set<Key<?>> keys() {
-        return asMap().keySet();
-    }
-
-    /** {@return a unordered {@code Stream} of all services in this registry} */
-    default Stream<Service> services() {
-        return asMap().values().stream();
-    }
+    Set<Key<?>> keys();
 
     /** { @return the number of services in this registry} */
     default int size() {
-        return asMap().size();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default Spliterator<Service> spliterator() {
-        return asMap().values().spliterator();
-    }
-
-    /** {@return an immutable service registry containing no services} */
-    static ServiceRegistry of() {
-        return InternalServiceUtil.EMPTY;
+        return keys().size();
     }
 }

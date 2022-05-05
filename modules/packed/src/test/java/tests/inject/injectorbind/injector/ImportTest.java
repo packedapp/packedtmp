@@ -22,10 +22,13 @@ import java.lang.annotation.Target;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory1;
-import packed.internal.inject.service.sandbox.Injector;
+import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceWirelets;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
  *
@@ -34,12 +37,9 @@ public class ImportTest {
 
     // The import at (Xxxx) and (Yyyy) both defines are service with Key<ZoneId>
     public static void main(String[] args) {
-
-        Injector i = Injector.configure(c -> {
-            // c.link(new London(), OldServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London")
-            // ZonedDateTime>() {}));
-            // c.link(new London(), OldServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin")
-            // ZonedDateTime>() {}));
+        OldServiceLocator i = InjectorComposer.configure(c -> {
+            c.link(new London(), ServiceWirelets.transformIn(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {})));
+            c.link(new London(), ServiceWirelets.transformIn(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {})));
         });
         System.out.println(i);
     }
@@ -51,7 +51,7 @@ public class ImportTest {
         protected void build() {
             provideInstance(ZoneId.systemDefault()).provideAs(ZoneId.class).export();
             providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
-            
+
         }
     }
 

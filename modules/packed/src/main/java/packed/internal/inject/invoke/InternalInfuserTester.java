@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import app.packed.bean.Provide;
 import app.packed.container.Extension;
 import app.packed.inject.service.ServiceRegistry;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.serviceexpose.PublicizeExtension;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.util.LookupUtil;
 
@@ -55,7 +55,7 @@ public class InternalInfuserTester {
         }
     }
 
-    @DependencyProvider.Hook(extension = ServiceExtension.class)
+    @DependencyProvider.Hook(extension = PublicizeExtension.class)
     interface XX {
 
         // Det er super smart at man ikke skal lave en ny klasse...

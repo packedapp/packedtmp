@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.operation.dependency;
 
 /**
  *
  */
+
+// Det er ligegyldig viden paa runtime vil jeg mene
+// Det giver kun mening for mirrors.
 public enum ServiceScope {
     CONTAINER, BEAN, OPERATION;
 }

@@ -15,8 +15,12 @@
  */
 package packed.internal.inject.service.sandbox;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
+import app.packed.application.App;
+import app.packed.application.ApplicationDriver;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ProvideableBeanConfiguration;
@@ -28,8 +32,10 @@ import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.ServiceExtension;
+import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.serviceexpose.PublicizeExtension;
+import packed.internal.application.ApplicationInitializationContext;
+import packed.internal.util.LookupUtil;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -55,8 +61,8 @@ public final class InjectorComposer extends Composer {
      * 
      * @return an instance of the injector extension
      */
-    private ServiceExtension extension() {
-        ServiceExtension se = configuration.use(ServiceExtension.class);
+    private PublicizeExtension extension() {
+        PublicizeExtension se = configuration.use(PublicizeExtension.class);
         if (!initialized) {
             se.exportAll();
             initialized = true;
@@ -168,7 +174,7 @@ public final class InjectorComposer extends Composer {
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
-    public void provideAll(ServiceLocator injector) {
+    public void provideAll(OldServiceLocator injector) {
         extension();
         configuration.use(BeanExtension.class).provideAll(injector);
     }
@@ -206,10 +212,21 @@ public final class InjectorComposer extends Composer {
         return configuration.use(BeanExtension.class).providePrototype(factory);
     }
 
-    static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(Injector.driver(), InjectorComposer::new, configurator, wirelets);
+    public static OldServiceLocator  configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
+        return compose(InjectorApplicationHelper.DRIVER, InjectorComposer::new, configurator, wirelets);
     }
+}
 
+/** An artifact driver for creating {@link App} instances. */
+final class InjectorApplicationHelper {
+
+    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", OldServiceLocator .class, ApplicationInitializationContext.class);
+
+    static final ApplicationDriver<OldServiceLocator> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), OldServiceLocator.class, CONV);
+
+    static OldServiceLocator convert(ApplicationInitializationContext container) {
+        return (OldServiceLocator ) container.services();
+    }
 }
 // addStatics(); useStatics()
 // @OnHook

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +27,10 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.inject.Provider;
+import app.packed.inject.service.Service;
+import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceSelection;
 
 /**
  * A specialization of {@link OldServiceLocator} where all service instances have some kind of common super type
@@ -37,12 +41,10 @@ import app.packed.inject.Provider;
  * @see OldServiceLocator#selectWithAnyQualifiers(Class)
  * @see OldServiceLocator#selectWithAnyQualifiers(app.packed.base.TypeToken)
  */
-public interface ServiceSelection<S> extends OldServiceLocator {
+// Nested class on ServiceLocator???
 
-    default void forEachInstance(BiConsumer<? super Service, ? super S> action) {
-        requireNonNull(action, "action is null");
-        serviceInstances().forEach(e -> action.accept(e.getKey(), e.getValue()));
-    }
+// Ved ikke med providers...
+public interface ServiceSelection2<S> extends ServiceLocator {
 
     /**
      * Acquires a service instance for each service in this selection and performs the specified action.

@@ -25,7 +25,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory0;
-import packed.internal.inject.service.sandbox.Injector;
+import app.packed.inject.service.OldServiceLocator;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 import testutil.assertj.Assertions;
 
 /**
@@ -41,8 +42,8 @@ public class InjectorBindAssemblyTest {
             protected void build() {}
         };
 
-        Assertions.npe(() -> Injector.configure(c -> c.link((BaseAssembly) null)), "assembly");
-        Assertions.npe(() -> Injector.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
+        Assertions.npe(() -> InjectorComposer.configure(c -> c.link((BaseAssembly) null)), "assembly");
+        Assertions.npe(() -> InjectorComposer.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */
@@ -55,7 +56,7 @@ public class InjectorBindAssemblyTest {
             }
         };
 
-        Injector i = Injector.configure(c -> {
+        OldServiceLocator i = InjectorComposer.configure(c -> {
             c.link(b);
         });
         assertThat(i.services().count()).isEqualTo(0L);
@@ -72,7 +73,7 @@ public class InjectorBindAssemblyTest {
             }
         };
 
-        Injector i = Injector.configure(c -> {
+        OldServiceLocator i = InjectorComposer.configure(c -> {
             c.link(b);
         });
         assertThat(i.use(String.class)).isEqualTo("X");
@@ -80,17 +81,17 @@ public class InjectorBindAssemblyTest {
 
     /** Tests that we can import no services. */
     @Test
-    @Disabled // because of refactoring
+    @Disabled
     public void protoTypeImport() {
         AtomicLong al = new AtomicLong();
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                providePrototype(new Factory0<>(al::incrementAndGet) {}).export();
+                providePrototype(new Factory0<Long>(al::incrementAndGet) {}).export();
             }
         };
 
-        Injector i = Injector.configure(c -> {
+        OldServiceLocator i = InjectorComposer.configure(c -> {
             c.link(b);
         });
         assertThat(i.use(Long.class)).isEqualTo(1L);

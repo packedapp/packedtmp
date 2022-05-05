@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.serviceexpose;
+package app.packed.inject.sandbox;
 
+import app.packed.inject.serviceexpose.ServiceContract;
 import app.packed.validate.Validator;
 
 /**
@@ -36,6 +37,7 @@ public abstract class ServiceContractChecker implements Validator<ServiceContrac
     // checkIs
     // checkFoo
 
+    // ServiceConstract.exactConstractValidator();
     public static Validator<ServiceContract> exact(ServiceContract sc) {
         throw new UnsupportedOperationException();
     }

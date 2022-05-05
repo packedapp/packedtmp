@@ -20,21 +20,21 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
+import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceRegistry;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -44,8 +44,8 @@ import app.packed.inject.service.ServiceRegistry;
  * order. A service transformation requires that any dependencies are available whenever performing a transformation of
  * some kind.
  * 
- * @see ServiceLocator#spawn(java.util.function.Consumer)
- * @see ServiceLocator#of(java.util.function.Consumer)
+ * @see OldServiceLocator#spawn(java.util.function.Consumer)
+ * @see OldServiceLocator#of(java.util.function.Consumer)
  */
 // Create services
 
@@ -77,8 +77,10 @@ import app.packed.inject.service.ServiceRegistry;
 // Den configuration vi skal kalde er jo ikke helt ContainerConfiguration
 // F.eks. hvis vi bruger den i forbindelse med filterExports eller wirelets
 // Det er jo mere en slags tilretning, hvor vi gerne vil registrere nogle componenter...
-public abstract /* sealed */ class ServiceComposer extends Composer implements ServiceRegistry /* permits PackedServiceComposer */ {
+public abstract /* sealed */ class ServiceComposer extends Composer /* permits PackedServiceComposer */ {
 
+    public abstract Map<Key<?>, Service> asMap();
+    
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
      * 
@@ -255,67 +257,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     // asFoo() laver jo en ny service....
     public abstract void rekey(Key<?> existingKey, Key<?> newKey); // Return the new service????
 
-    /**
-     * <p>
-     * The rekeying function should not call other mutating operations on this transformer during computation.
-     * 
-     * <pre> {@code
-     * for (Service s : this) {
-     *    Key<?> key = rekeyingFunction.apply(s);
-     *    if (key == null) {
-     *       remove(key);
-     *    } else if (!key.equals(s.key())) {
-     *       rekey(s.key(), key);
-     *    }
-     * }
-     * }</pre>
-     * 
-     * @param rekeyingFunction
-     *            the function used for rekeying
-     * @throws IllegalStateException
-     *             if a service with newKey already exists
-     * @throws ClassCastException
-     *             if the type of any new key is not assignable to the service type
-     */
-    // Null???? Why Not.. I don't think Key will ever be a inline type
-    // Map<Key<?>, Service>... taenker det er en unmodifiable wrapper over en intern
-    // datastructur
-    // Take text from Map#compute
-    public void rekeyAll(Function<Service, @Nullable Key<?>> rekeyingFunction) {
-        for (Service s : this) {
-            Key<?> key = rekeyingFunction.apply(s);
-            if (key == null) {
-                remove(key);
-            } else if (!key.equals(s.key())) {
-                rekey(s.key(), key);
-            }
-        }
-    }
-
-    // auto figure out if constant or prototype
-
-    public void rekeyAllWith(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        rekeyAll(s -> s.key().with(qualifier));
-    }
-
-    public void rekeyAllWithClassTag(Class<?> tag) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Rekey all service
-     * 
-     * @param tag
-     */
-    // IDK, can add them later
-    // Navnet lyder lidt forkert. Vi tilfoejer et tag, mere
-    // addkey, rekey
-    // keyAdd, keyReplace?
-    public void rekeyAllWithTag(String tag) {
-        requireNonNull(tag, "tagis null");
-        rekeyAll(s -> s.key().withTag(tag));
-    }
+   
 
     /**
      * <p>
@@ -346,7 +288,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
 
     /** Removes all services. */
     public void removeAll() {
-        keys().clear();
+        asMap().keySet().clear();
     }
 
     /**
@@ -383,7 +325,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
      */
     public void removeIf(Predicate<? super Service> filter) {
         requireNonNull(filter, "filter is null");
-        for (Iterator<Service> iterator = iterator(); iterator.hasNext();) {
+        for (Iterator<Service> iterator = asMap().values().iterator(); iterator.hasNext();) {
             Service s = iterator.next();
             if (filter.test(s)) {
                 iterator.remove();
@@ -409,7 +351,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
     }
 
     public void retain(Key<?>... keys) {
-        keys().retainAll(Set.of(keys));
+        asMap().keySet().retainAll(Set.of(keys));
     }
 
     /**
@@ -430,11 +372,12 @@ public abstract /* sealed */ class ServiceComposer extends Composer implements S
                         "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());
             }
         }
-        keys().retainAll(Set.of(a));
+        asMap().keySet().retainAll(Set.of(a));
     }
 }
 
-abstract class UNext {
+// Various ideas on provide/rekey
+abstract class YIdeas {
 
     // Den sidste der mangler er jo en maade at aendre attributer paa
 
@@ -459,12 +402,6 @@ abstract class UNext {
     //// Fcking Qualifier not an attribute
     // void addAttributeName(Key, String name);
     // void addAttributeNameAll(Key, String name);
-
-}
-
-// Various ideas on provide/rekey
-abstract class YIdeas {
-
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
     // Or maybe just methods...
@@ -533,21 +470,21 @@ abstract class ZBadIdeas {
     // wirelets can communicate here???
     // Nah make an AtomicReference... og sa lambda capture
 
-    public abstract ServiceComposer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    public abstract ZBadIdeas map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
-    public abstract ServiceComposer map(Factory<?> factory, int... resolveInternally);
+    public abstract ZBadIdeas map(Factory<?> factory, int... resolveInternally);
 
     // Eller ogsaa skal vi have endnu en lag
     // Foerend alle services bliver brugt....
     // Syntes ikke den her fin
-    public abstract ServiceComposer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+    public abstract ZBadIdeas mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
 
     public abstract Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // JPMS-> Record must be readable for Packed
     // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
     // Man maa lave noget midlertigt hulumhej, som ma saa remover
-    public abstract ServiceComposer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+    public abstract ZBadIdeas multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
 
     // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
     // If the specified factory has itself as a variable.
@@ -560,6 +497,6 @@ abstract class ZBadIdeas {
     // I think I would rather have something like
     // se.pushForChildExportTransformartion(Key... keys);
 
-    public abstract ServiceComposer retainIf(Iterable<? super Key<?>> keys);
+    public abstract ZBadIdeas retainIf(Iterable<? super Key<?>> keys);
 
 }

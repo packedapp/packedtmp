@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
-import packed.internal.inject.service.sandbox.Injector;
+import app.packed.inject.service.OldServiceLocator;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /** Tests {@link Provide#constant()}. */
@@ -55,7 +55,7 @@ public class MethodInstanceTest {
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
     public void providePrototype() {
-        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> Injector.configure(c -> {
+        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> InjectorComposer.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(SingletonMethod.class);
@@ -71,7 +71,7 @@ public class MethodInstanceTest {
         // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> Injector.configure(c -> {
+        a = assertThatThrownBy(() -> InjectorComposer.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeMethod.class);
@@ -118,7 +118,7 @@ public class MethodInstanceTest {
         }
 
         static void test(Consumer<? super InjectorComposer> configurator) {
-            Injector i = Injector.configure(c -> {
+            OldServiceLocator i = InjectorComposer.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

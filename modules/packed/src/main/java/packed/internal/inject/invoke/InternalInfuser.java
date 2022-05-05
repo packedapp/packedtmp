@@ -19,8 +19,8 @@ import packed.internal.util.MemberScanner;
 import packed.internal.util.OpenClass;
 
 // MemberInjector
-// Used by
 
+// Used by
 //// ApplicationInstance
 //// Assembly-ContainerHook
 //// Extension (ExtensionModel)

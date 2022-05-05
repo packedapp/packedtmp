@@ -31,7 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.container.ComposerAction;
 import app.packed.inject.Factory;
 import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.serviceexpose.ServiceComposer;
 import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.InternalService;
@@ -162,7 +162,7 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
 
     // No wirelets???? 
     // Add it to App
-    public static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
+    public static OldServiceLocator of(ComposerAction<? super ServiceComposer> action) {
         return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
    
     }
@@ -171,7 +171,7 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
      * 
      * @return the new service locator
      */
-    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends InternalService> services, ComposerAction<? super ServiceComposer> transformation) {
+    public static OldServiceLocator toServiceLocator(Map<Key<?>, ? extends InternalService> services, ComposerAction<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         PackedServiceComposer psm = new PackedServiceComposer(services);
         transformation.build(psm);
@@ -184,7 +184,7 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
         return new PackedInjector(runtimeEntries);
     }
 
-    public static ServiceLocator transform(ComposerAction<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
+    public static OldServiceLocator transform(ComposerAction<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
         requireNonNull(transformation, "transformation is null");
         HashMap<Key<?>, ServiceSetup> m = new HashMap<>();
         for (RuntimeService s : services) {
@@ -202,5 +202,11 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
             BiConsumer<? super ServiceTransformer, ? super T> transformer, T attachment) {
         PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst, attachment);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> void peek(Key<T> key, Consumer<? super T> consumer) {
+        throw new UnsupportedOperationException();
     }
 }
