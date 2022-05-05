@@ -28,7 +28,6 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;
@@ -43,7 +42,7 @@ public class ProvideTest {
 
     @Test
     public void configSite() throws Throwable {
-        ServiceLocator inj = InjectorComposer.configure2(conf -> {
+        ServiceLocator inj = ServiceLocator.of(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ProvideableBeanConfiguration<A> a = conf.provide(A.class);
             ProvideableBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.factoryOf(B.class));
@@ -57,7 +56,7 @@ public class ProvideTest {
 
     @Test
     public void bindInstance() {
-        ServiceLocator i = InjectorComposer.configure2(e -> {
+        ServiceLocator i = ServiceLocator.of(e -> {
             ProvideableBeanConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, true, Key.of(A.class));
         });

@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionPoint;
 import app.packed.container.Extension.DependsOn;
+import app.packed.container.ExtensionPoint;
 import testutil.util.AbstractApplicationTest;
 
 /**

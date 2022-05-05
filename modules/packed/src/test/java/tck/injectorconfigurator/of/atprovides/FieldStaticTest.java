@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.InjectorComposer;
 
 /**
  * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
@@ -70,7 +70,7 @@ public  static class MixedFieldsInstantiable {
             // L = 1L;
             P = 1;
             S = 1;
-            ServiceLocator i = InjectorComposer.configure2(c -> {
+            ServiceLocator i = ServiceLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
@@ -114,7 +114,7 @@ public    static class MixedFieldsNoInstantiation {
             // L = 1L;
             P = 1;
             S = 1;
-            ServiceLocator i = InjectorComposer.configure2(c -> {
+            ServiceLocator i = ServiceLocator.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

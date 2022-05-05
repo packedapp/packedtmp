@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 
 /**
@@ -32,7 +31,7 @@ public class InjectorGetServiceTest {
 
     @Test
     public void isRuntimeServices() {
-        ServiceLocator i = InjectorComposer.configure2(c -> {
+        ServiceLocator i = ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class).export();
         });

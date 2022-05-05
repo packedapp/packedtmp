@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.bean.Provide;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.InjectorComposer;
+import app.packed.inject.service.ServiceLocator.InjectorComposer;
 import testutil.stubs.annotation.StringQualifier;
 
 /**
@@ -42,7 +42,7 @@ public class MembersProvideTest {
     }
 
     private static ServiceLocator of(Consumer<? super InjectorComposer> consumer) {
-        return InjectorComposer.configure2(c -> {
+        return ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });

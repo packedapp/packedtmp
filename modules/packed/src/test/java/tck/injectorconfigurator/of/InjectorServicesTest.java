@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.inject.service.InjectorComposer;
+import app.packed.inject.service.ServiceLocator;
 
 /**
  *
@@ -28,7 +28,7 @@ public class InjectorServicesTest {
 
     @Test
     public void services() {
-        assertThat(InjectorComposer.configure2(c -> {}).keys()).isEmpty();
+        assertThat(ServiceLocator.of(c -> {}).keys()).isEmpty();
     }
 
 }

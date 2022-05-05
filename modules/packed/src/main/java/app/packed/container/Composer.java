@@ -164,8 +164,6 @@ public abstract class Composer {
     // assemblies.lookup)
     protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, C composer,
             ComposerAction<? super C> consumer, Wirelet... wirelets) {
-        // return ((PackedApplicationDriver<A>) driver).compose(composer, consumer, wirelets);
-
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 

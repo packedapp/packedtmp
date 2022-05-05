@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.inject.service.InjectorComposer;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
@@ -37,7 +36,7 @@ public class InjectorWithTest {
 
     @Test
     public void get() {
-        ServiceLocator i = InjectorComposer.configure2(c -> {
+        ServiceLocator i = ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
             c.provide(A.class).provideAs(new Key<@Left A>() {});
