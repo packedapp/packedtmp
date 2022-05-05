@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,11 +31,9 @@ import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.serviceexpose.ServiceComposer;
 import app.packed.operation.dependency.DependencyProvider;
-import packed.internal.inject.service.build.PackedServiceComposer;
-import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.
@@ -251,39 +249,6 @@ public interface OldServiceLocator extends ServiceRegistry {
     @Reflectable
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
-    }
-
-    /** {@return a service locator that provide no services} */
-    static OldServiceLocator of() {
-        return PackedInjector.EMPTY_SERVICE_LOCATOR;
-    }
-
-    /**
-     * Creates a new standalone service locator from the specified assembly and optional wirelets.
-     * 
-     * @param assembly
-     *            the assembly that should be used to build the service locator
-     * @param wirelets
-     *            optional wirelets
-     * @return a new service locator
-     * @see #driver()
-     */
-    @Reflectable
-    static OldServiceLocator of(Assembly assembly, Wirelet... wirelets) {
-        return driver().launch(assembly, wirelets);
-    }
-
-    /**
-     * Creates a new service locator via a service composer.
-     * 
-     * @param action
-     *            the composition action
-     * @return a new service locator
-     * @see #driver()
-     */
-    @Reflectable
-    static OldServiceLocator of(ComposerAction<? super ServiceComposer> action) {
-        return PackedServiceComposer.of(action);
     }
 
     @Reflectable

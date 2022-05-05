@@ -33,7 +33,6 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
@@ -226,11 +225,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
                 "runtime", LifecycleApplicationController.class);
 
-        /** A MethodHandle for invoking {@link ApplicationInitializationContext#services()}. */
-        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-                "services", OldServiceLocator.class);
-
-        /** A MethodHandle for invoking {@link ApplicationInitializationContext#services()}. */
+        /** A MethodHandle for invoking {@link ApplicationInitializationContext#serviceLocator()}. */
         private static final MethodHandle MH_SERVICE_LOCATOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
                 "serviceLocator", ServiceLocator.class);
         
@@ -253,7 +248,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // Find a method handle for the application shell's constructor
             InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
-            builder.provide(OldServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICE_LOCATOR, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
             if (isExecutable) { // Conditional add ApplicationRuntime

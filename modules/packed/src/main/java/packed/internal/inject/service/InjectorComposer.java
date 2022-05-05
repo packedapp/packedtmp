@@ -27,12 +27,10 @@ import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.util.LookupUtil;
 
@@ -49,11 +47,6 @@ import packed.internal.util.LookupUtil;
 public final class InjectorComposer extends Composer {
 
     private boolean initialized;
-    final ContainerConfiguration configuration;
-
-    public InjectorComposer(ContainerConfiguration cc) {
-        this.configuration = cc;
-    }
 
     /**
      * Returns an instance of the injector extension.
@@ -61,7 +54,7 @@ public final class InjectorComposer extends Composer {
      * @return an instance of the injector extension
      */
     private PublicizeExtension extension() {
-        PublicizeExtension se = configuration.use(PublicizeExtension.class);
+        PublicizeExtension se = configuration().use(PublicizeExtension.class);
         if (!initialized) {
             se.exportAll();
             initialized = true;
@@ -76,7 +69,7 @@ public final class InjectorComposer extends Composer {
      *            optional import/export wirelets
      */
     public ComponentMirror link(Assembly assembly, Wirelet... wirelets) {
-        return configuration.link(assembly, wirelets);
+        return configuration().link(assembly, wirelets);
     }
 
     /**
@@ -111,7 +104,7 @@ public final class InjectorComposer extends Composer {
      */
     public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
         extension();
-        return configuration.use(BeanExtension.class).install(implementation).provide();
+        return configuration().use(BeanExtension.class).install(implementation).provide();
 
         // return extension().provide(implementation);
         // return configuration.use(BeanExtension.class).install(implementation).provide();
@@ -131,7 +124,7 @@ public final class InjectorComposer extends Composer {
      */
     public <T> ProvideableBeanConfiguration<T> provide(Factory<T> factory) {
         extension();
-        return configuration.use(BeanExtension.class).install(factory).provide();
+        return configuration().use(BeanExtension.class).install(factory).provide();
 
         // return extension().provide(factory);
     }
@@ -173,9 +166,9 @@ public final class InjectorComposer extends Composer {
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
-    public void provideAll(OldServiceLocator injector) {
+    public void provideAll(ServiceLocator injector) {
         extension();
-        configuration.use(BeanExtension.class).provideAll(injector);
+        configuration().use(BeanExtension.class).provideAll(injector);
     }
 
     /**
@@ -197,42 +190,27 @@ public final class InjectorComposer extends Composer {
     // Should not fail if we fx have two public constructors of equal lenght
     public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
         extension();
-        return configuration.use(BeanExtension.class).installInstance(instance).provide();
+        return configuration().use(BeanExtension.class).installInstance(instance).provide();
 
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         extension();
-        return configuration.use(BeanExtension.class).providePrototype(implementation);
+        return configuration().use(BeanExtension.class).providePrototype(implementation);
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
         extension();
-        return configuration.use(BeanExtension.class).providePrototype(factory);
-    }
-
-    @Deprecated
-    public static OldServiceLocator configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(DRIVER, InjectorComposer::new, configurator, wirelets);
+        return configuration().use(BeanExtension.class).providePrototype(factory);
     }
 
     public static ServiceLocator configure2(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(DRIVER2, InjectorComposer::new, configurator, wirelets);
+        return compose(DRIVER2, new InjectorComposer(), configurator, wirelets);
     }
-    
-    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", OldServiceLocator.class,
-            ApplicationInitializationContext.class);
 
     static final MethodHandle CONV2 = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert2", ServiceLocator.class, ApplicationInitializationContext.class);
 
-    static final ApplicationDriver<OldServiceLocator> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), OldServiceLocator.class, CONV);
-    
     static final ApplicationDriver<ServiceLocator> DRIVER2 = ApplicationDriver.builder().build(MethodHandles.lookup(), ServiceLocator.class, CONV2);
-
-    
-    static OldServiceLocator convert(ApplicationInitializationContext container) {
-        return container.services();
-    }
 
     static ServiceLocator convert2(ApplicationInitializationContext container) {
         return container.serviceLocator();

@@ -24,7 +24,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
 
 /**
  *

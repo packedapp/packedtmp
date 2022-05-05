@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.serviceexpose.ServiceContract;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceContract;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.C;

@@ -21,12 +21,11 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.AssemblySetupOfComposer;
@@ -35,13 +34,8 @@ import packed.internal.util.LookupUtil;
 /**
  * Composers does not usually have any public constructors.
  */
-// Unlike assemblies composers are typically domain specific
-
-// two modes (may support both at the same time)
-//// Create a standalone application
-//// Configures a part of an extension
-
-// Does not support mirrors
+// -> AbstractComposer (synthetic Assembly -> Generaeted per module-per composer type???)
+// AbstractComposer og saa ServiceLocator.Composer
 public abstract class Composer {
 
     /** A handle that can access #configuration. */
@@ -64,14 +58,13 @@ public abstract class Composer {
     private ContainerConfiguration configuration;
 
     /**
-     * Checks that the underlying component is still configurable.
-     * 
+     * Checks that the underlying container is still configurable.
      */
-    protected final void checkPreBuild() {
+    protected final void checkConfigurable() {
         configuration().container.assembly.checkOpen();
     }
 
-    private ContainerConfiguration configuration() {
+    protected final ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of a composer");
@@ -149,7 +142,7 @@ public abstract class Composer {
      * Create a new application instance by using the specified consumer and configurator.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
-     * {@link OldServiceLocator#of(Consumer)}.
+     * {@link ServiceLocator#of(Consumer)}.
      * 
      * @param <C>
      *            the type of composer that is exposed to the end-user
@@ -169,11 +162,10 @@ public abstract class Composer {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, Function<ContainerConfiguration, C> composer,
+    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, C composer,
             ComposerAction<? super C> consumer, Wirelet... wirelets) {
-       // return ((PackedApplicationDriver<A>) driver).compose(composer, consumer, wirelets);
-        
-        
+        // return ((PackedApplicationDriver<A>) driver).compose(composer, consumer, wirelets);
+
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
@@ -186,36 +178,3 @@ public abstract class Composer {
         return ApplicationInitializationContext.launch(((PackedApplicationDriver<A>) driver), realm.application, null);
     }
 }
-//Application Composer.. Nej vi bruger dem ogsaa andet steds fra
-//Syntes bare den skal vaere ligesom Assembly
-//Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
-
-//BeanRepositoryComposer<?>
-
-// Er det ikke noget vi skal definere i vores ArtifactDriver...
-//@SafeVarargs
-//protected static void $AllowExtensions(Class<? extends Extension<?>>... extensions) {
-//    throw new UnsupportedOperationException();
-//}
-//
-//// Eller ogsaa har vi en anden driver??? ComposerDriver...
-//
-//// Hmm. vi kan jo godt have flere forskellige configurationer...
-//// Altsaa fx tillader vi ikke andre extensions hvis vi laver en ServiceLocator i nogen tilfaelde
-//// Mens vi nok goere det i andre...
-//// Men
-//
-//// De her bliver kaldt fra en statisks initializer
-//// Ikke hvis man skal bruge en ArtifactDriver...
-//@SafeVarargs
-//protected static void $RejectExtensions(Class<? extends Extension<?>>... extensions) {
-//    throw new UnsupportedOperationException();
-//}
-//Can take a CCC context. And cast it and provide lookup??
-//Maaske er det altid en container????
-//This class should be inlign with Assembly so Either ComponentComposer or just Composer
-//Composer<T>?
-//Maaske skal Composer bare vaere en special Assembly...
-//Jamen, saa skal vi tage noget andet end Assembly til de forskellige metoder.
-//Assembly extended by Composer|
-//Class<?> configurator = Assembly|Composer | Extension????<-- naah Assembly|Composer  

@@ -15,7 +15,7 @@
  */
 package app.packed.inject.sandbox;
 
-import app.packed.inject.serviceexpose.ServiceContract;
+import app.packed.inject.service.ServiceContract;
 import app.packed.validate.Validator;
 
 /**

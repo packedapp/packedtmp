@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
@@ -32,9 +31,8 @@ import app.packed.bean.BeanExtensionPoint;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
-import app.packed.inject.service.OldServiceLocator;
-import app.packed.inject.service.Service;
 import app.packed.inject.service.ServiceLocator;
+import packed.internal.inject.service.sandbox.Service;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -44,8 +42,6 @@ import app.packed.inject.service.ServiceLocator;
  * order. A service transformation requires that any dependencies are available whenever performing a transformation of
  * some kind.
  * 
- * @see OldServiceLocator#spawn(java.util.function.Consumer)
- * @see OldServiceLocator#of(java.util.function.Consumer)
  */
 // Create services
 
@@ -79,8 +75,6 @@ import app.packed.inject.service.ServiceLocator;
 // Det er jo mere en slags tilretning, hvor vi gerne vil registrere nogle componenter...
 public abstract /* sealed */ class ServiceComposer extends Composer /* permits PackedServiceComposer */ {
 
-    public abstract Map<Key<?>, Service> asMap();
-    
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
      * 
@@ -282,13 +276,15 @@ public abstract /* sealed */ class ServiceComposer extends Composer /* permits P
         requireNonNull(keys, "keys is null");
         for (Key<?> k : keys) {
             requireNonNull(k, "key in specified array is null");
-            asMap().remove(k);
+            keys().remove(k);
         }
     }
 
+    public abstract Set<Key<?>> keys();
+    
     /** Removes all services. */
     public void removeAll() {
-        asMap().keySet().clear();
+        keys().clear();
     }
 
     /**
@@ -308,9 +304,9 @@ public abstract /* sealed */ class ServiceComposer extends Composer /* permits P
         for (Object o : keys) {
             requireNonNull(o, "Specified collection contains a null");
             if (o instanceof Key) {
-                asMap().remove(o);
+                keys().remove(o);
             } else if (o instanceof Class c) {
-                asMap().remove(Key.of(c));
+                keys().remove(Key.of(c));
             } else {
                 throw new IllegalArgumentException(
                         "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());
@@ -323,10 +319,10 @@ public abstract /* sealed */ class ServiceComposer extends Composer /* permits P
      *            a predicate which returns {@code true} for services to be removed
      * @see Collection#removeIf(Predicate)
      */
-    public void removeIf(Predicate<? super Service> filter) {
+    public void removeIf(Predicate<? super Key<?>> filter) {
         requireNonNull(filter, "filter is null");
-        for (Iterator<Service> iterator = asMap().values().iterator(); iterator.hasNext();) {
-            Service s = iterator.next();
+        for (Iterator<Key<?>> iterator = keys().iterator(); iterator.hasNext();) {
+            Key<?> s = iterator.next();
             if (filter.test(s)) {
                 iterator.remove();
             }
@@ -351,7 +347,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer /* permits P
     }
 
     public void retain(Key<?>... keys) {
-        asMap().keySet().retainAll(Set.of(keys));
+        keys().retainAll(Set.of(keys));
     }
 
     /**
@@ -372,7 +368,7 @@ public abstract /* sealed */ class ServiceComposer extends Composer /* permits P
                         "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());
             }
         }
-        asMap().keySet().retainAll(Set.of(a));
+        keys().retainAll(Set.of(a));
     }
 }
 

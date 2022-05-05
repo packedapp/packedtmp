@@ -18,9 +18,9 @@ package packed.internal.inject.service;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.service.Service;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.RuntimeService;
+import packed.internal.inject.service.sandbox.Service;
 
 /**
  *

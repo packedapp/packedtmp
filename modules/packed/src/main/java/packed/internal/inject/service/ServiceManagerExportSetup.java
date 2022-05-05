@@ -26,13 +26,13 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceRegistry;
-import app.packed.inject.serviceexpose.ServiceContract;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceContract;
 import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.runtime.ServiceRegistry;
 
 /**
  * This class manages everything to do with exporting of services.

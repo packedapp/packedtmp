@@ -33,11 +33,11 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceRegistry;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.service.InternalServiceUtil;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.runtime.ServiceRegistry;
+import packed.internal.inject.service.sandbox.Service;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.OpenClass;
 

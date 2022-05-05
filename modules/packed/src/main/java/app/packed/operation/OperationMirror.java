@@ -19,14 +19,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.context.ContextRootMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
-import app.packed.inject.service.ServiceRegistry;
 import app.packed.mirror.Mirror;
 import app.packed.operation.dependency.DependencyMirror;
 import app.packed.operation.interceptor.OperationInterceptorMirror;
@@ -39,7 +40,7 @@ import packed.internal.container.ExtensionSetup;
  * A mirror for an bean operation.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
- * the {@link app.packed.inject.serviceexpose.PublicizeExtension} provides details about an exported service via
+ * the {@link app.packed.inject.service.PublicizeExtension} provides details about an exported service via
  * {@link ServiceExportMirror}.
  * <p>
  * NOTE: Subclasses of this class:
@@ -69,7 +70,7 @@ public non-sealed class OperationMirror implements Mirror, ContextRootMirror {
     public OperationMirror() {}
 
     /** {@return the services that are available at this injection site.} */
-    public final ServiceRegistry availableServices() {
+    public final Set<Key<?>> availableServices() {
         throw new UnsupportedOperationException();
     }
 

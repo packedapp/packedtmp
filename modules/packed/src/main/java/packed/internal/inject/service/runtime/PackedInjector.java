@@ -18,8 +18,7 @@ package packed.internal.inject.service.runtime;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.inject.service.OldServiceLocator;
-import app.packed.inject.service.Service;
+import packed.internal.inject.service.sandbox.Service;
 
 /** The default implementation of {@link OldServiceLocator}. */
 public final class PackedInjector extends AbstractServiceLocator implements OldServiceLocator {

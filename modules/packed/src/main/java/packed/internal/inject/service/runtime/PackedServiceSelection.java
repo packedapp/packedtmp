@@ -25,8 +25,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.inject.Provider;
-import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceSelection;
+import packed.internal.inject.service.sandbox.Service;
 
 /** Implementation of {@link ServiceSelection}. */
 final class PackedServiceSelection<S> extends AbstractServiceLocator implements ServiceSelection<S> {
@@ -112,25 +111,3 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         return "No service with the specified key has been selected, key = " + key;
     }
 }
-//
-///** {@inheritDoc} */
-//@Override
-//public void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action) {
-//  requireNonNull(action, "action is null");
-//  for (RuntimeService s : services.values()) {
-//      @SuppressWarnings("unchecked")
-//      Provider<S> provider = (Provider<S>) getProviderForLocator(s);
-//      action.accept(s, provider);
-//  }
-//}
-//
-///** {@inheritDoc} */
-//@Override
-//public void forEachProvider(Consumer<? super Provider<S>> action) {
-//  requireNonNull(action, "action is null");
-//  for (RuntimeService s : services.values()) {
-//      @SuppressWarnings("unchecked")
-//      Provider<S> provider = (Provider<S>) getProviderForLocator(s);
-//      action.accept(provider);
-//  }
-//}

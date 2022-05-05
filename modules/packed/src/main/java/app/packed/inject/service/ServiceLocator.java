@@ -17,6 +17,7 @@ package app.packed.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -32,7 +33,7 @@ import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.operation.dependency.DependencyProvider;
-
+import packed.internal.inject.service.PackedServiceLocator;
 
 /**
  * 
@@ -259,7 +260,7 @@ public interface ServiceLocator {
 
     /** {@return a service locator that provides no services.} */
     static ServiceLocator of() {
-        throw new UnsupportedOperationException();
+        return new PackedServiceLocator(Map.of());
     }
 
     /**
@@ -276,7 +277,6 @@ public interface ServiceLocator {
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
-
 }
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.

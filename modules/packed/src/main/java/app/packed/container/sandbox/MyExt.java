@@ -18,7 +18,7 @@ package app.packed.container.sandbox;
 import app.packed.container.Extension;
 import app.packed.container.Extension.BootstrapWith;
 import app.packed.container.sandbox.MyExt.MyBootstrap;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
 
 /**
  *

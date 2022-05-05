@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
@@ -83,15 +82,10 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
 
     /**
      * Returns a service locator for the system. If a service extension is not installed, returns
-     * {@link OldServiceLocator#of()}.
+     * {@link ServiceLocator#of()}.
      * 
      * @return a service locator for the application
      */
-    public OldServiceLocator services() {
-        ContainerInjectionManager sm = application.container.injectionManager;
-        return sm == null ? OldServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
-    }
-
     public ServiceLocator serviceLocator() {
         ContainerInjectionManager sm = application.container.injectionManager;
         return sm == null ? ServiceLocator.of() : sm.newNewServiceLocator(application.driver, pool);

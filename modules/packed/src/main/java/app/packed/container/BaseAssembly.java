@@ -20,8 +20,8 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.Provide;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.service.OldServiceLocator;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.OnStart;
 
 /**
@@ -260,7 +260,7 @@ public abstract class BaseAssembly extends Assembly {
         return install(factory).provide();
     }
 
-    protected final void provideAll(OldServiceLocator locator) {
+    protected final void provideAll(ServiceLocator locator) {
         bean().provideAll(locator);
     }
 

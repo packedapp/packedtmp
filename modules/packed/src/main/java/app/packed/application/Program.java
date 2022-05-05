@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
 import app.packed.lifecycle.sandbox.LifetimeWirelets;
@@ -59,7 +59,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return the service locator for this app
      */
-    OldServiceLocator services();
+    ServiceLocator services();
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
@@ -122,7 +122,7 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
-    static ApplicationLauncher<Program> imageOf(Assembly  assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -144,13 +144,13 @@ public interface Program extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static Program start(Assembly  assembly, Wirelet... wirelets) {
+    static Program start(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(String name, OldServiceLocator services, LifecycleApplicationController runtime) implements Program {
+record ProgramImplementation(String name, ServiceLocator services, LifecycleApplicationController runtime) implements Program {
 
     /** An driver for creating App instances. */
     static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(RunState.RUNNING).build(MethodHandles.lookup(),

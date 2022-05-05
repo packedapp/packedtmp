@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -30,14 +31,14 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.ComposerAction;
 import app.packed.inject.Factory;
-import app.packed.inject.service.Service;
-import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.serviceexpose.ServiceComposer;
 import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.InternalService;
+import packed.internal.inject.service.runtime.OldServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
+import packed.internal.inject.service.sandbox.Service;
 import packed.internal.util.CollectionUtil.ForwardingMap;
 import packed.internal.util.CollectionUtil.ForwardingStrategy;
 
@@ -64,7 +65,6 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
     public Map<Key<?>, Service> asMap() {
         Map<Key<?>, Service> es;
         // TODO fix forwarding map for remove
@@ -129,14 +129,15 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
 
     /** {@inheritDoc} */
     @Override
-    public void rekeyAll(Function<Service, @Nullable Key<?>> function) {
+    public void rekeyAll(Function<Key<?>, @Nullable Key<?>> function) {
         requireNonNull(function, "function is null");
 
         // We don't replace in-map as we want to be able to swap keys.
         // Which would not be possible if we did it in place.
         Map<Key<?>, InternalService> newServices = new HashMap<>();
         for (InternalService s : services.values()) {
-            Key<?> key = function.apply(s);
+            Key<?> k = s.key();
+            Key<?> key = function.apply(k);
             // If the function returns null we exclude the key
             if (key != null) {
                 Key<?> existing = s.key();
@@ -160,12 +161,13 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
         add(factory, true, false, true);
     }
 
-    // No wirelets???? 
+    // No wirelets????
     // Add it to App
     public static OldServiceLocator of(ComposerAction<? super ServiceComposer> action) {
         return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
-   
+
     }
+
     /**
      * Creates a new service locator.
      * 
@@ -208,5 +210,15 @@ public final class PackedServiceComposer extends ServiceComposer implements Serv
     @Override
     public <T> void peek(Key<T> key, Consumer<? super T> consumer) {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeAll() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Key<?>> keys() {
+        return asMap().keySet();
     }
 }

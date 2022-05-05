@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
-import app.packed.inject.service.OldServiceLocator;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.RuntimeService;
 
-/** Represents an invocation of {@link PublicizeExtension#provideAll(OldServiceLocator)}. */
+/** Represents an invocation of {@link PublicizeExtension#provideAll(ServiceLocator)}. */
 public final class ProvideAllFromServiceLocator {
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */

@@ -2,9 +2,10 @@ package app.packed.operation.mirror.ig;
 
 import java.lang.reflect.Member;
 import java.util.List;
+import java.util.Set;
 
+import app.packed.base.Key;
 import app.packed.bean.BeanMirror;
-import app.packed.inject.service.ServiceRegistry;
 
 // Constructor/Executable/Field/Injectable Function
 
@@ -21,7 +22,7 @@ import app.packed.inject.service.ServiceRegistry;
 public /* sealed */ interface InjectionSite /* permits ConsumerSite,ProducerSite */ {
 
     /** {@return the services that are available at this injection site.} */
-    ServiceRegistry availableServices(); // Er vel tom for disabled injection
+    Set<Key<?>> availableServices(); // Er vel tom for disabled injection
 
     /** {@return the bean this injection site is a part of.} */
     BeanMirror bean();

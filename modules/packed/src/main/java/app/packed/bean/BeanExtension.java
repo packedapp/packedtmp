@@ -8,7 +8,7 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.operation.OperationPack;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.bean.BeanSetup;
@@ -153,10 +153,10 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @throws IllegalArgumentException
      *             if the specified locator is not implemented by Packed
      */
-    public void provideAll(OldServiceLocator locator) {
+    public void provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
         if (!(locator instanceof AbstractServiceLocator l)) {
-            throw new IllegalArgumentException("Custom implementations of " + OldServiceLocator.class.getSimpleName()
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
         checkConfigurable();

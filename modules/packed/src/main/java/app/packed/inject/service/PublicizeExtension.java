@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.serviceexpose;
+package app.packed.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,6 +25,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.inject.sandbox.ServiceConfiguration;
+import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ContainerInjectionManager;
 

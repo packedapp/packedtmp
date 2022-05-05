@@ -18,7 +18,7 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.inject.service.ContainerInjectionManager;

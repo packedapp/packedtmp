@@ -27,8 +27,8 @@ import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.exceptionhandling.PanicException;
-import app.packed.inject.service.OldServiceLocator;
-import app.packed.inject.serviceexpose.PublicizeExtension;
+import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
 import app.packed.lifecycle.LifecycleApplicationController;
@@ -49,15 +49,14 @@ import packed.internal.application.PackedApplicationDriver;
  * Which is probably your best bet is to look at the source code of them to create your own.
  * <p>
  * This class can be used to create custom artifact types if the built-in artifact types such as {@link App} and
- * {@link OldServiceLocator} are not sufficient. In fact, the default implementations of both {@link App} and
- * {@link OldServiceLocator} uses an artifact driver themselves.
+ * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link App} and
+ * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
  * Normally, you never create more than a single instance of an application driver.
  * 
  * @param <A>
  *            the type of application interface this driver creates.
  * @see App#driver()
- * @see OldServiceLocator#driver()
  */
 // Environment + Application Interface + Result
 @SuppressWarnings("rawtypes")
@@ -83,7 +82,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see OldServiceLocator#imageOf(Assembly, Wirelet...)
      */
     ApplicationLauncher<A> imageOf(Assembly  assembly, Wirelet... wirelets);
 
@@ -114,7 +112,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @throws PanicException
      *             if the application had an executing phase and it fails
      * @see App#run(Assembly, Wirelet...)
-     * @see OldServiceLocator#of(Assembly, Wirelet...)
      */
     A launch(Assembly  assembly, Wirelet... wirelets); // newInstance
 

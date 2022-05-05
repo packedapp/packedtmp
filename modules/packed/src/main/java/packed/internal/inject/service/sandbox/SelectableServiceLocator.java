@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service.runtime;
+package packed.internal.inject.service.sandbox;
 
+import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
 import app.packed.container.ComposerAction;
-import app.packed.inject.service.OldServiceLocator;
-import app.packed.inject.service.ServiceSelection;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.serviceexpose.ServiceComposer;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.runtime.OldServiceLocator;
+import packed.internal.inject.service.runtime.ServiceSelection;
 
 /**
  *
  */
-public interface ServiceLocators {
+public interface SelectableServiceLocator extends ServiceLocator {
 
     /**
      * Returns a service selection with all of the services in this locator.
@@ -81,7 +82,6 @@ public interface ServiceLocators {
     @Reflectable
     OldServiceLocator spawn(ComposerAction<ServiceComposer> action);
 
-
     /**
      * Creates a new service locator via a service composer.
      * 
@@ -91,7 +91,49 @@ public interface ServiceLocators {
      * @see #driver()
      */
     @Reflectable
-    static OldServiceLocator of(ComposerAction<? super ServiceComposer> action) {
-        return PackedServiceComposer.of(action);
+    static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
+        throw new UnsupportedOperationException();
+    }
+}
+
+interface Zandbox {
+
+    // Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
+    // og saa faa den specificeret key.
+
+    // Kunne godt taenke mig at finde et godt navn.x
+    // Naar en noegle er en super noegle???
+
+    // may define any qualifiers
+    default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
+        // select(Number.class) will select @Named("foo") Number but not Integer
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a service selection with all of the services in this locator with a {@link Key} whose {@link Key#rawType()}
+     * is {@link Class#isAssignableFrom(Class) assignable} to the specified type.
+     * <p>
+     * Primitive types will automatically be boxed if specified.
+     * 
+     * @return a service selection with all of the services in this locator with a key whose raw type is assignable to the
+     *         specified service type
+     * @see Class#isAssignableFrom(Class)
+     * @see Key#rawType()
+     */
+    // Hmm kan vi sige noget om actual type som vi producere???
+    default <T> ServiceSelection<T> select(TypeToken<T> key) {
+        // May define additional qualifiers
+        throw new UnsupportedOperationException();
+    }
+
+    // Vi har faktisk 3.
+    // Key Delen = Foo.class; (Ignores qualifiers)
+    // Key delend.rawType = Foo.class
+    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
+
+    // All whose raw type is equal to.. Don't know if it is
+    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
     }
 }

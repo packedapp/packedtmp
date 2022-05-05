@@ -19,19 +19,16 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.inject.Factory;
-import app.packed.inject.service.Service;
-import app.packed.inject.service.ServiceRegistry;
+import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.service.ServiceWirelets;
 
 /**
@@ -62,8 +59,9 @@ import app.packed.inject.service.ServiceWirelets;
 // Read
 //-- Via ServiceRegistry
 
-public interface ServiceTransformer extends ServiceRegistry {
+public interface ServiceTransformer {
 
+ 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
      * 
@@ -237,17 +235,14 @@ public interface ServiceTransformer extends ServiceRegistry {
      * @throws ClassCastException
      *             if the type of any new key is not assignable to the service type
      */
-    // Null???? Why Not.. I don't think Key will ever be a inline type
-    // Map<Key<?>, Service>... taenker det er en unmodifiable wrapper over en intern
-    // datastructur
     // Take text from Map#compute
-    default void rekeyAll(Function<Service, @Nullable Key<?>> rekeyingFunction) {
-        for (Service s : this) {
+    default void rekeyAll(Function<Key<?>, @Nullable Key<?>> rekeyingFunction) {
+        for (Key<?> s : keys()) {
             Key<?> key = rekeyingFunction.apply(s);
             if (key == null) {
                 remove(key);
-            } else if (!key.equals(s.key())) {
-                rekey(s.key(), key);
+            } else if (!key.equals(s)) {
+                rekey(s, key);
             }
         }
     }
@@ -263,12 +258,12 @@ public interface ServiceTransformer extends ServiceRegistry {
     // keyAdd, keyReplace?
     default void rekeyAllAddTag(String tag) {
         requireNonNull(tag, "tagis null");
-        rekeyAll(s -> s.key().withTag(tag));
+        rekeyAll(s -> s.withTag(tag));
     }
 
     default void rekeyAllWith(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        rekeyAll(s -> s.key().with(qualifier));
+        rekeyAll(s -> s.with(qualifier));
     }
 
     default void rekeyAllWithClassTag(Class<?> tag) {
@@ -298,7 +293,7 @@ public interface ServiceTransformer extends ServiceRegistry {
         requireNonNull(keys, "keys is null");
         for (Key<?> k : keys) {
             requireNonNull(k, "key in specified array is null");
-            asMap().remove(k);
+            keys().remove(k);
         }
     }
 
@@ -322,9 +317,9 @@ public interface ServiceTransformer extends ServiceRegistry {
         for (Object o : keys) {
             requireNonNull(o, "Specified collection contains a null");
             if (o instanceof Key) {
-                asMap().remove(o);
+                keys().remove(o);
             } else if (o instanceof Class c) {
-                asMap().remove(Key.of(c));
+                keys().remove(Key.of(c));
             } else {
                 throw new IllegalArgumentException(
                         "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());
@@ -332,20 +327,20 @@ public interface ServiceTransformer extends ServiceRegistry {
         }
     }
 
-    /**
-     * @param filter
-     *            a predicate which returns {@code true} for services to be removed
-     * @see Collection#removeIf(Predicate)
-     */
-    default void removeIf(Predicate<? super Service> filter) {
-        requireNonNull(filter, "filter is null");
-        for (Iterator<Service> iterator = iterator(); iterator.hasNext();) {
-            Service s = iterator.next();
-            if (filter.test(s)) {
-                iterator.remove();
-            }
-        }
-    }
+//    /**
+//     * @param filter
+//     *            a predicate which returns {@code true} for services to be removed
+//     * @see Collection#removeIf(Predicate)
+//     */
+//    default void removeIf(Predicate<? super Service> filter) {
+//        requireNonNull(filter, "filter is null");
+//        for (Iterator<Service> iterator = iterator(); iterator.hasNext();) {
+//            Service s = iterator.next();
+//            if (filter.test(s)) {
+//                iterator.remove();
+//            }
+//        }
+//    }
 
     /**
      * Similar to {@link #map(Factory)} except that it will automatically remove all dependencies of the factory once the
@@ -363,6 +358,21 @@ public interface ServiceTransformer extends ServiceRegistry {
     default void retain(Key<?>... keys) {
         keys().retainAll(Set.of(keys));
     }
+    
+    /**
+     * Returns a set view containing the keys for every service in this registry.
+     * <p>
+     * If this registry supports removals, the returned set will also support removal operations: {@link Set#clear()},
+     * {@link Set#remove(Object)}, {@link Set#removeAll(java.util.Collection)},
+     * {@link Set#removeIf(java.util.function.Predicate)} and {@link Set#retainAll(java.util.Collection)}. or via any set
+     * iterators. The returned map will never support insertion or update operations.
+     * <p>
+     * The returned map will retain any thread-safety guarantees provided by the registry itself.
+     * 
+     * @return a set view containing the keys for every service in this registry
+     */
+    Set<Key<?>> keys();
+
 
     /**
      * @param keys

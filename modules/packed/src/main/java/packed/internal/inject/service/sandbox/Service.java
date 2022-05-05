@@ -1,4 +1,4 @@
-package app.packed.inject.service;
+package packed.internal.inject.service.sandbox;
 
 import app.packed.base.Key;
 

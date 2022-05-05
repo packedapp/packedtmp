@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Function;
 
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.container.Assembly;
@@ -57,14 +56,13 @@ public final class AssemblySetupOfComposer extends AssemblySetup {
         wireCommit(container);
     }
 
-    public <C extends Composer> void build(Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer) {
+    public <C extends Composer> void build(C composer, ComposerAction<? super C> consumer) {
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         // This will recursively call down through any sub-containers that are linked
 
-        Composer comp = composer.apply(componentConfiguration);
         // Invoke Composer#doCompose which in turn will invoke consumer.accept
         try {
-            MH_COMPOSER_DO_COMPOSE.invoke(comp, componentConfiguration, consumer);
+            MH_COMPOSER_DO_COMPOSE.invoke(composer, componentConfiguration, consumer);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

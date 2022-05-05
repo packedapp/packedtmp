@@ -1,4 +1,4 @@
-package app.packed.inject.serviceexpose;
+package app.packed.inject.service;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

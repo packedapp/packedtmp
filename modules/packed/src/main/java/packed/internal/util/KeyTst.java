@@ -19,7 +19,6 @@ import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Ancestral;
-import app.packed.inject.service.ServiceRegistry;
 
 /**
  *
@@ -32,8 +31,7 @@ public class KeyTst extends BaseAssembly {
     }
 
     public static class MyExt extends Extension<MyExt> {
-        public MyExt(ServiceRegistry c, Ancestral<MyExt> parent) {
-            System.out.println(c.keys());
+        public MyExt(Ancestral<MyExt> parent) {
             System.out.println("p = " + parent.ancestorOrNull());
         }
     }

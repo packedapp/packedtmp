@@ -25,14 +25,13 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.inject.serviceexpose.PublicizeExtension;
-import app.packed.inject.serviceexpose.ServiceContract;
 import app.packed.inject.serviceexpose.ServiceTransformer;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.sandbox.Service;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.
@@ -63,7 +62,7 @@ public final class ServiceWirelets {
     }
 
     public static Wirelet anchor(Key<?> key) {
-        return anchorIf(s -> s.key().equals(key));
+        return anchorIf(s -> s.equals(key));
     }
 
     /**
@@ -80,7 +79,7 @@ public final class ServiceWirelets {
 
     // A service is accessible by a class or interface x. if the full key is Accessible
 
-    public static Wirelet anchorIf(Predicate<? super Service> filter) {
+    public static Wirelet anchorIf(Predicate<? super Key<?>> filter) {
         throw new UnsupportedOperationException();
     }
 

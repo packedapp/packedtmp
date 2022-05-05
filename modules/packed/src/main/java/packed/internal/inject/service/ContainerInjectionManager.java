@@ -24,9 +24,8 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.serviceexpose.PublicizeExtension;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
@@ -69,7 +68,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
     private final ContainerInjectionManager parent;
 
     //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
-    /** All locators added via {@link PublicizeExtension#provideAll(OldServiceLocator)}. */
+    /** All locators added via {@link PublicizeExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
@@ -117,21 +116,6 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
             e = em = new ServiceManagerFailureSetup();
         }
         return e;
-    }
-
-    public OldServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
-        Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
-        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        if (ios.hasExports()) {
-            for (ServiceSetup export : ios.exports()) {
-                runtimeEntries.put(export.key(), export.toRuntimeEntry(con));
-            }
-
-        }
-
-        // make the entries immutable
-        runtimeEntries = Map.copyOf(runtimeEntries);
-        return new InputOutputServiceManager.ExportedServiceLocator(runtimeEntries);
     }
 
     public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
