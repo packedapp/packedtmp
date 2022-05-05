@@ -34,9 +34,9 @@ import app.packed.base.Reflectable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.component.ComponentMirror;
+import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.container.AbstractComposer;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -45,6 +45,68 @@ import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.inject.service.PackedServiceLocator;
 import packed.internal.util.LookupUtil;
+
+/**
+ * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
+ * An injector is typically created by populating an injector builder with the various services that needs to be
+ * available.
+ *
+ * These
+ *
+ * _ xxxxx Injector controls the services that are available from every container at runtime and is typically used for
+ * and for injection.
+ *
+ * Typically a number of injectors exist. The container injector is.
+ *
+ *
+ *
+ * Container injector can be.
+ *
+ * For example, the injector for a component will also include a Component service. Because an instance of the component
+ * interface can always be injected into any method.
+ *
+ *
+ * <p>
+ * An Injector instance is usually acquired in one of the following three ways:
+ * <h3>Directly from a Container instance</h3> By calling container.getService(ServiceManager.class)}:
+ *
+ * <pre>
+ * Container c = ...;
+ * Injector injector = c.getService(Injector.class);
+ * System.out.println(&quot;Available services: &quot; + Injector.services());
+ * </pre>
+ *
+ * <h3>Annotated method, such as OnStart or OnStop</h3> When using annotations such as OnStart or OnStop. An injected
+ * component manager can be used to determine which parameters are available for injection into the annotated method.
+ *
+ * <pre>
+ * &#064;RunOnStart()
+ * public void onStart(ServiceManager ServiceManager) {
+ *     System.out.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
+ * }
+ * </pre>
+ *
+ * <h3>Injecting it into a Constructor</h3> Or, by declaring it as a parameter in the constructor of a service or agent
+ * registered using container builder or container builder
+ *
+ * <pre>
+ * public class MyService {
+ *     public MyService(ServiceManager ServiceManager) {
+ *         System.out.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
+ *     }
+ * }
+ * </pre>
+ *
+ * <p>
+ * The map returned by this method may vary doing the life cycle of a container. For example, if this method is invoked
+ * in the constructor of a service registered with container builder. An instance of container builder is present in the
+ * map returned. However, after the container has been initialized, the container will no longer keep a reference to the
+ * configuration instance. So instances of Injector will never be available from any service manager after the container
+ * has fully started.
+ * <p>
+ * Injectors are always immutable, however, extensions of this interface might provide mutable operations for methods
+ * unrelated to injection.
+ */
 
 /**
  * 
@@ -319,7 +381,7 @@ public interface ServiceLocator {
          * @return an instance of the injector extension
          */
         private PublicizeExtension extension() {
-            PublicizeExtension se = configuration().use(PublicizeExtension.class);
+            PublicizeExtension se = container().use(PublicizeExtension.class);
             if (!initialized) {
                 se.exportAll();
                 initialized = true;
@@ -334,7 +396,7 @@ public interface ServiceLocator {
          *            optional import/export wirelets
          */
         public ComponentMirror link(Assembly assembly, Wirelet... wirelets) {
-            return configuration().link(assembly, wirelets);
+            return container().link(assembly, wirelets);
         }
 
         /**
@@ -369,10 +431,7 @@ public interface ServiceLocator {
          */
         public <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
             extension();
-            return configuration().use(BeanExtension.class).install(implementation).provide();
-
-            // return extension().provide(implementation);
-            // return configuration.use(BeanExtension.class).install(implementation).provide();
+            return container().use(BeanExtension.class).install(implementation).provide();
         }
 
         /**
@@ -389,9 +448,7 @@ public interface ServiceLocator {
          */
         public <T> ProvideableBeanConfiguration<T> provide(Factory<T> factory) {
             extension();
-            return configuration().use(BeanExtension.class).install(factory).provide();
-
-            // return extension().provide(factory);
+            return container().use(BeanExtension.class).install(factory).provide();
         }
 
         /**
@@ -433,7 +490,7 @@ public interface ServiceLocator {
         // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
         public void provideAll(ServiceLocator injector) {
             extension();
-            configuration().use(BeanExtension.class).provideAll(injector);
+            container().use(BeanExtension.class).provideAll(injector);
         }
 
         /**
@@ -455,18 +512,17 @@ public interface ServiceLocator {
         // Should not fail if we fx have two public constructors of equal lenght
         public <T> ProvideableBeanConfiguration<T> provideInstance(T instance) {
             extension();
-            return configuration().use(BeanExtension.class).installInstance(instance).provide();
-
+            return container().use(BeanExtension.class).installInstance(instance).provide();
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
             extension();
-            return configuration().use(BeanExtension.class).providePrototype(implementation);
+            return container().use(BeanExtension.class).providePrototype(implementation);
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
             extension();
-            return configuration().use(BeanExtension.class).providePrototype(factory);
+            return container().use(BeanExtension.class).providePrototype(factory);
         }
 
         static ServiceLocator configure2(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
@@ -474,80 +530,3 @@ public interface ServiceLocator {
         }
     }
 }
-/**
- * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
- * An injector is typically created by populating an injector builder with the various services that needs to be
- * available.
- *
- * These
- *
- * _ xxxxx Injector controls the services that are available from every container at runtime and is typically used for
- * and for injection.
- *
- * Typically a number of injectors exist. The container injector is.
- *
- *
- *
- * Container injector can be.
- *
- * For example, the injector for a component will also include a Component service. Because an instance of the component
- * interface can always be injected into any method.
- *
- *
- * <p>
- * An Injector instance is usually acquired in one of the following three ways:
- * <h3>Directly from a Container instance</h3> By calling container.getService(ServiceManager.class)}:
- *
- * <pre>
- * Container c = ...;
- * Injector injector = c.getService(Injector.class);
- * System.out.println(&quot;Available services: &quot; + Injector.services());
- * </pre>
- *
- * <h3>Annotated method, such as OnStart or OnStop</h3> When using annotations such as OnStart or OnStop. An injected
- * component manager can be used to determine which parameters are available for injection into the annotated method.
- *
- * <pre>
- * &#064;RunOnStart()
- * public void onStart(ServiceManager ServiceManager) {
- *     System.out.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
- * }
- * </pre>
- *
- * <h3>Injecting it into a Constructor</h3> Or, by declaring it as a parameter in the constructor of a service or agent
- * registered using container builder or container builder
- *
- * <pre>
- * public class MyService {
- *     public MyService(ServiceManager ServiceManager) {
- *         System.out.println(&quot;The following services can be injected: &quot; + ServiceManager.getAvailableServices());
- *     }
- * }
- * </pre>
- *
- * <p>
- * The map returned by this method may vary doing the life cycle of a container. For example, if this method is invoked
- * in the constructor of a service registered with container builder. An instance of container builder is present in the
- * map returned. However, after the container has been initialized, the container will no longer keep a reference to the
- * configuration instance. So instances of Injector will never be available from any service manager after the container
- * has fully started.
- * <p>
- * Injectors are always immutable, however, extensions of this interface might provide mutable operations for methods
- * unrelated to injection.
- */
-// Description... hmm its just super helpful...
-// Injector does not have a name. In many cases there are a container behind an Injector.
-// But if, for example, a component has its own injector. That injector does not have a container behind it.
-
-// Do we have an internal injector and an external injector?????
-// Or maybe an Injector and an InternalInjector (which if exportAll is the same???)
-
-// Altsaa den hoerer vel ikke til her...
-// Vi kan jo injecte andre ting en services
-
-// Injector taenker jeg er component versionen...
-// ServiceRegistry er service versionen...
-
-// Aahhhh vi mangler nu end 4. version... ind imellem Injector og ServiceRegistry...
-
-// Noget der kan injecte ting... Men ikke har en system component... 

@@ -19,8 +19,6 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationInfo;
 import app.packed.base.NamespacePath;
-import app.packed.container.AbstractComposer;
-import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
@@ -35,7 +33,7 @@ import app.packed.container.WireletSelection;
  * for complex extensions where the logic cannot easily fit into a single class. This configuration can be passed around
  * in order to invoke the needed methods.
  * <p>
- * An instance of this interface is normally acquired via {@link Extension#configuration()} or by constructor injecting
+ * An instance of this interface is normally acquired via {@link Extension#container()} or by constructor injecting
  * it into a subclass of {@link Extension}.
  * <p>
  * <strong>Note:</strong> Instances of this interface should never be exposed to end-users.
@@ -66,25 +64,25 @@ public interface ExtensionConfiguration {
     // Hvad med extension.newContainer()??? Det er en user realm, men giver vel ikke mening at checke
     void checkConfigurable();
 
-    /**
-     * @param <C>
-     *            the type of composer
-     * @param composer
-     *            the composer
-     * @param action
-     *            action to execute
-     * @throws IllegalStateException
-     *             if the specified composer has already been composed
-     */
-    // Taenker det stadig ser ud som om vi kommer fra samme assembly
-    <C extends AbstractComposer> void compose(C composer, ComposerAction<? super C> action);
-
-//    default ExtensionConfiguration extract(Extension<?> extension) {
-//        if (extension.getExtensionType == configuration.getExtensionType) {
-//            // ok
-//        }
-//        // fail
-//    }
+//    /**
+//     * @param <C>
+//     *            the type of composer
+//     * @param composer
+//     *            the composer
+//     * @param action
+//     *            action to execute
+//     * @throws IllegalStateException
+//     *             if the specified composer has already been composed
+//     */
+//    // Taenker det stadig ser ud som om vi kommer fra samme assembly
+//    <C extends AbstractComposer> void compose(C composer, ComposerAction<? super C> action);
+//
+////    default ExtensionConfiguration extract(Extension<?> extension) {
+////        if (extension.getExtensionType == configuration.getExtensionType) {
+////            // ok
+////        }
+////        // fail
+////    }
 
     /** {@return the path of the container where the extension is used.} */
     NamespacePath containerPath();

@@ -34,8 +34,7 @@ import packed.internal.util.LookupUtil;
 /**
  * Composers does not usually have any public constructors.
  */
-// -> AbstractComposer (synthetic Assembly -> Generaeted per module-per composer type???)
-// AbstractComposer og saa ServiceLocator.Composer
+// (synthetic Assembly -> Generaeted per module-per composer type???) Men hvis man ikke kan lave mirrors???
 public abstract class AbstractComposer {
 
     /** A handle that can access #configuration. */
@@ -61,10 +60,15 @@ public abstract class AbstractComposer {
      * Checks that the underlying container is still configurable.
      */
     protected final void checkConfigurable() {
-        configuration().container.assembly.checkOpen();
+        container().container.assembly.checkOpen();
     }
 
-    protected final ContainerConfiguration configuration() {
+    /**
+     * @return
+     * 
+     * @see Assembly#container()
+     */
+    protected final ContainerConfiguration container() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of a composer");
@@ -123,7 +127,7 @@ public abstract class AbstractComposer {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        configuration().container.assembly.lookup(lookup);
+        container().container.assembly.lookup(lookup);
     }
 
     /**

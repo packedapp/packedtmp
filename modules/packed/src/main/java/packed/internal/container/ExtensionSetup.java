@@ -13,8 +13,6 @@ import app.packed.base.Nullable;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
-import app.packed.container.AbstractComposer;
-import app.packed.container.ComposerAction;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -137,10 +135,6 @@ public final class ExtensionSetup {
         // Extension Assembly + Same Extension Assembly
         // Extension Assembly + Other Extension Assembly
         container.realm.checkOpen();
-    }
-
-    public <C extends AbstractComposer> void compose(C composer, ComposerAction<? super C> action) {
-        action.build(composer);
     }
 
     public void hookOnBeanBegin(BeanInfo beanInfo) {

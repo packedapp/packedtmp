@@ -60,7 +60,6 @@ import app.packed.inject.service.ServiceWirelets;
 //-- Via ServiceRegistry
 
 public interface ServiceTransformer {
-
  
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
