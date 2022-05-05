@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory1;
-import app.packed.inject.service.OldServiceLocator;
+import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceWirelets;
 import packed.internal.inject.service.InjectorComposer;
 
@@ -37,7 +37,7 @@ public class ImportTest {
 
     // The import at (Xxxx) and (Yyyy) both defines are service with Key<ZoneId>
     public static void main(String[] args) {
-        OldServiceLocator i = InjectorComposer.configure(c -> {
+        ServiceLocator i = InjectorComposer.configure2(c -> {
             c.link(new London(), ServiceWirelets.transformIn(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {})));
             c.link(new London(), ServiceWirelets.transformIn(t -> t.rekey(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {})));
         });

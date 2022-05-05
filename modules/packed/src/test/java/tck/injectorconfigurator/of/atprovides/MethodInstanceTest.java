@@ -71,7 +71,7 @@ public class MethodInstanceTest {
         // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> InjectorComposer.configure(c -> {
+        a = assertThatThrownBy(() -> InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeMethod.class);

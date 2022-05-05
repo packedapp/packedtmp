@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import app.packed.application.BuildException;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.Provide;
-import app.packed.inject.service.OldServiceLocator;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.inject.service.InjectorComposer;
 
@@ -112,7 +111,7 @@ public class FieldInstanceTest {
         // a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> InjectorComposer.configure(c -> {
+        a = assertThatThrownBy(() -> InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeField.class);
@@ -121,8 +120,8 @@ public class FieldInstanceTest {
         // TODO check message
     }
 
-    private static OldServiceLocator create(Consumer<? super InjectorComposer> consumer) {
-        return InjectorComposer.configure(c -> {
+    private static ServiceLocator create(Consumer<? super InjectorComposer> consumer) {
+        return InjectorComposer.configure2(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });
