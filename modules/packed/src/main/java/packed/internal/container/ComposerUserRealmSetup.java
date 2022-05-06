@@ -45,7 +45,6 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> consumer, Wirelet[] wirelets) {
         this.consumer = consumer;
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
-        wireNew(application.container);
     }
 
     public <C extends AbstractComposer> void build(C composer) {

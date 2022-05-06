@@ -68,7 +68,6 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         this.container = application.container;
         this.driver = new PackedContainerDriver(container);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
-        wireNew(container);
     }
 
     public AssemblyUserRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
@@ -79,7 +78,6 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         // else create new container
         this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
         this.driver = driver;
-        wireNew(container);
     }
 
     public void build() {

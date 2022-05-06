@@ -98,6 +98,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             this.onWireAction = parent.onWireAction;
             this.lifetime = parent.lifetime;
         }
+        realm.wireNew(this);
     }
 
     public final void checkIsCurrent() {

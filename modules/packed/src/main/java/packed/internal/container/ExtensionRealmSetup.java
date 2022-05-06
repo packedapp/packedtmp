@@ -63,10 +63,9 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     /** Closes the extension for configuration */
     void close() {
-        // Let the extension do final stuff
+        // Let the extension do their final stuff
         rootExtension.onApplicationClose();
-        wireComplete();
-        isClosed = true;
+        super.close();
     }
 
     /** {@inheritDoc} */

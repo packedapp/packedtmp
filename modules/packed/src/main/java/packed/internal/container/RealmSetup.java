@@ -23,7 +23,11 @@ import app.packed.base.Nullable;
 import app.packed.component.Realm;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDriver;
+import app.packed.container.Wirelet;
 import packed.internal.bean.BeanAccessor;
+import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.component.ComponentSetup;
 
 /**
@@ -37,10 +41,10 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
 
     /** The current active component in the realm. */
     @Nullable
-    protected ComponentSetup currentComponent;
+    private ComponentSetup currentComponent;
 
     /** Whether or not this realm is configurable. */
-    boolean isClosed;
+    private boolean isClosed;
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
@@ -53,7 +57,10 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
         return r;
     }
 
-    abstract void close();
+    void close() {
+        wireComplete();
+        isClosed = true;
+    }
 
     /** {@return whether or not the realm is closed.} */
     public final boolean isClosed() {
@@ -84,6 +91,12 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
      */
     public abstract Class<?> realmType();
 
+    /**
+     * @see PackedBeanHandleBuilder#build()
+     * @see ContainerConfiguration#link(ContainerDriver, Assembly, Wirelet...)
+     * @see RealmSetup#close()
+     */
+    // TODO add for PackedContainerHandleBuilder
     public void wireComplete() {
         if (currentComponent != null) {
             currentComponent.onWired();
@@ -91,8 +104,16 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
         }
     }
 
-    public void wireNew(ComponentSetup next) {
+    /**
+     * Called from the constructor of ComponentSetup whenever a new component is created. {@link #wireComplete()} must have
+     * previously been called unless the component is the first component in the realm.
+     * 
+     * @param newComponent
+     *            the new component
+     */
+    public void wireNew(ComponentSetup newComponent) {
         assert (currentComponent == null);
-        currentComponent = requireNonNull(next);
+        // next is not fully formed but called from the constructor of ComponentSetup
+        currentComponent = requireNonNull(newComponent);
     }
 }

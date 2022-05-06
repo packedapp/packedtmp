@@ -41,8 +41,7 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
     final void close() {
-        wireComplete();
-        isClosed = true;
+        super.close();
 
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
