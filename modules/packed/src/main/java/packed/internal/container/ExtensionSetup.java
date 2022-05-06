@@ -128,15 +128,6 @@ public final class ExtensionSetup {
         this.model = requireNonNull(extensionRealm.extensionModel);
     }
 
-    public void checkConfigurable() {
-        // Lots of combinations
-        // User Assembly + User Container
-        // User Assembly + Extension Container
-        // Extension Assembly + Same Extension Assembly
-        // Extension Assembly + Other Extension Assembly
-        container.realm.checkIsConfigurable();
-    }
-
     public void hookOnBeanBegin(BeanInfo beanInfo) {
         try {
             MH_EXTENSION_HOOK_BEAN_BEGIN.invokeExact(instance, beanInfo);

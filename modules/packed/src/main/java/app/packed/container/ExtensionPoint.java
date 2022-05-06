@@ -6,6 +6,7 @@ import app.packed.application.entrypoint.EntryPointExtensionPoint;
 import app.packed.base.Nullable;
 import app.packed.component.Realm;
 import app.packed.container.Extension.DependsOn;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionPointContext;
 
@@ -33,8 +34,10 @@ import packed.internal.container.PackedExtensionPointContext;
  * 
  * NOTE: In order to properly implement an extension point you:
  * <ul>
- * <li>Must override {@link Extension#newExtensionPoint()} in order to provide a new instance of the extension point.</li>
- * <li>Must place the extension point in the same module as the extension itself (iff the extension is defined in a module).</li>
+ * <li>Must override {@link Extension#newExtensionPoint()} in order to provide a new instance of the extension
+ * point.</li>
+ * <li>Must place the extension point in the same module as the extension itself (iff the extension is defined in a
+ * module).</li>
  * <li>Should name the extension point class {@code $NAME_OF_EXTENSION$}Point.</li>
  * </ul>
  * 
@@ -72,8 +75,11 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * @throws IllegalStateException
      *             if the extension that uses this extension point is no longer configurable.
      */
-    protected final void checkConfigurable() {
-        context().extension().extensionRealm.checkIsConfigurable();
+    protected final void checkIsConfigurable() {
+        ExtensionRealmSetup realm = context().usedBy().extensionRealm;
+        if (!realm.isConfigurable()) {
+            throw new IllegalStateException(realm.realmType() + " can no longer be configured");
+        }
     }
 
     /** {@return the context for this extension point.} */
@@ -95,7 +101,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     protected final Class<? extends Extension<?>> usedBy() {
         return context().usedBy().extensionType;
     }
-    
+
     /**
      * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
      * the internal configuration of the extension.

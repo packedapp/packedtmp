@@ -40,7 +40,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
     protected ComponentSetup currentComponent;
 
     /** Whether or not this realm is configurable. */
-    boolean isNonConfigurable;
+    boolean isClosed;
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
@@ -53,11 +53,8 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
         return r;
     }
 
-    public void checkIsConfigurable() {
-        // Tror maaske hellere vi skal kalde newOperation
-        if (isNonConfigurable) {
-            throw new IllegalStateException();
-        }
+    public final boolean isConfigurable() {
+        return !isClosed;
     }
 
     public boolean isCurrent(ComponentSetup component) {
@@ -84,32 +81,16 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
      */
     public abstract Class<?> realmType();
 
-
-    public void newOperation() {
-        if (currentComponent != null) {
-            currentComponent.onWired();
-            currentComponent = null;
-        }
-    }
-
-    
-    void initialize(ContainerSetup component) {
-        currentComponent = component;
-    }
-
-    
-    public void wireCommit(ComponentSetup component) {
-        currentComponent = component;
-    }
-
-    public void wirePrepare() {
-        if (isNonConfigurable) {
-            throw new IllegalStateException();
-        }
+    public void wireComplete() {
         // We need to finish the existing wiring before adding new
         if (currentComponent != null) {
             currentComponent.onWired();
             currentComponent = null;
         }
+    }
+
+    public void wireNew(ComponentSetup next) {
+        assert (currentComponent == null);
+        currentComponent = next;
     }
 }

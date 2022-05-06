@@ -44,6 +44,7 @@ import app.packed.inject.service.PublicizeExtensionMirror;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionPointHelper;
+import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedExtensionTree;
 import packed.internal.inject.invoke.InternalInfuser;
@@ -110,7 +111,10 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        setup().checkConfigurable();
+        ExtensionRealmSetup realm = setup().extensionRealm;
+        if (!realm.isConfigurable()) {
+            throw new IllegalStateException(realm.realmType() + " is no longer configurable");
+        }
     }
 
     /** {@return the path of the container that this extension belongs to.} */
@@ -170,8 +174,8 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * This method can be overridden to provide a customized mirror for the extension. For example, {@link PublicizeExtension}
-     * overrides this method to provide an instance of {@link PublicizeExtensionMirror}.
+     * This method can be overridden to provide a customized mirror for the extension. For example,
+     * {@link PublicizeExtension} overrides this method to provide an instance of {@link PublicizeExtensionMirror}.
      * <p>
      * This method should never return null.
      * 

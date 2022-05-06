@@ -65,7 +65,7 @@ public final class ExtensionRealmSetup extends RealmSetup {
     void close() {
         // Let the extension do final stuff
         rootExtension.onApplicationClose();
-        isNonConfigurable = true;
+        isClosed = true;
     }
 
     /** {@inheritDoc} */

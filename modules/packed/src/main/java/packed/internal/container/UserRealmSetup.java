@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,14 +41,18 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
      * extension dependency order.
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
-
+    
+    void initializeUserRealm(ContainerSetup container) {
+        currentComponent = requireNonNull(container);
+    }
+    
     final void closeRealm() {
         ContainerSetup container = container();
         if (currentComponent != null) {
             currentComponent.onWired();
             currentComponent = null;
         }
-        isNonConfigurable = true;
+        isClosed = true;
 
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all

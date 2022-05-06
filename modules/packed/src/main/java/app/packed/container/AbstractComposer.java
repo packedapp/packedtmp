@@ -66,8 +66,10 @@ public abstract class AbstractComposer {
     /**
      * Checks that the underlying container is still configurable.
      */
-    protected final void checkConfigurable() {
-        container().container.assembly.checkIsConfigurable();
+    protected final void checkIsConfigurable() {
+        if (!container().container.assembly.isConfigurable()) {
+            throw new IllegalStateException("This composer is no longer configurable");
+        }
     }
 
     /**

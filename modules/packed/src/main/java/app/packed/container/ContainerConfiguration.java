@@ -46,18 +46,21 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     final void addCloseAction(Runnable action) {
         throw new UnsupportedOperationException();
     }
-    
+
+    /** {@inheritDoc} */
+    @Override
+    protected void checkIsConfigurable() {
+        if (!container.realm.isConfigurable()) {
+            throw new IllegalStateException("This container is no longer configurable");
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     protected final void checkIsCurrent() {
         container.checkIsCurrent();
     }
 
-    protected final void checkConfigurable() {
-        container.checkIsCurrent();
-    }
-
-    
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
@@ -91,6 +94,39 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return container.isExtensionUsed(extensionType);
     }
 
+    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
+        return link(new PackedContainerDriver(container), assembly, wirelets);
+    }
+
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     */
+    //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
+    public ContainerMirror link(ContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
+
+        checkIsConfigurable();
+        // Wire the current component
+        container.assembly.wireComplete();
+        
+        // Create a new realm for the assembly
+        AssemblyUserRealmSetup newRealm = new AssemblyUserRealmSetup(d, container, assembly, wirelets);
+        
+
+        // Close the new realm again after the assembly has been successfully linked
+        newRealm.build();
+
+        return (ContainerMirror) newRealm.container.mirror();
+    }
+
     /** {@inheritDoc} */
     @Override
     public ContainerConfiguration named(String name) {
@@ -103,7 +139,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     public final NamespacePath path() {
         return container.path();
     }
-
+    
     // never selects extension wirelets...
     public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container.selectWirelets(wireletClass);
@@ -134,42 +170,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      */
     public final <E extends Extension<?>> E use(Class<E> extensionType) {
         return container.useExtension(extensionType);
-    }
-    
-    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return link(new PackedContainerDriver(container), assembly, wirelets);
-    }
-
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param realm
-     *            realm
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     */
-    //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
-    public ContainerMirror link(ContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
-
-        // Create a new realm for the assembly
-        AssemblyUserRealmSetup newRealm = new AssemblyUserRealmSetup(d, container, assembly, wirelets);
-
-        container.assembly.wirePrepare(); // check that the container is open for business
-
-        // Close the new realm again after the assembly has been successfully linked
-        newRealm.build();
-
-        return (ContainerMirror) newRealm.container.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void checkIsConfigurable() {
-        container.realm.checkIsConfigurable();
     }
 }
 

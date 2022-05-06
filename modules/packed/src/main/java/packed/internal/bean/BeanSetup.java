@@ -74,6 +74,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
             // Set the name of the component if it have not already been set using a wirelet
             initializeNameWithPrefix(hookModel.simpleName());
         }
+        realm.wireNew(this);
     }
 
     public void addOperation(OperationSetup operation) {

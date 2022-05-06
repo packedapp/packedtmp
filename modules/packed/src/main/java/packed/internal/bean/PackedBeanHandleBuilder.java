@@ -79,14 +79,10 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     @Override
     public PackedBeanHandle<T> build() {
         checkNotBuild();
-        RealmSetup realm;
-        if (owner == null) {
-            realm = container.realm;
-        } else {
-            realm = this.owner.extension().extensionRealm;
-        }
+        RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
+        
         // Can we call it more than once??? Why not
-        realm.wirePrepare();
+        realm.wireComplete();
 
         // Skal lave saa mange checks som muligt inde vi laver BeanSetup
         BeanSetup bean;
@@ -95,7 +91,6 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         } else {
             bean = new ExtensionBeanSetup(this, realm);
         }
-        realm.wireCommit(bean);
         return new PackedBeanHandle<>(bean);
     }
 
@@ -111,20 +106,18 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
     static BeanKind checkKind(BeanKind kind, int type) {
         return kind;
     }
-    
+
     private void checkNotBuild() {
-        
+
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable UseSite operator, BeanKind kind, ContainerSetup container,
-            Class<T> implementation) {
+    public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanHandleBuilder<>(operator, kind, container, implementation, SourceType.CLASS, implementation);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofFactory(@Nullable UseSite operator, BeanKind kind, ContainerSetup container,
-            Factory<T> factory) {
+    public static <T> PackedBeanHandleBuilder<T> ofFactory(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
         return new PackedBeanHandleBuilder<>(operator, kind, container, fac.rawReturnType(), SourceType.FACTORY, fac);
@@ -137,11 +130,11 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
-        
+
         // Optional is also not valid
         // or Provider, Lazy, ect
         // Ved heller ikke DependencyProvided beans
-        
+
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
         return new PackedBeanHandleBuilder<>(operator, kind, container, instance.getClass(), SourceType.INSTANCE, instance);
