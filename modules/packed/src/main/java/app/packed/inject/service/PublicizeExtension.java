@@ -127,7 +127,7 @@ public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExte
 
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
-        checkConfigurable();
+        checkIsConfigurable();
         injectionManager.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
@@ -162,7 +162,7 @@ public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExte
      */
     public void require(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkConfigurable();
+        checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
             injectionManager.ios.requirementsOrCreate().require(key, false /* , cs */);
@@ -187,7 +187,7 @@ public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExte
     // They will be consumed
     public void requireOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkConfigurable();
+        checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
             injectionManager.ios.requirementsOrCreate().require(key, true /* , cs */);

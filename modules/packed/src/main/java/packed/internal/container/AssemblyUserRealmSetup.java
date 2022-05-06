@@ -68,7 +68,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         this.container = application.container;
         this.driver = new PackedContainerDriver(container);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
-        initializeUserRealm(container);
+        wireNew(container);
     }
 
     public AssemblyUserRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
@@ -79,7 +79,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         // else create new container
         this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
         this.driver = driver;
-        initializeUserRealm(container);
+        wireNew(container);
     }
 
     public void build() {
@@ -93,7 +93,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         }
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
-        closeRealm();
+        close();
     }
 
     /** {@inheritDoc} */

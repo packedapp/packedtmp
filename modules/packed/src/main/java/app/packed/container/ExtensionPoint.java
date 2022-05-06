@@ -71,13 +71,13 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /**
      * Checks that the extension that uses this extension point is still configurable.
      * 
-     * @see Extension#checkConfigurable()
+     * @see Extension#checkIsConfigurable()
      * @throws IllegalStateException
      *             if the extension that uses this extension point is no longer configurable.
      */
     protected final void checkIsConfigurable() {
         ExtensionRealmSetup realm = context().usedBy().extensionRealm;
-        if (!realm.isConfigurable()) {
+        if (realm.isClosed()) {
             throw new IllegalStateException(realm.realmType() + " can no longer be configured");
         }
     }

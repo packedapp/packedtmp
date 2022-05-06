@@ -53,8 +53,11 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
         return r;
     }
 
-    public final boolean isConfigurable() {
-        return !isClosed;
+    abstract void close();
+
+    /** {@return whether or not the realm is closed.} */
+    public final boolean isClosed() {
+        return isClosed;
     }
 
     public boolean isCurrent(ComponentSetup component) {
@@ -82,7 +85,6 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
     public abstract Class<?> realmType();
 
     public void wireComplete() {
-        // We need to finish the existing wiring before adding new
         if (currentComponent != null) {
             currentComponent.onWired();
             currentComponent = null;
@@ -91,6 +93,6 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
 
     public void wireNew(ComponentSetup next) {
         assert (currentComponent == null);
-        currentComponent = next;
+        currentComponent = requireNonNull(next);
     }
 }

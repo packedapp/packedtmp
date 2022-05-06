@@ -50,7 +50,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     /** {@inheritDoc} */
     @Override
     protected void checkIsConfigurable() {
-        if (!container.realm.isConfigurable()) {
+        if (container.realm.isClosed()) {
             throw new IllegalStateException("This container is no longer configurable");
         }
     }

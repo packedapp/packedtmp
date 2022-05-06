@@ -89,7 +89,7 @@ public abstract class Extension<E extends Extension<E>> {
      * <p>
      * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
      * after the configuration of the extension has completed. This allows for invoking methods such as
-     * {@link #checkConfigurable()} at any time.
+     * {@link #checkIsConfigurable()} at any time.
      * <p>
      * This field should only be accessed via {@link #setup()}.
      */
@@ -110,9 +110,9 @@ public abstract class Extension<E extends Extension<E>> {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    protected final void checkConfigurable() {
+    protected final void checkIsConfigurable() {
         ExtensionRealmSetup realm = setup().extensionRealm;
-        if (!realm.isConfigurable()) {
+        if (realm.isClosed()) {
             throw new IllegalStateException(realm.realmType() + " is no longer configurable");
         }
     }

@@ -45,7 +45,7 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> consumer, Wirelet[] wirelets) {
         this.consumer = consumer;
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
-        initializeUserRealm(application.container);
+        wireNew(application.container);
     }
 
     public <C extends AbstractComposer> void build(C composer) {
@@ -59,7 +59,7 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
         }
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
-        closeRealm();
+        close();
     }
 
     /** {@inheritDoc} */

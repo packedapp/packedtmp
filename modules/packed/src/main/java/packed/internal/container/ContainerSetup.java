@@ -249,7 +249,7 @@ public final class ContainerSetup extends ComponentSetup {
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onNew.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
-            if (!realm.isConfigurable()) {
+            if (realm.isClosed()) {
                 throw new IllegalStateException("Cannot install extension as the container is no longer configurable");
             }
             // Checks that container is still configurable
@@ -265,7 +265,7 @@ public final class ContainerSetup extends ComponentSetup {
                 // TODO check that the extensionClass is not banned for users
 
                 // TODO Check that the extension user model has not been closed
-                if (!requestedByExtension.extensionRealm.isConfigurable()) {
+                if (requestedByExtension.extensionRealm.isClosed()) {
                     throw new IllegalStateException();
                 }
             }
