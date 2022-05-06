@@ -21,10 +21,10 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentMirror;
 import app.packed.mirror.Mirror;
-import packed.internal.container.AssemblySetup;
+import packed.internal.container.UserRealmSetup;
 
 /** A mirror of an {@link Assembly}. */
-public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.BuildtimeAssemblyMirror {
+public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.BuildtimeAssemblyMirror {
 
     /** {@return the type of the assembly.} */
     Class<? extends Assembly> assemblyType();

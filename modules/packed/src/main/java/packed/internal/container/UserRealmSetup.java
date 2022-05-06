@@ -15,21 +15,16 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.AbstractComposer;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.ComponentSetup;
@@ -37,11 +32,7 @@ import packed.internal.component.ComponentSetup;
 /**
  *
  */
-public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySetupOfAssembly, AssemblySetupOfComposer {
-
-    /** Currently we do not support that extensions create their own containers. */
-    @Nullable
-    private final ExtensionRealmSetup extension = null;
+public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyUserRealmSetup, ComposerUserRealmSetup {
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -55,7 +46,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
             currentComponent.onWired();
             currentComponent = null;
         }
-        isClosed = true;
+        isNonConfigurable = true;
 
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
@@ -97,17 +88,6 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
     /** {@return the setup of the root container of the realm.} */
     public abstract ContainerSetup container();
 
-    /**
-     * @param lookup
-     *            the lookup to use
-     * @see Assembly#lookup(Lookup)
-     * @see AbstractComposer#lookup(Lookup)
-     */
-    public void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup is null");
-        this.accessor = accessor().withLookup(lookup);
-    }
-
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         return new BuildtimeAssemblyMirror(this);
@@ -116,11 +96,11 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
     /** {@inheritDoc} */
     @Override
     public final Realm realm() {
-        return extension == null ? Realm.application() : extension.realm();
+        return Realm.application();
     }
 
     /** Implementation of {@link AssemblyMirror}. */
-    public record BuildtimeAssemblyMirror(AssemblySetup assembly) implements AssemblyMirror {
+    public record BuildtimeAssemblyMirror(UserRealmSetup assembly) implements AssemblyMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -167,7 +147,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits AssemblySe
             return children(assembly, assembly.container(), new ArrayList<>()).stream();
         }
 
-        private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
+        private ArrayList<AssemblyMirror> children(UserRealmSetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
             if (assembly == cs.assembly) {
                 for (ContainerSetup c : cs.containerChildren) {
                     children(assembly, c, list);

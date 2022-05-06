@@ -57,8 +57,13 @@ import app.packed.inject.Factory;
 // Read
 //-- Via ServiceRegistry
 
+// Nested class paa ServiceWirelets if that is the only place it is going to be used
 public interface ServiceTransformer {
  
+   default ServiceContract contract() {
+       throw new UnsupportedOperationException();
+   }
+    
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
      * 

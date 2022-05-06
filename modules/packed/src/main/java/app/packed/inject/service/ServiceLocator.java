@@ -127,7 +127,7 @@ public interface ServiceLocator {
     default boolean contains(Class<?> key) {
         return contains(Key.of(key));
     }
-    
+
     /**
      * Returns {@code true} if this registry contains a service with the specified key.
      *
@@ -174,7 +174,7 @@ public interface ServiceLocator {
     default <T> Optional<T> findInstance(Key<T> key) {
         return findProvider(key).map(p -> p.provide());
     }
-    
+
     default <T> Optional<Provider<T>> findProvider(Class<T> key) {
         return findProvider(Key.of(key));
     }
@@ -216,7 +216,6 @@ public interface ServiceLocator {
     default boolean isEmpty() {
         return keys().isEmpty();
     }
-    
 
     /**
      * Returns a set view containing the keys for every service in this registry.
@@ -302,15 +301,19 @@ public interface ServiceLocator {
     private static ApplicationDriver<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
-    
 
     // maaske har vi launcher og Image...
+
+    static <T> T lookup(Class<T> type, Assembly assembly, Wirelet... wirelets) {
+        // Hvad med empty
+        throw new UnsupportedOperationException();
+    }
+
     @Reflectable
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 
-    
     /**
      * Creates a new service locator image from the specified assembly and optional wirelets.
      * 
@@ -350,11 +353,11 @@ public interface ServiceLocator {
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
-        
+
     static ServiceLocator of(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
         return Composer.configure2(configurator, wirelets);
     }
-    
+
     /**
      * A lightweight configuration object that can be used to create injectors via. This is thought of a alternative to
      * using a {@link BaseAssembly}. Unlike assemblies all services are automatically exported once defined. For example
@@ -366,8 +369,8 @@ public interface ServiceLocator {
      */
     public static final class Composer extends AbstractComposer {
 
-        private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "serviceLocator",
-                ServiceLocator.class);
+        private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
+                "serviceLocator", ServiceLocator.class);
 
         private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), ServiceLocator.class, CONV);
 

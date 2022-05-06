@@ -31,7 +31,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class AssemblySetupOfComposer extends AssemblySetup {
+public final class ComposerUserRealmSetup extends UserRealmSetup {
 
     /** A handle that can invoke {@link AbstractComposer#doBuild(ContainerConfiguration, ComposerAction)}. */
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild",
@@ -42,7 +42,7 @@ public final class AssemblySetupOfComposer extends AssemblySetup {
 
     final ComposerAction<?> consumer;
 
-    public AssemblySetupOfComposer(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> consumer, Wirelet[] wirelets) {
+    public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> consumer, Wirelet[] wirelets) {
         this.consumer = consumer;
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
         wireCommit(application.container);

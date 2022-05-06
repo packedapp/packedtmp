@@ -35,7 +35,7 @@ import packed.internal.util.OpenClass;
  */
 // Altsaa er det mere en Bean ting???
 // BeanRealm???
-public abstract sealed class BeanModelManager {
+public abstract sealed class BeanAccessor {
 
     record HookModel() {}
     
@@ -81,7 +81,7 @@ public abstract sealed class BeanModelManager {
      *            the lookup to use
      * @return the new accessor
      */
-    public abstract BeanModelManager withLookup(Lookup lookup);
+    public abstract BeanAccessor withLookup(Lookup lookup);
 
     /**
      * Returns a container source model for the specified type
@@ -90,7 +90,7 @@ public abstract sealed class BeanModelManager {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static BeanModelManager defaultFor(Class<?> sourceType) {
+    public static BeanAccessor defaultFor(Class<?> sourceType) {
         return ModuleOpenedAccessor.MODELS.get(sourceType);
     }
 
@@ -98,7 +98,7 @@ public abstract sealed class BeanModelManager {
      * A accessor that relies on the user explicitly providing a {@link Lookup} object, for example, via
      * Assembly#lookup(Lookup).
      */
-    private static final class ModuleLookupAccessor extends BeanModelManager {
+    private static final class ModuleLookupAccessor extends BeanAccessor {
 
         /** The parent accessor. */
         private final ModuleOpenedAccessor defaultAccessor;
@@ -112,7 +112,7 @@ public abstract sealed class BeanModelManager {
         }
 
         @Override
-        public BeanModelManager withLookup(Lookup lookup) {
+        public BeanAccessor withLookup(Lookup lookup) {
             return defaultAccessor.withLookup(lookup);
         }
     }
@@ -121,14 +121,14 @@ public abstract sealed class BeanModelManager {
      * An accessor that uses relies on a module being open to Packed. Either via a module descriptor, or via command line
      * arguments such as {@code add-opens}.
      */
-    private static final class ModuleOpenedAccessor extends BeanModelManager {
+    private static final class ModuleOpenedAccessor extends BeanAccessor {
 
         /** A cache of accessor. */
-        private static final ClassValue<BeanModelManager.ModuleOpenedAccessor> MODELS = new ClassValue<>() {
+        private static final ClassValue<BeanAccessor.ModuleOpenedAccessor> MODELS = new ClassValue<>() {
 
             /** {@inheritDoc} */
             @Override
-            protected BeanModelManager.ModuleOpenedAccessor computeValue(Class<?> type) {
+            protected BeanAccessor.ModuleOpenedAccessor computeValue(Class<?> type) {
                 return new ModuleOpenedAccessor(type);
             }
         };
@@ -189,7 +189,7 @@ public abstract sealed class BeanModelManager {
          * @return the new realm
          */
         @Override
-        public BeanModelManager withLookup(Lookup lookup) {
+        public BeanAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.

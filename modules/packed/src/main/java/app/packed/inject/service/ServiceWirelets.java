@@ -18,7 +18,6 @@ package app.packed.inject.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -44,7 +43,8 @@ import packed.internal.inject.service.sandbox.Service;
  * Get some inspiration from streams
  * 
  * <p>
- * All Wirelets on this class can only be used on container components. And the container must use a {@link PublicizeExtension}.
+ * All Wirelets on this class can only be used on container components. And the container must use a
+ * {@link PublicizeExtension}.
  */
 public final class ServiceWirelets {
 
@@ -102,13 +102,13 @@ public final class ServiceWirelets {
     // maybe even just verify... or validate
     public static Wirelet checkContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
-        return transformIn((t, c) -> action.accept(c));
+        return transformIn(t -> action.accept(t.contract()));
     }
-
 
     public static <T> Wirelet provideInstance(Class<T> key, T instance) {
         return provideInstance(Key.of(key), instance);
     }
+
     /**
      * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a
      * service of the specific type as a requirement.
@@ -125,7 +125,6 @@ public final class ServiceWirelets {
         requireNonNull(instance, "instance is null");
         return transformOut(t -> t.provideInstance(key, instance));
     }
-
 
 //    public static Wirelet provideInstance(Object instance) {
 //        requireNonNull(instance, "instance is null");
@@ -146,23 +145,6 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet transformIn(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
-        requireNonNull(transformation, "transformation is null");
-        return new Service1stPassWirelet() {
-            @Override
-            protected void process(ContainerInjectionManager child) {
-                child.ios.exportsOrCreate().transform(transformation);
-            }
-        };
-    }
-
-    /**
-     * Transforms the services
-     * 
-     * @param transformation
-     *            the transformation to perform
-     * @return the transforming wirelet
-     */
     public static Wirelet transformIn(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
@@ -174,21 +156,12 @@ public final class ServiceWirelets {
         };
     }
 
-    public static Wirelet transformOut(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
-        requireNonNull(transformation, "transformation is null");
-        return new Service2ndPassWirelet() {
-            @Override
-            protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
-                PackedServiceComposer.transformInplaceAttachment(map, transformation, child.ios.newServiceContract());
-            }
-        };
-    }
-
     public static Wirelet transformOut(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
             protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
+                // child.ios.newServiceContract() to calc service contract
                 PackedServiceComposer.transformInplace(map, transformation);
             }
         };
@@ -221,6 +194,7 @@ class ServiceWSandbox {
     static Wirelet ignoreUnrequiredServices() {
         throw new UnsupportedOperationException();
     }
+
     static Wirelet anchor(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }

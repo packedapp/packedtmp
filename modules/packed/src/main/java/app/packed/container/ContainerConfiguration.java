@@ -7,7 +7,7 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import packed.internal.container.AssemblySetupOfAssembly;
+import packed.internal.container.AssemblyUserRealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 
@@ -49,12 +49,12 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     
     /** {@inheritDoc} */
     @Override
-    protected final void checkIsWiring() {
-        container.checkIsActive();
+    protected final void checkIsCurrent() {
+        container.checkIsCurrent();
     }
 
     protected final void checkConfigurable() {
-        container.checkIsActive();
+        container.checkIsCurrent();
     }
 
     
@@ -156,7 +156,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
 
         // Create a new realm for the assembly
-        AssemblySetupOfAssembly newRealm = new AssemblySetupOfAssembly(d, container, assembly, wirelets);
+        AssemblyUserRealmSetup newRealm = new AssemblyUserRealmSetup(d, container, assembly, wirelets);
 
         container.assembly.wirePrepare(); // check that the container is open for business
 
@@ -164,6 +164,12 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         newRealm.build();
 
         return (ContainerMirror) newRealm.container.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void checkIsConfigurable() {
+        container.realm.checkIsConfigurable();
     }
 }
 

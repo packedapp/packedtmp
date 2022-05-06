@@ -28,7 +28,9 @@ import app.packed.container.Wirelet;
  */
 public abstract sealed class ComponentConfiguration permits BeanConfiguration, ContainerConfiguration {
 
-    protected abstract void checkIsWiring();
+    protected abstract void checkIsConfigurable();
+    
+    protected abstract void checkIsCurrent();
 
     /**
      * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name

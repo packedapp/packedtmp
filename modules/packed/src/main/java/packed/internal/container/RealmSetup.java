@@ -15,71 +15,67 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.base.Nullable;
 import app.packed.component.Realm;
-import packed.internal.bean.BeanModelManager;
+import app.packed.container.AbstractComposer;
+import app.packed.container.Assembly;
+import packed.internal.bean.BeanAccessor;
 import packed.internal.component.ComponentSetup;
 
 /**
  * Configuration of a realm.
  */
-// BuildRealm???? Is this runtime at all???
-
-// Tror maaske det her er 2 forskellige ting???
-
-// Hvem der ejer den som vi har en af per application!!!!
-
-//// RealmSetup :-> ApplicationRealmSetup, ExtensionRealmSetup
-
-// Maaske er det endda ApplicationSetup .. Det er kun ExtensionRealmSetup der skal kunne lukkes
-
-
-//// ContainerConfigurator : 
-
-// Og formattet Assemly vs Composer
-
-public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySetup {
+public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
-    BeanModelManager accessor;
+    @Nullable
+    private BeanAccessor accessor;
 
     /** The current active component in the realm. */
+    @Nullable
     protected ComponentSetup currentComponent;
 
-    /** Whether or not this realm is closed. */
-    boolean isClosed;
+    /** Whether or not this realm is configurable. */
+    boolean isNonConfigurable;
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
     // Jaaa, men det klare jo ogsaa @JavaBaseSupport
-    public final BeanModelManager accessor() {
-        BeanModelManager r = accessor;
+    public final BeanAccessor beanAccessor() {
+        BeanAccessor r = accessor;
         if (r == null) {
-            this.accessor = r = BeanModelManager.defaultFor(realmType());
+            this.accessor = r = BeanAccessor.defaultFor(realmType());
         }
         return r;
     }
 
-    public abstract Realm realm();
-
-    public void checkOpen() {
+    public void checkIsConfigurable() {
         // Tror maaske hellere vi skal kalde newOperation
-        if (isClosed) {
+        if (isNonConfigurable) {
             throw new IllegalStateException();
         }
     }
 
-    public ComponentSetup currentComponent() {
-        return currentComponent;
+    public boolean isCurrent(ComponentSetup component) {
+        return currentComponent == component;
     }
 
-    public void newOperation() {
-        if (currentComponent != null) {
-            currentComponent.onWired();
-            currentComponent = null;
-        }
+    /**
+     * @param lookup
+     *            the lookup to use
+     * @see Assembly#lookup(Lookup)
+     * @see AbstractComposer#lookup(Lookup)
+     */
+    public void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup is null");
+        this.accessor = beanAccessor().withLookup(lookup);
     }
+
+    public abstract Realm realm();
 
     /**
      * Returns the type that was used to create this realm.
@@ -88,19 +84,21 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
      */
     public abstract Class<?> realmType();
 
+
+    public void newOperation() {
+        if (currentComponent != null) {
+            currentComponent.onWired();
+            currentComponent = null;
+        }
+    }
+
+    
     public void wireCommit(ComponentSetup component) {
         currentComponent = component;
-//
-//        // TODO: Move to class I think
-//        if (component instanceof ContainerSetup container) {
-//            if (container.parent == null || container.parent.realm != this) {
-//                rootContainers.add(container);
-//            }
-//        }
     }
 
     public void wirePrepare() {
-        if (isClosed) {
+        if (isNonConfigurable) {
             throw new IllegalStateException();
         }
         // We need to finish the existing wiring before adding new

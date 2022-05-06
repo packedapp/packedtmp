@@ -34,18 +34,26 @@ import packed.internal.inject.ExtensionInjectionManager;
 public final class ExtensionRealmSetup extends RealmSetup {
 
     /** A model of the extension/ */
-    public final ExtensionModel extensionModel;
+    final ExtensionModel extensionModel;
 
-    /** The extension in the root container. */
-    public final ExtensionSetup root;
+    /** The extension setup for the root container. */
+    private final ExtensionSetup rootExtension;
 
     private final ArrayList<BeanSetup> beans = new ArrayList<>();
 
-    // Tror vi skal have en liste af alle extension beans...
-
+    /**
+     * Creates a new realm.
+     * <p>
+     * This constructor is called from the constructor of the specified root
+     * 
+     * @param root
+     *            the root extension
+     * @param extensionType
+     *            the type of extension
+     */
     ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
-        this.root = requireNonNull(root);
+        this.rootExtension = requireNonNull(root);
     }
 
     public ExtensionInjectionManager injectionManagerFor(BeanSetup bean) {
@@ -53,20 +61,17 @@ public final class ExtensionRealmSetup extends RealmSetup {
         return bean.parent.extensions.get(realmType()).injectionManager;
     }
 
+    /** Closes the extension for configuration */
     void close() {
-        root.onApplicationClose();
-
-        for (BeanSetup bs : beans) {
-            System.out.println(bs);
-        }
-
-        isClosed = true;
+        // Let the extension do final stuff
+        rootExtension.onApplicationClose();
+        isNonConfigurable = true;
     }
 
     /** {@inheritDoc} */
     @Override
     public Realm realm() {
-        return Realm.extension(realmType());
+        return extensionModel.realm();
     }
 
     /** {@inheritDoc} */

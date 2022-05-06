@@ -28,9 +28,9 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
-import packed.internal.container.AssemblySetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.container.UserRealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
@@ -40,7 +40,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     public final ApplicationSetup application;
 
     /** The assembly from where the component is being installed. */
-    public final AssemblySetup assembly;
+    public final UserRealmSetup assembly;
 
     /** The depth of the component in the application tree. */
     public final int depth;
@@ -83,7 +83,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         this.application = requireNonNull(application);
         this.realm = requireNonNull(realm);
 
-        if (realm instanceof AssemblySetup s) {
+        if (realm instanceof UserRealmSetup s) {
             this.assembly = s;
         } else /* ExtensionRealmSetup */ {
             this.assembly = parent.assembly;
@@ -100,8 +100,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
     }
 
-    public final void checkIsActive() {
-        if (realm.currentComponent() != this) {
+    public final void checkIsCurrent() {
+        if (!isCurrent()) {
             String errorMsg;
             // if (realm.container == this) {
             errorMsg = "This operation must be called as the first thing in Assembly#build()";
@@ -111,6 +111,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
             throw new IllegalStateException(errorMsg);
         }
+    }
+
+    public final boolean isCurrent() {
+        return realm.isCurrent(this);
     }
 
     protected final void initializeNameWithPrefix(String name) {
@@ -160,7 +164,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         checkComponentName(newName);
 
         // Check that this component is still active and the name can be set
-        checkIsActive();
+        checkIsCurrent();
 
         String currentName = this.name;
 
@@ -183,7 +187,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
         this.name = newName;
     }
-    
+
     public final void onWired() {
         for (Runnable action : wiringActions) {
             action.run();
@@ -192,7 +196,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             onWireAction.accept(mirror());
         }
     }
-
 
     /** {@return the path of this component} */
     public final NamespacePath path() {
@@ -215,7 +218,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
         return name;
     }
-    
+
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
             return m.bean();
@@ -223,7 +226,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             return ((ContainerSetup.BuildTimeContainerMirror) mirror).container();
         }
     }
-    
+
 //  
 //  public final ComponentSetup resolve() {
 //      LinkedHashMap<String, ComponentSetup> map = children;

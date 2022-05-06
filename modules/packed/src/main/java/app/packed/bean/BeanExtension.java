@@ -2,6 +2,8 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
+
 import app.packed.base.Key;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
@@ -9,6 +11,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.inject.service.ServiceTransformer;
 import app.packed.operation.OperationPack;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.bean.BeanSetup;
@@ -41,7 +44,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     @Override
     protected void hookOnBeanField(BeanField field) {
         // readKey
-        
+
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
 
@@ -130,9 +133,9 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     void installNested(Object classOrFactory) {
-        
+
     }
-    
+
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror newExtensionMirror() {
@@ -161,6 +164,10 @@ public class BeanExtension extends Extension<BeanExtension> {
         }
         checkConfigurable();
         container.injectionManager.provideAll(l);
+    }
+
+    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
+      // ST.contract throws UOE
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {

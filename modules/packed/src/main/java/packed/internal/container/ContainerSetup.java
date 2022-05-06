@@ -257,7 +257,7 @@ public final class ContainerSetup extends ComponentSetup {
 
                 // TODO check that the extensionClass is not banned for users
 
-                realm.checkOpen();
+                realm.checkIsConfigurable();
             } else {
                 // An extension has made a request, that requires an extension to be installed.
 

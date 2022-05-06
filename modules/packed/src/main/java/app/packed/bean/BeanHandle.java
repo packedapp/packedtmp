@@ -55,6 +55,14 @@ import packed.internal.bean.PackedBeanHandleBuilder;
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
+    default boolean isCurrent() {
+        return false;
+    }
+    
+    default boolean isConfigurable() {
+        return false;
+    }
+    
     OperationHandle addFunctionOperation(Object functionInstance);
 
     /**

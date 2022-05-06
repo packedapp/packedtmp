@@ -44,8 +44,8 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    protected final void checkIsWiring() {
-        beanHandle.bean().checkIsActive();
+    protected final void checkIsCurrent() {
+        beanHandle.bean().checkIsCurrent();
     }
 
     /** {@return a handle for the configuration of the bean.} */
@@ -70,5 +70,13 @@ public non-sealed class BeanConfiguration extends ComponentConfiguration {
     @Override
     public String toString() {
         return beanHandle.bean().toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void checkIsConfigurable() {
+        if (!beanHandle.isConfigurable()) {
+            throw new IllegalStateException();
+        }
     }
 }

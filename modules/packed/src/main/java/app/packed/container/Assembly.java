@@ -23,7 +23,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.application.ApplicationInfo;
 import app.packed.base.Nullable;
-import packed.internal.container.AssemblySetupOfAssembly;
+import packed.internal.container.AssemblyUserRealmSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -131,7 +131,7 @@ public abstract class Assembly {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(AssemblySetupOfAssembly realm, ContainerConfiguration configuration) {
+    private void doBuild(AssemblyUserRealmSetup realm, ContainerConfiguration configuration) {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {

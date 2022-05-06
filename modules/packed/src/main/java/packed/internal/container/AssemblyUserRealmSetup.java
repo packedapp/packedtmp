@@ -32,11 +32,11 @@ import packed.internal.util.ThrowableUtil;
 /**
  * A component installer created from an {@link Assembly} instance.
  */
-public final class AssemblySetupOfAssembly extends AssemblySetup {
+public final class AssemblyUserRealmSetup extends UserRealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            AssemblySetupOfAssembly.class, ContainerConfiguration.class);
+            AssemblyUserRealmSetup.class, ContainerConfiguration.class);
 
     /** Or model of the assembly. */
     private final AssemblyModel assemblyModel;
@@ -62,7 +62,7 @@ public final class AssemblySetupOfAssembly extends AssemblySetup {
      *            optional wirelets
      * @return the application
      */
-    public AssemblySetupOfAssembly(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.container = application.container;
@@ -79,7 +79,7 @@ public final class AssemblySetupOfAssembly extends AssemblySetup {
         assemblyModel.postBuild(configuration);
     }
 
-    public AssemblySetupOfAssembly(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyUserRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
 
         this.assembly = requireNonNull(assembly, "assembly is null");

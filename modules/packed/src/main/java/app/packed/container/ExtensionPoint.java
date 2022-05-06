@@ -73,7 +73,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      *             if the extension that uses this extension point is no longer configurable.
      */
     protected final void checkConfigurable() {
-        context().extension().extensionRealm.checkOpen();
+        context().extension().extensionRealm.checkIsConfigurable();
     }
 
     /** {@return the context for this extension point.} */

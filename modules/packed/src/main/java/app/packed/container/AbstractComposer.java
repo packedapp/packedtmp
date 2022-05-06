@@ -28,7 +28,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.AssemblySetupOfComposer;
+import packed.internal.container.ComposerUserRealmSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -67,7 +67,7 @@ public abstract class AbstractComposer {
      * Checks that the underlying container is still configurable.
      */
     protected final void checkConfigurable() {
-        container().container.assembly.checkOpen();
+        container().container.assembly.checkIsConfigurable();
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class AbstractComposer {
         requireNonNull(consumer, "consumer is null");
 
         // Create a new realm
-        AssemblySetupOfComposer realm = new AssemblySetupOfComposer(d, consumer, wirelets);
+        ComposerUserRealmSetup realm = new ComposerUserRealmSetup(d, consumer, wirelets);
 
         // Build the application
         realm.build(composer);

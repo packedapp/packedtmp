@@ -134,7 +134,7 @@ public final class ExtensionSetup {
         // User Assembly + Extension Container
         // Extension Assembly + Same Extension Assembly
         // Extension Assembly + Other Extension Assembly
-        container.realm.checkOpen();
+        container.realm.checkIsConfigurable();
     }
 
     public void hookOnBeanBegin(BeanInfo beanInfo) {
@@ -189,7 +189,7 @@ public final class ExtensionSetup {
 
         // Hvad hvis en extension linker en af deres egne assemblies.
         // If the extension is added in the root container of an assembly. We need to add it there
-        if (container.realm instanceof AssemblySetup r && r.container() == container) {
+        if (container.realm instanceof UserRealmSetup r && r.container() == container) {
             r.extensions.add(this);
         }
 
