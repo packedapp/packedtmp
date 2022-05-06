@@ -93,6 +93,11 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
     }
 
     
+    void initialize(ContainerSetup component) {
+        currentComponent = component;
+    }
+
+    
     public void wireCommit(ComponentSetup component) {
         currentComponent = component;
     }

@@ -99,7 +99,7 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
+    public ContainerSetup(ApplicationSetup application, UserRealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(application, realm, parent);
         requireNonNull(wirelets, "wirelets is null");
 

@@ -29,7 +29,7 @@ import app.packed.lifecycle.RunState;
 import app.packed.lifetime.LifetimeMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
-import packed.internal.container.RealmSetup;
+import packed.internal.container.UserRealmSetup;
 import packed.internal.inject.ApplicationInjectionManager;
 import packed.internal.lifetime.PoolEntryHandle;
 
@@ -67,7 +67,7 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildType buildKind, RealmSetup realm, Wirelet[] wirelets) {
+    public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildType buildKind, UserRealmSetup realm, Wirelet[] wirelets) {
         this.driver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
         this.descriptor = new PackedApplicationDescriptor(buildKind);

@@ -38,13 +38,13 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             AssemblyUserRealmSetup.class, ContainerConfiguration.class);
 
-    /** Or model of the assembly. */
-    private final AssemblyModel assemblyModel;
+    public final ApplicationSetup application;
 
     /** The assembly used to create this installer. */
     final Assembly assembly;
 
-    public final ApplicationSetup application;
+    /** Or model of the assembly. */
+    private final AssemblyModel assemblyModel;
 
     /** The root component of this realm. */
     public final ContainerSetup container;
@@ -68,26 +68,18 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         this.container = application.container;
         this.driver = new PackedContainerDriver(container);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
-        wireCommit(container);
-    }
-
-    public void preBuild(ContainerConfiguration configuration) {
-        assemblyModel.preBuild(configuration);
-    }
-
-    public void postBuild(ContainerConfiguration configuration) {
-        assemblyModel.postBuild(configuration);
+        initialize(container);
     }
 
     public AssemblyUserRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
-
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
         // if embed do xxx
         // else create new container
         this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
         this.driver = driver;
+        initialize(container);
     }
 
     public void build() {
@@ -106,13 +98,21 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> realmType() {
-        return assembly.getClass();
+    public ContainerSetup container() {
+        return container;
+    }
+
+    public void postBuild(ContainerConfiguration configuration) {
+        assemblyModel.postBuild(configuration);
+    }
+
+    public void preBuild(ContainerConfiguration configuration) {
+        assemblyModel.preBuild(configuration);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerSetup container() {
-        return container;
+    public Class<?> realmType() {
+        return assembly.getClass();
     }
 }
