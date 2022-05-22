@@ -24,8 +24,8 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.inject.sandbox.ServiceConfiguration;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.inject.sandbox.ServiceConfiguration;
 import packed.internal.inject.service.ContainerInjectionManager;
 
 /**

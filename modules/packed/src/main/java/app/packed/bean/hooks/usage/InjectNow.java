@@ -25,16 +25,17 @@ import app.packed.operation.dependency.DependencyProvider;
  *
  */
 public class InjectNow {
+
     @DependencyProvider.Hook(extension = MyExtNow.class)
     @interface OnNow {}
 
     static class MyExtNow extends Extension<MyExtNow> {
 
         @Override
-        protected void hookOnBeanDependencyProvider(DependencyProvider injector) {
+        protected void hookOnBeanDependencyProvider(DependencyProvider provider) {
             // injector checkType
 
-            injector.provide(new Factory0<LocalDate>(() -> LocalDate.now()) {});
+            provider.provide(new Factory0<>(() -> LocalDate.now()) {});
         }
     }
-    }
+}

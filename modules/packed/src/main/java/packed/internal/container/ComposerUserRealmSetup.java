@@ -15,12 +15,14 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.container.AbstractComposer;
-import app.packed.container.ComposerAction;
+import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import packed.internal.application.ApplicationSetup;
@@ -33,17 +35,18 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class ComposerUserRealmSetup extends UserRealmSetup {
 
-    /** A handle that can invoke {@link AbstractComposer#doBuild(ContainerConfiguration, ComposerAction)}. */
+    /** A handle that can invoke {@link AbstractComposer#doBuild(ContainerConfiguration, BuildAction)}. */
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild",
-            void.class, ContainerConfiguration.class, ComposerAction.class);
+            void.class, ContainerConfiguration.class, BuildAction.class);
+
+    private final BuildAction<?> consumer;
+
 
     /** The application we are building. */
     public final ApplicationSetup application;
 
-    final ComposerAction<?> consumer;
-
-    public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<?> consumer, Wirelet[] wirelets) {
-        this.consumer = consumer;
+    public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, BuildAction<?> consumer, Wirelet[] wirelets) {
+        this.consumer = requireNonNull(consumer);
         this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.INSTANCE, this, wirelets);
     }
 

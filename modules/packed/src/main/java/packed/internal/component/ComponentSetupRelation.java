@@ -19,10 +19,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.application.ComponentMirror;
+import app.packed.application.ComponentScope;
+import app.packed.application.ComponentMirror.Relation;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentMirror.Relation;
-import app.packed.component.ComponentScope;
 
 /** Implementation of {@link Relation}. */
 public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements Relation {

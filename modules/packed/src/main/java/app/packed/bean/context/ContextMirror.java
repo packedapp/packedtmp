@@ -15,7 +15,7 @@
  */
 package app.packed.bean.context;
 
-import app.packed.mirror.Mirror;
+import app.packed.container.Mirror;
 
 /**
  *

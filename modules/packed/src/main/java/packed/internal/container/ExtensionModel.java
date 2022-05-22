@@ -30,10 +30,10 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import app.packed.application.Realm;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.component.Realm;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;

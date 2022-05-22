@@ -25,10 +25,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.component.ComponentMirror;
 import app.packed.container.AbstractComposer;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceLocator;

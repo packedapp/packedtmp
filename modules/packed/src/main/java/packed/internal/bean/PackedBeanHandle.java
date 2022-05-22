@@ -70,19 +70,7 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return null;
+    public boolean isConfigurable() {
+        return !bean.realm.isClosed();
     }
 }

@@ -15,8 +15,8 @@
  */
 package app.packed.bean.hooks;
 
+import app.packed.application.Realm;
 import app.packed.bean.BeanDefinitionException;
-import app.packed.component.Realm;
 import app.packed.operation.dependency.DependencyProvider;
 
 /**

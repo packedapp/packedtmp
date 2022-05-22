@@ -97,7 +97,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public Module module() {
-            return application.container.assembly.realmType().getModule();
+            return application.container.userRealm.realmType().getModule();
         }
 
         /** {@inheritDoc} */

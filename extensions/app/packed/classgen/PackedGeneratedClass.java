@@ -17,7 +17,7 @@ package app.packed.classgen;
 
 import java.lang.ref.WeakReference;
 
-import app.packed.component.Realm;
+import app.packed.application.Realm;
 
 /**
  *

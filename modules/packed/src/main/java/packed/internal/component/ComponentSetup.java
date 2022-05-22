@@ -22,10 +22,10 @@ import java.util.LinkedHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.application.ComponentMirror;
+import app.packed.application.ComponentScope;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentScope;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
@@ -40,7 +40,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     public final ApplicationSetup application;
 
     /** The assembly from where the component is being installed. */
-    public final UserRealmSetup assembly;
+    public final UserRealmSetup userRealm;
 
     /** The depth of the component in the application tree. */
     public final int depth;
@@ -84,9 +84,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         this.realm = requireNonNull(realm);
 
         if (realm instanceof UserRealmSetup s) {
-            this.assembly = s;
+            this.userRealm = s;
         } else /* ExtensionRealmSetup */ {
-            this.assembly = parent.assembly;
+            this.userRealm = parent.userRealm;
         }
 
         this.parent = parent;

@@ -67,7 +67,7 @@ public abstract class AbstractComposer {
      * Checks that the underlying container is still configurable.
      */
     protected final void checkIsConfigurable() {
-        if (container().container.assembly.isClosed()) {
+        if (container().container.userRealm.isClosed()) {
             throw new IllegalStateException("This composer is no longer configurable");
         }
     }
@@ -95,7 +95,7 @@ public abstract class AbstractComposer {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings({ "unused", "unchecked" })
-    private void doBuild(ContainerConfiguration configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
+    private void doBuild(ContainerConfiguration configuration, @SuppressWarnings("rawtypes") BuildAction consumer) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
@@ -136,18 +136,18 @@ public abstract class AbstractComposer {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        container().container.assembly.lookup(lookup);
+        container().container.userRealm.lookup(lookup);
     }
 
     /**
-     * Invoked by the runtime immediately after {@link ComposerAction#build(AbstractComposer)}.
+     * Invoked by the runtime immediately after {@link BuildAction#build(AbstractComposer)}.
      * <p>
-     * This method will not be called if {@link ComposerAction#build(AbstractComposer)} throws an exception.
+     * This method will not be called if {@link BuildAction#build(AbstractComposer)} throws an exception.
      */
     protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
 
     /**
-     * Invoked by the runtime immediately before it invokes {@link ComposerAction#build(AbstractComposer)}. Used for any
+     * Invoked by the runtime immediately before it invokes {@link BuildAction#build(AbstractComposer)}. Used for any
      * configuration that needs to be done before control is handed over to the composer action specified by the user.
      */
     protected void onNew() {} // navngivningen skal alines med AssemblyHook
@@ -162,27 +162,41 @@ public abstract class AbstractComposer {
      *            the type of composer that is exposed to the end-user
      * @param composer
      *            the composer
-     * @param consumer
-     *            the configurator specified by the end-user for configuring the composer
+     * @param action
+     *            the build action that operates on a consumer
      * @param wirelets
      *            optional wirelets
      * @return a new application instance
      * 
      * @see AbstractComposer
      */
-    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer, ComposerAction<? super C> consumer,
-            Wirelet... wirelets) {
+    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer, BuildAction<? super C> action, Wirelet... wirelets) {
         PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
         requireNonNull(composer, "composer is null");
-        requireNonNull(consumer, "consumer is null");
+        requireNonNull(action, "action is null");
 
         // Create a new realm
-        ComposerUserRealmSetup realm = new ComposerUserRealmSetup(d, consumer, wirelets);
+        ComposerUserRealmSetup realm = new ComposerUserRealmSetup(d, action, wirelets);
 
         // Build the application
         realm.build(composer);
 
         // Return a launched application
         return ApplicationInitializationContext.launch(d, realm.application, /* no runtime wirelets */ null);
+    }
+
+    /**
+    *
+    */
+    @FunctionalInterface
+    public interface BuildAction<C extends AbstractComposer> {
+
+        /**
+         * Builds an application using the given composer.
+         *
+         * @param composer
+         *            the composer
+         */
+        void build(C composer);
     }
 }

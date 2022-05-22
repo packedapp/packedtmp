@@ -39,7 +39,6 @@ import java.util.stream.StreamSupport;
 
 public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
 
-
     /** {@return the number of extensions in the tree.} */
     default int count() {
         int size = 0;

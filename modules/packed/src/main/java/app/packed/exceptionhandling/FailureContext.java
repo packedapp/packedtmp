@@ -2,7 +2,7 @@ package app.packed.exceptionhandling;
 
 import java.util.Optional;
 
-import app.packed.component.ComponentMirror;
+import app.packed.application.ComponentMirror;
 import app.packed.container.Extension;
 
 public interface FailureContext /* extends AttributedElement */ {

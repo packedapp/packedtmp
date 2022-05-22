@@ -22,7 +22,7 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
@@ -66,7 +66,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     /** {@inheritDoc} */
     @Override
-    public OperationTargetMirror mirror() {
+    public OperationSiteMirror mirror() {
         return new BuildTimeMethodTargetMirror(this);
     }
 
@@ -83,7 +83,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
     }
 
     /**  */
-    private record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationTargetMirror.OfMethodInvoke {
+    public record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationSiteMirror.OfMethodInvoke {
 
         /** {@inheritDoc} */
         @Override

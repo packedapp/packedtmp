@@ -2,9 +2,9 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.application.Realm;
 import app.packed.application.entrypoint.EntryPointExtensionPoint;
 import app.packed.base.Nullable;
-import app.packed.component.Realm;
 import app.packed.container.Extension.DependsOn;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;

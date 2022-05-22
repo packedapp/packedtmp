@@ -4,15 +4,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.container.Mirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.mirror.Mirror;
 import app.packed.operation.OperationMirror;
 import packed.internal.application.PackedApplicationDriver;
 

@@ -27,10 +27,7 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.container.ComposerAction;
 import app.packed.inject.Provider;
-import packed.internal.inject.service.build.PackedServiceComposer;
-import packed.internal.inject.service.build.ServiceComposer;
 import packed.internal.inject.service.sandbox.Service;
 
 /**
@@ -137,12 +134,12 @@ public abstract class AbstractServiceLocator implements OldServiceLocator {
         return select(s -> type.isAssignableFrom(s.key().rawType()));
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
-    public final OldServiceLocator spawn(ComposerAction<ServiceComposer> transformer) {
-        return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
-    }
+//    /** {@inheritDoc} */
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    @Override
+//    public final OldServiceLocator spawn(BuildAction<ServiceComposer> transformer) {
+//        return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
+//    }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")

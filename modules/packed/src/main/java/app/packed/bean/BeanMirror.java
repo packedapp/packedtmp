@@ -3,7 +3,8 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.component.ComponentMirror;
+import app.packed.application.ComponentMirror;
+import app.packed.application.Realm;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.operation.lifecycle.BeanFactoryOperationMirror;
@@ -16,6 +17,51 @@ import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
  */
 public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
 
+
+    /** {@return the owner of the component.} */
+    Realm owner();
+
+    /**
+     * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
+     * drive
+     * <p>
+     * Another thing is extension member, which is slightly different.
+     * 
+     * @return any extension the bean's driver is part of
+     */
+    // Hvem ejer den bean driver, der er blevet brugt til at registrere bean'en...
+    // Det er samtidig ogsaa den extension (if present) som evt. ville kunne instantiere den
+
+    // Altsaa den giver jo ogsaa mening for en funktion. Ikke rigtig for en container dog
+    // Eller en TreeBean (som jeg taenker aldrig kan registreres via en extension)
+    // Saa maaske skal den flyttes ned paa component
+
+    // Tror maaske den skal op paa ComponentMirror...
+    // Ved ikke om vi kan definere end ContainerDriver for en extension???
+    // Det primaere er vel injection
+    // Er det i virkeligheden altid ownership???
+    // Har vi tilfaelde hvor vi har en ikke-standard bean driver.
+    // Hvor det ikke er extension'en der soerger for instantiering
+
+    // RegisteredWith
+    // DeclaredBy
+    // Det er jo mere eller Realmen her
+
+    // Giver den her super meget mening????
+    /// fx @Get paa install(Foo.class) vs requestGet(Foo.class)
+    /// Vil jo have forskllig registrant...
+    /// Er nok mere relevant hvem der styre lifecyclen
+    
+    // Det er vel mere operator????
+
+    
+    // !!!! Den fungere jo ikke for containere???
+    
+    // var Optional<Class<? extends Extension<?>>> registrant
+    // Giver strengt tagt kun mening paa beans nu..
+    Class<? extends Extension<?>> operator();
+
+    
     /**
      * Returns the type (class) of the bean.
      * <p>

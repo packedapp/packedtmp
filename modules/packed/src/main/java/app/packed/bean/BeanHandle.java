@@ -55,23 +55,10 @@ import packed.internal.bean.PackedBeanHandleBuilder;
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
-    default boolean isCurrent() {
-        return false;
-    }
-    
-    default boolean isConfigurable() {
-        return false;
-    }
-    
     OperationHandle addFunctionOperation(Object functionInstance);
-
-    /**
-     * @return
-     * 
-     * @throws UnsupportedOperationException if called on a bean with void.class beanKind
-     */
-    Key<?> defaultKey();
-
+    
+    // Hvis vi aabner op for specialized bean mirrors
+    default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
     
     default OperationHandle addOperation(@SuppressWarnings("exports") OperationDriver driver) {
         throw new UnsupportedOperationException();
@@ -81,9 +68,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         throw new UnsupportedOperationException();
     }
 
-    // Hvis vi aabner op for specialized bean mirrors
-    default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
-
+    
     /**
      * Registers a wiring action to run when the bean becomes fully wired.
      * 
@@ -99,6 +84,29 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * @see BeanMirror#beanClass()
      */
     Class<?> beanClass(); // beanSource instead??
+
+    /**
+     * @param decorator
+     */
+    void decorateInstance(Function<? super T, ? extends T> decorator);
+
+    /**
+     * @return
+     * 
+     * @throws UnsupportedOperationException if called on a bean with void.class beanKind
+     */
+    Key<?> defaultKey();
+
+    boolean isConfigurable();
+
+    default boolean isCurrent() {
+        return false;
+    }
+
+    /**
+     * @param consumer
+     */
+    void peekInstance(Consumer<? super T> consumer);
 
     /**
      * A builder for {@link BeanHandle}. Can only be created via the various {@code newBuilder} methods on
@@ -130,17 +138,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         BeanHandle<T> build();
 
         /**
-         * Marks the bean as owned by the extension representing by specified extension point context
-         * 
-         * @param context
-         *            an extension point context representing the extension that owns the bean
-         * @return this builder
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
-         */
-        Builder<T> ownedBy(UseSite context);
-
-        /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
          * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
@@ -156,17 +153,18 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         default Builder<T> namePrefix(String prefix) {
             return this;
         }
+
+        /**
+         * Marks the bean as owned by the extension representing by specified extension point context
+         * 
+         * @param context
+         *            an extension point context representing the extension that owns the bean
+         * @return this builder
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
+         */
+        Builder<T> ownedBy(UseSite context);
     }
-
-    /**
-     * @param decorator
-     */
-    void decorateInstance(Function<? super T, ? extends T> decorator);
-
-    /**
-     * @param consumer
-     */
-    void peekInstance(Consumer<? super T> consumer);
 }
 
 interface BeanXDriverSandbox<T> {

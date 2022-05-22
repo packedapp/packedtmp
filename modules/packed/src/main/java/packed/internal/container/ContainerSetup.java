@@ -27,11 +27,10 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirror;
-import app.packed.component.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
@@ -249,8 +248,10 @@ public final class ContainerSetup extends ComponentSetup {
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onNew.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
+            // Ny extensions skal installeres indefor Assembly::build 
+            
             if (realm.isClosed()) {
-                throw new IllegalStateException("Cannot install extension as the container is no longer configurable");
+                throw new IllegalStateException("Cannot install new extensions as the container is no longer configurable");
             }
             // Checks that container is still configurable
             if (requestedByExtension == null) {
@@ -327,12 +328,6 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Class<? extends Extension<?>> operator() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";
         }
@@ -361,7 +356,7 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public AssemblyMirror assembly() {
-            return container.assembly.mirror();
+            return container.userRealm.mirror();
         }
 
         /** {@inheritDoc} */
@@ -385,12 +380,6 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public String name() {
             return container.name;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Realm owner() {
-            return container.realm.realm();
         }
 
         /** {@inheritDoc} */

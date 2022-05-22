@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.application.Realm;
 import app.packed.base.Nullable;
-import app.packed.component.Realm;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
+import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
 import packed.internal.bean.BeanAccessor;
 import packed.internal.bean.PackedBeanHandleBuilder;
@@ -58,7 +58,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
     }
 
     void close() {
-        wireComplete();
+        wireCurrentComponent();
         isClosed = true;
     }
 
@@ -93,11 +93,11 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
 
     /**
      * @see PackedBeanHandleBuilder#build()
-     * @see ContainerConfiguration#link(ContainerDriver, Assembly, Wirelet...)
+     * @see ContainerConfiguration#link(ContainerHandle, Assembly, Wirelet...)
      * @see RealmSetup#close()
      */
     // TODO add for PackedContainerHandleBuilder
-    public void wireComplete() {
+    public void wireCurrentComponent() {
         if (currentComponent != null) {
             currentComponent.onWired();
             currentComponent = null;
@@ -105,7 +105,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
     }
 
     /**
-     * Called from the constructor of ComponentSetup whenever a new component is created. {@link #wireComplete()} must have
+     * Called from the constructor of ComponentSetup whenever a new component is created. {@link #wireCurrentComponent()} must have
      * previously been called unless the component is the first component in the realm.
      * 
      * @param newComponent

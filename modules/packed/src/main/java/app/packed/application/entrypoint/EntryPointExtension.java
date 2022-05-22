@@ -18,10 +18,14 @@ import packed.internal.application.EntryPointSetup.MainThreadOfControl;
 import packed.internal.bean.hooks.PackedBeanMethod;
 import packed.internal.container.ExtensionSetup;
 
-// Cannot use both @app.packed.application.Main and the CLI extension at the same time.
 /**
- * An extension that controls any entry points of the an application.
+ * An extension that controls entry points into an application.
  */
+// Entrypoint er maaske daarligt. Giver ikke rigtig at sige en applikationer ikke
+// har entry points
+
+// ExecutionModel
+
 public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     boolean hasMain;

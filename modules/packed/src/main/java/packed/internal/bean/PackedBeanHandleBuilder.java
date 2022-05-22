@@ -82,7 +82,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
         
         // Can we call it more than once??? Why not
-        realm.wireComplete();
+        realm.wireCurrentComponent();
 
         // Skal lave saa mange checks som muligt inde vi laver BeanSetup
         BeanSetup bean;

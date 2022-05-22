@@ -20,13 +20,13 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 
+import app.packed.application.Realm;
 import app.packed.base.Variable;
 import app.packed.bean.hooks.BeanField;
-import app.packed.component.Realm;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
@@ -68,7 +68,7 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
 
     /** {@inheritDoc} */
     @Override
-    public OperationTargetMirror mirror() {
+    public OperationSiteMirror mirror() {
         return new BuildTimeFieldTargetMirror(this);
     }
 
@@ -121,7 +121,7 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
     }
 
     /** A mirror of {@code OperationTargetMirror.OfFieldAccess}. */
-    public record BuildTimeFieldTargetMirror(PackedBeanField pbf) implements OperationTargetMirror.OfFieldAccess {
+    public record BuildTimeFieldTargetMirror(PackedBeanField pbf) implements OperationSiteMirror.OfFieldAccess {
 
         /** {@inheritDoc} */
         @Override

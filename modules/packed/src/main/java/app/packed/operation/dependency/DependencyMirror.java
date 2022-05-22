@@ -17,7 +17,7 @@ package app.packed.operation.dependency;
 
 import java.util.Optional;
 
-import app.packed.component.Realm;
+import app.packed.application.Realm;
 import app.packed.operation.OperationMirror;
 
 /**

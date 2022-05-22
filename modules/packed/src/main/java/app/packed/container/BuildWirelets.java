@@ -22,8 +22,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLauncher;
-import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentScope;
+import app.packed.application.ComponentMirror;
+import app.packed.application.ComponentScope;
 import packed.internal.container.InternalWirelet;
 
 /**

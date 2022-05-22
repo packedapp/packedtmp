@@ -28,7 +28,7 @@ import packed.internal.inject.DependencyNode;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 
 /**
- * An extension for creating new beans.
+ * An extension for installing beans into a container.
  */
 public class BeanExtension extends Extension<BeanExtension> {
 

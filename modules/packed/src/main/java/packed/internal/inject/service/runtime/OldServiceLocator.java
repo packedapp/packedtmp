@@ -28,12 +28,10 @@ import app.packed.base.Key;
 import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
-import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.inject.service.PublicizeExtension;
 import app.packed.operation.dependency.DependencyProvider;
-import packed.internal.inject.service.build.ServiceComposer;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.
@@ -149,20 +147,20 @@ public interface OldServiceLocator extends ServiceRegistry {
      */
     <T> ServiceSelection<T> selectWithAnyQualifiers(TypeToken<T> typePart);
 
-    /**
-     * Spawns a new service locator by using a {@link ServiceComposer} to transmute this locator.
-     * <p>
-     * INSERT EXAMPLE
-     * 
-     * <p>
-     * If you
-     * 
-     * @param action
-     *            the transmutation action
-     * @return the new service locator
-     */
-    @Reflectable
-    OldServiceLocator spawn(ComposerAction<ServiceComposer> action);
+//    /**
+//     * Spawns a new service locator by using a {@link ServiceComposer} to transmute this locator.
+//     * <p>
+//     * INSERT EXAMPLE
+//     * 
+//     * <p>
+//     * If you
+//     * 
+//     * @param action
+//     *            the transmutation action
+//     * @return the new service locator
+//     */
+//    @Reflectable
+//    OldServiceLocator spawn(BuildAction<ServiceComposer> action);
 
     /**
      * Returns a service with the specified key. Or throws a {@link NoSuchElementException} if no such service is available.

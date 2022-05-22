@@ -15,7 +15,7 @@
  */
 package app.packed.operation.mirror;
 
-import app.packed.mirror.Mirror;
+import app.packed.container.Mirror;
 
 /**
  *

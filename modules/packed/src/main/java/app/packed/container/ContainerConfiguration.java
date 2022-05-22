@@ -3,10 +3,11 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
+import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import packed.internal.container.AssemblyUserRealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
@@ -14,10 +15,10 @@ import packed.internal.container.PackedContainerDriver;
 /**
  * The configuration of a container.
  */
-public non-sealed class ContainerConfiguration extends ComponentConfiguration {
+public class ContainerConfiguration {
 
     /**
-     * A marker configuration object to indicate that a composer or assembly has already been used to build something. Must
+     * A marker configuration object indicating that an assembly (or composer) has already been used for building. Should
      * never be exposed to end-users.
      */
     static final ContainerConfiguration USED = new ContainerConfiguration();
@@ -31,9 +32,14 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         this.container = null;
     }
 
-    public ContainerConfiguration(ContainerDriver containerHandle) {
-        PackedContainerDriver bh = (PackedContainerDriver) containerHandle;
-        this.container = bh.setup;
+    /**
+     * Create a new container configuration.
+     * 
+     * @param handle
+     *            the container handle
+     */
+    public ContainerConfiguration(ContainerHandle handle) {
+        this.container = requireNonNull((PackedContainerDriver) handle, "handle is null").setup;
     }
 
     // On container or assembly???
@@ -47,8 +53,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * 
+     * @throws IllegalStateException
+     *             if the container is no longer configurable
+     */
     protected void checkIsConfigurable() {
         if (container.realm.isClosed()) {
             throw new IllegalStateException("This container is no longer configurable");
@@ -56,7 +65,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     }
 
     /** {@inheritDoc} */
-    @Override
     protected final void checkIsCurrent() {
         container.checkIsCurrent();
     }
@@ -64,7 +72,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
-        
+
         // Men der er helt klart noget arbejde der
         throw new UnsupportedOperationException();
     }
@@ -94,6 +102,25 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return container.isExtensionUsed(extensionType);
     }
 
+    /**
+     * <p>
+     * If {@code Extension.class} is specified. The given action is invoked for every extension that is used.
+     * 
+     * @param <E>
+     *            the type of
+     * @param extensionType
+     * @param action
+     *            the action to invoke
+     */
+    public final <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
+        // bruger assignable
+        // onFirstUse(Extension.class, ()-> Extension isUsed);
+        // Taenker jeg kunne vaere brugbart i rooten....
+        /// Fx for at sige (SRExtension.class, ()-> e.setPrivatelyOwned());
+        // Er maaske taenkt
+        throw new UnsupportedOperationException();
+    }
+
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         return link(new PackedContainerDriver(container), assembly, wirelets);
     }
@@ -110,36 +137,62 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      * @return the component that was linked
      */
     //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
-    public ContainerMirror link(ContainerDriver driver, Assembly assembly, Wirelet... wirelets) {
+    public ContainerMirror link(ContainerHandle driver, Assembly assembly, Wirelet... wirelets) {
         PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
 
+        // Check that the container is still configurable
         checkIsConfigurable();
-        // Wire the current component
-        container.assembly.wireComplete();
-        
+
+        // Wire any current component
+        container.userRealm.wireCurrentComponent();
+
         // Create a new realm for the assembly
         AssemblyUserRealmSetup newRealm = new AssemblyUserRealmSetup(d, container, assembly, wirelets);
-        
 
         // Close the new realm again after the assembly has been successfully linked
         newRealm.build();
 
-        return (ContainerMirror) newRealm.container.mirror();
+        return (ContainerMirror) newRealm.container().mirror();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
+     * is case sensitive.
+     * <p>
+     * If no name is explicitly set on a component. A name will be assigned to the component (at build time) in such a way
+     * that it will have a unique name among other sibling components.
+     *
+     * @param name
+     *            the name of the component
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     * @see ComponentMirror#name()
+     * @see Wirelet#named(String)
+     */
     public ContainerConfiguration named(String name) {
         container.named(name);
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the full path of the component.
+     * <p>
+     * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
+     * <p>
+     * If building an image, the path of the instantiated component might be prefixed with another path.
+     * 
+     * <p>
+     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
+     * path returned does not maintain any reference to this configuration object.
+     * 
+     * @return the path of this configuration.
+     */
     public final NamespacePath path() {
         return container.path();
     }
-    
+
     // never selects extension wirelets...
     public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container.selectWirelets(wireletClass);
@@ -155,8 +208,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      * Returns an extension of the specified type.
      * <p>
      * If this is the first time an extension of the specified type has been requested. This method will create a new
-     * instance of the extension. This instance will then be returned for all subsequent calls to this method for the same
-     * extension type.
+     * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
+     * type.
      * 
      * @param <E>
      *            the type of extension to return
@@ -164,8 +217,8 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the underlying container is no longer configurable and an extension of the specified type is not
-     *             already in used
+     *             if the underlying container is no longer configurable and an extension of the specified type has not ben
+     *             used previously
      * @see #extensionsTypes()
      */
     public final <E extends Extension<?>> E use(Class<E> extensionType) {

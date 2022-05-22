@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import app.packed.application.ComponentMirrorTree;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirrorTree;
-import app.packed.mirror.Mirror;
+import app.packed.container.Mirror;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.lifecycle.BeanLifecycleMirrorPlan;
 import packed.internal.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;

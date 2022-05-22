@@ -28,7 +28,7 @@ import app.packed.bean.context.ContextRootMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
-import app.packed.mirror.Mirror;
+import app.packed.container.Mirror;
 import app.packed.operation.dependency.DependencyMirror;
 import app.packed.operation.interceptor.OperationInterceptorMirror;
 import app.packed.operation.mirror.OperationErrorHandlingMirror;
@@ -238,7 +238,7 @@ public non-sealed class OperationMirror implements Mirror, ContextRootMirror {
     }
 
     /** {@return the target of the operation.} */
-    public final OperationTargetMirror target() {
+    public final OperationSiteMirror target() {
         return operation().target.mirror();
     }
 }

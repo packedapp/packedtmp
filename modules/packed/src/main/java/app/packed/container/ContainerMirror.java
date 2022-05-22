@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ComponentMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirror;
 import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
 
 /**
@@ -26,6 +26,9 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
     // Kan ikke lige umiddelbart se nogle use cases
     // Maaske bare fjerne den
     Set<ExtensionMirror<?>> extensions();
+
+    /** {@return the parent container of this container. Or empty if the root container.} */
+    Optional<ContainerMirror> parent();
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
     Set<Class<? extends Extension<?>>> extensionTypes();
@@ -65,13 +68,9 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
      * @see ApplicationMirror#useExtension(Class)
      * @see #findExtension(Class)
      * @throws NoSuchElementException
-     *             if the extension the mirror is a part of is not in use by the container
-     * @throws InternalExtensionException
-     *             if the specified mirror class is not annotated with {@link ExtensionMember}.
+     *             if the mirror's extension is not in use by the container
      */
     default <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
     }
 }
-// TODO
-// * List of banned extensions? Maaske baade dem inheriter, og dem vi ikke inheriter

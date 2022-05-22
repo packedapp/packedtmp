@@ -17,8 +17,8 @@ package app.packed.operation.mirror.ig;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.application.Realm;
 import app.packed.base.Key;
-import app.packed.component.Realm;
 
 /**
  *

@@ -15,7 +15,7 @@
  */
 package app.packed.classgen;
 
-import app.packed.component.Realm;
+import app.packed.application.Realm;
 
 /**
  *

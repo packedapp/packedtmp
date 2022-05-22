@@ -5,18 +5,17 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ComponentMirror;
+import app.packed.application.Realm;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.BeanInfo;
-import app.packed.component.ComponentMirror;
-import app.packed.component.Realm;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
@@ -162,7 +161,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         /** {@inheritDoc} */
         @Override
         public AssemblyMirror assembly() {
-            return bean.assembly.mirror();
+            return bean.userRealm.mirror();
         }
 
         /** {@inheritDoc} */
@@ -193,12 +192,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         @Override
         public Realm owner() {
             return bean.realm.realm();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<ContainerMirror> parent() {
-            return Optional.of(bean.parent.mirror());
         }
 
         /** {@inheritDoc} */

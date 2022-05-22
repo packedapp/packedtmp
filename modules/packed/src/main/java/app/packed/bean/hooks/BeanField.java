@@ -34,7 +34,7 @@ import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanField;
 
 /**
- *
+ * A bean field represents a {@link Field} on a bean.
  */
 public sealed interface BeanField extends BeanElement permits PackedBeanField {
 

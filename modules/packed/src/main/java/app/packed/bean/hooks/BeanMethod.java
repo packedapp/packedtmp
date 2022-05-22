@@ -30,7 +30,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanMethod;
 
@@ -59,7 +59,7 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     /**
      * 
      * <p>
-     * A new mirror with {@link OperationTargetMirror.OfMethodInvoke} as the {@link OperationMirror#target()}.
+     * A new mirror with {@link OperationSiteMirror.OfMethodInvoke} as the {@link OperationMirror#target()}.
      * 
      * @param invoker
      *            the extension bean that will invoke the operation

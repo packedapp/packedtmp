@@ -17,7 +17,7 @@ package packed.internal.bean.operation;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationSiteMirror;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /** The target of an operation. */
@@ -28,5 +28,5 @@ public sealed interface PackedOperationTarget permits PackedBeanMember, PackedFu
     }
 
     /** {@return a mirror representing the target.} */
-    public abstract OperationTargetMirror mirror();
+    public abstract OperationSiteMirror mirror();
 }

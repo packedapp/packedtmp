@@ -4,11 +4,11 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
+import app.packed.container.ContainerHandle;
 import app.packed.container.Extension;
 
-/** Implementation of {@link ContainerDriver}. */
-public final class PackedContainerDriver implements ContainerDriver {
+/** Implementation of {@link ContainerHandle}. */
+public final class PackedContainerDriver implements ContainerHandle {
 
     @Nullable
     final ContainerSetup parent;

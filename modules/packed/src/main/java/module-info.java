@@ -1,16 +1,15 @@
 module app.packed {
     exports app.packed.application;
-    exports app.packed.base;
-    exports app.packed.bean;
-    exports app.packed.component;
     exports app.packed.container;
+    exports app.packed.bean;
+    exports app.packed.operation;
+    
+    exports app.packed.base;
     exports app.packed.inject;
     exports app.packed.lifecycle;
     exports app.packed.lifetime;
-    exports app.packed.operation;
-
+    
     exports app.packed.conversion;
-    exports app.packed.mirror;
     exports app.packed.validate;
 
     exports app.packed.application.entrypoint;

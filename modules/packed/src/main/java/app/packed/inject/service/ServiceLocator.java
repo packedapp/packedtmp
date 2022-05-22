@@ -28,16 +28,16 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.base.Reflectable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ProvideableBeanConfiguration;
-import app.packed.component.ComponentMirror;
 import app.packed.container.AbstractComposer;
+import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
@@ -117,11 +117,11 @@ import packed.internal.util.LookupUtil;
 public interface ServiceLocator {
 
     /**
-     * Returns {@code true} if this registry contains a service with the specified key.
+     * Returns {@code true} if this service locator provides a service with the specified key.
      *
      * @param key
-     *            key whose presence in this registry is to be tested
-     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
+     *            key whose presence in this service locator is to be tested
+     * @return {@code true} if a service with the specified key is provided by this service locator. Otherwise {@code false}
      * @see #contains(Key)
      */
     default boolean contains(Class<?> key) {
@@ -129,11 +129,11 @@ public interface ServiceLocator {
     }
 
     /**
-     * Returns {@code true} if this registry contains a service with the specified key.
+     * Returns {@code true} if this service locator provides a service with the specified key.
      *
      * @param key
-     *            key whose presence in this registry is to be tested
-     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
+     *            key whose presence in this service locator is to be tested
+     * @return {@code true} if a service with the specified key is provided by this service locator. Otherwise {@code false}
      * @see #contains(Class)
      */
     default boolean contains(Key<?> key) {
@@ -142,16 +142,16 @@ public interface ServiceLocator {
     }
 
     /**
-     * Returns a service instance for the given key if available, otherwise an empty optional.
+     * Returns a service instance with the given key if available, otherwise an empty optional.
      * <p>
-     * If you know for certain that a service exists for the specified key, {@link #use(Class)} usually gives more fluent
-     * code.
+     * If you know for certain that a service is provided for the specified key, {@link #use(Class)} usually gives more
+     * fluent code.
      *
      * @param <T>
      *            the type of service that this method returns
      * @param key
      *            the key of the service to find
-     * @return an optional containing the service instance if present, or an empty optional if not present
+     * @return an optional containing an instance of the service if present, or an empty optional if not present
      * @see #use(Class)
      */
     default <T> Optional<T> findInstance(Class<T> key) {
@@ -159,16 +159,16 @@ public interface ServiceLocator {
     }
 
     /**
-     * Returns a service instance for the given key if available, otherwise an empty optional.
+     * Returns a service instance with the given key if available, otherwise an empty optional.
      * <p>
-     * If you know for certain that a service exists for the specified key, {@link #use(Class)} usually gives more fluent
-     * code.
+     * If you know for certain that a service is provided for the specified key, {@link #use(Key)} usually gives more
+     * fluent code.
      *
      * @param <T>
      *            the type of service that this method returns
      * @param key
      *            the key of the service to find
-     * @return an optional containing the service instance if present, or an empty optional if not present
+     * @return an optional containing an instance of the service if present, or an empty optional if not present
      * @see #use(Key)
      */
     default <T> Optional<T> findInstance(Key<T> key) {
@@ -195,13 +195,13 @@ public interface ServiceLocator {
     }
 
     /**
-     * If a service with the specified key is present, performs the given action with a service instance, otherwise does
+     * If a service with the specified key is provided, performs the given action with a service instance, otherwise does
      * nothing.
      *
      * @param key
      *            the key to test
      * @param action
-     *            the action to be performed, if a service with the specified key is present
+     *            the action to be performed, if a service with the specified key is provided
      */
     default <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
         requireNonNull(action, "action is null");
@@ -212,26 +212,26 @@ public interface ServiceLocator {
         }
     }
 
-    /** {@return true if this registry contains any services, otherwise false} */
+    /** {@return true if this locator provides any services, otherwise false} */
     default boolean isEmpty() {
         return keys().isEmpty();
     }
 
     /**
-     * Returns a set view containing the keys for every service in this registry.
+     * Returns a set view containing the keys of every provided service.
      * <p>
-     * If this registry supports removals, the returned set will also support removal operations: {@link Set#clear()},
+     * If this locator supports removals, the returned set will also support removal operations: {@link Set#clear()},
      * {@link Set#remove(Object)}, {@link Set#removeAll(java.util.Collection)},
      * {@link Set#removeIf(java.util.function.Predicate)} and {@link Set#retainAll(java.util.Collection)}. or via any set
      * iterators. The returned map will never support insertion or update operations.
      * <p>
-     * The returned map will retain any thread-safety guarantees provided by the registry itself.
+     * The returned set will retain any thread-safety guarantees provided by the locator itself.
      * 
-     * @return a set view containing the keys for every service in this registry
+     * @return a set view containing the keys of every provided service.
      */
     Set<Key<?>> keys();
 
-    /** { @return the number of services in this locator} */
+    /** {@return the number of services provided by this locator} */
     default int size() {
         return keys().size();
     }
@@ -340,22 +340,21 @@ public interface ServiceLocator {
     }
 
     /**
-     * Creates a new standalone service locator from the specified assembly and optional wirelets.
+     * Creates a new service locator from the specified assembly and optional wirelets.
      * 
      * @param assembly
-     *            the assembly that should be used to build the service locator
+     *            the assembly that should be used to create the service locator
      * @param wirelets
      *            optional wirelets
      * @return a new service locator
-     * @see #driver()
      */
     @Reflectable
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 
-    static ServiceLocator of(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
-        return Composer.configure2(configurator, wirelets);
+    static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+        return Composer.of(configurator, wirelets);
     }
 
     /**
@@ -376,6 +375,7 @@ public interface ServiceLocator {
 
         private boolean initialized;
 
+        /** For internal use only. */
         Composer() {}
 
         /**
@@ -528,7 +528,7 @@ public interface ServiceLocator {
             return container().use(BeanExtension.class).providePrototype(factory);
         }
 
-        static ServiceLocator configure2(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
+        private static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
             return compose(DRIVER, new Composer(), configurator, wirelets);
         }
     }

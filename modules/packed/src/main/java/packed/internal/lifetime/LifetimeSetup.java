@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import app.packed.application.ComponentMirrorTree;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.component.ComponentMirrorTree;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimePhase;

@@ -30,7 +30,7 @@ import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.ServiceRegistry;
 
@@ -211,7 +211,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
-        PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
+        PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
     }
 
     /**
@@ -221,7 +221,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      *            the transformer to use
      */
     public void transform(Consumer<? super ServiceTransformer> transformer) {
-        PackedServiceComposer.transformInplace(resolvedExports, transformer);
+        PackedServiceTransformer.transformInplace(resolvedExports, transformer);
     }
 
     /**

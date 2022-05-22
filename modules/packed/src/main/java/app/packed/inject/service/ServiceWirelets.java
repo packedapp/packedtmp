@@ -27,7 +27,7 @@ import app.packed.container.Wirelet;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
-import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.sandbox.Service;
 
@@ -100,7 +100,12 @@ public final class ServiceWirelets {
     // was peekContract, but arguments were identical
     // verifyContract throws Verification exception
     // maybe even just verify... or validate
-    public static Wirelet checkContract(Consumer<? super ServiceContract> action) {
+    public static Wirelet checkExactContract(Consumer<? super ServiceContract> action) {
+        requireNonNull(action, "action is null");
+        return transformIn(t -> action.accept(t.contract()));
+    }
+
+    public static Wirelet checkCompatibleContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
         return transformIn(t -> action.accept(t.contract()));
     }
@@ -162,7 +167,7 @@ public final class ServiceWirelets {
             @Override
             protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
                 // child.ios.newServiceContract() to calc service contract
-                PackedServiceComposer.transformInplace(map, transformation);
+                PackedServiceTransformer.transformInplace(map, transformation);
             }
         };
     }

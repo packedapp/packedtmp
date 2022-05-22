@@ -90,8 +90,8 @@ public abstract class Assembly {
     /**
      * Checks that {@link #build()} has not already been invoked by the framework.
      * <p>
-     * This method is typically used by assemblies that define methods that can used to configure the assembly before is
-     * used. Making sure that the assembly is still in a state to be configurable.
+     * This method is typically used by assemblies that define configuration methods that must be called before
+     * {@link #build()}. Making sure that the assembly is still in a state to be configurable.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has already been invoked
@@ -105,9 +105,9 @@ public abstract class Assembly {
     /**
      * Returns the configuration of the <strong>root</strong> container defined by this assembly.
      * <p>
-     * This method must only be called from within the {@link #build()} method.
+     * This method must be called from within the {@link #build()} method.
      * 
-     * @return the container configuration object
+     * @return the configuration of the root container
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
@@ -174,6 +174,6 @@ public abstract class Assembly {
     // skal vi jo ogsaa bruge den der. IDK
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        container().container.assembly.lookup(lookup);
+        container().container.userRealm.lookup(lookup);
     }
 }

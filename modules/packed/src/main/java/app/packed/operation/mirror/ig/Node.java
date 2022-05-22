@@ -17,8 +17,8 @@ package app.packed.operation.mirror.ig;
 
 import java.util.Optional;
 
+import app.packed.application.Realm;
 import app.packed.bean.BeanMirror;
-import app.packed.component.Realm;
 
 /**
  *

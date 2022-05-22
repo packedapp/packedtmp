@@ -47,8 +47,10 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
     private final AssemblyModel assemblyModel;
 
     /** The root component of this realm. */
-    public final ContainerSetup container;
+    private final ContainerSetup container;
 
+    // Naar vi har faaet styr paa container drivers osv.
+    // Flytter vi dem ned i UserRealm
     private final PackedContainerDriver driver;
 
     /**
@@ -65,9 +67,10 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
     public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+
         this.container = application.container;
         this.driver = new PackedContainerDriver(container);
-        this.assemblyModel = AssemblyModel.of(assembly.getClass());
     }
 
     public AssemblyUserRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {

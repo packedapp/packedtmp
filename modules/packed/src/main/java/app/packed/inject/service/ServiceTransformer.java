@@ -36,6 +36,15 @@ import app.packed.inject.Factory;
  * @see ServiceWirelets#from(java.util.function.Consumer)
  * @see PublicizeExtension#transformExports(java.util.function.Consumer)
  */
+// 4 Targets
+
+// Into a child container
+// From a child container
+
+// Imports (styret af requires, og
+// Exports // Maaske alligevel ikke
+
+// Og saa lidt internt??? 
 
 //Create services
 

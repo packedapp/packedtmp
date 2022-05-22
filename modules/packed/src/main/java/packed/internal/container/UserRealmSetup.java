@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import app.packed.component.ComponentMirror;
-import app.packed.component.Realm;
+import app.packed.application.ComponentMirror;
+import app.packed.application.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerHook;
@@ -122,7 +122,7 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
         /** {@inheritDoc} */
         @Override
         public Stream<ComponentMirror> components() {
-            return assembly.container().stream().filter(c -> c.assembly == assembly).map(ComponentSetup::mirror);
+            return assembly.container().stream().filter(c -> c.userRealm == assembly).map(ComponentSetup::mirror);
         }
 
         /** {@inheritDoc} */
@@ -130,8 +130,8 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
         public Optional<AssemblyMirror> parent() {
             ContainerSetup org = assembly.container();
             for (ContainerSetup p = org.parent; p != null; p = p.parent) {
-                if (org.assembly != p.assembly) {
-                    return Optional.of(p.assembly.mirror());
+                if (org.userRealm != p.userRealm) {
+                    return Optional.of(p.userRealm.mirror());
                 }
             }
             return Optional.empty();
@@ -144,12 +144,12 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
         }
 
         private ArrayList<AssemblyMirror> children(UserRealmSetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
-            if (assembly == cs.assembly) {
+            if (assembly == cs.userRealm) {
                 for (ContainerSetup c : cs.containerChildren) {
                     children(assembly, c, list);
                 }
             } else {
-                list.add(cs.assembly.mirror());
+                list.add(cs.userRealm.mirror());
             }
             return list;
         }

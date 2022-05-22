@@ -93,7 +93,7 @@ public abstract class MemberScanner {
                         // but not include static methods on interfaces.
                         onMethod(m);
                     }
-                } else if (!m.isBridge()) { // TODO should we include synthetic methods??
+                } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
                     case Modifier.PUBLIC:
                         continue; // we have already added the method in the first step

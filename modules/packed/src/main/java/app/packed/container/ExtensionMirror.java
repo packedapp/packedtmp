@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
@@ -12,7 +13,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
-import app.packed.mirror.Mirror;
 import packed.internal.container.PackedExtensionTree;
 
 /**
@@ -20,15 +20,12 @@ import packed.internal.container.PackedExtensionTree;
  * <p>
  * Noget omkring local mode and non-local mode.
  * <p>
- * This class can be extended by an extension to provide more detailed information about itself. For example,
+ * This class can be extended by an extension to provide more detailed information about the extension. For example,
  * {@link app.packed.bean.BeanExtension} extends this class via {@link app.packed.bean.BeanExtensionMirror}.
  * <p>
  * Extension mirror instances are typically obtained via calls to {@link ApplicationMirror#useExtension(Class)} or
  * {@link ContainerMirror#useExtension(Class)}.
  * <p>
- * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
- * {@link IllegalStateException} being thrown.
- * 
  * NOTE: In order to properly implement a specialized extension mirror you:
  * <ul>
  * <li>Must override {@link Extension#newExtensionMirror()} in order to provide a new instance of the mirror.</li>
@@ -46,8 +43,8 @@ import packed.internal.container.PackedExtensionTree;
 public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /*
-     * When naming methods in this class try to use non-trivial names such as as {@code name}, {@code type}, {@code stream}
-     * as these are names sub-classes might want to use.
+     * When naming methods in this class try to avoid using trivial names such as {@code name}, {@code type}, {@code stream}
+     * as sub-classes might want to make use of such names.
      * 
      * This class contains a number of all* methods. There are no exact criteria for what methods to include. Only that they
      * should generally helpful for people writing extension mirrors.
@@ -63,6 +60,9 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * Create a new extension mirror.
      * <p>
      * Subclasses should have a single constructor with package-private access.
+     * <p>
+     * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
+     * {@link IllegalStateException} being thrown.
      */
     protected ExtensionMirror() {}
 
@@ -74,15 +74,32 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * @param predicate
      *            a predicate to apply to all extensions of this mirror
      * @return {@code true} if any extensions of the mirror match the provided predicate, otherwise {@code false}
-     * 
+     * @see Stream#anyMatch(Predicate)
      */
+    // all->each?
     protected final boolean allAnyMatch(Predicate<? super E> predicate) {
         return allStream().anyMatch(predicate);
     }
 
+    protected final <T> List<T> allCollectToList(BiConsumer<E, List<T>> action) {
+        requireNonNull(action, "action is null");
+        ArrayList<T> result = new ArrayList<>();
+        for (E t : extensionTree()) {
+            action.accept(t, result);
+        }
+        return result;
+    }
+
+    protected final void allForEach(Consumer<E> action) {
+        requireNonNull(action, "action is null");
+        for (E t : extensionTree()) {
+            action.accept(t);
+        }
+    }
+
     /** {@return a non-empty stream of all of the extension instances we are mirroring.} */
     protected final Stream<E> allStream() {
-        return extensions().stream();
+        return extensionTree().stream();
     }
 
     /**
@@ -97,7 +114,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     protected final int allSumInt(ToIntFunction<? super E> mapper) {
         requireNonNull(mapper, "mapper is null");
         int result = 0;
-        for (E t : extensions()) {
+        for (E t : extensionTree()) {
             int tmp = mapper.applyAsInt(t);
             result = Math.addExact(result, tmp);
         }
@@ -107,18 +124,9 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     protected final long allSumLong(ToLongFunction<? super E> mapper) {
         requireNonNull(mapper, "mapper is null");
         long result = 0;
-        for (E t : extensions()) {
+        for (E t : extensionTree()) {
             long tmp = mapper.applyAsLong(t);
             result = Math.addExact(result, tmp);
-        }
-        return result;
-    }
-
-    protected final <T> List<T> allCollectToList(BiConsumer<E, List<T>> action) {
-        requireNonNull(action, "action is null");
-        ArrayList<T> result = new ArrayList<>();
-        for (E t : extensions()) {
-            action.accept(t, result);
         }
         return result;
     }
@@ -142,6 +150,10 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     /** {@return the name of the extension.} */
     public final String extensionName() {
         return extensionDescriptor().name();
+    }
+
+    protected final E extensionRoot() {
+        return extensionTree().root();
     }
 
     /** {@return all the extensions that are being mirrored.} */
