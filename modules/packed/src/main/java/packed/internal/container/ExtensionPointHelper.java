@@ -107,7 +107,7 @@ public final class ExtensionPointHelper {
         }
 
         // Initializes the extension point
-        PackedExtensionPointContext context = new PackedExtensionPointContext(requestingExtension, extension);
+        PackedExtensionPointContext context = new PackedExtensionPointContext(extension, requestingExtension);
         try {
             MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(instance, context);
         } catch (Throwable e) {

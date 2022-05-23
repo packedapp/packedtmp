@@ -15,9 +15,9 @@
   <!-- ==================================================================== -->
   <modules>
     <module>packed</module>
-    <module>packed-base-micro</module>
+    <module>packed-micro</module>
     <!--
-    <module>packed-base-devtools</module>
+    <module>packed-devtools</module>
     -->
   </modules>
   
@@ -78,7 +78,8 @@
   
   <!-- ==================================================================== -->
   <build>
-    <directory>${project.basedir}/target.tmp</directory>
+    
+    <!-- <directory>${project.basedir}/target.tmp</directory> -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

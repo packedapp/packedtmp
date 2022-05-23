@@ -40,6 +40,11 @@ public class BeanExtension extends Extension<BeanExtension> {
         this.container = setup.container;
     }
 
+    @Override
+    protected BeanExtensionPoint newExtensionPoint() {
+        return new BeanExtensionPoint();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void hookOnBeanField(BeanField field) {

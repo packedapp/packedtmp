@@ -28,6 +28,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
        /* package-private */ BeanExtensionPoint() {}
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
+        PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation);
         BeanHandle<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }

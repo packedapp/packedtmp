@@ -45,7 +45,6 @@ public abstract sealed class BeanAccessor {
         @Override
         protected HookModel computeValue(Class<?> type) {
             OpenClass.of(lookup(), type);
-            
             return new HookModel();
             //return BootstrappedSourcedClassModel.newModel(oc, null);
         }

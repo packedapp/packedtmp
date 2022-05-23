@@ -18,6 +18,7 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -41,7 +42,7 @@ import packed.internal.util.MemberScanner;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T> permits ExecutableFactory, FieldFactory {
+public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>permits ExecutableFactory, FieldFactory {
 
     /** A cache of factories used by {@link #factoryOf(Class)}. */
     public static final ClassValue<ExecutableFactory<?>> DEFAULT_FACTORY = new ClassValue<>() {
@@ -59,7 +60,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T> per
 
         /** A factory with an executable as a target. */
         public final Executable executable;
-        
+
         /** The type of objects this factory creates. */
         private final TypeToken<T> typeLiteral;
 
@@ -92,8 +93,29 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T> per
         public MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle methodHandle;
             try {
-                if (Modifier.isPrivate(executable.getModifiers())) {
-                    lookup = lookup.in(executable.getDeclaringClass());
+                if (!Modifier.isPublic(executable.getModifiers())) {
+
+//                    Class<?> c = executable.getDeclaringClass();
+
+                    // For some reason the lookup objects that comes here might not have full privilege access
+                    lookup = MethodHandles.lookup();
+                    
+//                    System.out.println(lookup.hasFullPrivilegeAccess());
+//
+//                    Module m1 = BeanExtension.class.getModule();
+//                    Module m2 = executable.getDeclaringClass().getModule();
+//
+//                    System.out.println("Is Open " + m2.isOpen(c.getPackageName(), m1));
+//
+////                    lookup = lookup.in(executable.getDeclaringClass());
+//
+//  //                  lookup.accessClass(executable.getDeclaringClass());
+//
+//                    System.out.println(lookup);
+//    
+                    lookup = MethodHandles.privateLookupIn(executable.getDeclaringClass(), lookup);
+                    //
+                    //System.out.println(lookup);
                 }
                 if (executable instanceof Constructor<?> c) {
                     methodHandle = lookup.unreflectConstructor(c);
@@ -136,7 +158,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T> per
 
         /** The field we invoke. */
         private final Field field;
-        
+
         /** The type of objects this factory creates. */
         private final TypeToken<T> typeLiteral;
 

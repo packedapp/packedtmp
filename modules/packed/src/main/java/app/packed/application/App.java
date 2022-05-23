@@ -66,6 +66,12 @@ public final class App {
         return DRIVER.mirrorOf(assembly, wirelets);
     }
 
+    public static void print(Assembly assembly, Wirelet... wirelets) {
+        // not in final version I think
+        DRIVER.print(assembly, wirelets);
+    }
+
+    
     /**
      * This method will create and start an {@link Program application} from the specified source. Blocking until the run
      * state of the application is {@link RunState#TERMINATED}.

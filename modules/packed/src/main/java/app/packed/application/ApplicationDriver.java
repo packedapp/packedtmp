@@ -167,7 +167,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append("");
             if (cc instanceof BeanMirror bm) {
-                sb.append(" [").append(bm.beanClass().getName()).append("]");
+                sb.append(" [").append(bm.beanClass().getName()).append("], owner = " + bm.owner());
             }
             System.out.println(sb.toString());
         });

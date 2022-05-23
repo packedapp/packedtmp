@@ -8,9 +8,11 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
+import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Ancestral;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup;
@@ -26,6 +28,7 @@ import packed.internal.container.ExtensionSetup;
 
 // ExecutionModel
 
+@DependsOn(extensions = BeanExtension.class)
 public class EntryPointExtension extends Extension<EntryPointExtension> {
 
     boolean hasMain;
@@ -131,7 +134,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     static class EntryPointDispatcher {
-        EntryPointDispatcher(String s) {}
+        EntryPointDispatcher() {}
     }
 
     static class EntryPointConf {

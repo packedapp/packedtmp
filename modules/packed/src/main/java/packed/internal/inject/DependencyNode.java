@@ -54,16 +54,13 @@ import packed.internal.util.ThrowableUtil;
 //AutoServiceFactory
 //Binding operation
 
-
 //////----- Fremtid
 
 //Sidecars (Sidebeans)
 
-
-
 ////Kan dependences on
 ////Det er jo ikke f.eks. et bean factory man kan depende paa. Men en bean
-public abstract sealed class DependencyNode implements LifetimePoolWriteable permits BeanInstanceDependencyNode,BeanMemberDependencyNode {
+public abstract sealed class DependencyNode implements LifetimePoolWriteable permits BeanInstanceDependencyNode, BeanMemberDependencyNode {
 
     /** The bean this dependency consumer is a part of. */
     public final BeanSetup bean;
@@ -164,6 +161,9 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                         }
                     } else {
                         bs = es.injectionManager.lookup(requiredKey);
+                    }
+                    if (bs == null) {
+                        throw new RuntimeException("Could not resolve key " + requiredKey + " for " + ers.realmType());
                     }
 
                     e = bs.injectionManager;
