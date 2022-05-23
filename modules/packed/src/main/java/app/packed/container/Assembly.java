@@ -40,7 +40,7 @@ import packed.internal.util.LookupUtil;
  * Assemblies are composable via linking.
  * 
  * <p>
- * Subclasses of this class supports 2 type based annotations. {@link ContainerHook} and {@link BeanHook}. Which
+ * Subclasses of this class supports 2 type based annotations. . Which
  * controls how containers and beans are added respectively.
  * <p>
  * Packed does not support any annotations on fields or methods. And will never perform any kind of reflection based

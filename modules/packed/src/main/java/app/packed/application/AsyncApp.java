@@ -31,7 +31,6 @@ public interface AsyncApp extends AutoCloseable {
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see LifecycleApplicationController#stop(LifecycleApplicationController.StopOption...)
      **/
     @Override
     default void close() {

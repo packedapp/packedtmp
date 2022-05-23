@@ -65,8 +65,8 @@ import app.packed.lifecycle.OnStart;
  * 
  * 
  * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
- * {@link BaseContainerConfiguration}. Delegating every invocation in the class to an instance of
- * {@link BaseContainerConfiguration} available via {@link #container()}.
+ * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
+ * {@link ContainerConfiguration} available via {@link #container()}.
  * <p>
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.

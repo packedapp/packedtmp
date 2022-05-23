@@ -92,7 +92,6 @@ public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher
      * @param wirelets
      *            optional wirelets
      * @return an application instance
-     * @see {@link ApplicationDriver#launch(Assembly, Wirelet...)}
      */
     A launch(Wirelet... wirelets);
 

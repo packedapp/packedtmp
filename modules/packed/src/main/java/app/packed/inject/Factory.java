@@ -232,7 +232,6 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * Returns the type of the type of objects this factory provide.
      *
      * @return the type of the type of objects this factory provide
-     * @see #rawType()
      */
     public abstract TypeToken<R> typeLiteral();
 
@@ -365,7 +364,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     /**
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
-     * first variable. Use {@link #provideInstance(Object)} to bind an instance of the declaring class.
+     * first variable. Use  to bind an instance of the declaring class.
      * 
      * @param <T>
      *            the type of value returned by the method

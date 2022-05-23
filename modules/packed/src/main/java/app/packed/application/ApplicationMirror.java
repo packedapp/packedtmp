@@ -69,7 +69,6 @@ public interface ApplicationMirror extends Mirror {
      * The name of an application is always identical to the name of the root container.
      * 
      * @return the name of the application
-     * @see Assembly#named(String)
      * @see Wirelet#named(String)
      */
     default String name() {

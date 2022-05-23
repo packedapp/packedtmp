@@ -134,7 +134,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
      * @see #imageOf(Assembly, Wirelet...)
-     * @see ExecutionWirelets#launchMode(RunState)
      */
     RunState launchMode();
 
@@ -301,13 +300,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
-        /**
-         * 
-         * @param applicationType
-         * @return
-         * 
-         * @see ApplicationDriver#type()
-         */
+
         default Builder resultType(Class<?> resultType) {
             throw new UnsupportedOperationException();
         }

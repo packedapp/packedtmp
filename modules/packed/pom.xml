@@ -9,10 +9,10 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>packed-base</artifactId>
+  <artifactId>packed</artifactId>
   <packaging>jar</packaging>
-  <name>Packed-Base</name>
-  <description>Packed Base</description>
+  <name>Packed</name>
+  <description>Packed</description>
   
   <!-- ==================================================================== -->
   <dependencies>
@@ -26,32 +26,11 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>net.bytebuddy</groupId>
-      <artifactId>byte-buddy</artifactId>
-      <version>1.12.10</version>
-    <scope>test</scope>
-</dependency>
   </dependencies>
-<!--
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>app.packed.cli.HelloWorld</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-     -->
- <profiles>
- <!-- https://stackoverflow.com/questions/44910155/maven-invoker-plugin-not-detecting-failed-test --> 
+
+  <!-- ==================================================================== -->
+  <profiles>
+  <!-- https://stackoverflow.com/questions/44910155/maven-invoker-plugin-not-detecting-failed-test --> 
    <profile>
       <id>run-its</id>
       <build>
@@ -98,49 +77,3 @@
   </profiles>
 </project>
 
-<!--
- <profiles>
-   <profile>
-      <id>run-its</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-invoker-plugin</artifactId>
-            <version>3.1.0</version>
-            <configuration>
-              <debug>true</debug>
-              <addTestClassPath>true</addTestClassPath>
-              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-              <pomIncludes>
-                <pomInclude>*/pom.xml</pomInclude>
-              </pomIncludes>
-              <postBuildHookScript>verify</postBuildHookScript>
-              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-              <settingsFile>src/it/settings.xml</settingsFile>
-              <scriptVariables>
-                <junitPlatformVersion>${junit.platform.version}</junitPlatformVersion>
-                <junitJupiterVersion>${junit.jupiter.version}</junitJupiterVersion>
-                <junitVintageVersion>${junit.vintage.version}</junitVintageVersion>
-              </scriptVariables>
-              <goals>
-                <goal>clean</goal>
-                <goal>test</goal>
-              </goals>
-            </configuration>
-            <executions>
-              <execution>
-                <id>integration-test</id>
-                <goals>
-                  <goal>install</goal>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-   -->

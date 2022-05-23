@@ -20,18 +20,18 @@ import packed.internal.container.PackedWireletSelection;
  * <li><b>launch</b>Finally, wirelets specified at application launch time</li>
  * </ul>
  * <p>
- * Skal vi have wildcard? SelectWirelets<? extends SSSfoo> eller supportere vi ogsaa SelectWirelets<SSSfoo>, jeg ville
+ * Skal vi have wildcard? {@code extends SSSfoo> eller supportere vi ogsaa SelectWirelets}, jeg ville
  * mene vi supportere begge.
  * 
- * Maaske selecter vi differently??? ... exact type for SelectWirelet<FooWirelet>, eller alle super klasser for
- * SelectWirelet<? extends FooWirelet>
+ * Maaske selecter vi differently??? ... exact type for SelectWirelet, eller alle super klasser for
+ * 
  * 
  * <p>
  * The selecting class must be in the same module as the type of wirelet selected
  * <p>
  * There a couple of ways to select wirelets. For extension space wirelets
  * 
- * at buildtime:. ExtensionConfiguration#selectWirelets, Extension#selectWirelets Hook injection?? Could make sense for
+ * at buildtime:. ExtensionConfiguration#selectWirelets, ExtensionselectWirelets Hook injection?? Could make sense for
  * some class hooks
  * 
  * at runtime: SelectWirelet<> on an extension Runtime class
@@ -47,7 +47,7 @@ import packed.internal.container.PackedWireletSelection;
  * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
  * can do what you want
  * 
- * @param <T>
+ * @param <W>
  *            the type of wirelets in this selection
  * 
  * @implNote We expect the number of wirelets for a single component to be small in practice. So the current

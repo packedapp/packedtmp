@@ -46,7 +46,7 @@ import app.packed.inject.Inject;
  * </pre>
  * <p>
  * To find out exactly what kind of services that can be injected into an annotated method, an instance of an
- * {@link ServiceRegistry} can be used:
+ * ServiceRegistry can be used:
  *
  * <pre>{@code  @OnInitialize
  * public void onInit(ServiceRegistry registry) {

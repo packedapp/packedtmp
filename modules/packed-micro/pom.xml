@@ -9,10 +9,10 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>packed-base-micro</artifactId>
+  <artifactId>packed-micro</artifactId>
   <packaging>jar</packaging>
-  <name>Packed-Base-Micro</name>
-  <description>Packed Base Micro Benchmarking</description>
+  <name>Packed-Micro</name>
+  <description>Packed Micro Benchmarking</description>
   
   <!-- ==================================================================== -->
   <properties>
@@ -21,62 +21,64 @@
 
   <!-- ==================================================================== -->
   <dependencies>
+    
     <dependency>
       <groupId>app.packed</groupId>
-      <artifactId>packed-base</artifactId>
-          <version>0.1-SNAPSHOT</version>
+      <artifactId>packed</artifactId>
     </dependency>
   
     <dependency>
       <groupId>org.openjdk.jmh</groupId>
       <artifactId>jmh-core</artifactId>
     </dependency>
+    
     <dependency>
       <groupId>org.openjdk.jmh</groupId>
       <artifactId>jmh-generator-annprocess</artifactId>
       <scope>provided</scope>
     </dependency>
+    
   </dependencies>
 
   <!-- ==================================================================== -->
   <build>
-     <plugins>
+    <plugins>
       <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>${uberjar.name}</finalName>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.openjdk.jmh.Main</mainClass>
-                                </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <!--
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>${uberjar.name}</finalName>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.openjdk.jmh.Main</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+              </transformers>
+              <filters>
+                <filter>
+                  <!--
                                         Shading signed JARs will fail without this.
                                         http://stackoverflow.com/questions/999489/invalid-signature-file-when-attempting-to-run-a-jar
                                     -->
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-       </plugins>
-    </build>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
