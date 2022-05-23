@@ -44,7 +44,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
     /** {@inheritDoc} */
     public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
-        
+
         List<InternalDependency> dependencies = dependencies();
 
         List<Variable> variables = variables();
@@ -81,9 +81,9 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
         return new BoundFactory<>(this, position, dd, List.of(vars), args);
     }
-    
+
     public abstract List<InternalDependency> dependencies();
-    
+
     public final Factory<R> peek(Consumer<? super R> action) {
         return new PeekableFactory<>(this, action);
     }
@@ -95,12 +95,14 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     public static <R> InternalFactory<R> crackFactory(Factory<R> factory) {
         requireNonNull(factory, "factory is null");
         if (factory instanceof InternalFactory<R> f) {
             return f;
         } else {
-            return (InternalFactory<R>) InternalCapturingInternalFactory.VH_CF_FACTORY.get(factory);
+            Object result = InternalCapturingInternalFactory.VH_CF_FACTORY.get(factory);
+            return (InternalFactory<R>) result;
         }
     }
 

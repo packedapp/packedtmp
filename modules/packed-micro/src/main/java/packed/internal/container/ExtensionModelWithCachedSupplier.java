@@ -58,6 +58,7 @@ final class ExtensionModelWithCachedSupplier<T> {
      * @param type
      *            the extension type
      */
+    @SuppressWarnings("unchecked")
     private ExtensionModelWithCachedSupplier(Class<? extends Extension<?>> type) {
         this.type = requireNonNull(type);
         /// TODO Check not abstract
@@ -78,7 +79,8 @@ final class ExtensionModelWithCachedSupplier<T> {
 
             CallSite site = LambdaMetafactory.metafactory(lookup, "get", invokedType, methodType, mh, methodType);
             MethodHandle factory = site.getTarget();
-            s = (Supplier<T>) factory.invoke();
+            Supplier<?> ss = (Supplier<?>) factory.invoke();
+            s = (Supplier<T>) ss;
         } catch (Throwable e) {
             throw new InaccessibleMemberException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
                     + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);

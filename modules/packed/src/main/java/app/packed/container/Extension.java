@@ -315,6 +315,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     // Vi kan sagtens lave den en normal metode taenker jeg maaske paa en utility klasse...
     // Og saa et Lookup object som parameter...
+    @SuppressWarnings("unchecked")
     protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
         Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
         // Attempt to load an extension with the specified name
@@ -341,11 +342,14 @@ public abstract class Extension<E extends Extension<E>> {
         // Create and return a single instance of the bootstrap class
         InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), c);
         MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
+        Object result;
+        
         try {
-            return (T) mh.invoke();
+            result = mh.invoke();
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+        return (T) result;
     }
 
     protected static <T> T $dependsOnIfAvailable2(Class<T> returnType, String testExistence, Lookup ifPresentLookup, String ifPresentClass,
