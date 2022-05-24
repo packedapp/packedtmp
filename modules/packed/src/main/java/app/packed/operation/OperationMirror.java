@@ -27,13 +27,12 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.Mirror;
 import app.packed.operation.dependency.DependencyMirror;
-import app.packed.operation.interceptor.OperationInterceptorMirror;
 import app.packed.operation.mirror.OperationErrorHandlingMirror;
 import app.packed.operation.usage.ServiceExportMirror;
 import packed.internal.bean.operation.OperationSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.container.Mirror;
 
 /**
  * A mirror for an bean operation.
@@ -180,7 +179,7 @@ public class OperationMirror implements Mirror {
     }
 
     /** {@return any interceptors that are applied to the operation.} */
-    public final List<OperationInterceptorMirror> interceptors() {
+    public final List<Object /* OperationInterceptorMirror */> interceptors() {
         throw new UnsupportedOperationException();
     }
 

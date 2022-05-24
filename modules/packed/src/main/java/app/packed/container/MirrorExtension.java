@@ -16,21 +16,12 @@
 package app.packed.container;
 
 /**
- *
+ * This extension is mainly here as a kind of a marker extension. Indicating that somewhere in the application someone
+ * has decided to reference a mirror. In which case the whole mirror shebang is available at runtime.
+ * <p>
+ * Maybe at some point we will support a compact mirror mode where each extension can keep a minimal set of information
+ * that is needed at runtime.
  */
-// An extension that allows access to mirrors at runtime
-// Primarily for debugging
-
-// DebugExtension???? <--- saa kan vi ogsaa bruge hooks'ene
-// Understreger endda maaske lidt mere at det ikke er normalt brug...
-// Syntes maaske ikke der er grund til at vi har 2 extensions for det IDK
-
-// ContainerMirror <--- Er en Type Injection Service med MirrorExtension som ejer
-// ApplicationMirror
-// BeanMirror
-
-// Hvis ParamTraceren ogsaa er en del af MirrorExtensionen...
-// Betyder det vi ikke kan bruge den uden for en container...
 public class MirrorExtension extends Extension<MirrorExtension> {
 
     /**
@@ -42,16 +33,12 @@ public class MirrorExtension extends Extension<MirrorExtension> {
        /* package-private */ MirrorExtension() {}
 }
 
+//DebugExtension???? Clearly indicates that it is not normal usage
+// However, I don't see the need two extensions.
+// Do we need a DevTools extension???
+
 //https://docs.scala-lang.org/overviews/reflection/environment-universes-mirrors.html
 //reflect = build time, introspect = runtime.. IDK
-//Der er jo saadan set ikke noget i vejen for at supportere det runtume
-enum MirrorEnvironment {
+enum MirrorEnvironment { // ApplicationEnvironment???
     BUILD_TIME, RUN_TIME;
-}
-//Partial
-
-//Ideen er lidt at vi f.eks. kan arbejde i et mix mellem build og runtime mode indikere
-//at nogle ting "mangler", f.eks. er mirror'et for parent applikation ikke i perfekt stand
-interface MirrorMode {
-
 }

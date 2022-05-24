@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
+import packed.internal.container.Mirror;
 import packed.internal.container.PackedExtensionTree;
 
 /**

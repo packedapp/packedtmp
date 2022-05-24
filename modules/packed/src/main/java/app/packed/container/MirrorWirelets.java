@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import packed.internal.container.Mirror;
+
 // Wirelet retainModelsAtRuntime();
 // Wirelet allDetails();
 
@@ -21,12 +23,13 @@ class MirrorWirelets {
     // Altsaa isaer for extensions kan jeg se det er et problem...
     // Meget af det bliver jo lazy computed...
     // Taenker ikke vi supporter det fra starten af
-    
+
+    // Well the extension needs to already have been installed.
+    // I don't think it makes sense
     public static Wirelet retainModelsAtRuntime() {
         throw new UnsupportedOperationException();
     }
     
-    // Problemet er lidt alle de relations typer...
     @SafeVarargs
     public static Wirelet retainModelsAtRuntime(Class<? extends Mirror>... modelTypes) {
         throw new UnsupportedOperationException();

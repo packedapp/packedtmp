@@ -18,8 +18,6 @@ package packed.internal.bean.hooks;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.sandbox.AnnotationReader;
-import app.packed.bean.hooks.sandbox.VariableParser;
 import app.packed.inject.Factory;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.base.PackedVariable;
@@ -35,7 +33,7 @@ public record PackedDependencyProvider(OperationSetup operation, int variableInd
 
     /** {@inheritDoc} */
     @Override
-    public AnnotationReader annotations() {
+    public Object annotations() {
         throw new UnsupportedOperationException();
     }
 
@@ -59,11 +57,6 @@ public record PackedDependencyProvider(OperationSetup operation, int variableInd
     @Override
     public void requireContext(Class<?> contextType) {}
 
-    /** {@inheritDoc} */
-    @Override
-    public <T> T variableParse(VariableParser<T> parser) {
-        return null;
-    }
 
     /** {@inheritDoc} */
     @Override

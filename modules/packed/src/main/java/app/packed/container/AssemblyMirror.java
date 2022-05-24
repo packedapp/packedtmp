@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirror;
+import packed.internal.container.Mirror;
 import packed.internal.container.UserRealmSetup;
 
 /** A mirror of an {@link Assembly}. */

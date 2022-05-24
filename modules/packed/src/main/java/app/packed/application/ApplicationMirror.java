@@ -9,11 +9,11 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.Mirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.container.Mirror;
 
 /**
  * A mirror of an application.

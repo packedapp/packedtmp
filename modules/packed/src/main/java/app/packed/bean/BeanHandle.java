@@ -15,17 +15,14 @@
  */
 package app.packed.bean;
 
-import java.lang.reflect.Member;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.sandbox.InvokerConfiguration;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationMirror;
 import app.packed.operation.driver.OperationDriver;
 import app.packed.operation.driver.OperationDriver2;
 import packed.internal.bean.PackedBeanHandle;
@@ -166,103 +163,3 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         Builder<T> ownedBy(UseSite context);
     }
 }
-
-interface BeanXDriverSandbox<T> {
-
-    default <E> void bindService(Key<E> key, Class<E> implementation) {
-        // bindService(WebRequestContext.class, WebRequestBeanContextImpl.class)
-        // ServiceScope.Bean
-    }
-
-    // Ved ikke rigtig usecasen. Fordi den skal ikke bruges fra BeanConfiguration
-    // Der er allerede en vi kan bruge.
-    default void checkWiring() {}
-
-    default InvokerConfiguration factory() {
-        throw new UnsupportedOperationException();
-    }
-
-    default InvokerConfiguration factory(Member member) {
-        // Ideen er lidt at Member er en constructor
-        // statisks field
-        // static metode
-        // Som skal returne en exact bean class
-
-        // Men hvorfor ikke bare tage et Factory????
-        throw new UnsupportedOperationException();
-    }
-
-    default FunctionalBeanOperationConfiguration operationAdd() {
-        throw new UnsupportedOperationException();
-    }
-
-    default FunctionalBeanOperationConfiguration operationAddFunctional(Class<?> functionType, Object function) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void sidecarAdd(Class<?> clazz) {}
-
-    default void sidecarAdd(Factory<?> clazz) {}
-
-    //////////////// Sidecars
-    default void sidecarAddInstance(Object o) {}
-
-    // Provide stuff, state holder, Lifecycle
-
-    default void synthetic() {
-        // or hidden();
-    }
-
-    @SuppressWarnings("exports")
-    interface FunctionalBeanOperationConfiguration {
-        FunctionalBeanOperationConfiguration addMirror(Class<? extends OperationMirror> bomType);
-
-        FunctionalBeanOperationConfiguration name(String name);
-
-        FunctionalBeanOperationConfiguration prefix(String prefix); // Maaske tilfoejer vi bare automatisk et prefix, hvis der eksistere en med samme navn
-        /// IDK
-    }
-}
-// Alternativ name: BeanDefiner, Soeg videre under GraalmVM fra og med D
-
-/// set properties
-/// Bind operation (Eller er det hooks???)
-/// make method handles, or runtime factories (maybe after build)
-/// 
-
-// Inject BeanManager<T>
-// MH(ExtensionContext, )
-
-/* sealed */ interface ZBuilder {
-
-    default void bindOperationMirror() {
-        // bind(EntityMirror.class);
-        // Mulighederne er uendelige, og
-    }
-
-    // Specific super type
-
-    ZBuilder namePrefix(Function<Class<?>, String> computeIt);
-
-    ZBuilder noInstances();
-
-    // BeanConfigurationBinder<BeanConfiguration> buildBinder();
-    ZBuilder noReflection();
-
-    ZBuilder oneInstance();
-
-    // Vi kan ikke rejecte extensions paa bean niveau...
-    //// Man kan altid lave en anden extension som bruger den extension jo
-    //// Saa det er kun paa container niveau vi kan forbyde extensions
-
-    //// For instantiationOnly
-    // reflectOnConstructorOnly();
-
-    // reflectOn(Fields|Methods|Constructors)
-    // look in declaring class
-}
-
-//BeanBuilder, BeanRegistrant
-
-//BeanInstanceMaker??? Nope, det er ikke kun bean instances...
-//Men vi har maaske n ekstra

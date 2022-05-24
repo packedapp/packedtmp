@@ -2,8 +2,6 @@ package app.packed.container;
 
 import java.util.Set;
 
-import app.packed.application.AsyncApp;
-import app.packed.container.sandbox.ExtensionLauncher;
 import packed.internal.container.PackedContainerDriver;
 
 // Maaske er det mere en Builder paa ContainerConfiguration
@@ -30,11 +28,11 @@ public sealed interface ContainerHandle permits PackedContainerDriver {
     //// a.la. in a trie. Don't care if it is 
     // container bean/functional bean/new bean/new container
     // Alt har samme signatur
-    public default ExtensionLauncher<Void> voidLauncher(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-    
-    public default ExtensionLauncher<AsyncApp> asyncApp(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+//    public default ExtensionLauncher<Void> voidLauncher(Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//    
+//    public default ExtensionLauncher<AsyncApp> asyncApp(Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
 }

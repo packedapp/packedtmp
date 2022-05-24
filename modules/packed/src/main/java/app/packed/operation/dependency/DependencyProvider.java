@@ -27,9 +27,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.hooks.BeanElement;
-import app.packed.bean.hooks.sandbox.AnnotationReader;
-import app.packed.bean.hooks.sandbox.CommonVarInfo;
-import app.packed.bean.hooks.sandbox.VariableParser;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Variable;
@@ -56,7 +53,7 @@ import packed.internal.bean.hooks.PackedDependencyProvider;
 // Variable -> Dependency
 public sealed interface DependencyProvider extends BeanElement permits PackedDependencyProvider {
 
-    AnnotationReader annotations();
+    Object /*  AnnotationReader  */ annotations();
 
     void provide(Factory<?> fac);
 
@@ -99,12 +96,12 @@ public sealed interface DependencyProvider extends BeanElement permits PackedDep
 
     Variable variable();
 
-    // Altsaa hvornaar vil man parse de 2 ting samtidig??
-    default CommonVarInfo variableParse() {
-        return variableParse(CommonVarInfo.DEFAULT);
-    }
+//    // Altsaa hvornaar vil man parse de 2 ting samtidig??
+//    default CommonVarInfo variableParse() {
+//        return variableParse(CommonVarInfo.DEFAULT);
+//    }
 
-    <T> T variableParse(VariableParser<T> parser);
+    //<T> T variableParse(VariableParser<T> parser);
 
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)

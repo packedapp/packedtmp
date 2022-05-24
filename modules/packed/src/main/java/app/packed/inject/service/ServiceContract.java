@@ -28,7 +28,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.validate.Validation;
 
 /**
  * A service contract details of a contractee.
@@ -216,7 +215,7 @@ public final class ServiceContract {
 
     // Altsaa Validation giver kun mening hvis noget skal praecenteres til brugere...
     // Det giver ikke "machine-to-machine"
-    public Validation validateXXXX() {
+    public Object /* Validation */ validateXXXX() {
         // Man kan let kombinere 2 Validatation
         throw new UnsupportedOperationException();
     }

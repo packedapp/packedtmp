@@ -12,7 +12,6 @@ module app.packed {
     exports app.packed.validate;
 
     exports app.packed.application.entrypoint;
-    exports app.packed.operation.interceptor;
     exports app.packed.operation.mirror;
     exports app.packed.operation.lifecycle;
     exports app.packed.inject.service;
