@@ -21,7 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.base.PackedVariable;
-import packed.internal.bean.operation.OperationSetup;
+import packed.internal.operation.OperationSetup;
 
 /**
  *

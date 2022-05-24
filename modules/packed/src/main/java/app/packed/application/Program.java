@@ -24,7 +24,6 @@ import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.sandbox.LifetimeWirelets;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -133,7 +132,7 @@ public interface Program extends AutoCloseable {
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use {@link LifetimeWirelets#lazyStart()}. Which will return an application in the
+     * process you can use LifetimeWirelets#lazyStartE. Which will return an application in the
      * {@link RunState#INITIALIZED} phase instead.
      * 
      * @param assembly

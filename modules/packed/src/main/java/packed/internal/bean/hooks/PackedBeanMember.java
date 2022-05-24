@@ -16,8 +16,8 @@
 package packed.internal.bean.hooks;
 
 import packed.internal.bean.BeanSetup;
-import packed.internal.bean.operation.PackedOperationTarget;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.operation.PackedOperationTarget;
 import packed.internal.util.OpenClass;
 
 /**

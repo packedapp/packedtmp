@@ -23,11 +23,11 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.bean.hooks.BeanScanner;
-import packed.internal.bean.operation.OperationSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.BeanInjectionManager;
+import packed.internal.operation.OperationSetup;
 
 /** The build-time configuration of a bean. */
 public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits ExtensionBeanSetup {

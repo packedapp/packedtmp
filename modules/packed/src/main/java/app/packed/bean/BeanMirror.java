@@ -7,7 +7,6 @@ import app.packed.application.ComponentMirror;
 import app.packed.application.Realm;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.operation.lifecycle.BeanFactoryOperationMirror;
 import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
 
 /**
@@ -82,7 +81,7 @@ public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBean
 interface zandbox {
 
     // @SuppressWarnings({ "unchecked", "rawtypes" })
-    default Optional<BeanFactoryOperationMirror> factory() {
+    default Optional<Object /*BeanFactoryOperationMirror */> factory() {
         // return (Optional) operations().stream().filter(m ->
         // BeanFactoryOperationMirror.class.isAssignableFrom(m.getClass())).findAny();
         // Kunne man forstille sig at en bean havde 2 constructors??

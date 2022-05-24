@@ -27,12 +27,11 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
+import app.packed.inject.service.ServiceExportMirror;
 import app.packed.operation.dependency.DependencyMirror;
-import app.packed.operation.mirror.OperationErrorHandlingMirror;
-import app.packed.operation.usage.ServiceExportMirror;
-import packed.internal.bean.operation.OperationSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.Mirror;
+import packed.internal.operation.OperationSetup;
 
 /**
  * A mirror for an bean operation.
@@ -149,7 +148,7 @@ public class OperationMirror implements Mirror {
     }
 
     /** {@return how errors are handle when calling the operation.} */
-    public final OperationErrorHandlingMirror errorHandling() {
+    public final Object /* OperationErrorHandlingMirror */ errorHandling() {
         // field??? Unhandled?
         throw new UnsupportedOperationException();
     }

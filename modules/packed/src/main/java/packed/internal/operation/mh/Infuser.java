@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package packed.internal.operation.mh;
 
-import packed.internal.operation.RawOperationSetup;
+import java.lang.invoke.MethodType;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperationHandle<T> extends OperationHandle permits RawOperationSetup {
-    T handle();
+
+public interface Infuser {
+
+    MethodType methodType();
+    
+    interface Builder {
+        
+    }
 }

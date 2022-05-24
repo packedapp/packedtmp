@@ -6,8 +6,6 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
-import app.packed.operation.usage.ServiceExportMirror;
-import app.packed.operation.usage.ServiceProvideMirror;
 import packed.internal.inject.service.ContainerInjectionManager;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
@@ -49,13 +47,11 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     // Map<K, V> unresolvedOptional?();
 
     /** { @return a map view of all the services that are exported from the container.} */
-    @SuppressWarnings("exports")
     public Map<Key<?>, ServiceExportMirror> exports() {
         throw new UnsupportedOperationException();
     }
 
     /** { @return a map view of all the services that are provided internally in the container.} */
-    @SuppressWarnings("exports")
     public Map<Key<?>, ServiceProvideMirror> provisions() {
         throw new UnsupportedOperationException();
     }

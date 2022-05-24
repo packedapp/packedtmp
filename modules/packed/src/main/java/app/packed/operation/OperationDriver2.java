@@ -15,13 +15,16 @@
  */
 package app.packed.operation;
 
-import packed.internal.operation.RawOperationSetup;
-
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperationHandle<T> extends OperationHandle permits RawOperationSetup {
-    T handle();
+public abstract class OperationDriver2 {
+    
+    protected OperationMirror mirror() {
+        return new OperationMirror();
+    }
+    
+    protected void spawnNewThread() {
+        
+    }
 }

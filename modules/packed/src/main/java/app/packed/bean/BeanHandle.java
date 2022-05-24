@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
+import app.packed.operation.OperationDriver;
+import app.packed.operation.OperationDriver2;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.driver.OperationDriver;
-import app.packed.operation.driver.OperationDriver2;
 import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
 
@@ -57,11 +57,11 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     // Hvis vi aabner op for specialized bean mirrors
     default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
     
-    default OperationHandle addOperation(@SuppressWarnings("exports") OperationDriver driver) {
+    default OperationHandle addOperation(OperationDriver driver) {
         throw new UnsupportedOperationException();
     }
 
-    default void addOperation(@SuppressWarnings("exports") OperationDriver2 driver) {
+    default void addOperation(OperationDriver2 driver) {
         throw new UnsupportedOperationException();
     }
 

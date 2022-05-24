@@ -10,7 +10,6 @@ import app.packed.container.Wirelet;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifecycleApplicationController.StopOption;
 import app.packed.lifecycle.RunState;
-import app.packed.lifecycle.sandbox.LifetimeWirelets.ShutdownHookWirelet;
 
 /**
  * Application runtime wirelet that can be specified when building or launching an application that includes the
@@ -102,7 +101,8 @@ public final class ExecutionWirelets {
      * @see Runtime#addShutdownHook(Thread)
      */
     public static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, LifecycleApplicationController.StopOption... options) {
-        return new ShutdownHookWirelet();
+        throw new UnsupportedOperationException();
+        //return new ShutdownHookWirelet();
     }
 
     // excludes start?? IDK

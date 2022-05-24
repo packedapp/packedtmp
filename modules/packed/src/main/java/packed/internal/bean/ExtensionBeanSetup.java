@@ -20,8 +20,8 @@ import app.packed.base.Nullable;
 import app.packed.inject.Factory0;
 import app.packed.operation.OperationPack;
 import app.packed.operation.dependency.DependencyProvider;
-import packed.internal.bean.operation.PackedOperationPackSetup;
 import packed.internal.container.RealmSetup;
+import packed.internal.operation.PackedOperationPackSetup;
 
 /**
  * A special version of bean setup for extension beans.

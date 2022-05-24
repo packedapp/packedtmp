@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package incubator.exceptionhandling;
 
-import packed.internal.operation.RawOperationSetup;
+import packed.internal.container.Mirror;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperationHandle<T> extends OperationHandle permits RawOperationSetup {
-    T handle();
+// What happens if an operation fails
+
+// passthrough
+// Could be a inner interface on BeanOperationMirror
+// Maaske er det ogsaa noget der kan bruges udover bean operations?
+public interface OperationErrorHandlingMirror extends Mirror {
+
+    // Field Operation -> Enten har man en optional
+    // Unhandled
+    //
+    default void print() {
+        
+    }
 }

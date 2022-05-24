@@ -24,8 +24,8 @@ import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.RawOperationHandle;
-import packed.internal.bean.operation.RawOperationSetup;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.operation.RawOperationSetup;
 
 /**
  *
