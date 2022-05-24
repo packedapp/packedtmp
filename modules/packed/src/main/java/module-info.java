@@ -8,8 +8,6 @@ module app.packed {
     exports app.packed.inject;
     exports app.packed.lifecycle;
     exports app.packed.lifetime;
-    
-    exports app.packed.validate;
 
     exports app.packed.application.entrypoint;
     exports app.packed.operation.mirror;
