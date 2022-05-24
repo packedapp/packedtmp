@@ -24,7 +24,6 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.context.ContextRootMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
@@ -52,7 +51,7 @@ import packed.internal.container.ExtensionSetup;
 //Class -> members
 //Scanning class -> Hooks
 //Bean -> Operation
-public non-sealed class OperationMirror implements Mirror, ContextRootMirror {
+public class OperationMirror implements Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via

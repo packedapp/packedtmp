@@ -26,7 +26,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.service.PublicizeExtension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
@@ -109,7 +108,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      *             if the application could not be build
      * @throws LifecycleException
      *             if the application failed to initializing
-     * @throws PanicException
+     * @throws RuntimeException
      *             if the application had an executing phase and it fails
      * @see App#run(Assembly, Wirelet...)
      */

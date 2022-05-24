@@ -64,7 +64,7 @@ public final class ContainerSetup extends ComponentSetup {
 
     /**
      * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns
-     * deterministically.
+     * a deterministic view.
      */
     final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
@@ -78,7 +78,7 @@ public final class ContainerSetup extends ComponentSetup {
     public boolean isNameInitializedFromWirelet;
 
     /** Wirelets that was specified when creating the component. */
-    // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
+    // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
 
@@ -89,8 +89,6 @@ public final class ContainerSetup extends ComponentSetup {
      *            the application this container is a part of
      * @param realm
      *            the realm this container is a part of
-     * @param lifetime
-     *            the lifetime this container is part of
      * @param handle
      *            the driver that is used to create this container
      * @param parent

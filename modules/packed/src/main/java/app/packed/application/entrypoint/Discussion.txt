@@ -1,11 +1,11 @@
-Q) Skal vi ligge under .application? eller under .entrypoint
+Q) Should we merge with .application? or have a .entrypoint (maybe together with CLI)
 
-Q) Hvad goer vi med fx CliArgumentMirror??? 
-   Er det CliArgumentMirror extends EntryPointMirror
-   Eller EntryPointMirror->CliArgument
-   Det vil give mening at extende EntryPointMirror
-   Saaledes at man slipper for at have en peger fra
+Q) CliArgumentMirror???
+   CliArgumentMirror extends EntryPointMirror
+   or EntryPointMirror->CliArgument
+   I think EntryPointMirror is best, otherwise we have
    EntryPointMirror->CliArgument og CliArgument->EntryPointMirror
-   
-   Vi skal ihvertfald undgaa at have 2 Entry Points for hver actual entry point.
-   Saa det giver naermest kun mening at overskrive
+
+   No matter what we should not have 2 entry point mirrors for an actual entry point.
+   So EntryPoinyExtension must support methods for registrating an extended entry point
+   mirror 

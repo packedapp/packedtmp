@@ -16,7 +16,7 @@
 package app.packed.application;
 
 /**
- * An exception that is typically thrown when build phase of an application fails.
+ * An exception that is typically thrown when the build phase of an application fails.
  * <p>
  * This exception normally indicates a programmatic error and can usually only be recovered by updates to the underlying
  * code.

@@ -20,9 +20,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandles;
 
-import app.packed.base.AnnotationMaker;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
 
@@ -77,8 +75,6 @@ import app.packed.bean.hooks.BeanMethod;
 @BeanMethod.AnnotatedWithHook(allowInvoke = true, extension = BeanExtension.class)
 @BeanField.AnnotatedWithHook(allowGet = true, extension = BeanExtension.class)
 public @interface Provide {
-
-    public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
 
     /**
      * Indicates whether or not the provided value is a constant.

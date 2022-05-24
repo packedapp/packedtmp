@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.context.ContextRootMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Mirror;
@@ -39,7 +38,7 @@ import packed.internal.util.StreamUtil;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public sealed interface ComponentMirror extends Mirror , ContextRootMirror permits ContainerMirror, BeanMirror {
+public sealed interface ComponentMirror extends Mirror permits ContainerMirror, BeanMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();

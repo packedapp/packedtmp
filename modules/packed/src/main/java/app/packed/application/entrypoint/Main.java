@@ -42,7 +42,6 @@ import app.packed.bean.hooks.BeanMethod;
 // and then shutdown container down again
 // Panic if it fails???? or do we not wrap exception??? I think we wrap...
 // We always wrap in container panic exception
-
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
