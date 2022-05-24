@@ -44,7 +44,7 @@ import packed.internal.inject.service.sandbox.Service;
  * 
  * <p>
  * All Wirelets on this class can only be used on container components. And the container must use a
- * {@link PublicizeExtension}.
+ * {@link ServiceExtension}.
  */
 public final class ServiceWirelets {
 
@@ -70,7 +70,7 @@ public final class ServiceWirelets {
      * The wirelet can only be used when wiring non-root containers.
      * 
      * @return a wirelet that will anchor all services
-     * @see PublicizeExtension#anchorAll()
+     * @see ServiceExtension#anchorAll()
      */
     public static Wirelet anchorAll() {
         return anchorIf(t -> true);

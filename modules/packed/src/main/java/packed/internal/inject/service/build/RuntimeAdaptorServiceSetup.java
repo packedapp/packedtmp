@@ -18,14 +18,14 @@ package packed.internal.inject.service.build;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.OldServiceLocator;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/** An entry specifically used for {@link PublicizeExtension#provideAll(OldServiceLocator)}. */
+/** An entry specifically used for {@link ServiceExtension#provideAll(OldServiceLocator)}. */
 public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
 
     /** The runtime entry to delegate to. */

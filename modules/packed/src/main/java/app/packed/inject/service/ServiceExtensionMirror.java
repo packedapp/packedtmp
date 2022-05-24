@@ -10,13 +10,13 @@ import app.packed.operation.usage.ServiceExportMirror;
 import app.packed.operation.usage.ServiceProvideMirror;
 import packed.internal.inject.service.ContainerInjectionManager;
 
-/** A specialized extension mirror for the {@link PublicizeExtension}. */
-public class PublicizeExtensionMirror extends ExtensionMirror<PublicizeExtension> {
+/** A specialized extension mirror for the {@link ServiceExtension}. */
+public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** The service manager */
     private final ContainerInjectionManager services;
 
-    PublicizeExtensionMirror(ContainerInjectionManager services) {
+    ServiceExtensionMirror(ContainerInjectionManager services) {
         this.services = requireNonNull(services);
     }
 

@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import app.packed.base.TypeToken;
-import app.packed.base.Variable;
+import app.packed.inject.Variable;
 
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
 public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrapper typeWrapper) implements Variable {

@@ -25,7 +25,6 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.Variable;
 import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.hooks.BeanElement;
 import app.packed.bean.hooks.sandbox.AnnotationReader;
@@ -33,6 +32,7 @@ import app.packed.bean.hooks.sandbox.CommonVarInfo;
 import app.packed.bean.hooks.sandbox.VariableParser;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.inject.Variable;
 import packed.internal.bean.hooks.PackedDependencyProvider;
 
 /**

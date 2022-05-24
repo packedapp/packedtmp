@@ -28,10 +28,10 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BuildsApplication;
 import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.base.Reflectable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.container.AbstractComposer;
@@ -309,7 +309,7 @@ public interface ServiceLocator {
         throw new UnsupportedOperationException();
     }
 
-    @Reflectable
+    @BuildsApplication
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
@@ -324,12 +324,12 @@ public interface ServiceLocator {
      * @return the new image
      * @see #driver()
      */
-    @Reflectable
+    @BuildsApplication
     static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
-    @Reflectable
+    @BuildsApplication
     static ApplicationLauncher<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }
@@ -348,7 +348,7 @@ public interface ServiceLocator {
      *            optional wirelets
      * @return a new service locator
      */
-    @Reflectable
+    @BuildsApplication
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
@@ -383,8 +383,8 @@ public interface ServiceLocator {
          * 
          * @return an instance of the injector extension
          */
-        private PublicizeExtension extension() {
-            PublicizeExtension se = container().use(PublicizeExtension.class);
+        private ServiceExtension extension() {
+            ServiceExtension se = container().use(ServiceExtension.class);
             if (!initialized) {
                 se.exportAll();
                 initialized = true;

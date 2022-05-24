@@ -29,9 +29,9 @@ import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.base.Variable;
 import app.packed.inject.CapturingFactory;
 import app.packed.inject.Factory;
+import app.packed.inject.Variable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;

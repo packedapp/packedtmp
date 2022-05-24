@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.inject;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
+import app.packed.base.TypeToken;
 import app.packed.bean.hooks.sandbox.CommonVarInfo;
 import app.packed.bean.hooks.sandbox.VariableParser;
 import packed.internal.base.PackedVariable;
@@ -55,7 +56,7 @@ import packed.internal.base.VariableTypeWrapper;
  * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
  *          {@link TypeVariable}
  */
-// extends AnnotatedType???? Is fucking annotatedType???
+// extends AnnotatedType???? It is more or less AnnotatedType...
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
     /**
@@ -73,6 +74,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     default Type getGenericType() {
         throw new UnsupportedOperationException();
     }
+    
     TypeToken<?> typeToken();
 
     /**

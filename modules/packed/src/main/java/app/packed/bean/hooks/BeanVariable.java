@@ -22,8 +22,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import app.packed.base.Variable;
 import app.packed.container.Extension;
+import app.packed.inject.Variable;
 
 /**
  *

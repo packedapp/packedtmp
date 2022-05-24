@@ -18,7 +18,7 @@ package app.packed.container.sandbox;
 import app.packed.container.Extension;
 import app.packed.container.Extension.BootstrapWith;
 import app.packed.container.sandbox.MyExt.MyBootstrap;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 
 /**
  *
@@ -31,7 +31,7 @@ public class MyExt extends Extension<MyExt> {
         /** {@inheritDoc} */
         @Override
         protected void bootstrap() {
-            dependsOn(PublicizeExtension.class);
+            dependsOn(ServiceExtension.class);
         }
     }
 }

@@ -20,7 +20,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.Provide;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.OnStart;
 
@@ -309,15 +309,15 @@ public abstract class BaseAssembly extends Assembly {
 //    }
 
     /**
-     * Returns a {@link PublicizeExtension} instance.
+     * Returns a {@link ServiceExtension} instance.
      * <p>
      * Calling this method is short for {@code use(ServiceExtension.class)}
      * 
      * @return a service extension instance
      * @see #use(Class)
      */
-    protected final PublicizeExtension service() {
-        return use(PublicizeExtension.class);
+    protected final ServiceExtension service() {
+        return use(ServiceExtension.class);
     }
 
 //    /**

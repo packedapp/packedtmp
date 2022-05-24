@@ -24,13 +24,13 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BuildsApplication;
 import app.packed.base.Key;
-import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.operation.dependency.DependencyProvider;
 
 /**
@@ -38,7 +38,7 @@ import app.packed.operation.dependency.DependencyProvider;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@DependencyProvider.Hook(extension = PublicizeExtension.class)
+@DependencyProvider.Hook(extension = ServiceExtension.class)
 public interface OldServiceLocator extends ServiceRegistry {
 
     /**
@@ -238,18 +238,18 @@ public interface OldServiceLocator extends ServiceRegistry {
      * @return the new image
      * @see #driver()
      */
-    @Reflectable
+    @BuildsApplication
     static ApplicationLauncher<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
     // maaske har vi launcher og Image...
-    @Reflectable
+    @BuildsApplication
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
 
-    @Reflectable
+    @BuildsApplication
     static ApplicationLauncher<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }

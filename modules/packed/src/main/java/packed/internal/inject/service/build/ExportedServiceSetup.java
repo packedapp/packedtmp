@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import packed.internal.inject.DependencyNode;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -46,8 +46,8 @@ public final class ExportedServiceSetup extends ServiceSetup {
      * 
      * @param builder
      *            the injector configuration this node is being added to
-     * @see PublicizeExtension#export(Class)
-     * @see PublicizeExtension#export(Key)
+     * @see ServiceExtension#export(Class)
+     * @see ServiceExtension#export(Key)
      */
     public ExportedServiceSetup(Key<?> exportAsKey) {
         super(exportAsKey);
@@ -59,7 +59,7 @@ public final class ExportedServiceSetup extends ServiceSetup {
      * 
      * @param entryToExport
      *            the entry to export
-     * @see PublicizeExtension#exportAll()
+     * @see ServiceExtension#exportAll()
      */
     public ExportedServiceSetup(ServiceSetup entryToExport) {
         super(entryToExport.key());

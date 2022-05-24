@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceContract;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -37,7 +37,7 @@ import testutil.stubs.Letters.NeedsB;
  */
 public class ServiceContractTCKTest {
 
-    /** Tests that we return an empty contract even if we do not use {@link PublicizeExtension}. */
+    /** Tests that we return an empty contract even if we do not use {@link ServiceExtension}. */
     @Test
     public void empty1() {
         check(ServiceContract.EMPTY, new BaseAssembly() {
@@ -52,7 +52,7 @@ public class ServiceContractTCKTest {
         check(ServiceContract.EMPTY, new BaseAssembly() {
             @Override
             protected void build() {
-                use(PublicizeExtension.class);
+                use(ServiceExtension.class);
             }
         });
     }

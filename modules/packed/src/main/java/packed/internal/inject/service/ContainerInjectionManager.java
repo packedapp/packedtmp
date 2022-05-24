@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.bean.BeanSetup;
@@ -68,7 +68,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
     private final ContainerInjectionManager parent;
 
     //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
-    /** All locators added via {@link PublicizeExtension#provideAll(ServiceLocator)}. */
+    /** All locators added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */

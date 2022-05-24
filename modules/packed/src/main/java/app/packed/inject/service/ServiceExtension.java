@@ -72,7 +72,7 @@ import packed.internal.inject.service.ContainerInjectionManager;
 
 // Rename to ExportExtension or ServiceExportExtension
 @DependsOn(extensions = BeanExtension.class)
-public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExtension> {
+public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
     private final ContainerInjectionManager injectionManager;
 
@@ -82,7 +82,7 @@ public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExte
      * @param configuration
      *            an extension configuration object.
      */
-    PublicizeExtension(ExtensionSetup setup) {
+    ServiceExtension(ExtensionSetup setup) {
         this.injectionManager = setup.container.injectionManager;
     }
 
@@ -133,8 +133,8 @@ public /* non-sealed */ class PublicizeExtension extends Extension<PublicizeExte
 
     /** {@return a mirror for this extension.} */
     @Override
-    protected PublicizeExtensionMirror newExtensionMirror() {
-        return new PublicizeExtensionMirror(injectionManager);
+    protected ServiceExtensionMirror newExtensionMirror() {
+        return new ServiceExtensionMirror(injectionManager);
     }
 
     // requires bliver automatisk anchoret...

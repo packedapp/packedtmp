@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import app.packed.application.Realm;
 import app.packed.base.Key;
-import app.packed.base.Variable;
+import app.packed.inject.Variable;
 import app.packed.operation.OperationMirror;
 
 /**

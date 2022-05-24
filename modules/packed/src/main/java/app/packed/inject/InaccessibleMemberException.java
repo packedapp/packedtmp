@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.conversion;
+package app.packed.inject;
 
-/** An exception indicating the failure of a conversion. */
-public class ConversionException extends RuntimeException {
+/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
+// UncheckedIllegalAccessException...
+// RuntimeIllegalAccessException
+
+// AccessRestrictedException <- General one, could sound really securish, maybe have a name
+// which makes it clear it is relevant to reflection/method handlers
+// NotOpenedException
+// UndeclaredAccessException
+// Was UncheckedIllegalAccessException
+
+// InaccessibleRealmException or
+// InaccessibleModuleException
+
+// Maybe it is a build exception??? Skal jo helst klare det under build..
+
+// InaccessibleOperationException???
+// InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
+public class InaccessibleMemberException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -29,8 +45,9 @@ public class ConversionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ConversionException(String message) {
+    public InaccessibleMemberException(String message) {
         super(message);
+
     }
 
     /**
@@ -43,10 +60,7 @@ public class ConversionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ConversionException(String message, Throwable cause) {
+    public InaccessibleMemberException(String message, Throwable cause) {
         super(message, cause);
     }
 }
-//https://github.com/eclipse/ConfigJSR/blob/master/spec/src/main/asciidoc/converters.asciidoc
-//https://github.com/eclipse-ee4j/jaxrs-api/blob/master/jaxrs-spec/src/main/asciidoc/chapters/resources/_resource_field.adoc#fields-and-bean-properties
-//https://github.com/eclipse-ee4j/jaxrs-api/issues/879

@@ -9,7 +9,6 @@ module app.packed {
     exports app.packed.lifecycle;
     exports app.packed.lifetime;
     
-    exports app.packed.conversion;
     exports app.packed.validate;
 
     exports app.packed.application.entrypoint;

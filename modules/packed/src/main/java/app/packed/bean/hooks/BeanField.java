@@ -26,9 +26,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
-import app.packed.base.Variable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.inject.Variable;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanField;

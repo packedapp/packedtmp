@@ -26,7 +26,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
@@ -428,7 +428,7 @@ interface ApplicationDriverSandbox<A> {
 
     default void fff() {
         // ApplicationDriver.builder().enableExtension(ApplicationRuntimeExtension.class);
-        ApplicationDriverSandbox.builder().enableExtension(PublicizeExtension.class, e -> e.exportAll());
+        ApplicationDriverSandbox.builder().enableExtension(ServiceExtension.class, e -> e.exportAll());
 
         ApplicationDriverSandbox.builder().enableExtension(JobExtension.class, (b, e) -> {
             @SuppressWarnings("unchecked")

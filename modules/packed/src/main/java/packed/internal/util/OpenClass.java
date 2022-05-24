@@ -27,7 +27,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.base.InaccessibleMemberException;
+import app.packed.inject.InaccessibleMemberException;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.

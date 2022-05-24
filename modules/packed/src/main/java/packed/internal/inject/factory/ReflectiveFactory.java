@@ -27,9 +27,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeToken;
-import app.packed.base.Variable;
+import app.packed.inject.InaccessibleMemberException;
+import app.packed.inject.Variable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.inject.factory.ReflectiveFactory.FieldFactory;

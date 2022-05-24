@@ -15,8 +15,8 @@
  */
 package packed.internal.inject.service.sandbox;
 
+import app.packed.application.BuildsApplication;
 import app.packed.base.Key;
-import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.inject.service.ServiceLocator;
@@ -79,7 +79,7 @@ public interface SelectableServiceLocator extends ServiceLocator {
      *            the transmutation action
      * @return the new service locator
      */
-    @Reflectable
+    @BuildsApplication
     OldServiceLocator spawn(BuildAction<ServiceComposer> action);
 
     /**
@@ -90,7 +90,7 @@ public interface SelectableServiceLocator extends ServiceLocator {
      * @return a new service locator
      * @see #driver()
      */
-    @Reflectable
+    @BuildsApplication
     static ServiceLocator of(BuildAction<? super ServiceComposer> action) {
         throw new UnsupportedOperationException();
     }

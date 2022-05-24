@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceContract;
 import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
@@ -37,7 +37,7 @@ import packed.internal.inject.service.runtime.ServiceRegistry;
 /**
  * This class manages everything to do with exporting of services.
  *
- * @see PublicizeExtension#exportAll()
+ * @see ServiceExtension#exportAll()
  */
 public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
 
@@ -45,8 +45,8 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     private boolean exportAll;
 
     /**
-     * An entry to this list is added every time the user calls {@link PublicizeExtension#export(Class)},
-     * {@link PublicizeExtension#export(Key)}.
+     * An entry to this list is added every time the user calls {@link ServiceExtension#export(Class)},
+     * {@link ServiceExtension#export(Key)}.
      */
     @Nullable
     private ArrayList<ExportedServiceSetup> exportedEntries;
@@ -146,8 +146,8 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     /**
-     * This method tries to find matching entries for exports added via {@link PublicizeExtension#export(Class)}and
-     * {@link PublicizeExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
+     * This method tries to find matching entries for exports added via {@link ServiceExtension#export(Class)}and
+     * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
      * any point, even before the
      */
     public void resolve(ContainerInjectionManager sm) {
@@ -227,8 +227,8 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     /**
      * An instance of that is returned to the user when they export a service
      * 
-     * @see PublicizeExtension#export(Class)
-     * @see PublicizeExtension#export(Key)
+     * @see ServiceExtension#export(Class)
+     * @see ServiceExtension#export(Key)
      */
     record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup service) {
 

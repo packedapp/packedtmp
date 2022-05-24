@@ -21,10 +21,10 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 
 import app.packed.application.Realm;
-import app.packed.base.Variable;
 import app.packed.bean.hooks.BeanField;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.inject.Variable;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.RawOperationHandle;

@@ -28,10 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.base.Variable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactory.ConstantFactory;
 import packed.internal.inject.factory.InternalFactory.LookedUpFactory;

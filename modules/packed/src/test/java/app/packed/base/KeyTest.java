@@ -36,7 +36,6 @@ import java.util.OptionalLong;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.conversion.ConversionException;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.CharQualifier;
 import testutil.stubs.annotation.IntQualifier;
@@ -139,11 +138,11 @@ public class KeyTest {
         assertThat(Key.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.convertField(findField(Tmpx.class, "notTypeParameterFree")));
-        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
+        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
         // TODO test msg
 
         a = assertThatThrownBy(() -> Key.convertField(findField(Tmpx.class, "optional")));
-        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
+        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
         // TODO test msg
 
 //        a = assertThatThrownBy(() -> Key.convertField(findField(Tmpx.class, "multipleQualifier")));
@@ -220,14 +219,14 @@ public class KeyTest {
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
                 () -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
-        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
+        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
 
         a = assertThatThrownBy(() -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("notTypeParameterFree")));
-        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
+        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
         // TODO test msg
 
         a = assertThatThrownBy(() -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("optional")));
-        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
+        a.isExactlyInstanceOf(RuntimeException.class).hasNoCause();
         // TODO test msg
 
 //        a = assertThatThrownBy(() -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("multipleQualifier")));
@@ -281,20 +280,20 @@ public class KeyTest {
         assertThat(k2.hasQualifiers()).isFalse();
 
         // Optional
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(ConversionException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalInt>() {})).isExactlyInstanceOf(ConversionException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalInt>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalLong>() {})).isExactlyInstanceOf(ConversionException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalLong>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalDouble>() {})).isExactlyInstanceOf(ConversionException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalDouble>() {})).isExactlyInstanceOf(RuntimeException.class)
                 .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
 
         // We need to use this old fashion way because of
         try {
             Key.convertTypeLiteral(new TypeToken<List<S>>() {});
             fail("should have failed");
-        } catch (ConversionException e) {
+        } catch (RuntimeException e) {
             assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
         }
     }

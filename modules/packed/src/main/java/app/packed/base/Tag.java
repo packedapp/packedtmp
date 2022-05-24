@@ -19,7 +19,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandles;
 
 /** A {@link Qualifier} that holds a generic string. */
 @Retention(RetentionPolicy.RUNTIME)
@@ -30,9 +29,6 @@ import java.lang.invoke.MethodHandles;
 
 // Maybe just Tag, it is b
 public @interface Tag {
-
-    /** An annotation maker that can create {@link Tag} instances. */
-    static final AnnotationMaker<Tag> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Tag.class);
 
     /**
      * Returns the tag.

@@ -39,8 +39,8 @@ import app.packed.bean.hooks.BeanInfo;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.bean.hooks.BeanVariable;
 import app.packed.inject.Ancestral;
-import app.packed.inject.service.PublicizeExtension;
-import app.packed.inject.service.PublicizeExtensionMirror;
+import app.packed.inject.service.ServiceExtension;
+import app.packed.inject.service.ServiceExtensionMirror;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionPointHelper;
@@ -175,7 +175,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * This method can be overridden to provide a customized mirror for the extension. For example,
-     * {@link PublicizeExtension} overrides this method to provide an instance of {@link PublicizeExtensionMirror}.
+     * {@link ServiceExtension} overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
      * This method should never return null.
      * 

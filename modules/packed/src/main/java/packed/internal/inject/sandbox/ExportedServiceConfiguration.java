@@ -17,16 +17,16 @@ package packed.internal.inject.sandbox;
 
 import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.service.PublicizeExtension;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceLocator.Composer;
 
 /**
  * A configuration object for an exported service.
  * <p>
  * An instance of this interface is usually obtained by calling the various provide or export methods located on
- * {@link PublicizeExtension}, {@link Composer} or {@link BaseAssembly}.
+ * {@link ServiceExtension}, {@link Composer} or {@link BaseAssembly}.
  * 
- * @see PublicizeExtension#export(Class)
+ * @see ServiceExtension#export(Class)
  */
 public interface ExportedServiceConfiguration<T> {
 

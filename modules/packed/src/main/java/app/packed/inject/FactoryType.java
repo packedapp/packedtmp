@@ -26,8 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.base.Variable;
-
 /**
  * A function type represents the arguments and return type accepted and returned by an invokable function.
  * 

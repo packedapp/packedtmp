@@ -17,7 +17,7 @@ package app.packed.bean.hooks;
 
 import java.util.function.Supplier;
 
-import app.packed.base.Variable;
+import app.packed.inject.Variable;
 
 /**
  *
