@@ -3,7 +3,7 @@ package app.packed.container;
 import java.util.function.BiConsumer;
 
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandler;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
@@ -26,11 +26,12 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     /**
      * @param handle
      */
-    public ExtensionBeanConfiguration(BeanHandle<T> handle) {
+    public ExtensionBeanConfiguration(BeanHandler<T> handle) {
         super(handle);
+        // Validate 
     }
 
-    public <P> void callbackOnInitialize(BeanHandle<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
+    public <P> void callbackOnInitialize(BeanHandler<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
         
     }
     // Same container I think

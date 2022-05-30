@@ -41,40 +41,65 @@ import app.packed.application.App;
 public class AppConstructionMicro {
 
     @Benchmark
-    public void emptyApp() {
-        App.run(VariousImages.empty());
+    public void appRun000Beans() {
+        App.run(VariousImages.of(0));
     }
 
     @Benchmark
-    public void oneComponent() {
-        App.run(VariousImages.oneComponent());
+    public void appRun001Beans() {
+        App.run(VariousImages.of(1));
     }
 
     @Benchmark
-    public void fiveComponents() {
-        App.run(VariousImages.fiveComponents());
+    public void appRun005Beans() {
+        App.run(VariousImages.of(5));
     }
 
     @Benchmark
-    public void oneContainer() {
-        App.run(VariousImages.oneContainer());
+    public void appRun050Beans() {
+        App.run(VariousImages.of(50));
     }
 
+
     @Benchmark
-    public Void emptyAppFromImage() {
+    public void appRun500Beans() {
+        App.run(VariousImages.of(500));
+    }
+
+    
+    @Benchmark
+    public Void appImage000Beans() {
         return VariousImages.EMPTY_IMAGE.launch();
     }
 
     @Benchmark
-    public Void oneComponentFromImage() {
-        return VariousImages.ONE_COMPONENT_IMAGE.launch();
+    public Void appImage001Beans() {
+        return VariousImages.ONE_BEAN_IMAGE.launch();
     }
 
     @Benchmark
-    public Void fiveComponentsFromImage() {
-        return VariousImages.FIVE_CONTAINER_IMAGE.launch();
+    public Void appImage005Beans() {
+        return VariousImages.FIVE_BEAN_IMAGE.launch();
+    }
+    
+    @Benchmark
+    public Void appImage050Beans() {
+        return VariousImages.FIFTY_BEAN_IMAGE.launch();
+    }
+    @Benchmark
+    public Void appImage500Beans() {
+        return VariousImages.FIVEHUNDRED_BEAN_IMAGE.launch();
     }
 }
+
+// 25 May 2022 - M1
+//AppConstructionMicro.emptyApp                 avgt    5    93,113 ±  3,010  ns/op
+//AppConstructionMicro.emptyAppFromImage        avgt    5    20,863 ±  1,034  ns/op
+//AppConstructionMicro.fiveComponents           avgt    5  6484,989 ± 66,484  ns/op
+//AppConstructionMicro.fiveComponentsFromImage  avgt    5    37,671 ±  0,813  ns/op
+//AppConstructionMicro.oneComponent             avgt    5  1373,740 ±  2,870  ns/op
+//AppConstructionMicro.oneComponentFromImage    avgt    5    30,983 ±  4,578  ns/op
+//AppConstructionMicro.oneContainer             avgt    5   161,865 ±  4,447  ns/op
 
 // 11 Dec 2021 - M1
 //AppConstructionMicro.emptyApp                 avgt    5   78.152 ± 0.325  ns/op

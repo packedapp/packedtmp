@@ -50,6 +50,11 @@ import packed.internal.util.typevariable.TypeVariableExtractor;
 // Take a look at helidons
 // https://helidon.io/docs/v2/apidocs/io.helidon.common/io/helidon/common/GenericType.html
 // I like the cast method
+
+
+// Maybe this should die so we only have one version which also captures annotations
+// We always va
+
 public abstract class TypeToken<T> {
 
     /** A cache of factories used by. */

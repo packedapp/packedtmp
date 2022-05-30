@@ -17,7 +17,11 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
 import java.util.function.Supplier;
+
+import app.packed.base.Nullable;
+import app.packed.base.VarToken;
 
 /**
  * A {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
@@ -48,5 +52,28 @@ public abstract class Factory0<R> extends CapturingFactory<R> {
      */
     protected Factory0(Supplier<? extends R> supplier) {
         super(requireNonNull(supplier, "supplier is null"));
+    }
+
+    static <R> Factory0<R> ofInstancex(R instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <R> Factory0<R> ofInstance(Class<R> r, R instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <R> Factory0<R> ofInstance(VarToken<R> r, R instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <R> Factory0<R> of(Class<R> key, Supplier<R> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Given ikke mening at have baade Variable og VarToken... Eller maaske goer det...
+    // Maaske er VarToken implements Variable
+    static <R> Factory0<R> of(VarToken<R> r, Supplier<R> supplier) {
+        new VarToken<@Nullable List<String>>() {};
+        throw new UnsupportedOperationException();
     }
 }

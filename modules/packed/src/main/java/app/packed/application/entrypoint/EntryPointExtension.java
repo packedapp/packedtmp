@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.ProvideableBeanConfiguration;
+import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
@@ -49,6 +49,11 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
     }
 
+    /**
+     * Captures methods annotated with {@link Main}.
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     protected void hookOnBeanMethod(BeanMethod method) {
         registerEntryPoint(null, true);
@@ -56,22 +61,23 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         application.entryPoints = new EntryPointSetup();
 
         MainThreadOfControl mc = application.entryPoints.mainThread();
-        
+
         mc.isStatic = Modifier.isStatic(method.getModifiers());
         mc.cs = ((PackedBeanMethod) method).bean;
-        mc.methodHandle = method.newRawOperation().handle();
+        mc.methodHandle = ((PackedBeanMethod) method).newMethodHandle();
 
+       // installMain(() -> {});
 //        oldOperation().useMirror(() -> new EntryPointMirror(0));
     }
-    
-    public void main(Runnable runnable) {
-        // Det her er en function
+
+    // installMain
+    public <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
+        // IDK, skal vi vente med at tilfoeje dem
+        throw new UnsupportedOperationException();
     }
 
-    public <T extends Runnable> ProvideableBeanConfiguration<?> mainBeanInstance(T runnable) {
-        // Hehe, tag den, hvad goer vi her, den ene er en bean
-        // Den anden er en function.
-        // Tror ikke vi skal have begge dele
+    
+    public <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
         throw new UnsupportedOperationException();
     }
 
@@ -81,7 +87,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         return new EntryPointExtensionMirror();
     }
 
-   int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
+    int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
 
         // Jeg gaar udfra metoden er blevet populeret med hvad der er behov for.
         // Saa det er kun selve invokationen der sker her

@@ -21,7 +21,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
@@ -30,11 +29,10 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
 import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.RawOperationHandle;
 import packed.internal.bean.hooks.PackedBeanField;
 
 /**
- * A bean field represents a {@link Field} on a bean.
+ * This class represents a {@link Field} on a bean.
  */
 public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
@@ -49,31 +47,22 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      */
     int getModifiers();
 
-    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> invoker, VarHandle.AccessMode accessMode);
-
-    InjectableOperationHandle newOperationGetter(ExtensionBeanConfiguration<?> invoker);
-
-    InjectableOperationHandle newOperationSetter(ExtensionBeanConfiguration<?> invoker);
-
     /**
      * Returns a method handle that gives read access to the underlying field as specified by
      * {@link Lookup#unreflectGetter(Field)}.
      * 
      * @return a method handle getter
      */
-    RawOperationHandle<MethodHandle> newRawGetterOperation();
+    InjectableOperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
-     * Must have both get and set
+     * @param operator
+     * @param accessMode
+     * @return
      * 
-     * @return the variable
-     * @see Lookup#unreflectVarHandle(Field)
-     * @see BeanField.AnnotatedWithHook#allowGet()
-     * @see BeanField.AnnotatedWithHook#allowSet()
-     * @throws UnsupportedOperationException
-     *             if the extension field has not both get and set access
+     * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
      */
-    RawOperationHandle<VarHandle> newRawOperation();
+    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
      * Returns a method handle that gives write access to the underlying field as specified by
@@ -81,8 +70,8 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle setter
      */
-    RawOperationHandle<MethodHandle> newRawSetterOperation();
-    
+    InjectableOperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator);
+
     /**
      * {@return the underlying field represented as a {@code Variable}.}
      * 

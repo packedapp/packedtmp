@@ -15,13 +15,19 @@
  */
 package packed.internal.bean;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanConfiguration;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Factory0;
 import app.packed.operation.OperationPack;
 import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.RealmSetup;
 import packed.internal.operation.PackedOperationPackSetup;
+import packed.internal.util.LookupUtil;
 
 /**
  * A special version of bean setup for extension beans.
@@ -48,11 +54,19 @@ public final class ExtensionBeanSetup extends BeanSetup {
         }
         return p;
     }
-    
+
     public void provideOperationPack(DependencyProvider provider) {
         Key<?> key = provider.readKey();
         @SuppressWarnings("unchecked")
         PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
         provider.provide(new Factory0<OperationPack>(() -> s.build()) {});
+    }
+
+    /** A handle that can access #configuration. */
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle", PackedBeanHandler.class);
+
+    public static ExtensionBeanSetup from(ExtensionBeanConfiguration<?> configuration) {
+        PackedBeanHandler<?> bh = (PackedBeanHandler<?>) VH_HANDLE.get((BeanConfiguration) configuration);
+        return (ExtensionBeanSetup) bh.bean();
     }
 }

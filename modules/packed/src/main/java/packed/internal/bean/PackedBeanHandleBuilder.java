@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.Builder;
+import app.packed.bean.BeanHandler;
+import app.packed.bean.BeanHandler.Builder;
 import app.packed.bean.BeanKind;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
@@ -30,7 +30,7 @@ import packed.internal.container.RealmSetup;
 import packed.internal.inject.factory.InternalFactory;
 
 /** Implementation of BeanHandle.Builder. */
-public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
+public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
     final Class<?> beanClass;
@@ -77,7 +77,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanHandle<T> build() {
+    public PackedBeanHandler<T> build() {
         checkNotBuild();
         RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
         
@@ -91,7 +91,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandle.Builder<T> {
         } else {
             bean = new ExtensionBeanSetup(this, realm);
         }
-        return new PackedBeanHandle<>(bean);
+        return new PackedBeanHandler<>(bean);
     }
 
     /** {@inheritDoc} */

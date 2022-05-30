@@ -22,10 +22,10 @@ import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationSiteMirror;
-import app.packed.operation.RawOperationHandle;
+import app.packed.operation.OperationTargetMirror;
+import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.operation.RawOperationSetup;
+import packed.internal.operation.InjectableOperationSetup;
 
 /**
  *
@@ -66,24 +66,22 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
 
     /** {@inheritDoc} */
     @Override
-    public OperationSiteMirror mirror() {
+    public OperationTargetMirror mirror() {
         return new BuildTimeMethodTargetMirror(this);
+    }
+
+    public MethodHandle newMethodHandle() {
+        return openClass.unreflect(method);
     }
 
     /** {@inheritDoc} */
     @Override
     public InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public RawOperationHandle<MethodHandle> newRawOperation() {
-        return new RawOperationSetup<MethodHandle>(this, openClass.unreflect(method));
+        return new InjectableOperationSetup(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 
     /**  */
-    public record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationSiteMirror.OfMethodInvoke {
+    public record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationTargetMirror.OfMethodInvoke {
 
         /** {@inheritDoc} */
         @Override

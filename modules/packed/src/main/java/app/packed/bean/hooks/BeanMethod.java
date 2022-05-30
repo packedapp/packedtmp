@@ -21,7 +21,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
@@ -30,12 +29,13 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationSiteMirror;
-import app.packed.operation.RawOperationHandle;
+import app.packed.operation.OperationTargetMirror;
 import packed.internal.bean.hooks.PackedBeanMethod;
 
 /**
- * Represents a bean method.
+ * Represents a method on a bean.
+ * 
+ * @see Extension#hookOnBeanMethod(BeanMethod)
  */
 public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
@@ -43,15 +43,17 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     FactoryType factoryType();
 
     /**
-     * Returns the modifiers of the method.
-     * 
-     * @return the modifiers of the method
+     * {@return the modifiers of then underlying method.}F
+     *
      * @see Method#getModifiers()
      * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
      */
     int getModifiers();
 
-    boolean hasInvokeAccess();
+    /**
+     * @return
+     */
+    boolean hasInvokeAccess(); // isOperational?
 
     /** {@return the underlying method.} */
     Method method();
@@ -59,13 +61,19 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     /**
      * 
      * <p>
-     * A new mirror with {@link OperationSiteMirror.OfMethodInvoke} as the {@link OperationMirror#target()}.
+     * Any mirror created from the operation will have a {@link OperationTargetMirror.OfMethodInvoke} as the
+     * {@link OperationMirror#target()}.
      * 
-     * @param invoker
+     * @param operator
      *            the extension bean that will invoke the operation
      * @return
+     * @throws IllegalArgumentException
+     *             if the specified extension bean is not located in the same container as the method's bean.
      */
-    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> invoker);
+    // YODO I think we allow descendents as well. But only in the same lifetime I think...
+    // Altsaa fx for session. Skal vi jo have en instansp[ per container (session)
+    // Saa en descent kan jo ikke vide bvad der er vhad
+    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
@@ -80,22 +88,23 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
      *             BeanClassHook#allowAllAccess()
      */
-    RawOperationHandle<MethodHandle> newRawOperation();
+//    RawOperationHandle<MethodHandle> newRawOperation();
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
+    // CaptureAnnotated
     public @interface AnnotatedWithHook {
 
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanMethod#newRawOperation()} and... will fail with {@link UnsupportedOperationException}
-         * unless the value of this attribute is {@code true}.
+         * Methods such as {@link BeanMethod#newOperation(ExtensionBeanConfiguration)} and... will fail with
+         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanMethod#newRawOperation()
+         * @see BeanMethod#newOperation(ExtensionBeanConfiguration)
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...

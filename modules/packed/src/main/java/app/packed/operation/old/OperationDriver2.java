@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.old;
 
-import packed.internal.operation.RawOperationSetup;
+import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-// record for know
-@SuppressWarnings("all")
-public sealed interface RawOperationHandle<T> extends OperationHandle permits RawOperationSetup {
-    T handle();
+public abstract class OperationDriver2 {
+    
+    protected OperationMirror mirror() {
+        return new OperationMirror();
+    }
+    
+    protected void spawnNewThread() {
+        
+    }
 }

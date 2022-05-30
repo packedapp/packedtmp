@@ -13,29 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.operation;
+package app.packed.operation.old;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.VarHandle;
-
-import app.packed.operation.RawOperationHandle;
-import packed.internal.bean.hooks.PackedBeanMember;
+import app.packed.base.Key;
+import app.packed.operation.OperationPack;
 
 /**
  *
  */
-public final class RawOperationSetup<T> extends OperationSetup implements RawOperationHandle<T> {
+public final class OperationPackType {
 
-    /** Either a {@link VarHandle} or {@link MethodHandle}. */
-    final T handle;
-    
-    public RawOperationSetup(PackedBeanMember member, T handle) {
-        super(member.bean, member, member.operator);
-        this.handle = handle;
+    private final Key<OperationPack> key = Key.of(OperationPack.class);
+
+    public Key<OperationPack> key() {
+        return key;
     }
     
-    /** {@inheritDoc} */
-    public T handle() {
-        return handle;
+    interface Meta {
+        //Capabalitites
+        //Customize
+        // Definition
+        // Define
+        // Directives
+        // Global
+        // Header
+        // Load
+        // Meta
+        // Setup
+        // Specialize
+        
+        // @Specialize + Specializer
     }
+    
+
 }

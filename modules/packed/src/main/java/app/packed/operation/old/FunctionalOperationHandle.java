@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.old;
 
 /**
  *
  */
-public abstract class OperationDriver2 {
-    
-    protected OperationMirror mirror() {
-        return new OperationMirror();
-    }
-    
-    protected void spawnNewThread() {
-        
-    }
+interface FunctionalOperationHandle {
+
 }

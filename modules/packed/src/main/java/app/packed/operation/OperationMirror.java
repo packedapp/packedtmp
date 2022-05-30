@@ -235,7 +235,7 @@ public class OperationMirror implements Mirror {
     }
 
     /** {@return the target of the operation.} */
-    public final OperationSiteMirror target() {
+    public final OperationTargetMirror target() {
         return operation().target.mirror();
     }
 }

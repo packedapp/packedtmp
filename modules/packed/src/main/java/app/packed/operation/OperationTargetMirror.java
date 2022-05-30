@@ -34,38 +34,39 @@ import packed.internal.bean.hooks.PackedBeanMethod.BuildTimeMethodTargetMirror;
 // Er det Saa Method invoke???Eller FunctionCall
 
 // Maaske drop Invoke til di
-public interface OperationSiteMirror {
+// OperationTargetMirror tror jeg bedre jeg kunne lide
+public interface OperationTargetMirror { //extends AnnotatedMember?
 
     // Accessing an instance that have previously been computed
     // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
     // Giver ikke mening for provide...
 
     // Kan ikke komme paa andre brugbare ting end @Provide
-    public interface OfInstanceAccess extends OperationSiteMirror {
+    public interface OfInstanceAccess extends OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
-        Optional<OperationSiteMirror> origin();
+        Optional<OperationTargetMirror> origin();
 
         // Har maaske ogsaa noget LifetimePoolMirror her????
     } // ofLifetimePool? Hmm
 
     // invoke exact?
-    public interface OfMethodHandleInvoke extends OperationSiteMirror {} // ofSynthetic?
+    public interface OfMethodHandleInvoke extends OperationTargetMirror {} // ofSynthetic?
 
 ////////////////////////////////
 
-    public interface OfFunctionCall extends OperationSiteMirror {}
+    public interface OfFunctionCall extends OperationTargetMirror {}
 
     // Members
     /** Represents an operation that invokes a constructor. */
-    public interface OfConstructorInvoke extends OperationSiteMirror {
+    public interface OfConstructorInvoke extends OperationTargetMirror {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
     /** Represents an operation that gets, sets or updates a field. */
-    public sealed interface OfFieldAccess extends OperationSiteMirror permits BuildTimeFieldTargetMirror {
+    public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror {
 
         boolean allowGet();
 
@@ -76,7 +77,7 @@ public interface OperationSiteMirror {
     }
 
     /** Represents an operation that invokes a method. */
-    public sealed interface OfMethodInvoke extends OperationSiteMirror permits BuildTimeMethodTargetMirror {
+    public sealed interface OfMethodInvoke extends OperationTargetMirror permits BuildTimeMethodTargetMirror {
 
         /** {@return the underlying method.} */
         Method method();

@@ -15,7 +15,7 @@
  */
 package packed.internal.operation;
 
-import app.packed.operation.OperationSiteMirror;
+import app.packed.operation.OperationTargetMirror;
 
 /**
  *
@@ -24,12 +24,12 @@ public final class PackedFunctionOperationTarget implements PackedOperationTarge
 
     /** {@inheritDoc} */
     @Override
-    public OperationSiteMirror mirror() {
+    public OperationTargetMirror mirror() {
         return new BuildTimeMethodTargetMirror(this);
     }
 
 
-    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget ff) implements OperationSiteMirror.OfFunctionCall {
+    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget ff) implements OperationTargetMirror.OfFunctionCall {
 
     }
 }

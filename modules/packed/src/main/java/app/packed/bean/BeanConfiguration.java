@@ -4,15 +4,15 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
-import packed.internal.bean.PackedBeanHandle;
+import packed.internal.bean.PackedBeanHandler;
 
 /**
- * The base configuration class of a single bean.
+ * The base configuration class for a bean.
  */
 public class BeanConfiguration {
 
     /** The bean handle. */
-    final PackedBeanHandle<?> beanHandle;
+    final PackedBeanHandler<?> beanHandle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -20,14 +20,14 @@ public class BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public BeanConfiguration(BeanHandle<?> handle) {
-        this.beanHandle = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
+    public BeanConfiguration(BeanHandler<?> handle) {
+        this.beanHandle = requireNonNull((PackedBeanHandler<?>) handle, "handle is null");
     }
 
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanHandle#beanKind()
+     * @see BeanHandler#beanClass()
      */
     public final Class<?> beanClass() {
         return beanHandle.beanClass();
@@ -36,13 +36,18 @@ public class BeanConfiguration {
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanHandle#beanKind()
+     * @see BeanHandler#beanKind()
      */
     public final BeanKind beanKind() {
         return beanHandle.bean().beanKind();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not.
+     * 
+     * @throws IllegalStateException
+     *             if the bean is no longer configurable
+     */
     protected final void checkIsConfigurable() {
         if (!beanHandle.isConfigurable()) {
             throw new IllegalStateException("The bean is no longer configurable");
@@ -55,19 +60,19 @@ public class BeanConfiguration {
     }
 
     /** {@return a handle for the configuration of the bean.} */
-    protected BeanHandle<?> handle() {
+    protected BeanHandler<?> handle() {
         return beanHandle;
     }
 
     /**
-     * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
-     * is case sensitive.
+     * Sets the name of the bean. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name is
+     * case sensitive.
      * <p>
-     * If no name is explicitly set on a component. A name will be assigned to the component (at build time) in such a way
-     * that it will have a unique name among other sibling components.
+     * If no name is explicitly set on for a bean. A name will be assigned to the bean (at build time) in such a way that it
+     * will have a unique name among other sibling components.
      *
      * @param name
-     *            the name of the component
+     *            the name of the bean
      * @return this configuration
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric

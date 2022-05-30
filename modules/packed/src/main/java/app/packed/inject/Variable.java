@@ -54,6 +54,8 @@ import packed.internal.base.VariableTypeWrapper;
  *          {@link TypeVariable}
  */
 // extends AnnotatedType???? It is more or less AnnotatedType...
+// VariableType, VarType?
+
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
     /**

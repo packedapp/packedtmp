@@ -166,7 +166,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         }
     }
 
-    /** A factory that provides the same value every time, used by {@link Factory#ofConstant(Object)}. */
+    /** A factory that provides the same value every time, used by {@link Factory#ofInstance(Object)}. */
     public static final class ConstantFactory<R> extends InternalFactory<R> {
 
         /** The value that is returned every time. */

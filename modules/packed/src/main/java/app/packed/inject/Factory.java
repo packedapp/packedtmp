@@ -341,6 +341,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      *            the instance to return on every request
      * @return the factory
      */
+    // Move to Factory0?
     public static <T> Factory<T> ofInstance(T instance) {
         requireNonNull(instance, "instance is null");
         return new ConstantFactory<T>(instance);

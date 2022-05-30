@@ -24,52 +24,25 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationLauncher<Void> EMPTY_IMAGE = App.newReusableLauncher(empty());
-    public static final ApplicationLauncher<Void> ONE_COMPONENT_IMAGE = App.newReusableLauncher(oneComponent());
-    public static final ApplicationLauncher<Void> FIVE_CONTAINER_IMAGE = App.newReusableLauncher(fiveComponents());
-    public static final ApplicationLauncher<Void> ONE_CONTAINER_IMAGE = App.newReusableLauncher(oneContainer());
+    public static final ApplicationLauncher<Void> EMPTY_IMAGE = App.newReusableLauncher(of(0));
+    public static final ApplicationLauncher<Void> ONE_BEAN_IMAGE = App.newReusableLauncher(of(1));
+    public static final ApplicationLauncher<Void> FIVE_BEAN_IMAGE = App.newReusableLauncher(of(5));
+    public static final ApplicationLauncher<Void> FIFTY_BEAN_IMAGE = App.newReusableLauncher(of(50));
+    public static final ApplicationLauncher<Void> FIVEHUNDRED_BEAN_IMAGE = App.newReusableLauncher(of(500));
 
-    public static BaseAssembly empty() {
-        return new BaseAssembly() {
-            @Override
-            protected void build() {}
-        };
-    }
-
-    public static BaseAssembly oneComponent() {
+    public static BaseAssembly of(int beanCount) {
         return new BaseAssembly() {
 
             @Override
             public void build() {
-                installInstance("foo");
+                for (int i = 0; i < beanCount; i++) {
+                    installInstance("foo").named(Integer.toString(i));
+                }
             }
         };
     }
-
-    public static BaseAssembly fiveComponents() {
-        return new BaseAssembly() {
-
-            @Override
-            public void build() {
-                installInstance("foo").named("1");
-                installInstance("foo").named("2");
-                installInstance("foo").named("3");
-                installInstance("foo").named("4");
-                installInstance("foo").named("5");
-            }
-        };
-    }
-
-    public static BaseAssembly oneContainer() {
-        return new BaseAssembly() {
-
-            @Override
-            public void build() {
-                link(new BaseAssembly() {
-                    @Override
-                    protected void build() {}
-                });
-            }
-        };
+    
+    public static void main(String[] args) {
+        VariousImages.FIVEHUNDRED_BEAN_IMAGE.launch();
     }
 }

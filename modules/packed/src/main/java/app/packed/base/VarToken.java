@@ -13,36 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
-
-import app.packed.base.Key;
+package app.packed.base;
 
 /**
  *
  */
-public final class OperationPackType {
-
-    private final Key<OperationPack> key = Key.of(OperationPack.class);
-
-    public Key<OperationPack> key() {
-        return key;
-    }
-    
-    interface Meta {
-        //Capabalitites
-        //Customize
-        // Definition
-        // Define
-        // Directives
-        // Global
-        // Header
-        // Load
-        // Meta
-        // Setup
-        // Specialize
-        
-        // @Specialize + Specializer
-    }
-    
+// Like TypeToken but also captures annotations
+public abstract class VarToken<T> /* implements Variable */ {
 
 }

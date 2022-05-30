@@ -16,11 +16,9 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.FactoryType;
 
 /**
  *
@@ -40,16 +38,12 @@ public non-sealed interface InjectableOperationHandle extends OperationHandle {
         // MethodType of the returned function must be identical
     }
 
-    MethodType invocationType();
-
     int pack();
 
     int pack(Key<OperationPack> key);
 
     // Hvad goer vi med annoteringer paa Field/Update???
     // Putter paa baade Variable og ReturnType???? Det vil jeg mene
-
-    FactoryType type();
 }
 //
 ///**

@@ -72,10 +72,9 @@ import packed.internal.util.ThrowableUtil;
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
  * taking a single parameter of type {@link Ancestral}. The constructor should have package private accessibility to
- * make sure users do not try an manually instantiate it, but instead use
- * {@link ContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is
- * expected that future versions of Packed will supports some debug configuration that relies on extending extensions.
- * And capturing interactions with the extension.
+ * make sure users do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. The
+ * extension subclass should not be declared final as it is expected that future versions of Packed will supports some
+ * debug configuration that relies on extending extensions. And capturing interactions with the extension.
  * 
  * @see ExtensionDescriptor
  * 
@@ -136,8 +135,8 @@ public abstract class Extension<E extends Extension<E>> {
      * is annotated with an annotation that itself is annotated with {@link BeanField.AnnotatedWithHook} and where
      * {@link AnnotatedWithHook#extension()} matches the type of this extension.
      * <p>
-     * This method is never invoked more than once for a single bean field for any given extension. Even if there are
-     * multiple matching hook annotations on the same field. This method will only be called once for the field.
+     * This method is never invoked more than once for a single field for any given extension. Even if there are multiple
+     * matching hook annotations on the same field. This method will only be called once for the field.
      * 
      * @param field
      *            the bean field
@@ -145,7 +144,9 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected void hookOnBeanField(BeanField field) {}
 
-    protected void hookOnBeanMethod(BeanMethod method) {}
+    protected void hookOnBeanMethod(BeanMethod method) {
+        throw new UnsupportedOperationException(/* method,hooks not handled on getClass()... */);
+    }
 
     protected void hookOnBeanVariable(BeanVariable variable) {}
 
@@ -174,8 +175,8 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * This method can be overridden to provide a customized mirror for the extension. For example,
-     * {@link ServiceExtension} overrides this method to provide an instance of {@link ServiceExtensionMirror}.
+     * This method can be overridden to provide a customized mirror for the extension. For example, {@link ServiceExtension}
+     * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
      * This method should never return null.
      * 
@@ -343,7 +344,7 @@ public abstract class Extension<E extends Extension<E>> {
         InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), c);
         MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
         Object result;
-        
+
         try {
             result = mh.invoke();
         } catch (Throwable t) {

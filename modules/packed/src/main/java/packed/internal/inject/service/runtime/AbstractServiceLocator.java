@@ -86,7 +86,7 @@ public abstract class AbstractServiceLocator implements OldServiceLocator {
     final Provider<?> getProviderForLocator(RuntimeService s) {
         if (s.isConstant()) {
             Object constant = provideInstanceForLocator(s);
-            return Provider.ofConstant(constant);
+            return Provider.ofInstance(constant);
         } else {
             return new PackedProvider<>(s);
         }

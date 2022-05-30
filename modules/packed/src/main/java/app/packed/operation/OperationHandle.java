@@ -15,7 +15,11 @@
  */
 package app.packed.operation;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
+
+import app.packed.inject.FactoryType;
 
 /**
  *
@@ -24,22 +28,21 @@ import java.util.function.Supplier;
 // Vi skal have en eller anden form for naming.
 // int OperationID?
 
-@SuppressWarnings("rawtypes")
-public sealed interface OperationHandle permits InjectableOperationHandle, RawOperationHandle {
-
-    // newInstance(); <-- automatisk???
-
-//    default void setOrigin(ExtensionBeanConfiguration<?> ebc) {
-//        // Vi bliver noedt til at vide hvor alle "services" kommer fra
-//    }
+public sealed interface OperationHandle permits InjectableOperationHandle {
 
     /**
-     * Adds a specialized mirror to the operation.
+     * Adds a specialized mirror for the operation.
      * 
      * @param supplier
      *            a mirror supplier
      */
     default void addMirror(Supplier<? extends OperationMirror> supplier) {}
+
+    MethodType methodType();
+    
+    FactoryType type();
+    
+    MethodHandle toRaw();
 }
 //OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
 //Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer

@@ -21,25 +21,25 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandler;
 import app.packed.operation.OperationHandle;
 
 /**
- * The implementation of {@link BeanHandle}.
+ * The implementation of {@link BeanHandler}.
  * 
  * @apiNote we could just let {@link BeanSetup} implement BeanHandle, but we choose to avoid parameterizing BeanSetup.
  */
-public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
+public /* primitive */ record PackedBeanHandler<T> (BeanSetup bean) implements BeanHandler<T> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle addFunctionOperation(Object functionInstance) {
+    public OperationHandle addFunctionalOperation(Object functionInstance) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanHandle<T> addWiringAction(Runnable action) {
+    public PackedBeanHandler<T> addWiringAction(Runnable action) {
         requireNonNull(action, "action is null");
         bean.wiringActions.add(action);
         return this;

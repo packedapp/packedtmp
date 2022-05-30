@@ -24,6 +24,8 @@ import java.lang.invoke.MethodHandle;
 // Den bliver provided direkte som keyed...
 // Saa den er tilgaengelig 
 
+// Hvorfor er det vi ikke bare kan injecte MethodHandle[]? som key
+
 public interface OperationPack {
 
     /** {@return an array of all method handles that where prepared.} */

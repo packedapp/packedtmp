@@ -15,6 +15,7 @@
  */
 package packed.internal.operation;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 
 import app.packed.base.Key;
@@ -36,17 +37,21 @@ public final class InjectableOperationSetup extends OperationSetup implements In
 
     int packId = -1;
 
+    MethodHandle methodHandle;
+
     /**
      * @param member
      */
-    public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup operator) {
+    public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup operator, MethodHandle methodHandle) {
         super(member.bean, member, member.operator);
         this.operator = operator;
+        this.methodHandle = methodHandle;
+
     }
 
     /** {@inheritDoc} */
     @Override
-    public MethodType invocationType() {
+    public MethodType methodType() {
         return null;
     }
 
@@ -74,5 +79,11 @@ public final class InjectableOperationSetup extends OperationSetup implements In
     @Override
     public FactoryType type() {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toRaw() {
+        return methodHandle;
     }
 }

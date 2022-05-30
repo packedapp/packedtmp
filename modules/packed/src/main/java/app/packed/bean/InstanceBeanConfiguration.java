@@ -35,17 +35,18 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanHandle<T> handle) {
+    public InstanceBeanConfiguration(BeanHandler<T> handle) {
         super(handle);
     }
     
     // Understoetter vi altid DependencyInjection???
-    public <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {
+    // bindServiceInstance????
+    <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {
         return bindInstance(Key.of(key), instance);
     }
 
     // Taenker den overrider
-    public <K> InstanceBeanConfiguration<T> bindInstance(Key<K> key, K instance) {
+    <K> InstanceBeanConfiguration<T> bindInstance(Key<K> key, K instance) {
         throw new UnsupportedOperationException();
     }
 
@@ -62,15 +63,16 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      * @return this configuration
      */
     // Kan vi finde en eneste usecase?
-    public InstanceBeanConfiguration<T> decorate(Function<? super T, ? extends T> decorator) {
+    // Hvornaar bliver den kaldt??? Igen er det ikke bare paa factorien???
+    InstanceBeanConfiguration<T> decorate(Function<? super T, ? extends T> decorator) {
         handle().decorateInstance(decorator);
         return this;
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    protected BeanHandle<T> handle() {
-        return (BeanHandle<T>) super.handle();
+    protected BeanHandler<T> handle() {
+        return (BeanHandler<T>) super.handle();
     }
 
     /** {@inheritDoc} */
@@ -80,7 +82,9 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         return this;
     }
 
-    public InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
+    // Peek when???? Maybe wrap a factory for now
+    InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
+        // peek at constr
         handle().peekInstance(consumer);
         return this;
     }

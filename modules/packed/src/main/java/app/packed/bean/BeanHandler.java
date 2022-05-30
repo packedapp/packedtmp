@@ -15,18 +15,18 @@
  */
 package app.packed.bean;
 
+import java.lang.invoke.MethodHandle;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
+import app.packed.base.TypeToken;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
-import app.packed.operation.OperationDriver;
-import app.packed.operation.OperationDriver2;
 import app.packed.operation.OperationHandle;
-import packed.internal.bean.PackedBeanHandle;
 import packed.internal.bean.PackedBeanHandleBuilder;
+import packed.internal.bean.PackedBeanHandler;
 
 /**
  * A bean driver must be created via {@link BeanExtensionPoint}.
@@ -34,6 +34,7 @@ import packed.internal.bean.PackedBeanHandleBuilder;
 // INFO (type, kind)
 
 // BeanCustomizer?? Syntes maaske handle er lidt mere runtime
+// BeanMaker??
 
 // Operations (add synthetic/functional)
 
@@ -49,30 +50,36 @@ import packed.internal.bean.PackedBeanHandleBuilder;
 // Saa hvis vi provider services/contexts saa skal det vaere paa
 // builderen ellers er de ikke klar til BeanField og friends
 // som jo bliver lavet naar man invoker build()
+
+// BeanExtensor?? OperationExtensor, ContainerExtensor, InterceptorExtensor
 @SuppressWarnings("rawtypes")
-public sealed interface BeanHandle<T> permits PackedBeanHandle {
+public sealed interface BeanHandler<T> permits PackedBeanHandler {
 
-    OperationHandle addFunctionOperation(Object functionInstance);
-    
+    default <F> OperationHandle addFunctionalOperation(Class<F> tt, F function) {
+        throw new UnsupportedOperationException();
+    }
+
+    OperationHandle addFunctionalOperation(Object functionInstance);
+
+    default OperationHandle addFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
+        throw new UnsupportedOperationException();
+    }
+
     // Hvis vi aabner op for specialized bean mirrors
+    // maybe just name it mirror?
     default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
-    
-    default OperationHandle addOperation(OperationDriver driver) {
+
+    default OperationHandle addSyntheticOperation(MethodHandle methodHandle, boolean firstParamIsBeanInstance) {
         throw new UnsupportedOperationException();
     }
 
-    default void addOperation(OperationDriver2 driver) {
-        throw new UnsupportedOperationException();
-    }
-
-    
     /**
      * Registers a wiring action to run when the bean becomes fully wired.
      * 
      * @param action
      *            a {@code Runnable} to invoke when the bean is wired
      */
-    BeanHandle<T> addWiringAction(Runnable action);
+    BeanHandler<T> addWiringAction(Runnable action);
 
     /**
      * @return
@@ -90,7 +97,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     /**
      * @return
      * 
-     * @throws UnsupportedOperationException if called on a bean with void.class beanKind
+     * @throws UnsupportedOperationException
+     *             if called on a bean with void.class beanKind
      */
     Key<?> defaultKey();
 
@@ -103,10 +111,11 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     /**
      * @param consumer
      */
+    // giver den plus decorate mening?
     void peekInstance(Consumer<? super T> consumer);
 
     /**
-     * A builder for {@link BeanHandle}. Can only be created via the various {@code newBuilder} methods on
+     * A builder for {@link BeanHandler}. Can only be created via the various {@code newBuilder} methods on
      * {@link BeanExtensionPoint}.
      * 
      * @see BeanExtensionPoint#newBuilder(BeanKind)
@@ -132,7 +141,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        BeanHandle<T> build();
+        BeanHandler<T> build();
 
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
@@ -163,3 +172,11 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         Builder<T> ownedBy(UseSite context);
     }
 }
+
+//default OperationHandle addOperation(OperationDriver driver) {
+//  throw new UnsupportedOperationException();
+//}
+//
+//default void addOperation(OperationDriver2 driver) {
+//  throw new UnsupportedOperationException();
+//}

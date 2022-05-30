@@ -45,26 +45,26 @@ public interface Provider<T> {
     }
 
     /**
-     * Returns a provider that will be provide the specified constant for every invocation of {@link #provide()}.
+     * Returns a provider that will be provide the specified instance for every invocation of {@link #provide()}.
      * 
      * @param <T>
      *            the type of the provider
-     * @param constant
-     *            the constant
-     * @return a new provider that provides the specified constant
+     * @param instance
+     *            the instance
+     * @return a new provider that provides the specified instance
      */
-    static <T> Provider<T> ofConstant(T constant) {
-        return new ConstantProvider<>(constant);
+    static <T> Provider<T> ofInstance(T instance) {
+        return new InstanceProvider<>(instance);
     }
 }
 
 /** An implementation of {@link Provider} that returns the instance on every invocation. */
-/* primitive */ final class ConstantProvider<T> implements Provider<T> {
+/* primitive */ final class InstanceProvider<T> implements Provider<T> {
 
     /** The constant to provide on every invocation. */
     private final T constant;
 
-    ConstantProvider(T constant) {
+    InstanceProvider(T constant) {
         this.constant = requireNonNull(constant, "constant is null");
     }
 

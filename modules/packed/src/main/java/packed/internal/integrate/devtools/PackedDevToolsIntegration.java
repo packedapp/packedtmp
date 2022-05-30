@@ -19,10 +19,11 @@ import java.lang.reflect.Member;
 import java.util.ServiceLoader;
 
 /**
- *
+ * This class integrates with the
  */
 public abstract class PackedDevToolsIntegration {
 
+    /** */
     public static final PackedDevToolsIntegration INSTANCE;
 
     static {
@@ -32,7 +33,11 @@ public abstract class PackedDevToolsIntegration {
     public abstract void goo();
 
     public void reflectMembers(Class<?> clazz, Member[] members) {}
-    
+
+    /**
+     * An instances of this class is provided from {@link PackedDevToolsIntegration#INSTANCE} when the devtools jar is not
+     * on the classpath or modulepath.
+     */
     static final class NoDevTools extends PackedDevToolsIntegration {
 
         public void goo() {

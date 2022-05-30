@@ -59,7 +59,7 @@ public non-sealed interface RuntimeService extends InternalService {
     default Provider<?> provider() {
         if (isConstant()) {
             Object constant = provideInstance();
-            return Provider.ofConstant(constant);
+            return Provider.ofInstance(constant);
         } else {
             return new PackedProvider<>(this);
         }
