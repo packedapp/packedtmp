@@ -10,14 +10,11 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanInfo;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.BeanScanner;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.inject.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
@@ -26,25 +23,9 @@ import packed.internal.util.ThrowableUtil;
 /** Build-time configuration of an extension. */
 public final class ExtensionSetup {
 
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_BEGIN = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanBegin",
-            void.class, BeanInfo.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_DEPENDENCY_PROVIDER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "hookOnBeanDependencyProvider", void.class, DependencyProvider.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_END = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanEnd",
-            void.class, BeanInfo.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_FIELD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "hookOnBeanField",
-            void.class, BeanField.class);
-
-    /** A handle for invoking the protected method {@link Extension#onNew()}. */
-    private static final MethodHandle MH_EXTENSION_HOOK_BEAN_METHOD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "hookOnBeanMethod", void.class, BeanMethod.class);
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_NEW_BEAN_SCANNER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newBeanScanner",
+            BeanScanner.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -128,46 +109,6 @@ public final class ExtensionSetup {
         this.model = requireNonNull(extensionRealm.extensionModel);
     }
 
-    public void hookOnBeanBegin(BeanInfo beanInfo) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_BEGIN.invokeExact(instance, beanInfo);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanEnd(BeanInfo beanInfo) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_END.invokeExact(instance, beanInfo);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanField(BeanField field) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_FIELD.invokeExact(instance, field);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanDependencyProvider(DependencyProvider provider) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_DEPENDENCY_PROVIDER.invokeExact(instance, provider);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public void hookOnBeanMethod(BeanMethod method) {
-        try {
-            MH_EXTENSION_HOOK_BEAN_METHOD.invokeExact(instance, method);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
     void initialize() {
         // Creates a new extension instance
         instance = model.newInstance(this);
@@ -207,6 +148,14 @@ public final class ExtensionSetup {
         return e;
     }
 
+    public BeanScanner newBeanScanner() {
+        try {
+            return (BeanScanner) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+    }
+
     /**
      * Invokes {@link Extension#onApplicationClose()}.
      * <p>
@@ -227,6 +176,7 @@ public final class ExtensionSetup {
             throw ThrowableUtil.orUndeclared(t);
         }
     }
+
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         // Check that we are a proper subclass of ExtensionWirelet

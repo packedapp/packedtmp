@@ -100,7 +100,6 @@ public class OperationMirror implements Mirror {
         return false;
     }
 
-    @SuppressWarnings("exports")
     public final List<DependencyMirror> dependencies() {
         // ; // What are we having injected... Giver det mening for functions????
 

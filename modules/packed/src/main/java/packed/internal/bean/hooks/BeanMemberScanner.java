@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import app.packed.bean.BeanScanner;
 import app.packed.bean.hooks.BeanField;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
@@ -48,7 +49,7 @@ public final class BeanMemberScanner {
     final BeanSetup bean;
 
     // I think we need stable iteration order... AppendOnly identity map, stable iteration order
-    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
+    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionBeanCombo> extensions = new LinkedHashMap<>();
 
     final OpenClass oc;
 
@@ -57,23 +58,23 @@ public final class BeanMemberScanner {
         this.oc = OpenClass.of(MethodHandles.lookup(), bean.beanClass());
     }
 
-    private ExtensionSetup findOrCreateExtension(Module owner, Class<? extends Extension<?>> clazz) {
-        ExtensionSetup extension = extensions.get(clazz);
-        if (extension == null) {
+    private ExtensionBeanCombo findOrCreateExtension(Module owner, Class<? extends Extension<?>> clazz) {
+        ExtensionBeanCombo combo = extensions.get(clazz);
+        if (combo == null) {
             ContainerSetup container = bean.parent;
-            extension = container.useExtensionSetup(clazz, null);
-            extensions.put(clazz, extension);
-            
-            // this should probably be moved elsewhere
+            ExtensionSetup extension = container.useExtensionSetup(clazz, null);
+            combo = new ExtensionBeanCombo(extension, extension.newBeanScanner());
+            extensions.put(clazz, combo);
 
             // Is it per operation????? Don't think so
             // We probably need to store it in bean setup
             // I think, for example, for example class annotations
             // and functional operations are also a part of this???
             // IDK
-            extension.hookOnBeanBegin(bean);
+            // bs
+            combo.bean().onNew(bean);
         }
-        return extension;
+        return combo;
     }
 
     private boolean hasFullAccess(Class<? extends Extension<?>> extension) {
@@ -83,8 +84,8 @@ public final class BeanMemberScanner {
     public void scan() {
         scan0(bean.beanClass(), true, Object.class);
 
-        for (ExtensionSetup e : extensions.values()) {
-            e.hookOnBeanEnd(bean);
+        for (ExtensionBeanCombo e : extensions.values()) {
+            e.bean().onEnd(bean);
         }
     }
 
@@ -206,14 +207,14 @@ public final class BeanMemberScanner {
             FieldHookModel fhm = FieldHookModel.CACHE.get(annotationType);
 
             if (fhm != null) {
-                ExtensionSetup ei = findOrCreateExtension(annotationType.getModule(), fhm.extensionType);
+                ExtensionBeanCombo ei = findOrCreateExtension(annotationType.getModule(), fhm.extensionType);
 
                 boolean hasFullAccess = hasFullAccess(fhm.extensionType);
-                PackedBeanField f = new PackedBeanField(BeanMemberScanner.this, ei, field, fhm.isGettable || hasFullAccess,
+                PackedBeanField f = new PackedBeanField(BeanMemberScanner.this, ei.extension, field, fhm.isGettable || hasFullAccess,
                         fhm.isSettable || hasFullAccess);
 
                 // Call into Extension#hookOnBeanField
-                ei.hookOnBeanField(f);
+                ei.bean.onField(f);
             }
         }
     }
@@ -231,11 +232,15 @@ public final class BeanMemberScanner {
             Class<? extends Annotation> a1Type = a1.annotationType();
             MethodHookModel fh = MethodHookModel.CACHE.get(a1Type);
             if (fh != null) {
-                ExtensionSetup ei = findOrCreateExtension(a1Type.getModule(), fh.extensionType);
-                ei.hookOnBeanMethod(new PackedBeanMethod(BeanMemberScanner.this, ei, method, fh.isInvokable));
+                ExtensionBeanCombo ei = findOrCreateExtension(a1Type.getModule(), fh.extensionType);
+
+                PackedBeanMethod pbm = new PackedBeanMethod(BeanMemberScanner.this, ei.extension, method, fh.isInvokable);
+                ei.bean.onMethod(pbm);
             }
         }
     }
+
+    record ExtensionBeanCombo(ExtensionSetup extension, BeanScanner bean) {}
 
     record FieldHookModel(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
 

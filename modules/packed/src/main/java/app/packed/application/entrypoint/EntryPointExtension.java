@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanScanner;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
@@ -49,26 +50,34 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
     }
 
-    /**
-     * Captures methods annotated with {@link Main}.
-     * <p>
-     * {@inheritDoc}
-     */
     @Override
-    protected void hookOnBeanMethod(BeanMethod method) {
-        registerEntryPoint(null, true);
+    protected BeanScanner newBeanScanner() {
+        return new BeanScanner() {
 
-        application.entryPoints = new EntryPointSetup();
+            /**
+             * Captures methods annotated with {@link Main}.
+             * <p>
+             * {@inheritDoc}
+             */
+            @Override
+            public void onMethod(BeanMethod method) {
+                registerEntryPoint(null, true);
 
-        MainThreadOfControl mc = application.entryPoints.mainThread();
+                application.entryPoints = new EntryPointSetup();
 
-        mc.isStatic = Modifier.isStatic(method.getModifiers());
-        mc.cs = ((PackedBeanMethod) method).bean;
-        mc.methodHandle = ((PackedBeanMethod) method).newMethodHandle();
+                MainThreadOfControl mc = application.entryPoints.mainThread();
 
-       // installMain(() -> {});
-//        oldOperation().useMirror(() -> new EntryPointMirror(0));
+                mc.isStatic = Modifier.isStatic(method.getModifiers());
+                mc.cs = ((PackedBeanMethod) method).bean;
+                mc.methodHandle = ((PackedBeanMethod) method).newMethodHandle();
+
+               // installMain(() -> {});
+//                oldOperation().useMirror(() -> new EntryPointMirror(0));
+            }
+            
+        };
     }
+
 
     // installMain
     public <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {

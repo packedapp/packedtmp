@@ -32,16 +32,10 @@ import app.packed.application.ApplicationDriver;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.hooks.BeanClass;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanField.AnnotatedWithHook;
-import app.packed.bean.hooks.BeanInfo;
-import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.hooks.BeanVariable;
+import app.packed.bean.BeanScanner;
 import app.packed.inject.Ancestral;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
-import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionPointHelper;
 import packed.internal.container.ExtensionRealmSetup;
@@ -121,35 +115,6 @@ public abstract class Extension<E extends Extension<E>> {
         return setup().container.path();
     }
 
-    protected void hookOnBeanBegin(BeanInfo beanInfo) {}
-
-    protected void hookOnBeanClass(BeanClass clazz) {}
-
-    protected void hookOnBeanDependencyProvider(DependencyProvider providr) {}
-
-    protected void hookOnBeanEnd(BeanInfo beanInfo) {}
-
-    /**
-     * A callback method that is invoked for any field on a newly added bean where the field:
-     * 
-     * is annotated with an annotation that itself is annotated with {@link BeanField.AnnotatedWithHook} and where
-     * {@link AnnotatedWithHook#extension()} matches the type of this extension.
-     * <p>
-     * This method is never invoked more than once for a single field for any given extension. Even if there are multiple
-     * matching hook annotations on the same field. This method will only be called once for the field.
-     * 
-     * @param bf
-     *            the bean field
-     * @see BeanField.AnnotatedWithHook
-     */
-    protected void hookOnBeanField(BeanField bf) {}
-
-    protected void hookOnBeanMethod(BeanMethod method) {
-        throw new UnsupportedOperationException(/* method,hooks not handled on getClass()... */);
-    }
-
-    protected void hookOnBeanVariable(BeanVariable variable) {}
-
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
     // Her er det jo root container vi skal teste
@@ -174,6 +139,11 @@ public abstract class Extension<E extends Extension<E>> {
         return setup().parent == null;
     }
 
+    // Whenever a Hook annotation is found
+    protected BeanScanner newBeanScanner() {
+        return new BeanScanner();
+    }
+
     /**
      * This method can be overridden to provide a customized mirror for the extension. For example, {@link ServiceExtension}
      * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
@@ -190,7 +160,7 @@ public abstract class Extension<E extends Extension<E>> {
     protected ExtensionPoint<E> newExtensionPoint() {
         throw new UnsupportedOperationException(getClass() + " does not define any extension points.");
     }
-
+    
     /**
      * Invoked by the runtime on the root extension to finalize configuration of the extension.
      * <p>

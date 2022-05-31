@@ -41,58 +41,6 @@ public class BeanExtension extends Extension<BeanExtension> {
         this.container = setup.container;
     }
 
-    @Override
-    protected BeanExtensionPoint newExtensionPoint() {
-        return new BeanExtensionPoint();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void hookOnBeanField(BeanField field) {
-        // readKey
-
-        Key<?> key = Key.convertField(field.field());
-        boolean constant = field.field().getAnnotation(Provide.class).constant();
-
-        BeanSetup bean = ((PackedBeanField) field).bean;
-        FieldHelper fh = new FieldHelper(field, ((PackedBeanField) field).newVarHandle(), constant, key);
-        DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-        field.newSetOperation(null);
-
-        bean.parent.injectionManager.addConsumer(node);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void hookOnBeanMethod(BeanMethod method) {
-        Key<?> key = Key.convertMethodReturnType(method.method());
-        boolean constant = method.method().getAnnotation(Provide.class).constant();
-
-        BeanSetup bean = ((PackedBeanMethod) method).bean;
-        MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
-        DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-
-        // Er ikke sikker paa vi har en runtime bean...
-        //method.newOperation(null);
-
-        bean.parent.injectionManager.addConsumer(node);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void hookOnBeanDependencyProvider(DependencyProvider provider) {
-        // We only have a hook for OperationPack
-        BeanSetup bean = ((PackedDependencyProvider) provider).operation().bean;
-
-        // OperationPacks can only be used with extension beans
-        if (bean instanceof ExtensionBeanSetup e) {
-            e.provideOperationPack(provider);
-        } else {
-            provider.failWith(OperationPack.class.getSimpleName() + " can only be injected into extension beans installed using "
-                    + BeanExtensionPoint.class.getSimpleName());
-        }
-    }
-
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
      * application is initialized.
@@ -109,6 +57,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new ProvideableBeanConfiguration<>(handle);
     }
 
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * 
@@ -121,6 +70,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanHandler<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
+
 
     /**
      * Install the specified component instance.
@@ -142,10 +92,69 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     }
 
+    @Override
+    protected BeanScanner newBeanScanner() {
+        return new BeanScanner() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void onDependencyProvider(DependencyProvider provider) {
+                // We only have a hook for OperationPack
+                BeanSetup bean = ((PackedDependencyProvider) provider).operation().bean;
+
+                // OperationPacks can only be used with extension beans
+                if (bean instanceof ExtensionBeanSetup e) {
+                    e.provideOperationPack(provider);
+                } else {
+                    provider.failWith(OperationPack.class.getSimpleName() + " can only be injected into extension beans installed using "
+                            + BeanExtensionPoint.class.getSimpleName());
+                }
+            }
+
+
+            /** {@inheritDoc} */
+            @Override
+            public void onField(BeanField field) {
+                // readKey
+
+                Key<?> key = Key.convertField(field.field());
+                boolean constant = field.field().getAnnotation(Provide.class).constant();
+
+                BeanSetup bean = ((PackedBeanField) field).bean;
+                FieldHelper fh = new FieldHelper(field, ((PackedBeanField) field).newVarHandle(), constant, key);
+                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+                field.newSetOperation(null);
+
+                bean.parent.injectionManager.addConsumer(node);
+            }
+            
+            /** {@inheritDoc} */
+            @Override
+            public void onMethod(BeanMethod method) {
+                Key<?> key = Key.convertMethodReturnType(method.method());
+                boolean constant = method.method().getAnnotation(Provide.class).constant();
+
+                BeanSetup bean = ((PackedBeanMethod) method).bean;
+                MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
+                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+
+                // Er ikke sikker paa vi har en runtime bean...
+                // method.newOperation(null);
+
+                bean.parent.injectionManager.addConsumer(node);
+            }
+        };
+    }
+
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror newExtensionMirror() {
         return new BeanExtensionMirror();
+    }
+
+    @Override
+    protected BeanExtensionPoint newExtensionPoint() {
+        return new BeanExtensionPoint();
     }
 
     /** {@inheritDoc} */
@@ -173,7 +182,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
-      // ST.contract throws UOE
+        // ST.contract throws UOE
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {

@@ -11,6 +11,9 @@ module app.packed {
     exports app.packed.lifetime;
     exports app.packed.operation;
 
+    // temporary
+    exports app.packed.operation.dependency;
+
     /* Special support for DevTools project */
     uses packed.internal.integrate.devtools.PackedDevToolsIntegration;
 
