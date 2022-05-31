@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.hooks;
+package packed.internal.bean.inject;
+
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 
 /**
  *
  */
-public class PackedBeanElement {
+public abstract class KeyProvidable {
+    
+    @Nullable
+    public final Key<?> provideAskey;
 
+    protected KeyProvidable(Key<?> provideAskey) {
+        this.provideAskey = provideAskey;
+    }
 }

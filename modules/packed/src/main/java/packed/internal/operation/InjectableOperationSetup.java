@@ -42,7 +42,7 @@ public final class InjectableOperationSetup extends OperationSetup implements In
     /**
      * @param member
      */
-    public InjectableOperationSetup(PackedBeanMember member, ExtensionBeanSetup operator, MethodHandle methodHandle) {
+    public InjectableOperationSetup(PackedBeanMember<?> member, ExtensionBeanSetup operator, MethodHandle methodHandle) {
         super(member.bean, member, member.operator);
         this.operator = operator;
         this.methodHandle = methodHandle;

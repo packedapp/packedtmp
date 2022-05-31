@@ -15,6 +15,9 @@
  */
 package packed.internal.bean.hooks;
 
+import java.lang.reflect.Member;
+
+import app.packed.bean.hooks.BeanInfo;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.operation.PackedOperationTarget;
@@ -22,20 +25,37 @@ import packed.internal.util.OpenClass;
 
 /**
  *
+ *
+ * <p>
+ * If there are member hooks for multiple extensions (operators) a bean member is created for each extension.
  */
-// We create one instance of a member per extension...
-// So we multiple extensions have annotated the same method we create multiple PBM
-public abstract sealed class PackedBeanMember implements PackedOperationTarget permits PackedBeanField, PackedBeanMethod {
+public abstract sealed class PackedBeanMember<T extends Member> implements PackedOperationTarget permits PackedBeanField, PackedBeanMethod {
+
+    /** The bean that declares the member */
+    public final BeanSetup bean;
+
+    /** The bean member. */
+    protected final T member;
 
     final OpenClass openClass;
 
-    public final BeanSetup bean;
-
+    /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    PackedBeanMember(BeanScanner scanner, ExtensionSetup operator) {
+    PackedBeanMember(BeanMemberScanner scanner, ExtensionSetup operator, T member) {
         this.openClass = scanner.oc;
         this.bean = scanner.bean;
         this.operator = operator;
+        this.member = member;
+    }
+
+    /** {@return information about the bean.} */
+    public final BeanInfo beanInfo() {
+        return bean;
+    }
+
+    /** {@return modifiers for the member.} */
+    public final int getModifiers() {
+        return member.getModifiers();
     }
 }

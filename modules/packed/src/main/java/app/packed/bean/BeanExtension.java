@@ -17,13 +17,12 @@ import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.bean.PackedBeanHandleBuilder;
-import packed.internal.bean.hooks.BeanMemberDependencyNode;
-import packed.internal.bean.hooks.FieldHelper;
-import packed.internal.bean.hooks.MethodHelper;
 import packed.internal.bean.hooks.PackedBeanField;
-import packed.internal.bean.hooks.PackedBeanMember;
 import packed.internal.bean.hooks.PackedBeanMethod;
-import packed.internal.bean.hooks.PackedDependencyProvider;
+import packed.internal.bean.inject.BeanMemberDependencyNode;
+import packed.internal.bean.inject.FieldHelper;
+import packed.internal.bean.inject.MethodHelper;
+import packed.internal.bean.inject.PackedDependencyProvider;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
@@ -55,7 +54,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         Key<?> key = Key.convertField(field.field());
         boolean constant = field.field().getAnnotation(Provide.class).constant();
 
-        BeanSetup bean = ((PackedBeanMember) field).bean;
+        BeanSetup bean = ((PackedBeanField) field).bean;
         FieldHelper fh = new FieldHelper(field, ((PackedBeanField) field).newVarHandle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
         field.newSetOperation(null);
@@ -69,7 +68,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         Key<?> key = Key.convertMethodReturnType(method.method());
         boolean constant = method.method().getAnnotation(Provide.class).constant();
 
-        BeanSetup bean = ((PackedBeanMember) method).bean;
+        BeanSetup bean = ((PackedBeanMethod) method).bean;
         MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
         DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 

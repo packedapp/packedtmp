@@ -22,7 +22,7 @@ import app.packed.container.Extension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
-import packed.internal.bean.hooks.BeanScanner;
+import packed.internal.bean.hooks.BeanMemberScanner;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.RealmSetup;
@@ -63,7 +63,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         }
 
         if (builder.sourceType != SourceType.NONE) {
-            new BeanScanner(this, builder.beanClass()).scan();
+            new BeanMemberScanner(this).scan();
         }
 
         // Wire the hook model

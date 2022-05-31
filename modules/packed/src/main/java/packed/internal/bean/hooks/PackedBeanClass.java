@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.operation;
+package packed.internal.bean.hooks;
 
-import java.lang.invoke.MethodHandle;
+/**
+ *
+ */
+public class PackedBeanClass {
 
-import app.packed.operation.OperationTargetMirror;
-import packed.internal.bean.hooks.PackedBeanMember;
-
-/** The target of an operation. */
-@SuppressWarnings("rawtypes")
-public sealed interface PackedOperationTarget permits PackedBeanMember, PackedFunctionOperationTarget {
-
-    default MethodHandle methodHandle() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return a mirror representing the target.} */
-    public abstract OperationTargetMirror mirror();
 }

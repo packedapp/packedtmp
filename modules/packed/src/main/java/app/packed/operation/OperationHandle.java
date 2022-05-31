@@ -25,24 +25,41 @@ import app.packed.inject.FactoryType;
  *
  */
 
+// Operation"Type"
+// Bean instance provided from OperationPack vs Bean Instance provided as MH.parameter
+
+// checks() are always performed before we create an actual operation
+
 // Vi skal have en eller anden form for naming.
 // int OperationID?
 
 public sealed interface OperationHandle permits InjectableOperationHandle {
 
+    MethodType methodType(); // includes bean?????
+
     /**
-     * Adds a specialized mirror for the operation.
+     * Adds a supplier that creates a specialized mirror for the operation when an operation mirror is requested.
+     * <p>
+     * The supplied will be called exactly once if needed.
+     * 
+     * <p>
+     * The supplier should never return {@code null}.
      * 
      * @param supplier
      *            a mirror supplier
      */
-    default void addMirror(Supplier<? extends OperationMirror> supplier) {}
+    OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
 
-    MethodType methodType();
-    
-    FactoryType type();
-    
     MethodHandle toRaw();
+
+    FactoryType type();
+
+    final class RawExtractor<T> {
+        static final RawExtractor<MethodHandle> METHOD_HANDLE = null;
+        static final RawExtractor<MethodHandle> METHOD_HANDLE_GETTER = null;
+        static final RawExtractor<MethodHandle> METHOD_HANDLE_SETTER = null;
+        static final RawExtractor<MethodHandle> VAR_HANDLE = null;
+    }
 }
 //OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
 //Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer

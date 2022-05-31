@@ -33,23 +33,26 @@ import app.packed.operation.OperationTargetMirror;
 import packed.internal.bean.hooks.PackedBeanMethod;
 
 /**
- * Represents a method on a bean.
+ * This class represents a {@link Method} on a bean.
  * 
  * @see Extension#hookOnBeanMethod(BeanMethod)
  */
 public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
+    /** {@return information about this method's declaring bean.} */
+    BeanInfo beanInfo();
+
     /** {@return a factory type for this method.} */
     FactoryType factoryType();
 
     /**
-     * {@return the modifiers of then underlying method.}F
+     * {@return the modifiers of then underlying method.}
      *
      * @see Method#getModifiers()
      * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
      */
     int getModifiers();
-
+        
     /**
      * @return
      */
@@ -61,18 +64,21 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     /**
      * 
      * <p>
-     * Any mirror created from the operation will have a {@link OperationTargetMirror.OfMethodInvoke} as the
-     * {@link OperationMirror#target()}.
+     * Any {@link OperationMirror} created from the operation, will have a {@link OperationTargetMirror.OfMethodInvoke} as
+     * its {@link OperationMirror#target()}.
      * 
      * @param operator
-     *            the extension bean that will invoke the operation
-     * @return
+     *            the extension bean that will invoke the operation. The extension bean must be located in the same (or a
+     *            direct ancestor) container as the bean that declares this method.
+     * @return a new operation
+     * 
+     * @see Lookup#unreflect(Method)
+     * @see BeanMethodHook#allowInvoke()
+     * @see BeanClassHook#allowAllAccess()
+     * 
      * @throws IllegalArgumentException
-     *             if the specified extension bean is not located in the same container as the method's bean.
+     *             if the specified operator is not located in the same container as the method's bean.
      */
-    // YODO I think we allow descendents as well. But only in the same lifetime I think...
-    // Altsaa fx for session. Skal vi jo have en instansp[ per container (session)
-    // Saa en descent kan jo ikke vide bvad der er vhad
     InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
@@ -88,7 +94,6 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
      *             BeanClassHook#allowAllAccess()
      */
-//    RawOperationHandle<MethodHandle> newRawOperation();
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)

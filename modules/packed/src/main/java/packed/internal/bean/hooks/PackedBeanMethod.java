@@ -30,26 +30,16 @@ import packed.internal.operation.InjectableOperationSetup;
 /**
  *
  */
-public final class PackedBeanMethod extends PackedBeanMember implements BeanMethod {
+public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanMethod {
 
-    /** The method we are wrapping. */
-    private final Method method;
-
-    PackedBeanMethod(BeanScanner scanner, ExtensionSetup extension, Method method, boolean allowInvoke) {
-        super(scanner, extension);
-        this.method = method;
+    PackedBeanMethod(BeanMemberScanner scanner, ExtensionSetup extension, Method method, boolean allowInvoke) {
+        super(scanner, extension, method);
     }
 
     /** {@inheritDoc} */
     @Override
     public FactoryType factoryType() {
-        return FactoryType.ofExecutable(method);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getModifiers() {
-        return method.getModifiers();
+        return FactoryType.ofExecutable(member);
     }
 
     /** {@inheritDoc} */
@@ -61,7 +51,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
     /** {@inheritDoc} */
     @Override
     public Method method() {
-        return method;
+        return member;
     }
 
     /** {@inheritDoc} */
@@ -71,7 +61,7 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
     }
 
     public MethodHandle newMethodHandle() {
-        return openClass.unreflect(method);
+        return openClass.unreflect(member);
     }
 
     /** {@inheritDoc} */
@@ -80,13 +70,13 @@ public final class PackedBeanMethod extends PackedBeanMember implements BeanMeth
         return new InjectableOperationSetup(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 
-    /**  */
+    /** The operation target mirror of a bean method.  */
     public record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationTargetMirror.OfMethodInvoke {
 
         /** {@inheritDoc} */
         @Override
         public Method method() {
-            return pbm.method;
+            return pbm.member;
         }
     }
 }

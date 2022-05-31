@@ -27,7 +27,8 @@ import app.packed.operation.OperationHandle;
 /**
  * The implementation of {@link BeanHandler}.
  * 
- * @apiNote we could just let {@link BeanSetup} implement BeanHandle, but we choose to avoid parameterizing BeanSetup.
+ * @apiNote we could just let {@link BeanSetup} implement {@link BeanHandler}, but we choose not to, to avoid parameterizing
+ *          {@link BeanSetup}.
  */
 public /* primitive */ record PackedBeanHandler<T> (BeanSetup bean) implements BeanHandler<T> {
 

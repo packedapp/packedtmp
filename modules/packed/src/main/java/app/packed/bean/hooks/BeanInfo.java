@@ -20,24 +20,28 @@ import app.packed.bean.BeanKind;
 import app.packed.container.Extension;
 
 /**
- *
+ * Information about a bean.
  */
-// int beanApplicationId();
+// int beanApplicationId(); (Why not container id???)
 // int beanContainerId();
 
 // BeanDescriptor??? Vi har ogsaa ApplicationInfo (var ApplicationDescriptor) og ExtensionDescriptor
 
-// Tror vi skal have defineret hvor vi skal bruge den fra...
-// Er ikke sikker paa vi kan noejes med en
+// Tror vi skal have defineret hvor vi skal bruge den fra, Er ikke sikker paa vi kan noejes med en
 
-
+// Use cases
+//// Bean NamingStrategy BeanInfo->String
 public interface BeanInfo {
 
+    /** {@return the bean class.} */
     Class<?> beanClass();
 
+    /** {@return the kind of bean.} */
     BeanKind beanKind();
 
+    /** {@return the extension that operates the bean.} */
     Class<? extends Extension<?>> operator();
 
+    /** {@return the owner of the bean.} */
     Realm owner();
 }

@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.util.MemberScanner;
+import packed.internal.inject.factory.ConstructorFinder;
 import packed.internal.util.OpenClass;
 
 // MemberInjector
@@ -54,7 +54,7 @@ public final class InternalInfuser {
 
     private MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
         // First lets find a constructor
-        Constructor<?> constructor = MemberScanner.getConstructor(type, false, errorMaker);
+        Constructor<?> constructor = ConstructorFinder.getConstructor(type, false, errorMaker);
 
         OpenClass oc = OpenClass.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);

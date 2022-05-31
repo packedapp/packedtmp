@@ -28,8 +28,7 @@ public final class PackedFunctionOperationTarget implements PackedOperationTarge
         return new BuildTimeMethodTargetMirror(this);
     }
 
-
-    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget ff) implements OperationTargetMirror.OfFunctionCall {
+    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget target) implements OperationTargetMirror.OfFunctionCall {
 
     }
 }

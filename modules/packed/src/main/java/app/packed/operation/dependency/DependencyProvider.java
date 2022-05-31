@@ -30,7 +30,7 @@ import app.packed.bean.hooks.BeanElement;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Variable;
-import packed.internal.bean.hooks.PackedDependencyProvider;
+import packed.internal.bean.inject.PackedDependencyProvider;
 
 /**
  *

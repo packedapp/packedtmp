@@ -53,8 +53,7 @@ public class OperationMirror implements Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
-     * {@link #initialize(ExtensionSetup)} which must be called by extension developers via
-     * {@link Extension#mirrorInitialize(ExtensionMirror)}.
+     * {@link #initialize(ExtensionSetup)}.
      */
     @Nullable
     private OperationSetup operation;
@@ -94,27 +93,7 @@ public class OperationMirror implements Mirror {
         return false;
     }
 
-    public void printDependencyTree() {
-        // Det er jo bare en trae af ServiceDependency
-
-        // ResolvedVariable -> Status Unresolved but Optional.
-
-        // InjectableDependency?
-
-        // En for hver parameter...
-//        com.javadeveloperzone:maven-show-dependency-tree:jar:1.0-SNAPSHOT
-//        [INFO] \- org.springframework.boot:spring-boot-devtools:jar:1.5.4.RELEASE:compile
-//        [INFO]    +- org.springframework.boot:spring-boot:jar:1.5.4.RELEASE:compile
-//        [INFO]    |  +- org.springframework:spring-core:jar:4.3.9.RELEASE:compile
-//        [INFO]    |  |  \- commons-logging:commons-logging:jar:1.2:compile
-//        [INFO]    |  \- org.springframework:spring-context:jar:4.3.9.RELEASE:compile
-//        [INFO]    |     +- org.springframework:spring-aop:jar:4.3.9.RELEASE:compile
-//        [INFO]    |     +- org.springframework:spring-beans:jar:4.3.9.RELEASE:compile
-//        [INFO]    |     \- org.springframework:spring-expression:jar:4.3.9.RELEASE:compile
-//        [INFO]    \- org.springframework.boot:spring-boot-autoconfigure:jar:1.5.4.RELEASE:compile
-    }
-    
-    public final boolean createsNewThread() {
+    final boolean createsNewThread() {
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)
         // Hoere det til i noget meta data per extension???
@@ -193,17 +172,16 @@ public class OperationMirror implements Mirror {
     }
 
     /**
-     * {@return the mirrored operation's internal configuration.}
+     * {@return the internal configuration of operation.}
      * 
      * @throws InternalExtensionException
-     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#newExtensionMirror()}.
+     *             if {@link #initialize(OperationSetup)} has not been called.
      */
     private OperationSetup operation() {
         OperationSetup o = operation;
         if (o == null) {
             throw new InternalExtensionException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return o;
     }
@@ -211,6 +189,26 @@ public class OperationMirror implements Mirror {
     /** {@return the extension that initiates the operation.} */
     public final Class<? extends Extension<?>> operator() {
         return operation().operator.extensionType;
+    }
+
+    public void printDependencyTree() {
+        // Det er jo bare en trae af ServiceDependency
+
+        // ResolvedVariable -> Status Unresolved but Optional.
+
+        // InjectableDependency?
+
+        // En for hver parameter...
+//        com.javadeveloperzone:maven-show-dependency-tree:jar:1.0-SNAPSHOT
+//        [INFO] \- org.springframework.boot:spring-boot-devtools:jar:1.5.4.RELEASE:compile
+//        [INFO]    +- org.springframework.boot:spring-boot:jar:1.5.4.RELEASE:compile
+//        [INFO]    |  +- org.springframework:spring-core:jar:4.3.9.RELEASE:compile
+//        [INFO]    |  |  \- commons-logging:commons-logging:jar:1.2:compile
+//        [INFO]    |  \- org.springframework:spring-context:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     +- org.springframework:spring-aop:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     +- org.springframework:spring-beans:jar:4.3.9.RELEASE:compile
+//        [INFO]    |     \- org.springframework:spring-expression:jar:4.3.9.RELEASE:compile
+//        [INFO]    \- org.springframework.boot:spring-boot-autoconfigure:jar:1.5.4.RELEASE:compile
     }
 
     /**
@@ -236,7 +234,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the target of the operation.} */
     public final OperationTargetMirror target() {
-        return operation().target.mirror();
+        return operation().operationTarget.mirror();
     }
 }
 //Is invoked by an extension

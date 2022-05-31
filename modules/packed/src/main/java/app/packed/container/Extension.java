@@ -138,11 +138,11 @@ public abstract class Extension<E extends Extension<E>> {
      * This method is never invoked more than once for a single field for any given extension. Even if there are multiple
      * matching hook annotations on the same field. This method will only be called once for the field.
      * 
-     * @param field
+     * @param bf
      *            the bean field
      * @see BeanField.AnnotatedWithHook
      */
-    protected void hookOnBeanField(BeanField field) {}
+    protected void hookOnBeanField(BeanField bf) {}
 
     protected void hookOnBeanMethod(BeanMethod method) {
         throw new UnsupportedOperationException(/* method,hooks not handled on getClass()... */);

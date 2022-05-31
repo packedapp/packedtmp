@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.hooks;
+package app.packed.bean;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
+ * An optional annotation that can be applied to a bean
  */
-public abstract class KeyProvidable {
-    
-    @Nullable
-    public final Key<?> provideAskey;
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 
-    protected KeyProvidable(Key<?> provideAskey) {
-        this.provideAskey = provideAskey;
-    }
+// Skal man kunne smide den paa en Annotation??? F.x. EntityBean????
+// I think we need this.. People want to statically name their beans
+// Or as a minimum indicate
+@interface Bean {
+    String name() default "";
 }

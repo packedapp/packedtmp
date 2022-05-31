@@ -33,6 +33,8 @@ import packed.internal.bean.hooks.PackedBeanField;
 
 /**
  * This class represents a {@link Field} on a bean.
+ * 
+ * @see Extension#hookOnBeanField(BeanField)
  */
 public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
@@ -72,6 +74,11 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      */
     InjectableOperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator);
 
+    // Or maybe just rawVarHandle() on IOH
+    default VarHandle varHandleOf(InjectableOperationHandle handle) { 
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * {@return the underlying field represented as a {@code Variable}.}
      * 

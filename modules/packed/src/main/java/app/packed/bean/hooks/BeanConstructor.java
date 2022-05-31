@@ -21,10 +21,10 @@ import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
 
 /**
- *
+ * This class represents a {@link Constructor} on a bean.
  * <p>
- * Unlike BeanField and BeanMethod. There is no way to define hooks on constructors. Instead they must be defined on a
- * bean driver or a bean class. Which determines how constructors are processed.
+ * Unlike {@link BeanField} and {@link BeanMethod}. There are no way to define hooks on constructors. Instead they must
+ * be defined on a bean driver or a bean class. Which determines how constructors are processed.
  */
 // Do we need a BeanExecutable??? Not sure we have a use case
 public non-sealed interface BeanConstructor extends BeanElement {
@@ -34,7 +34,7 @@ public non-sealed interface BeanConstructor extends BeanElement {
 
     /** {@return a factory type for this method.} */
     FactoryType factoryType();
-    
+
     /**
      * Returns the modifiers of the constructor.
      * 
@@ -44,6 +44,6 @@ public non-sealed interface BeanConstructor extends BeanElement {
      *          {@link Constructor#getModifiers()}
      */
     int getModifiers();
-    
+
     InjectableOperationHandle newOperation();
 }

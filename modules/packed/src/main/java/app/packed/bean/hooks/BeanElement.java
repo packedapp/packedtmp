@@ -15,7 +15,6 @@
  */
 package app.packed.bean.hooks;
 
-import app.packed.application.Realm;
 import app.packed.bean.BeanDefinitionException;
 import app.packed.operation.dependency.DependencyProvider;
 
@@ -28,7 +27,7 @@ public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanFiel
 
     // annotationReadr()???
     // We need it on every element
-    
+
     /**
      * @param postFix
      *            the message to include in the final message
@@ -40,16 +39,11 @@ public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanFiel
         throw new BeanDefinitionException("OOPS " + postFix);
     }
 
+    /** {@return information about this method's declaring bean.} */
     default BeanInfo beanInfo() {
         throw new UnsupportedOperationException();
     }
 
-    // Hvem bruger den... 
-    // Er det altid det samme som fra BeanInfo???
-    // Det vil jeg mene...
-    default Realm realm() {
-        throw new UnsupportedOperationException();
-    }
 }
 // CheckRealmIsApplication
 // CheckRealmIsExtension

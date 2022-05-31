@@ -17,6 +17,7 @@ package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 
@@ -30,6 +31,14 @@ import app.packed.base.Key;
 
 // Kan laves fra et Field eller Method
 // og kan invokere en metoder/constructor, lase/skrive/update et field
+
+
+// To primaere funktioner...
+/// Injection, MH creation
+
+/// Styring omkring
+
+
 public non-sealed interface InjectableOperationHandle extends OperationHandle {
 
     // Ideen er lidt at hvis vi har forskel
@@ -37,6 +46,8 @@ public non-sealed interface InjectableOperationHandle extends OperationHandle {
     default void filter(Function<MethodHandle, MethodHandle> filter) {
         // MethodType of the returned function must be identical
     }
+    
+    InjectableOperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
 
     int pack();
 
@@ -53,4 +64,4 @@ public non-sealed interface InjectableOperationHandle extends OperationHandle {
 //*            the action
 //*/
 //// onWired??? Hmm ikke ved wirelets
-//void deliverTo(Consumer<MethodHandle> action);
+// void deliverTo(Consumer<MethodHandle> action);

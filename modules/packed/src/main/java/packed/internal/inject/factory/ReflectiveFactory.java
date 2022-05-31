@@ -33,7 +33,6 @@ import app.packed.inject.Variable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
 import packed.internal.inject.factory.ReflectiveFactory.FieldFactory;
-import packed.internal.util.MemberScanner;
 
 /**
  * A factory that needs a {@link Lookup} object.
@@ -72,7 +71,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
 
         public ExecutableFactory(TypeToken<T> key, Class<?> findConstructorOn) {
             typeLiteral = requireNonNull(key);
-            this.executable = MemberScanner.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
+            this.executable = ConstructorFinder.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
             this.dependencies = InternalDependency.fromExecutable(executable);
         }
 

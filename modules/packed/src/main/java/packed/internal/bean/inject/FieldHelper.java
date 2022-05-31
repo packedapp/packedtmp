@@ -13,51 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bean.hooks;
+package packed.internal.bean.inject;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.hooks.BeanField;
 import packed.internal.inject.DependencyProducer;
-import packed.internal.inject.InternalDependency;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  *
  */
-public class MethodHelper extends DependencyHolder {
+public class FieldHelper extends DependencyHolder {
 
     /** The modifiers of the field. */
     private final int modifiers;
 
     /** A direct method handle to the field. */
-    public final MethodHandle varHandle;
+    public final VarHandle varHandle;
     
-    public MethodHelper(BeanMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
-        super(InternalDependency.fromExecutable(method.method()), provideAsConstant, provideAsKey);
-        this.modifiers = requireNonNull(method.getModifiers());
+    public FieldHelper(BeanField field, VarHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
+        super(List.of(), provideAsConstant, provideAsKey);
+        this.modifiers = requireNonNull(field.getModifiers());
         this.varHandle = requireNonNull(mh);
     }
 
     @Override
     public DependencyProducer[] createProviders() {
         DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
-
-        // System.out.println("RESOLVING " + directMethodHandle);
-//        for (int i = 0; i < dependencies.size(); i++) {
-//            InternalDependency d = dependencies.get(i);
-//            HookedMethodProvide dp = hook.keys.get(d.key());
-//            if (dp != null) {
-//                // System.out.println("MAtches for " + d.key());
-//                int index = i + (Modifier.isStatic(modifiers) ? 0 : 1);
-//                providers[index] = dp;
-//                // System.out.println("SEtting provider " + dp.dependencyAccessor());
-//            }
-//        }
-
         return providers;
     }
 
@@ -70,6 +59,6 @@ public class MethodHelper extends DependencyHolder {
     /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
-        return varHandle;
+        return MethodHandleUtil.getFromField(modifiers, varHandle);
     }
 }

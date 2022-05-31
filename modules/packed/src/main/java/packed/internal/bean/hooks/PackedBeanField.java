@@ -19,7 +19,6 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 
-import app.packed.application.Realm;
 import app.packed.bean.hooks.BeanField;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
@@ -33,7 +32,7 @@ import packed.internal.container.ExtensionSetup;
  * 
  * @see Extension#hookOnBeanField(BeanField)
  */
-public final class PackedBeanField extends PackedBeanMember implements BeanField {
+public final class PackedBeanField extends PackedBeanMember<Field> implements BeanField {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -41,12 +40,8 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
     /** Whether or not the field can be written. */
     final boolean allowSet;
 
-    /** The field we are wrapping. */
-    private final Field field;
-
-    PackedBeanField(BeanScanner scanner, ExtensionSetup extension, Field field, boolean allowGet, boolean allowSet) {
-        super(scanner, extension);
-        this.field = field;
+    PackedBeanField(BeanMemberScanner scanner, ExtensionSetup extension, Field field, boolean allowGet, boolean allowSet) {
+        super(scanner, extension, field);
         this.allowGet = allowGet;
         this.allowSet = allowSet;
     }
@@ -54,13 +49,7 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
     /** {@inheritDoc} */
     @Override
     public Field field() {
-        return field;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getModifiers() {
-        return field.getModifiers();
+        return member;
     }
 
     /** {@inheritDoc} */
@@ -92,19 +81,13 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
     }
 
     public VarHandle newVarHandle() {
-        return openClass.unreflectVarHandle(field);
+        return openClass.unreflectVarHandle(member);
     }
     
     /** {@inheritDoc} */
     @Override
-    public Realm realm() {
-        return bean.realm.realm();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Variable variable() {
-        return Variable.ofField(field);
+        return Variable.ofField(member);
     }
 
     /** A mirror of {@code OperationTargetMirror.OfFieldAccess}. */
@@ -125,7 +108,7 @@ public final class PackedBeanField extends PackedBeanMember implements BeanField
         /** {@inheritDoc} */
         @Override
         public Field field() {
-            return pbf.field;
+            return pbf.member;
         }
     }
 }

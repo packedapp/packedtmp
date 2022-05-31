@@ -21,7 +21,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.base.Nullable;
+import app.packed.container.InternalExtensionException;
+import app.packed.operation.InjectableOperationHandle;
 import app.packed.operation.OperationMirror;
 import packed.internal.base.PackedVariable;
 import packed.internal.bean.BeanSetup;
@@ -30,7 +31,7 @@ import packed.internal.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The build-time configuration of an operation. */
+/** Build-time configuration of an operation. */
 public class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
@@ -42,43 +43,46 @@ public class OperationSetup {
 
     public DependencyNode depNode;
 
-    public final boolean isRaw = false;
-
-    @Nullable
-    Supplier<? extends OperationMirror> mirrorSupplier;
-
-    /** The operation's operator. */
-    public final ExtensionSetup operator;
+    /** Supplies a mirror for the operation */
+    private Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
 
     /** The operation's target. */
-    public final PackedOperationTarget target;
+    public final PackedOperationTarget operationTarget;
+
+    /** The operator of the operation. */
+    public final ExtensionSetup operator;
 
     public OperationSetup(BeanSetup bean, PackedOperationTarget target, ExtensionSetup operator) {
         this.bean = requireNonNull(bean);
-        this.target = requireNonNull(target);
+        this.operationTarget = requireNonNull(target);
         this.operator = requireNonNull(operator);
-        bean.addOperation(this);
+        
+        bean.addOperation(this); // add operation
     }
 
-    public PackedVariable variable(int index) {
-        throw new UnsupportedOperationException();
+    public InjectableOperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
+        requireNonNull(supplier, "supplier is null");
+        this.mirrorSupplier = supplier;
+        return (InjectableOperationHandle) this;
     }
-    
+
     /** {@return a mirror for the operation.} */
     public OperationMirror mirror() {
-        OperationMirror mirror;
-        if (mirrorSupplier == null) {
-            mirror = new OperationMirror();
-        } else {
-            mirror = mirrorSupplier.get();
+        OperationMirror mirror = mirrorSupplier.get();
+        if (mirror == null) {
+            throw new InternalExtensionException(operator.extensionType + " supplied a null operation mirror");
         }
 
-        // calls OperationMirror#initialize(OperationSetup)
+        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
         try {
             MH_OPERATION_MIRROR_INITIALIZE.invokeExact(mirror, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public PackedVariable variable(int index) {
+        throw new UnsupportedOperationException();
     }
 }
