@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanField;
 import app.packed.bean.BeanMethod;
-import app.packed.bean.BeanField.AnnotatedWithHook;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
