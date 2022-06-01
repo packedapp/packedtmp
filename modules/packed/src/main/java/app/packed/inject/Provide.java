@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.inject;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanField;
+import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanField.AnnotatedWithHook;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

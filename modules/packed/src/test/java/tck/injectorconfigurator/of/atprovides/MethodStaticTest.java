@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.Provide;
+import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceLocator.Composer;
 

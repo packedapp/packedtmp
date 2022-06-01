@@ -8,6 +8,7 @@ import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceTransformer;
 import app.packed.operation.OperationPack;

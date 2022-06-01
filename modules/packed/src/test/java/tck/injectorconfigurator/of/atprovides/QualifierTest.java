@@ -25,7 +25,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.bean.Provide;
+import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceLocator.Composer;
 import testutil.stubs.annotation.StringQualifier;
