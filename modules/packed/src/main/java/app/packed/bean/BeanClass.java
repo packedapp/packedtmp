@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks;
+package app.packed.bean;
 
 import java.util.function.Consumer;
 

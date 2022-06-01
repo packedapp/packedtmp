@@ -3,7 +3,6 @@ module app.packed {
     exports app.packed.application.entrypoint;
     exports app.packed.base;
     exports app.packed.bean;
-    exports app.packed.bean.hooks;
     exports app.packed.container;
     exports app.packed.inject;
     exports app.packed.inject.service;

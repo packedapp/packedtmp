@@ -18,12 +18,14 @@ package packed.internal.container;
 import java.util.Iterator;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionTree;
+import app.packed.container.ExtensionDescriptor;
+import app.packed.container.ExtensionNavigator;
 
 /**
  *
  */
-public record PackedExtensionTree<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionTree<T> {
+// Should take current + root
+public record PackedExtensionNavigator<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionNavigator<T> {
 
     /** {@inheritDoc} */
     @Override
@@ -41,5 +43,11 @@ public record PackedExtensionTree<T extends Extension<T>> (ExtensionSetup extens
     @Override
     public T root() {
         return extensionType.cast(extension.instance());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ExtensionDescriptor descriptor() {
+        return extension.model;
     }
 }

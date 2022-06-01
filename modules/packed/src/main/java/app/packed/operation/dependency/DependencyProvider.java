@@ -15,19 +15,11 @@
  */
 package app.packed.operation.dependency;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
-import app.packed.bean.hooks.BeanElement;
-import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Variable;
 import packed.internal.bean.inject.PackedDependencyProvider;
@@ -51,14 +43,23 @@ import packed.internal.bean.inject.PackedDependencyProvider;
 // was BeanVarInjector???? maybe it will be so again
 
 // Variable -> Dependency
-public sealed interface DependencyProvider extends BeanElement permits PackedDependencyProvider {
+public sealed interface DependencyProvider permits PackedDependencyProvider {
 
     Object /*  AnnotationReader  */ annotations();
 
     void provide(Factory<?> fac);
 
     void provide(MethodHandle methodHandle);
-
+    /**
+     * @param postFix
+     *            the message to include in the final message
+     * 
+     * @throws BeanDefinitionException
+     *             always thrown
+     */
+    default void failWith(String postFix) {
+        throw new BeanDefinitionException("OOPS " + postFix);
+    }
     /**
      * <p>
      * Vi tager Nullable med saa vi bruge raw.
@@ -103,17 +104,17 @@ public sealed interface DependencyProvider extends BeanElement permits PackedDep
 
     //<T> T variableParse(VariableParser<T> parser);
 
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    public @interface Hook {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-
-        // HttpRequestContext... requireAllContexts, requireAnyContexts
-        Class<?>[] requiresContext() default {};
-    }
+//    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+//    @Retention(RUNTIME)
+//    @Documented
+//    public @interface ProvisionHook {
+//
+//        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+//        Class<? extends Extension<?>> extension();
+//
+//        // HttpRequestContext... requireAllContexts, requireAnyContexts
+//        Class<?>[] requiresContext() default {};
+//    }
 
     // Skal saettes statisk paa bootstrappe vil jeg mene??? IDK
     // Som udgangs punkt er man build time resolved 

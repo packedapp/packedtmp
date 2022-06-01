@@ -34,7 +34,7 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
         // Fx
         //// CLI
         //// Serverless
-        return Optional.ofNullable(extensionRoot().share.dispatcher);
+        return Optional.ofNullable(navigator().root().share.dispatcher);
     }
 
     public Collection<EntryPointMirror> entryPoints() {

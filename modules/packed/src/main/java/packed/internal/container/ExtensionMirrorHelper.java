@@ -53,9 +53,9 @@ final class ExtensionMirrorHelper {
         }
     };
 
-    /** A handle for invoking the package-private method {@link ExtensionMirror#initialize(PackedExtensionTree)}. */
+    /** A handle for invoking the package-private method {@link ExtensionMirror#initialize(PackedExtensionNavigator)}. */
     private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class,
-            "initialize", void.class, PackedExtensionTree.class);
+            "initialize", void.class, PackedExtensionNavigator.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -104,7 +104,7 @@ final class ExtensionMirrorHelper {
 
         // Initializes the mirror
         try {
-            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, new PackedExtensionTree(extension, extension.extensionType));
+            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, new PackedExtensionNavigator(extension, extension.extensionType));
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

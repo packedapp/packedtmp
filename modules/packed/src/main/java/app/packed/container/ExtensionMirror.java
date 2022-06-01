@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import packed.internal.container.Mirror;
-import packed.internal.container.PackedExtensionTree;
+import packed.internal.container.PackedExtensionNavigator;
 
 /**
  * Provides generic information about the usage of an extension.
@@ -52,10 +52,11 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      */
 
     /**
-     * The extensions that are being mirrored. Is initially null but populated via {@link #initialize(PackedExtensionTree)}
+     * The extensions that are being mirrored. Is initially null but populated via
+     * {@link #initialize(PackedExtensionNavigator)}
      */
     @Nullable
-    private PackedExtensionTree<E> extensions;
+    private PackedExtensionNavigator<E> navigator;
 
     /**
      * Create a new extension mirror.
@@ -85,7 +86,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     protected final <T> List<T> allCollectToList(BiConsumer<E, List<T>> action) {
         requireNonNull(action, "action is null");
         ArrayList<T> result = new ArrayList<>();
-        for (E t : extensionTree()) {
+        for (E t : navigator()) {
             action.accept(t, result);
         }
         return result;
@@ -93,14 +94,14 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     protected final void allForEach(Consumer<E> action) {
         requireNonNull(action, "action is null");
-        for (E t : extensionTree()) {
+        for (E t : navigator()) {
             action.accept(t);
         }
     }
 
     /** {@return a non-empty stream of all of the extension instances we are mirroring.} */
     protected final Stream<E> allStream() {
-        return extensionTree().stream();
+        return navigator().stream();
     }
 
     /**
@@ -115,7 +116,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     protected final int allSumInt(ToIntFunction<? super E> mapper) {
         requireNonNull(mapper, "mapper is null");
         int result = 0;
-        for (E t : extensionTree()) {
+        for (E t : navigator()) {
             int tmp = mapper.applyAsInt(t);
             result = Math.addExact(result, tmp);
         }
@@ -125,7 +126,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     protected final long allSumLong(ToLongFunction<? super E> mapper) {
         requireNonNull(mapper, "mapper is null");
         long result = 0;
-        for (E t : extensionTree()) {
+        for (E t : navigator()) {
             long tmp = mapper.applyAsLong(t);
             result = Math.addExact(result, tmp);
         }
@@ -135,57 +136,18 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
-        return other instanceof ExtensionMirror<?> m && getClass() == m.getClass() && extensionTree().equals(m.extensionTree());
+        return other instanceof ExtensionMirror<?> m && getClass() == m.getClass() && navigator().equals(m.navigator());
     }
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() {
-        return extensionTree().extension().model;
-    }
-
-    /** {@return the full name of the extension.} */
-    public final String extensionFullName() {
-        return extensionDescriptor().fullName();
-    }
-
-    /** {@return the name of the extension.} */
-    public final String extensionName() {
-        return extensionDescriptor().name();
-    }
-
-    protected final E extensionRoot() {
-        return extensionTree().root();
-    }
-
-    /** {@return all the extensions that are being mirrored.} */
-    protected final ExtensionTree<E> extensions() {
-        return extensionTree();
-    }
-
-    /**
-     * {@return the mirrored extension's internal configuration.}
-     * 
-     * @throws InternalExtensionException
-     *             if called from the constructor of the mirror
-     */
-    private PackedExtensionTree<E> extensionTree() {
-        PackedExtensionTree<E> e = extensions;
-        if (e == null) {
-            throw new InternalExtensionException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
-        }
-        return e;
-    }
-
-    /** {@return the type of extension this mirror is a part of.} */
-    public final Class<? extends Extension<?>> extensionType() {
-        return extensionTree().extension().extensionType;
+        return navigator().descriptor();
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return extensionTree().hashCode();
+        return navigator().hashCode();
     }
 
     /**
@@ -194,16 +156,46 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(PackedExtensionTree<E> extensions) {
-        if (this.extensions != null) {
+    final void initialize(PackedExtensionNavigator<E> extensions) {
+        if (this.navigator != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
-        this.extensions = requireNonNull(extensions);
+        this.navigator = requireNonNull(extensions);
+    }
+
+    /**
+     * {@return all the extensions that are being mirrored.}
+     * 
+     * @throws InternalExtensionException
+     *             if called from the constructor of the mirror
+     */
+    protected final ExtensionNavigator<E> navigator() {
+        PackedExtensionNavigator<E> n = navigator;
+        if (n == null) {
+            throw new InternalExtensionException(
+                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
+        }
+        return n;
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return extensionType().getCanonicalName();
+        return "Mirror for " + extensionDescriptor().type().getCanonicalName();
     }
 }
+//
+///** {@return the full name of the extension.} */
+//public final String extensionFullName() {
+//    return extensionDescriptor().fullName();
+//}
+//
+///** {@return the name of the extension.} */
+//public final String extensionName() {
+//    return extensionDescriptor().name();
+//}
+//
+///** {@return the type of extension this mirror is a part of.} */
+//public final Class<? extends Extension<?>> extensionType() {
+//    return extensionDescriptor().type();
+//}

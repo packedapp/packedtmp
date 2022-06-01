@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ComponentMirror;
-import app.packed.application.ComponentScope;
 import app.packed.application.ComponentMirror.Relation;
+import app.packed.application.ComponentScope;
 import app.packed.base.Nullable;
 
 /** Implementation of {@link Relation}. */

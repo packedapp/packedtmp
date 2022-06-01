@@ -15,6 +15,7 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import packed.internal.bean.BeanSetup;
 import packed.internal.inject.ExtensionInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
@@ -26,6 +27,10 @@ public final class ExtensionSetup {
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_SCANNER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newBeanScanner",
             BeanScanner.class);
+
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanScanner.class, "initialize",
+            void.class, ExtensionSetup.class, BeanSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -148,12 +153,15 @@ public final class ExtensionSetup {
         return e;
     }
 
-    public BeanScanner newBeanScanner() {
+    public BeanScanner newBeanScanner(ExtensionSetup extension, BeanSetup bean) {
+        BeanScanner bs;
         try {
-            return (BeanScanner) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
+            bs = (BeanScanner) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
+            MH_BEAN_SCANNER_INITIALIZE.invoke(bs, extension, bean);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+        return bs;
     }
 
     /**
@@ -176,7 +184,6 @@ public final class ExtensionSetup {
             throw ThrowableUtil.orUndeclared(t);
         }
     }
-
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         // Check that we are a proper subclass of ExtensionWirelet

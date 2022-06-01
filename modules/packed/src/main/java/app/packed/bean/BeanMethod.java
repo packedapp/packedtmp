@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks;
+package app.packed.bean;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -39,9 +39,6 @@ import packed.internal.bean.hooks.PackedBeanMethod;
  */
 public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
-    /** {@return information about this method's declaring bean.} */
-    BeanInfo beanInfo();
-
     /** {@return a factory type for this method.} */
     FactoryType factoryType();
 
@@ -52,7 +49,7 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
      */
     int getModifiers();
-        
+
     /**
      * @return
      */

@@ -23,7 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanField;
+import app.packed.bean.BeanField;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.util.MethodHandleUtil;
 

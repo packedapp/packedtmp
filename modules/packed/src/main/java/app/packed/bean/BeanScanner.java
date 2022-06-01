@@ -15,24 +15,51 @@
  */
 package app.packed.bean;
 
-import app.packed.bean.hooks.BeanClass;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanField.AnnotatedWithHook;
-import app.packed.bean.hooks.BeanInfo;
-import app.packed.bean.hooks.BeanMethod;
-import app.packed.bean.hooks.BeanVariable;
-import app.packed.operation.dependency.DependencyProvider;
+import app.packed.base.Nullable;
+import app.packed.bean.BeanField.AnnotatedWithHook;
+import app.packed.container.InternalExtensionException;
+import packed.internal.bean.BeanSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
  *
  */
 public class BeanScanner {
+
+    /**
+     * The configuration of this scanner. Is initially null but populated via
+     * {@link #initialize(ExtensionSetup, BeanSetup)}.
+     */
+    @Nullable
+    private Setup setup;
+
+    public final Object beanAnnotatedReader() {
+        // AnnotatedReader.of(beanClass());
+        throw new UnsupportedOperationException();
+    }
     
-    public void onClass(BeanClass clazz) {}
+    public final Class<?> beanClass() {
+        return setup().bean.beanClass();
+    }
 
-    public void onDependencyProvider(DependencyProvider providr) {}
+    public final BeanKind beanKind() {
+        return setup().bean.beanKind();
+    }
 
-    public void onEnd(BeanInfo beanInfo) {}
+    /**
+     * Invoked by a MethodHandle from ExtensionSetup.
+     * 
+     * @param bean
+     *            the bean we are scanning
+     */
+    final void initialize(ExtensionSetup extension, BeanSetup bean) {
+        if (this.setup != null) {
+            throw new IllegalStateException("This scanner has already been initialized.");
+        }
+        this.setup = new Setup(extension, bean);
+    }
+
+    public void onBeanClass(BeanClass clazz) {}
 
     /**
      * A callback method that is invoked for any field on a newly added bean where the field:
@@ -47,11 +74,18 @@ public class BeanScanner {
      *            the bean field
      * @see BeanField.AnnotatedWithHook
      */
-    public void onField(BeanField bf) {}
+    public void onBeanField(BeanField bf) {}
 
-    public void onMethod(BeanMethod method) {
-        throw new UnsupportedOperationException(/* method,hooks not handled on getClass()... */);
+    public void onBeanMethod(BeanMethod method) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        // We probably want to throw an internal extension exception instead
+        throw new InternalExtensionException(setup().extension.model.fullName() + " failed to handle bean method");
     }
+
+    public void onBeanVariable(BeanVariable variable) {}
+
+    public void onClose() {}
 
     /**
      * 
@@ -62,8 +96,22 @@ public class BeanScanner {
      */
     // What happens if we install an extension that adds a bean for scanning that uses the same extension???
     // I think we should wait with the scanning??? IDK
-    public void onNew(BeanInfo beanInfo) {}
+    public void onNew() {}
 
-    public void onVariable(BeanVariable variable) {}
-    
+    /**
+     * {@return all the extensions that are being mirrored.}
+     * 
+     * @throws InternalExtensionException
+     *             if called from the constructor of the mirror
+     */
+    private final Setup setup() {
+        Setup b = setup;
+        if (b == null) {
+            throw new InternalExtensionException("This method cannot be called from the constructor of this class.");
+        }
+        return b;
+    }
+
+    private record Setup(ExtensionSetup extension, BeanSetup bean) {}
+
 }

@@ -78,7 +78,7 @@ public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBean
     ContainerMirror container();
 }
 
-interface zandbox {
+interface SSandbox {
 
     // @SuppressWarnings({ "unchecked", "rawtypes" })
     default Optional<Object /*BeanFactoryOperationMirror */> factory() {

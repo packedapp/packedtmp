@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtension;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.BeanField;
+import app.packed.bean.BeanMethod;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

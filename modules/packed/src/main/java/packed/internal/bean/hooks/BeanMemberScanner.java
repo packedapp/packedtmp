@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import app.packed.bean.BeanField;
+import app.packed.bean.BeanMethod;
 import app.packed.bean.BeanScanner;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.bean.BeanSetup;
@@ -63,7 +63,7 @@ public final class BeanMemberScanner {
         if (combo == null) {
             ContainerSetup container = bean.parent;
             ExtensionSetup extension = container.useExtensionSetup(clazz, null);
-            combo = new ExtensionBeanCombo(extension, extension.newBeanScanner());
+            combo = new ExtensionBeanCombo(extension, extension.newBeanScanner(extension, bean));
             extensions.put(clazz, combo);
 
             // Is it per operation????? Don't think so
@@ -72,7 +72,7 @@ public final class BeanMemberScanner {
             // and functional operations are also a part of this???
             // IDK
             // bs
-            combo.bean().onNew(bean);
+            combo.scanner.onNew();
         }
         return combo;
     }
@@ -85,7 +85,7 @@ public final class BeanMemberScanner {
         scan0(bean.beanClass(), true, Object.class);
 
         for (ExtensionBeanCombo e : extensions.values()) {
-            e.bean().onEnd(bean);
+            e.scanner.onClose();
         }
     }
 
@@ -214,7 +214,7 @@ public final class BeanMemberScanner {
                         fhm.isSettable || hasFullAccess);
 
                 // Call into Extension#hookOnBeanField
-                ei.bean.onField(f);
+                ei.scanner.onBeanField(f);
             }
         }
     }
@@ -235,12 +235,20 @@ public final class BeanMemberScanner {
                 ExtensionBeanCombo ei = findOrCreateExtension(a1Type.getModule(), fh.extensionType);
 
                 PackedBeanMethod pbm = new PackedBeanMethod(BeanMemberScanner.this, ei.extension, method, fh.isInvokable);
-                ei.bean.onMethod(pbm);
+
+                ei.scanner.onBeanMethod(pbm);
             }
         }
     }
 
-    record ExtensionBeanCombo(ExtensionSetup extension, BeanScanner bean) {}
+    static void checkExtensionClass(Class<?> annotationType, Class<? extends Extension<?>> extensionType) {
+        ClassUtil.checkProperSubclass(Extension.class, extensionType, s -> new InternalExtensionException(s));
+        if (extensionType.getModule() != annotationType.getModule()) {
+            throw new InternalExtensionException("The annotation " + annotationType + " and the extension " + extensionType + " must be declared in the same module");
+        }
+    }
+
+    public record ExtensionBeanCombo(ExtensionSetup extension, BeanScanner scanner) {}
 
     record FieldHookModel(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
 
@@ -253,13 +261,8 @@ public final class BeanMemberScanner {
                 if (h == null) {
                     return null;
                 }
-                @SuppressWarnings({ "rawtypes", "unchecked" })
-                Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension(),
-                        s -> new InternalExtensionException(s));
-                if (cl.getModule() != type.getModule()) {
-                    throw new InternalExtensionException("The annotation " + type + " and the extension " + cl + " must be located in the same module");
-                }
-                return new FieldHookModel(cl, h.allowGet(), h.allowSet());
+                checkExtensionClass(type, h.extension());
+                return new FieldHookModel(h.extension(), h.allowGet(), h.allowSet());
             }
         };
     }
@@ -275,13 +278,8 @@ public final class BeanMemberScanner {
                 if (h == null) {
                     return null;
                 }
-                @SuppressWarnings({ "rawtypes", "unchecked" })
-                Class<? extends Extension<?>> cl = (Class) ClassUtil.checkProperSubclass(Extension.class, h.extension(),
-                        s -> new InternalExtensionException(s));
-                if (cl.getModule() != type.getModule()) {
-                    throw new Error();
-                }
-                return new MethodHookModel(cl, h.allowInvoke());
+                checkExtensionClass(type, h.extension());
+                return new MethodHookModel(h.extension(), h.allowInvoke());
             }
         };
     }

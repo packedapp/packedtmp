@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks;
+package app.packed.bean;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -106,7 +106,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
 }
 
-interface Sandbox {
+interface Zandbox {
 
     // BeanInfo
 

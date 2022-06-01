@@ -27,18 +27,18 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.bean.BeanVariable;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.inject.service.ServiceExtension;
-import app.packed.operation.dependency.DependencyProvider;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@DependencyProvider.Hook(extension = ServiceExtension.class)
+@BeanVariable.ProvisionHook(extension = ServiceExtension.class)
 public interface OldServiceLocator extends ServiceRegistry {
 
     /**

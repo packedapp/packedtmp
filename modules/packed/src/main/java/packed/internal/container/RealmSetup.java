@@ -26,7 +26,7 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
 import app.packed.container.Wirelet;
-import packed.internal.bean.BeanAccessor;
+import packed.internal.bean.BeanMemberAccessor;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.component.ComponentSetup;
 
@@ -37,7 +37,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     @Nullable
-    private BeanAccessor accessor;
+    private BeanMemberAccessor accessor;
 
     /** The current active component in the realm. */
     @Nullable
@@ -49,10 +49,10 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
     // Jaaa, men det klare jo ogsaa @JavaBaseSupport
-    public final BeanAccessor beanAccessor() {
-        BeanAccessor r = accessor;
+    public final BeanMemberAccessor beanAccessor() {
+        BeanMemberAccessor r = accessor;
         if (r == null) {
-            this.accessor = r = BeanAccessor.defaultFor(realmType());
+            this.accessor = r = BeanMemberAccessor.defaultFor(realmType());
         }
         return r;
     }

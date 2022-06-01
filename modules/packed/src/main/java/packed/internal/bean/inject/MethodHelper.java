@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.BeanMethod;
 import packed.internal.inject.DependencyProducer;
 import packed.internal.inject.InternalDependency;
 

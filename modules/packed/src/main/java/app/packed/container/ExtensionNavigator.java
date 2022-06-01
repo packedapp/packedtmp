@@ -19,44 +19,47 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Represents a rooted tree of 1 or more extension instances.
+ * Represents a rooted tree of extensions with a single extension as the origin.
+ * 
+ * @param <E>
+ *            the type of extensions
  */
-// Maaske T extends Extension | T extends ExtensionBean... 
-// Saa kan vi ogsaa bruge den paa runtime
+public interface ExtensionNavigator<E extends Extension<E>> extends Iterable<E> {
 
-//// Kan vi lave den som generisk tree???
-//// * Maaske vi vil returnere nogle ExtensionConfiguration's
+    ExtensionDescriptor descriptor();
 
-// map(extension->extension.configuration()) 
+    default E origin() {
+        throw new UnsupportedOperationException();
+    }
 
-// TreeView<T>
-
-
-// Immutable???
-
-
-// Maybe -> Extension.TreeView Taenker aldrig det er noget man selv laver
-
-public interface ExtensionTree<T extends Extension<T>> extends Iterable<T> {
+    /**
+     * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
+     * of an application does not have a parent extension.
+     */
+    default boolean isRoot() {
+        return root() == origin();
+    }
 
     /** {@return the number of extensions in the tree.} */
     default int count() {
         int size = 0;
         for (@SuppressWarnings("unused")
-        T t : this) {
+        E t : this) {
             size++;
         }
         return size;
     }
 
     /** {@return the root of the tree.} */
-    T root();
+    E root();
 
-    default Stream<T> stream() {
+    default Stream<E> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    static <E extends Extension<E>> ExtensionTree<E> ofSingle(E extension) {
+    // Is both root, current, and no children
+    // mostly for tests
+    static <E extends Extension<E>> ExtensionNavigator<E> ofSingle(E extension) {
         // Den her kan godt vaere public
         // Men dem der iterere kan ikke
 

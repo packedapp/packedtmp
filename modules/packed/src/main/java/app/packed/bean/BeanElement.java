@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks;
-
-import app.packed.bean.BeanDefinitionException;
-import app.packed.operation.dependency.DependencyProvider;
+package app.packed.bean;
 
 /**
  *
  */
-// For now it is a place holder... Ved ikke om vi vil beholder dent. BeanVarInjcector er ogsaa lidt sjot
+// This is a place holder for now... Might ditch it in the future
+
 // BeanVariable bare
-public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, DependencyProvider, BeanVariable {
+public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVariable {
 
     // annotationReadr()???
     // We need it on every element
@@ -37,11 +35,6 @@ public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanFiel
      */
     default void failWith(String postFix) {
         throw new BeanDefinitionException("OOPS " + postFix);
-    }
-
-    /** {@return information about this method's declaring bean.} */
-    default BeanInfo beanInfo() {
-        throw new UnsupportedOperationException();
     }
 
 }

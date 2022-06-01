@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtension;
-import app.packed.bean.hooks.BeanVariable;
 import app.packed.inject.Inject;
+import app.packed.operation.dependency.BeanVariable1;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
@@ -67,7 +67,7 @@ import app.packed.inject.Inject;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@BeanVariable.AnnotatedWithHook(extension = BeanExtension.class)
+@BeanVariable1.AnnotatedWithHook(extension = BeanExtension.class)
 public @interface OnInitialize {
 
     /**

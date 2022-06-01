@@ -33,6 +33,7 @@ import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanVariable;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
@@ -41,7 +42,6 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
-import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.inject.service.PackedServiceLocator;
 import packed.internal.util.LookupUtil;
@@ -113,7 +113,7 @@ import packed.internal.util.LookupUtil;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@DependencyProvider.Hook(extension = BeanExtension.class)
+@BeanVariable.ProvisionHook(extension = BeanExtension.class)
 public interface ServiceLocator {
 
     /**

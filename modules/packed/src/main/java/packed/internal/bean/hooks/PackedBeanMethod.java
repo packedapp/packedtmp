@@ -18,7 +18,7 @@ package packed.internal.bean.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.bean.hooks.BeanMethod;
+import app.packed.bean.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.InjectableOperationHandle;
@@ -27,13 +27,11 @@ import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.operation.InjectableOperationSetup;
 
-/**
- *
- */
+/** Internal implementation of BeanMethod */
 public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanMethod {
 
-    PackedBeanMethod(BeanMemberScanner scanner, ExtensionSetup extension, Method method, boolean allowInvoke) {
-        super(scanner, extension, method);
+    PackedBeanMethod(BeanMemberScanner scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
+        super(scanner, operator, method);
     }
 
     /** {@inheritDoc} */

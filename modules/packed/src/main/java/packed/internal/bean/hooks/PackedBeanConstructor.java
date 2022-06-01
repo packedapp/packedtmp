@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean.hooks;
-
-import java.util.function.Supplier;
-
-import app.packed.inject.Variable;
+package packed.internal.bean.hooks;
 
 /**
  *
  */
-public interface BeanVariable2 {
-  
-    Variable variable();
-    
-    void unresolved();
-    
-    void unresolved(Supplier<String> sup);
+public class PackedBeanConstructor {
+
 }

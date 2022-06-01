@@ -40,7 +40,7 @@ import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionPointHelper;
 import packed.internal.container.ExtensionRealmSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedExtensionTree;
+import packed.internal.container.PackedExtensionNavigator;
 import packed.internal.inject.invoke.InternalInfuser;
 import packed.internal.util.StackWalkerUtil;
 import packed.internal.util.ThrowableUtil;
@@ -132,14 +132,21 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
-     * of an application does not have a parent extension.
+     * Returns an extension navigator with this extension instance as current.
+     * 
+     * @return a new extension navigator
      */
-    protected final boolean isRoot() {
-        return setup().parent == null;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final ExtensionNavigator<E> navigator() {
+        ExtensionSetup setup = setup();
+        return new PackedExtensionNavigator(setup, setup.extensionType);
     }
 
-    // Whenever a Hook annotation is found
+    /**
+     * Whenever a Hook annotation is found
+     * 
+     * @return a new bean scanner
+     */
     protected BeanScanner newBeanScanner() {
         return new BeanScanner();
     }
@@ -157,10 +164,17 @@ public abstract class Extension<E extends Extension<E>> {
         return new ExtensionMirror<>();
     }
 
+    /**
+     * 
+     * @return a new extension point
+     * 
+     * @throws UnsupportedOperationException
+     *             if the extension does not support extension points.
+     */
     protected ExtensionPoint<E> newExtensionPoint() {
         throw new UnsupportedOperationException(getClass() + " does not define any extension points.");
     }
-    
+
     /**
      * Invoked by the runtime on the root extension to finalize configuration of the extension.
      * <p>
@@ -247,18 +261,6 @@ public abstract class Extension<E extends Extension<E>> {
         return s;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final ExtensionTree<E> tree() {
-        ExtensionSetup setup = setup();
-        return new PackedExtensionTree(setup, setup.extensionType);
-    }
-
-    // Kunne vaere en mode paa traet?
-    // filterOnSameLifetime();
-    protected final ExtensionTree<E> treeOfLifetime() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns an extension point of the specified type
      * <p>
@@ -329,6 +331,7 @@ public abstract class Extension<E extends Extension<E>> {
         throw new UnsupportedOperationException();
     }
 
+    // I think we need some more use cases
     public static abstract class Bootstrap {
         protected abstract void bootstrap();
 

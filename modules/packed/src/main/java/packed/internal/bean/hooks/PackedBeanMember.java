@@ -17,7 +17,6 @@ package packed.internal.bean.hooks;
 
 import java.lang.reflect.Member;
 
-import app.packed.bean.hooks.BeanInfo;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.operation.PackedOperationTarget;
@@ -47,11 +46,6 @@ public abstract sealed class PackedBeanMember<T extends Member> implements Packe
         this.bean = scanner.bean;
         this.operator = operator;
         this.member = member;
-    }
-
-    /** {@return information about the bean.} */
-    public final BeanInfo beanInfo() {
-        return bean;
     }
 
     /** {@return modifiers for the member.} */

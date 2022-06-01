@@ -26,8 +26,8 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceContract;
+import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceTransformer;
 import packed.internal.inject.service.build.ExportedServiceSetup;
 import packed.internal.inject.service.build.PackedServiceTransformer;

@@ -29,16 +29,16 @@ import packed.internal.util.LookupValue;
 import packed.internal.util.OpenClass;
 
 /**
- * This class exists because we have two ways to access the members of a component instance. One where the users provide
- * a {@link Lookup} object, for example, via {@link Assembly#lookup(Lookup)}. And another where users use a module
- * descriptor to provide access.
+ * This class exists because we have two ways to access the members of a bean:
+ * <ul>
+ * <li>{@link ModuleDescriptorAccessor}, which uses a module-info.java descriptor to provide access to bean
+ * members.</li>
+ * <li>{@link ModuleLookupAccessor}, which uses {@link Lookup} object, for example, via {@link Assembly#lookup(Lookup)}
+ * to provide access to bean members.</li>
+ * </ul>
  */
-// Altsaa er det mere en Bean ting???
-// BeanRealm???
-public abstract sealed class BeanAccessor {
+public abstract sealed class BeanMemberAccessor {
 
-    record HookModel() {}
-    
     /** A cache of bean models per accessor. */
     private final ClassValue<HookModel> beanModels = new ClassValue<>() {
 
@@ -46,20 +46,19 @@ public abstract sealed class BeanAccessor {
         protected HookModel computeValue(Class<?> type) {
             OpenClass.of(lookup(), type);
             return new HookModel();
-            //return BootstrappedSourcedClassModel.newModel(oc, null);
         }
     };
+
+    public final HookModel beanModelOf(Class<?> beanClass) {
+        return beanModels.get(beanClass);
+    }
 
     private Lookup lookup() {
         if (this instanceof ModuleLookupAccessor lookupAccessor) {
             return lookupAccessor.lookup;
         } else {
-            return ((ModuleOpenedAccessor) this).lookup();
+            return ((ModuleDescriptorAccessor) this).lookup();
         }
-    }
-
-    public final HookModel beanModelOf(Class<?> beanClass) {
-        return beanModels.get(beanClass);
     }
 
     /**
@@ -80,7 +79,7 @@ public abstract sealed class BeanAccessor {
      *            the lookup to use
      * @return the new accessor
      */
-    public abstract BeanAccessor withLookup(Lookup lookup);
+    public abstract BeanMemberAccessor withLookup(Lookup lookup);
 
     /**
      * Returns a container source model for the specified type
@@ -89,46 +88,25 @@ public abstract sealed class BeanAccessor {
      *            the container source type
      * @return a container source model for the specified type
      */
-    public static BeanAccessor defaultFor(Class<?> sourceType) {
-        return ModuleOpenedAccessor.MODELS.get(sourceType);
+    public static BeanMemberAccessor defaultFor(Class<?> sourceType) {
+        return ModuleDescriptorAccessor.MODELS.get(sourceType);
     }
 
-    /**
-     * A accessor that relies on the user explicitly providing a {@link Lookup} object, for example, via
-     * Assembly#lookup(Lookup).
-     */
-    private static final class ModuleLookupAccessor extends BeanAccessor {
-
-        /** The parent accessor. */
-        private final ModuleOpenedAccessor defaultAccessor;
-
-        /** The lookup object provided by the user. */
-        private final Lookup lookup;
-
-        private ModuleLookupAccessor(ModuleOpenedAccessor defaultAccessor, Lookup lookup) {
-            this.defaultAccessor = requireNonNull(defaultAccessor);
-            this.lookup = requireNonNull(lookup);
-        }
-
-        @Override
-        public BeanAccessor withLookup(Lookup lookup) {
-            return defaultAccessor.withLookup(lookup);
-        }
-    }
+    record HookModel() {}
 
     /**
      * An accessor that uses relies on a module being open to Packed. Either via a module descriptor, or via command line
      * arguments such as {@code add-opens}.
      */
-    private static final class ModuleOpenedAccessor extends BeanAccessor {
+    private static final class ModuleDescriptorAccessor extends BeanMemberAccessor {
 
         /** A cache of accessor. */
-        private static final ClassValue<BeanAccessor.ModuleOpenedAccessor> MODELS = new ClassValue<>() {
+        private static final ClassValue<BeanMemberAccessor.ModuleDescriptorAccessor> MODELS = new ClassValue<>() {
 
             /** {@inheritDoc} */
             @Override
-            protected BeanAccessor.ModuleOpenedAccessor computeValue(Class<?> type) {
-                return new ModuleOpenedAccessor(type);
+            protected BeanMemberAccessor.ModuleDescriptorAccessor computeValue(Class<?> type) {
+                return new ModuleDescriptorAccessor(type);
             }
         };
 
@@ -143,7 +121,7 @@ public abstract sealed class BeanAccessor {
 
             @Override
             protected ModuleLookupAccessor computeValue(Lookup lookup) {
-                return new ModuleLookupAccessor(ModuleOpenedAccessor.this, lookup);
+                return new ModuleLookupAccessor(ModuleDescriptorAccessor.this, lookup);
             }
         };
 
@@ -156,7 +134,7 @@ public abstract sealed class BeanAccessor {
          * @param realmType
          *            the realm type
          */
-        private ModuleOpenedAccessor(Class<?> realmType) {
+        private ModuleDescriptorAccessor(Class<?> realmType) {
             this.type = requireNonNull(realmType);
         }
 
@@ -188,7 +166,7 @@ public abstract sealed class BeanAccessor {
          * @return the new realm
          */
         @Override
-        public BeanAccessor withLookup(Lookup lookup) {
+        public BeanMemberAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.
@@ -205,6 +183,29 @@ public abstract sealed class BeanAccessor {
             } else {
                 return lookups.get(lookup);
             }
+        }
+    }
+
+    /**
+     * A accessor that relies on the user explicitly providing a {@link Lookup} object, for example, via
+     * Assembly#lookup(Lookup).
+     */
+    private static final class ModuleLookupAccessor extends BeanMemberAccessor {
+
+        /** The parent accessor. */
+        private final ModuleDescriptorAccessor defaultAccessor;
+
+        /** The lookup object provided by the user. */
+        private final Lookup lookup;
+
+        private ModuleLookupAccessor(ModuleDescriptorAccessor defaultAccessor, Lookup lookup) {
+            this.defaultAccessor = requireNonNull(defaultAccessor);
+            this.lookup = requireNonNull(lookup);
+        }
+
+        @Override
+        public BeanMemberAccessor withLookup(Lookup lookup) {
+            return defaultAccessor.withLookup(lookup);
         }
     }
 }

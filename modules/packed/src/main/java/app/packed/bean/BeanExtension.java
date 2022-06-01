@@ -5,8 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.bean.hooks.BeanField;
-import app.packed.bean.hooks.BeanMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -57,7 +55,6 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new ProvideableBeanConfiguration<>(handle);
     }
 
-
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * 
@@ -70,7 +67,6 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanHandler<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
-
 
     /**
      * Install the specified component instance.
@@ -98,7 +94,8 @@ public class BeanExtension extends Extension<BeanExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onDependencyProvider(DependencyProvider provider) {
+            public void onBeanVariable(BeanVariable v) {
+                DependencyProvider provider = v.dp();
                 // We only have a hook for OperationPack
                 BeanSetup bean = ((PackedDependencyProvider) provider).operation().bean;
 
@@ -111,10 +108,9 @@ public class BeanExtension extends Extension<BeanExtension> {
                 }
             }
 
-
             /** {@inheritDoc} */
             @Override
-            public void onField(BeanField field) {
+            public void onBeanField(BeanField field) {
                 // readKey
 
                 Key<?> key = Key.convertField(field.field());
@@ -127,10 +123,10 @@ public class BeanExtension extends Extension<BeanExtension> {
 
                 bean.parent.injectionManager.addConsumer(node);
             }
-            
+
             /** {@inheritDoc} */
             @Override
-            public void onMethod(BeanMethod method) {
+            public void onBeanMethod(BeanMethod method) {
                 Key<?> key = Key.convertMethodReturnType(method.method());
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 
