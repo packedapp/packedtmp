@@ -13,33 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.operation.dependency;
 
 import java.util.Optional;
 
-import app.packed.base.Key;
+import app.packed.application.Realm;
 import app.packed.operation.OperationMirror;
 
 /**
- *
+ * A mirror for a dependency.
  */
-public abstract class ServiceExportMirror extends OperationMirror {
+// Hmm den burde vel passe til BeanInjector
+public interface DependencyMirror {
 
-    ServiceExportMirror(IntService is) {
-        
-    }
+    DependencyGraphMirror graph();
     
-    /** {@return the key that the service is exported with.} */
-    public abstract Key<?> key();
-
-    // Hvad goer vi omvendt??? Returnere en liste??
-    // Kun allower en? IDK
-    public abstract Optional<ServiceProvideMirror> service(); // Kan ikke fange alle dog
-
-    // find usage of the exported service
+    /** {@return the operation the dependency belongs to.} */
+    // Hvad med unresolved... Tror vi skal fejle
+    OperationMirror operation();
     
+    Optional<Realm> providedBy();
     
-    static class IntService {
-        
-    }
+    Optional<OperationMirror> providingOperation();
+    
+    boolean isResolved();
+    
+    boolean isSatisfiable();
 }

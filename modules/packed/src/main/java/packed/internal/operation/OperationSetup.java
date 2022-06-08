@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.OperationBuilder;
-import app.packed.operation.mirror.OperationMirror;
+import app.packed.operation.OperationMirror;
 import packed.internal.base.PackedVariable;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;

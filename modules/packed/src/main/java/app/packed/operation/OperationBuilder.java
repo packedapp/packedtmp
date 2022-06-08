@@ -21,7 +21,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.operation.mirror.OperationMirror;
 import packed.internal.operation.InjectableOperationSetup;
 
 /**

@@ -12,7 +12,6 @@ module app.packed {
 
     // temporary
     exports app.packed.operation.dependency;
-    exports app.packed.operation.mirror;
 
     /* Special support for DevTools project */
     uses packed.internal.integrate.devtools.PackedDevToolsIntegration;

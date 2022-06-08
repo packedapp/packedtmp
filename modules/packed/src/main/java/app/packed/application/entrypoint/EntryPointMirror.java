@@ -1,6 +1,6 @@
 package app.packed.application.entrypoint;
 
-import app.packed.operation.mirror.OperationMirror;
+import app.packed.operation.OperationMirror;
 
 /**
  * A mirror representing a single entry point in an application. Instances of this mirror are normally acquired by

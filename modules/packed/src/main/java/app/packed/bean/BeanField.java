@@ -29,7 +29,7 @@ import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.mirror.InjectableOperationHandle;
+import app.packed.operation.OperationBuilder;
 import packed.internal.bean.hooks.PackedBeanField;
 
 /**
@@ -56,7 +56,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle getter
      */
-    InjectableOperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationBuilder newGetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * @param operator
@@ -65,7 +65,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
      */
-    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
+    OperationBuilder newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
      * Returns a method handle that gives write access to the underlying field as specified by
@@ -73,10 +73,10 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle setter
      */
-    InjectableOperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationBuilder newSetOperation(ExtensionBeanConfiguration<?> operator);
 
     // Or maybe just rawVarHandle() on IOH
-    default VarHandle varHandleOf(InjectableOperationHandle handle) { 
+    default VarHandle varHandleOf(OperationBuilder handle) { 
         throw new UnsupportedOperationException();
     }
     

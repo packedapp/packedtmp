@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.inject.FactoryType;
-import app.packed.operation.mirror.InjectableOperationHandle;
+import app.packed.operation.OperationBuilder;
 
 /**
  * This class represents a {@link Constructor} on a bean.
@@ -46,5 +46,5 @@ public non-sealed interface BeanConstructor extends BeanElement {
      */
     int getModifiers();
 
-    InjectableOperationHandle newOperation();
+    OperationBuilder newOperation();
 }

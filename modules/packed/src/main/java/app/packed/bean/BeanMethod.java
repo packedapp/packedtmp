@@ -23,8 +23,8 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationBuilder;
-import app.packed.operation.mirror.OperationMirror;
-import app.packed.operation.mirror.OperationTargetMirror;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTargetMirror;
 import packed.internal.bean.hooks.PackedBeanMethod;
 
 /**

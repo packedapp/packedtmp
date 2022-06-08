@@ -22,7 +22,7 @@ import app.packed.bean.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationBuilder;
-import app.packed.operation.mirror.OperationTargetMirror;
+import app.packed.operation.OperationTargetMirror;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.operation.InjectableOperationSetup;
