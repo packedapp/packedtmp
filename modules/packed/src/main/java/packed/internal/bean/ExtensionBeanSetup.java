@@ -21,10 +21,10 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanVariable;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Factory0;
 import app.packed.operation.OperationPack;
-import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.container.RealmSetup;
 import packed.internal.operation.PackedOperationPackSetup;
 import packed.internal.util.LookupUtil;
@@ -55,7 +55,7 @@ public final class ExtensionBeanSetup extends BeanSetup {
         return p;
     }
 
-    public void provideOperationPack(DependencyProvider provider) {
+    public void provideOperationPack(BeanVariable provider) {
         Key<?> key = provider.readKey();
         @SuppressWarnings("unchecked")
         PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
