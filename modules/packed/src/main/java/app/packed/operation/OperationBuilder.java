@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanDependency;
-import packed.internal.operation.InjectableOperationSetup;
+import packed.internal.operation.PackedOperationBuilder;
 
 /**
  *
@@ -52,7 +52,7 @@ import packed.internal.operation.InjectableOperationSetup;
 
 // Lad os sige vi godt vil generere en hidden class extension bean...
 
-public sealed interface OperationBuilder permits InjectableOperationSetup {
+public sealed interface OperationBuilder permits PackedOperationBuilder {
 
     int build();
 

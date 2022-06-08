@@ -194,7 +194,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the extension that initiates the operation.} */
     public final Class<? extends Extension<?>> operator() {
-        return operation().operator.extensionType;
+        return operation().operatorBean.extension.extensionType;
     }
 
     public void printDependencyTree() {

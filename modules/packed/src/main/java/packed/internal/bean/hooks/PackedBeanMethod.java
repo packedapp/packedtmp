@@ -25,7 +25,7 @@ import app.packed.operation.OperationBuilder;
 import app.packed.operation.OperationTargetMirror;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.operation.InjectableOperationSetup;
+import packed.internal.operation.PackedOperationBuilder;
 
 /** Internal implementation of BeanMethod */
 public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanMethod {
@@ -65,7 +65,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
     /** {@inheritDoc} */
     @Override
     public OperationBuilder operationBuilder(ExtensionBeanConfiguration<?> operator) {
-        return new InjectableOperationSetup(this, ExtensionBeanSetup.from(operator), newMethodHandle());
+        return new PackedOperationBuilder(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 
     /** The operation target mirror of a bean method.  */

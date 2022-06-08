@@ -80,7 +80,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
     public PackedBeanHandler<T> build() {
         checkNotBuild();
         RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
-        
+
         // Can we call it more than once??? Why not
         realm.wireCurrentComponent();
 
@@ -89,7 +89,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
         if (owner == null) {
             bean = new BeanSetup(this, realm);
         } else {
-            bean = new ExtensionBeanSetup(this, realm);
+            bean = new ExtensionBeanSetup(owner.extension(), this, realm);
         }
         return new PackedBeanHandler<>(bean);
     }

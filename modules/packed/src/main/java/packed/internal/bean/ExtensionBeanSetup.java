@@ -15,6 +15,8 @@
  */
 package packed.internal.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
@@ -25,6 +27,7 @@ import app.packed.bean.BeanDependency;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Factory0;
 import app.packed.operation.OperationPack;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
 import packed.internal.operation.PackedOperationPackSetup;
 import packed.internal.util.LookupUtil;
@@ -39,12 +42,15 @@ public final class ExtensionBeanSetup extends BeanSetup {
     @Nullable
     PackedOperationPackSetup operationPack;
 
+    public final ExtensionSetup extension;
+
     /**
      * @param builder
      * @param owner
      */
-    public ExtensionBeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
+    public ExtensionBeanSetup(ExtensionSetup extension, PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
         super(builder, owner);
+        this.extension = requireNonNull(extension);
     }
 
     public PackedOperationPackSetup operationPack(@Nullable Key<OperationPack> key) {
@@ -63,7 +69,8 @@ public final class ExtensionBeanSetup extends BeanSetup {
     }
 
     /** A handle that can access #configuration. */
-    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle", PackedBeanHandler.class);
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle",
+            PackedBeanHandler.class);
 
     public static ExtensionBeanSetup from(ExtensionBeanConfiguration<?> configuration) {
         PackedBeanHandler<?> bh = (PackedBeanHandler<?>) VH_HANDLE.get((BeanConfiguration) configuration);

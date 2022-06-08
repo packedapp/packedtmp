@@ -15,24 +15,20 @@
  */
 package packed.internal.operation;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.OperationBuilder;
 import app.packed.operation.OperationMirror;
-import packed.internal.base.PackedVariable;
 import packed.internal.bean.BeanSetup;
-import packed.internal.container.ExtensionSetup;
+import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.inject.DependencyNode;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of an operation. */
-public class OperationSetup {
+public final class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_OPERATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
@@ -44,27 +40,27 @@ public class OperationSetup {
     public DependencyNode depNode;
 
     /** Supplies a mirror for the operation */
-    private Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
+    private final Supplier<? extends OperationMirror> mirrorSupplier;
 
-    /** The operation's target. */
+    /** The target of the operation. */
     public final PackedOperationTarget operationTarget;
 
     /** The operator of the operation. */
-    public final ExtensionSetup operator;
-
-    public OperationSetup(BeanSetup bean, PackedOperationTarget target, ExtensionSetup operator) {
-        this.bean = requireNonNull(bean);
-        this.operationTarget = requireNonNull(target);
-        this.operator = requireNonNull(operator);
-        
-        bean.addOperation(this); // add operation
+    public final ExtensionBeanSetup operatorBean;
+    
+    OperationSetup(PackedOperationBuilder builder) {
+        this.bean = builder.bean;
+        this.operationTarget = builder.target;
+        this.operatorBean = builder.operatorBean;
+        this.mirrorSupplier = builder.mirrorSupplier;
     }
 
     /** {@return a mirror for the operation.} */
     public OperationMirror mirror() {
+        // Create a new OperationMirror
         OperationMirror mirror = mirrorSupplier.get();
         if (mirror == null) {
-            throw new InternalExtensionException(operator.extensionType + " supplied a null operation mirror");
+            throw new InternalExtensionException(operatorBean.extension.extensionType + " supplied a null operation mirror");
         }
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
@@ -74,15 +70,5 @@ public class OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
-    }
-
-    public OperationBuilder specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        requireNonNull(supplier, "supplier is null");
-        this.mirrorSupplier = supplier;
-        return (OperationBuilder) this;
-    }
-
-    public PackedVariable variable(int index) {
-        throw new UnsupportedOperationException();
     }
 }
