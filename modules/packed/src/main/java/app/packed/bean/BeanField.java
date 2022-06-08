@@ -25,10 +25,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
+import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.mirror.InjectableOperationHandle;
 import packed.internal.bean.hooks.PackedBeanField;
 
 /**
@@ -89,7 +90,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
-    public @interface AnnotatedWithHook {
+    public @interface FieldHook {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
         boolean allowGet() default false;
@@ -99,9 +100,6 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
         /** The hook's {@link BeanField} class. */
         Class<? extends Extension<?>> extension();
-
-        // Altsaa vi har jo ikke lukket for at vi senere kan goere nogle andre ting...
-        // Class<Supplier<? extends BeanMethod>> bootstrap();
     }
 
 }

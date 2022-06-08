@@ -15,15 +15,16 @@
  */
 package packed.internal.operation.mh;
 
-import static packed.internal.operation.mh.MethodHandleUtil.afterInterceptor;
-import static packed.internal.operation.mh.MethodHandleUtil.aroundInterceptor;
-import static packed.internal.operation.mh.MethodHandleUtil.beforeInterceptor;
-import static packed.internal.operation.mh.MethodHandleUtil.invokeAndReturnArg;
+import static packed.internal.operation.mh.MethodHandleUtilx.afterInterceptor;
+import static packed.internal.operation.mh.MethodHandleUtilx.aroundInterceptor;
+import static packed.internal.operation.mh.MethodHandleUtilx.beforeInterceptor;
+import static packed.internal.operation.mh.MethodHandleUtilx.invokeAndReturnArg;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+
 /**
  *
  */

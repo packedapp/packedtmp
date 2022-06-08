@@ -27,7 +27,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanVariable;
+import app.packed.bean.BeanVariable.ProvisionHook;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
@@ -38,7 +38,7 @@ import app.packed.inject.service.ServiceExtension;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@BeanVariable.ProvisionHook(extension = ServiceExtension.class)
+@ProvisionHook(extension = ServiceExtension.class)
 public interface OldServiceLocator extends ServiceRegistry {
 
     /**

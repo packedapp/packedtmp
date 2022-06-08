@@ -33,7 +33,7 @@ import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanVariable;
+import app.packed.bean.BeanVariable.ProvisionHook;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
@@ -113,7 +113,7 @@ import packed.internal.util.LookupUtil;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@BeanVariable.ProvisionHook(extension = BeanExtension.class)
+@ProvisionHook(extension = BeanExtension.class)
 public interface ServiceLocator {
 
     /**

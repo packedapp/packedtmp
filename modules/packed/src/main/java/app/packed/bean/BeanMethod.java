@@ -15,21 +15,16 @@
  */
 package app.packed.bean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
+import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
-import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationBuilder;
+import app.packed.operation.mirror.OperationMirror;
+import app.packed.operation.mirror.OperationTargetMirror;
 import packed.internal.bean.hooks.PackedBeanMethod;
 
 /**
@@ -74,9 +69,9 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      * @see BeanClassHook#allowAllAccess()
      * 
      * @throws IllegalArgumentException
-     *             if the specified operator is not located in the same container as the method's bean.
+     *             if the specified operator is not a direct ancestor of the method's bean.
      */
-    InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator);
+    OperationBuilder operationBuilder(ExtensionBeanConfiguration<?> operator);
 
     /**
      * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
@@ -91,30 +86,4 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
      *             BeanClassHook#allowAllAccess()
      */
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    // CaptureAnnotated
-    public @interface AnnotatedWithHook {
-
-        /**
-         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
-         * <p>
-         * Methods such as {@link BeanMethod#newOperation(ExtensionBeanConfiguration)} and... will fail with
-         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
-         * 
-         * @return whether or not the implementation is allowed to invoke the target method
-         * 
-         * @see BeanMethod#newOperation(ExtensionBeanConfiguration)
-         */
-        // maybe just invokable = true, idk og saa Field.gettable and settable
-        boolean allowInvoke() default false; // allowIntercept...
-
-        /** The hook's {@link BeanField} class. */
-        Class<? extends Extension<?>> extension();
-
-        // Altsaa vi har jo ikke lukket for at vi senere kan goere nogle andre ting...
-        // Class<Supplier<? extends BeanMethod>> bootstrap();
-    }
 }

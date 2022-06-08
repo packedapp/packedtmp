@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 
 /**
  *

@@ -17,8 +17,9 @@ package app.packed.bean;
 
 import java.lang.reflect.Constructor;
 
+import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.inject.FactoryType;
-import app.packed.operation.InjectableOperationHandle;
+import app.packed.operation.mirror.InjectableOperationHandle;
 
 /**
  * This class represents a {@link Constructor} on a bean.

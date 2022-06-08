@@ -22,7 +22,7 @@ import app.packed.base.Key;
  */
 // Altsaa Vi har jo lidt brug for den i forbindelse med extension beans taenker jeg...
 // Der er ingen grund til at scanne dem flere gange...
-public final class BaseClassModel {
+public final class BeanClassModel {
 
     /** The class of the model. */
     public final Class<?> clazz;
@@ -30,7 +30,7 @@ public final class BaseClassModel {
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
 
-    BaseClassModel(Class<?> clazz) {
+    BeanClassModel(Class<?> clazz) {
         this.clazz = clazz;
     }
     

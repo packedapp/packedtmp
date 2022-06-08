@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanHandler;
-import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationBuilder;
 
 /**
  * The implementation of {@link BeanHandler}.
@@ -34,7 +34,7 @@ public /* primitive */ record PackedBeanHandler<T> (BeanSetup bean) implements B
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle addFunctionalOperation(Object functionInstance) {
+    public OperationBuilder functionalOperationBuilder(Object functionInstance) {
         throw new UnsupportedOperationException();
     }
 

@@ -11,7 +11,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.Mirror;
 

@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 /**
  *
  */
-public class MethodHandleUtil {
+public class MethodHandleUtilx {
 
     public static MethodHandle peekReturnValue(MethodHandle methodHandle, Consumer<?> consumer) {
         throw new UnsupportedOperationException();

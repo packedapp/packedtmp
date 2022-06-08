@@ -17,9 +17,12 @@ package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.inject.FactoryType;
+import app.packed.base.Key;
+import app.packed.operation.mirror.OperationMirror;
+import packed.internal.operation.InjectableOperationSetup;
 
 /**
  *
@@ -32,10 +35,36 @@ import app.packed.inject.FactoryType;
 
 // Vi skal have en eller anden form for naming.
 // int OperationID?
+//noget omkring Instance (requiresInstance) Altsaa det er lidt 
+//noget omkring wrapping mode
 
-public sealed interface OperationHandle permits InjectableOperationHandle {
+//FactoryInvoker??? Fraekt hvis faa dem bundet sammen
 
-    MethodType methodType(); // includes bean?????
+//Kan laves fra et Field eller Method
+//og kan invokere en metoder/constructor, lase/skrive/update et field
+
+//To primaere funktioner...
+/// Injection, MH creation
+
+/// Styring omkring
+
+
+// Lad os sige vi godt vil generere en hidden class extension bean...
+
+public sealed interface OperationBuilder permits InjectableOperationSetup {
+
+    int build();
+
+    int build(Key<OperationPack> key);
+
+    MethodHandle buildNow(); // buildNow????
+
+    default void filter(Function<MethodHandle, MethodHandle> filter) {
+        // MethodType of the returned function must be identical
+    }
+
+    // Hvad goer vi med annoteringer paa Field/Update???
+    // Putter paa baade Variable og ReturnType???? Det vil jeg mene
 
     /**
      * Adds a supplier that creates a specialized mirror for the operation when an operation mirror is requested.
@@ -48,19 +77,34 @@ public sealed interface OperationHandle permits InjectableOperationHandle {
      * @param supplier
      *            a mirror supplier
      */
-    OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
+    OperationBuilder specializeMirror(Supplier<? extends OperationMirror> supplier);
 
-    MethodHandle toRaw();
-
-    FactoryType type();
+    default MethodType targetType() {
+        return MethodType.methodType(void.class);
+    }
+    // Ideen er lidt at hvis vi har forskel
 
     final class RawExtractor<T> {
         static final RawExtractor<MethodHandle> METHOD_HANDLE = null;
         static final RawExtractor<MethodHandle> METHOD_HANDLE_GETTER = null;
         static final RawExtractor<MethodHandle> METHOD_HANDLE_SETTER = null;
-        static final RawExtractor<MethodHandle> VAR_HANDLE = null;
+        static final RawExtractor<MethodHandle> VAR_HANDLE = null; //buildVarHandleNow
+    }
+
+    default OperationBuilder addArgument(Class<?> argumentType) {
+        // Raw -> man kan kun tilgaa den via
+        // Templated (@Provide paa metoder) <-- kan fx. bruges som lazy
+        return this;
+    }
+    
+    public enum Option {
+        NO_OP_PACK
     }
 }
+
+// Vi har ikke MethodType/Factory type her... Det maa komme fra BeanConstructor/BeanMethod 
+// 
+
 //OperationHandle??? Vi dropper builder parten... Eller maaske ikke IDK
 //Vi har brug for at saette nogle ting inde vi skanner og tilfoejer operationer
 //i nogen tilfaelde..

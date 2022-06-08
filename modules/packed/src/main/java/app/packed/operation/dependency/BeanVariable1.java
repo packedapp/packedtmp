@@ -74,9 +74,4 @@ public interface BeanVariable1 {
         // HttpRequestContext... requireAllContexts, requireAnyContexts
         Class<?>[] requiresContext() default {};
     }
-
-}
-
-interface Sazndbox {
-    Object source();
 }

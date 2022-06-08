@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanField;
-import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanScanner.MethodHook;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -73,8 +73,8 @@ import app.packed.bean.BeanMethod;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@BeanMethod.AnnotatedWithHook(allowInvoke = true, extension = BeanExtension.class)
-@BeanField.AnnotatedWithHook(allowGet = true, extension = BeanExtension.class)
+@MethodHook(allowInvoke = true, extension = BeanExtension.class)
+@BeanField.FieldHook(allowGet = true, extension = BeanExtension.class)
 public @interface Provide {
 
     /**

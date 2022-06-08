@@ -26,8 +26,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import app.packed.bean.BeanField;
-import app.packed.bean.BeanMethod;
 import app.packed.bean.BeanScanner;
+import app.packed.bean.BeanScanner.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.bean.BeanSetup;
@@ -72,7 +72,7 @@ public final class BeanMemberScanner {
             // and functional operations are also a part of this???
             // IDK
             // bs
-            combo.scanner.onNew();
+            combo.scanner.onScanBegin();
         }
         return combo;
     }
@@ -85,7 +85,7 @@ public final class BeanMemberScanner {
         scan0(bean.beanClass(), true, Object.class);
 
         for (ExtensionBeanCombo e : extensions.values()) {
-            e.scanner.onClose();
+            e.scanner.onScanEnd();
         }
     }
 
@@ -214,7 +214,7 @@ public final class BeanMemberScanner {
                         fhm.isSettable || hasFullAccess);
 
                 // Call into Extension#hookOnBeanField
-                ei.scanner.onBeanField(f);
+                ei.scanner.onField(f);
             }
         }
     }
@@ -236,7 +236,7 @@ public final class BeanMemberScanner {
 
                 PackedBeanMethod pbm = new PackedBeanMethod(BeanMemberScanner.this, ei.extension, method, fh.isInvokable);
 
-                ei.scanner.onBeanMethod(pbm);
+                ei.scanner.onMethod(pbm);
             }
         }
     }
@@ -257,7 +257,7 @@ public final class BeanMemberScanner {
 
             @Override
             protected FieldHookModel computeValue(Class<?> type) {
-                BeanField.AnnotatedWithHook h = type.getAnnotation(BeanField.AnnotatedWithHook.class);
+                BeanField.FieldHook h = type.getAnnotation(BeanField.FieldHook.class);
                 if (h == null) {
                     return null;
                 }
@@ -274,7 +274,7 @@ public final class BeanMemberScanner {
 
             @Override
             protected MethodHookModel computeValue(Class<?> type) {
-                BeanMethod.AnnotatedWithHook h = type.getAnnotation(BeanMethod.AnnotatedWithHook.class);
+                MethodHook h = type.getAnnotation(MethodHook.class);
                 if (h == null) {
                     return null;
                 }

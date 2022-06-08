@@ -12,7 +12,6 @@ import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceTransformer;
 import app.packed.operation.OperationPack;
-import app.packed.operation.dependency.DependencyProvider;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.bean.PackedBeanHandleBuilder;
@@ -21,7 +20,6 @@ import packed.internal.bean.hooks.PackedBeanMethod;
 import packed.internal.bean.inject.BeanMemberDependencyNode;
 import packed.internal.bean.inject.FieldHelper;
 import packed.internal.bean.inject.MethodHelper;
-import packed.internal.bean.inject.PackedDependencyProvider;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.DependencyNode;
@@ -95,23 +93,22 @@ public class BeanExtension extends Extension<BeanExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onBeanVariable(BeanVariable v) {
-                DependencyProvider provider = v.dp();
+            public void onProvision(BeanVariable v) {
                 // We only have a hook for OperationPack
-                BeanSetup bean = ((PackedDependencyProvider) provider).operation().bean;
+                BeanSetup bean = null;// ((PackedDependencyProvider) provider).operation().bean;
 
                 // OperationPacks can only be used with extension beans
                 if (bean instanceof ExtensionBeanSetup e) {
-                    e.provideOperationPack(provider);
+//                    e.provideOperationPack(provider);
                 } else {
-                    provider.failWith(OperationPack.class.getSimpleName() + " can only be injected into extension beans installed using "
+                    v.failWith(OperationPack.class.getSimpleName() + " can only be injected into extension beans installed using "
                             + BeanExtensionPoint.class.getSimpleName());
                 }
             }
 
             /** {@inheritDoc} */
             @Override
-            public void onBeanField(BeanField field) {
+            public void onField(BeanField field) {
                 // readKey
 
                 Key<?> key = Key.convertField(field.field());
@@ -127,7 +124,7 @@ public class BeanExtension extends Extension<BeanExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onBeanMethod(BeanMethod method) {
+            public void onMethod(BeanMethod method) {
                 Key<?> key = Key.convertMethodReturnType(method.method());
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 

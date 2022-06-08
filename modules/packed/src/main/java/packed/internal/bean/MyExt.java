@@ -24,6 +24,7 @@ import app.packed.application.App;
 import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanMethod;
 import app.packed.bean.BeanScanner;
+import app.packed.bean.BeanScanner.MethodHook;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -49,14 +50,14 @@ public class MyExt extends BaseAssembly {
             return new BeanScanner() {
 
                 @Override
-                public void onNew() {
+                public void onScanBegin() {
                     if (!beanClass().isAnnotationPresent(Deprecated.class)) {
                         throw new BeanDefinitionException("Beans that use @Foo must be annotated with Deprecated ");
                     }
                 }
 
                 @Override
-                public void onBeanMethod(BeanMethod method) {}
+                public void onMethod(BeanMethod method) {}
             };
         }
     }
@@ -69,7 +70,7 @@ public class MyExt extends BaseAssembly {
         }
     }
 
-    @BeanMethod.AnnotatedWithHook(extension = My.class)
+    @MethodHook(extension = My.class)
     @Retention(RUNTIME)
     @Documented
     @interface Foo {

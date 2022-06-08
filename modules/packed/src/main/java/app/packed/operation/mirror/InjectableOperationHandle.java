@@ -13,33 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.mirror;
 
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
+import app.packed.operation.OperationPack;
 
 /**
  *
  */
-// noget omkring Instance (requiresInstance) Altsaa det er lidt 
-// noget omkring wrapping mode
-
-// FactoryInvoker??? Fraekt hvis faa dem bundet sammen
-
-// Kan laves fra et Field eller Method
-// og kan invokere en metoder/constructor, lase/skrive/update et field
 
 
-// To primaere funktioner...
-/// Injection, MH creation
-
-/// Styring omkring
-
-
-public non-sealed interface InjectableOperationHandle extends OperationHandle {
+public interface InjectableOperationHandle {
 
     // Ideen er lidt at hvis vi har forskel
 

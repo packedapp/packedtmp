@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationBuilder;
+import app.packed.operation.mirror.OperationMirror;
 import packed.internal.base.PackedVariable;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
@@ -60,12 +60,6 @@ public class OperationSetup {
         bean.addOperation(this); // add operation
     }
 
-    public InjectableOperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        requireNonNull(supplier, "supplier is null");
-        this.mirrorSupplier = supplier;
-        return (InjectableOperationHandle) this;
-    }
-
     /** {@return a mirror for the operation.} */
     public OperationMirror mirror() {
         OperationMirror mirror = mirrorSupplier.get();
@@ -80,6 +74,12 @@ public class OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public OperationBuilder specializeMirror(Supplier<? extends OperationMirror> supplier) {
+        requireNonNull(supplier, "supplier is null");
+        this.mirrorSupplier = supplier;
+        return (OperationBuilder) this;
     }
 
     public PackedVariable variable(int index) {

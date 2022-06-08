@@ -15,7 +15,7 @@
  */
 package app.packed.operation.old;
 
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 
 /**
  *

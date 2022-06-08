@@ -15,28 +15,18 @@
  */
 package app.packed.operation.dependency;
 
-import java.util.Optional;
-
-import app.packed.application.Realm;
-import app.packed.operation.OperationMirror;
+import java.lang.annotation.Annotation;
 
 /**
- * A mirror for a dependency.
+ *
  */
-// Hmm den burde vel passe til BeanInjector
-public interface DependencyMirror {
+// Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
+// AnnotatedBeanElement?
+public interface BeanAnnotationReader {
 
-    DependencyGraphMirror graph();
-    
-    /** {@return the operation the dependency belongs to.} */
-    // Hvad med unresolved... Tror vi skal fejle
-    OperationMirror operation();
-    
-    Optional<Realm> providedBy();
-    
-    Optional<OperationMirror> providingOperation();
-    
-    boolean isResolved();
-    
-    boolean isSatisfiable();
+    // Throws Invalid bean exception
+    <T extends Annotation> T readRequired(Class<T> annotationType);
+
+    // Det er taenk
+    Annotation[] readAnyOf(Class<?>... annotationTypes);
 }

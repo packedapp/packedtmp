@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirrorTree;
 import app.packed.bean.BeanMirror;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 import packed.internal.container.Mirror;
 import packed.internal.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 

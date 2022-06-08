@@ -15,7 +15,16 @@
  */
 package app.packed.bean;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.function.Consumer;
+
+import app.packed.bean.BeanScanner.BeanElement;
+import app.packed.container.Extension;
 
 /**
  *
@@ -39,4 +48,17 @@ public non-sealed interface BeanClass extends BeanElement {
 //    static BeanClass of(MethodHandles.Lookup caller, Class<?> clazz) {
 //        throw new UnsupportedOperationException();
 //    }
+    
+    
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface ClassHook {
+
+        /** Whether or not the sidecar is allow to get the contents of a field. */
+        boolean allowAllAccess() default false;
+
+        /** The hook's {@link BeanField} class. */
+        Class<? extends Extension<?>> extension();
+    }
 }

@@ -32,6 +32,10 @@ import java.util.StringJoiner;
  * @apiNote This class is modelled after {@link MethodType}. But includes information about annotations and detailed
  *          type information.
  */
+
+// Mit problem med den her er lidt method return type...
+// Altsaa annoteringer er jo ikke noedvendigvis knyttede til retur typen, fx @Get
+
 public final /* primitive */ class FactoryType {
 
     private static final Variable[] NO_VARS = {};

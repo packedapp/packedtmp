@@ -20,7 +20,7 @@ import java.util.function.BiConsumer;
 import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.inject.service.ServiceExtension;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 
 /**
  *

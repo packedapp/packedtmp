@@ -14,7 +14,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimePhase;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 

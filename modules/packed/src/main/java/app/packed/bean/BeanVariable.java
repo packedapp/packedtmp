@@ -21,17 +21,66 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
-import app.packed.operation.dependency.DependencyProvider;
+import app.packed.inject.Factory;
 
 /**
  *
  */
-public non-sealed interface BeanVariable extends BeanElement{
+public non-sealed interface BeanVariable extends BeanElement {
+    /**
+     * <p>
+     * For raw er det automatisk en fejl
+     */
+    void provideMissing();
     
-    DependencyProvider dp();
+    /**
+     * @return
+     * 
+     * @throws BeanDefinitionException
+     *             if the variable was a proper key
+     */
+    default Key<?> readKey() {
+        throw new UnsupportedOperationException();
+    }
     
+    void provide(Factory<?> fac);
+
+    void provide(MethodHandle methodHandle);
+
+    /**
+     * <p>
+     * Vi tager Nullable med saa vi bruge raw.
+     * <p>
+     * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
+     * 
+     * @param instance
+     *            the instance to provide to the variable
+     * 
+     * @throws ClassCastException
+     *             if the type of the instance does not match the type of the variable
+     * @throws IllegalStateException
+     *             if a provide method has already been called on this instance (I think it is fine to allow it to be
+     *             overriden by itself).
+     */
+    void provideInstance(@Nullable Object obj);
+
+    /**
+     * Variable is resolvable at runtime.
+     * <p>
+     * Cannot provide instance. Must provide an optional class or Null will represent a missing value
+     * 
+     * @return
+     */
+    BeanVariable runtimeOptional();
+
+    TypeInfo type();
+
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)
     @Documented
@@ -39,5 +88,15 @@ public non-sealed interface BeanVariable extends BeanElement{
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
+    }
+
+    interface TypeInfo {
+
+        void checkAssignable(Class<?> clazz, Class<?>... additionalClazzes);
+
+        boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes);
+
+        Class<?> rawType();
+
     }
 }

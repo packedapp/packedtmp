@@ -50,6 +50,7 @@ public sealed interface DependencyProvider permits PackedDependencyProvider {
     void provide(Factory<?> fac);
 
     void provide(MethodHandle methodHandle);
+    
     /**
      * @param postFix
      *            the message to include in the final message
@@ -119,6 +120,7 @@ public sealed interface DependencyProvider permits PackedDependencyProvider {
     // Skal saettes statisk paa bootstrappe vil jeg mene??? IDK
     // Som udgangs punkt er man build time resolved 
     enum Availability {
+        
         /** For example, ServiceRegistry. */
         ALWAYS_AVAILABLE,
 

@@ -148,7 +148,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @return a new bean scanner
      */
     protected BeanScanner newBeanScanner() {
-        return new BeanScanner();
+        return new BeanScanner() {};
     }
 
     /**

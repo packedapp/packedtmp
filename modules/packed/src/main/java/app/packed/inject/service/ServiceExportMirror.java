@@ -18,7 +18,7 @@ package app.packed.inject.service;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 
 /**
  *

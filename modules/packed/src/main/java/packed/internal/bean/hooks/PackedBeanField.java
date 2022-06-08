@@ -23,8 +23,8 @@ import app.packed.bean.BeanField;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.mirror.InjectableOperationHandle;
+import app.packed.operation.mirror.OperationTargetMirror;
 import packed.internal.container.ExtensionSetup;
 
 /**

@@ -15,16 +15,30 @@
  */
 package app.packed.bean;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import app.packed.base.Nullable;
-import app.packed.bean.BeanField.AnnotatedWithHook;
+import app.packed.bean.BeanField.FieldHook;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
+import app.packed.operation.dependency.BeanAnnotationReader;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
  *
+ *
+ * @see Extension#newBeanScanner
+ * @see BeanHandler.Builder#beanScanner(BeanScanner)
  */
-public class BeanScanner {
+// Move BeanMethod and friends into BeanScanner as nested classes???
+public abstract class BeanScanner {
 
     /**
      * The configuration of this scanner. Is initially null but populated via
@@ -33,15 +47,19 @@ public class BeanScanner {
     @Nullable
     private Setup setup;
 
-    public final Object beanAnnotatedReader() {
-        // AnnotatedReader.of(beanClass());
+    // BeanAnnotationReader???
+
+    /** {@return an annotation reader for for the bean.} */
+    public final BeanAnnotationReader beanAnnotationReader() {
+        // AnnotationReader.of(beanClass());
         throw new UnsupportedOperationException();
     }
-    
+
     public final Class<?> beanClass() {
         return setup().bean.beanClass();
     }
 
+    /** {@return the kind of bean being scanned.} */
     public final BeanKind beanKind() {
         return setup().bean.beanKind();
     }
@@ -49,6 +67,8 @@ public class BeanScanner {
     /**
      * Invoked by a MethodHandle from ExtensionSetup.
      * 
+     * @param extension
+     *            the extension that owns the scanner
      * @param bean
      *            the bean we are scanning
      */
@@ -59,44 +79,55 @@ public class BeanScanner {
         this.setup = new Setup(extension, bean);
     }
 
-    public void onBeanClass(BeanClass clazz) {}
+    public void onClass(BeanClass clazz) {}
 
     /**
-     * A callback method that is invoked for any field on a newly added bean where the field:
+     * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
-     * is annotated with an annotation that itself is annotated with {@link BeanField.AnnotatedWithHook} and where
-     * {@link AnnotatedWithHook#extension()} matches the type of this extension.
+     * is annotated with an annotation that itself is annotated with {@link BeanField.FieldHook} and where
+     * {@link FieldHook#extension()} matches the type of this extension.
      * <p>
-     * This method is never invoked more than once for a single field for any given extension. Even if there are multiple
-     * matching hook annotations on the same field. This method will only be called once for the field.
+     * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
+     * annotations on the same field.
      * 
-     * @param bf
+     * @param field
      *            the bean field
-     * @see BeanField.AnnotatedWithHook
+     * @see BeanField.FieldHook
      */
-    public void onBeanField(BeanField bf) {}
+    // onAnnotatedField(Set<Class<? extends Annotation<>> hooks, BeanField));
+    // IDK
+    // Det kommer lidt an paa variable vil jeg mene...
+    public void onField(BeanField field) {}
 
-    public void onBeanMethod(BeanMethod method) {
+    public void onMethod(BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         // We probably want to throw an internal extension exception instead
         throw new InternalExtensionException(setup().extension.model.fullName() + " failed to handle bean method");
     }
 
-    public void onBeanVariable(BeanVariable variable) {}
-
-    public void onClose() {}
+    // Maaske bare en metode... onInjectVariable
+    public void onProvision(BeanVariable variable) {}
 
     /**
+     * A callback method that is called before any other methods on the scanner.
+     * <p>
+     * This method can be used to setup data structures or perform validation.
      * 
-     * This method is always called before
-     * 
-     * @param beanInfo
-     *            information about the bean
+     * @see #onScanEnd()
      */
-    // What happens if we install an extension that adds a bean for scanning that uses the same extension???
-    // I think we should wait with the scanning??? IDK
-    public void onNew() {}
+    public void onScanBegin() {}
+
+    /**
+     * A callback method that is called after any other methods on the scanner.
+     * <p>
+     * This method can be used to provide final validation or registration of the bean.
+     * <p>
+     * If an exception is thrown at any time doing processing of the bean this method will not be called.
+     * 
+     * @see #onScanBegin()
+     */
+    public void onScanEnd() {}
 
     /**
      * {@return all the extensions that are being mirrored.}
@@ -112,6 +143,50 @@ public class BeanScanner {
         return b;
     }
 
-    private record Setup(ExtensionSetup extension, BeanSetup bean) {}
+    // This is a place holder for now... Will be ditched it in the future
+    // BeanVariable bare
+    public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVariable {
 
+        default BeanAnnotationReader annotations() {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * @param postFix
+         *            the message to include in the final message
+         * 
+         * @throws BeanDefinitionException
+         *             always thrown
+         */
+        default void failWith(String postFix) {
+            throw new BeanDefinitionException("OOPS " + postFix);
+        }
+    }
+    
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface MethodHook {
+
+        /**
+         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+         * <p>
+         * Methods such as {@link BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
+         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
+         * 
+         * @return whether or not the implementation is allowed to invoke the target method
+         * 
+         * @see BeanMethod#operationBuilder(ExtensionBeanConfiguration)
+         */
+        // maybe just invokable = true, idk og saa Field.gettable and settable
+        boolean allowInvoke() default false; // allowIntercept...
+
+        /** The hook's {@link BeanField} class. */
+        Class<? extends Extension<?>> extension();
+    }
+    // CheckRealmIsApplication
+    // CheckRealmIsExtension
+
+    /** A small utility record to hold the both the extension and the bean in one field. */
+    private record Setup(ExtensionSetup extension, BeanSetup bean) {}
 }

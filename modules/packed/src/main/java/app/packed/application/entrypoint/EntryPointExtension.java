@@ -60,7 +60,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
              * {@inheritDoc}
              */
             @Override
-            public void onBeanMethod(BeanMethod method) {
+            public void onMethod(BeanMethod method) {
                 registerEntryPoint(null, true);
 
                 application.entryPoints = new EntryPointSetup();
@@ -77,7 +77,6 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
             
         };
     }
-
 
     // installMain
     public <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {

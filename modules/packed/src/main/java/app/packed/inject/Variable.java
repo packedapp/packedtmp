@@ -114,6 +114,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
         return new PackedVariable(parameter, new VariableTypeWrapper.OfParameter(parameter));
     }
 
+    // Do we really want to support type variables??? I don't think so
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
         return new PackedVariable(typeVariable, new VariableTypeWrapper.OfTypeVariable(typeVariable));
     }

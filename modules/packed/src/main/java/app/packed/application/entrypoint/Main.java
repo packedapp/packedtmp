@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.BuildException;
-import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanScanner.MethodHook;
 
 /**
  * Trying to build an application with more than a single method annotated with this annotation will fail with
@@ -45,5 +45,5 @@ import app.packed.bean.BeanMethod;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@BeanMethod.AnnotatedWithHook(allowInvoke = true, extension = EntryPointExtension.class)
+@MethodHook(allowInvoke = true, extension = EntryPointExtension.class)
 public @interface Main {}

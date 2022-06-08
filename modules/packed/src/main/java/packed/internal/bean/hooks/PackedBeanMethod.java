@@ -21,8 +21,8 @@ import java.lang.reflect.Method;
 import app.packed.bean.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
-import app.packed.operation.InjectableOperationHandle;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationBuilder;
+import app.packed.operation.mirror.OperationTargetMirror;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.operation.InjectableOperationSetup;
@@ -64,7 +64,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
 
     /** {@inheritDoc} */
     @Override
-    public InjectableOperationHandle newOperation(ExtensionBeanConfiguration<?> operator) {
+    public OperationBuilder operationBuilder(ExtensionBeanConfiguration<?> operator) {
         return new InjectableOperationSetup(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 

@@ -19,7 +19,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.bean.hooks.BeanMemberScanner;
 import packed.internal.component.ComponentSetup;
@@ -36,7 +36,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
 
     /** A model of hooks on the bean class. Or null if no member scanning was performed. */
     @Nullable
-    public final BaseClassModel hookModel;
+    public final BeanClassModel beanModel;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
@@ -54,7 +54,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     public BeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
         super(builder.container.application, owner, builder.container);
         this.builder = builder;
-        this.hookModel = builder.sourceType == SourceType.NONE ? null : new BaseClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
+        this.beanModel = builder.sourceType == SourceType.NONE ? null : new BeanClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
         if (beanKind() != BeanKind.FUNCTIONAL) {
             this.injectionManager = new BeanInjectionManager(this, builder);
         } else {
@@ -66,11 +66,11 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         }
 
         // Wire the hook model
-        if (hookModel != null) {
+        if (beanModel != null) {
             // hookModel.onWire(this);
 
             // Set the name of the component if it have not already been set using a wirelet
-            initializeNameWithPrefix(hookModel.simpleName());
+            initializeNameWithPrefix(beanModel.simpleName());
         }
     }
 

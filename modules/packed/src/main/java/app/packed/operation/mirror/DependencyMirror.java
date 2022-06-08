@@ -13,18 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
+package app.packed.operation.mirror;
+
+import java.util.Optional;
+
+import app.packed.application.Realm;
 
 /**
- *
+ * A mirror for a dependency.
  */
-// Det er vel primaert hjaelpmetoder vi skal have her?
-// Vi kan jo "deep" explore enhver operation
+// Hmm den burde vel passe til BeanInjector
+public interface DependencyMirror {
 
-// Giv mig alle steder vi bruger InjctionContext
-
-// resolved().isKeyBased().key == InjectionContxt();
-
-public interface DependencyGraphMirror {
-
+    DependencyGraphMirror graph();
+    
+    /** {@return the operation the dependency belongs to.} */
+    // Hvad med unresolved... Tror vi skal fejle
+    OperationMirror operation();
+    
+    Optional<Realm> providedBy();
+    
+    Optional<OperationMirror> providingOperation();
+    
+    boolean isResolved();
+    
+    boolean isSatisfiable();
 }

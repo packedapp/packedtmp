@@ -16,7 +16,7 @@
 package app.packed.inject.service;
 
 import app.packed.base.Key;
-import app.packed.operation.OperationMirror;
+import app.packed.operation.mirror.OperationMirror;
 
 /**
  *

@@ -17,7 +17,7 @@ package packed.internal.operation;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.mirror.OperationTargetMirror;
 import packed.internal.bean.hooks.PackedBeanMember;
 
 /** The target of an operation. */
