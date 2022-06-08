@@ -80,6 +80,8 @@ public class OperationMirror implements Mirror {
      * 
      * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
      */
+    
+    // Creates new Component instead??? Could make a session
     public final boolean createsNewBean() {
         // Hvad med en constructor??
 
@@ -116,6 +118,8 @@ public class OperationMirror implements Mirror {
 
         // Men er det dependencies??? Ja det er vel fx for @Provide
         // Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
+        
+        // f.eks @Provide for et field ville ikke have dependencies
         throw new UnsupportedOperationException();
     }
 
@@ -139,6 +143,9 @@ public class OperationMirror implements Mirror {
 
     public final Optional<Class<? extends Annotation>> hook() {
         // Enten Provide eller ogsaa MetaAnnotation
+        // use source().annotationReader();
+        
+        // Maybe this is on target???
         throw new UnsupportedOperationException();
     }
 

@@ -4,7 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
-import app.packed.bean.BeanVariable;
+import app.packed.bean.BeanDependency;
 import app.packed.container.Extension;
 import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceExtension;
@@ -55,7 +55,7 @@ public class InternalInfuserTester {
         }
     }
 
-    @BeanVariable.ProvisionHook(extension = ServiceExtension.class)
+    @BeanDependency.ProvisionHook(extension = ServiceExtension.class)
     interface XX {
 
         // Det er super smart at man ikke skal lave en ny klasse...

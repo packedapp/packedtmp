@@ -33,7 +33,7 @@ import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanVariable.ProvisionHook;
+import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;

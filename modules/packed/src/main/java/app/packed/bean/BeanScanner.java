@@ -27,7 +27,6 @@ import app.packed.bean.BeanField.FieldHook;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.dependency.BeanAnnotationReader;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 
@@ -81,6 +80,8 @@ public abstract class BeanScanner {
 
     public void onClass(BeanClass clazz) {}
 
+    public void onDependency(BeanDependency dependency) {}
+
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
@@ -105,9 +106,6 @@ public abstract class BeanScanner {
         // We probably want to throw an internal extension exception instead
         throw new InternalExtensionException(setup().extension.model.fullName() + " failed to handle bean method");
     }
-
-    // Maaske bare en metode... onInjectVariable
-    public void onProvision(BeanVariable variable) {}
 
     /**
      * A callback method that is called before any other methods on the scanner.
@@ -145,7 +143,7 @@ public abstract class BeanScanner {
 
     // This is a place holder for now... Will be ditched it in the future
     // BeanVariable bare
-    public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanVariable {
+    public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanDependency {
 
         default BeanAnnotationReader annotations() {
             throw new UnsupportedOperationException();

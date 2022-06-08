@@ -32,11 +32,13 @@ import app.packed.inject.Factory;
 /**
  *
  */
-public non-sealed interface BeanVariable extends BeanElement {
+// Why not BeanDependency
+public non-sealed interface BeanDependency extends BeanElement {
     /**
      * <p>
      * For raw er det automatisk en fejl
      */
+    // provideUnresolved();
     void provideMissing();
     
     /**
@@ -73,11 +75,12 @@ public non-sealed interface BeanVariable extends BeanElement {
     /**
      * Variable is resolvable at runtime.
      * <p>
-     * Cannot provide instance. Must provide an optional class or Null will represent a missing value
+     * Cannot provide instance. Must provide an optional class or Null will represent a missing value.
+     * Maybe just optional class for now
      * 
      * @return
      */
-    BeanVariable runtimeOptional();
+    BeanDependency runtimeOptional();
 
     TypeInfo type();
 
@@ -97,6 +100,5 @@ public non-sealed interface BeanVariable extends BeanElement {
         boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes);
 
         Class<?> rawType();
-
     }
 }

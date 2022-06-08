@@ -27,7 +27,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanVariable.ProvisionHook;
+import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;

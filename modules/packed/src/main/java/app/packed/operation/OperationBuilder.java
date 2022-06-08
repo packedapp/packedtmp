@@ -17,10 +17,12 @@ package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
+import app.packed.bean.BeanDependency;
 import packed.internal.operation.InjectableOperationSetup;
 
 /**
@@ -61,6 +63,10 @@ public sealed interface OperationBuilder permits InjectableOperationSetup {
     default void filter(Function<MethodHandle, MethodHandle> filter) {
         // MethodType of the returned function must be identical
     }
+    
+    default List<BeanDependency> dependencies() {
+        throw new UnsupportedOperationException();
+    }
 
     // Hvad goer vi med annoteringer paa Field/Update???
     // Putter paa baade Variable og ReturnType???? Det vil jeg mene
@@ -78,7 +84,7 @@ public sealed interface OperationBuilder permits InjectableOperationSetup {
      */
     OperationBuilder specializeMirror(Supplier<? extends OperationMirror> supplier);
 
-    default MethodType targetType() {
+    default MethodType invocationType() {
         return MethodType.methodType(void.class);
     }
     // Ideen er lidt at hvis vi har forskel

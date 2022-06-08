@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanVariable.ProvisionHook;
+import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.inject.Inject;
 
 /**

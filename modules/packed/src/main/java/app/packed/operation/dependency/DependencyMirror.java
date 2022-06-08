@@ -23,20 +23,25 @@ import app.packed.operation.OperationMirror;
 /**
  * A mirror for a dependency.
  */
-// Hmm den burde vel passe til BeanInjector
 public interface DependencyMirror {
 
     DependencyGraphMirror graph();
-    
+
     /** {@return the operation the dependency belongs to.} */
     // Hvad med unresolved... Tror vi skal fejle
     OperationMirror operation();
-    
+
     Optional<Realm> providedBy();
-    
+
+    /**
+     * If this dependency is the result of another operation.
+     * 
+     * @return
+     */
+    // Talking about some caching here makes sense 
     Optional<OperationMirror> providingOperation();
-    
+
     boolean isResolved();
-    
+
     boolean isSatisfiable();
 }

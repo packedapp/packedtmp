@@ -25,6 +25,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
+import app.packed.base.Key;
 import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
@@ -39,6 +40,11 @@ import packed.internal.bean.hooks.PackedBeanField;
  */
 public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
+    default Key<?> readKey() {
+        return Key.convertField(field());
+    }
+
+    
     /** {@return the underlying field.} */
     Field field();
 

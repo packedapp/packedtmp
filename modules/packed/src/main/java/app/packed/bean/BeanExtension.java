@@ -93,7 +93,7 @@ public class BeanExtension extends Extension<BeanExtension> {
 
             /** {@inheritDoc} */
             @Override
-            public void onProvision(BeanVariable v) {
+            public void onDependency(BeanDependency v) {
                 // We only have a hook for OperationPack
                 BeanSetup bean = null;// ((PackedDependencyProvider) provider).operation().bean;
 
@@ -111,7 +111,7 @@ public class BeanExtension extends Extension<BeanExtension> {
             public void onField(BeanField field) {
                 // readKey
 
-                Key<?> key = Key.convertField(field.field());
+                Key<?> key = field.readKey();
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 
                 BeanSetup bean = ((PackedBeanField) field).bean;

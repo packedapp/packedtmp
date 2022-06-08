@@ -21,7 +21,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanVariable;
+import app.packed.bean.BeanDependency;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Factory0;
 import app.packed.operation.OperationPack;
@@ -55,7 +55,7 @@ public final class ExtensionBeanSetup extends BeanSetup {
         return p;
     }
 
-    public void provideOperationPack(BeanVariable provider) {
+    public void provideOperationPack(BeanDependency provider) {
         Key<?> key = provider.readKey();
         @SuppressWarnings("unchecked")
         PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
