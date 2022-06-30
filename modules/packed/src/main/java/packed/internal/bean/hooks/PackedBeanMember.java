@@ -41,9 +41,9 @@ public abstract sealed class PackedBeanMember<T extends Member> implements Packe
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    PackedBeanMember(BeanMemberScanner scanner, ExtensionSetup operator, T member) {
+    PackedBeanMember(BeanSetup bean, BeanMemberScanner scanner, ExtensionSetup operator, T member) {
         this.openClass = scanner.oc;
-        this.bean = scanner.bean;
+        this.bean = bean;
         this.operator = operator;
         this.member = member;
     }

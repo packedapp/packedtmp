@@ -15,31 +15,17 @@
  */
 package app.packed.inject.service;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
 import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-public abstract class ServiceExportMirror extends OperationMirror {
+public abstract class ServiceProvideOperationMirror extends OperationMirror {
 
-    ServiceExportMirror(IntService is) {
-        
-    }
-    
-    /** {@return the key that the service is exported with.} */
+    /** {@return the key of the service.} */
     public abstract Key<?> key();
-
-    // Hvad goer vi omvendt??? Returnere en liste??
-    // Kun allower en? IDK
-    public abstract Optional<ServiceProvideMirror> service(); // Kan ikke fange alle dog
-
-    // find usage of the exported service
-    
-    
-    static class IntService {
-        
-    }
 }
+
+// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
+// provide(Doo.class) -> BeanOperation.element = BeanClass

@@ -23,8 +23,10 @@ import app.packed.container.ExtensionNavigator;
 
 /**
  *
+ * @implNote It is important that this class implements equals/hashCode as this is used by equals/hashCode on ExtensionMirror.
  */
 // Should take current + root
+
 public record PackedExtensionNavigator<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionNavigator<T> {
 
     /** {@inheritDoc} */
@@ -47,7 +49,7 @@ public record PackedExtensionNavigator<T extends Extension<T>> (ExtensionSetup e
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionDescriptor descriptor() {
+    public ExtensionDescriptor extensionDescriptor() {
         return extension.model;
     }
 }

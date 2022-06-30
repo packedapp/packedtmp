@@ -3,15 +3,17 @@ package app.packed.application.entrypoint;
 import app.packed.operation.OperationMirror;
 
 /**
- * A mirror representing a single entry point in an application. Instances of this mirror are normally acquired by
- * calling various methods on a {@link EntryPointExtensionMirror} instance.
+ * A mirror representing a single entry point in an application.
+ * <p>
+ * Instances of this mirror are normally acquired by calling various methods on a {@link EntryPointExtensionMirror}
+ * instance.
  */
-public final class EntryPointMirror extends OperationMirror {
+public class EntryPointOperationMirror extends OperationMirror {
 
     /** The unique id of the entry point within the application. */
     private final int entryPointId;
 
-    EntryPointMirror(int entryPointId) {
+    EntryPointOperationMirror(int entryPointId) {
         this.entryPointId = entryPointId;
     }
 

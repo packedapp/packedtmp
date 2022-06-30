@@ -64,9 +64,9 @@ public interface ComponentMirrorTree  {
 }
 //Her er taenkt paa en Path fra From to To
 //Minder maaske lidt for meget om ComponnetMirror.Relation
-interface ComponentMirrorPath extends Iterable<ComponentMirror> {
-
- ComponentMirror from();
- 
- ComponentMirror to();
-}
+//interface ComponentMirrorPath extends Iterable<ComponentMirror> {
+//
+// ComponentMirror from();
+// 
+// ComponentMirror to();
+//}

@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.inject.FactoryType;
-import app.packed.operation.OperationBuilder;
+import app.packed.operation.OperationConfiguration;
 
 /**
  * This class represents a {@link Constructor} on a bean.
@@ -28,6 +28,7 @@ import app.packed.operation.OperationBuilder;
  * be defined on a bean driver or a bean class. Which determines how constructors are processed.
  */
 // Do we need a BeanExecutable??? Not sure we have a use case
+// Or maybe we just have BeanMethod (Problem with constructor() though)
 public non-sealed interface BeanConstructor extends BeanElement {
 
     /** {@return the underlying constructor.} */
@@ -46,5 +47,5 @@ public non-sealed interface BeanConstructor extends BeanElement {
      */
     int getModifiers();
 
-    OperationBuilder newOperation();
+    OperationConfiguration newOperation();
 }

@@ -22,7 +22,8 @@ package app.packed.application;
  * code.
  */
 // Taenker configurations fejl maaske smider ConfigException - Det kan jo baade vaere paa runtime og build time
-// ApplicationBuildException (Men saa lukker vi for at vi kan deploye adhoc ting
+
+// ApplicationBuildException (Men saa lukker vi for at vi kan deploye adhoc ting...
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

@@ -30,32 +30,21 @@ import app.packed.lifecycle.RunState;
  */
 public final class App {
 
-    /** A driver for this application. */
-    private static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().buildVoid();
+    /** The default application driver. */
+    private static final ApplicationDriver<Void> DEFAULT_DRIVER = ApplicationDriver.builder().buildVoid();
 
     /** Not today Satan, not today. */
     private App() {}
 
-    // The launcher can be used exactly once
-    public static ApplicationLauncher<Void> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return DRIVER.imageOf(assembly, wirelets);
-    }
-
-    public static ApplicationLauncher<Void> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
-        return DRIVER.imageOf(assembly, wirelets);
-    }
-
-    /** {@return the application driver used by this class.} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    static ApplicationDriver<Void> driver() {
-        return (ApplicationDriver) DRIVER;
+    static Builder builder() {
+        throw new UnsupportedOperationException();
     }
 
     /**
      * Builds an application from the specified assembly and returns a mirror representing the application.
      * 
      * @param assembly
-     *            the application's assembly 
+     *            the application's assembly
      * @param wirelets
      *            optional wirelets
      * @return a mirror representing the application
@@ -63,52 +52,54 @@ public final class App {
      *             if the application could not be build
      */
     public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return DRIVER.mirrorOf(assembly, wirelets);
+        return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
+    }
+
+    // The launcher can be used exactly once
+    public static ApplicationImage<Void> newLauncher(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
+    }
+
+    public static ApplicationImage<Void> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
-        // not in final version I think
-        DRIVER.print(assembly, wirelets);
+        // not in final version I think IDK
+        mirrorOf(assembly, wirelets).print();
     }
 
-    
     /**
-     * This method will create and start an {@link Program application} from the specified source. Blocking until the run
-     * state of the application is {@link RunState#TERMINATED}.
+     * Builds and executes an application from the specified assembly and optional wirelets.
      * <p>
-     * Entry point or run to termination
-     * <p>
-     * 
-     * @param assembly
-     *            the assembly to execute
-     * @param wirelets
-     *            wirelets
-     * @throws RuntimeException
-     *             if the application failed to run properly
-     */
-    /**
-     * Builds an application from the specified assembly. If successful a single instance of the application that will
-     * created and executed until it is {@link RunState#TERMINATED terminated}. After which this method will return.
+     * If successful a single instance of the application that will created and executed until it is
+     * {@link RunState#TERMINATED terminated}. After which this method will return.
      * 
      * @param assembly
      *            the assembly representing the application
      * @param wirelets
      *            optional wirelets
      * @throws BuildException
-     *             if the application could not be build
+     *             if the application failed to build
      * @throws UnhandledApplicationException
      *             if the fails during runtime
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
-        driver().launch(assembly, wirelets);
+        DEFAULT_DRIVER.launch(assembly, wirelets);
+    }
+
+    // class probably... no need for an interface. Noone is going to call in
+    interface Builder {
+        ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
+
+        Builder restartable();
+
+        void run(Assembly assembly, Wirelet... wirelets);
     }
 }
 
-// static class Launcher {
-//
-//    static Launcher launcher() {
-//        return new Launcher();
-//    }
-//
-//    // Kunne have noget med noget Throwable
-// }
+class Usage {
+    public static void main(String[] args) {
+        App.builder().restartable().run(null);
+    }
+}

@@ -25,11 +25,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.function.Function;
 
 import app.packed.base.TypeToken.CanonicalizedTypeToken;
 import packed.internal.util.AnnotationUtil;
@@ -70,6 +72,12 @@ import packed.internal.util.TypeUtil;
  * that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
  */
 public abstract class Key<T> {
+
+    // Fail on type variables.
+    // Strip wildcards
+    // fail on void, optional*, Provider
+    // I think we need to test this
+    static final List<Class<?>> FORBIDDEN = List.of(Optional.class/* , ....., */);
 
     /** A cache of keys used by {@link #of(Class)}. */
     private static final ClassValue<Key<?>> CLASS_KEY_CACHE = new ClassValue<>() {
@@ -304,7 +312,7 @@ public abstract class Key<T> {
      */
     public final Key<T> withTag(String name) {
         requireNonNull(name, "name is null");
-        
+
         @SuppressWarnings("all")
         class TaggedAnno implements Tag {
 
@@ -318,11 +326,9 @@ public abstract class Key<T> {
                 return name;
             }
 
-            
         }
         return with(new TaggedAnno());
     }
-    
 
     public final Key<T> without(Class<? extends Annotation> qualifierType) {
         throw new UnsupportedOperationException();
@@ -398,6 +404,11 @@ public abstract class Key<T> {
         TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
         Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
         return convertTypeLiteralNullableAnnotation(field, tl, annotation);
+    }
+
+    public static <T extends Throwable> Key<?> convertField(Field field, Function<String, T> supplier) throws T {
+        // Jeg har lyst til at fjerne dem...
+        throw new UnsupportedOperationException();
     }
 
     public static Key<?> convertParameter(Parameter parameter) {

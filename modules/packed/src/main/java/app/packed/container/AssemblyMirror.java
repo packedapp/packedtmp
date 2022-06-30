@@ -19,21 +19,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.ComponentMirror;
+import app.packed.application.ApplicationMirror;
 import packed.internal.container.Mirror;
 import packed.internal.container.UserRealmSetup;
 
 /** A mirror of an {@link Assembly}. */
 public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.BuildtimeAssemblyMirror {
 
-    /** {@return the type of the assembly.} */
-    Class<? extends Assembly> assemblyType();
+    /** {@return the application this assembly is a part of.} */
+    ApplicationMirror application();
+    
+    /** {@return the class that defines the assembly.} */
+    Class<? extends Assembly> assemblyClass();
 
     /** {@return a stream of all assemblies that have been linked from this assembly.} */
     Stream<AssemblyMirror> children();
 
-    /** {@return a stream of all components defined by the assembly.} */
-    Stream<ComponentMirror> components();
+    /** {@return the root container defined by this assembly.} */
+    ContainerMirror container();
 
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
     List<Class<? extends ContainerHook>> containerHooks();
@@ -41,9 +44,9 @@ public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.Bui
     /** @return whether or not this assembly defines the root container in the application.} */
     boolean isRoot();
 
-    /** {@return any assembly that linked this assembly, or null if this assembly defines the root container.} */
+    /**
+     * {@return any assembly that linked this assembly, or empty if the assembly defined the root container of an
+     * application.}
+     */
     Optional<AssemblyMirror> parent();
-
-    /** {@return the root container defined by this assembly.} */
-    ContainerMirror root();
 }

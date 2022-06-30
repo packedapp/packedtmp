@@ -16,12 +16,18 @@
 package app.packed.container;
 
 /**
+ * This extension is used to provide mirrors at runtime.
+ * 
  * This extension is mainly here as a kind of a marker extension. Indicating that somewhere in the application someone
  * has decided to reference a mirror. In which case the whole mirror shebang is available at runtime.
  * <p>
  * Maybe at some point we will support a compact mirror mode where each extension can keep a minimal set of information
  * that is needed at runtime.
  */
+// ApplicationMirror
+// ContainerMirror
+// BeanMirror
+
 public class MirrorExtension extends Extension<MirrorExtension> {
 
     /**
@@ -35,7 +41,11 @@ public class MirrorExtension extends Extension<MirrorExtension> {
 
 //DebugExtension???? Clearly indicates that it is not normal usage
 // However, I don't see the need two extensions.
-// Do we need a DevTools extension???
+// Do we need the DevTools extension???
+
+
+//FooExtension <- only if installed though
+//// Nah.. vi supportere ikke nedarvnings injection
 
 //https://docs.scala-lang.org/overviews/reflection/environment-universes-mirrors.html
 //reflect = build time, introspect = runtime.. IDK

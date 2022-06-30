@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
-import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -75,7 +74,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @throws BuildException
      *             if the image could not be build
      */
-    ApplicationLauncher<A> imageOf(Assembly  assembly, Wirelet... wirelets);
+    ApplicationImage<A> imageOf(Assembly  assembly, Wirelet... wirelets);
 
     /**
      * Returns whether or not applications produced by this driver have an {@link LifecycleApplicationController}.
@@ -106,15 +105,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @see App#run(Assembly, Wirelet...)
      */
     A launch(Assembly  assembly, Wirelet... wirelets); // newInstance
-
-    default A launchJob(Assembly  assembly, Wirelet... wirelets) {
-        // Er ikke sikker paa vi kan bruge den hed med signaturen <A>
-
-        // JobDriver
-        throw new UnsupportedOperationException();
-    }
-    // Maaske er den her paa ApplicationRuntimeExtension.launch()
-    // JobExtension.execute()
 
     /**
      * Returns the launch mode of applications created by this driver.
@@ -152,22 +142,11 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     ApplicationMirror mirrorOf(Assembly  assembly, Wirelet... wirelets);
 
-    default void print(Assembly  assembly, Wirelet... wirelets) {
-        ApplicationMirror b = ApplicationMirror.of(assembly, wirelets);
-        b.container().stream().forEach(cc -> {
-            StringBuilder sb = new StringBuilder();
-            sb.append(cc.path()).append("");
-            if (cc instanceof BeanMirror bm) {
-                sb.append(" [").append(bm.beanClass().getName()).append("], owner = " + bm.owner());
-            }
-            System.out.println(sb.toString());
-        });
-    }
 
     // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester 
-    ApplicationLauncher<A> reusableImageOf(Assembly  assembly, Wirelet... wirelets);
+    ApplicationImage<A> reusableImageOf(Assembly  assembly, Wirelet... wirelets);
 
     /** {@return the type (typically an interface) of the application instances created by this driver.} */
     // This is not the resultType
@@ -231,12 +210,23 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
        
         // Problemet her er at vi gerne maaske fx vil angive LaunchState for Lifetime.
         // Hvilket ikke er muligt
-        @SuppressWarnings("unchecked") 
-        default Builder addController(Class<? extends ApplicationController>... controllers) {
+        
+        
+        @SuppressWarnings("unchecked")
+        default Builder requireExtension(Class<? extends Extension>... extensionTypes) {
+            
+            return this;
+        }
+        
+        // noget optional??? ellers
+        default Builder addController(ApplicationController<?>... controllers) {
             return this;
         }
         
         default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
+            
+            // Taenker lidt den bliver erstattet af ApplicationController?
+            
             // extension must be available...
             // An extensionBean of the specified type must be installed by the extension in the root container
             return this;
@@ -351,4 +341,16 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             throw new UnsupportedOperationException();
         }
     }
+}
+interface OldDriver<A> {
+    
+    // maa kalde internal_app_instance.jobCompleter.awaitResult or whatever
+    default A launchJob(Assembly  assembly, Wirelet... wirelets) {
+        // Er ikke sikker paa vi kan bruge den hed med signaturen <A>
+
+        // JobDriver
+        throw new UnsupportedOperationException();
+    }
+    // Maaske er den her paa ApplicationRuntimeExtension.launch()
+    // JobExtension.execute()
 }

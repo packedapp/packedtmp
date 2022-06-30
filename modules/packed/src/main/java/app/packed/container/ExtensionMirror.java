@@ -141,7 +141,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() {
-        return navigator().descriptor();
+        return navigator().extensionDescriptor();
     }
 
     /** {@inheritDoc} */

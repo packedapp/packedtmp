@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package packed.internal.component;
 
 import app.packed.base.Qualifier;
 
@@ -129,15 +129,8 @@ class XComp2 {
         c.rootOf(ComponentScope.NAMESPACE);
         c.isPartOfSame(ComponentScope.NAMESPACE, c);
         c.isPartOf(ComponentScope.NAMESPACE);
-
     }
 
-    public static void main(ComponentMirror c1, ComponentMirror c2) {
-//        if (ComponentScope.NAMESPACE.in(c1, c2)) {
-//
-//        }
-
-    }
 }
 
 // Optional<> findRootOf

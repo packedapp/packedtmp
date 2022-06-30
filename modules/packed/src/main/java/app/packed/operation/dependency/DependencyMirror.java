@@ -15,20 +15,43 @@
  */
 package app.packed.operation.dependency;
 
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 import app.packed.application.Realm;
+import app.packed.base.Key;
 import app.packed.operation.OperationMirror;
+import packed.internal.container.Mirror;
 
 /**
  * A mirror for a dependency.
  */
-public interface DependencyMirror {
+// ; // What are we having injected... Giver det mening for functions????
+
+// BiFunction(WebRequest, WebResponse) vs
+// foo(WebRequest req, WebResponse res)
+// Hvorfor ikke...
+// Ja det giver mening!
+
+// @WebRequst
+// (HttpRequest, HttpResponse) == (r, p) -> ....
+
+// Req + Response -> er jo operations variable...
+// Tjah ikke
+
+// Men er det dependencies??? Ja det er vel fx for @Provide
+// Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
+
+// f.eks @Provide for et field ville ikke have dependencies
+public sealed interface DependencyMirror extends Mirror {
 
     DependencyGraphMirror graph();
 
-    /** {@return the operation the dependency belongs to.} */
-    // Hvad med unresolved... Tror vi skal fejle
+    boolean isResolved();
+
+    boolean isSatisfiable();
+
+    /** {@return the operation the dependency is a part of.} */
     OperationMirror operation();
 
     Optional<Realm> providedBy();
@@ -38,10 +61,33 @@ public interface DependencyMirror {
      * 
      * @return
      */
-    // Talking about some caching here makes sense 
+    // Talking about some caching here makes sense
+    // ConstantPoolReadOperationMirror
+    // Er empty if Unesolved... Eller hvad.
+    // Hvis vi fx er @Default ville vi vel gerne have nogle fake operationer
     Optional<OperationMirror> providingOperation();
 
-    boolean isResolved();
+    non-sealed interface OfAnnotation extends DependencyMirror {
+        abstract Annotation annotation();
 
-    boolean isSatisfiable();
+        abstract Class<? extends Annotation> annotationType();
+    }
+
+    non-sealed interface OfComposite extends DependencyMirror {
+
+        abstract DependencyMirror dependencies();
+
+        abstract boolean isFuncionalInterface();
+
+    }
+
+    non-sealed interface OfKey extends DependencyMirror {
+        abstract Key<?> key();
+    }
+
+    non-sealed interface OfOther extends DependencyMirror {}
+
+    non-sealed interface OfTyped extends DependencyMirror {
+        abstract Class<?> typed();
+    }
 }

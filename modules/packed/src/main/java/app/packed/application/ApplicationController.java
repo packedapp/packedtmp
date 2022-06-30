@@ -20,6 +20,18 @@ package app.packed.application;
  */
 // Advanced Marker interface. Eller ikke IDK
 // Problemet er at nogle fx 
-public interface ApplicationController {
 
+
+// Ideen er at extensions kan definere disse ting... som andre saa kan udnytte
+
+
+
+// EntryExtensionPoint.CALL_ENTRY_APPLICATION_CONTROLLER  = ApplicationController<MethodHandle>
+// Man kan saa faa den injected... i sin AppImplementation
+
+public interface ApplicationController<T> {
+
+    public static void main(String[] args) {
+        
+    }
 }

@@ -26,12 +26,14 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import app.packed.bean.BeanField;
+import app.packed.bean.BeanField.FieldHook;
 import app.packed.bean.BeanScanner;
 import app.packed.bean.BeanScanner.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import app.packed.operation.dependency.BeanDependency;
+import app.packed.operation.dependency.BeanDependency.ProvisionHook;
 import packed.internal.bean.BeanSetup;
-import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.integrate.devtools.PackedDevToolsIntegration;
 import packed.internal.util.ClassUtil;
@@ -51,6 +53,7 @@ public final class BeanMemberScanner {
     // I think we need stable iteration order... AppendOnly identity map, stable iteration order
     final LinkedHashMap<Class<? extends Extension<?>>, ExtensionBeanCombo> extensions = new LinkedHashMap<>();
 
+    // Should be made lazily??? I think
     final OpenClass oc;
 
     public BeanMemberScanner(BeanSetup bean) {
@@ -58,21 +61,16 @@ public final class BeanMemberScanner {
         this.oc = OpenClass.of(MethodHandles.lookup(), bean.beanClass());
     }
 
-    private ExtensionBeanCombo findOrCreateExtension(Module owner, Class<? extends Extension<?>> clazz) {
+    private ExtensionBeanCombo findOrCreateExtension(Class<? extends Extension<?>> clazz) {
         ExtensionBeanCombo combo = extensions.get(clazz);
         if (combo == null) {
-            ContainerSetup container = bean.parent;
-            ExtensionSetup extension = container.useExtensionSetup(clazz, null);
-            combo = new ExtensionBeanCombo(extension, extension.newBeanScanner(extension, bean));
+            ExtensionSetup extension = bean.parent.useExtensionSetup(clazz, null);
+            BeanScanner scanner = extension.newBeanScanner(extension, bean);
+
+            combo = new ExtensionBeanCombo(extension, scanner);
             extensions.put(clazz, combo);
 
-            // Is it per operation????? Don't think so
-            // We probably need to store it in bean setup
-            // I think, for example, for example class annotations
-            // and functional operations are also a part of this???
-            // IDK
-            // bs
-            combo.scanner.onScanBegin();
+            scanner.onScanBegin();
         }
         return combo;
     }
@@ -82,7 +80,7 @@ public final class BeanMemberScanner {
     }
 
     public void scan() {
-        scan0(bean.beanClass(), true, Object.class);
+        scan0(true, Object.class);
 
         for (ExtensionBeanCombo e : extensions.values()) {
             e.scanner.onScanEnd();
@@ -95,9 +93,8 @@ public final class BeanMemberScanner {
      * @param baseType
      *            the base type
      */
-    final void scan0(Class<?> classToScan, boolean reflectOnFields, Class<?> baseType) {
+    final void scan0(boolean reflectOnFields, Class<?> baseType) {
 
-        /** Processes all fields and methods on a class. */
         record Helper(int hash, String name, Class<?>[] parameterTypes) {
 
             Helper(Method method) {
@@ -120,12 +117,14 @@ public final class BeanMemberScanner {
                 return hash;
             }
         }
-
+        Class<?> classToScan = bean.beanClass();
         HashSet<Package> packages = new HashSet<>();
         HashMap<Helper, HashSet<Package>> types = new HashMap<>();
 
         // Hmm, skal skrive noget om de kan komme i enhver order
         // Lige nu kommer metoder foerend fields
+
+        scanClass(classToScan);
 
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
@@ -207,16 +206,49 @@ public final class BeanMemberScanner {
             FieldHookModel fhm = FieldHookModel.CACHE.get(annotationType);
 
             if (fhm != null) {
-                ExtensionBeanCombo ei = findOrCreateExtension(annotationType.getModule(), fhm.extensionType);
+                ExtensionBeanCombo ei = findOrCreateExtension(fhm.extensionType);
 
                 boolean hasFullAccess = hasFullAccess(fhm.extensionType);
-                PackedBeanField f = new PackedBeanField(BeanMemberScanner.this, ei.extension, field, fhm.isGettable || hasFullAccess,
+                PackedBeanField f = new PackedBeanField(bean, BeanMemberScanner.this, ei.extension, field, fhm.isGettable || hasFullAccess,
                         fhm.isSettable || hasFullAccess);
 
                 // Call into Extension#hookOnBeanField
                 ei.scanner.onField(f);
             }
         }
+    }
+
+    void scanField2(Field field) {
+        // iterate through every annotation on the field
+
+        // Der kan vaere en settable annotering???
+        
+        Annotation[] annotations = field.getAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            // See if we can find a field hook model for the annotation
+            FieldHookModel model1 = FieldHookModel.CACHE.get(annotations[i].annotationType());
+
+            if (model1 != null) {
+                for (int j = i + 1; j < annotations.length; j++) {
+                    FieldHookModel model2 = FieldHookModel.CACHE.get(annotations[j].annotationType());
+
+                    if (model2 != null) {
+
+                    }
+                }
+
+                ExtensionBeanCombo ei = findOrCreateExtension(model1.extensionType);
+                boolean hasFullAccess = hasFullAccess(model1.extensionType);
+                PackedBeanField f = new PackedBeanField(bean, BeanMemberScanner.this, ei.extension, field, model1.isGettable || hasFullAccess,
+                        model1.isSettable || hasFullAccess);
+
+                ei.scanner.onField(f);
+            }
+        }
+    }
+
+    private void scanClass(Class<?> clazz) {
+
     }
 
     /**
@@ -232,7 +264,7 @@ public final class BeanMemberScanner {
             Class<? extends Annotation> a1Type = a1.annotationType();
             MethodHookModel fh = MethodHookModel.CACHE.get(a1Type);
             if (fh != null) {
-                ExtensionBeanCombo ei = findOrCreateExtension(a1Type.getModule(), fh.extensionType);
+                ExtensionBeanCombo ei = findOrCreateExtension(fh.extensionType);
 
                 PackedBeanMethod pbm = new PackedBeanMethod(BeanMemberScanner.this, ei.extension, method, fh.isInvokable);
 
@@ -244,25 +276,37 @@ public final class BeanMemberScanner {
     static void checkExtensionClass(Class<?> annotationType, Class<? extends Extension<?>> extensionType) {
         ClassUtil.checkProperSubclass(Extension.class, extensionType, s -> new InternalExtensionException(s));
         if (extensionType.getModule() != annotationType.getModule()) {
-            throw new InternalExtensionException("The annotation " + annotationType + " and the extension " + extensionType + " must be declared in the same module");
+            throw new InternalExtensionException(
+                    "The annotation " + annotationType + " and the extension " + extensionType + " must be declared in the same module");
         }
     }
 
     public record ExtensionBeanCombo(ExtensionSetup extension, BeanScanner scanner) {}
 
-    record FieldHookModel(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable) {
+    record FieldHookModel(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
+            boolean isProvision) {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<FieldHookModel> CACHE = new ClassValue<>() {
 
             @Override
             protected FieldHookModel computeValue(Class<?> type) {
-                BeanField.FieldHook h = type.getAnnotation(BeanField.FieldHook.class);
-                if (h == null) {
+                @SuppressWarnings("unchecked")
+                Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
+                BeanField.FieldHook fieldHook = type.getAnnotation(BeanField.FieldHook.class);
+                BeanDependency.ProvisionHook provisionHook = type.getAnnotation(BeanDependency.ProvisionHook.class);
+
+                if (provisionHook == fieldHook) { // check both null
                     return null;
+                } else if (provisionHook == null) {
+                    checkExtensionClass(type, fieldHook.extension());
+                    return new FieldHookModel(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
+                } else if (fieldHook == null) {
+                    checkExtensionClass(type, provisionHook.extension());
+                    return new FieldHookModel(annotationType, provisionHook.extension(), false, true, true);
+                } else {
+                    throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + ProvisionHook.class);
                 }
-                checkExtensionClass(type, h.extension());
-                return new FieldHookModel(h.extension(), h.allowGet(), h.allowSet());
             }
         };
     }

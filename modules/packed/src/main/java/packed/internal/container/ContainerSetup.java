@@ -45,7 +45,6 @@ import app.packed.operation.OperationMirror;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.bean.BeanSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.ComponentSetupRelation;
 import packed.internal.inject.service.ContainerInjectionManager;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.CollectionUtil;
@@ -290,8 +289,8 @@ public final class ContainerSetup extends ComponentSetup {
     public record BuildTimeContainerMirror(ContainerSetup container) implements ContainerMirror {
 
         /** {@inheritDoc} */
-        public Collection<ComponentMirror> children() {
-            return CollectionUtil.unmodifiableView(container.children.values(), c -> c.mirror());
+        public Collection<ContainerMirror> children() {
+            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.mirror());
         }
 
         /** {@inheritDoc} */
@@ -391,13 +390,6 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public NamespacePath path() {
             return container.path();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Relation relationTo(ComponentMirror other) {
-            requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(container, ComponentSetup.crackMirror(other));
         }
     }
 }

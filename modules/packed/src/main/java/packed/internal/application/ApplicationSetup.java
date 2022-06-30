@@ -96,12 +96,6 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Module module() {
-            return application.container.userRealm.realmType().getModule();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public ApplicationInfo descriptor() {
             return application.descriptor;
         }

@@ -22,16 +22,16 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.inject.service.ServiceExtension;
+import app.packed.operation.dependency.BeanDependency.ProvisionHook;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.
@@ -239,7 +239,7 @@ public interface OldServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     @BuildsApplication
-    static ApplicationLauncher<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
@@ -250,7 +250,7 @@ public interface OldServiceLocator extends ServiceRegistry {
     }
 
     @BuildsApplication
-    static ApplicationLauncher<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }
 }

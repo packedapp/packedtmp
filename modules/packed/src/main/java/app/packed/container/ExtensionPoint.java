@@ -29,8 +29,8 @@ import packed.internal.container.PackedExtensionPointContext;
  * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
  * {@link IllegalStateException} being thrown.
  * <p>
- * If an extension defines classes that are only usable by other extension and not end-users. They should be declared as
- * nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
+ * If an extension defines classes that are only usable by other extension and not application developers. They should
+ * be declared as nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
  * 
  * NOTE: In order to properly implement an extension point you:
  * <ul>
@@ -48,15 +48,15 @@ import packed.internal.container.PackedExtensionPointContext;
  *            The type of extension this extension point is a part of.
  * 
  * @apiNote The reason that end-users uses {@code Extension} instances and extensions uses {@code ExtensionPoint}
- *          instances are twofold. It allows an extension to "hide" highly specialized methods that no end-users would
- *          ever need on the extension point class. Allow the application developer to be in full control.
+ *          instances is that it allows an extension to "hide" highly specialized methods that no end-users would ever
+ *          need.
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
     /**
-     * A context for this extension point. Is initialized after the extension point has been constructor injected.
+     * A context for this extension point. Is initialized via {@link #initialize(PackedExtensionPointContext)}..
      * <p>
-     * This field must be accessed via {@link #context()}.
+     * This field should only be read via {@link #context()}.
      */
     @Nullable
     private PackedExtensionPointContext context;
@@ -64,7 +64,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
     /**
      * Create a new extension point.
      * <p>
-     * Subclasses should have constructors with package-private access.
+     * Subclasses should never exposed any public constructors.
      */
     protected ExtensionPoint() {}
 
@@ -91,7 +91,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         return c;
     }
 
-    /** {@return the extension instance that this extension point is extending.} */
+    /** {@return the extension instance that this extension point is a part of.} */
     @SuppressWarnings("unchecked")
     protected final E extension() {
         return (E) context().extension().instance();
@@ -104,10 +104,10 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
 
     /**
      * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
-     * the internal configuration of the extension.
+     * the context of this extension point.
      * 
-     * @param extension
-     *            the internal configuration of the extension to mirror
+     * @param context
+     *            the context of this extension point
      */
     final void initialize(PackedExtensionPointContext context) {
         if (this.context != null) {

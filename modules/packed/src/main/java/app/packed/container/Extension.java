@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationDriver;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint;
@@ -396,7 +395,6 @@ class Zarchive {
      *            the extension type to test
      * @return {@code true} if the extension is disabled, otherwise {@code false}
      * 
-     * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     // Kan disable den paa application driver...
     // Er det kombination af isExtensionDisabled og isUsed

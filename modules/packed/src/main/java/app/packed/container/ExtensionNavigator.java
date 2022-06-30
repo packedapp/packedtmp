@@ -19,14 +19,14 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Represents a rooted tree of extensions with a single extension as the origin.
+ * Represents a rooted tree of extensions of the same type with a single extension as the origin.
  * 
  * @param <E>
  *            the type of extensions
  */
 public interface ExtensionNavigator<E extends Extension<E>> extends Iterable<E> {
 
-    ExtensionDescriptor descriptor();
+    ExtensionDescriptor extensionDescriptor();
 
     default E origin() {
         throw new UnsupportedOperationException();

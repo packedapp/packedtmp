@@ -27,6 +27,7 @@ import app.packed.bean.BeanField.FieldHook;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
+import app.packed.operation.dependency.BeanDependency;
 import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 
@@ -36,6 +37,9 @@ import packed.internal.container.ExtensionSetup;
  * @see Extension#newBeanScanner
  * @see BeanHandler.Builder#beanScanner(BeanScanner)
  */
+
+//BeanAnalyzer, BeanVisitor, BeanInspector, BeanIntrospector, BeanProcessor
+
 // Move BeanMethod and friends into BeanScanner as nested classes???
 public abstract class BeanScanner {
 
@@ -45,8 +49,6 @@ public abstract class BeanScanner {
      */
     @Nullable
     private Setup setup;
-
-    // BeanAnnotationReader???
 
     /** {@return an annotation reader for for the bean.} */
     public final BeanAnnotationReader beanAnnotationReader() {
@@ -96,8 +98,7 @@ public abstract class BeanScanner {
      * @see BeanField.FieldHook
      */
     // onAnnotatedField(Set<Class<? extends Annotation<>> hooks, BeanField));
-    // IDK
-    // Det kommer lidt an paa variable vil jeg mene...
+    // IDK Det kommer lidt an paa variable vil jeg mene...
     public void onField(BeanField field) {}
 
     public void onMethod(BeanMethod method) {
@@ -160,7 +161,7 @@ public abstract class BeanScanner {
             throw new BeanDefinitionException("OOPS " + postFix);
         }
     }
-    
+
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented

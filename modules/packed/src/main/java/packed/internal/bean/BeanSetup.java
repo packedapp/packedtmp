@@ -3,8 +3,6 @@ package packed.internal.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
@@ -23,7 +21,6 @@ import app.packed.operation.OperationMirror;
 import packed.internal.bean.PackedBeanHandleBuilder.SourceType;
 import packed.internal.bean.hooks.BeanMemberScanner;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.ComponentSetupRelation;
 import packed.internal.container.RealmSetup;
 import packed.internal.inject.BeanInjectionManager;
 import packed.internal.operation.OperationSetup;
@@ -129,12 +126,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         }
 
         /** {@inheritDoc} */
-        @Override
-        public Collection<ComponentMirror> children() {
-            return List.of();
-        }
-
-        /** {@inheritDoc} */
         public final ContainerMirror container() {
             return bean.parent.mirror();
         }
@@ -197,13 +188,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         @Override
         public NamespacePath path() {
             return bean.path();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Relation relationTo(ComponentMirror other) {
-            requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(bean, ComponentSetup.crackMirror(other));
         }
 
         /** {@inheritDoc} */

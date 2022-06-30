@@ -4,10 +4,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
-import app.packed.bean.BeanDependency;
 import app.packed.container.Extension;
 import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceExtension;
+import app.packed.operation.dependency.BeanDependency;
 import packed.internal.inject.service.runtime.ServiceRegistry;
 import packed.internal.util.LookupUtil;
 

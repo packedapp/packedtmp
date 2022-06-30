@@ -19,5 +19,5 @@ package app.packed.operation.dependency;
  *
  */
 public enum DependencyKind {
-    SERVICE, ANNO_CLASS, CLASS, OTHER; 
+    BY_KEY, BY_ANNOTATION, BY_CLASS, MANUAL; 
 }

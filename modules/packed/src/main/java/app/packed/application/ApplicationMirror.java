@@ -1,9 +1,8 @@
 package app.packed.application;
 
-import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Stream;
 
+import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -11,14 +10,13 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
-import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.Mirror;
 
 /**
  * A mirror of an application.
  * <p>
- * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
+ * An instance of this class is typically obtained by calling a application mirror factory method such as
+ * {@link App#mirrorOf(Assembly, Wirelet...)}. {@link #of(Assembly, Wirelet...)} on this class.
  */
 // En application kan
 //// Vaere ejet af bruger
@@ -31,11 +29,6 @@ public interface ApplicationMirror extends Mirror {
     /** {@return a mirror for the assembly that defines the application.} */
     default AssemblyMirror assembly() {
         return container().assembly();
-    }
-
-    /** {@return a stream containing all components in the application.} */
-    default Stream<ComponentMirror> components() {
-        return container().stream();
     }
 
     /** {@return the root container in the application.} */
@@ -53,17 +46,6 @@ public interface ApplicationMirror extends Mirror {
     LifetimeMirror lifetime();
 
     /**
-     * {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
-     * defines the application container.}
-     * 
-     * Altsaa hvis en application skal have et module... Skal container+Bean vel ogsaa
-     */
-    // Hmm, hvis applikation = Container specialization... Ved component
-    // Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
-    // Maaske vi skal have et realm mirror????
-    Module module();
-
-    /**
      * Returns the name of the application.
      * <p>
      * The name of an application is always identical to the name of the root container.
@@ -75,14 +57,15 @@ public interface ApplicationMirror extends Mirror {
         return container().name();
     }
 
-    // Tror det ville giver mening at have OperationMirrorList her...
-    // Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...
-    default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
-        throw new UnsupportedOperationException();
-    }
-
     default void print() {
-        container().print();
+        container().stream().forEach(cc -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append(cc.path()).append("");
+            if (cc instanceof BeanMirror bm) {
+                sb.append(" [").append(bm.beanClass().getName()).append("], owner = " + bm.owner());
+            }
+            System.out.println(sb.toString());
+        });
     }
 
     /**
@@ -94,22 +77,26 @@ public interface ApplicationMirror extends Mirror {
      * 
      * @see ContainerMirror#useExtension(Class)
      */
+    // Maasker drop use, og bare have extension(ServiceExtensionMirror.class).
     <T extends ExtensionMirror<?>> T useExtension(Class<T> type);
-
-    /**
-     * Create
-     * 
-     * @param assembly
-     *            the assembly containing the application to create a mirror for
-     * @param wirelets
-     *            optional wirelets
-     * @return an application mirror
-     */
-    // IDK om vi bare altid bruger en Application Launcher class...
-    public static ApplicationMirror of(Assembly assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
-    }
 }
+
+
+//// Tror det ville giver mening at have OperationMirrorList her...
+//// Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...
+//default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
+//    throw new UnsupportedOperationException();
+//}
+///**
+// * {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
+// * defines the application container.}
+// * 
+// * Altsaa hvis en application skal have et module... Skal container+Bean vel ogsaa
+// */
+//// Hmm, hvis applikation = Container specialization... Ved component
+//// Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
+//// Maaske vi skal have et realm mirror????
+//Module module();
 
 //default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
 //    throw new UnsupportedOperationException();

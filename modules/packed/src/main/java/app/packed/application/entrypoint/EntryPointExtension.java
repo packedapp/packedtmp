@@ -14,6 +14,7 @@ import app.packed.bean.BeanScanner;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.container.ExtensionPoint;
 import app.packed.inject.Ancestral;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.EntryPointSetup;
@@ -48,6 +49,11 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, /* hidden */ ExtensionSetup setup) {
         this.application = setup.container.application;
         this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
+    }
+
+    @Override
+    protected ExtensionPoint<EntryPointExtension> newExtensionPoint() {
+        return new EntryPointExtensionPoint();
     }
 
     @Override

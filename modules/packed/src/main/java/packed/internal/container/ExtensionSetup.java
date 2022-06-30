@@ -157,7 +157,7 @@ public final class ExtensionSetup {
         BeanScanner bs;
         try {
             bs = (BeanScanner) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
-            MH_BEAN_SCANNER_INITIALIZE.invoke(bs, extension, bean);
+            MH_BEAN_SCANNER_INITIALIZE.invokeExact(bs, extension, bean);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

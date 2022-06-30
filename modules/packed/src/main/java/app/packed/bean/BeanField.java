@@ -30,7 +30,7 @@ import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.OperationBuilder;
+import app.packed.operation.OperationConfiguration;
 import packed.internal.bean.hooks.PackedBeanField;
 
 /**
@@ -40,11 +40,20 @@ import packed.internal.bean.hooks.PackedBeanField;
  */
 public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
-    default Key<?> readKey() {
+    /**
+     * @return
+     * 
+     * @throws BeanDefinitionException
+     *             if the field does not represent a proper key
+     */
+    // what about wrappers??? Skal vi have den paa dependency istedet for???
+    // dependency().readKey(); det tror jeg...
+    // Det er fint, det er raw... Det er taenkt som en producer... 
+    // en consumer boer gaa via dependency().readkey();
+    default Key<?> fieldToKey() {
         return Key.convertField(field());
     }
 
-    
     /** {@return the underlying field.} */
     Field field();
 
@@ -62,7 +71,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle getter
      */
-    OperationBuilder newGetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationConfiguration newGetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * @param operator
@@ -71,7 +80,9 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
      */
-    OperationBuilder newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
+    // Masske allow mere en 1 operations type.... Saa kan man fx
+    // lave en get og en set varhandle?
+    OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
      * Returns a method handle that gives write access to the underlying field as specified by
@@ -79,19 +90,19 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * 
      * @return a method handle setter
      */
-    OperationBuilder newSetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationConfiguration newSetOperation(ExtensionBeanConfiguration<?> operator);
 
     // Or maybe just rawVarHandle() on IOH
-    default VarHandle varHandleOf(OperationBuilder handle) { 
+    default VarHandle varHandleOf(OperationConfiguration handle) {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * {@return the underlying field represented as a {@code Variable}.}
      * 
      * @see Variable#ofField(Field)
      */
-    Variable variable(); //mayby toVariable
+    Variable variable(); // mayby toVariable
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
@@ -121,6 +132,7 @@ interface Zandbox {
         // Maaske skal vi droppe Class<? extends Annotation> som parameter
         return 1;
     }
+
     // Can only read stuff...
     // Then we can just passe it off to anyone
     // IDK know about usecases

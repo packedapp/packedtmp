@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.application.ComponentMirror;
-import app.packed.application.ComponentScope;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.component.ComponentScope;
 import packed.internal.component.ComponentSetup;
 
 /**

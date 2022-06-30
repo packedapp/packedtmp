@@ -13,19 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.lifetime;
 
-import app.packed.base.Key;
+import java.util.List;
+
 import app.packed.operation.OperationMirror;
 
 /**
  *
  */
-public abstract class ServiceProvideMirror extends OperationMirror {
+public class LifetimeOperationMirror extends OperationMirror {
 
-    /** {@return the key of the service.} */
-    public abstract Key<?> key();
+    public boolean isExternal() {
+        return true;
+    }
+    
+    public List<OperationMirror> operations() {
+        // Her er taenkt alle operationer der bliver koert som result
+        // En slags composite operation
+        // Kan jo baade vaere serielt og parallelt.
+
+        // Maaske har vi en specielt "liste" 
+        // Maaske er det bare aabent for interapition
+        
+        // Kan alle operationer vaere composites????
+        
+        
+        return List.of();
+    }
 }
-
-// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
-// provide(Doo.class) -> BeanOperation.element = BeanClass

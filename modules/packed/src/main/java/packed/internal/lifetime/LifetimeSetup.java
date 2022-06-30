@@ -113,24 +113,6 @@ public final class LifetimeSetup {
         public List<OperationMirror> operations(LifetimePhase phase) {
             throw new UnsupportedOperationException();
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean equals(Object obj) {
-            return false;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return null;
-        }
     }
 
     // Vi kan sagtens folde bedste foraeldre ind ogsaa...

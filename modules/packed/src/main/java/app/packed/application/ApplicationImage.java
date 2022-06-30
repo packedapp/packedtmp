@@ -15,6 +15,8 @@
  */
 package app.packed.application;
 
+import java.util.function.Function;
+
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
@@ -59,7 +61,7 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationLaun
 //// Med mindre man bruger en speciel wirelet
 
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher {
+public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
 
     /**
      * Launches an instance of the application that this image represents.
@@ -74,6 +76,10 @@ public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher
         return launch(new Wirelet[] {});
     }
 
+    default A launch(String[] args) {
+        return launch(/* CliWirelets.args(args).andThen( */);
+    }
+    
     /**
      * @param args
      * @param wirelets
@@ -103,6 +109,10 @@ public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher
      * @see ApplicationDriver#launchMode()
      */
     RunState launchMode(); // usageMode??
+    
+    default <E> ApplicationImage<E> map(Function<A, E> mapper) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 // Man maa lave sit eget image saa
@@ -122,7 +132,7 @@ interface Zimgbox<A> {
         return true;
     }
 
-    default ApplicationLauncher<A> with(Wirelet... wirelets) {
+    default ApplicationImage<A> with(Wirelet... wirelets) {
         // Egentlig er den kun her pga Launcher
         throw new UnsupportedOperationException();
     }
@@ -136,7 +146,7 @@ interface Zimgbox<A> {
      * @throws UnsupportedOperationException
      *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
      */
-    static ApplicationMirror extractMirror(ApplicationLauncher<?> image) {
+    static ApplicationMirror extractMirror(ApplicationImage<?> image) {
         throw new UnsupportedOperationException();
     }
 }

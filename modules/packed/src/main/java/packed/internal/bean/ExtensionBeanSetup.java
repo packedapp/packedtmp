@@ -20,16 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanDependency;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.inject.Factory0;
-import app.packed.operation.OperationPack;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.container.RealmSetup;
-import packed.internal.operation.PackedOperationPackSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -37,11 +31,11 @@ import packed.internal.util.LookupUtil;
  */
 public final class ExtensionBeanSetup extends BeanSetup {
 
-    public static final Key<OperationPack> OPERATION_PACK_KEY = Key.of(OperationPack.class);
+    /** A handle that can access #configuration. */
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle",
+            PackedBeanHandler.class);
 
-    @Nullable
-    PackedOperationPackSetup operationPack;
-
+    /** The extension the bean is a part of. */
     public final ExtensionSetup extension;
 
     /**
@@ -53,27 +47,26 @@ public final class ExtensionBeanSetup extends BeanSetup {
         this.extension = requireNonNull(extension);
     }
 
-    public PackedOperationPackSetup operationPack(@Nullable Key<OperationPack> key) {
-        PackedOperationPackSetup p = operationPack;
-        if (p == null) {
-            p = operationPack = new PackedOperationPackSetup();
-        }
-        return p;
-    }
-
-    public void provideOperationPack(BeanDependency provider) {
-        Key<?> key = provider.readKey();
-        @SuppressWarnings("unchecked")
-        PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
-        provider.provide(new Factory0<OperationPack>(() -> s.build()) {});
-    }
-
-    /** A handle that can access #configuration. */
-    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle",
-            PackedBeanHandler.class);
-
     public static ExtensionBeanSetup from(ExtensionBeanConfiguration<?> configuration) {
         PackedBeanHandler<?> bh = (PackedBeanHandler<?>) VH_HANDLE.get((BeanConfiguration) configuration);
         return (ExtensionBeanSetup) bh.bean();
     }
 }
+
+// public static final Key<OperationPack> OPERATION_PACK_KEY = Key.of(OperationPack.class);
+
+//
+//public PackedOperationPackSetup operationPack(@Nullable Key<OperationPack> key) {
+//  PackedOperationPackSetup p = operationPack;
+//  if (p == null) {
+//      p = operationPack = new PackedOperationPackSetup();
+//  }
+//  return p;
+//}
+//
+//public void provideOperationPack(BeanDependency provider) {
+//  Key<?> key = provider.readKey();
+//  @SuppressWarnings("unchecked")
+//  PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
+//  provider.provide(new Factory0<OperationPack>(() -> s.build()) {});
+//}

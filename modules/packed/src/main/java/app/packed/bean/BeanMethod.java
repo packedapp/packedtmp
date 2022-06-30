@@ -19,18 +19,18 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
 import app.packed.bean.BeanScanner.BeanElement;
-import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
-import app.packed.operation.OperationBuilder;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationType;
 import packed.internal.bean.hooks.PackedBeanMethod;
 
 /**
  * This class represents a {@link Method} on a bean.
  * 
- * @see Extension#hookOnBeanMethod(BeanMethod)
+ * @see BeanScanner#onMethod(BeanMethod)
  */
 public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
@@ -71,19 +71,20 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      * @throws IllegalArgumentException
      *             if the specified operator is not a direct ancestor of the method's bean.
      */
-    OperationBuilder operationBuilder(ExtensionBeanConfiguration<?> operator);
-
-    /**
-     * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
-     * that may have been configured elsewhere).
-     * 
-     * @return a direct method handle to the underlying method
-     * @see Lookup#unreflect(Method)
-     * @see BeanMethodHook#allowInvoke()
-     * @see BeanClassHook#allowAllAccess()
-     * 
-     * @throws UnsupportedOperationException
-     *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
-     *             BeanClassHook#allowAllAccess()
-     */
+    // take bean configuration instead and just test realm.
+    OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationType operationType);
 }
+
+/**
+ * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
+ * that may have been configured elsewhere).
+ * 
+ * @return a direct method handle to the underlying method
+ * @see Lookup#unreflect(Method)
+ * @see BeanMethodHook#allowInvoke()
+ * @see BeanClassHook#allowAllAccess()
+ * 
+ * @throws UnsupportedOperationException
+ *             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
+ *             BeanClassHook#allowAllAccess()
+ */

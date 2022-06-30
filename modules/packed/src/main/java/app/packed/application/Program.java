@@ -103,14 +103,14 @@ public interface Program extends AutoCloseable {
      * 
      * @return an artifact driver for App
      */
-    static ApplicationDriver<Program> driver() {
+    private static ApplicationDriver<Program> driver() {
         return ProgramImplementation.DRIVER;
     }
 
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationLauncher#launch(Wirelet...)} will be
+     * The state of the applications returned by {@link ApplicationImage#launch(Wirelet...)} will be
      * {@link RunState#RUNNING}. unless GuestWirelet.delayStart
      * 
      * @param assembly
@@ -121,7 +121,7 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
-    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 

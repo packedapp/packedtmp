@@ -25,10 +25,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
+import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceLocator;
@@ -452,7 +452,7 @@ abstract class YIdeas {
     // Component2Be
     // Vi er ihvertfald interesset i navn, Container osv.
     // ComponentDesc
-    public abstract ComponentMirror target();
+    public abstract BeanMirror target();
     // the target (container) of the transformation
 
     // Vi kan ikke rigtig have source... Idet vi jo er ved at opbygge den container...

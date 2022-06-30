@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -48,7 +48,7 @@ import app.packed.container.Extension;
 public class ExtensionActivation {
 
     @Benchmark
-    public ApplicationLauncher<Void> empty() {
+    public ApplicationImage<Void> empty() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
@@ -57,7 +57,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ApplicationLauncher<Void> useExtension() {
+    public ApplicationImage<Void> useExtension() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -68,7 +68,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ApplicationLauncher<Void> install() {
+    public ApplicationImage<Void> install() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -79,7 +79,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ApplicationLauncher<Void> newExtensionUseInstall() {
+    public ApplicationImage<Void> newExtensionUseInstall() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -91,7 +91,7 @@ public class ExtensionActivation {
     }
 
     @Benchmark
-    public ApplicationLauncher<Void> newExtensionAutoActivate() {
+    public ApplicationImage<Void> newExtensionAutoActivate() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {

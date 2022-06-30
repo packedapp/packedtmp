@@ -15,6 +15,7 @@
  */
 package app.packed.operation;
 
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,31 +36,12 @@ import packed.internal.bean.hooks.PackedBeanMethod.BuildTimeMethodTargetMirror;
 
 // Maaske drop Invoke til di
 // OperationTargetMirror tror jeg bedre jeg kunne lide
-public interface OperationTargetMirror { //extends AnnotatedMember?
-
-    // Accessing an instance that have previously been computed
-    // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
-    // Giver ikke mening for provide...
-
-    // Kan ikke komme paa andre brugbare ting end @Provide
-    public interface OfInstanceAccess extends OperationTargetMirror {
-        // empty if the instance was provided
-        // otherwise the operation that created it, and stored it somewhere.
-        Optional<OperationTargetMirror> origin();
-
-        // Har maaske ogsaa noget LifetimePoolMirror her????
-    } // ofLifetimePool? Hmm
-
-    // invoke exact?
-    public interface OfMethodHandleInvoke extends OperationTargetMirror {} // ofSynthetic?
-
-////////////////////////////////
-
-    public interface OfFunctionCall extends OperationTargetMirror {}
+/// OperationLocationmirror
+public sealed interface OperationTargetMirror { // extends AnnotatedMember?
 
     // Members
     /** Represents an operation that invokes a constructor. */
-    public interface OfConstructorInvoke extends OperationTargetMirror {
+    public non-sealed interface OfConstructorInvoke extends OperationTargetMirror {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
@@ -76,19 +58,40 @@ public interface OperationTargetMirror { //extends AnnotatedMember?
         Field field();
     }
 
+    /**
+     * Represents an operation that calls a function.
+     * <p>
+     * method on a functional interface.
+     */
+    public non-sealed interface OfFunctionCall extends OperationTargetMirror {}
+
+    /**
+     * Represents an operation that simply return an instance
+     */
+    public non-sealed interface OfInstanceReturn extends OperationTargetMirror {
+        // empty if the instance was provided
+        // otherwise the operation that created it, and stored it somewhere.
+        Optional<OperationTargetMirror> origin();
+
+        // Accessing an instance that have previously been computed
+        // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
+        // Giver ikke mening for provide...
+        // Kan ikke komme paa andre brugbare ting end @Provide
+        
+        // Er det her en speciel operation istedet for et target???
+        /// InstanceProvide? IDK
+
+        // Har maaske ogsaa noget LifetimePoolMirror her????
+    } // ofLifetimePool? Hmm
+
     /** Represents an operation that invokes a method. */
     public sealed interface OfMethodInvoke extends OperationTargetMirror permits BuildTimeMethodTargetMirror {
 
         /** {@return the underlying method.} */
         Method method();
     }
-}
-// OfBeanInstance - Something that just returns the bean instance
-// OfConstructor -
-// OfField -
-// OfFunction - invoke a function
-// OfMethod -
-// OfMethodHandle - Synthetic
 
-// of(Instace).map, of(method).map
-// of(Method).bind
+    public non-sealed interface OfSyntheticInvoke extends OperationTargetMirror {
+        MethodType methodType();
+    }
+}

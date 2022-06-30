@@ -20,12 +20,10 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.application.ComponentMirror;
-import app.packed.application.ComponentMirror.Relation;
-import app.packed.application.ComponentScope;
 import app.packed.base.Nullable;
 
-/** Implementation of {@link Relation}. */
-public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements Relation {
+/** Implementation of {@link ContainerRelation}. */
+public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements ContainerRelation {
 
     /** {@inheritDoc} */
     @Override
@@ -73,11 +71,6 @@ public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int
     }
 
     @Override
-    public boolean inSameApplication() {
-        return from.application == to.application;
-    }
-
-    @Override
     public boolean isInSame(ComponentScope scope) {
         return from.isInSame(scope, to);
     }
@@ -88,7 +81,7 @@ public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int
         return from.mirror();
     }
 
-    public static Relation of(ComponentSetup from, ComponentSetup to) {
+    public static ContainerRelation of(ComponentSetup from, ComponentSetup to) {
         int fd = from.depth;
         int td = to.depth;
         if (from.lifetime.pool == to.lifetime.pool) {

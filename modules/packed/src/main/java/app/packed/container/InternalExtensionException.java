@@ -16,7 +16,7 @@
 package app.packed.container;
 
 /**
- * An exception typically thrown by the runtime to indicating an internal malfunction of an extension.
+ * An exception typically thrown to indicate an internal malfunction of an extension.
  * <p>
  * If you encounter this exception when using an extension. There is typically nothing you can do, except for reporting
  * it to the developer of the extension.

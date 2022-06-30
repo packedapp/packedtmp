@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import java.util.function.Consumer;
+
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.ProvideableBeanConfiguration;
@@ -209,7 +211,14 @@ public abstract class BaseAssembly extends Assembly {
     protected final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         return container().link(assembly, wirelets);
     }
-    
+
+    protected final ContainerMirror link2(Assembly assembly, Consumer<Linker> linker) {
+        throw new UnsupportedOperationException();
+    }
+
+    public interface Linker {
+        
+    }
 
     /**
      * 

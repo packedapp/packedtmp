@@ -1,7 +1,9 @@
 package app.packed.container;
 
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
+import app.packed.base.Key;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanHandler;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -29,6 +31,14 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     public ExtensionBeanConfiguration(BeanHandler<T> handle) {
         super(handle);
         // Validate 
+    }
+
+    public <V> void bindDelayed(Class<V> key, Supplier<V> supplier) {
+        
+    }
+    public <V> ExtensionBeanConfiguration<T> bindDelayed(Key<V> key, Supplier<V> supplier) {
+        
+        return this;
     }
 
     public <P> void callbackOnInitialize(BeanHandler<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {

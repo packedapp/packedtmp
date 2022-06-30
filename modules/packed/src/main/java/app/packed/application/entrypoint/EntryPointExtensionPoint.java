@@ -16,16 +16,24 @@
 package app.packed.application.entrypoint;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import app.packed.application.BuildException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
+import app.packed.operation.OperationConfiguration;
 
 /** An extension point for {@link EntryPointExtension}. */
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
 
     EntryPointExtensionPoint() {}
+    
+    public OperationConfiguration specializeMirror(OperationConfiguration configuration, int id, Supplier<? extends EntryPointOperationMirror> supplier) {
+        // Ved ikke lige helt hvordan den skal fungere
+        return configuration;
+    }
+    
 
     /**
      * {@return the extension that is managing the
@@ -82,7 +90,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
          *             if no entry point with the specified id exists
          * @throws IllegalStateException
          *             if the method is invoked more than once
-         * @see EntryPointMirror#id()
+         * @see EntryPointOperationMirror#id()
          */
         void selectEntryPoint(int id);
     }

@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirror;
-import app.packed.application.ComponentScope;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import packed.internal.application.ApplicationSetup;

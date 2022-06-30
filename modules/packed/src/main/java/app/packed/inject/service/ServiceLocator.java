@@ -26,22 +26,22 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildsApplication;
-import app.packed.application.ComponentMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
+import app.packed.operation.dependency.BeanDependency.ProvisionHook;
 import packed.internal.application.ApplicationInitializationContext;
 import packed.internal.inject.service.PackedServiceLocator;
 import packed.internal.util.LookupUtil;
@@ -325,12 +325,12 @@ public interface ServiceLocator {
      * @see #driver()
      */
     @BuildsApplication
-    static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
     @BuildsApplication
-    static ApplicationLauncher<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().reusableImageOf(assembly, wirelets);
     }
 
@@ -398,7 +398,7 @@ public interface ServiceLocator {
          * @param wirelets
          *            optional import/export wirelets
          */
-        public ComponentMirror link(Assembly assembly, Wirelet... wirelets) {
+        public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
             return container().link(assembly, wirelets);
         }
 

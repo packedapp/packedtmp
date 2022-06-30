@@ -21,13 +21,12 @@ import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-import app.packed.application.ComponentMirror;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.Realm;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
-import packed.internal.component.ComponentSetup;
 
 /**
  *
@@ -106,24 +105,24 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
 
         /** {@inheritDoc} */
         @Override
-        public ContainerMirror root() {
+        public ContainerMirror container() {
             return assembly.container().mirror();
         }
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public Class<? extends Assembly> assemblyType() {
+        public Class<? extends Assembly> assemblyClass() {
             // Probably does not work for composer
             // Needs to check isAssignable
             return (Class<? extends Assembly>) assembly.realmType();
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Stream<ComponentMirror> components() {
-            return assembly.container().stream().filter(c -> c.userRealm == assembly).map(ComponentSetup::mirror);
-        }
+//        /** {@inheritDoc} */
+//        @Override
+//        public Stream<ComponentMirror> findAllComponents() {
+//            return assembly.container().stream().filter(c -> c.userRealm == assembly).map(ComponentSetup::mirror);
+//        }
 
         /** {@inheritDoc} */
         @Override
@@ -158,6 +157,12 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
         @Override
         public boolean isRoot() {
             return assembly.container().parent == null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror application() {
+            return assembly.container().application.mirror();
         }
     }
 }

@@ -8,13 +8,14 @@ import app.packed.application.Realm;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
+import packed.internal.container.Mirror;
 
 /**
- * A mirror of a single bean.
+ * A mirror of a bean.
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-public sealed interface BeanMirror extends ComponentMirror permits BuildTimeBeanMirror {
+public sealed interface BeanMirror extends ComponentMirror, Mirror permits BuildTimeBeanMirror {
 
 
     /** {@return the owner of the component.} */

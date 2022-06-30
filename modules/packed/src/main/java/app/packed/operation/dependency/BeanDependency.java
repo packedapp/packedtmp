@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.operation.dependency;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -22,9 +22,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanScanner.BeanElement;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -34,25 +36,9 @@ import app.packed.inject.Factory;
  */
 // Why not BeanDependency
 public non-sealed interface BeanDependency extends BeanElement {
-    /**
-     * <p>
-     * For raw er det automatisk en fejl
-     */
-    // provideUnresolved();
-    void provideMissing();
-    
-    /**
-     * @return
-     * 
-     * @throws BeanDefinitionException
-     *             if the variable was a proper key
-     */
-    default Key<?> readKey() {
-        throw new UnsupportedOperationException();
-    }
     
     void provide(Factory<?> fac);
-
+    
     void provide(MethodHandle methodHandle);
 
     /**
@@ -71,6 +57,23 @@ public non-sealed interface BeanDependency extends BeanElement {
      *             overriden by itself).
      */
     void provideInstance(@Nullable Object obj);
+    
+    /**
+     * <p>
+     * For raw er det automatisk en fejl
+     */
+    // provideUnresolved();
+    void provideMissing();
+
+    /**
+     * @return
+     * 
+     * @throws BeanDefinitionException
+     *             if the variable was a proper key
+     */
+    default Key<?> readKey() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Variable is resolvable at runtime.
@@ -81,6 +84,8 @@ public non-sealed interface BeanDependency extends BeanElement {
      * @return
      */
     BeanDependency runtimeOptional();
+
+    BeanDependency specializeMirror(Supplier<? extends DependencyMirror> supplier);
 
     TypeInfo type();
 

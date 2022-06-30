@@ -25,7 +25,6 @@ import app.packed.inject.Ancestral;
  */
 public class KeyTst extends BaseAssembly {
 
-    
     public static void main(String[] args) {
         App.mirrorOf(new KeyTst());
     }
@@ -42,14 +41,18 @@ public class KeyTst extends BaseAssembly {
         link(new Chi());
 //        use(MyExt.class);
     }
-    
+
     static class Chi extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
         protected void build() {
             use(MyExt.class);
+            link2(new Chi(), l -> {
+                bean().filter(l);
+                bean().filter(l);
+            });
         }
-        
+
     }
 }

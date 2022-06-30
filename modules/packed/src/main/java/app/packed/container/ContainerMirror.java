@@ -9,13 +9,14 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ComponentMirror;
 import app.packed.bean.BeanMirror;
 import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
+import packed.internal.container.Mirror;
 
 /**
  * A mirror of a container.
  * <p>
  * Instances of this class is typically via {@link ApplicationMirror}.
  */
-public sealed interface ContainerMirror extends ComponentMirror permits BuildTimeContainerMirror {
+public sealed interface ContainerMirror extends ComponentMirror, Mirror permits BuildTimeContainerMirror {
 
     /** {@return a {@link Collection} view of all the beans defined in the container.} */
     Collection<BeanMirror> beans();
@@ -27,6 +28,10 @@ public sealed interface ContainerMirror extends ComponentMirror permits BuildTim
     // Maaske bare fjerne den
     Set<ExtensionMirror<?>> extensions();
 
+
+    /** {@return an unmodifiable view of all of the children of this component.} */
+    /* Sequenced */ Collection<ContainerMirror> children();
+    
     /** {@return the parent container of this container. Or empty if the root container.} */
     Optional<ContainerMirror> parent();
 

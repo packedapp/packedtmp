@@ -21,8 +21,9 @@ import java.lang.reflect.Method;
 import app.packed.bean.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
-import app.packed.operation.OperationBuilder;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationType;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.operation.PackedOperationBuilder;
@@ -31,7 +32,7 @@ import packed.internal.operation.PackedOperationBuilder;
 public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanMethod {
 
     PackedBeanMethod(BeanMemberScanner scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
-        super(scanner, operator, method);
+        super(scanner.bean, scanner, operator, method);
     }
 
     /** {@inheritDoc} */
@@ -64,17 +65,17 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
 
     /** {@inheritDoc} */
     @Override
-    public OperationBuilder operationBuilder(ExtensionBeanConfiguration<?> operator) {
+    public OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationType operationType) {
         return new PackedOperationBuilder(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 
-    /** The operation target mirror of a bean method.  */
+    /** An operation target mirror for a bean method.  */
     public record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationTargetMirror.OfMethodInvoke {
 
         /** {@inheritDoc} */
         @Override
         public Method method() {
-            return pbm.member;
+            return pbm.method();
         }
     }
 }

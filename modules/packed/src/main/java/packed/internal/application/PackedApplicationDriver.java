@@ -26,7 +26,7 @@ import java.util.Set;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
@@ -115,7 +115,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+    public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.IMAGE, assembly, wirelets);
         realm.build();
         return new PackedApplicationLauncher<>(this, realm.application);
@@ -170,7 +170,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+    public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
         realm.build();
         return new PackedApplicationLauncher<>(this, realm.application);
@@ -311,9 +311,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#imageOf(Assembly, Wirelet...)}. */
+    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#imageOf(Assembly, Wirelet...)}. */
     public final /* primitive */ record PackedApplicationLauncher<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
-            implements ApplicationLauncher<A> {
+            implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override

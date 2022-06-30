@@ -37,7 +37,10 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
         return Optional.ofNullable(navigator().root().share.dispatcher);
     }
 
-    public Collection<EntryPointMirror> entryPoints() {
+    public Collection<EntryPointOperationMirror> entryPoints() {
+        // Vi behoever jo strengt taget ikke selv holde styr paa dem
+        // OperationMirror.findAllOperationsAssingableTo(EntryPointOperationMirror);
+        
         // Man boer jo kunne extende dem EntryPoints....
         // Altsaa hvis jeg bruge CliExtension...
         return List.of();
@@ -55,7 +58,7 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
     /**
      * @return stuff
      */
-    public Optional<EntryPointMirror> main() {
+    public Optional<EntryPointOperationMirror> main() {
         return Optional.empty();
     }
 

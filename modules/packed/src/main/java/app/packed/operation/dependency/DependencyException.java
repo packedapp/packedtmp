@@ -21,7 +21,8 @@ import app.packed.application.BuildException;
  * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
  * could not be found.
  */
-public class DependencyException extends BuildException {
+// Ved ikke om vi skal have den?
+public abstract class DependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

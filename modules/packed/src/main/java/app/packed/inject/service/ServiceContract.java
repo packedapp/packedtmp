@@ -28,6 +28,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import packed.internal.application.PackedApplicationDriver;
 
 /**
  * A service contract details of a contractee.
@@ -266,7 +267,8 @@ public final class ServiceContract {
 
     // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(assembly, wirelets).container().findExtension(ServiceExtensionMirror.class).map(e -> e.contract())
+        ApplicationMirror m = PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
+        return m.container().findExtension(ServiceExtensionMirror.class).map(e -> e.contract())
                 .orElse(ServiceContract.EMPTY);
     }
 

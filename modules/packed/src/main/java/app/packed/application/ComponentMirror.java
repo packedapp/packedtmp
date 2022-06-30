@@ -17,7 +17,6 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -27,7 +26,6 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
-import packed.internal.container.Mirror;
 import packed.internal.util.StreamUtil;
 
 /**
@@ -38,16 +36,13 @@ import packed.internal.util.StreamUtil;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public sealed interface ComponentMirror extends Mirror permits ContainerMirror, BeanMirror {
+public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMirror, BeanMirror {
 
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
     /** {@return the assembly where the component is defined.} */
     AssemblyMirror assembly();
-
-    /** {@return an unmodifiable view of all of the children of this component.} */
-    /* Sequenced */ Collection<ComponentMirror> children();
 
     /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
     int depth();
@@ -88,15 +83,6 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
         // Super useful...
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Computes the relation from this component to the specified component.
-     * 
-     * @param other
-     *            the other component
-     * @return the relation to the other component
-     */
-    ComponentMirror.Relation relationTo(ComponentMirror other);
 
     /** {@return a stream containing this mirror and all descendents.} */
     Stream<ComponentMirror> stream();
@@ -150,82 +136,6 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
 
     default Optional<ComponentMirror> tryResolve(CharSequence path) {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * A (component mirror) relation is an unchangeable representation of a directional relationship between two components.
-     * <p>
-     * It is typically created via {@link ComponentMirror#relationTo(ComponentMirror)}.
-     */
-    public /* sealed */ interface Relation extends Iterable<ComponentMirror> {
-
-        /**
-         * -1 if {@link #source()} and {@link #target()} are not in the same system. 0 if source and target are identical.
-         * 
-         * @return the distance between the two components
-         */
-        int distance();
-
-        /**
-         * Finds the lowest common ancestor for the two components if they are in the same system. Or {@link Optional#empty()}
-         * if not in the same system.
-         * 
-         * @return lowest common ancestor for the two components. Or empty if not in the same system
-         */
-        Optional<ComponentMirror> findLowestCommonAncestor();
-
-        /**
-         * Returns whether or not the two components are in the same application.
-         * 
-         * @return whether or not the two components are in the same application
-         */
-        boolean inSameApplication();
-
-        /**
-         * Returns whether or not the two components are in the same container.
-         * 
-         * @return whether or not the two components are in the same container
-         */
-        boolean inSameContainer();
-
-        // inSameLifetime
-
-        boolean isInSame(ComponentScope scope);
-
-        /**
-         * Returns whether or not the two components are in the same system. Two components are in the same system, iff they
-         * have the same {@link ComponentMirror#extensionRoot() system component}.
-         * 
-         * @return whether or not the two components are in the same system
-         * @see ComponentMirror#extensionRoot()
-         */
-        default boolean isInSameNamespace() {
-            return isInSame(ComponentScope.NAMESPACE);
-        }
-
-        // Just here because it might be easier to remember...
-        // isStronglyWired...
-        default boolean isStronglyWired() {
-            throw new UnsupportedOperationException();
-        }
-
-        default boolean isWeaklyWired() {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * The source of the relation.
-         * 
-         * @return the source of the relation
-         */
-        ComponentMirror source();
-
-        /**
-         * The target of the relation.
-         * 
-         * @return the target of the relation
-         */
-        ComponentMirror target();
     }
 
     // Taenker den er immutable...

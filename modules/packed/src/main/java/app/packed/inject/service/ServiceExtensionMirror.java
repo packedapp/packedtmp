@@ -47,12 +47,12 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     // Map<K, V> unresolvedOptional?();
 
     /** { @return a map view of all the services that are exported from the container.} */
-    public Map<Key<?>, ServiceExportMirror> exports() {
+    public Map<Key<?>, ServiceExportOperationMirror> exports() {
         throw new UnsupportedOperationException();
     }
 
     /** { @return a map view of all the services that are provided internally in the container.} */
-    public Map<Key<?>, ServiceProvideMirror> provisions() {
+    public Map<Key<?>, ServiceProvideOperationMirror> provisions() {
         throw new UnsupportedOperationException();
     }
 }

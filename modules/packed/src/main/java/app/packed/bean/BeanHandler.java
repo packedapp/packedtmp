@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
-import app.packed.operation.OperationBuilder;
+import app.packed.operation.OperationConfiguration;
 import packed.internal.bean.PackedBeanHandleBuilder;
 import packed.internal.bean.PackedBeanHandler;
 
@@ -55,13 +55,13 @@ import packed.internal.bean.PackedBeanHandler;
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandler<T> permits PackedBeanHandler {
 
-    default <F> OperationBuilder addFunctionalOperation(Class<F> tt, F function) {
+    default <F> OperationConfiguration addFunctionalOperation(Class<F> tt, F function) {
         throw new UnsupportedOperationException();
     }
 
-    OperationBuilder functionalOperationBuilder(Object functionInstance);
+    OperationConfiguration functionalOperationBuilder(Object functionInstance);
 
-    default OperationBuilder functionalOperationBuilder(TypeToken<?> tt, Object functionInstance) {
+    default OperationConfiguration functionalOperationBuilder(TypeToken<?> tt, Object functionInstance) {
         throw new UnsupportedOperationException();
     }
 
@@ -69,7 +69,7 @@ public sealed interface BeanHandler<T> permits PackedBeanHandler {
     // maybe just name it mirror?
     default void addMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
 
-    default OperationBuilder addSyntheticOperation(MethodHandle methodHandle, boolean firstParamIsBeanInstance) {
+    default OperationConfiguration addSyntheticOperation(MethodHandle methodHandle, boolean firstParamIsBeanInstance) {
         throw new UnsupportedOperationException();
     }
 
@@ -118,23 +118,23 @@ public sealed interface BeanHandler<T> permits PackedBeanHandler {
      * A builder for {@link BeanHandler}. Can only be created via the various {@code newBuilder} methods on
      * {@link BeanExtensionPoint}.
      * 
-     * @see BeanExtensionPoint#newBuilder(BeanKind)
-     * @see BeanExtensionPoint#newBuilderFromClass(BeanKind, Class)
-     * @see BeanExtensionPoint#newBuilderFromFactory(BeanKind, Factory)
-     * @see BeanExtensionPoint#newBuilderFromInstance(BeanKind, Object)
+     * @see BeanExtensionPoint#beanBuilder(BeanKind)
+     * @see BeanExtensionPoint#beanBuilderFromClass(BeanKind, Class)
+     * @see BeanExtensionPoint#beanBuilderFromFactory(BeanKind, Factory)
+     * @see BeanExtensionPoint#beanBuilderFromInstance(BeanKind, Object)
      */
     // Could also have, scan(), scan(BeanScanner), noScan() instead of build()
     sealed interface Builder<T> permits PackedBeanHandleBuilder {
 
-        // Will replace Extension.newBeanScanner for the particular extension...
-        
-        // newBeanScanner could then throw "FooBean" must be created using
-        // one of the doo methods on JooExtension... (Which returns a special extension)
-        default Builder<T> beanScanner(BeanScanner scanner) {
-            throw new UnsupportedOperationException();
-        }
-    
-        
+        /**
+         * @param scanner
+         * @return
+         * 
+         * @throws UnsupportedOperationException
+         *             if called on a bean of kind functional
+         */
+        Builder<T> beanScanner(BeanScanner scanner);
+
         // Scan (disable, do scan) ???
 
         /**

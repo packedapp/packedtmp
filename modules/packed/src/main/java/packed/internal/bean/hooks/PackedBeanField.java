@@ -23,8 +23,9 @@ import app.packed.bean.BeanField;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.OperationBuilder;
+import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationTargetMirror;
+import packed.internal.bean.BeanSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -40,8 +41,8 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     /** Whether or not the field can be written. */
     final boolean allowSet;
 
-    PackedBeanField(BeanMemberScanner scanner, ExtensionSetup extension, Field field, boolean allowGet, boolean allowSet) {
-        super(scanner, extension, field);
+    PackedBeanField(BeanSetup bean, BeanMemberScanner scanner, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet) {
+        super(bean, scanner, operator, field);
         this.allowGet = allowGet;
         this.allowSet = allowSet;
     }
@@ -60,13 +61,13 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
 
     /** {@inheritDoc} */
     @Override
-    public OperationBuilder newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode) {
+    public OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationBuilder newGetOperation(ExtensionBeanConfiguration<?> operator) {
+    public OperationConfiguration newGetOperation(ExtensionBeanConfiguration<?> operator) {
 //         return new RawOperationSetup<>(this, openClass.unreflectGetter(field));
 
         return null;
@@ -74,7 +75,7 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
 
     /** {@inheritDoc} */
     @Override
-    public OperationBuilder newSetOperation(ExtensionBeanConfiguration<?> operator) {
+    public OperationConfiguration newSetOperation(ExtensionBeanConfiguration<?> operator) {
         // return new RawOperationSetup<>(this, openClass.unreflectSetter(field));
 
         return null;

@@ -3,6 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
 import app.packed.base.TypeToken;
 import app.packed.container.ExtensionBeanConfiguration;
@@ -20,6 +21,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /** Creates a new bean extension point */
     /* package-private */ BeanExtensionPoint() {}
 
+    <T> ExtensionBeanConfiguration<T> installOnce(Class<T> implementation, Consumer<? super T> consumer) {
+        // maaske hellere bare et installEBean felt i extensionen...
+        throw new UnsupportedOperationException();
+    }
+    
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation);
         BeanHandler<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
@@ -36,19 +42,19 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new ExtensionBeanConfiguration<>(handle);
     }
 
-    public BeanHandler.Builder<?> newBuilder(BeanKind kind) {
+    public BeanHandler.Builder<?> beanBuilder(BeanKind kind) {
         return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container);
     }
 
-    public <T> BeanHandler.Builder<T> newBuilderFromClass(BeanKind kind, Class<T> implementation) {
+    public <T> BeanHandler.Builder<T> beanBuilderFromClass(BeanKind kind, Class<T> implementation) {
         return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
     }
 
-    public <T> BeanHandler.Builder<T> newBuilderFromFactory(BeanKind kind, Factory<T> factory) {
+    public <T> BeanHandler.Builder<T> beanBuilderFromFactory(BeanKind kind, Factory<T> factory) {
         return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
     }
 
-    public <T> BeanHandler.Builder<T> newBuilderFromInstance(BeanKind kind, T instance) {
+    public <T> BeanHandler.Builder<T> beanBuilderFromInstance(BeanKind kind, T instance) {
         return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container, instance);
     }
 

@@ -11,7 +11,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceTransformer;
-import app.packed.operation.OperationPack;
+import app.packed.operation.dependency.BeanDependency;
 import packed.internal.bean.BeanSetup;
 import packed.internal.bean.ExtensionBeanSetup;
 import packed.internal.bean.PackedBeanHandleBuilder;
@@ -38,6 +38,9 @@ public class BeanExtension extends Extension<BeanExtension> {
         this.container = setup.container;
     }
 
+    public void filter(BaseAssembly.Linker l) {
+        
+    }
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
      * application is initialized.
@@ -101,7 +104,7 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (bean instanceof ExtensionBeanSetup e) {
 //                    e.provideOperationPack(provider);
                 } else {
-                    v.failWith(OperationPack.class.getSimpleName() + " can only be injected into extension beans installed using "
+                    v.failWith(String.class.getSimpleName() + " can only be injected into extension beans installed using "
                             + BeanExtensionPoint.class.getSimpleName());
                 }
             }
@@ -111,7 +114,7 @@ public class BeanExtension extends Extension<BeanExtension> {
             public void onField(BeanField field) {
                 // readKey
 
-                Key<?> key = field.readKey();
+                Key<?> key = field.fieldToKey();
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 
                 BeanSetup bean = ((PackedBeanField) field).bean;
