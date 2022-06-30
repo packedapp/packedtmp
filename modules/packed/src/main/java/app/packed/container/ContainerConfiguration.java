@@ -8,9 +8,9 @@ import java.util.function.Consumer;
 import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import packed.internal.container.AssemblyUserRealmSetup;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerDriver;
+import internal.app.packed.container.AssemblyUserRealmSetup;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.PackedContainerDriver;
 
 /**
  * The configuration of a container.

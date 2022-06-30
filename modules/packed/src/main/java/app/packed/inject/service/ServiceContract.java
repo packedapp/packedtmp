@@ -28,7 +28,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import packed.internal.application.PackedApplicationDriver;
+import internal.app.packed.application.PackedApplicationDriver;
 
 /**
  * A service contract details of a contractee.

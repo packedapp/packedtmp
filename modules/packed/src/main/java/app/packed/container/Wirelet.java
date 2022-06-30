@@ -18,10 +18,10 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bean.BeanConfiguration;
-import packed.internal.container.CompositeWirelet;
-import packed.internal.container.InternalWirelet.OverrideNameWirelet;
-import packed.internal.container.WireletModel;
-import packed.internal.util.StackWalkerUtil;
+import internal.app.packed.container.CompositeWirelet;
+import internal.app.packed.container.WireletModel;
+import internal.app.packed.container.InternalWirelet.OverrideNameWirelet;
+import internal.app.packed.util.StackWalkerUtil;
 
 /**
  * A wirelet is a small piece of "glue code" that can be specified when wiring a container.

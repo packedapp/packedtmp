@@ -3,7 +3,7 @@ package app.packed.bean;
 import java.util.stream.Stream;
 
 import app.packed.container.ExtensionMirror;
-import packed.internal.bean.BeanSetup;
+import internal.app.packed.bean.BeanSetup;
 
 /** A specialized extension mirror for the {@link BeanExtension}. */
 public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {

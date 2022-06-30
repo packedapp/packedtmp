@@ -6,7 +6,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
-import packed.internal.inject.service.ContainerInjectionManager;
+import internal.app.packed.inject.service.ContainerInjectionManager;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {

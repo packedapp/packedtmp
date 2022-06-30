@@ -16,11 +16,11 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
 import app.packed.inject.Ancestral;
-import packed.internal.application.ApplicationSetup;
-import packed.internal.application.EntryPointSetup;
-import packed.internal.application.EntryPointSetup.MainThreadOfControl;
-import packed.internal.bean.hooks.PackedBeanMethod;
-import packed.internal.container.ExtensionSetup;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.EntryPointSetup;
+import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
+import internal.app.packed.bean.hooks.PackedBeanMethod;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  * An extension that controls entry points into an application.

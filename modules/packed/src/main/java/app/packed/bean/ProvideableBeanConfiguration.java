@@ -19,11 +19,11 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.inject.service.ServiceExtension;
-import packed.internal.bean.BeanSetup;
-import packed.internal.bean.PackedBeanHandler;
-import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.inject.service.InternalServiceUtil;
-import packed.internal.inject.service.build.BeanInstanceServiceSetup;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.PackedBeanHandler;
+import internal.app.packed.inject.service.ContainerInjectionManager;
+import internal.app.packed.inject.service.InternalServiceUtil;
+import internal.app.packed.inject.service.build.BeanInstanceServiceSetup;
 
 /**
  * A configuration of a container bean.

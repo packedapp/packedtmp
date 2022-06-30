@@ -15,9 +15,9 @@
  */
 package app.packed.base;
 
+import static internal.app.packed.util.StringFormatter.format;
+import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
-import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -26,11 +26,11 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import packed.internal.util.BasePackageAccess;
-import packed.internal.util.BasePackageAccess.AppPackedBaseAccess;
-import packed.internal.util.ClassUtil;
-import packed.internal.util.TypeUtil;
-import packed.internal.util.typevariable.TypeVariableExtractor;
+import internal.app.packed.util.BasePackageAccess;
+import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.TypeUtil;
+import internal.app.packed.util.BasePackageAccess.AppPackedBaseAccess;
+import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does

@@ -23,8 +23,8 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.application.ApplicationInfo;
 import app.packed.base.Nullable;
-import packed.internal.container.AssemblyUserRealmSetup;
-import packed.internal.util.LookupUtil;
+import internal.app.packed.container.AssemblyUserRealmSetup;
+import internal.app.packed.util.LookupUtil;
 
 /**
  * Assemblies are the main way that applications are configured in Packed.

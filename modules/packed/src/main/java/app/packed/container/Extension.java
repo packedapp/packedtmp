@@ -35,14 +35,14 @@ import app.packed.bean.BeanScanner;
 import app.packed.inject.Ancestral;
 import app.packed.inject.service.ServiceExtension;
 import app.packed.inject.service.ServiceExtensionMirror;
-import packed.internal.container.ExtensionModel;
-import packed.internal.container.ExtensionPointHelper;
-import packed.internal.container.ExtensionRealmSetup;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedExtensionNavigator;
-import packed.internal.inject.invoke.InternalInfuser;
-import packed.internal.util.StackWalkerUtil;
-import packed.internal.util.ThrowableUtil;
+import internal.app.packed.container.ExtensionModel;
+import internal.app.packed.container.ExtensionPointHelper;
+import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.PackedExtensionNavigator;
+import internal.app.packed.inject.invoke.InternalInfuser;
+import internal.app.packed.util.StackWalkerUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
  * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is

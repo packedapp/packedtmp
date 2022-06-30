@@ -8,8 +8,8 @@ import java.util.Set;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ComponentMirror;
 import app.packed.bean.BeanMirror;
-import packed.internal.container.ContainerSetup.BuildTimeContainerMirror;
-import packed.internal.container.Mirror;
+import internal.app.packed.container.Mirror;
+import internal.app.packed.container.ContainerSetup.BuildTimeContainerMirror;
 
 /**
  * A mirror of a container.

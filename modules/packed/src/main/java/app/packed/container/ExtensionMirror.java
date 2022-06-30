@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
-import packed.internal.container.Mirror;
-import packed.internal.container.PackedExtensionNavigator;
+import internal.app.packed.container.Mirror;
+import internal.app.packed.container.PackedExtensionNavigator;
 
 /**
  * Provides generic information about the usage of an extension.

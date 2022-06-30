@@ -3,7 +3,7 @@ package app.packed.application;
 import java.util.NoSuchElementException;
 
 import app.packed.container.Extension;
-import packed.internal.util.ClassUtil;
+import internal.app.packed.util.ClassUtil;
 
 // Registrant
 // Operator, Contractor

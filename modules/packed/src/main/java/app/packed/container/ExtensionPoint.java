@@ -6,9 +6,9 @@ import app.packed.application.Realm;
 import app.packed.application.entrypoint.EntryPointExtensionPoint;
 import app.packed.base.Nullable;
 import app.packed.container.Extension.DependsOn;
-import packed.internal.container.ExtensionRealmSetup;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.container.PackedExtensionPointContext;
+import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.PackedExtensionPointContext;
 
 /**
  * Extension points are the main mechanism by which an extension can use other extensions. Developers that are not

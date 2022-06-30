@@ -2,7 +2,7 @@ package app.packed.application;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import packed.internal.application.PackedApplicationDescriptor;
+import internal.app.packed.application.PackedApplicationDescriptor;
 
 // Input DAW (Application) Driver Assembly Wirelets
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.

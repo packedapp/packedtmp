@@ -10,8 +10,8 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
-import packed.internal.bean.PackedBeanHandleBuilder;
-import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
+import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 
 /**
  * An extension point class for {@link BeanExtension}.

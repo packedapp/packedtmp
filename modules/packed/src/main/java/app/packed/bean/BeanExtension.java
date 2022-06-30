@@ -12,18 +12,18 @@ import app.packed.inject.Provide;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.inject.service.ServiceTransformer;
 import app.packed.operation.dependency.BeanDependency;
-import packed.internal.bean.BeanSetup;
-import packed.internal.bean.ExtensionBeanSetup;
-import packed.internal.bean.PackedBeanHandleBuilder;
-import packed.internal.bean.hooks.PackedBeanField;
-import packed.internal.bean.hooks.PackedBeanMethod;
-import packed.internal.bean.inject.BeanMemberDependencyNode;
-import packed.internal.bean.inject.FieldHelper;
-import packed.internal.bean.inject.MethodHelper;
-import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.DependencyNode;
-import packed.internal.inject.service.runtime.AbstractServiceLocator;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.ExtensionBeanSetup;
+import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.hooks.PackedBeanField;
+import internal.app.packed.bean.hooks.PackedBeanMethod;
+import internal.app.packed.bean.inject.BeanMemberDependencyNode;
+import internal.app.packed.bean.inject.FieldHelper;
+import internal.app.packed.bean.inject.MethodHelper;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.inject.DependencyNode;
+import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension for installing beans into a container.

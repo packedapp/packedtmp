@@ -31,7 +31,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
 import app.packed.operation.OperationConfiguration;
-import packed.internal.bean.hooks.PackedBeanField;
+import internal.app.packed.bean.hooks.PackedBeanField;
 
 /**
  * This class represents a {@link Field} on a bean.

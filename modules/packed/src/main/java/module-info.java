@@ -14,9 +14,9 @@ module app.packed {
     exports app.packed.operation.dependency;
 
     /* Special support for DevTools project */
-    uses packed.internal.integrate.devtools.PackedDevToolsIntegration;
+    uses internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
 
-    exports packed.internal.integrate.devtools to app.packed.devtools;
+    exports internal.app.packed.integrate.devtools to app.packed.devtools;
 }
 
 // requires static org.graalvm.sdk;

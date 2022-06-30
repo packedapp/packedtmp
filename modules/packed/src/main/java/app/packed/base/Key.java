@@ -15,9 +15,9 @@
  */
 package app.packed.base;
 
+import static internal.app.packed.util.StringFormatter.format;
+import static internal.app.packed.util.StringFormatter.formatSimple;
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
-import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -34,10 +34,10 @@ import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.base.TypeToken.CanonicalizedTypeToken;
-import packed.internal.util.AnnotationUtil;
-import packed.internal.util.ClassUtil;
-import packed.internal.util.QualifierUtil;
-import packed.internal.util.TypeUtil;
+import internal.app.packed.util.AnnotationUtil;
+import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.QualifierUtil;
+import internal.app.packed.util.TypeUtil;
 
 /**
  * A key defines a unique identifier with two parts: a mandatory type literal and an optional annotation called a

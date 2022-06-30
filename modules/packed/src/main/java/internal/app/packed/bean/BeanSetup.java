@@ -1,0 +1,199 @@
+package internal.app.packed.bean;
+
+import static java.util.Objects.requireNonNull;
+
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
+import app.packed.application.ApplicationMirror;
+import app.packed.application.ComponentMirror;
+import app.packed.application.Realm;
+import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
+import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanKind;
+import app.packed.bean.BeanMirror;
+import app.packed.container.AssemblyMirror;
+import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
+import app.packed.lifetime.LifetimeMirror;
+import app.packed.operation.OperationMirror;
+import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
+import internal.app.packed.bean.hooks.BeanMemberScanner;
+import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.container.RealmSetup;
+import internal.app.packed.inject.BeanInjectionManager;
+import internal.app.packed.operation.OperationSetup;
+
+/** The build-time configuration of a bean. */
+public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits ExtensionBeanSetup {
+
+    /** The builder that was used to create the bean. */
+    public final PackedBeanHandleBuilder<?> builder;
+
+    /** A model of hooks on the bean class. Or null if no member scanning was performed. */
+    @Nullable
+    public final BeanClassModel beanModel;
+
+    /** The bean's injection manager. Null for functional beans, otherwise non-null */
+    @Nullable
+    public final BeanInjectionManager injectionManager;
+
+    /** Operations declared by the bean. */
+    private final ArrayList<OperationSetup> operations = new ArrayList<>();
+
+    /**
+     * Create a new bean setup.
+     * 
+     * @param builder
+     *            the handle builder
+     */
+    public BeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
+        super(builder.container.application, owner, builder.container);
+        this.builder = builder;
+        this.beanModel = builder.sourceType == SourceType.NONE ? null : new BeanClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
+        if (beanKind() != BeanKind.FUNCTIONAL) {
+            this.injectionManager = new BeanInjectionManager(this, builder);
+        } else {
+            this.injectionManager = null;
+        }
+
+        if (builder.sourceType != SourceType.NONE) {
+            new BeanMemberScanner(this).scan();
+        }
+
+        // Wire the hook model
+        if (beanModel != null) {
+            // hookModel.onWire(this);
+
+            // Set the name of the component if it have not already been set using a wirelet
+            initializeNameWithPrefix(beanModel.simpleName());
+        }
+    }
+
+    public void addOperation(OperationSetup operation) {
+        operations.add(requireNonNull(operation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> beanClass() {
+        return builder.beanClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanKind beanKind() {
+        return builder.beanKind();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanMirror mirror() {
+        return new BuildTimeBeanMirror(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension<?>> operator() {
+        return builder.operator == null ? BeanExtension.class : builder.operator.extension().extensionType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Realm owner() {
+        return realm.realm();
+    }
+
+    @Override
+    public Stream<ComponentSetup> stream() {
+        return Stream.of(this);
+    }
+
+    /** A build-time bean mirror. */
+    public record BuildTimeBeanMirror(BeanSetup bean) implements BeanMirror {
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> beanClass() {
+            return bean.builder.beanClass();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BeanKind beanKind() {
+            return bean.builder.beanKind();
+        }
+
+        /** {@inheritDoc} */
+        public final ContainerMirror container() {
+            return bean.parent.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<? extends Extension<?>> operator() {
+            return bean.operator();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Stream<OperationMirror> operations() {
+            return bean.operations.stream().map(OperationSetup::mirror);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror application() {
+            return bean.application.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public AssemblyMirror assembly() {
+            return bean.userRealm.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Stream<ComponentMirror> stream() {
+            return Stream.of(this);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int depth() {
+            return bean.depth;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeMirror lifetime() {
+            return bean.lifetime.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return bean.name;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Realm owner() {
+            return bean.realm.realm();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public NamespacePath path() {
+            return bean.path();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return bean.toString();
+        }
+    }
+}

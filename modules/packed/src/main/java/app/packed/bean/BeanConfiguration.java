@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
-import packed.internal.bean.PackedBeanHandler;
+import internal.app.packed.bean.PackedBeanHandler;
 
 /**
  * The base configuration class for a bean.

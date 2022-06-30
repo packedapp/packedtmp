@@ -42,9 +42,9 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
 import app.packed.operation.dependency.BeanDependency.ProvisionHook;
-import packed.internal.application.ApplicationInitializationContext;
-import packed.internal.inject.service.PackedServiceLocator;
-import packed.internal.util.LookupUtil;
+import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.inject.service.PackedServiceLocator;
+import internal.app.packed.util.LookupUtil;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.

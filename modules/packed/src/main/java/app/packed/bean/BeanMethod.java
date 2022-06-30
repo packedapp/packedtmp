@@ -25,7 +25,7 @@ import app.packed.operation.OperationConfiguration;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
-import packed.internal.bean.hooks.PackedBeanMethod;
+import internal.app.packed.bean.hooks.PackedBeanMethod;
 
 /**
  * This class represents a {@link Method} on a bean.

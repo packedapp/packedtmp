@@ -33,9 +33,9 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.service.ServiceExportOperationMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.dependency.DependencyMirror;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.container.Mirror;
-import packed.internal.operation.OperationSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * A mirror for a bean operation.

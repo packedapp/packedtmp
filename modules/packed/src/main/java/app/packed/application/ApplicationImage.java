@@ -20,7 +20,7 @@ import java.util.function.Function;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifecycle.RunState;
-import packed.internal.application.PackedApplicationDriver.PackedApplicationLauncher;
+import internal.app.packed.application.PackedApplicationDriver.PackedApplicationLauncher;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system

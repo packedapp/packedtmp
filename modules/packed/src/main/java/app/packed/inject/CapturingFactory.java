@@ -31,11 +31,11 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import packed.internal.inject.InternalDependency;
-import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactory.InternalCapturingInternalFactory;
-import packed.internal.util.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
+import internal.app.packed.inject.InternalDependency;
+import internal.app.packed.inject.factory.InternalFactory;
+import internal.app.packed.inject.factory.InternalFactory.InternalCapturingInternalFactory;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.MethodHandleUtil;
 
 /**
  * A abstract factory that captures the type an annotated return type and annotated type apra

@@ -10,7 +10,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
-import packed.internal.container.Mirror;
+import internal.app.packed.container.Mirror;
 
 /**
  * A mirror of an application.

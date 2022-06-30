@@ -24,9 +24,9 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.service.ContainerInjectionManager;
-import packed.internal.inject.service.ServiceConfiguration;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.inject.service.ContainerInjectionManager;
+import internal.app.packed.inject.service.ServiceConfiguration;
 
 /**
  * An extension that deals with the service functionality of a container.

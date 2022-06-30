@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.operation.dependency.BeanDependency;
-import packed.internal.operation.PackedOperationBuilder;
+import internal.app.packed.operation.PackedOperationBuilder;
 
 /**
  *

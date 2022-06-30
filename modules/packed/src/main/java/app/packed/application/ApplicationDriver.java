@@ -26,7 +26,7 @@ import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifecycleException;
 import app.packed.lifecycle.RunState;
-import packed.internal.application.PackedApplicationDriver;
+import internal.app.packed.application.PackedApplicationDriver;
 
 /**
  * Application drivers are responsible for building applications.

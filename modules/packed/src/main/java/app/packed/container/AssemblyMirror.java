@@ -20,8 +20,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import packed.internal.container.Mirror;
-import packed.internal.container.UserRealmSetup;
+import internal.app.packed.container.Mirror;
+import internal.app.packed.container.UserRealmSetup;
 
 /** A mirror of an {@link Assembly}. */
 public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.BuildtimeAssemblyMirror {

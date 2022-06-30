@@ -26,10 +26,10 @@ import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import app.packed.inject.service.ServiceLocator;
-import packed.internal.application.ApplicationInitializationContext;
-import packed.internal.application.PackedApplicationDriver;
-import packed.internal.container.ComposerUserRealmSetup;
-import packed.internal.util.LookupUtil;
+import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.application.PackedApplicationDriver;
+import internal.app.packed.container.ComposerUserRealmSetup;
+import internal.app.packed.util.LookupUtil;
 
 /**
  * Composers does not usually have any public constructors.

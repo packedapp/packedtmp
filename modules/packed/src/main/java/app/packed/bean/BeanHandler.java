@@ -25,8 +25,8 @@ import app.packed.base.TypeToken;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import app.packed.operation.OperationConfiguration;
-import packed.internal.bean.PackedBeanHandleBuilder;
-import packed.internal.bean.PackedBeanHandler;
+import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.PackedBeanHandler;
 
 /**
  * A bean driver must be created via {@link BeanExtensionPoint}.

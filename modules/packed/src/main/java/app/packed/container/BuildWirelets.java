@@ -23,8 +23,8 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.ComponentMirror;
-import packed.internal.component.ComponentScope;
-import packed.internal.container.InternalWirelet;
+import internal.app.packed.component.ComponentScope;
+import internal.app.packed.container.InternalWirelet;
 
 /**
  * Wirelets that can be specified at when building an application. Attempts to use them with

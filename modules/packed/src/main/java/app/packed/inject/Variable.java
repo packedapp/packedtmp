@@ -25,8 +25,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import app.packed.base.TypeToken;
-import packed.internal.base.PackedVariable;
-import packed.internal.base.VariableTypeWrapper;
+import internal.app.packed.base.PackedVariable;
+import internal.app.packed.base.VariableTypeWrapper;
 
 /**
  * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 

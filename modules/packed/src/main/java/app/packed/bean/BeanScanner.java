@@ -28,8 +28,8 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.dependency.BeanDependency;
-import packed.internal.bean.BeanSetup;
-import packed.internal.container.ExtensionSetup;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  *

@@ -7,8 +7,8 @@ import app.packed.application.ComponentMirror;
 import app.packed.application.Realm;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import packed.internal.bean.BeanSetup.BuildTimeBeanMirror;
-import packed.internal.container.Mirror;
+import internal.app.packed.bean.BeanSetup.BuildTimeBeanMirror;
+import internal.app.packed.container.Mirror;
 
 /**
  * A mirror of a bean.

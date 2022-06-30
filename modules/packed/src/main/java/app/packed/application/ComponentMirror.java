@@ -26,7 +26,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
-import packed.internal.util.StreamUtil;
+import internal.app.packed.util.StreamUtil;
 
 /**
  * A mirror of a component.

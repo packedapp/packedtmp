@@ -30,11 +30,11 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactory.ConstantFactory;
-import packed.internal.inject.factory.InternalFactory.LookedUpFactory;
-import packed.internal.inject.factory.ReflectiveFactory;
-import packed.internal.inject.factory.ReflectiveFactory.ExecutableFactory;
+import internal.app.packed.inject.factory.InternalFactory;
+import internal.app.packed.inject.factory.ReflectiveFactory;
+import internal.app.packed.inject.factory.InternalFactory.ConstantFactory;
+import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;
+import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
