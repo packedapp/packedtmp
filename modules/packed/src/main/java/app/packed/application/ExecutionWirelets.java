@@ -82,9 +82,12 @@ public final class ExecutionWirelets {
      * @see #shutdownHook(Function, app.packed.lifecycle.LifecycleApplicationController.StopOption...)
      * @see Runtime#addShutdownHook(Thread)
      */
-    // cannot specify it on ServiceLocator
+    // cannot specify it on ServiceLocator or anyone else that is not closeable
     // Ogsaa skrive noget om hvad der sker hvis vi stopper
     // Skriv noget om der bliver lavet en traad, og man kan bruge den anden metode hvis man selv skal lave en
+    
+    // Maaske skal vi ogsaa exponere en installShutdownHook(ContainerConfiguration?)
+    // Maaske har vi en PlatformAssembly???
     public static Wirelet shutdownHook(LifecycleApplicationController.StopOption... options) {
         // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);

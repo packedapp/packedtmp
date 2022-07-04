@@ -34,7 +34,9 @@ import app.packed.container.Wirelet;
 /// Maaske er det ogsaa bare nogle method handles...
 /// Altsaa forventer ikke der er mange der bruger dem....
 
-public interface ContainerLifetimeMap<K, S> {
+// Naehhh, den her kan vi ikke rigtig bruge
+
+interface ContainerLifetimeMap<K, S> {
     
     S make(K key);
     S make(K key, Wirelet... wirelets);

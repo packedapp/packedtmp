@@ -148,15 +148,16 @@ public class OperationMirror implements Mirror {
     }
 
     /**
-     * Returns whether or not a new bean instance is created every time the operation is invoked.
+     * Returns whether or new component lifetime is created every time the operation is invoked. The lifetime will last jast
+     * for the lifetime of the operation.
      * 
      * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
      */
     // Creates a new Lifetime just for the duration of the operation!
     // What about start/stop
     // spawnsLifetime
-    final Optional<LifetimeMirror> createsNewLifetime() {
-        // Hvad med en constructor?? 
+    final Optional<LifetimeMirror> launchesLifetime() {
+        // Hvad med en constructor??
         //// Alt hvad der kalder en i user code kraever en operation
 
         // Operation
@@ -201,10 +202,10 @@ public class OperationMirror implements Mirror {
 
     final String name() {
         // Maaske maa operationer godt have det samme navn????
-        
+
         // Altsaa webGet1 + webGet2 giver jo ikke rigtig noget information...
         // Saa kan vi ligesaa godt have webGet + webGet
-        
+
         //// Vi har vel 3 interessante navne
         // Name
         // BeanExtension#name

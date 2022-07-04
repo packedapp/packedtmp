@@ -34,6 +34,8 @@ import app.packed.operation.OperationMirror;
 //// TreeView<ComponentMirror>
 //// TreeView<ContainerMirror>
 //// TreeView<T extends Extension<?>>
+
+// Maaske er den bedre i .container?
 public interface ComponentMirrorTree  {
 
     /** {@return {@code true} if this set contains no mirrors.} */

@@ -18,8 +18,7 @@ package app.packed.lifetime;
 /**
  *
  */
-// Er closely related to bean lifecycle
-//
+// Er application bare det samme som en root container?
 public enum LifetimeKind {
 
     /** Created and destroyed together with the application. */
@@ -29,17 +28,18 @@ public enum LifetimeKind {
     CONTAINER,
     
     /** Created and destroyed independently of other components */
-    BEAN,
-    
-    
-    
-    /// Hmm maaske har vi flere LifetimeKind???
-    // BeanLifetimeKind [Container, OPERATION
-    // OPERATION, DEPENDANT, ...
-    
-    // Omvendt saa kan vi vel godt lave en container pga en operation????
+    BEAN;
 }
 
+// function/static beans har samme lifetime som deres container
+
+
+
+/// Hmm maaske har vi flere LifetimeKind???
+// BeanLifetimeKind [Container, OPERATION
+// OPERATION, DEPENDANT, ...
+
+// Omvendt saa kan vi vel godt lave en container pga en operation????
 
 
 //// Honorable mentions

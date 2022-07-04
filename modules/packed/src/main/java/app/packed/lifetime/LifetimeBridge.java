@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.lifetime;
 
 /**
  *
@@ -29,7 +29,7 @@ package app.packed.application;
 // EntryExtensionPoint.CALL_ENTRY_APPLICATION_CONTROLLER  = ApplicationController<MethodHandle>
 // Man kan saa faa den injected... i sin AppImplementation
 
-public interface ApplicationController<T> {
+public interface LifetimeBridge<T> {
 
     public static void main(String[] args) {
         

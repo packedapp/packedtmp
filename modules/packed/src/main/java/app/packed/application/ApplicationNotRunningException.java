@@ -8,6 +8,8 @@ package app.packed.application;
 // Men den fejler
 // InvalidApplicationStateException?
 // RuntimeApplicationException
+// LifetimeNotRunning, LifetimeNotAvailable?
+// NotRunningException
 public class ApplicationNotRunningException extends RuntimeException {
 
     /** */

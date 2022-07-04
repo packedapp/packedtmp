@@ -27,8 +27,7 @@ public enum ApplicationExecutionModel {
     // Does not have an entry point. But will run as a daemon until
     // shutdown either internally or externally
     DAEMON,
-    
-    
+        
     STATELESS;
 }
 

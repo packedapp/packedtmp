@@ -26,6 +26,7 @@ import app.packed.inject.service.ServiceLocator;
 import app.packed.lifecycle.LifecycleApplicationController;
 import app.packed.lifecycle.LifecycleException;
 import app.packed.lifecycle.RunState;
+import app.packed.lifetime.LifetimeBridge;
 import internal.app.packed.application.PackedApplicationDriver;
 
 /**
@@ -219,7 +220,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         }
         
         // noget optional??? ellers
-        default Builder addController(ApplicationController<?>... controllers) {
+        default Builder addController(LifetimeBridge<?>... controllers) {
             return this;
         }
         
