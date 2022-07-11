@@ -41,7 +41,7 @@ import internal.app.packed.inject.service.build.ServiceSetup;
 import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 import internal.app.packed.inject.service.runtime.RuntimeService;
 import internal.app.packed.inject.service.runtime.ServiceInstantiationContext;
-import internal.app.packed.lifetime.LifetimePool;
+import internal.app.packed.lifetime.LifetimeConstantPool;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
@@ -118,7 +118,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
         return e;
     }
 
-    public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
+    public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimeConstantPool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         if (ios.hasExports()) {

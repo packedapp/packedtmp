@@ -53,7 +53,7 @@ public class ExtensionActivation {
             @Override
             protected void build() {}
         };
-        return App.newReusableLauncher(b);
+        return App.newReusableImage(b);
     }
 
     @Benchmark
@@ -64,7 +64,7 @@ public class ExtensionActivation {
                 use(MyExtension.class);
             }
         };
-        return App.newReusableLauncher(b);
+        return App.newReusableImage(b);
     }
 
     @Benchmark
@@ -75,7 +75,7 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return App.newReusableLauncher(b);
+        return App.newReusableImage(b);
     }
 
     @Benchmark
@@ -87,7 +87,7 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return App.newReusableLauncher(b);
+        return App.newReusableImage(b);
     }
 
     @Benchmark
@@ -98,7 +98,7 @@ public class ExtensionActivation {
                 installInstance(new MyStuff());
             }
         };
-        return App.newReusableLauncher(b);
+        return App.newReusableImage(b);
     }
 
     static class MyStuff {

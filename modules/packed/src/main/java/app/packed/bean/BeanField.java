@@ -15,47 +15,45 @@
  */
 package app.packed.bean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
+import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanScanner.BeanElement;
-import app.packed.container.Extension;
+import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.dependency.BeanDependency;
 import internal.app.packed.bean.hooks.PackedBeanField;
 
 /**
  * This class represents a {@link Field} on a bean.
  * 
- * @see Extension#hookOnBeanField(BeanField)
+ * @see BeanExtensionPoint.FieldHook
+ * @see BeanProcessor#onField(BeanField)
  */
 public sealed interface BeanField extends BeanElement permits PackedBeanField {
 
+    /** {@return the underlying field.} */
+    Field field();
+
     /**
-     * @return
+     * Attempts to convert field to a {@link Key} or fails with a {@link BeanDefinitionException} if the field does not
+     * represent a proper key.
+     * <p>
+     * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
+     * key. As {@link BeanDependency} is typically used in cases where this is needed instead of this class.
+     * 
+     * @return a key representing the field
      * 
      * @throws BeanDefinitionException
      *             if the field does not represent a proper key
      */
-    // what about wrappers??? Skal vi have den paa dependency istedet for???
-    // dependency().readKey(); det tror jeg...
-    // Det er fint, det er raw... Det er taenkt som en producer... 
-    // en consumer boer gaa via dependency().readkey();
     default Key<?> fieldToKey() {
         return Key.convertField(field());
     }
-
-    /** {@return the underlying field.} */
-    Field field();
 
     /**
      * {@return the modifiers of the field.}
@@ -66,10 +64,14 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
     int getModifiers();
 
     /**
-     * Returns a method handle that gives read access to the underlying field as specified by
-     * {@link Lookup#unreflectGetter(Field)}.
+     * Creates a new operation that reads a field as specified by {@link Lookup#unreflectGetter(Field)}.
      * 
-     * @return a method handle getter
+     * @param operator
+     *            the bean that will invoke the operation. The operator must be defined in the same container (or in a
+     *            parent container) as the bean that declares the field
+     * @return an operation configuration object
+     * @throws IllegalArgumentException
+     *             if the specified operator is not a direct ancestor of the bean that declares the field
      */
     OperationConfiguration newGetOperation(ExtensionBeanConfiguration<?> operator);
 
@@ -79,51 +81,34 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * @return
      * 
      * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
+     * 
+     * @apiNote there are currently no way to create more than 1 MethodHandle or VarHandle per operation. If this is needed
+     *          at some point. We could take a varargs of access modes and then allow repeat calls to methodHandleNow. No
+     *          matter what we must declare the invocation types when we create the operation, so we can check access before
+     *          creating the actual operation
      */
-    // Masske allow mere en 1 operations type.... Saa kan man fx
-    // lave en get og en set varhandle?
+    // Tror man maa lave 2 operationer hvis man behov for det. JUC bruger aldrig mere end 1 VarHandle. Men det er jo ogsaa
+    // fordi
+    // de altid bare laesaer den volatile vaerdi. Saa de har aldrig nogle gettere
+    // Har stadig ikke en usecase for 2 VarHandle. Men get plus set, er dog ikke sikker paa det er noget vi vil supportere
     OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
-     * Returns a method handle that gives write access to the underlying field as specified by
-     * {@link Lookup#unreflectSetter(Field)}.
+     * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
      * 
-     * @return a method handle setter
+     * @return an operation configuration object
      */
     OperationConfiguration newSetOperation(ExtensionBeanConfiguration<?> operator);
-
-    // Or maybe just rawVarHandle() on IOH
-    default VarHandle varHandleOf(OperationConfiguration handle) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * {@return the underlying field represented as a {@code Variable}.}
      * 
      * @see Variable#ofField(Field)
      */
-    Variable variable(); // mayby toVariable
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface FieldHook {
-
-        /** Whether or not the sidecar is allow to get the contents of a field. */
-        boolean allowGet() default false;
-
-        /** Whether or not the sidecar is allow to set the contents of a field. */
-        boolean allowSet() default false;
-
-        /** The hook's {@link BeanField} class. */
-        Class<? extends Extension<?>> extension();
-    }
-
+    Variable variable(); // mayby toVariable (kun hvis den fejler taenker jeg)
 }
 
 interface Zandbox {
-
-    // BeanInfo
 
     default int beanFieldId() {
         // IDeen er lidt at fields (og methods) har et unikt id...
@@ -133,8 +118,17 @@ interface Zandbox {
         return 1;
     }
 
+    // BeanInfo
+
     // Can only read stuff...
     // Then we can just passe it off to anyone
     // IDK know about usecases
     BeanField unmodifiable();
+
+    // Or maybe just rawVarHandle() on IOH
+    //// Ideen var lidt at man kunne kalde den her metode for at faa extra
+    // Varhandles hvis man havde angivet mere end en access mode
+    default VarHandle varHandleOf(OperationConfiguration handle) {
+        throw new UnsupportedOperationException();
+    }
 }

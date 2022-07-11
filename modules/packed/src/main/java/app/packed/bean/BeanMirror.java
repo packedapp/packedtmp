@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ComponentMirror;
-import app.packed.application.Realm;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
+import app.packed.container.Realm;
 import internal.app.packed.bean.BeanSetup.BuildTimeBeanMirror;
 import internal.app.packed.container.Mirror;
 

@@ -43,8 +43,8 @@ public final class LifetimePoolSetup {
         entries.add(c);
     }
 
-    public LifetimePool newPool(ApplicationInitializationContext launchContext) {
-        LifetimePool pool = new LifetimePool(size);
+    public LifetimeConstantPool newPool(ApplicationInitializationContext launchContext) {
+        LifetimeConstantPool pool = new LifetimeConstantPool(size);
 
         launchContext.writeToPool(pool);
 

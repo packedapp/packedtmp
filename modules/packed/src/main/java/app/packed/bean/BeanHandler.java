@@ -133,7 +133,7 @@ public sealed interface BeanHandler<T> permits PackedBeanHandler {
          * @throws UnsupportedOperationException
          *             if called on a bean of kind functional
          */
-        Builder<T> beanScanner(BeanScanner scanner);
+        Builder<T> beanScanner(BeanProcessor scanner);
 
         // Scan (disable, do scan) ???
 

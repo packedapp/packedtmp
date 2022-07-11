@@ -91,8 +91,8 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     @Override
-    protected BeanScanner newBeanScanner() {
-        return new BeanScanner() {
+    protected BeanProcessor newBeanScanner() {
+        return new BeanProcessor() {
 
             /** {@inheritDoc} */
             @Override

@@ -41,7 +41,7 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
     /** Whether or not the field can be written. */
     final boolean allowSet;
 
-    PackedBeanField(BeanSetup bean, BeanMemberScanner scanner, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet) {
+    PackedBeanField(BeanSetup bean, BeanHookScanner scanner, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet) {
         super(bean, scanner, operator, field);
         this.allowGet = allowGet;
         this.allowSet = allowSet;

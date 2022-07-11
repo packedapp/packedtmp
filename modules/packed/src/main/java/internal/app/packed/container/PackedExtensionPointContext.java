@@ -15,8 +15,8 @@
  */
 package internal.app.packed.container;
 
-import app.packed.application.Realm;
 import app.packed.container.ExtensionPoint.UseSite;
+import app.packed.container.Realm;
 
 /**
  *

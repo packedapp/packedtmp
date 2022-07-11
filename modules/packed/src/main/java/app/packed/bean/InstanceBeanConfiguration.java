@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.lifecycle.RunState;
+import app.packed.lifetime.RunState;
 
 /**
  * A bean that creates instances of a fixed {@link BeanConfiguration#beanClass() type}.

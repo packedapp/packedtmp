@@ -22,7 +22,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandler;
 import app.packed.bean.BeanHandler.Builder;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanScanner;
+import app.packed.bean.BeanProcessor;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import internal.app.packed.container.ContainerSetup;
@@ -57,7 +57,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
     public final SourceType sourceType;
 
     @Nullable
-    BeanScanner scanner;
+    BeanProcessor scanner;
 
     private PackedBeanHandleBuilder(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
             @Nullable Object source) {
@@ -154,7 +154,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
 
     /** {@inheritDoc} */
     @Override
-    public Builder<T> beanScanner(BeanScanner scanner) {
+    public Builder<T> beanScanner(BeanProcessor scanner) {
         requireNonNull(scanner, "scanner is null");
         if (kind == BeanKind.FUNCTIONAL) {
             throw new UnsupportedOperationException("Cannot specify a scanner on a functional bean");

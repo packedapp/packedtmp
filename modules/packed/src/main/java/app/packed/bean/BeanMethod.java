@@ -18,19 +18,20 @@ package app.packed.bean;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanScanner.BeanElement;
+import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationInvocationType;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
-import app.packed.operation.OperationType;
 import internal.app.packed.bean.hooks.PackedBeanMethod;
 
 /**
  * This class represents a {@link Method} on a bean.
  * 
- * @see BeanScanner#onMethod(BeanMethod)
+ * @see BeanExtensionPoint.MethodHook
+ * @see BeanProcessor#onMethod(BeanMethod)
  */
 public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
@@ -54,7 +55,6 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     Method method();
 
     /**
-     * 
      * <p>
      * Any {@link OperationMirror} created from the operation, will have a {@link OperationTargetMirror.OfMethodInvoke} as
      * its {@link OperationMirror#target()}.
@@ -71,8 +71,7 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
      * @throws IllegalArgumentException
      *             if the specified operator is not a direct ancestor of the method's bean.
      */
-    // take bean configuration instead and just test realm.
-    OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationType operationType);
+    OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationInvocationType operationType);
 }
 
 /**

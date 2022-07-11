@@ -91,7 +91,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         this.parent = parent;
         if (parent == null) {
             this.depth = 0;
-            this.lifetime = new LifetimeSetup((ContainerSetup) this);
+            this.lifetime = new LifetimeSetup((ContainerSetup) this, null);
         } else {
             this.depth = parent.depth + 1;
             this.onWireAction = parent.onWireAction;

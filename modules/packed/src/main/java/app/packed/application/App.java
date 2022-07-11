@@ -15,9 +15,10 @@
  */
 package app.packed.application;
 
+import app.packed.application.sandbox.UnhandledApplicationException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifecycle.RunState;
+import app.packed.lifetime.RunState;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -26,7 +27,6 @@ import app.packed.lifecycle.RunState;
  * An entry point for all the various types of applications that are available in Packed.
  * <p>
  * This class does not prov For creating application -instances -mirrors and -images.
- * 
  */
 public final class App {
 
@@ -55,13 +55,12 @@ public final class App {
         return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
     }
 
-    // The launcher can be used exactly once
-    public static ApplicationImage<Void> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
+    public static ApplicationImage<Void> newImage(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.newImage(assembly, wirelets);
     }
 
-    public static ApplicationImage<Void> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
+    public static ApplicationImage<Void> newReusableImage(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.newImage(assembly, wirelets);
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
@@ -72,8 +71,8 @@ public final class App {
     /**
      * Builds and executes an application from the specified assembly and optional wirelets.
      * <p>
-     * If successful a single instance of the application that will created and executed until it is
-     * {@link RunState#TERMINATED terminated}. After which this method will return.
+     * If the application is built successfully from the assembly. A single instance of the application will be created and
+     * executed. This method will block until the application reaches the {@link RunState#TERMINATED terminated} state.
      * 
      * @param assembly
      *            the assembly representing the application

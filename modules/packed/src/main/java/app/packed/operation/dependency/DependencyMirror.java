@@ -18,8 +18,8 @@ package app.packed.operation.dependency;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.application.Realm;
 import app.packed.base.Key;
+import app.packed.container.Realm;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
 

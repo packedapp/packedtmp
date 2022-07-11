@@ -31,9 +31,9 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.ReflectiveFactory;
 import internal.app.packed.inject.factory.InternalFactory.ConstantFactory;
 import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;
+import internal.app.packed.inject.factory.ReflectiveFactory;
 import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 
 /**

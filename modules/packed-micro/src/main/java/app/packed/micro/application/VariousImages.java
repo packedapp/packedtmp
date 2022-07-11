@@ -24,11 +24,11 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationImage<Void> EMPTY_IMAGE = App.newReusableLauncher(of(0));
-    public static final ApplicationImage<Void> ONE_BEAN_IMAGE = App.newReusableLauncher(of(1));
-    public static final ApplicationImage<Void> FIVE_BEAN_IMAGE = App.newReusableLauncher(of(5));
-    public static final ApplicationImage<Void> FIFTY_BEAN_IMAGE = App.newReusableLauncher(of(50));
-    public static final ApplicationImage<Void> FIVEHUNDRED_BEAN_IMAGE = App.newReusableLauncher(of(500));
+    public static final ApplicationImage<Void> EMPTY_IMAGE = App.newReusableImage(of(0));
+    public static final ApplicationImage<Void> ONE_BEAN_IMAGE = App.newReusableImage(of(1));
+    public static final ApplicationImage<Void> FIVE_BEAN_IMAGE = App.newReusableImage(of(5));
+    public static final ApplicationImage<Void> FIFTY_BEAN_IMAGE = App.newReusableImage(of(50));
+    public static final ApplicationImage<Void> FIVEHUNDRED_BEAN_IMAGE = App.newReusableImage(of(500));
 
     public static BaseAssembly of(int beanCount) {
         return new BaseAssembly() {

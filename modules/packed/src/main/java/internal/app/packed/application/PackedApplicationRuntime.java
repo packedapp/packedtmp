@@ -21,9 +21,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.lifecycle.LifecycleApplicationController;
-import app.packed.lifecycle.RunState;
+import app.packed.lifetime.LifetimeController;
 import app.packed.lifetime.LifetimeState;
+import app.packed.lifetime.RunState;
+import app.packed.lifetime.StopOption;
 
 /**
  *
@@ -33,7 +34,7 @@ import app.packed.lifetime.LifetimeState;
 /// Error bit (data = 
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedApplicationRuntime implements LifecycleApplicationController {
+public final class PackedApplicationRuntime implements LifetimeController {
 
     // Sagtens encode det i sync ogsaa
     RunState desiredState = RunState.UNINITIALIZED;

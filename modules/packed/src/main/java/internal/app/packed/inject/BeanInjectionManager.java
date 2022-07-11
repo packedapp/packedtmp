@@ -28,7 +28,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.ReflectiveFactory;
-import internal.app.packed.lifetime.LifetimePool;
+import internal.app.packed.lifetime.LifetimeConstantPool;
 import internal.app.packed.lifetime.PoolEntryHandle;
 
 /**
@@ -116,7 +116,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         if (bean.builder.sourceType == SourceType.INSTANCE) {
             Object instance = bean.builder.source;
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-            return MethodHandles.dropArguments(mh, 0, LifetimePool.class);
+            return MethodHandles.dropArguments(mh, 0, LifetimeConstantPool.class);
             // return MethodHandles.constant(instance.getClass(), instance);
         } else if (singletonHandle != null) {
             return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T

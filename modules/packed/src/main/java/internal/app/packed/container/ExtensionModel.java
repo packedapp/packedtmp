@@ -30,7 +30,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.application.Realm;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
@@ -38,6 +37,7 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
+import app.packed.container.Realm;
 import app.packed.inject.Ancestral;
 import internal.app.packed.inject.invoke.InternalInfuser;
 import internal.app.packed.thirdparty.guice.GTypes;

@@ -17,8 +17,6 @@ package app.packed.lifetime;
 
 import java.util.Optional;
 
-import app.packed.lifecycle.RunState;
-
 /**
  * The state immutable snapshot of the state of a container.
  */

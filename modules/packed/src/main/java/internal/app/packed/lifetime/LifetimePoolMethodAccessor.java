@@ -25,19 +25,19 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
- * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link LifetimePool} to be
+ * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link LifetimeConstantPool} to be
  * invoked.
  */
 public record LifetimePoolMethodAccessor<T> (/** The method handle to invoke */
 MethodHandle mh, /** The constant pool that stores needed data. */
-LifetimePool pool) implements MethodAccessor<T> {
+LifetimeConstantPool pool) implements MethodAccessor<T> {
 
     /**
      * A method handle for creating new RuntimeRegionInvoker instance. We explicitly cast return type from
      * ConstantPoolMethodAccessor->MethodAccessor.
      */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
-            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, LifetimePool.class), MethodAccessor.class);
+            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, LifetimeConstantPool.class), MethodAccessor.class);
 
     public LifetimePoolMethodAccessor {
         requireNonNull(mh);

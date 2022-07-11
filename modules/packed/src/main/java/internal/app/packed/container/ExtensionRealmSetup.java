@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
-import app.packed.application.Realm;
 import app.packed.container.Extension;
+import app.packed.container.Realm;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.inject.ExtensionInjectionManager;
 

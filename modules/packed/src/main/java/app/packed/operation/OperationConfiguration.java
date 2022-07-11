@@ -20,6 +20,7 @@ import java.lang.invoke.VarHandle;
 import java.util.List;
 import java.util.function.Supplier;
 
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.dependency.BeanDependency;
 import internal.app.packed.operation.PackedOperationBuilder;
 
@@ -32,15 +33,21 @@ import internal.app.packed.operation.PackedOperationBuilder;
 // create XHandle
 // laver special handling af en eller flere dependencies
 // Noget navngivning
+
+// Vi burde faktisk supportere baade toMethodHandle og toVarHandle paa OperationConfiguration
+// Naar man er lavet fra et Field
 public sealed interface OperationConfiguration permits PackedOperationBuilder {
 
+    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
+    // Eller vi bare kan genbruge BeanDependency
     default List<BeanDependency> dependencies() {
         throw new UnsupportedOperationException();
     }
-
-    // Ellers har vi OperationConfiguration<T>
-    <T> T handleNow(Class<T> handleType);
     
+    // Eller har vi OperationConfiguration<T>, og saa bestemer man typen naar
+    // laver operationen
+    <T> T computeHandle(Class<T> handleType);
+
     /**
      * @return
      * 
@@ -48,46 +55,31 @@ public sealed interface OperationConfiguration permits PackedOperationBuilder {
      *             foo
      * @throws UnsupportedOperationException
      *             if a varhandle is created instead
+     * @see ExtensionBeanConfiguration#bindDelayed(Class, Supplier)
      */
-    default MethodHandle methodHandleNow() {
+    default MethodHandle computeMethodHandle() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Hvad goer vi med annoteringer paa Field/Update???
+    // Putter paa baade Variable og ReturnType???? Det vil jeg mene
+
+    // Ideen er lidt at hvis vi har forskel
+    default VarHandle computeVarHandle() {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Adds a supplier that creates a specialized operation mirror for the operation when a mirror for the operation is
-     * requested.
+     * Adds a supplier that creates the mirror that will be returned when a mirror for the operation is requested.
      * <p>
-     * The supplier may be called multiple times.
+     * The supplier may be called multiple times for the same operation.
      * <p>
      * The supplier should never return {@code null}.
      * 
      * @param supplier
      *            a mirror supplier
      */
-    // Det boer ogsaa vaere muligt at lave disse direkte hvis man har behov for dem.
-    //// Fx EntryPointM
-    // Eller ogsaa kan man vel bare finde dem?
     OperationConfiguration specializeMirror(Supplier<? extends OperationMirror> supplier);
-
-    // Hvad goer vi med annoteringer paa Field/Update???
-    // Putter paa baade Variable og ReturnType???? Det vil jeg mene
-
-    // Ideen er lidt at hvis vi har forskel
-
-    default VarHandle varHandleNow() {
-        throw new UnsupportedOperationException();
-    }
-
-//    public enum Option {
-//        NO_OP_PACK
-//    }
-
-//    final class RawExtractor<T> {
-//        static final RawExtractor<MethodHandle> METHOD_HANDLE = null;
-//        static final RawExtractor<MethodHandle> METHOD_HANDLE_GETTER = null;
-//        static final RawExtractor<MethodHandle> METHOD_HANDLE_SETTER = null;
-//        static final RawExtractor<MethodHandle> VAR_HANDLE = null; // buildVarHandleNow
-//    }
 }
 
 //Operation"Type"

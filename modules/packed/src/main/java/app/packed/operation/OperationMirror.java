@@ -31,7 +31,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.service.ServiceExportOperationMirror;
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.mirror.LifetimeMirror;
 import app.packed.operation.dependency.DependencyMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
@@ -154,8 +154,13 @@ public class OperationMirror implements Mirror {
      * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
      */
     // Creates a new Lifetime just for the duration of the operation!
-    // What about start/stop
+    // What about start/stop (not present)
     // spawnsLifetime
+    
+    // Altsaa ved ikke om det bare er en boolean???? MakesNewBean?
+    // Problemet er lidt hvordan selve registreringen skal vaere?
+    // Man skal jo markere containeren og sige. Alle @Get beans i den her container starter en ny container.
+    // Hvori foriøvrigt det kun er den ene bean der skal launches
     final Optional<LifetimeMirror> launchesLifetime() {
         // Hvad med en constructor??
         //// Alt hvad der kalder en i user code kraever en operation

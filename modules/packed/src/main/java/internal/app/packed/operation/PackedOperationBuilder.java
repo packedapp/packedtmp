@@ -82,7 +82,7 @@ public final class PackedOperationBuilder implements OperationConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <T> T handleNow(Class<T> handleType) {
+    public <T> T computeHandle(Class<T> handleType) {
         return null;
     }
 }

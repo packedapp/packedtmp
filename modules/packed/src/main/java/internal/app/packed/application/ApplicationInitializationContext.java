@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifecycle.LifecycleApplicationController;
-import app.packed.lifecycle.RunState;
+import app.packed.lifetime.LifetimeController;
+import app.packed.lifetime.RunState;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.lifetime.LifetimePool;
+import internal.app.packed.lifetime.LifetimeConstantPool;
 import internal.app.packed.lifetime.LifetimePoolWriteable;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -46,7 +46,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     public String name;
 
     /** The runtime component node we are building. */
-    private LifetimePool pool;
+    private LifetimeConstantPool pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
@@ -69,11 +69,11 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
         return name;
     }
 
-    public LifetimePool pool() {
+    public LifetimeConstantPool pool() {
         return pool;
     }
 
-    LifecycleApplicationController runtime() {
+    LifetimeController runtime() {
         if (runtime != null) {
             return runtime;
         }
@@ -92,7 +92,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     }
     
     @Override
-    public void writeToPool(LifetimePool pool) {
+    public void writeToPool(LifetimeConstantPool pool) {
         if (runtime != null) {
             application.runtimeAccessor.store(pool, runtime);
         }
@@ -126,7 +126,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
             }
         }
 
-        LifetimePool pool = context.pool = application.container.lifetime.pool.newPool(context);
+        LifetimeConstantPool pool = context.pool = application.container.lifetime.pool.newPool(context);
 
         // Run all initializers
         for (MethodHandle mh : application.container.lifetime.initializers) {

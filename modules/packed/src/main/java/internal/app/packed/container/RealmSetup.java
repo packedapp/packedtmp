@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.application.Realm;
 import app.packed.base.Nullable;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHandle;
+import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
 import internal.app.packed.bean.PackedBeanHandleBuilder;

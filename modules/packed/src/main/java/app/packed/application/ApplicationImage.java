@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifecycle.RunState;
+import app.packed.lifetime.RunState;
 import internal.app.packed.application.PackedApplicationDriver.PackedApplicationLauncher;
 
 /**
@@ -48,8 +48,8 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
  * An image can be used to create new instances of {@link app.packed.application.App} or other applications. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
- * @see App#newLauncher(Assembly, Wirelet...)
- * @see App#newReusableLauncher(Assembly, Wirelet...)
+ * @see App#newImage(Assembly, Wirelet...)
+ * @see App#newReusableImage(Assembly, Wirelet...)
  */
 
 // Det er som default mange gange...
@@ -59,6 +59,10 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
 
 //// Jeg tror ikke man kan mirror et application image...
 //// Med mindre man bruger en speciel wirelet
+// I virkeligheden er det jo bare det samme som at launch en Bean...
+// Saa det er vel snare en tynd wrapper over en MH som tager en single parameter or type
+// Wirelet[] wirelets
+
 
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
@@ -79,7 +83,7 @@ public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
     default A launch(String[] args) {
         return launch(/* CliWirelets.args(args).andThen( */);
     }
-    
+
     /**
      * @param args
      * @param wirelets
@@ -109,22 +113,27 @@ public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
      * @see ApplicationDriver#launchMode()
      */
     RunState launchMode(); // usageMode??
-    
+
+    /**
+     * @param <E>
+     *            the type to map the launch result to
+     * @param mapper
+     *            the mapper
+     * @return a new application image that maps the result of the launch
+     */
     default <E> ApplicationImage<E> map(Function<A, E> mapper) {
         throw new UnsupportedOperationException();
     }
 }
 
-// Man maa lave sit eget image saa
-// Og saa i driveren sige at man skal pakke launch 
-interface ZImage<A> {
+interface Zimgbox<A> {
+ // Man maa lave sit eget image saa
+ // Og saa i driveren sige at man skal pakke launch
+
     // Hmmmmmmm IDK
     // Could do sneaky throws instead
     A throwingUse(Wirelet... wirelets) throws Throwable;
-}
-
-interface Zimgbox<A> {
-
+    
     default boolean isUseable() {
         // An image returns true always
 

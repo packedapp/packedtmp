@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import internal.app.packed.inject.service.build.ServiceSetup;
-import internal.app.packed.lifetime.LifetimePool;
+import internal.app.packed.lifetime.LifetimeConstantPool;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -34,12 +34,12 @@ public final class PrototypeRuntimeService implements RuntimeService {
     private final MethodHandle mh; // (ConstantPool)Object
 
     /** The Constant pool used when creating new service instances. */
-    private final LifetimePool pool;
+    private final LifetimeConstantPool pool;
 
     /**
      * @param service
      */
-    public PrototypeRuntimeService(ServiceSetup service, LifetimePool region, MethodHandle mh) {
+    public PrototypeRuntimeService(ServiceSetup service, LifetimeConstantPool region, MethodHandle mh) {
         this.key = service.key();
         this.pool = requireNonNull(region);
         this.mh = requireNonNull(mh);

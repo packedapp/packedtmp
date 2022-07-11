@@ -1,5 +1,8 @@
 package app.packed.bean;
 
+// This class doesn't really work. I'm not sure we can describe a bean by a single kind.
+// For example, if a bean is not managed.. it should be managed. But it is not here
+// Maybe once we clear up lifetime this will work better
 public enum BeanKind {
 
     /** Lives and dies with the container it is installed into. */

@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ComponentMirror;
-import app.packed.application.Realm;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
@@ -16,10 +15,11 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.container.Realm;
+import app.packed.lifetime.mirror.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
-import internal.app.packed.bean.hooks.BeanMemberScanner;
+import internal.app.packed.bean.hooks.BeanHookScanner;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.BeanInjectionManager;
@@ -59,7 +59,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         }
 
         if (builder.sourceType != SourceType.NONE) {
-            new BeanMemberScanner(this).scan();
+            new BeanHookScanner(this).scan();
         }
 
         // Wire the hook model

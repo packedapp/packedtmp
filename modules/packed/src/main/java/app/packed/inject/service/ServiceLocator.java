@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildsApplication;
+import app.packed.application.sandbox.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
@@ -294,7 +294,7 @@ public interface ServiceLocator {
      * Returns an application driver that can be used to create standalone service locator instances.
      * 
      * @return an application driver
-     * @see #imageOf(Assembly, Wirelet...)
+     * @see #newImage(Assembly, Wirelet...)
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
@@ -326,12 +326,12 @@ public interface ServiceLocator {
      */
     @BuildsApplication
     static ApplicationImage<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().imageOf(assembly, wirelets);
+        return driver().newImage(assembly, wirelets);
     }
 
     @BuildsApplication
     static ApplicationImage<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().reusableImageOf(assembly, wirelets);
+        return driver().newReusableImage(assembly, wirelets);
     }
 
     /** {@return a service locator that provides no services.} */

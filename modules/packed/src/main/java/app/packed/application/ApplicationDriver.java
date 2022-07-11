@@ -23,17 +23,18 @@ import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifecycle.LifecycleApplicationController;
-import app.packed.lifecycle.LifecycleException;
-import app.packed.lifecycle.RunState;
-import app.packed.lifetime.LifetimeBridge;
+import app.packed.lifetime.ContainerLifetimeCompanion;
+import app.packed.lifetime.LifetimeController;
+import app.packed.lifetime.RunState;
+import app.packed.lifetime.sandbox.LifecycleException;
 import internal.app.packed.application.PackedApplicationDriver;
 
 /**
  * Application drivers are responsible for building applications.
  * <p>
  * Packed comes with a number of predefined application drivers:
- * 
+ * <p>
+ * Application drivers are normally never exposed to end users.
  * 
  * <p>
  * If these are not sufficient, it is very easy to build your own.
@@ -65,20 +66,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /**
-     * Create a new application image by using the specified assembly and optional wirelets.
-     * 
-     * @param assembly
-     *            the assembly that should be used to build the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     * @throws BuildException
-     *             if the image could not be build
-     */
-    ApplicationImage<A> imageOf(Assembly  assembly, Wirelet... wirelets);
-
-    /**
-     * Returns whether or not applications produced by this driver have an {@link LifecycleApplicationController}.
+     * Returns whether or not applications produced by this driver have an {@link LifetimeController}.
      * <p>
      * Applications that are not runnable will always be launched in the Initial state.
      * 
@@ -100,7 +88,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @throws BuildException
      *             if the application could not be build
      * @throws LifecycleException
-     *             if the application failed to initializing
+     *             if the application failed to initialize
      * @throws RuntimeException
      *             if the application had an executing phase and it fails
      * @see App#run(Assembly, Wirelet...)
@@ -116,19 +104,9 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
-     * @see #imageOf(Assembly, Wirelet...)
+     * @see #newImage(Assembly, Wirelet...)
      */
     RunState launchMode();
-
-    // Foer var den som wirelet.
-    // Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
-    // vi har processeret alle wirelets
-
-    // Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
-
-    // eller selvstaendig metode -> Er nok den bedste for nu
-
-    // og saa ServiceLocator.newReusableImage
 
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
@@ -143,15 +121,34 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     ApplicationMirror mirrorOf(Assembly  assembly, Wirelet... wirelets);
 
+    // Foer var den som wirelet.
+    // Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
+    // vi har processeret alle wirelets
+
+    // Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
+
+    // eller selvstaendig metode -> Er nok den bedste for nu
+
+    // og saa ServiceLocator.newReusableImage
+
+    /**
+     * Create a new application image by using the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly that should be used to build the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     * @throws BuildException
+     *             if the image could not be build
+     */
+    ApplicationImage<A> newImage(Assembly  assembly, Wirelet... wirelets);
+
 
     // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester 
-    ApplicationImage<A> reusableImageOf(Assembly  assembly, Wirelet... wirelets);
-
-    /** {@return the type (typically an interface) of the application instances created by this driver.} */
-    // This is not the resultType
-    Class<?> type();
+    ApplicationImage<A> newReusableImage(Assembly  assembly, Wirelet... wirelets);
 
     default void verify(Assembly  assembly, Wirelet... wirelets) {
         // Attempts to build a mirror, throws Verification
@@ -183,15 +180,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
-     * @param launchMode
-     * @return
-     * @throws UnsupportedOperationException
-     *             if the driver was not built as executable.
-     * @see Builder#executable(RunState)
-     */
-    ApplicationDriver<A> withLaunchMode(RunState launchMode);
-
-    /**
      * Returns a new {@code ApplicationDriver} builder.
      *
      * @return the new builder
@@ -213,23 +201,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         // Hvilket ikke er muligt
         
         
-        @SuppressWarnings("unchecked")
-        default Builder requireExtension(Class<? extends Extension>... extensionTypes) {
-            
-            return this;
-        }
-        
         // noget optional??? ellers
-        default Builder addController(LifetimeBridge<?>... controllers) {
-            return this;
-        }
-        
-        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
-            
-            // Taenker lidt den bliver erstattet af ApplicationController?
-            
-            // extension must be available...
-            // An extensionBean of the specified type must be installed by the extension in the root container
+        default Builder addCompanion(ContainerLifetimeCompanion... companions) {
             return this;
         }
         
@@ -238,7 +211,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * <p>
          * The specified implementation can have the following types injected.
          * 
-         * If the specified implementation implements {@link AutoCloseable} a {@link LifecycleApplicationController} can also be injected.
+         * If the specified implementation implements {@link AutoCloseable} a {@link LifetimeController} can also be injected.
          * <p>
          * Fields and methods are not processed.
          * 
@@ -251,12 +224,12 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @return a new driver
          */
         <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> implementation, Wirelet... wirelets);
-
+        
         // Hvorfor har vi en caller her???
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
-
-        ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
         
+        ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
+
         /**
          * Disables 1 or more extensions. Attempting to use a disabled extension will result in an
          * RestrictedExtensionException being thrown
@@ -275,14 +248,18 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @param launchState
          *            the launch mode of the application
          * @return this builder
-         * @see ApplicationDriver#withLaunchMode(RunState)
          */
         Builder executable(RunState launchState);
+    
+        @SuppressWarnings("unchecked")
+        default Builder requireExtension(Class<? extends Extension>... extensionTypes) {
+            
+            return this;
+        }
 
         default Builder restartable() {
             return this;
         }
-
 
         default Builder resultType(Class<?> resultType) {
             throw new UnsupportedOperationException();
@@ -322,36 +299,23 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         // fx disallow(FileExtension.class);
         // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
 
-        // Det er faktisk en okay maade at lave det her paa
-        // Vi kan maaske endda have en. AsBean()?
-        /**
-         * Will add a service locator for injection of all exported services from the root container.
-         * 
-         * @return this builder
-         */
-        //// Altsaa vi kan vel godt lave et eller andet saa vi kan "exportere" ting fra extensions
-        // publically
-        // ServiceExtensionSupport.registerWithApplicationDriver(ApplicationDriver.Builder builder);
-        default Builder serviceLocator() {
-            //// Vi skal have en generics version alle extensions kan tilbyde "services" via
-            //// Vi bliver noedt til at konvertere en extension bean paa en eller anden maade
-            //// Da vi fx kan lave flere ServiceLocators fra et single image
+        
+//        default Builder linkExtensionBean(Class<? extends Extension> extensionType, Class<?> extensionBean) {
+//            
+//            // Taenker lidt den bliver erstattet af ApplicationController?
+//            
+//            // extension must be available...
+//            // An extensionBean of the specified type must be installed by the extension in the root container
+//            return this;
+//        }
 
-            // ExtensionBean -> X + Default X if not available
-
-            throw new UnsupportedOperationException();
-        }
     }
 }
-interface OldDriver<A> {
-    
-    // maa kalde internal_app_instance.jobCompleter.awaitResult or whatever
-    default A launchJob(Assembly  assembly, Wirelet... wirelets) {
-        // Er ikke sikker paa vi kan bruge den hed med signaturen <A>
-
-        // JobDriver
-        throw new UnsupportedOperationException();
-    }
-    // Maaske er den her paa ApplicationRuntimeExtension.launch()
-    // JobExtension.execute()
-}
+///**
+//* @param launchMode
+//* @return
+//* @throws UnsupportedOperationException
+//*             if the driver was not built as executable.
+//* @see Builder#executable(RunState)
+//*/
+//ApplicationDriver<A> withLaunchMode(RunState launchMode);

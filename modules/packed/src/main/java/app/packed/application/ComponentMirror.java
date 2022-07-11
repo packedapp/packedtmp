@@ -24,7 +24,7 @@ import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.mirror.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.util.StreamUtil;
 

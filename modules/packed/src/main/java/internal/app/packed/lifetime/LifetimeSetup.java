@@ -10,11 +10,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirrorTree;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanMirror;
-import app.packed.lifetime.LifetimeKind;
-import app.packed.lifetime.LifetimeMirror;
-import app.packed.lifetime.LifetimePhase;
-import app.packed.operation.OperationMirror;
+import app.packed.lifetime.LifetimeManagementKind;
+import app.packed.lifetime.mirror.LifetimeMirror;
+import app.packed.lifetime.mirror.LifetimeOperationMirror;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 
@@ -31,12 +29,9 @@ public final class LifetimeSetup {
     private List<LifetimeSetup> children;
 
     /** The root component of the lifetime. */
-    final ComponentSetup component;
+    final ComponentSetup origin;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
-
-    /** The type of lifetime. */
-    final LifetimeKind lifetimeType;
 
     // Der er jo som saadan ikke noget vi vejen for at vi har en DAG istedet for et trae...
     /** Any parent of this lifetime. The root lifetime always being identical to the application lifetime. */
@@ -52,18 +47,13 @@ public final class LifetimeSetup {
      * @param rootContainer
      *            the application's root container
      */
-    public LifetimeSetup(ContainerSetup rootContainer) {
-        this(LifetimeKind.APPLICATION, rootContainer, null);
-    }
-
-    private LifetimeSetup(LifetimeKind lifetimeType, ComponentSetup component, @Nullable LifetimeSetup parent) {
-        this.component = requireNonNull(component);
-        this.lifetimeType = lifetimeType;
+    public LifetimeSetup(ComponentSetup origin, @Nullable LifetimeSetup parent) {
+        this.origin = requireNonNull(origin);
         this.parent = parent;
     }
 
     public LifetimeSetup addChild(ComponentSetup component) {
-        LifetimeSetup l = new LifetimeSetup(component instanceof ContainerSetup ? LifetimeKind.CONTAINER : LifetimeKind.BEAN, component, this);
+        LifetimeSetup l = new LifetimeSetup(component, this);
         if (children == null) {
             children = new ArrayList<>(1);
         }
@@ -76,12 +66,6 @@ public final class LifetimeSetup {
     }
 
     public record BuildtimeLifetimeMirror(LifetimeSetup l) implements LifetimeMirror {
-
-        /** {@inheritDoc} */
-        @Override
-        public Stream<BeanMirror> beans() {
-            return null;
-        }
 
         /** {@inheritDoc} */
         @Override
@@ -98,8 +82,11 @@ public final class LifetimeSetup {
 
         /** {@inheritDoc} */
         @Override
-        public LifetimeKind lifetimeType() {
-            return l.lifetimeType;
+        public LifetimeOriginKind originKind() {
+            if (l.origin instanceof ContainerSetup c) {
+                return c.application.container == c ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
+            }
+            return LifetimeOriginKind.BEAN;
         }
 
         /** {@inheritDoc} */
@@ -110,7 +97,13 @@ public final class LifetimeSetup {
 
         /** {@inheritDoc} */
         @Override
-        public List<OperationMirror> operations(LifetimePhase phase) {
+        public List<LifetimeOperationMirror> operations() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public LifetimeManagementKind managementKind() {
             throw new UnsupportedOperationException();
         }
     }

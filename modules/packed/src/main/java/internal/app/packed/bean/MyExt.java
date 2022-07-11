@@ -22,9 +22,9 @@ import java.lang.annotation.Retention;
 
 import app.packed.application.App;
 import app.packed.bean.BeanDefinitionException;
+import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanMethod;
-import app.packed.bean.BeanScanner;
-import app.packed.bean.BeanScanner.MethodHook;
+import app.packed.bean.BeanProcessor;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -46,11 +46,11 @@ public class MyExt extends BaseAssembly {
     static class My extends Extension<My> {
 
         @Override
-        protected BeanScanner newBeanScanner() {
-            return new BeanScanner() {
+        protected BeanProcessor newBeanScanner() {
+            return new BeanProcessor() {
 
                 @Override
-                public void onScanBegin() {
+                public void onProcessStart() {
                     if (!beanClass().isAnnotationPresent(Deprecated.class)) {
                         throw new BeanDefinitionException("Beans that use @Foo must be annotated with Deprecated ");
                     }

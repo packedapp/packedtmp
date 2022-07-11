@@ -6,7 +6,8 @@ module app.packed {
     exports app.packed.container;
     exports app.packed.inject;
     exports app.packed.inject.service;
-    exports app.packed.lifecycle;
+    exports app.packed.lifetime.mirror;
+    exports app.packed.lifetime.sandbox;
     exports app.packed.lifetime;
     exports app.packed.operation;
 

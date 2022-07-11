@@ -1,11 +1,17 @@
 package app.packed.bean;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
 import app.packed.base.TypeToken;
+import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.inject.Factory;
@@ -19,13 +25,24 @@ import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     /** Creates a new bean extension point */
-    /* package-private */ BeanExtensionPoint() {}
+                                             /* package-private */ BeanExtensionPoint() {}
 
-    <T> ExtensionBeanConfiguration<T> installOnce(Class<T> implementation, Consumer<? super T> consumer) {
-        // maaske hellere bare et installEBean felt i extensionen...
-        throw new UnsupportedOperationException();
+    public BeanHandler.Builder<?> beanBuilder(BeanKind kind) {
+        return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container);
     }
-    
+
+    public <T> BeanHandler.Builder<T> beanBuilderFromClass(BeanKind kind, Class<T> implementation) {
+        return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
+    }
+
+    public <T> BeanHandler.Builder<T> beanBuilderFromFactory(BeanKind kind, Factory<T> factory) {
+        return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
+    }
+
+    public <T> BeanHandler.Builder<T> beanBuilderFromInstance(BeanKind kind, T instance) {
+        return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container, instance);
+    }
+
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation);
         BeanHandler<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
@@ -42,20 +59,9 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new ExtensionBeanConfiguration<>(handle);
     }
 
-    public BeanHandler.Builder<?> beanBuilder(BeanKind kind) {
-        return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container);
-    }
-
-    public <T> BeanHandler.Builder<T> beanBuilderFromClass(BeanKind kind, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
-    }
-
-    public <T> BeanHandler.Builder<T> beanBuilderFromFactory(BeanKind kind, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
-    }
-
-    public <T> BeanHandler.Builder<T> beanBuilderFromInstance(BeanKind kind, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container, instance);
+    <T> ExtensionBeanConfiguration<T> installOnce(Class<T> implementation, Consumer<? super T> consumer) {
+        // maaske hellere bare et installEBean felt i extensionen...
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -98,6 +104,55 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     public static <T> Factory<T> factoryOf(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return (Factory<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
+    }
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface ClassHook {
+
+        /** Whether or not the sidecar is allow to get the contents of a field. */
+        boolean allowAllAccess() default false;
+
+        /** The hook's {@link BeanField} class. */
+        Class<? extends Extension<?>> extension();
+    }
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface FieldHook {
+
+        /** Whether or not the owning extension is allow to get the contents of the field. */
+        boolean allowGet() default false;
+
+        /** Whether or not the owning extension is allow to set the contents of the field. */
+        boolean allowSet() default false;
+
+        /** The extension the hook is a part of. */
+        Class<? extends Extension<?>> extension();
+    }
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface MethodHook {
+
+        /**
+         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+         * <p>
+         * Methods such as {@link BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
+         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
+         * 
+         * @return whether or not the implementation is allowed to invoke the target method
+         * 
+         * @see BeanMethod#operationBuilder(ExtensionBeanConfiguration)
+         */
+        // maybe just invokable = true, idk og saa Field.gettable and settable
+        boolean allowInvoke() default false; // allowIntercept...
+
+        /** The hook's {@link BeanField} class. */
+        Class<? extends Extension<?>> extension();
     }
 }
 

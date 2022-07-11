@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanScanner;
+import app.packed.bean.BeanProcessor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
@@ -26,10 +26,10 @@ public final class ExtensionSetup {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_SCANNER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newBeanScanner",
-            BeanScanner.class);
+            BeanProcessor.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanScanner.class, "initialize",
+    private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanProcessor.class, "initialize",
             void.class, ExtensionSetup.class, BeanSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
@@ -153,10 +153,10 @@ public final class ExtensionSetup {
         return e;
     }
 
-    public BeanScanner newBeanScanner(ExtensionSetup extension, BeanSetup bean) {
-        BeanScanner bs;
+    public BeanProcessor newBeanScanner(ExtensionSetup extension, BeanSetup bean) {
+        BeanProcessor bs;
         try {
-            bs = (BeanScanner) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
+            bs = (BeanProcessor) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
             MH_BEAN_SCANNER_INITIALIZE.invokeExact(bs, extension, bean);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);

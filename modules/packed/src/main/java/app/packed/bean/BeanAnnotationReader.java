@@ -22,9 +22,12 @@ import java.lang.annotation.Annotation;
  */
 // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
 // AnnotatedBeanElement?
+// I think the only we reason we call it BeanAnnotationReader is because
+// if we called AnnotationReader is should really be located in a utility package
 public interface BeanAnnotationReader {
 
-    // Throws Invalid bean exception
+    // Throws BeanDefinitionException
+    //// foo bean was expected method to dddoooo to be annotated with 
     <T extends Annotation> T readRequired(Class<T> annotationType);
 
     // Det er taenk

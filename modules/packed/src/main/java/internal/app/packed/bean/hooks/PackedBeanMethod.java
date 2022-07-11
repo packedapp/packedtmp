@@ -22,8 +22,8 @@ import app.packed.bean.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationInvocationType;
 import app.packed.operation.OperationTargetMirror;
-import app.packed.operation.OperationType;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationBuilder;
@@ -31,7 +31,7 @@ import internal.app.packed.operation.PackedOperationBuilder;
 /** Internal implementation of BeanMethod */
 public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanMethod {
 
-    PackedBeanMethod(BeanMemberScanner scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
+    PackedBeanMethod(BeanHookScanner scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
         super(scanner.bean, scanner, operator, method);
     }
 
@@ -65,7 +65,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationType operationType) {
+    public OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationInvocationType operationType) {
         return new PackedOperationBuilder(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 

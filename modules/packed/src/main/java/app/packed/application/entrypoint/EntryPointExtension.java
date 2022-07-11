@@ -10,7 +10,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMethod;
-import app.packed.bean.BeanScanner;
+import app.packed.bean.BeanProcessor;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
@@ -57,8 +57,8 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     @Override
-    protected BeanScanner newBeanScanner() {
-        return new BeanScanner() {
+    protected BeanProcessor newBeanScanner() {
+        return new BeanProcessor() {
 
             /**
              * Captures methods annotated with {@link Main}.

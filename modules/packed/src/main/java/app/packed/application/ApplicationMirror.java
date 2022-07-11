@@ -9,7 +9,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.mirror.LifetimeMirror;
 import internal.app.packed.container.Mirror;
 
 /**

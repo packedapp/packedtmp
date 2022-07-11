@@ -15,7 +15,7 @@
  */
 package internal.app.packed.inject.service.sandbox;
 
-import app.packed.application.BuildsApplication;
+import app.packed.application.sandbox.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.AbstractComposer.BuildAction;

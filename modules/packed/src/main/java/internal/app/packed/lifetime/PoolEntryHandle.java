@@ -20,15 +20,15 @@ public final class PoolEntryHandle {
     // Skal vi vide hvor vi bliver laest fra???
     public MethodHandle poolReader() {
         // (LifetimePool, int)Object -> (LifetimePool)Object
-        MethodHandle mh = MethodHandles.insertArguments(LifetimePool.MH_CONSTANT_POOL_READER, 1, index);
+        MethodHandle mh = MethodHandles.insertArguments(LifetimeConstantPool.MH_CONSTANT_POOL_READER, 1, index);
         return MethodHandleUtil.castReturnType(mh, clazz); // (LifetimePool)Object -> (LifetimePool)clazz
     }
 
-    public Object read(LifetimePool pool) {
+    public Object read(LifetimeConstantPool pool) {
         return pool.read(index);
     }
 
-    public void store(LifetimePool pool, Object o) {
+    public void store(LifetimeConstantPool pool, Object o) {
         if (!clazz.isInstance(o)) {
             throw new Error("Expected " + clazz + ", was " + o.getClass());
         }

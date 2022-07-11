@@ -31,7 +31,7 @@ import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.ServiceDelegate;
-import internal.app.packed.lifetime.LifetimePool;
+import internal.app.packed.lifetime.LifetimeConstantPool;
 import internal.app.packed.lifetime.LifetimePoolSetup;
 import internal.app.packed.lifetime.LifetimePoolWriteable;
 import internal.app.packed.lifetime.PoolEntryHandle;
@@ -204,7 +204,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         // We create the runtime method handle a little different, depending on the
         // number of dependencies/producers it has
         if (producers.length == 0) {
-            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimePool.class);
+            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimeConstantPool.class);
         } else if (producers.length == 1) {
             mh = MethodHandles.collectArguments(originalMethodHandle, 0, producers[0].dependencyAccessor());
         } else {
@@ -216,7 +216,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
             }
 
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimePool.class);
+            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimeConstantPool.class);
             mh = MethodHandles.permuteArguments(mh, mt, new int[producers.length]);
         }
 
@@ -232,7 +232,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     }
 
     @Override
-    public void writeToPool(LifetimePool pool) {
+    public void writeToPool(LifetimeConstantPool pool) {
         MethodHandle mh = runtimeMethodHandle();
 
         Object instance;

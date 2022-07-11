@@ -15,9 +15,9 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.application.Realm;
 import app.packed.bean.BeanKind;
 import app.packed.container.Extension;
+import app.packed.container.Realm;
 
 /**
  * Information about a bean.

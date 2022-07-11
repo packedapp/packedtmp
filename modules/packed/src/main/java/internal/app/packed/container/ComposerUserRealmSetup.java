@@ -23,12 +23,12 @@ import java.lang.invoke.MethodHandles;
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.Wirelet;
 
 /**
  *

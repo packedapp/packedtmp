@@ -27,14 +27,22 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
-import app.packed.bean.BeanScanner.BeanElement;
+import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
 /**
  *
  */
-// Why not BeanDependency
+
+// Eller ogsaa peeler vi inde vi kalder provide
+
+// Med alle de andre bean ting. Saa har vi en BeanField->Operation
+// Skal vi have noget lige saadan her BeanDependency->Provisioning
+// eller BeanVariable -> Dependency???
+// Saa kan vi strippe af paa BeanVariable
+// Saa bliver BeanVariable
+
 public non-sealed interface BeanDependency extends BeanElement {
     
     void provide(Factory<?> fac);

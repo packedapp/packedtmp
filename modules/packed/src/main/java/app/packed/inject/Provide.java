@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanField;
-import app.packed.bean.BeanScanner.MethodHook;
+import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bean.BeanExtensionPoint.MethodHook;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -74,7 +74,7 @@ import app.packed.bean.BeanScanner.MethodHook;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @MethodHook(allowInvoke = true, extension = BeanExtension.class)
-@BeanField.FieldHook(allowGet = true, extension = BeanExtension.class)
+@FieldHook(allowGet = true, extension = BeanExtension.class)
 public @interface Provide {
 
     /**

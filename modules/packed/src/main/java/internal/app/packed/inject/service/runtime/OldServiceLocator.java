@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildsApplication;
+import app.packed.application.sandbox.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
@@ -240,7 +240,7 @@ public interface OldServiceLocator extends ServiceRegistry {
      */
     @BuildsApplication
     static ApplicationImage<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().imageOf(assembly, wirelets);
+        return driver().newImage(assembly, wirelets);
     }
 
     // maaske har vi launcher og Image...
@@ -251,7 +251,7 @@ public interface OldServiceLocator extends ServiceRegistry {
 
     @BuildsApplication
     static ApplicationImage<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().reusableImageOf(assembly, wirelets);
+        return driver().newReusableImage(assembly, wirelets);
     }
 }
 
