@@ -24,8 +24,11 @@ import app.packed.operation.OperationMirror;
  */
 public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 
-    public LifetimeBeanMirror bean() {
-        return (LifetimeBeanMirror) super.bean();
+    // Hmmm.. IDK Hvorfor skal den vaere paa en seperat bean (for beans?)
+    // Kan vel ligges paa en ExtensionBean taenker jeg???
+    public LifetimeMirror manages() {
+        // Altsaa application vil nogle gange laver flere jo.
+        throw new UnsupportedOperationException();
     }
 //    
 //    public boolean isAvailableExternal() {
@@ -41,6 +44,7 @@ public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 //    }
     
     // OperationPlan (me thinks)
+    // SingleThreaded
     public List<OperationMirror> operations() {
         // Her er taenkt alle operationer der bliver koert som result
         // En slags composite operation
@@ -50,8 +54,6 @@ public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
         // Maaske er det bare aabent for interapition
         
         // Kan alle operationer vaere composites????
-        
-        
         return List.of();
     }
 }

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirrorTree;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
@@ -88,11 +89,11 @@ public class LifetimeMirror implements Mirror {
     }
 
     /**
-     * If this lifetime is non-stateless returns the bean that controls creation and destruction of the lifetime.
+     * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
      * 
      * @return
      */
-    public Optional<LifetimeBeanMirror> bean() {
+    public Optional<BeanMirror> managedByBean() {
         return Optional.empty();
     }
 

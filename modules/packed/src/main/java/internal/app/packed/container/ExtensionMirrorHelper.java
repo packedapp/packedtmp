@@ -27,7 +27,7 @@ import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /** A helper class for creating new {@link ExtensionMirror} instances. */
-final class ExtensionMirrorHelper {
+public final class ExtensionMirrorHelper {
 
     /** A ExtensionMirror class to Extension class mapping. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -119,7 +119,7 @@ final class ExtensionMirrorHelper {
      *            the extension
      * @return the new mirror
      */
-    static ExtensionMirror<?> newMirrorOfUnknownType(ExtensionSetup extension) {
+    public static ExtensionMirror<?> newMirrorOfUnknownType(ExtensionSetup extension) {
         return newMirror(extension, null);
     }
 
@@ -133,7 +133,7 @@ final class ExtensionMirrorHelper {
      * @return a mirror of the specified type or null if no extension of the matching type was used in the container
      */
     @Nullable
-    static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
+    public static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
         // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
         Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
 

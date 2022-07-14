@@ -26,7 +26,6 @@ import app.packed.inject.service.ServiceLocator;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.companion.LifetimeBeanCompanion;
 import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.lifetime.sandbox.LifecycleException;
 import internal.app.packed.application.PackedApplicationDriver;
 
 /**

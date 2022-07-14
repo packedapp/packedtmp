@@ -15,30 +15,50 @@
  */
 package app.packed.lifetime.companion;
 
+import java.lang.invoke.MethodHandles;
+import java.util.function.Function;
+
+import app.packed.base.Key;
+import app.packed.container.Extension;
+
 /**
- *
+ * Det den her kan er at kommunikere paa tvaers af lifetime barriere
+ * <p>
+ * Hvorfor kan jeg ikke klare det paa andre maader?
  */
 
-
-// LifetimeDependency?????
-
-// !! Er udviklet videre i den anden ExtensionLifetimeFeature
-
-// Typer
-
-// Bean <-> Bean
-// Bean <-> Extension (Lifetime Configuration)
-// Bean <-> Runtime
+// ManagedLifetime er ikke en Extension...
+// Restart vil jeg heller ikke mene er en extension? Eller er det
 
 
-// Kraever en !stateless Bean i begge ender vil jeg mene? LifetimeBeanBridge?
+// Alt konfigurationen omkring managed state maa ligger paa application/container driver
 
-// Til venstre er der altid en LifetimeManagementBean
+// Til venstre er der altid en ContainerLifetimeBean vil jeg mene...
+
+// Maaske defineret nested paa ExtensionPoint?
 public interface LifetimeBeanCompanion {
 
-}
+    static <E extends Extension<E>> Builder<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
+        throw new UnsupportedOperationException();
+    }
 
-// Udover ManagedLifetime ved jeg ikke rigtig hvad man skal kunne styre
-interface BeanLifetimeCompanion {
-    
+    // Hvad hvis extensionen ikke er installeret?
+    interface Builder<E extends Extension<E>> {
+        Builder<E> onBuild(E extension);
+
+        <B, C> Builder<E> provide(Class<C> companionType, Class<B> extensionBeanType, Function<B, C> extractor);
+
+        <B, C> Builder<E> provide(Key<C> companionType, Class<B> extensionBeanType, Function<B, C> extractor);
+
+        LifetimeBeanCompanion build();
+    }
 }
+//ExtractSingleExportedService (not the whole ServiceLocator)
+//ServiceLocator
+//JobResult
+//RestartFoo?
+// WebServerController?
+
+//ManagedLifetimeController // Den her tror jeg kommer fra ApplicationDriver/ContainerDriver
+
+// JobResult -> JobResult er taet knyttet lifetimes og ikke bare realms...

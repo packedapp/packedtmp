@@ -15,8 +15,6 @@
  */
 package app.packed.lifetime.companion;
 
-import app.packed.lifetime.LifetimeBeanMirror;
-
 /**
  * A mirror of {@link LifetimeBeanCompanion}
  */ 
@@ -32,5 +30,5 @@ public interface LifetimeBeanCompanionMirror {
     // All companions needs a (host) bean...
     // Det betyder ogsaa at hvis stateless skal kunne bruge companions.
     // Saa skal de jo bruge en bean...
-    LifetimeBeanMirror bean();
+    //LifetimeBeanMirror bean();
 }

@@ -22,9 +22,10 @@ import internal.app.packed.bean.BeanSetup;
  *
  */
 class MirrorTemplate {
+    
     /**
-     * The internal configuration of the bean we are mirroring. Is initially null but populated via
-     * {@link #initialize(BeanSetup)}.
+     * The internal configuration of the xxxxx we are mirroring. Is initially null but populated via
+     * {@link #initialize(XxxxxSetup)}.
      */
     @Nullable
     private BeanSetup bean;

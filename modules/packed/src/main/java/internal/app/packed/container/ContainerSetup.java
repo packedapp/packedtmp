@@ -17,42 +17,40 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationMirror;
-import app.packed.application.ComponentMirror;
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.util.ClassUtil;
-import internal.app.packed.util.CollectionUtil;
-import internal.app.packed.util.StreamUtil;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
 
+    /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
+    private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class, "initialize",
+            void.class, ContainerSetup.class);
+
+    /** Supplies a mirror for the container. */
+    public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
+
+    
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
@@ -65,7 +63,7 @@ public final class ContainerSetup extends ComponentSetup {
      * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns
      * a deterministic view.
      */
-    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
+    public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /** The container's injection manager. */
     public final ContainerInjectionManager injectionManager;
@@ -201,10 +199,22 @@ public final class ContainerSetup extends ComponentSetup {
         return extensions.containsKey(extensionType);
     }
 
-    /** {@return a container mirror.} */
+    /** {@return a new mirror.} */
     @Override
-    public BuildTimeContainerMirror mirror() {
-        return new BuildTimeContainerMirror(this);
+    public ContainerMirror mirror() {
+        // Create a new ContainerMirror
+        ContainerMirror mirror = mirrorSupplier.get();
+        if (mirror == null) {
+            throw new InternalExtensionException(" supplied a null container mirror");
+        }
+
+        // Initialize ContainerMirror by calling ContainerMirror#initialize(ContainerSetup)
+        try {
+            MH_CONTAINER_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
@@ -279,117 +289,4 @@ public final class ContainerSetup extends ComponentSetup {
         return extension;
     }
 
-    /**
-     * A build-time container mirror.
-     * 
-     * @implNote previous versions had a common super class shared between BeanSetup and ContainerSetup. However, code is
-     *           much cleaner without it. So please don't reintroduce it.
-     * 
-     */
-    public record BuildTimeContainerMirror(ContainerSetup container) implements ContainerMirror {
-
-        /** {@inheritDoc} */
-        public Collection<ContainerMirror> children() {
-            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.mirror());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<ExtensionMirror<?>> extensions() {
-            HashSet<ExtensionMirror<?>> result = new HashSet<>();
-            for (ExtensionSetup extension : container.extensions.values()) {
-                result.add(ExtensionMirrorHelper.newMirrorOfUnknownType(extension));
-            }
-            return Set.copyOf(result);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<Class<? extends Extension<?>>> extensionTypes() {
-            return container.extensionTypes();
-        }
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
-            ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-            return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.newMirrorOrNull(container, mirrorType));
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-            return container.isExtensionUsed(extensionType);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return "ContainerMirror (" + path() + ")";
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Collection<BeanMirror> beans() {
-            // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
-            throw new UnsupportedOperationException();
-            // we need a filter on the view...
-            // size, isEmpty, is going to get a bit slower.
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Stream<OperationMirror> operations() {
-            return StreamUtil.filterAssignable(BeanSetup.class, container.children.values().stream()).flatMap(b -> b.mirror().operations());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ApplicationMirror application() {
-            return container.application.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public AssemblyMirror assembly() {
-            return container.userRealm.mirror();
-        }
-
-        /** {@inheritDoc} */
-        public final Stream<ComponentMirror> stream() {
-            return container.stream().map(c -> c.mirror());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int depth() {
-            return container.depth;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifetimeMirror lifetime() {
-            return container.lifetime.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String name() {
-            return container.name;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<ContainerMirror> parent() {
-            ContainerSetup p = container.parent;
-            return p == null ? Optional.empty() : Optional.of(p.mirror());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public NamespacePath path() {
-            return container.path();
-        }
-    }
 }

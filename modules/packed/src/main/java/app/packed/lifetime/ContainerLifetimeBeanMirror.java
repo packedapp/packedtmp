@@ -47,7 +47,18 @@ import app.packed.operation.dependency.DependencyMirror;
 //
 
 // A lifetime bean may create more than 1 type of lifetime
-public class LifetimeBeanMirror extends BeanMirror {
+
+// Har vi brug for den??? Giver det mening at vi altid har en bean??
+// Giver det ikke mere mening at det fx er ExtensionBean der laver en
+// WebExtension????
+
+// Operator = owner -> Self managing operation
+
+//LifetimeWrapperBean
+
+// A bean that is specifically created to hold container lifetime thingies
+
+class ContainerLifetimeBeanMirror extends BeanMirror {
 
     // Skal have nogle bedre navne end managed
 
@@ -112,7 +123,7 @@ interface Zandbox1 {
 
 // Taenker de maa alle tage de sammen launch contexts...
 
-    public class ContainerLifetimeLaunchBeanMirror extends LifetimeBeanMirror {
+    public class ContainerLifetimeLaunchBeanMirror /* extends LifetimeBeanMirror */ {
 
         // Bridge dependencies...
 

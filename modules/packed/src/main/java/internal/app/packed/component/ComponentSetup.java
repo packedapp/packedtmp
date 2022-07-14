@@ -28,6 +28,7 @@ import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
+import app.packed.container.ContainerMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -223,15 +224,20 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         return name;
     }
 
-    /** A handle that can access BeanConfiguration#beanHandle. */
+    /** A handle that can access BeanMirror#bean. */
     private static final VarHandle BEAN_MIRROR_BEAN_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMirror.class, "bean",
             BeanSetup.class);
 
+    /** A handle that can access ContainerMirror#container. */
+    private static final VarHandle CONTAINER_MIRROR_CONTAINER_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ContainerMirror.class, "container",
+            ContainerSetup.class);
+    
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanMirror m) {
             return (BeanSetup) BEAN_MIRROR_BEAN_HANDLE.get(m);
         } else {
-            return ((ContainerSetup.BuildTimeContainerMirror) mirror).container();
+            return (ContainerSetup) CONTAINER_MIRROR_CONTAINER_HANDLE.get((ContainerMirror) mirror);
+
         }
     }
 
