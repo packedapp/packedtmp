@@ -26,7 +26,7 @@ import app.packed.inject.Ancestral;
 public class KeyTst extends BaseAssembly {
 
     public static void main(String[] args) {
-        App.mirrorOf(new KeyTst());
+        App.mirror(new KeyTst());
     }
 
     public static class MyExt extends Extension<MyExt> {

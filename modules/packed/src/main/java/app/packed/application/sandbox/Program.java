@@ -19,13 +19,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.LifetimeController;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.managed.ManagedLifetimeController;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -38,7 +38,7 @@ public interface Program extends AutoCloseable {
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see LifetimeController#stop(LifetimeController.StopOption...)
+     * @see ManagedLifetimeController#stop(ManagedLifetimeController.StopOption...)
      **/
     @Override
     default void close() {
@@ -53,7 +53,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    LifetimeController runtime();
+    ManagedLifetimeController runtime();
 
     /**
      * Returns this app's service locator.
@@ -112,7 +112,7 @@ public interface Program extends AutoCloseable {
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationImage#launch(Wirelet...)} will be
+     * The state of the applications returned by {@link ApplicationLauncher#launch(Wirelet...)} will be
      * {@link RunState#RUNNING}. unless GuestWirelet.delayStart
      * 
      * @param assembly
@@ -123,7 +123,7 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
-    static ApplicationImage<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().newImage(assembly, wirelets);
     }
 
@@ -151,7 +151,7 @@ public interface Program extends AutoCloseable {
 }
 
 /** The default implementation of {@link Program}. */
-record ProgramImplementation(String name, ServiceLocator services, LifetimeController runtime) implements Program {
+record ProgramImplementation(String name, ServiceLocator services, ManagedLifetimeController runtime) implements Program {
 
     /** An driver for creating App instances. */
     static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(RunState.RUNNING).build(MethodHandles.lookup(),

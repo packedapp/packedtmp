@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.container.BaseAssembly;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
@@ -42,7 +42,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final ApplicationImage<Void> INSTALL31 = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL31 = App.buildReusable(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -61,7 +61,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final ApplicationImage<Void> INSTALL253 = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL253 = App.buildReusable(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -97,7 +97,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final ApplicationImage<Void> INSTALL253_NOS = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL253_NOS = App.buildReusable(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());

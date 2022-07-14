@@ -21,14 +21,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ComponentMirror;
 import internal.app.packed.component.ComponentScope;
 import internal.app.packed.container.InternalWirelet;
 
 /**
  * Wirelets that can be specified at when building an application. Attempts to use them with
- * {@link ApplicationImage#launch(Wirelet...)} will fail with {@link IllegalArgumentException}.
+ * {@link ApplicationLauncher#launch(Wirelet...)} will fail with {@link IllegalArgumentException}.
  */
 // Jeg tror den doer og ryger over paa andre wirelets...
 // Saa vi udelukkende gruppere dem efter type...

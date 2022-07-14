@@ -8,21 +8,21 @@ import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.StopOption;
+import app.packed.lifetime.managed.StopOption;
 
 /**
  * Application runtime wirelet that can be specified when building or launching an application that includes the
  * {@link AcceptPendingException}. Attempt to use these wirelets
  * <p>
  * Attempting to use any of the wirelets on this class on an application that does not. Attempts to use it with a
- * non-runnable application will fail with 
+ * non-runnable application will fail with
  * 
  */
-///// ContainerWirelets??? RuntimeWirelets?? ApplicationWirelets
+///// ContainerWirelets??? RuntimeWirelets?? ApplicationWirelets, Was ExecutionWirelets
 
-// LifetimeRegionWirelets...
-public final class ExecutionWirelets {
-    private ExecutionWirelets() {}
+// Application og Build har jo meget med hinanden at goere. Eftersom Application er "the minimal buildable unit"
+public final class ApplicationWirelets {
+    private ApplicationWirelets() {}
 
     // after which the guest will be shutdown normally
     static Wirelet deadline(Instant deadline, StopOption... options) {
@@ -38,6 +38,8 @@ public final class ExecutionWirelets {
     // Must have an execution phase
     // Hmm.... Hvad hvis man er et job... Saa er det jo mere cancel end det er shutdown...
     // Er ikke sikker paa vi vil have den her..
+    // Requires Managed...
+    // Er det et slags entry point?
     static Wirelet enterToStop() {
 
         // Den fungere kun med Terminate eller Stop mode...
@@ -78,13 +80,13 @@ public final class ExecutionWirelets {
      * <p>
      * 
      * @return a shutdown hook wirelet
-     * @see #shutdownHook(Function, app.packed.lifetime.StopOption...)
+     * @see #shutdownHook(Function, app.packed.lifetime.managed.StopOption...)
      * @see Runtime#addShutdownHook(Thread)
      */
     // cannot specify it on ServiceLocator or anyone else that is not closeable
     // Ogsaa skrive noget om hvad der sker hvis vi stopper
     // Skriv noget om der bliver lavet en traad, og man kan bruge den anden metode hvis man selv skal lave en
-    
+
     // Maaske skal vi ogsaa exponere en installShutdownHook(ContainerConfiguration?)
     // Maaske har vi en PlatformAssembly???
     public static Wirelet shutdownHook(StopOption... options) {
@@ -102,9 +104,11 @@ public final class ExecutionWirelets {
      * @return a shutdown hook wirelet
      * @see Runtime#addShutdownHook(Thread)
      */
+    // Fail if unmanaged???? Or just ignore?
+    // I would think failed... Maybe Wirelets.ifManagedApplication(Wirelet w); only apply the wirelet if a managed application
     public static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, StopOption... options) {
         throw new UnsupportedOperationException();
-        //return new ShutdownHookWirelet();
+        // return new ShutdownHookWirelet();
     }
 
     // excludes start?? IDK
@@ -124,6 +128,9 @@ public final class ExecutionWirelets {
      */
     public static Wirelet timeToRun(Duration duration, StopOption... options) {
         // can make a timeToLive() <-- which includes start
+        // timeTo(Initialize, Running) (from, to)
+        // (Running, Running)
+        // Or maybe we should have a boolean, includeTimeToStart, includeTimeToInitize
         throw new UnsupportedOperationException();
     }
 

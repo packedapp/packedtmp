@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.managed;
 
 import java.util.Optional;
+
+import app.packed.lifetime.RunState;
 
 /**
  * The state immutable snapshot of the state of a container.
@@ -23,14 +25,14 @@ import java.util.Optional;
 // Generic StateInfo immutable class...
 //  HostInfo?
 
-// LifetimeState
+// LifetimeState <--- lige nu har vi lifetimes uden RunState
 
 // Det er ikke application state. Det kunne ogsaa vaere en Session
 
 // Ved ikke om den bare skal hedde RunStateSnapshot.
 // Ved ikke hvad metoderne skal hedde hvis man har begge dele paa et App interface.
 
-public interface LifetimeState {
+public interface ManagedState {
 
     /** {@return the actual state of the entity.} */
     RunState currentState();

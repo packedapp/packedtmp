@@ -2,6 +2,7 @@ package app.packed.application;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.application.PackedApplicationDescriptor;
 
 // Input DAW (Application) Driver Assembly Wirelets
@@ -13,7 +14,18 @@ import internal.app.packed.application.PackedApplicationDescriptor;
  * An immutable descriptor of an application.
  */
 // Or Descriptor
+
+
+//// Hmmm, vi kan ikke svare paa
+
+// Er der entry points?
+// Forventes der et result (JobExtension)f
+// Hvad er navnet
+
 public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
+    
+    // string name() would be nice... but unfortunantely is mutable....)
+    
 //
 //    boolean isMirror();
 //    
@@ -22,9 +34,10 @@ public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
 //    }
 //
 //    void checkHasRunnable(String message);
-//
-    /** {@return the type of the root container.} */
-    Class<? extends Assembly > containerType();
+
+    //
+//    /** {@return the type of the root container.} */
+//    Class<? extends Assembly> containerType();
 //    // defaultLaunchMode() -> Lazy
 //
 //    // Ved ikke om vi skal have den her...
@@ -34,6 +47,10 @@ public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
 //    boolean isClosedWorld(); // isStaticImage
 //    
 //    boolean isRestartable();
+
+    default LifetimeKind lifetimeKind() {
+        return LifetimeKind.MANAGED;
+    }
 
     // isHosted
 
@@ -47,6 +64,7 @@ public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
     // Kunne vaere rart ogsaa at eksponere, isClosedWorld().
     // isClosedWorld() ved du ikke for starten... Med mindre man eksplicit skal definere det...
     // Hvilket jeg faktisk maaske er tilhaenger af...
+    // Helt sikkert, hvis vi har statisk java er det jo ogsaa en given.
 
     // En app er Image, En Sessions child app er ReusableImage
     // ApplicationBuildTarget
@@ -55,6 +73,8 @@ public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
     // Altsaa det er jo primaert extensions der skal bruge det.
     // Tror aldrig man kommer til at switche paa den
     // Saa er maaske ikke super brugbart
+
+    // Rename to ApplicationOutputKind??? Or
     public enum ApplicationBuildType {
 
         /**
@@ -64,26 +84,30 @@ public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
          * 
          * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
          */
-        IMAGE,
+        // De andre bygger jo saadan set ogsaa...
+        // buildOnly? IDK syntes vi skal finde et andet navn
+        BUILD,
+        
+        // Skal helst hedde det samme som App.reusable taenker jeg
+        BUILD_MULTIPLE,
 
         /**
          * Build and instantiate an application.
          * 
          * @see ApplicationDriver#launch(Assembly, Wirelet...)
          */
-        INSTANCE, // LAUNCH
+        LAUNCH,
 
         /**
          * Build a mirror of some kind, for example, an {@link ApplicationMirror}.
          *
-         * @see ApplicationMirror#of(Assembly, Wirelet...)
+         * @see App#mirrorOf(Assembly, Wirelet...)
          */
         MIRROR,
 
-        REUSABLE_IMAGE;
-
-        public boolean isImage() {
-            return this == IMAGE || this == REUSABLE_IMAGE;
-        }
+        // I really think we should have verify as well...
+        // Tror det er et vigtigt signal at sende ved at have en void metode
+        // verify
+        VERIFY;
     }
 }

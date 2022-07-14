@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime.mirror;
+package app.packed.lifetime.companion;
+
+import app.packed.lifetime.LifetimeBeanMirror;
 
 /**
  *
  */
-public class ApplicationBootstrapMirror {
-    
+
+// !! Er udviklet videre i den anden ExtensionLifetimeFeature
+// Bridge
+// LifetimeHolder eksistere jo ogsaa maaske vi skal knytte dem taettere sammen
+//
+
+
+public interface LifetimeManagementCompanionMirror {
+
+    // All companions needs a (host) bean...
+    // Det betyder ogsaa at hvis stateless skal kunne bruge companions.
+    // Saa skal de jo bruge en bean...
+    LifetimeBeanMirror bean();
 }

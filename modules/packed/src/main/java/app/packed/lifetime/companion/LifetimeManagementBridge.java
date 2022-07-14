@@ -13,11 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.companion;
 
 /**
  *
  */
-public interface RestartableLifetime {
+// !! Er udviklet videre i den anden ExtensionLifetimeFeature
 
+// Typer
+
+// Bean <-> Bean
+// Bean <-> Extension (Lifetime Configuration)
+// Bean <-> Runtime
+
+
+// Kraever en !stateless Bean i begge ender vil jeg mene? LifetimeBeanBridge?
+
+// Til venstre er der altid en LifetimeManagementBean
+public interface LifetimeManagementBridge {
+
+}
+
+// Udover ManagedLifetime ved jeg ikke rigtig hvad man skal kunne styre
+interface BeanLifetimeCompanion {
+    
 }

@@ -2,7 +2,6 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import internal.app.packed.bean.PackedBeanHandler;
 
@@ -77,7 +76,7 @@ public class BeanConfiguration {
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
-     * @see ComponentMirror#name()
+     * @see BeanMirror#name()
      */
     public BeanConfiguration named(String name) {
         beanHandle.bean().named(name);

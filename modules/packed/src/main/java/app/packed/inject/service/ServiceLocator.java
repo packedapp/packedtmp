@@ -26,9 +26,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.sandbox.BuildsApplication;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
@@ -294,7 +293,7 @@ public interface ServiceLocator {
      * Returns an application driver that can be used to create standalone service locator instances.
      * 
      * @return an application driver
-     * @see #newImage(Assembly, Wirelet...)
+     * @see #build(Assembly, Wirelet...)
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
@@ -309,7 +308,6 @@ public interface ServiceLocator {
         throw new UnsupportedOperationException();
     }
 
-    @BuildsApplication
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return driver().mirrorOf(assembly, wirelets);
     }
@@ -324,13 +322,11 @@ public interface ServiceLocator {
      * @return the new image
      * @see #driver()
      */
-    @BuildsApplication
-    static ApplicationImage<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().newImage(assembly, wirelets);
     }
 
-    @BuildsApplication
-    static ApplicationImage<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationLauncher<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().newReusableImage(assembly, wirelets);
     }
 
@@ -348,7 +344,6 @@ public interface ServiceLocator {
      *            optional wirelets
      * @return a new service locator
      */
-    @BuildsApplication
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }

@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.sandbox;
+package app.packed.application;
 
 /**
  *
  */
-// ApplicationPanicException
-// Ved ikke om vi har den laengere?
-//
-public class UnhandledApplicationException extends RuntimeException {
+public class ApplicationLaunchException extends Exception {
 
-    /** */
     private static final long serialVersionUID = 1L;
 
 }

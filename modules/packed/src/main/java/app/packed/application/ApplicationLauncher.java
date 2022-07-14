@@ -48,8 +48,8 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
  * An image can be used to create new instances of {@link app.packed.application.App} or other applications. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
- * @see App#newImage(Assembly, Wirelet...)
- * @see App#newReusableImage(Assembly, Wirelet...)
+ * @see App#build(Assembly, Wirelet...)
+ * @see App#buildReusable(Assembly, Wirelet...)
  */
 
 // Det er som default mange gange...
@@ -63,10 +63,18 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
 // Saa det er vel snare en tynd wrapper over en MH som tager en single parameter or type
 // Wirelet[] wirelets
 
-
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
+public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher {
 
+    default A checkedLaunch() throws ApplicationLaunchException {
+        return checkedLaunch(new Wirelet[] {});
+    }
+    
+    // Altsaa skal vi have en Bestemt Exception. Som har mere info??
+    // ApplicationLaunchException
+    A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException;
+
+    
     /**
      * Launches an instance of the application that this image represents.
      * 
@@ -97,7 +105,7 @@ public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
      * Launches an instance of the application that this image represents.
      * <p>
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
-     * The behavior of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
+     * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets
@@ -106,34 +114,30 @@ public sealed interface ApplicationImage<A> permits PackedApplicationLauncher {
     A launch(Wirelet... wirelets);
 
     /**
-     * Returns the launch mode of application(s) created by this image.
+     * Returns a new application image that maps the result of the launch.
      * 
-     * @return the launch mode of the application
-     * 
-     * @see ApplicationDriver#launchMode()
-     */
-    RunState launchMode(); // usageMode??
-
-    /**
      * @param <E>
      *            the type to map the launch result to
      * @param mapper
      *            the mapper
      * @return a new application image that maps the result of the launch
      */
-    default <E> ApplicationImage<E> map(Function<A, E> mapper) {
-        throw new UnsupportedOperationException();
-    }
+     <E> ApplicationLauncher<E> map(Function<A, E> mapper);
 }
 
 interface Zimgbox<A> {
- // Man maa lave sit eget image saa
- // Og saa i driveren sige at man skal pakke launch
-
-    // Hmmmmmmm IDK
-    // Could do sneaky throws instead
-    A throwingUse(Wirelet... wirelets) throws Throwable;
     
+
+    /**
+     * Returns the launch mode of application(s) created by this image.
+     * 
+     * @return the launch mode of the application
+     * 
+     * @see ApplicationDriver#launchMode()
+     */
+    // ApplicationInfo instead???
+    RunState launchMode(); // usageMode??
+
     default boolean isUseable() {
         // An image returns true always
 
@@ -141,7 +145,11 @@ interface Zimgbox<A> {
         return true;
     }
 
-    default ApplicationImage<A> with(Wirelet... wirelets) {
+    // Hmmmmmmm IDK
+    // Could do sneaky throws instead
+    A throwingUse(Wirelet... wirelets) throws Throwable;
+
+    default ApplicationLauncher<A> with(Wirelet... wirelets) {
         // Egentlig er den kun her pga Launcher
         throw new UnsupportedOperationException();
     }
@@ -155,7 +163,23 @@ interface Zimgbox<A> {
      * @throws UnsupportedOperationException
      *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
      */
-    static ApplicationMirror extractMirror(ApplicationImage<?> image) {
+    static ApplicationMirror extractMirror(ApplicationLauncher<?> image) {
         throw new UnsupportedOperationException();
+    }
+
+    // ALWAYS HAS A CAUSE
+    // Problemet jeg ser er, hvad skal launch smide? UndeclaredThrowableException
+
+    // App.execute
+    // App.checkedExecute <---
+
+    // Maaske er det LifetimeLaunchException
+    public static class ApplicationLaunchException extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        RunState state() {
+            return RunState.INITIALIZED;
+        }
     }
 }

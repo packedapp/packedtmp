@@ -9,14 +9,14 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.mirror.LifetimeMirror;
+import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.container.Mirror;
 
 /**
  * A mirror of an application.
  * <p>
  * An instance of this class is typically obtained by calling a application mirror factory method such as
- * {@link App#mirrorOf(Assembly, Wirelet...)}. {@link #of(Assembly, Wirelet...)} on this class.
+ * {@link App#mirror(Assembly, Wirelet...)}. {@link #of(Assembly, Wirelet...)} on this class.
  */
 // En application kan
 //// Vaere ejet af bruger
@@ -43,7 +43,9 @@ public interface ApplicationMirror extends Mirror {
     }
 
     /** {@return the application's lifetime.} */
-    LifetimeMirror lifetime();
+    default LifetimeMirror lifetime() {
+        return container().lifetime();
+    }
 
     /**
      * Returns the name of the application.
@@ -78,9 +80,10 @@ public interface ApplicationMirror extends Mirror {
      * @see ContainerMirror#useExtension(Class)
      */
     // Maasker drop use, og bare have extension(ServiceExtensionMirror.class).
-    <T extends ExtensionMirror<?>> T useExtension(Class<T> type);
+    default <T extends ExtensionMirror<?>> T useExtension(Class<T> type) {
+        return container().useExtension(type);
+    }
 }
-
 
 //// Tror det ville giver mening at have OperationMirrorList her...
 //// Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...

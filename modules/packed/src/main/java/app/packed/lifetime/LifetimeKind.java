@@ -20,9 +20,28 @@ package app.packed.lifetime;
  */
 // LifetimeManagement bare?
 // Maaske ender det bare med en boolean
-public enum LifetimeManagementKind {
+public enum LifetimeKind {
+    STATELESS,
+
     UNMANAGED,
-    
+
+    MANAGED;
+}
+
+enum AlternativeNaming {
+    STATIC,
+
+    UNMANAGED_INSTANCE,
+
+    MANAGED_INSTANCE
+}
+
+// Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
+enum AlternativeNaming2 {
+    NONE,
+
+    UNMANAGED,
+
     MANAGED;
 }
 
@@ -36,7 +55,6 @@ public enum LifetimeManagementKind {
 
 // Unmanaged Lifetime typically relies on the garbage collection to clean up things.
 // Cleaner can be used. But 
-
 
 // Or Tracked vs Untracked
 

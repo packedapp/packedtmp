@@ -16,7 +16,7 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -24,11 +24,11 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationImage<Void> EMPTY_IMAGE = App.newReusableImage(of(0));
-    public static final ApplicationImage<Void> ONE_BEAN_IMAGE = App.newReusableImage(of(1));
-    public static final ApplicationImage<Void> FIVE_BEAN_IMAGE = App.newReusableImage(of(5));
-    public static final ApplicationImage<Void> FIFTY_BEAN_IMAGE = App.newReusableImage(of(50));
-    public static final ApplicationImage<Void> FIVEHUNDRED_BEAN_IMAGE = App.newReusableImage(of(500));
+    public static final ApplicationLauncher<Void> EMPTY_IMAGE = App.buildReusable(of(0));
+    public static final ApplicationLauncher<Void> ONE_BEAN_IMAGE = App.buildReusable(of(1));
+    public static final ApplicationLauncher<Void> FIVE_BEAN_IMAGE = App.buildReusable(of(5));
+    public static final ApplicationLauncher<Void> FIFTY_BEAN_IMAGE = App.buildReusable(of(50));
+    public static final ApplicationLauncher<Void> FIVEHUNDRED_BEAN_IMAGE = App.buildReusable(of(500));
 
     public static BaseAssembly of(int beanCount) {
         return new BaseAssembly() {

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.managed;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.base.Nullable;
+import app.packed.lifetime.RunState;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -48,7 +49,7 @@ import app.packed.base.Nullable;
 // ExecutionHost
 // ExecutionManager
 // Application Container
-public interface LifetimeController {
+public interface ManagedLifetimeController {
 
     // Optional<Throwable> getFailure();
 
@@ -97,7 +98,7 @@ public interface LifetimeController {
      * 
      * @return an immutable snapshot of the component's current status
      */
-    LifetimeState info();
+    ManagedState info();
 
     /**
      * Starts and awaits the component if it has not already been started.

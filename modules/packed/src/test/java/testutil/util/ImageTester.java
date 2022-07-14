@@ -17,7 +17,7 @@ package testutil.util;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.sandbox.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
@@ -27,7 +27,7 @@ import app.packed.container.Wirelet;
  */
 public class ImageTester {
 
-    private final ApplicationImage<Program> image;
+    private final ApplicationLauncher<Program> image;
 
     public ImageTester(BaseAssembly source, Wirelet... wirelets) {
         this(Program.imageOf(source, wirelets));
@@ -37,7 +37,7 @@ public class ImageTester {
         return new AppTester(image, wirelets);
     }
 
-    public ImageTester(ApplicationImage<Program> image) {
+    public ImageTester(ApplicationLauncher<Program> image) {
         this.image = requireNonNull(image);
     }
 

@@ -15,8 +15,10 @@
  */
 package app.packed.lifetime;
 
+import app.packed.lifetime.managed.ManagedLifetimeController;
+
 /**
- * An enum containing all valid states of a {@link LifetimeController}.
+ * An enum containing all valid states of a {@link ManagedLifetimeController}.
  *
  * There are 4 <b>steady</b> states: {@link #UNINITIALIZED}, {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *

@@ -1,5 +1,8 @@
 Q) Should we merge with .application? or have a .entrypoint (maybe together with CLI)
 
+   Altsaa kan godt se den er taet knyttet til en application men saa heller ikke saa slemt.
+   Altsaa den er vel ikke anderledes i forhold til Job?
+
 Q) CliArgumentMirror???
    CliArgumentMirror extends EntryPointMirror
    or EntryPointMirror->CliArgument

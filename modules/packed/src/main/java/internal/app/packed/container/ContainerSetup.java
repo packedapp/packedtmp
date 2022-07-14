@@ -40,7 +40,7 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.lifetime.mirror.LifetimeMirror;
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;

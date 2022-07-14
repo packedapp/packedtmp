@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.LifetimeController;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.managed.ManagedLifetimeController;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.inject.service.ContainerInjectionManager;
@@ -73,7 +73,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
         return pool;
     }
 
-    LifetimeController runtime() {
+    ManagedLifetimeController runtime() {
         if (runtime != null) {
             return runtime;
         }

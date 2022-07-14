@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblyUserRealmSetup;
@@ -168,7 +167,7 @@ public class ContainerConfiguration {
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
-     * @see ComponentMirror#name()
+     * @see ContainerMirror#name()
      * @see Wirelet#named(String)
      */
     public ContainerConfiguration named(String name) {

@@ -20,13 +20,11 @@ import static java.util.Objects.requireNonNull;
 import app.packed.application.ApplicationInfo;
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ExecutionWirelets;
+import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.mirror.LifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerDriver;
 import internal.app.packed.container.UserRealmSetup;
@@ -39,9 +37,6 @@ public final class ApplicationSetup {
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
-    /** The tree this service manager is a part of. */
-    public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
-    
     public final ApplicationInfo descriptor;
 
     /** The driver responsible for building the application. */
@@ -51,8 +46,11 @@ public final class ApplicationSetup {
     @Nullable
     public EntryPointSetup entryPoints;
 
+    /** The tree this service manager is a part of. */
+    public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
+
     /**
-     * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(RunState)} at
+     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
      * build-time. If used from an image {@link ApplicationInitializationContext#launchMode} is updated instead.
      */
     final RunState launchMode;
@@ -98,18 +96,6 @@ public final class ApplicationSetup {
         @Override
         public ApplicationInfo descriptor() {
             return application.descriptor;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <T extends ExtensionMirror<?>> T useExtension(Class<T> type) {
-            return container().useExtension(type);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifetimeMirror lifetime() {
-            return application.container.lifetime.mirror();
         }
 
         /** {@inheritDoc} */

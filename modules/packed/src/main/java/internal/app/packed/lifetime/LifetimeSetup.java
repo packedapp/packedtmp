@@ -10,9 +10,8 @@ import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirrorTree;
 import app.packed.base.Nullable;
-import app.packed.lifetime.LifetimeManagementKind;
-import app.packed.lifetime.mirror.LifetimeMirror;
-import app.packed.lifetime.mirror.LifetimeOperationMirror;
+import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 
@@ -97,14 +96,26 @@ public final class LifetimeSetup {
 
         /** {@inheritDoc} */
         @Override
-        public List<LifetimeOperationMirror> operations() {
+        public LifetimeKind lifetimeKind() {
             throw new UnsupportedOperationException();
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+            return false;
         }
 
         /** {@inheritDoc} */
         @Override
-        public LifetimeManagementKind managementKind() {
-            throw new UnsupportedOperationException();
+        public int hashCode() {
+            return 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return null;
         }
     }
 

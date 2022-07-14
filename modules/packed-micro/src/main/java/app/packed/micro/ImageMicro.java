@@ -28,7 +28,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -43,24 +43,24 @@ import app.packed.container.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final ApplicationImage<Void> EMPTY = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> EMPTY = App.buildReusable(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final ApplicationImage<Void> USE_EXTENSION = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> USE_EXTENSION = App.buildReusable(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final ApplicationImage<Void> INSTALL = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL = App.buildReusable(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final ApplicationImage<Void> INSTALL_AUTO_ACTIVATE = App.newReusableImage(new BaseAssembly() {
+    static final ApplicationLauncher<Void> INSTALL_AUTO_ACTIVATE = App.buildReusable(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());

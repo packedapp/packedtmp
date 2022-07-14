@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.sandbox;
 
 /**
  *
  */
+public interface RestartableLifetime {
 
-// !! Er udviklet videre i den anden ExtensionLifetimeFeature
-// Bridge
-// LifetimeHolder eksistere jo ogsaa maaske vi skal knytte dem taettere sammen
-//
-public interface ContainerLifetimeCompanion {
-
-}
-
-// Udover ManagedLifetime ved jeg ikke rigtig hvad man skal kunne styre
-interface BeanLifetimeCompanion {
-    
 }

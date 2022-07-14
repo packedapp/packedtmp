@@ -1,12 +1,10 @@
-package app.packed.lifetime.mirror;
+package app.packed.lifetime;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirrorTree;
-import app.packed.lifetime.LifetimeManagementKind;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 
@@ -23,27 +21,42 @@ import internal.app.packed.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
  * 
  */
 //https://thesaurus.plus/related/life_cycle/lifetime
+
+//Har vi ContainerLifetime/BeanLifetime???
+
 public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeMirror {
 
     // App run er vel den eneste der har en holder, men ikke en bean?
-    default Optional<LifetimeHolderBeanMirror> holder() {
-        // App.run does not have a LifetimeHolder object
-        // Prototype Service Bean does not have a lifetime holder
-        // AsyncApp has a minimum a holder with a shutdown token
-        return Optional.empty();
-    }
+
+    // All lifetimes have a launcher except a bootstrap lifetime...
 
     /** {@return a stream of child lifetimes of this lifetime.} */
     Stream<LifetimeMirror> children();
 
     /** {@return all components that are part of the lifetime.} */
+    // A tree of containers and beans
+    // Maaske er det i virkeligheden bare en stream af componenter depth first
     ComponentMirrorTree components();
 
-    /** {@return the type of lifetime.} */
-    // Tror vi dropper den her. Og saa er application.container bare en container
-    LifetimeOriginKind originKind();
+    LifetimeKind lifetimeKind();
 
-    LifetimeManagementKind managementKind();
+    // If has a holder
+    // -- If is a bean -> Holder is in same container as the root of the lifetime
+    // -- If is a non-root container -> Holder is in parent container
+    // -- If is a non-root application -> Holder is in parent application
+    // -- If a a root application -> Holder is a single bean in an bootstrap application
+    
+    // Its unmanaged but have management operation Maybe its okay
+    // Maaske kan vi launch en bean der ikke er i samme container..
+    // Fx hvis vi er en extension bean. Og vi ikke gider installere saadan en.
+    // I andet end root containeren.
+    //// Stateless never has a management bean mirror
+    default Optional<LifetimeBeanMirror> managedBy() {
+        // App.run does not have a LifetimeHolder object
+        // Prototype Service Bean does not have a lifetime holder
+        // AsyncApp has a minimum a holder with a shutdown token
+        return Optional.empty();
+    }
 
     // Hvad med sync/async start/stop??? Det er externt bestemt
     /**
@@ -55,7 +68,16 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
      * 
      * @return
      */
-    List<LifetimeOperationMirror> operations();
+    // interne operationer (i lifetimen)
+    // Externe operationer (der bliver brugt til at lave lifetimen, og destroy den)
+    // Tror maaske man bare maa query managedBy().managementOperations()
+    // Skal vi kunne query vi noget om hvilke operationer bliver koert hvornaar??
+    // Eller maaske ligger vi det bare paa launcheren
+    // List<LifetimeManagementOperationMirror> managementOperations();
+
+    /** {@return the type of lifetime.} */
+    // Tror vi dropper den her. Og saa er application.container bare en container
+    LifetimeOriginKind originKind();
 
     /** {@return any parent lifetime this lifetime might have.} */
     Optional<LifetimeMirror> parent();
@@ -65,16 +87,24 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
     */
     // Er application bare det samme som en root container?
     // Syntes maaske bare det er en masse is() metoder paa LifetimeMirror
+    // en mindre klasse
+    // isBeanOrigin(), isContainerOrigin, is ApplicationOrigin();
+    
+    // Vi vil helst have at application.lifetime == application.container.lifetime...
+    
     public enum LifetimeOriginKind {
 
         /** An application is created together with lifetime. */
         APPLICATION,
 
-        /** A (non-root) container is created together with lifetime. */
-        CONTAINER,
-
         /** A single bean is created with the lifetime. */
-        BEAN;
+        BEAN,
+
+        /** A (non-root) container is created together with lifetime. */
+        CONTAINER;
+
+        // Hvad med Operation??
+        // I sidste ende bliver alle lifetimes jo lavet med en operation
     }
 
     // function/static beans har samme lifetime som deres container
@@ -125,12 +155,8 @@ interface LifetimeSandbox {
     // Altsaa en egentlig graph af ting der skal vaere oppe og koere.
     Set<LifetimeMirror> dependants();
 
-    default List<LifetimeOperationMirror> initialization() {
-        throw new UnsupportedOperationException();
-    }
 
     boolean isSingleton(); // I relation til foraeldren
 
     // BeanLifecycleMirrorPlan plan();
-
 }

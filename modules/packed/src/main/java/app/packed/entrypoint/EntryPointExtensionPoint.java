@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.entrypoint;
+package app.packed.entrypoint;
 
 import java.util.Optional;
 import java.util.function.Supplier;

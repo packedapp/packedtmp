@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.lifetime.LifetimeController;
-import app.packed.lifetime.LifetimeState;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.StopOption;
+import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.managed.ManagedState;
+import app.packed.lifetime.managed.StopOption;
 
 /**
  *
@@ -34,7 +34,7 @@ import app.packed.lifetime.StopOption;
 /// Error bit (data = 
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedApplicationRuntime implements LifetimeController {
+public final class PackedApplicationRuntime implements ManagedLifetimeController {
 
     // Sagtens encode det i sync ogsaa
     RunState desiredState = RunState.UNINITIALIZED;
@@ -97,7 +97,7 @@ public final class PackedApplicationRuntime implements LifetimeController {
 
     /** {@inheritDoc} */
     @Override
-    public LifetimeState info() {
+    public ManagedState info() {
         return null;
     }
 

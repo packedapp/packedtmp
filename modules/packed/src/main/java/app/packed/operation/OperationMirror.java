@@ -31,7 +31,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.service.ServiceExportOperationMirror;
-import app.packed.lifetime.mirror.LifetimeMirror;
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.dependency.DependencyMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;

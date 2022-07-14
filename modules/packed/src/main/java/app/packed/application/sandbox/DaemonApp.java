@@ -16,12 +16,12 @@
 package app.packed.application.sandbox;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeController;
-import app.packed.lifetime.StopOption;
+import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.managed.StopOption;
 
 /**
  *
@@ -47,7 +47,7 @@ public interface DaemonApp extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    LifetimeController lifecycle();
+    ManagedLifetimeController lifecycle();
 
     default void stop(StopOption... options) {
         lifecycle().stop(options);
@@ -60,11 +60,11 @@ public interface DaemonApp extends AutoCloseable {
     // launching the image will result in a daemon being returned in the starting state
 
     // Should this be the app in an unitialized state instead
-    public static ApplicationImage<DaemonApp> build(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationLauncher<DaemonApp> build(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public static ApplicationImage<DaemonApp> buildImage(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationLauncher<DaemonApp> buildImage(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

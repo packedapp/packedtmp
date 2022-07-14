@@ -10,4 +10,4 @@
  */
 //@java.lang.Deprecated
 //@InitializeAttributes()<----
-package app.packed.application.entrypoint;
+package app.packed.entrypoint;

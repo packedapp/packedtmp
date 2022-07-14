@@ -115,6 +115,10 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      * <p>
      * This method can be invoked more than once. But use cases for this are limited.
      */
+    // Altsaa tror mere vi er ude efter noget a.la. exported.services = internal.services
+    // Saa maske smide ISE hvis der allerede er exporteret services. Det betyder naesten ogsaa
+    // at @Export ikke er supporteret
+    // ect have exportAll(boolean ignoreExplicitExports) (Otherwise fails)
     public void exportAll() {
         // Tror vi aendre den til streng service solve...
         // Og saa tager vi bare alle services() og exportere

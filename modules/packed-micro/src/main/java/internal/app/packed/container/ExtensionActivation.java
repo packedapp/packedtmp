@@ -32,7 +32,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -48,38 +48,38 @@ import app.packed.container.Extension;
 public class ExtensionActivation {
 
     @Benchmark
-    public ApplicationImage<Void> empty() {
+    public ApplicationLauncher<Void> empty() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
         };
-        return App.newReusableImage(b);
+        return App.buildReusable(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> useExtension() {
+    public ApplicationLauncher<Void> useExtension() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 use(MyExtension.class);
             }
         };
-        return App.newReusableImage(b);
+        return App.buildReusable(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> install() {
+    public ApplicationLauncher<Void> install() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance("foo");
             }
         };
-        return App.newReusableImage(b);
+        return App.buildReusable(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> newExtensionUseInstall() {
+    public ApplicationLauncher<Void> newExtensionUseInstall() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -87,18 +87,18 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return App.newReusableImage(b);
+        return App.buildReusable(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> newExtensionAutoActivate() {
+    public ApplicationLauncher<Void> newExtensionAutoActivate() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance(new MyStuff());
             }
         };
-        return App.newReusableImage(b);
+        return App.buildReusable(b);
     }
 
     static class MyStuff {

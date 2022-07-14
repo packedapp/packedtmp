@@ -1,4 +1,4 @@
-package app.packed.application.entrypoint;
+package app.packed.entrypoint;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;

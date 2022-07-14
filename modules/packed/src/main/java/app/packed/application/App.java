@@ -28,6 +28,7 @@ import app.packed.lifetime.RunState;
  * <p>
  * This class does not prov For creating application -instances -mirrors and -images.
  */
+// [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
 public final class App {
 
     /** The default application driver. */
@@ -36,7 +37,45 @@ public final class App {
     /** Not today Satan, not today. */
     private App() {}
 
-    static Builder builder() {
+    /**
+     * Builds an application and returns a launcher that can be used to launch a <u>single</u> instance of the application.
+     * <p>
+     * If you need to launch multiple instances of the same application use {@link #buildReusable(Assembly, Wirelet...)}. Or
+     * maybe use that Application wirelet... I don't really think it is that common
+     * 
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return a launcher that can be used to launch a single instance of the application
+     */
+    public static ApplicationLauncher<Void> build(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.newImage(assembly, wirelets);
+    }
+
+    public static ApplicationLauncher<Void> buildReusable(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.newImage(assembly, wirelets);
+    }
+
+    /**
+     * @param assembly
+     *            the assembly representing the application
+     * @param wirelets
+     *            optional wirelets
+     * @throws ApplicationLaunchException
+     *             if the application failed to build
+     * @throws RuntimeException
+     *             if the build
+     */
+    public static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationLaunchException {
+        DEFAULT_DRIVER.launch(assembly, wirelets);
+    }
+
+    /**
+     * 
+     * @return
+     */
+    static App.Customizer customize() {
         throw new UnsupportedOperationException();
     }
 
@@ -51,21 +90,16 @@ public final class App {
      * @throws BuildException
      *             if the application could not be build
      */
-    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationMirror mirror(Assembly assembly, Wirelet... wirelets) {
         return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
     }
 
-    public static ApplicationImage<Void> newImage(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.newImage(assembly, wirelets);
-    }
-
-    public static ApplicationImage<Void> newReusableImage(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.newImage(assembly, wirelets);
-    }
-
     public static void print(Assembly assembly, Wirelet... wirelets) {
-        // not in final version I think IDK
-        mirrorOf(assembly, wirelets).print();
+        // not in final version I think IDK, why not...
+        // I think it is super usefull
+        //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
+        // ApplicationPrinter.Full, ApplicationPrinter.Normal
+        mirror(assembly, wirelets).print();
     }
 
     /**
@@ -82,16 +116,22 @@ public final class App {
      *             if the application failed to build
      * @throws UnhandledApplicationException
      *             if the fails during runtime
+     * @see #checkedRun(Assembly, Wirelet...)
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
         DEFAULT_DRIVER.launch(assembly, wirelets);
     }
 
+    public static void verify(Assembly assembly, Wirelet... wirelets) {
+        // Det er jo bare Mirror uden at returnere det...
+        DEFAULT_DRIVER.launch(assembly, wirelets);
+    }
+
     // class probably... no need for an interface. Noone is going to call in
-    interface Builder {
+    interface Customizer {
         ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
 
-        Builder restartable();
+        Customizer restartable();
 
         void run(Assembly assembly, Wirelet... wirelets);
     }
@@ -99,6 +139,6 @@ public final class App {
 
 class Usage {
     public static void main(String[] args) {
-        App.builder().restartable().run(null);
+        App.customize().restartable().run(null);
     }
 }

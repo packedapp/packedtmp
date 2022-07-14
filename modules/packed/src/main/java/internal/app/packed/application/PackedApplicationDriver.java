@@ -23,19 +23,21 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
+import app.packed.application.ApplicationLaunchException;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ExecutionWirelets;
+import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.LifetimeController;
 import app.packed.lifetime.RunState;
+import app.packed.lifetime.managed.ManagedLifetimeController;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
@@ -56,7 +58,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     private final boolean isExecutable;
 
-    /** The default launch mode, may be overridden via {@link ExecutionWirelets#launchMode(RunState)}. */
+    /** The default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(RunState)}. */
     private final RunState launchMode;
 
     /** The method handle used for creating new application instances. */
@@ -115,14 +117,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.IMAGE, assembly, wirelets);
-        realm.build();
-        return new PackedApplicationLauncher<>(this, realm.application);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isExecutable() {
         return isExecutable;
     }
@@ -131,7 +125,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
         // Create a new assembly realm which
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.INSTANCE, assembly, wirelets);
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.LAUNCH, assembly, wirelets);
         realm.build();
         return ApplicationInitializationContext.launch(this, realm.application, null);
     }
@@ -142,12 +136,26 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return launchMode;
     }
 
+    /** {@return the type (typically an interface) of the application instances created by this driver.} */
+    public Class<?> launchType() {
+        // It is a bit strange this method I think. Now since the AD is not exposed to end users
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.MIRROR, assembly, wirelets);
         realm.build();
         return realm.application.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.BUILD, assembly, wirelets);
+        realm.build();
+        return new PackedApplicationLauncher<>(this, realm.application);
     }
 
     /**
@@ -170,16 +178,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> newReusableImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.REUSABLE_IMAGE, assembly, wirelets);
+    public ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets) {
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.BUILD_MULTIPLE, assembly, wirelets);
         realm.build();
         return new PackedApplicationLauncher<>(this, realm.application);
-    }
-
-    /** {@return the type (typically an interface) of the application instances created by this driver.} */
-    public Class<?> launchType() {
-        // It is a bit strange this method I think. Now since the AD is not exposed to end users
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -224,7 +226,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#runtime()}. */
         private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-                "runtime", LifetimeController.class);
+                "runtime", ManagedLifetimeController.class);
 
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#serviceLocator()}. */
         private static final MethodHandle MH_SERVICE_LOCATOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
@@ -252,7 +254,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICE_LOCATOR, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
             if (isExecutable) { // Conditional add ApplicationRuntime
-                builder.provide(LifetimeController.class).invokeExact(MH_RUNTIME, 0);
+                builder.provide(ManagedLifetimeController.class).invokeExact(MH_RUNTIME, 0);
             }
 
             // builder(caller).addParameter(implementation).addParameter(AIC);
@@ -312,9 +314,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
+    /** Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
     public final /* primitive */ record PackedApplicationLauncher<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
-            implements ApplicationImage<A> {
+            implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -332,8 +334,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public RunState launchMode() {
-            return application.launchMode;
+        public A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <E> ApplicationLauncher<E> map(Function<A, E> mapper) {
+            throw new UnsupportedOperationException();
         }
     }
 }

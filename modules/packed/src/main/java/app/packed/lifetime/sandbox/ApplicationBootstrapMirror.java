@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.entrypoint;
+package app.packed.lifetime.sandbox;
 
-import app.packed.container.Wirelet;
-
-/** Various wirelets that can be used together with the {@link EntryPointExtension}. */
-public final class EntryPointWirelets {
-
-    /** No entry for you. */
-    private EntryPointWirelets() {}
-
-    public static Wirelet args(String... args) {
-        throw new UnsupportedOperationException();
-    }
+/**
+ *
+ */
+public class ApplicationBootstrapMirror {
+    
 }

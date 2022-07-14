@@ -17,14 +17,13 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.lifetime.mirror.LifetimeMirror;
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.util.StreamUtil;
 
@@ -45,7 +44,7 @@ public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMir
     AssemblyMirror assembly();
 
     /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
-    int depth();
+    int depth(); // Er sikkert mest interessant for indentions
 
     /** {@return the component's lifetime.} */
     LifetimeMirror lifetime();
@@ -134,9 +133,9 @@ public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMir
 //        throw new UnsupportedOperationException();
 //    }
 
-    default Optional<ComponentMirror> tryResolve(CharSequence path) {
-        throw new UnsupportedOperationException();
-    }
+//    default Optional<ComponentMirror> tryResolve(CharSequence path) {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Taenker den er immutable...
 

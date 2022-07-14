@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime.mirror;
+package app.packed.lifetime;
 
 import java.util.List;
 
@@ -22,24 +22,27 @@ import app.packed.operation.OperationMirror;
 /**
  *
  */
-// Er operationer som udgangspunkt hirakiske?
-// Er det ene speciel operations type?
-// Eller er det case to case
+
 public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 
-    public boolean isAvailableExternal() {
-        return true;
+    public LifetimeBeanMirror lifetimeLaunchBean() {
+        // return (LLBM) bean();
+        throw new UnsupportedOperationException();
     }
-
+//    
+//    public boolean isAvailableExternal() {
+//        return true;
+//    }
+//    
+//    public boolean isAvailableInternal() {
+//        // Launching operation is never available internal
+//        // Ved ikke om de giver mening de her operationer
+//        // Det er jo kun explicit. Hvis nu en traad fejler
+//        // saa er det jo ogsaa internt
+//        return true;
+//    }
     
-    public boolean isAvailableInternal() {
-        // Launching operation is never available internal
-        // Ved ikke om de giver mening de her operationer
-        // Det er jo kun explicit. Hvis nu en traad fejler
-        // saa er det jo ogsaa internt
-        return true;
-    }
-    
+    // OperationPlan (me thinks)
     public List<OperationMirror> operations() {
         // Her er taenkt alle operationer der bliver koert som result
         // En slags composite operation

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.sandbox;
+package app.packed.entrypoint;
 
-/**
- *
- */
-// ApplicationPanicException
-// Ved ikke om vi har den laengere?
-//
-public class UnhandledApplicationException extends RuntimeException {
+import app.packed.container.Wirelet;
 
-    /** */
-    private static final long serialVersionUID = 1L;
+/** Various wirelets that can be used together with the {@link EntryPointExtension}. */
+public final class EntryPointWirelets {
 
+    /** No entry for you. */
+    private EntryPointWirelets() {}
+
+    public static Wirelet args(String... args) {
+        throw new UnsupportedOperationException();
+    }
 }
