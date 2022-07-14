@@ -22,6 +22,18 @@ import internal.app.packed.application.ApplicationInitializationContext;
 /**
  *
  */
+
+// Vi kan sagtens folde bedste foraeldre ind ogsaa...
+// Altsaa bruger man kun et enkelt object kan vi jo bare folde det ind...
+//[ [GrandParent][Parent], O1, O2, O3]
+
+//Der er faktisk 2 strategier her...
+//RepeatableImage -> Har vi 2 pools taenker jeg... En shared, og en per instans
+//Ikke repeatable.. Kav vi lave vi noget af array'et paa forhaand... F.eks. smide
+//bean instancerne ind i det
+
+//Saa maaske er pool og Lifetime to forskellige ting???
+//
 // Long term.. Could we rewrite all the indexes for images. In this way we could store all constants in another array that we would just reference
 public final class LifetimePoolSetup {
 

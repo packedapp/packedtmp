@@ -55,7 +55,7 @@ public final class OperationSetup {
         this.mirrorSupplier = builder.mirrorSupplier;
     }
 
-    /** {@return a mirror for the operation.} */
+    /** {@return a new mirror.} */
     public OperationMirror mirror() {
         // Create a new OperationMirror
         OperationMirror mirror = mirrorSupplier.get();

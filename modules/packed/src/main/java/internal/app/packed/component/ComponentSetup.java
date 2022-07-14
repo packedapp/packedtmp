@@ -17,6 +17,8 @@ package internal.app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.function.Consumer;
@@ -25,12 +27,14 @@ import java.util.stream.Stream;
 import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.container.UserRealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
+import internal.app.packed.util.LookupUtil;
 
 /** Abstract build-time setup of a component. */
 public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
@@ -219,9 +223,13 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         return name;
     }
 
+    /** A handle that can access BeanConfiguration#beanHandle. */
+    private static final VarHandle BEAN_MIRROR_BEAN_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMirror.class, "bean",
+            BeanSetup.class);
+
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
-        if (mirror instanceof BeanSetup.BuildTimeBeanMirror m) {
-            return m.bean();
+        if (mirror instanceof BeanMirror m) {
+            return (BeanSetup) BEAN_MIRROR_BEAN_HANDLE.get(m);
         } else {
             return ((ContainerSetup.BuildTimeContainerMirror) mirror).container();
         }

@@ -30,7 +30,7 @@ package app.packed.lifetime.companion;
 // Kraever en !stateless Bean i begge ender vil jeg mene? LifetimeBeanBridge?
 
 // Til venstre er der altid en LifetimeManagementBean
-public interface LifetimeManagementBridge {
+public interface LifetimeBeanCompanion {
 
 }
 

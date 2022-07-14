@@ -24,7 +24,7 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.companion.LifetimeManagementBridge;
+import app.packed.lifetime.companion.LifetimeBeanCompanion;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.LifecycleException;
 import internal.app.packed.application.PackedApplicationDriver;
@@ -202,7 +202,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
         // noget optional??? ellers
         @SuppressWarnings("exports")
-        default Builder addCompanion(LifetimeManagementBridge... companions) {
+        default Builder addCompanion(LifetimeBeanCompanion... companions) {
             return this;
         }
 

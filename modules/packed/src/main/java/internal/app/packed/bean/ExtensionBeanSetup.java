@@ -31,7 +31,7 @@ import internal.app.packed.util.LookupUtil;
  */
 public final class ExtensionBeanSetup extends BeanSetup {
 
-    /** A handle that can access #configuration. */
+    /** A handle that can access BeanConfiguration#beanHandle. */
     private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle",
             PackedBeanHandler.class);
 

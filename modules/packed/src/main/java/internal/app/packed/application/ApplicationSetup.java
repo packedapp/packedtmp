@@ -17,12 +17,16 @@ package internal.app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.function.Supplier;
+
 import app.packed.application.ApplicationInfo;
 import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
-import app.packed.container.ContainerMirror;
+import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
 import internal.app.packed.container.ContainerSetup;
@@ -30,9 +34,15 @@ import internal.app.packed.container.PackedContainerDriver;
 import internal.app.packed.container.UserRealmSetup;
 import internal.app.packed.inject.ApplicationInjectionManager;
 import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /** Build-time configuration of an application. */
 public final class ApplicationSetup {
+
+    /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
+    private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
+            "initialize", void.class, ApplicationSetup.class);
 
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
@@ -59,6 +69,9 @@ public final class ApplicationSetup {
     @Nullable
     final PoolEntryHandle runtimeAccessor;
 
+    /** Supplies a mirror for the operation */
+    private final Supplier<? extends ApplicationMirror> mirrorSupplier = () -> new ApplicationMirror();
+
     /**
      * Create a new application setup
      * 
@@ -80,40 +93,17 @@ public final class ApplicationSetup {
 
     /** {@return an application mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        return new BuildTimeApplicationMirror(this);
-    }
-
-    /** An application mirror adaptor. */
-    private record BuildTimeApplicationMirror(ApplicationSetup application) implements ApplicationMirror {
-
-        /** {@inheritDoc} */
-        @Override
-        public ContainerMirror container() {
-            return application.container.mirror();
+        // Create a new OperationMirror
+        ApplicationMirror mirror = mirrorSupplier.get();
+        if (mirror == null) {
+            throw new InternalExtensionException("??? supplied a null operation mirror");
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public ApplicationInfo descriptor() {
-            return application.descriptor;
+        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
+        try {
+            MH_APPLICATION_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof BuildTimeApplicationMirror m && m.application == application;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int hashCode() {
-            return application.hashCode();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return "Application";
-        }
+        return mirror;
     }
 }

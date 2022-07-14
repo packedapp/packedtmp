@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.bean.BeanMirror;
 import app.packed.lifetime.sandbox.LifetimeHostBeanMirror;
 import app.packed.operation.dependency.DependencyMirror;
 
@@ -26,21 +27,29 @@ import app.packed.operation.dependency.DependencyMirror;
  * A bean that manages one or more lifetime instances.
  * <p>
  * All lifetimes are managed by a bean of this type except for the lifetime of a bootstrap application. Where
- * {@link LifetimeMirror#managedBy()} return empty.
+ * {@link LifetimeMirror#bean()} return empty.
  * <p>
  * A lifetime management bean typically only manages lifetime.
  * <p>
  * The bean lives and dies with the instance
  */
+// Any non-stateless lifetime has a "managing bean" that creates and destroys it.
 // Alle components der ikke er stateless har en LifetimeBean
-public interface LifetimeBeanMirror {
-    
-    default LifetimeKind managesLifetimeKind() {
+
+// A stateless lifetime component does not have lifetime bean...
+//
+
+// A lifetime bean may create more than 1 type of lifetime
+public class LifetimeBeanMirror extends BeanMirror {
+
+    public LifetimeKind managesLifetimeKind() {
         return managesLifetimes().iterator().next().lifetimeKind();
     }
 
     /** {@return a collection of the lifetimes managed by this bean.} */
-    Collection<LifetimeMirror> managesLifetimes();
+    public Collection<LifetimeMirror> managesLifetimes() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns a non-empty list of all the lifetime management operations this bean provide.
@@ -49,7 +58,9 @@ public interface LifetimeBeanMirror {
      * 
      * @return a list of all lifetime management operations this bean provides
      */
-    List<LifetimeOperationMirror> managementOperations();
+    public List<LifetimeOperationMirror> managementOperations() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 interface Zandbox1 {
@@ -92,7 +103,7 @@ interface Zandbox1 {
 
 // Taenker de maa alle tage de sammen launch contexts...
 
-    public interface ContainerLifetimeLaunchBeanMirror extends LifetimeBeanMirror {
+    public class ContainerLifetimeLaunchBeanMirror extends LifetimeBeanMirror {
 
         // Bridge dependencies...
 

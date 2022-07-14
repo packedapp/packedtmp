@@ -87,6 +87,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         // Invoke Assembly::doBuild
         // which in turn will invoke Assembly::build
         ContainerConfiguration configuration = driver.toConfiguration(container);
+
         try {
             MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, this, configuration);
         } catch (Throwable e) {

@@ -5,8 +5,15 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ComponentMirrorTree;
+import app.packed.base.Nullable;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
+import app.packed.container.InternalExtensionException;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
+import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
  * A component whose lifetime is managed by Packed.
@@ -24,38 +31,91 @@ import internal.app.packed.lifetime.LifetimeSetup.BuildtimeLifetimeMirror;
 
 //Har vi ContainerLifetime/BeanLifetime???
 
-public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeMirror {
+public class LifetimeMirror implements Mirror {
 
-    // App run er vel den eneste der har en holder, men ikke en bean?
+    /**
+     * The internal configuration of the operation we are mirrored. Is initially null but populated via
+     * {@link #initialize(ExtensionSetup)}.
+     */
+    @Nullable
+    private LifetimeSetup lifetime;
 
-    // All lifetimes have a launcher except a bootstrap lifetime...
+    /**
+     * Create a new operation mirror.
+     * <p>
+     * Subclasses should have a single package-protected constructor.
+     */
+    public LifetimeMirror() {}
+
+    /**
+     * {@return the internal configuration of operation.}
+     * 
+     * @throws InternalExtensionException
+     *             if {@link #initialize(ApplicationSetup)} has not been called.
+     */
+    private LifetimeSetup lifetime() {
+        LifetimeSetup a = lifetime;
+        if (a == null) {
+            throw new InternalExtensionException(
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
+        }
+        return a;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other || other instanceof LifetimeMirror m && lifetime() == m.lifetime();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return lifetime().hashCode();
+    }
+
+    /**
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
+     * 
+     * @param owner
+     *            the internal configuration of the extension to mirror
+     */
+    final void initialize(LifetimeSetup operation) {
+        if (this.lifetime != null) {
+            throw new IllegalStateException("This mirror has already been initialized.");
+        }
+        this.lifetime = operation;
+    }
+
+    /**
+     * If this lifetime is non-stateless returns the bean that controls creation and destruction of the lifetime.
+     * 
+     * @return
+     */
+    public Optional<LifetimeBeanMirror> bean() {
+        return Optional.empty();
+    }
 
     /** {@return a stream of child lifetimes of this lifetime.} */
-    Stream<LifetimeMirror> children();
+    public Stream<LifetimeMirror> children() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return all components that are part of the lifetime.} */
     // A tree of containers and beans
     // Maaske er det i virkeligheden bare en stream af componenter depth first
-    ComponentMirrorTree components();
-
-    LifetimeKind lifetimeKind();
+    public ComponentMirrorTree components() {
+        throw new UnsupportedOperationException();
+    }
 
     // If has a holder
     // -- If is a bean -> Holder is in same container as the root of the lifetime
     // -- If is a non-root container -> Holder is in parent container
     // -- If is a non-root application -> Holder is in parent application
     // -- If a a root application -> Holder is a single bean in an bootstrap application
-    
-    // Its unmanaged but have management operation Maybe its okay
-    // Maaske kan vi launch en bean der ikke er i samme container..
-    // Fx hvis vi er en extension bean. Og vi ikke gider installere saadan en.
-    // I andet end root containeren.
-    //// Stateless never has a management bean mirror
-    default Optional<LifetimeBeanMirror> managedBy() {
-        // App.run does not have a LifetimeHolder object
-        // Prototype Service Bean does not have a lifetime holder
-        // AsyncApp has a minimum a holder with a shutdown token
-        return Optional.empty();
+
+    public LifetimeKind lifetimeKind() {
+        throw new UnsupportedOperationException();
     }
 
     // Hvad med sync/async start/stop??? Det er externt bestemt
@@ -77,10 +137,17 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
 
     /** {@return the type of lifetime.} */
     // Tror vi dropper den her. Og saa er application.container bare en container
-    LifetimeOriginKind originKind();
+    public LifetimeOriginKind originKind() {
+        if (lifetime().origin instanceof ContainerSetup c) {
+            return c.application.container == c ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
+        }
+        return LifetimeOriginKind.BEAN;
+    }
 
     /** {@return any parent lifetime this lifetime might have.} */
-    Optional<LifetimeMirror> parent();
+    public Optional<LifetimeMirror> parent() {
+        return lifetime().parent == null ? Optional.empty() : Optional.of(lifetime().parent.mirror());
+    }
 
     /**
     *
@@ -89,9 +156,9 @@ public sealed interface LifetimeMirror extends Mirror permits BuildtimeLifetimeM
     // Syntes maaske bare det er en masse is() metoder paa LifetimeMirror
     // en mindre klasse
     // isBeanOrigin(), isContainerOrigin, is ApplicationOrigin();
-    
+
     // Vi vil helst have at application.lifetime == application.container.lifetime...
-    
+
     public enum LifetimeOriginKind {
 
         /** An application is created together with lifetime. */
@@ -154,7 +221,6 @@ interface LifetimeSandbox {
     // Altsaa det er taenkt paa at man kan have fx application dependencies.
     // Altsaa en egentlig graph af ting der skal vaere oppe og koere.
     Set<LifetimeMirror> dependants();
-
 
     boolean isSingleton(); // I relation til foraeldren
 

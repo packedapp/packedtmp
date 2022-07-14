@@ -1,26 +1,127 @@
 package app.packed.bean;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ComponentMirror;
+import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
+import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.Realm;
-import internal.app.packed.bean.BeanSetup.BuildTimeBeanMirror;
+import app.packed.lifetime.LifetimeMirror;
+import app.packed.operation.OperationMirror;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * A mirror of a bean.
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-public sealed interface BeanMirror extends ComponentMirror, Mirror permits BuildTimeBeanMirror {
+public non-sealed class BeanMirror implements ComponentMirror, Mirror {
+    
+    /**
+     * The internal configuration of the bean we are mirroring. Is initially null but populated via
+     * {@link #initialize(BeanSetup)}.
+     */
+    @Nullable
+    private BeanSetup bean;
 
+    /**
+     * Create a new bean mirror.
+     * <p>
+     * Subclasses should have a single package-protected constructor.
+     */
+    public BeanMirror() {}
+
+    /**
+     * {@return the internal configuration of the bean we are mirroring.}
+     * 
+     * @throws IllegalStateException
+     *             if {@link #initialize(BeanSetup)} has not been called previously.
+     */
+    private BeanSetup bean() {
+        BeanSetup b = bean;
+        if (b == null) {
+            throw new IllegalStateException(
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
+        }
+        return b;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other || other instanceof BeanMirror m && bean() == m.bean();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return bean().hashCode();
+    }
+
+    /**
+     * Invoked by the runtime with the internal configuration of the bean to mirror.
+     * 
+     * @param bean
+     *            the internal configuration of the bean to mirror
+     */
+    final void initialize(BeanSetup bean) {
+        if (this.bean != null) {
+            throw new IllegalStateException("This mirror has already been initialized.");
+        }
+        this.bean = bean;
+    }
 
     /** {@return the owner of the component.} */
-    Realm owner();
+    public Realm owner() {
+        return bean().realm.realm();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationMirror application() {
+        return bean().application.mirror();
+    }
 
+    /** {@inheritDoc} */
+    @Override
+    public AssemblyMirror assembly() {
+        return bean().userRealm.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Stream<ComponentMirror> stream() {
+        return Stream.of(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int depth() {
+        return bean().depth;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifetimeMirror lifetime() {
+        return bean().lifetime.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return bean().name;
+    }
+    
+    public NamespacePath path() {
+        return bean().path();
+    }
     /**
      * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
      * drive
@@ -59,8 +160,13 @@ public sealed interface BeanMirror extends ComponentMirror, Mirror permits Build
     
     // var Optional<Class<? extends Extension<?>>> registrant
     // Giver strengt tagt kun mening paa beans nu..
-    Class<? extends Extension<?>> operator();
-
+    public Class<? extends Extension<?>> operator() {
+        return bean.operator();
+    }
+    
+    public Stream<OperationMirror> operations() {
+        return bean().operations.stream().map(OperationSetup::mirror);
+    }
     
     /**
      * Returns the type (class) of the bean.
@@ -70,13 +176,20 @@ public sealed interface BeanMirror extends ComponentMirror, Mirror permits Build
      * 
      * @return the type (class) of the bean.
      */
-    Class<?> beanClass();
+    public Class<?> beanClass() {
+        return bean().builder.beanClass();
+    }
 
     /** {@return the bean's kind.} */
-    BeanKind beanKind();
+    public BeanKind beanKind() {
+        return bean.builder.beanKind();
+    }
+
 
     /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
-    ContainerMirror container();
+    public final ContainerMirror container() {
+        return bean.parent.mirror();
+    }
 }
 
 interface SSandbox {

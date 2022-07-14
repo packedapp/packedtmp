@@ -17,11 +17,14 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Supplier;
+
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandler;
 import app.packed.bean.BeanHandler.Builder;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanProcessor;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
@@ -55,6 +58,9 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
 
     /** The type of source the driver is created from. */
     public final SourceType sourceType;
+
+    /** Supplies a mirror for the operation */
+    final Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
 
     @Nullable
     BeanProcessor scanner;

@@ -69,25 +69,7 @@ public class OperationMirror implements Mirror {
      */
     public OperationMirror() {}
 
-    /** {@return the application the operation belongs to.} */
-    public final ApplicationMirror application() {
-        return operation().bean.application.mirror();
-    }
-
-    /** {@return the bean the operation belongs to.} */
-    public final BeanMirror bean() {
-        return operation().bean.mirror();
-    }
-
-    /** {@return the container the operation belongs to.} */
-    public final ContainerMirror container() {
-        return operation().bean.parent.mirror();
-    }
-
-    /** {@return any dependencies that the operation takes.} */
-    public final List<DependencyMirror> dependencies() {
-        throw new UnsupportedOperationException();
-    }
+    
 
     /** {@inheritDoc} */
     @Override
@@ -124,10 +106,32 @@ public class OperationMirror implements Mirror {
      */
     final void initialize(OperationSetup operation) {
         if (this.operation != null) {
-            throw new IllegalStateException("The specified mirror has already been initialized.");
+            throw new IllegalStateException("This mirror has already been initialized.");
         }
         this.operation = operation;
     }
+    
+    
+    /** {@return the application the operation belongs to.} */
+    public final ApplicationMirror application() {
+        return operation().bean.application.mirror();
+    }
+
+    /** {@return the bean the operation belongs to.} */
+    public final BeanMirror bean() {
+        return operation().bean.mirror();
+    }
+
+    /** {@return the container the operation belongs to.} */
+    public final ContainerMirror container() {
+        return operation().bean.parent.mirror();
+    }
+
+    /** {@return any dependencies that the operation takes.} */
+    public final List<DependencyMirror> dependencies() {
+        throw new UnsupportedOperationException();
+    }
+
 
     /** {@return the extension that is responsible for invoking the operation.} */
     public final Class<? extends Extension<?>> invokedBy() {

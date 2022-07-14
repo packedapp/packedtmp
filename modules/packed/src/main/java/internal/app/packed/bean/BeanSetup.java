@@ -2,45 +2,47 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationMirror;
-import app.packed.application.ComponentMirror;
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.container.AssemblyMirror;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 import app.packed.container.Realm;
-import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
 import internal.app.packed.bean.hooks.BeanHookScanner;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.BeanInjectionManager;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
 public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits ExtensionBeanSetup {
 
-    /** The builder that was used to create the bean. */
-    public final PackedBeanHandleBuilder<?> builder;
+    /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
+    private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
+            void.class, BeanSetup.class);
 
     /** A model of hooks on the bean class. Or null if no member scanning was performed. */
     @Nullable
     public final BeanClassModel beanModel;
+
+    /** The builder that was used to create the bean. */
+    public final PackedBeanHandleBuilder<?> builder;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
     public final BeanInjectionManager injectionManager;
 
     /** Operations declared by the bean. */
-    private final ArrayList<OperationSetup> operations = new ArrayList<>();
+    public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /**
      * Create a new bean setup.
@@ -87,10 +89,21 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         return builder.beanKind();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return a new mirror.} */
     public BeanMirror mirror() {
-        return new BuildTimeBeanMirror(this);
+        // Create a new BeanMirror
+        BeanMirror mirror = builder.mirrorSupplier.get();
+        if (mirror == null) {
+            throw new InternalExtensionException(" supplied a null operation mirror");
+        }
+
+        // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
+        try {
+            MH_BEAN_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
     }
 
     /** {@inheritDoc} */
@@ -108,92 +121,5 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Override
     public Stream<ComponentSetup> stream() {
         return Stream.of(this);
-    }
-
-    /** A build-time bean mirror. */
-    public record BuildTimeBeanMirror(BeanSetup bean) implements BeanMirror {
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> beanClass() {
-            return bean.builder.beanClass();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BeanKind beanKind() {
-            return bean.builder.beanKind();
-        }
-
-        /** {@inheritDoc} */
-        public final ContainerMirror container() {
-            return bean.parent.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<? extends Extension<?>> operator() {
-            return bean.operator();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Stream<OperationMirror> operations() {
-            return bean.operations.stream().map(OperationSetup::mirror);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ApplicationMirror application() {
-            return bean.application.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public AssemblyMirror assembly() {
-            return bean.userRealm.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Stream<ComponentMirror> stream() {
-            return Stream.of(this);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int depth() {
-            return bean.depth;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public LifetimeMirror lifetime() {
-            return bean.lifetime.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String name() {
-            return bean.name;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Realm owner() {
-            return bean.realm.realm();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public NamespacePath path() {
-            return bean.path();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return bean.toString();
-        }
     }
 }
