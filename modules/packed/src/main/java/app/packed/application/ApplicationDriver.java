@@ -148,11 +148,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     /// Nu bliver jeg i tvivl igen... Fx med Tester
     ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets);
 
-    default void verify(Assembly assembly, Wirelet... wirelets) {
-        // Attempts to build a mirror, throws Verification
-
-        // Altsaa vi skal have verify med taenker jeg..
-    }
+    void verify(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Augment the driver with the specified wirelets, that will be processed when building or instantiating new

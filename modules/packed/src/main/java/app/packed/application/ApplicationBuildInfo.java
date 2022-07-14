@@ -6,6 +6,7 @@ import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.application.PackedApplicationInfo;
 
 // Input DAW (Application) Driver Assembly Wirelets
+
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.
 // Saa ville den jo kunne be overskrevet paa runtime
 
@@ -73,9 +74,7 @@ public sealed interface ApplicationBuildInfo permits PackedApplicationInfo {
     // Altsaa det er jo primaert extensions der skal bruge det.
     // Tror aldrig man kommer til at switche paa den
     // Saa er maaske ikke super brugbart
-
-    // Rename to ApplicationOutputKind??? Or
-    public enum ApplicationBuildType {
+    public enum ApplicationBuildKind {
 
         /**
          * An application image will build the application. But delay the actual launch of the application to a later point.

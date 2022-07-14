@@ -18,6 +18,6 @@ package internal.app.packed.application;
 /**
  *
  */
-public class ApplicationShutdownContext {
+public class ManagedStartupContext {
 
 }

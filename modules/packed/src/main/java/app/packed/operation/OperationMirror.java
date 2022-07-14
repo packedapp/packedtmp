@@ -69,8 +69,6 @@ public class OperationMirror implements Mirror {
      */
     public OperationMirror() {}
 
-    
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -110,37 +108,35 @@ public class OperationMirror implements Mirror {
         }
         this.operation = operation;
     }
-    
-    
+
     /** {@return the application the operation belongs to.} */
-    public final ApplicationMirror application() {
+    public ApplicationMirror application() {
         return operation().bean.application.mirror();
     }
 
     /** {@return the bean the operation belongs to.} */
-    public final BeanMirror bean() {
+    public BeanMirror bean() {
         return operation().bean.mirror();
     }
 
     /** {@return the container the operation belongs to.} */
-    public final ContainerMirror container() {
+    public ContainerMirror container() {
         return operation().bean.parent.mirror();
     }
 
     /** {@return any dependencies that the operation takes.} */
-    public final List<DependencyMirror> dependencies() {
+    public List<DependencyMirror> dependencies() {
         throw new UnsupportedOperationException();
     }
 
-
     /** {@return the extension that is responsible for invoking the operation.} */
-    public final Class<? extends Extension<?>> invokedBy() {
+    public Class<? extends Extension<?>> invokedBy() {
         // ExtensionMirror??? Hmm, saa returnere vi en Single?
         return operation().operatorBean.extension.extensionType;
     }
 
     /** {@return the target of the operation.} */
-    public final OperationTargetMirror target() {
+    public OperationTargetMirror target() {
         return operation().operationTarget.mirror();
     }
 
@@ -160,7 +156,7 @@ public class OperationMirror implements Mirror {
     // Creates a new Lifetime just for the duration of the operation!
     // What about start/stop (not present)
     // spawnsLifetime
-    
+
     // Altsaa ved ikke om det bare er en boolean???? MakesNewBean?
     // Problemet er lidt hvordan selve registreringen skal vaere?
     // Man skal jo markere containeren og sige. Alle @Get beans i den her container starter en ny container.

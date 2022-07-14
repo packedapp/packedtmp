@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.ContainerConfiguration;
@@ -47,7 +47,7 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
 
     public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, BuildAction<?> consumer, Wirelet[] wirelets) {
         this.consumer = requireNonNull(consumer);
-        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildType.LAUNCH, this, wirelets);
+        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildKind.LAUNCH, this, wirelets);
     }
 
     public <C extends AbstractComposer> void build(C composer) {

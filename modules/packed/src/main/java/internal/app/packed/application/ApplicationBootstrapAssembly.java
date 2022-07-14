@@ -15,9 +15,9 @@
  */
 package internal.app.packed.application;
 
+import app.packed.container.Assembly;
+
 /**
  *
  */
-public class ApplicationStartupContext {
-
-}
+public abstract class ApplicationBootstrapAssembly extends Assembly {}

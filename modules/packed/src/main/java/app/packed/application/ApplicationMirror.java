@@ -78,7 +78,7 @@ public class ApplicationMirror implements Mirror {
     }
 
     /** {@return the assembly that defines the application.} */
-    public final AssemblyMirror assembly() {
+    public AssemblyMirror assembly() {
         return container().assembly();
     }
 

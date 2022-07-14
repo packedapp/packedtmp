@@ -24,8 +24,8 @@ import app.packed.operation.OperationMirror;
  */
 public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 
-    public LifetimeBeanMirror lifetimeBean() {
-        return (LifetimeBeanMirror) bean();
+    public LifetimeBeanMirror bean() {
+        return (LifetimeBeanMirror) super.bean();
     }
 //    
 //    public boolean isAvailableExternal() {

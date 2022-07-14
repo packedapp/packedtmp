@@ -24,11 +24,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import internal.app.packed.application.PackedApplicationDriver;
 
 /**
  * A service contract details of a contractee.
@@ -70,6 +70,9 @@ import internal.app.packed.application.PackedApplicationDriver;
 
 // provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
 public final class ServiceContract {
+
+    /** The driver used for creating mirrors daemon driver. */
+    public static final ApplicationDriver<Void> MIRROR_DRIVER = ApplicationDriver.builder().buildVoid();
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());
@@ -267,7 +270,7 @@ public final class ServiceContract {
 
     // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
     public static ServiceContract of(Assembly assembly, Wirelet... wirelets) {
-        ApplicationMirror m = PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
+        ApplicationMirror m = MIRROR_DRIVER.mirrorOf(assembly, wirelets);
         return m.container().findExtension(ServiceExtensionMirror.class).map(e -> e.contract())
                 .orElse(ServiceContract.EMPTY);
     }

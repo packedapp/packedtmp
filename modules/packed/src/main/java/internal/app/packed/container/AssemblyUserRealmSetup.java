@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -64,7 +64,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
      *            optional wirelets
      * @return the application
      */
-    public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildType buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildKind buildTarget, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());

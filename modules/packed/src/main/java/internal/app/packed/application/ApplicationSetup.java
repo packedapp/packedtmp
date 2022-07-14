@@ -17,10 +17,9 @@ package internal.app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Supplier;
 
 import app.packed.application.ApplicationBuildInfo;
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
@@ -34,7 +33,7 @@ import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Build-time configuration of an application. */
+/** Internal configuration of an application. */
 public final class ApplicationSetup {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
@@ -44,8 +43,6 @@ public final class ApplicationSetup {
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
-    public final ApplicationBuildInfo info;
-
     /** The driver responsible for building the application. */
     public final PackedApplicationDriver<?> driver;
 
@@ -53,21 +50,14 @@ public final class ApplicationSetup {
     @Nullable
     public EntryPointSetup entryPoints;
 
+    public final ApplicationBuildInfo info;
+
     /** The tree this service manager is a part of. */
     public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
-
-    /**
-     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
-     * build-time. If used from an image {@link ApplicationInitializationContext#launchMode} is updated instead.
-     */
-//    final LifetimeKind launchMode;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
     final PoolEntryHandle runtimeAccessor;
-
-    /** Supplies a mirror for the application. */
-    public Supplier<? extends ApplicationMirror> mirrorSupplier = () -> new ApplicationMirror();
 
     /**
      * Create a new application setup
@@ -75,7 +65,7 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildType buildKind, UserRealmSetup realm, Wirelet[] wirelets) {
+    public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildKind buildKind, UserRealmSetup realm, Wirelet[] wirelets) {
         this.driver = driver;
         this.info = new PackedApplicationInfo(buildKind);
 
@@ -90,9 +80,9 @@ public final class ApplicationSetup {
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
         // Create a new mirror
-        ApplicationMirror mirror = mirrorSupplier.get();
+        ApplicationMirror mirror = driver.mirrorSupplier.get();
         if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
+            throw new NullPointerException(driver.mirrorSupplier + " returned a null instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)

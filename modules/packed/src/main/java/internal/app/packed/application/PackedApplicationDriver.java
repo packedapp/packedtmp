@@ -24,8 +24,9 @@ import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchException;
 import app.packed.application.ApplicationLauncher;
@@ -48,19 +49,18 @@ import internal.app.packed.util.ThrowableUtil;
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
-    /** The driver used for creating mirrors daemon driver. */
-    // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
-    // vil sikre sig af en application goere x...
-    public static final PackedApplicationDriver<Void> MIRROR_DRIVER = new Builder().buildVoid();
-
-    final Set<Class<? extends Extension<?>>> disabledExtensions;
+    final Set<Class<? extends Extension<?>>> bannedExtensions;
 
     private final LifetimeKind lifetimeKind;
-    
+
     /** The method handle used for creating new application instances. */
+    // We need more info for bootstrap mirrors
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
-    /** Optional wirelets that will be applied to any component created by this driver. */
+    /** Supplies a mirror for the application. */
+    public final Supplier<? extends ApplicationMirror> mirrorSupplier = () -> new ApplicationMirror();
+
+    /** Optional (flattened) wirelets that will be applied to any applications created by this driver. */
     @Nullable
     public final Wirelet wirelet;
 
@@ -74,7 +74,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.wirelet = builder.wirelet;
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.lifetimeKind = builder.lifetimeKind;
-        this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
+        this.bannedExtensions = Set.copyOf(builder.disabledExtensions);
     }
 
     /**
@@ -89,23 +89,22 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.wirelet = existing.wirelet;
         this.lifetimeKind = existing.lifetimeKind;
         this.mhConstructor = existing.mhConstructor;
-        this.disabledExtensions = existing.disabledExtensions;
-    }
-
-    /**
-     * Returns the raw type of the artifacts that this driver creates.
-     * 
-     * @return the raw type of the artifacts that this driver creates
-     */
-    // Virker ikke rigtig pga mhConstructors signature... vi maa gemme den andet steds
-    public Class<?> applicationRawType() {
-        return mhConstructor.type().returnType();
+        this.bannedExtensions = existing.bannedExtensions;
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
-        return disabledExtensions;
+        return bannedExtensions;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A launch(Assembly assembly, Wirelet... wirelets) {
+        // Create a new assembly realm which
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.LAUNCH, assembly, wirelets);
+        realm.build();
+        return ApplicationInitializationContext.launch(this, realm.application, null);
     }
 
     /** {@inheritDoc} */
@@ -116,17 +115,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public A launch(Assembly assembly, Wirelet... wirelets) {
-        // Create a new assembly realm which
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.LAUNCH, assembly, wirelets);
-        realm.build();
-        return ApplicationInitializationContext.launch(this, realm.application, null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.MIRROR, assembly, wirelets);
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.MIRROR, assembly, wirelets);
         realm.build();
         return realm.application.mirror();
     }
@@ -134,7 +124,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.BUILD, assembly, wirelets);
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.BUILD, assembly, wirelets);
         realm.build();
         return new PackedApplicationLauncher<>(this, realm.application);
     }
@@ -160,9 +150,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.BUILD_MULTIPLE, assembly, wirelets);
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.BUILD_MULTIPLE, assembly, wirelets);
         realm.build();
         return new PackedApplicationLauncher<>(this, realm.application);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void verify(Assembly assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -186,17 +182,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
         throw new UnsupportedOperationException();
     }
-
-//    @Override
-//    public ApplicationDriver<A> withLaunchMode(RunState launchMode) {
-//        if (!isExecutable()) {
-//            throw new UnsupportedOperationException("This method is only supported if the application is executable");
-//        }
-//        // Skal vel bare flyttes til implementeringen???
-//        throw new UnsupportedOperationException();
-////            return with(ExecutionWirelets.launchMode(launchMode));
-//
-//    }
 
     /** Single implementation of {@link ApplicationDriver.Builder}. */
     public static final class Builder implements ApplicationDriver.Builder {
@@ -320,12 +305,3 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 }
-///** {@return the type (typically an interface) of the application instances created by this driver.} */
-//public Class<?> launchType() {
-//  // It is a bit strange this method I think. Now since the AD is not exposed to end users
-//  throw new UnsupportedOperationException();
-//}
-
-// Uhh uhhh species... Job<R> kan vi lave det???
-
-// Create an infuser (SomeExtension, Class)
