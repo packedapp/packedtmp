@@ -23,7 +23,7 @@ import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.companion.LifetimeBeanCompanion;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.LifecycleException;
@@ -72,7 +72,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
-    boolean isExecutable();
+    LifetimeKind lifetimeKind();
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -106,7 +106,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @see #launch(Assembly, Wirelet...)
      * @see #newImage(Assembly, Wirelet...)
      */
-    RunState launchMode();
 
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
@@ -245,12 +244,10 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * <p>
          * The default launchState can be overridden at later point by using XYZ
          * 
-         * @param launchState
-         *            the launch mode of the application
          * @return this builder
          */
-        Builder executable(RunState launchState);
-
+        Builder managedLifetime();
+        
         @SuppressWarnings("unchecked")
         default Builder requireExtension(Class<? extends Extension>... extensionTypes) {
 

@@ -154,7 +154,7 @@ public interface Program extends AutoCloseable {
 record ProgramImplementation(String name, ServiceLocator services, ManagedLifetimeController runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(RunState.RUNNING).build(MethodHandles.lookup(),
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().managedLifetime().build(MethodHandles.lookup(),
             ProgramImplementation.class);
 
     /** {@inheritDoc} */

@@ -15,8 +15,6 @@
  */
 package internal.app.packed.application;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
@@ -24,10 +22,9 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationBuildInfo;
 import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerDriver;
 import internal.app.packed.container.UserRealmSetup;
@@ -63,7 +60,7 @@ public final class ApplicationSetup {
      * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
      * build-time. If used from an image {@link ApplicationInitializationContext#launchMode} is updated instead.
      */
-    final RunState launchMode;
+//    final LifetimeKind launchMode;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
@@ -80,7 +77,6 @@ public final class ApplicationSetup {
      */
     public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildType buildKind, UserRealmSetup realm, Wirelet[] wirelets) {
         this.driver = driver;
-        this.launchMode = requireNonNull(driver.launchMode());
         this.info = new PackedApplicationInfo(buildKind);
 
         // Create the root container of the application
@@ -88,7 +84,7 @@ public final class ApplicationSetup {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
+        this.runtimeAccessor = driver.lifetimeKind() == LifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
     }
 
     /** {@return a mirror that can be exposed to end-users.} */

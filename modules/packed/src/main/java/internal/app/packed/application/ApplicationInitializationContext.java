@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
@@ -41,7 +41,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     public final ApplicationSetup application;
 
     /** The launch mode of the application. */
-    final RunState launchMode;
+    final LifetimeKind lifetimeKind;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
@@ -61,7 +61,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
         this.application = application;
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.mirror().name());
-        this.launchMode = requireNonNull(application.launchMode);
+        this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
         this.runtime = application.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
     }
 

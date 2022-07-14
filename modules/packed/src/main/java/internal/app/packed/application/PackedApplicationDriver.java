@@ -30,13 +30,12 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchException;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.CompositeWirelet;
@@ -56,11 +55,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     final Set<Class<? extends Extension<?>>> disabledExtensions;
 
-    private final boolean isExecutable;
-
-    /** The default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(RunState)}. */
-    private final RunState launchMode;
-
+    private final LifetimeKind lifetimeKind;
+    
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
@@ -77,10 +73,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private PackedApplicationDriver(Builder builder) {
         this.wirelet = builder.wirelet;
         this.mhConstructor = requireNonNull(builder.mhConstructor);
-        this.launchMode = builder.launchMode;
+        this.lifetimeKind = builder.lifetimeKind;
         this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
-
-        this.isExecutable = builder.isExecutable;
     }
 
     /**
@@ -93,9 +87,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet wirelet) {
         this.wirelet = existing.wirelet;
-        this.isExecutable = existing.isExecutable;
+        this.lifetimeKind = existing.lifetimeKind;
         this.mhConstructor = existing.mhConstructor;
-        this.launchMode = existing.launchMode;
         this.disabledExtensions = existing.disabledExtensions;
     }
 
@@ -117,8 +110,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isExecutable() {
-        return isExecutable;
+    public LifetimeKind lifetimeKind() {
+        return lifetimeKind;
     }
 
     /** {@inheritDoc} */
@@ -128,12 +121,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildType.LAUNCH, assembly, wirelets);
         realm.build();
         return ApplicationInitializationContext.launch(this, realm.application, null);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public RunState launchMode() {
-        return launchMode;
     }
 
     /** {@inheritDoc} */
@@ -225,14 +212,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#serviceLocator()}. */
         private static final MethodHandle MH_SERVICE_LOCATOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
                 "serviceLocator", ServiceLocator.class);
-        
+
         private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
 
-        /** Whether or not the applications that will be produced are executable. */
-        private boolean isExecutable = true;
-
-        /** The default launch mode of the application. */
-        private RunState launchMode = RunState.TERMINATED;
+        private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
 
         MethodHandle mhConstructor;
 
@@ -247,7 +230,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICE_LOCATOR, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
-            if (isExecutable) { // Conditional add ApplicationRuntime
+            if (lifetimeKind == LifetimeKind.MANAGED) { // Conditional add ApplicationRuntime
                 builder.provide(ManagedLifetimeController.class).invokeExact(MH_RUNTIME, 0);
             }
 
@@ -300,10 +283,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder executable(RunState launchMode) {
-            requireNonNull(launchMode, "launchMode is null");
-            this.isExecutable = true;
-            this.launchMode = launchMode;
+        public Builder managedLifetime() {
+            this.lifetimeKind = LifetimeKind.MANAGED;
             return this;
         }
     }
@@ -344,7 +325,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 //  // It is a bit strange this method I think. Now since the AD is not exposed to end users
 //  throw new UnsupportedOperationException();
 //}
-
 
 // Uhh uhhh species... Job<R> kan vi lave det???
 
