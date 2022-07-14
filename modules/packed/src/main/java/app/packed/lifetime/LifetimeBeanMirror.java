@@ -20,8 +20,15 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.lifetime.sandbox.LifetimeHostBeanMirror;
 import app.packed.operation.dependency.DependencyMirror;
+
+// Why lifetime bean
+// Det startede lidt med problemet omkring Application "wrapper" objekter som AsyncApp/Injector osv.
+// Det er jo basalt set en bean, andet giver naesten ikke mening. Isaer naar vi skal have App on App
+// Dette ledte til at vi selvfoelgelig skal kunne mirror den. Hvilket foerte til denne bean.
+// Eftersom operationer der laver en application ikke kan vaere definere indefor selve applicationer.
+// Da det ville bryde encapsulation. Ligger vi disse operationer udenfor application. Hvilket skaber
+// en ny bean (LifetimeBean) og en ny container og en ny bootstrap application
 
 /**
  * A bean that manages one or more lifetime instances.
@@ -41,6 +48,8 @@ import app.packed.operation.dependency.DependencyMirror;
 
 // A lifetime bean may create more than 1 type of lifetime
 public class LifetimeBeanMirror extends BeanMirror {
+
+    // Skal have nogle bedre navne end managed
 
     public LifetimeKind managesLifetimeKind() {
         return managesLifetimes().iterator().next().lifetimeKind();
@@ -124,4 +133,15 @@ interface Zandbox1 {
     Class<?> holderClass();
 
     Optional<LifetimeHostBeanMirror> host();
+
+    // Tror ikke vi har en generisk Host bean
+    public class LifetimeHostBeanMirror extends BeanMirror {
+
+        // Som regel er den her en LifetimeHolder. Men ikke altid
+        // Eller maaske skal det bare vaere altid
+        public BeanMirror holds() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
 }

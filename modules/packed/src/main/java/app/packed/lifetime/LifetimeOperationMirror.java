@@ -20,14 +20,12 @@ import java.util.List;
 import app.packed.operation.OperationMirror;
 
 /**
- *
+ * An operation on a lifetime bean.
  */
-
 public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 
-    public LifetimeBeanMirror lifetimeLaunchBean() {
-        // return (LLBM) bean();
-        throw new UnsupportedOperationException();
+    public LifetimeBeanMirror lifetimeBean() {
+        return (LifetimeBeanMirror) bean();
     }
 //    
 //    public boolean isAvailableExternal() {

@@ -25,8 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationInfo.ApplicationBuildType;
 import app.packed.application.ApplicationLaunchException;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
@@ -134,12 +134,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public RunState launchMode() {
         return launchMode;
-    }
-
-    /** {@return the type (typically an interface) of the application instances created by this driver.} */
-    public Class<?> launchType() {
-        // It is a bit strange this method I think. Now since the AD is not exposed to end users
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -345,6 +339,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 }
+///** {@return the type (typically an interface) of the application instances created by this driver.} */
+//public Class<?> launchType() {
+//  // It is a bit strange this method I think. Now since the AD is not exposed to end users
+//  throw new UnsupportedOperationException();
+//}
+
+
 // Uhh uhhh species... Job<R> kan vi lave det???
 
 // Create an infuser (SomeExtension, Class)

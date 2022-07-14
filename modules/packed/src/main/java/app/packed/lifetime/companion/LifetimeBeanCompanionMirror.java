@@ -18,8 +18,8 @@ package app.packed.lifetime.companion;
 import app.packed.lifetime.LifetimeBeanMirror;
 
 /**
- *
- */
+ * A mirror of {@link LifetimeBeanCompanion}
+ */ 
 
 // !! Er udviklet videre i den anden ExtensionLifetimeFeature
 // Bridge
@@ -27,7 +27,7 @@ import app.packed.lifetime.LifetimeBeanMirror;
 //
 
 
-public interface LifetimeManagementCompanionMirror {
+public interface LifetimeBeanCompanionMirror {
 
     // All companions needs a (host) bean...
     // Det betyder ogsaa at hvis stateless skal kunne bruge companions.

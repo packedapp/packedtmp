@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package internal.app.packed.lifetime.pool;
 
 import static java.util.Objects.requireNonNull;
 

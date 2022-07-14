@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import internal.app.packed.inject.service.build.ServiceSetup;
-import internal.app.packed.lifetime.LifetimeConstantPool;
+import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 
 /** A special instantiation context that is created */
 // Vi beholder den lidt endnu, det saa traels hver gang vi

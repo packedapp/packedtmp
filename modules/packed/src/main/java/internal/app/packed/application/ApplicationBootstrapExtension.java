@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime.sandbox;
+package internal.app.packed.application;
 
-import app.packed.bean.BeanMirror;
+import app.packed.container.Extension;
 
 /**
- *
+ * A "synthetic" extension that operates operations in bootstrap applications.
  */
-// A host is always a bean...
-public interface LifetimeHostBeanMirror /* extends BeanMirror */ {
-
-    // Som regel er den her en LifetimeHolder. Men ikke altid
-    // Eller maaske skal det bare vaere altid
-    BeanMirror holds();
-}
+// Don't know if need this. But I think we do
+public class ApplicationBootstrapExtension extends Extension<ApplicationBootstrapExtension> {}

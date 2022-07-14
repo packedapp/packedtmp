@@ -28,8 +28,8 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.ReflectiveFactory;
-import internal.app.packed.lifetime.LifetimeConstantPool;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 
 /**
  * An injection manager for a bean.

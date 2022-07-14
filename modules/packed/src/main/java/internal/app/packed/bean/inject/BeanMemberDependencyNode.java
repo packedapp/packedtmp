@@ -27,8 +27,8 @@ import internal.app.packed.inject.DependencyProducer;
 import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.build.BeanMemberServiceSetup;
 import internal.app.packed.inject.service.build.ServiceSetup;
-import internal.app.packed.lifetime.LifetimePoolSetup;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.LifetimePoolSetup;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 
 /**
  *

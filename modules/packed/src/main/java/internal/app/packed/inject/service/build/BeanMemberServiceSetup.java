@@ -27,7 +27,7 @@ import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.runtime.PrototypeRuntimeService;
 import internal.app.packed.inject.service.runtime.RuntimeService;
 import internal.app.packed.inject.service.runtime.ServiceInstantiationContext;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 
 /**
  *

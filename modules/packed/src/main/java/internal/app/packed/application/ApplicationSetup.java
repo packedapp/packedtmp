@@ -21,19 +21,19 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationInfo;
-import app.packed.application.ApplicationInfo.ApplicationBuildType;
+import app.packed.application.ApplicationBuildInfo;
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerDriver;
 import internal.app.packed.container.UserRealmSetup;
 import internal.app.packed.inject.ApplicationInjectionManager;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.PackedManagedLifetime;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -47,7 +47,7 @@ public final class ApplicationSetup {
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
-    public final ApplicationInfo descriptor;
+    public final ApplicationBuildInfo info;
 
     /** The driver responsible for building the application. */
     public final PackedApplicationDriver<?> driver;
@@ -69,8 +69,8 @@ public final class ApplicationSetup {
     @Nullable
     final PoolEntryHandle runtimeAccessor;
 
-    /** Supplies a mirror for the operation */
-    private final Supplier<? extends ApplicationMirror> mirrorSupplier = () -> new ApplicationMirror();
+    /** Supplies a mirror for the application. */
+    public Supplier<? extends ApplicationMirror> mirrorSupplier = () -> new ApplicationMirror();
 
     /**
      * Create a new application setup
@@ -81,24 +81,25 @@ public final class ApplicationSetup {
     public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildType buildKind, UserRealmSetup realm, Wirelet[] wirelets) {
         this.driver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
-        this.descriptor = new PackedApplicationDescriptor(buildKind);
+        this.info = new PackedApplicationInfo(buildKind);
 
         // Create the root container of the application
         this.container = new ContainerSetup(this, realm, new PackedContainerDriver(null), null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
+        this.runtimeAccessor = driver.isExecutable() ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
     }
 
-    /** {@return an application mirror that can be exposed to end-users.} */
+    /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        // Create a new OperationMirror
+        // Create a new mirror
         ApplicationMirror mirror = mirrorSupplier.get();
         if (mirror == null) {
-            throw new InternalExtensionException("??? supplied a null operation mirror");
+            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
         }
-        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
+
+        // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)
         try {
             MH_APPLICATION_MIRROR_INITIALIZE.invokeExact(mirror, this);
         } catch (Throwable e) {

@@ -41,7 +41,7 @@ import internal.app.packed.inject.service.build.ServiceSetup;
 import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 import internal.app.packed.inject.service.runtime.RuntimeService;
 import internal.app.packed.inject.service.runtime.ServiceInstantiationContext;
-import internal.app.packed.lifetime.LifetimeConstantPool;
+import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.

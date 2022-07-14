@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import internal.app.packed.inject.service.build.ServiceSetup;
-import internal.app.packed.lifetime.LifetimeConstantPool;
+import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */

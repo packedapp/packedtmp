@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.inject.service.build.ServiceSetup;
-import internal.app.packed.lifetime.LifetimePoolSetup;
+import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 
 /**
  * Something that

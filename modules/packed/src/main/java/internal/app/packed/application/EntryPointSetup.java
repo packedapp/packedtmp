@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

@@ -31,10 +31,10 @@ import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.ServiceDelegate;
-import internal.app.packed.lifetime.LifetimeConstantPool;
-import internal.app.packed.lifetime.LifetimePoolSetup;
-import internal.app.packed.lifetime.LifetimePoolWriteable;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.pool.LifetimePoolSetup;
+import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

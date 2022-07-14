@@ -27,8 +27,9 @@ import app.packed.lifetime.managed.ManagedLifetimeController;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.lifetime.LifetimeConstantPool;
-import internal.app.packed.lifetime.LifetimePoolWriteable;
+import internal.app.packed.lifetime.PackedManagedLifetime;
+import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -50,7 +51,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
-    final PackedApplicationRuntime runtime;
+    final PackedManagedLifetime runtime;
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
@@ -61,7 +62,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
         this.wirelets = wirelets;
         this.name = requireNonNull(application.container.mirror().name());
         this.launchMode = requireNonNull(application.launchMode);
-        this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntime(this);
+        this.runtime = application.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
     }
 
     /** {@return the name of the application} */

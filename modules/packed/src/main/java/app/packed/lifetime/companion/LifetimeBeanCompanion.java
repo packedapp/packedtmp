@@ -18,6 +18,10 @@ package app.packed.lifetime.companion;
 /**
  *
  */
+
+
+// LifetimeDependency?????
+
 // !! Er udviklet videre i den anden ExtensionLifetimeFeature
 
 // Typer

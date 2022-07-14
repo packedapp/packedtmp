@@ -20,7 +20,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.PoolEntryHandle;
 
 /**
  *

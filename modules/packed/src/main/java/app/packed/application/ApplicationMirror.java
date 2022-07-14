@@ -65,10 +65,10 @@ public class ApplicationMirror implements Mirror {
     }
 
     /**
-     * Invoked by the set the internal configuration of the mirror.
+     * Invoked by {@link ApplicationSetup#mirror()} to set up this mirror.
      * 
      * @param application
-     *            the internal configuration of application to mirror
+     *            the internal configuration of the application to mirror
      */
     final void initialize(ApplicationSetup application) {
         if (this.application != null) {
@@ -88,8 +88,8 @@ public class ApplicationMirror implements Mirror {
     }
 
     /** {@return a descriptor for the application.} */
-    public ApplicationInfo descriptor() {
-        return application().descriptor;
+    public ApplicationBuildInfo descriptor() {
+        return application().info;
     }
 
     /** {@return a {@link Set} view of every extension type that has been used in the container.} */

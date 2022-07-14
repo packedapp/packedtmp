@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package internal.app.packed.lifetime;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -25,6 +25,9 @@ import app.packed.lifetime.RunState;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.managed.ManagedState;
 import app.packed.lifetime.managed.StopOption;
+import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.EntryPointSetup;
 
 /**
  *
@@ -34,7 +37,7 @@ import app.packed.lifetime.managed.StopOption;
 /// Error bit (data = 
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedApplicationRuntime implements ManagedLifetimeController {
+public final class PackedManagedLifetime implements ManagedLifetimeController {
 
     // Sagtens encode det i sync ogsaa
     RunState desiredState = RunState.UNINITIALIZED;
@@ -53,7 +56,7 @@ public final class PackedApplicationRuntime implements ManagedLifetimeController
     // midlertidigt state,paa den anden side kan vi maaske have lidt mindre state?
     volatile RunState state = RunState.UNINITIALIZED;
 
-    public PackedApplicationRuntime(ApplicationInitializationContext launchContext) {}
+    public PackedManagedLifetime(ApplicationInitializationContext launchContext) {}
 
     // Hmm, maybe not
 //    @Nullable

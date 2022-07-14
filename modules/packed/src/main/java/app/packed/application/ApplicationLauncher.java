@@ -133,7 +133,6 @@ interface Zimgbox<A> {
      * 
      * @return the launch mode of the application
      * 
-     * @see ApplicationDriver#launchMode()
      */
     // ApplicationInfo instead???
     RunState launchMode(); // usageMode??

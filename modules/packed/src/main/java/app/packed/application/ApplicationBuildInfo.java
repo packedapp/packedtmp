@@ -3,7 +3,7 @@ package app.packed.application;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
-import internal.app.packed.application.PackedApplicationDescriptor;
+import internal.app.packed.application.PackedApplicationInfo;
 
 // Input DAW (Application) Driver Assembly Wirelets
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.
@@ -22,7 +22,7 @@ import internal.app.packed.application.PackedApplicationDescriptor;
 // Forventes der et result (JobExtension)f
 // Hvad er navnet
 
-public sealed interface ApplicationInfo permits PackedApplicationDescriptor {
+public sealed interface ApplicationBuildInfo permits PackedApplicationInfo {
     
     // string name() would be nice... but unfortunantely is mutable....)
     

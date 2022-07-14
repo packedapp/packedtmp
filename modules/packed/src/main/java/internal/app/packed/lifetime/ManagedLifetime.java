@@ -23,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 @SuppressWarnings("unused")
-public class Lifetime {
+public class ManagedLifetime {
 
     private final ReentrantLock lifetimeLock = new ReentrantLock();
     
@@ -31,7 +31,7 @@ public class Lifetime {
     static {
         try {
             MethodHandles.Lookup l = MethodHandles.lookup();
-            STATE = l.findVarHandle(Lifetime.class, "state", int.class);
+            STATE = l.findVarHandle(ManagedLifetime.class, "state", int.class);
         } catch (Exception e) {
             throw new InternalError(e);
         }

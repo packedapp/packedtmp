@@ -1,4 +1,4 @@
-package internal.app.packed.lifetime;
+package internal.app.packed.lifetime.pool;
 
 // TODO vi burde jo gemme
 @FunctionalInterface

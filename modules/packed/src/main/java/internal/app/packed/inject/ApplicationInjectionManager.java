@@ -23,7 +23,7 @@ import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.lifetime.LifetimePoolSetup;
+import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link ContainerInjectionManager service composers}

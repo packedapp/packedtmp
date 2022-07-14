@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationInfo.ApplicationBuildType;
+import app.packed.application.ApplicationBuildInfo.ApplicationBuildType;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.ContainerConfiguration;

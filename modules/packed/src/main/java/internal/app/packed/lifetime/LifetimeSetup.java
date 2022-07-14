@@ -10,6 +10,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
