@@ -23,8 +23,8 @@ import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.service.ServiceLocator;
+import app.packed.lifetime.LifetimeCompanion;
 import app.packed.lifetime.LifetimeKind;
-import app.packed.lifetime.companion.LifetimeBeanCompanion;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import internal.app.packed.application.PackedApplicationDriver;
 
@@ -195,8 +195,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         // Hvilket ikke er muligt
 
         // noget optional??? ellers
-        @SuppressWarnings("exports")
-        default Builder addCompanion(LifetimeBeanCompanion... companions) {
+        default Builder addCompanion(LifetimeCompanion... companions) {
             return this;
         }
 

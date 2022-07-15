@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime.companion;
+package app.packed.lifetime.sandbox;
+
+import app.packed.lifetime.LifetimeCompanion;
 
 /**
- * A mirror of {@link LifetimeBeanCompanion}
+ * A mirror of {@link LifetimeCompanion}
  */ 
 
 // !! Er udviklet videre i den anden ExtensionLifetimeFeature
@@ -24,7 +26,8 @@ package app.packed.lifetime.companion;
 // LifetimeHolder eksistere jo ogsaa maaske vi skal knytte dem taettere sammen
 //
 
-
+// Tror ikke vi har et mirror... Ejeren er som regel syntetisk.
+// Med mindre vi hoster
 public interface LifetimeBeanCompanionMirror {
 
     // All companions needs a (host) bean...

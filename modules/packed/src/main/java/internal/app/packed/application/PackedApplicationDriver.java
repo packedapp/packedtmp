@@ -58,7 +58,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
     /** Supplies a mirror for the application. */
-    public final Supplier<? extends ApplicationMirror> mirrorSupplier = () -> new ApplicationMirror();
+    public final Supplier<? extends ApplicationMirror> mirrorSupplier = ApplicationMirror::new;
 
     /** Optional (flattened) wirelets that will be applied to any applications created by this driver. */
     @Nullable

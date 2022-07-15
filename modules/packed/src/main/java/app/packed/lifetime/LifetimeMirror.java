@@ -32,6 +32,8 @@ import internal.app.packed.lifetime.LifetimeSetup;
 
 //Har vi ContainerLifetime/BeanLifetime???
 
+// Har svaert ved at forstille mig man kan customize denne?
+// StatelessLifetimeMirror, UnmanagedLifetimeMirror, ManagedLifetimeMirror????
 public class LifetimeMirror implements Mirror {
 
     /**

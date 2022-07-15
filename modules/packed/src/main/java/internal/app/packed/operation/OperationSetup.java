@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.container.InternalExtensionException;
+import app.packed.application.ApplicationMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
@@ -34,7 +34,7 @@ public final class OperationSetup {
     private static final MethodHandle MH_OPERATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
             "initialize", void.class, OperationSetup.class);
 
-    /** The bean the operation is a part of. */
+    /** The bean that defines the operation. */
     public final BeanSetup bean;
 
     public DependencyNode depNode;
@@ -60,7 +60,7 @@ public final class OperationSetup {
         // Create a new OperationMirror
         OperationMirror mirror = mirrorSupplier.get();
         if (mirror == null) {
-            throw new InternalExtensionException(operatorBean.extension.extensionType + " supplied a null operation mirror");
+            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)

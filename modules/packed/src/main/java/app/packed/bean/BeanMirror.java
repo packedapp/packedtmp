@@ -1,5 +1,6 @@
 package app.packed.bean;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -22,8 +23,8 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-public non-sealed class BeanMirror implements ComponentMirror, Mirror {
-    
+public non-sealed class BeanMirror implements ComponentMirror , Mirror {
+
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via
      * {@link #initialize(BeanSetup)}.
@@ -82,7 +83,7 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
     public Realm owner() {
         return bean().realm.realm();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror application() {
@@ -118,10 +119,16 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
     public String name() {
         return bean().name;
     }
-    
+
+    public Collection<LifetimeMirror> managesLifetimes() {
+        // Find LifetimeOperations->Unique on Lifetime
+        throw new UnsupportedOperationException();
+    }
+
     public NamespacePath path() {
         return bean().path();
     }
+
     /**
      * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
      * drive
@@ -152,22 +159,21 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
     /// fx @Get paa install(Foo.class) vs requestGet(Foo.class)
     /// Vil jo have forskllig registrant...
     /// Er nok mere relevant hvem der styre lifecyclen
-    
+
     // Det er vel mere operator????
 
-    
     // !!!! Den fungere jo ikke for containere???
-    
+
     // var Optional<Class<? extends Extension<?>>> registrant
     // Giver strengt tagt kun mening paa beans nu..
     public Class<? extends Extension<?>> operator() {
         return bean.operator();
     }
-    
+
     public Stream<OperationMirror> operations() {
         return bean().operations.stream().map(OperationSetup::mirror);
     }
-    
+
     /**
      * Returns the type (class) of the bean.
      * <p>
@@ -185,7 +191,6 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
         return bean.builder.beanKind();
     }
 
-
     /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
     public ContainerMirror container() {
         return bean.parent.mirror();
@@ -195,7 +200,7 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
 interface SSandbox {
 
     // @SuppressWarnings({ "unchecked", "rawtypes" })
-    default Optional<Object /*BeanFactoryOperationMirror */> factory() {
+    default Optional<Object /* BeanFactoryOperationMirror */> factory() {
         // return (Optional) operations().stream().filter(m ->
         // BeanFactoryOperationMirror.class.isAssignableFrom(m.getClass())).findAny();
         // Kunne man forstille sig at en bean havde 2 constructors??

@@ -15,14 +15,12 @@
  */
 package app.packed.bean;
 
-import app.packed.operation.OperationMirror;
-
 /**
  * A mirror for an operation that creates a new instance of a bean.
  * <p>
  * The operator of this operation is always {@link BeanExtension}.
  */
-public class BeanInstantiationOperationMirror extends OperationMirror {}
+public class BeanInstantiationOperationMirror extends BeanLifecycleOperationMirror {}
 
 // Hvis jeg register en instance har min bean ikke en
 // Men factory og non-static class har altid en

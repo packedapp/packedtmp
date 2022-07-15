@@ -43,6 +43,10 @@ import internal.app.packed.container.Mirror;
 // Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
 
 // f.eks @Provide for et field ville ikke have dependencies
+
+// Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
+// Eller maaske goer det? Taenker ikke man kan vaere alle dele
+
 public sealed interface DependencyMirror extends Mirror {
 
     DependencyGraphMirror graph();

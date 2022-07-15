@@ -20,13 +20,14 @@ import java.util.List;
 import app.packed.operation.OperationMirror;
 
 /**
- * An operation on a lifetime bean.
+ * An operation that creates or destroys a lifetime.
  */
+// Har vi two subklasses????
 public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 
     // Hmmm.. IDK Hvorfor skal den vaere paa en seperat bean (for beans?)
     // Kan vel ligges paa en ExtensionBean taenker jeg???
-    public LifetimeMirror manages() {
+    public LifetimeMirror managesLifetime() {
         // Altsaa application vil nogle gange laver flere jo.
         throw new UnsupportedOperationException();
     }

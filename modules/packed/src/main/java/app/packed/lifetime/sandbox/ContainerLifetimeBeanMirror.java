@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.sandbox;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
+import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.LifetimeOperationMirror;
 import app.packed.operation.dependency.DependencyMirror;
 
 // Why lifetime bean
@@ -29,6 +32,11 @@ import app.packed.operation.dependency.DependencyMirror;
 // Eftersom operationer der laver en application ikke kan vaere definere indefor selve applicationer.
 // Da det ville bryde encapsulation. Ligger vi disse operationer udenfor application. Hvilket skaber
 // en ny bean (LifetimeBean) og en ny container og en ny bootstrap application
+
+
+// Q: Hvorfor ikke for bean
+// A: Vi supportere ikke rigtig nogle companion objects for beans.
+// Det eneste vi har er en managed state. Som folk selv lidt maa styre...
 
 /**
  * A bean that manages one or more lifetime instances.
@@ -57,18 +65,28 @@ import app.packed.operation.dependency.DependencyMirror;
 //LifetimeWrapperBean
 
 // A bean that is specifically created to hold container lifetime thingies
+// Er ikke sikker paa vi skal have den... Det er jo foerst og fremmest en syntetisk
+// bean...
 
+@Deprecated
 class ContainerLifetimeBeanMirror extends BeanMirror {
 
+    /** {@return a collection of the lifetimes managed by this bean.} */
+    // Hmm, skal den her paa BeanMirror???
+    
+    // I virkeligheden er det jo ikke InjectorImpl der styre creation af den lifetime
+    // Men Bootstrap appen. InjectorImpl holder bare noget info...
+    public Collection<LifetimeMirror> managesLifetimes() {
+        throw new UnsupportedOperationException();
+    }
+
+    ///// Resten er lidt ligegyldigt.
+    /// Kan ikke se hvorfor man ikke kan managed lifetimes af forskellige typer
+    // Og den sidste er bare selectOperationsOfType(LifetimeOperationMirror.class);
     // Skal have nogle bedre navne end managed
 
     public LifetimeKind managesLifetimeKind() {
         return managesLifetimes().iterator().next().lifetimeKind();
-    }
-
-    /** {@return a collection of the lifetimes managed by this bean.} */
-    public Collection<LifetimeMirror> managesLifetimes() {
-        throw new UnsupportedOperationException();
     }
 
     /**

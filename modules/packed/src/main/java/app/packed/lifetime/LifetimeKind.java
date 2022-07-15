@@ -38,7 +38,7 @@ enum AlternativeNaming {
 
 // Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
 enum AlternativeNaming2 {
-    NONE,
+    NONE, 
 
     UNMANAGED,
 

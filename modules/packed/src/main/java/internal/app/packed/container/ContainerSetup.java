@@ -205,7 +205,7 @@ public final class ContainerSetup extends ComponentSetup {
         // Create a new ContainerMirror
         ContainerMirror mirror = mirrorSupplier.get();
         if (mirror == null) {
-            throw new InternalExtensionException(" supplied a null container mirror");
+            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + ContainerMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize ContainerMirror by calling ContainerMirror#initialize(ContainerSetup)

@@ -237,7 +237,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             return (BeanSetup) BEAN_MIRROR_BEAN_HANDLE.get(m);
         } else {
             return (ContainerSetup) CONTAINER_MIRROR_CONTAINER_HANDLE.get((ContainerMirror) mirror);
-
         }
     }
 

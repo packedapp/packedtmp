@@ -12,7 +12,6 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.Realm;
 import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
 import internal.app.packed.bean.hooks.BeanHookScanner;
@@ -94,7 +93,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         // Create a new BeanMirror
         BeanMirror mirror = builder.mirrorSupplier.get();
         if (mirror == null) {
-            throw new InternalExtensionException(" supplied a null operation mirror");
+            throw new NullPointerException(builder.mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
