@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.bean.Inject;
 import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.InternalFactory.ConstantFactory;
 import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;

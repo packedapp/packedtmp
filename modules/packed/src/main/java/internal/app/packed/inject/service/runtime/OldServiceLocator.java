@@ -29,8 +29,8 @@ import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.operation.dependency.BeanDependency.ProvisionHook;
+import app.packed.service.ServiceExtension;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.

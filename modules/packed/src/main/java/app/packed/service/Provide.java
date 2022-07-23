@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,7 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 
@@ -73,8 +72,8 @@ import app.packed.bean.BeanExtensionPoint.MethodHook;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@MethodHook(allowInvoke = true, extension = BeanExtension.class)
-@FieldHook(allowGet = true, extension = BeanExtension.class)
+@MethodHook(allowInvoke = true, extension = ServiceExtension.class)
+@FieldHook(allowGet = true, extension = ServiceExtension.class)
 public @interface Provide {
 
     /**

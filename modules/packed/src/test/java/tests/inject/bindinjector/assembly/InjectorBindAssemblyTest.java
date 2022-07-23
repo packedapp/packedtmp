@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory0;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import testutil.assertj.Assertions;
 
 /**

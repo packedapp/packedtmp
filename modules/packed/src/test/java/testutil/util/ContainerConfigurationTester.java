@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.service.ProvideableBeanConfiguration;
 
 /**
  *

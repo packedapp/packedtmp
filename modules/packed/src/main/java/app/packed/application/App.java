@@ -18,7 +18,7 @@ package app.packed.application;
 import app.packed.application.sandbox.UnhandledApplicationException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.managed.RunState;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are

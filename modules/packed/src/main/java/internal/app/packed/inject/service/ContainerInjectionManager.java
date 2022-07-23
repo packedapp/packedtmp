@@ -24,8 +24,8 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceExtension;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;

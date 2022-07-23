@@ -19,10 +19,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.managed.RunState;
 
 /**
- * A bean that creates instances of a fixed {@link BeanConfiguration#beanClass() type}.
+ * Base configuration for beans that creates one or more instances of {@link BeanConfiguration#beanClass()} at runtime.
  * 
  * @param <T>
  *            the type of bean instances that will be created at runtime
@@ -38,7 +38,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     public InstanceBeanConfiguration(BeanHandler<T> handle) {
         super(handle);
     }
-    
+
     // Understoetter vi altid DependencyInjection???
     // bindServiceInstance????
     <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {

@@ -30,9 +30,9 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
-import app.packed.inject.service.ServiceExportOperationMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.dependency.DependencyMirror;
+import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
@@ -41,8 +41,8 @@ import internal.app.packed.operation.OperationSetup;
  * A mirror for a bean operation.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
- * the {@link app.packed.inject.service.ServiceExtension} provides details about an exported service via
- * {@link ServiceExportOperationMirror}.
+ * the {@link app.packed.service.ServiceExtension} provides details about an exported service via
+ * {@link ExportOperationMirror}.
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>

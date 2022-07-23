@@ -40,7 +40,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
     Field field();
 
     /**
-     * Attempts to convert field to a {@link Key} or fails with a {@link BeanDefinitionException} if the field does not
+     * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanDefinitionException} if the field does not
      * represent a proper key.
      * <p>
      * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the

@@ -77,10 +77,10 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 mc.cs = ((PackedBeanMethod) method).bean;
                 mc.methodHandle = ((PackedBeanMethod) method).newMethodHandle();
 
-               // installMain(() -> {});
+                // installMain(() -> {});
 //                oldOperation().useMirror(() -> new EntryPointMirror(0));
             }
-            
+
         };
     }
 
@@ -90,7 +90,6 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         throw new UnsupportedOperationException();
     }
 
-    
     public <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
         throw new UnsupportedOperationException();
     }

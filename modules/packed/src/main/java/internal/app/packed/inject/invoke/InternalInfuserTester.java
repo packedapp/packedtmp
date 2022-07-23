@@ -5,9 +5,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
 import app.packed.container.Extension;
-import app.packed.inject.Provide;
-import app.packed.inject.service.ServiceExtension;
 import app.packed.operation.dependency.BeanDependency;
+import app.packed.service.Provide;
+import app.packed.service.ServiceExtension;
 import internal.app.packed.inject.service.runtime.ServiceRegistry;
 import internal.app.packed.util.LookupUtil;
 

@@ -22,10 +22,10 @@ import java.util.Set;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.ServiceLocator;
 import app.packed.lifetime.LifetimeCompanion;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 
 /**

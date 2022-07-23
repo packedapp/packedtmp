@@ -1,16 +1,20 @@
 module app.packed {
-    
-    exports app.packed.application;
-    exports app.packed.entrypoint;
+
     exports app.packed.base;
-    exports app.packed.bean;
+
+    exports app.packed.application;
     exports app.packed.container;
-    exports app.packed.inject;
-    exports app.packed.lifetime;
+    exports app.packed.bean;
     exports app.packed.operation;
 
+    exports app.packed.lifetime;
+
+    // Essential extensions
+    exports app.packed.entrypoint;
+    exports app.packed.service;
+
     // temporary
-    exports app.packed.inject.service;
+    exports app.packed.inject;
     exports app.packed.lifetime.managed;
     exports app.packed.lifetime.sandbox;
     exports app.packed.operation.dependency;

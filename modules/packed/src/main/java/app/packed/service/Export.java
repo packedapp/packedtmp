@@ -1,4 +1,4 @@
-package app.packed.inject.service;
+package app.packed.service;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

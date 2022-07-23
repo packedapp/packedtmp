@@ -30,7 +30,7 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceTransformer;
+import app.packed.service.ServiceTransformer;
 import internal.app.packed.inject.service.InternalService;
 import internal.app.packed.inject.service.runtime.OldServiceLocator;
 import internal.app.packed.inject.service.runtime.PackedInjector;

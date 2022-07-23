@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.container.ComposerUserRealmSetup;

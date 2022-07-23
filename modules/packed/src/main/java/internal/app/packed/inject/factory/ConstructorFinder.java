@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
-import app.packed.inject.Inject;
+import app.packed.bean.Inject;
 import internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
 import internal.app.packed.util.StringFormatter;
 

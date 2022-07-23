@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.service;
 
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.inject.service.ServiceExtension;
+import app.packed.bean.BeanHandler;
+import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandler;
 import internal.app.packed.inject.service.ContainerInjectionManager;
@@ -28,12 +29,7 @@ import internal.app.packed.inject.service.build.BeanInstanceServiceSetup;
 /**
  * A configuration of a container bean.
  */
-// Tror ikke den kan noget PBC ikke kan.
-// Men vi kan kraeve den som parameter nogle steder.
-
-// Nu har vi en.. Saa skal vi have lagt de services ting ud i handle...
-// Maaske paanaer export()??? Hoere vel til export extension
-
+// ServiceableBeanConfiguration?
 public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
     
     private final ServiceableBean sb;
@@ -44,7 +40,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      */
     public ProvideableBeanConfiguration(BeanHandler<T> handle) {
         super(handle);
-        this.sb = new ServiceableBean(beanHandle);
+        this.sb = new ServiceableBean((PackedBeanHandler<?>) handle);
         handle.addWiringAction(() -> sb.onWired());
     }
 
@@ -163,6 +159,13 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         }
     }
 }
+//Tror ikke den kan noget PBC ikke kan.
+//Men vi kan kraeve den som parameter nogle steder.
+
+//Nu har vi en.. Saa skal vi have lagt de services ting ud i handle...
+//Maaske paanaer export()??? Hoere vel til export extension
+
+
 //
 //public <X extends Runnable & Callable<String>> X foo() {
 //  return null;

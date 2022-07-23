@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,9 +22,19 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanField;
+import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanProcessor;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.hooks.PackedBeanField;
+import internal.app.packed.bean.hooks.PackedBeanMethod;
+import internal.app.packed.bean.inject.BeanMemberDependencyNode;
+import internal.app.packed.bean.inject.FieldHelper;
+import internal.app.packed.bean.inject.MethodHelper;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.inject.DependencyNode;
 import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.ServiceConfiguration;
 
@@ -82,7 +92,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      * @param configuration
      *            an extension configuration object.
      */
-    ServiceExtension(ExtensionSetup setup) {
+    ServiceExtension(/* hidden */ ExtensionSetup setup) {
         this.injectionManager = setup.container.injectionManager;
     }
 
@@ -135,6 +145,44 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         injectionManager.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
+    @Override
+    protected BeanProcessor newBeanScanner() {
+        return new BeanProcessor() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void onField(BeanField field) {
+                // todo check not extension
+                
+                Key<?> key = field.fieldToKey();
+                boolean constant = field.field().getAnnotation(Provide.class).constant();
+
+                BeanSetup bean = ((PackedBeanField) field).bean;
+                FieldHelper fh = new FieldHelper(field, ((PackedBeanField) field).newVarHandle(), constant, key);
+                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+                field.newSetOperation(null);
+
+                bean.parent.injectionManager.addConsumer(node);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void onMethod(BeanMethod method) {
+                Key<?> key = Key.convertMethodReturnType(method.method());
+                boolean constant = method.method().getAnnotation(Provide.class).constant();
+
+                BeanSetup bean = ((PackedBeanMethod) method).bean;
+                MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
+                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+
+                // Er ikke sikker paa vi har en runtime bean...
+                // method.newOperation(null);
+
+                bean.parent.injectionManager.addConsumer(node);
+            }
+        };
+    }
+    
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {

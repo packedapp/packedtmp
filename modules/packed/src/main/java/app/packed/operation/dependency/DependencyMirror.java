@@ -53,12 +53,12 @@ public sealed interface DependencyMirror extends Mirror {
 
     boolean isResolved();
 
-    boolean isSatisfiable();
+    boolean isSatisfiable(); //isSatisfied?
 
-    /** {@return the operation the dependency is a part of.} */
+    /** {@return the operation that declares this dependency.} */
     OperationMirror operation();
 
-    Optional<Realm> providedBy();
+    Optional<Realm> providedBy(); // BeanMirror?
 
     /**
      * If this dependency is the result of another operation.

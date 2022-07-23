@@ -31,7 +31,7 @@ import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
 import app.packed.inject.Factory;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.inject.service.sandbox.Service;
 
 /**

@@ -23,9 +23,9 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.ServiceLocator;
-import app.packed.lifetime.RunState;
 import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.managed.RunState;
+import app.packed.service.ServiceLocator;
 
 /**
  * An App (application) is a type of artifact provided by Packed.

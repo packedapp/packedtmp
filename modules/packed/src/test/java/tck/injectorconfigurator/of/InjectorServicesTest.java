@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceLocator;
 
 /**
  *

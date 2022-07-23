@@ -21,7 +21,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.service.ServiceContract;
+import app.packed.service.ServiceContract;
 import internal.app.packed.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import internal.app.packed.inject.service.build.ServiceSetup;
 import internal.app.packed.inject.service.runtime.AbstractServiceLocator;

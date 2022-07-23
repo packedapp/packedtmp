@@ -15,7 +15,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.inject.Factory;
-import app.packed.inject.Inject;
 import internal.app.packed.bean.PackedBeanHandleBuilder;
 import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 

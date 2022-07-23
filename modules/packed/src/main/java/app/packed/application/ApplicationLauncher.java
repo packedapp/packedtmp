@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.RunState;
+import app.packed.lifetime.managed.RunState;
 import internal.app.packed.application.PackedApplicationDriver.PackedApplicationLauncher;
 
 /**

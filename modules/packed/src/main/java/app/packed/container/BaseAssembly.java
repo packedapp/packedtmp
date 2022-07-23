@@ -20,11 +20,11 @@ import java.util.function.Consumer;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.OnStart;
-import app.packed.bean.ProvideableBeanConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
-import app.packed.inject.service.ServiceExtension;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.Provide;
+import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceLocator;
 
 /**
  * Extends {@link Assembly} with shortcuts for some commonly used extensions.

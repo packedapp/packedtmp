@@ -23,9 +23,9 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.inject.Provide;
-import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceLocator.Composer;
+import app.packed.service.Provide;
+import app.packed.service.ServiceLocator;
+import app.packed.service.ServiceLocator.Composer;
 
 /** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {

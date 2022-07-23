@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.service;
+package app.packed.service;
+
+import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.operation.OperationMirror;
@@ -21,11 +23,20 @@ import app.packed.operation.OperationMirror;
 /**
  *
  */
-public abstract class ServiceProvideOperationMirror extends OperationMirror {
 
-    /** {@return the key of the service.} */
+// Skal vi kun have en klasse?
+// Skal vi have en faelles klasse? Hvad vil man soege efter
+public abstract class ExportOperationMirror extends OperationMirror {
+
+    /** {@return the key that the service is exported with.} */
     public abstract Key<?> key();
-}
 
-// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
-// provide(Doo.class) -> BeanOperation.element = BeanClass
+    // Hvad goer vi omvendt??? Returnere en liste??
+    // Kun allower en? IDK
+    public abstract Optional<ProvideOperationMirror> service(); // Kan ikke fange alle dog
+
+    // find usage of the exported service
+    
+    
+
+}

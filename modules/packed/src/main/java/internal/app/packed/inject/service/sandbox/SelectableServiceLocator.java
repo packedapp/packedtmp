@@ -18,7 +18,7 @@ package internal.app.packed.inject.service.sandbox;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.AbstractComposer.BuildAction;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.inject.service.build.ServiceComposer;
 import internal.app.packed.inject.service.runtime.OldServiceLocator;
 import internal.app.packed.inject.service.runtime.ServiceSelection;

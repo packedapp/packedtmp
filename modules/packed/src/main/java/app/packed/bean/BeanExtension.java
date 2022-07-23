@@ -4,25 +4,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.base.Key;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
-import app.packed.inject.service.ServiceLocator;
-import app.packed.inject.service.ServiceTransformer;
-import app.packed.operation.dependency.BeanDependency;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.ExtensionBeanSetup;
+import app.packed.service.ProvideableBeanConfiguration;
+import app.packed.service.ServiceLocator;
+import app.packed.service.ServiceTransformer;
 import internal.app.packed.bean.PackedBeanHandleBuilder;
-import internal.app.packed.bean.hooks.PackedBeanField;
-import internal.app.packed.bean.hooks.PackedBeanMethod;
-import internal.app.packed.bean.inject.BeanMemberDependencyNode;
-import internal.app.packed.bean.inject.FieldHelper;
-import internal.app.packed.bean.inject.MethodHelper;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.inject.DependencyNode;
 import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 
 /**
@@ -88,59 +78,6 @@ public class BeanExtension extends Extension<BeanExtension> {
 
     void installNested(Object classOrFactory) {
 
-    }
-
-    @Override
-    protected BeanProcessor newBeanScanner() {
-        return new BeanProcessor() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void onDependency(BeanDependency v) {
-                // We only have a hook for OperationPack
-                BeanSetup bean = null;// ((PackedDependencyProvider) provider).operation().bean;
-
-                // OperationPacks can only be used with extension beans
-                if (bean instanceof ExtensionBeanSetup e) {
-//                    e.provideOperationPack(provider);
-                } else {
-                    v.failWith(String.class.getSimpleName() + " can only be injected into extension beans installed using "
-                            + BeanExtensionPoint.class.getSimpleName());
-                }
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void onField(BeanField field) {
-                // readKey
-
-                Key<?> key = field.fieldToKey();
-                boolean constant = field.field().getAnnotation(Provide.class).constant();
-
-                BeanSetup bean = ((PackedBeanField) field).bean;
-                FieldHelper fh = new FieldHelper(field, ((PackedBeanField) field).newVarHandle(), constant, key);
-                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-                field.newSetOperation(null);
-
-                bean.parent.injectionManager.addConsumer(node);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void onMethod(BeanMethod method) {
-                Key<?> key = Key.convertMethodReturnType(method.method());
-                boolean constant = method.method().getAnnotation(Provide.class).constant();
-
-                BeanSetup bean = ((PackedBeanMethod) method).bean;
-                MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
-                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-
-                // Er ikke sikker paa vi har en runtime bean...
-                // method.newOperation(null);
-
-                bean.parent.injectionManager.addConsumer(node);
-            }
-        };
     }
 
     /** {@inheritDoc} */

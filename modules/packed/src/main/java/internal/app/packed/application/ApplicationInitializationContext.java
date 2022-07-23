@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.inject.service.ServiceLocator;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.inject.service.ContainerInjectionManager;

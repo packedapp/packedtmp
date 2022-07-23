@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.inject.Provider;
-import app.packed.inject.service.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import internal.app.packed.inject.service.runtime.OldServiceLocator;
 import internal.app.packed.inject.service.runtime.ServiceSelection;
 

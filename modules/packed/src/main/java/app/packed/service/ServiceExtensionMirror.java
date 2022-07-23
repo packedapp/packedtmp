@@ -1,4 +1,4 @@
-package app.packed.inject.service;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -47,12 +47,12 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     // Map<K, V> unresolvedOptional?();
 
     /** { @return a map view of all the services that are exported from the container.} */
-    public Map<Key<?>, ServiceExportOperationMirror> exports() {
+    public Map<Key<?>, ExportOperationMirror> exports() {
         throw new UnsupportedOperationException();
     }
 
     /** { @return a map view of all the services that are provided internally in the container.} */
-    public Map<Key<?>, ServiceProvideOperationMirror> provisions() {
+    public Map<Key<?>, ProvideOperationMirror> provisions() {
         throw new UnsupportedOperationException();
     }
 }
