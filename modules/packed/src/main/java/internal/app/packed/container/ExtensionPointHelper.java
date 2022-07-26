@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.util.ClassUtil;
@@ -30,10 +29,10 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
-/** A helper class for creating new {@link ExtensionMirror} instances. */
+/** A helper class for creating new {@link ExtensionPoint} instances. */
 public final class ExtensionPointHelper {
 
-    /** A ExtensionMirror class to Extension class mapping. */
+    /** A ExtensionPoint class to Extension class mapping. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
 
         /** A type variable extractor. */
@@ -44,32 +43,33 @@ public final class ExtensionPointHelper {
         @Override
         protected Class<? extends Extension<?>> computeValue(Class<?> type) {
             ClassUtil.checkProperSubclass(ExtensionPoint.class, type, InternalExtensionException::new);
-            // Extract the type of extension from ExtensionMirror<E>
+            
+            // Extract the extension class from ExtensionPoint<E>
             Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_LITERAL_EP_EXTRACTOR.extractProperSubClassOf(type,
                     Extension.class, InternalExtensionException::new);
 
-            // Check that the mirror is in the same module as the extension itself
+            // Check that the extension point is in the same module as the extension itself
             if (extensionClass.getModule() != type.getModule()) {
                 throw new InternalExtensionException("The extension point " + type + " must be a part of the same module (" + extensionClass.getModule()
                         + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
             }
 
-            return ExtensionModel.of(extensionClass).type(); // Check that the extension is valid
+            return ExtensionModel.of(extensionClass).type(); // Will check that the extension is valid
         }
     };
 
-    /** A handle for invoking the package-private method {@link ExtensionMirror#initialize(PackedExtensionTree)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionPoint.class,
+    /** A handle for invoking the package-private method {@link ExtensionPoint#initialize(PackedExtensionPointContext)}. */
+    private static final MethodHandle MH_EXTENSION_POINT_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionPoint.class,
             "initialize", void.class, PackedExtensionPointContext.class);
 
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    /** A handle for invoking the protected method {@link Extension#newExtensionPoint()}. */
     private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_POINT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "newExtensionPoint", ExtensionPoint.class);
 
     /** No help for you. */
     private ExtensionPointHelper() {}
 
-    /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
+    /** {@return an extension point of the specified type} */
     public static ExtensionPoint<?> newExtensionPoint(ExtensionSetup requestingExtension, Class<?> extensionPointType) {
         requireNonNull(extensionPointType, "extensionPointType is null");
         Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(extensionPointType); // checks proper subclass
@@ -97,7 +97,7 @@ public final class ExtensionPointHelper {
 
         // Cannot return a null extension point
         if (instance == null) {
-            throw new InternalExtensionException(
+            throw new NullPointerException(
                     "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionPoint()");
         }
 
@@ -109,7 +109,7 @@ public final class ExtensionPointHelper {
         // Initializes the extension point
         PackedExtensionPointContext context = new PackedExtensionPointContext(extension, requestingExtension);
         try {
-            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(instance, context);
+            MH_EXTENSION_POINT_INITIALIZE.invokeExact(instance, context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

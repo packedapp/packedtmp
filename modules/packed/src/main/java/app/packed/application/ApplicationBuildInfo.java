@@ -7,6 +7,8 @@ import internal.app.packed.application.PackedApplicationInfo;
 
 // Input DAW (Application) Driver Assembly Wirelets
 
+// Kan ikke have noget fra fx ContainerConfiguration
+
 //// Wirelets boer kun vaere build wirelets. Fx hvis nu havde time to live.
 // Saa ville den jo kunne be overskrevet paa runtime
 
@@ -81,7 +83,6 @@ public sealed interface ApplicationBuildInfo permits PackedApplicationInfo {
          * <p>
          * A typical use case is native images
          * 
-         * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
          */
         // De andre bygger jo saadan set ogsaa...
         // buildOnly? IDK syntes vi skal finde et andet navn
@@ -93,7 +94,6 @@ public sealed interface ApplicationBuildInfo permits PackedApplicationInfo {
         /**
          * Build and instantiate an application.
          * 
-         * @see ApplicationDriver#launch(Assembly, Wirelet...)
          */
         LAUNCH,
 

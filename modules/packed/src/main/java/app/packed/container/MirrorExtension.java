@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import internal.app.packed.container.ExtensionSetup;
+
 /**
  * This extension is used to provide mirrors at runtime.
  * 
@@ -36,13 +38,12 @@ public class MirrorExtension extends Extension<MirrorExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-       /* package-private */ MirrorExtension() {}
+       /* package-private */ MirrorExtension(/* hidden */ ExtensionSetup setup) {}
 }
 
 //DebugExtension???? Clearly indicates that it is not normal usage
 // However, I don't see the need two extensions.
 // Do we need the DevTools extension???
-
 
 //FooExtension <- only if installed though
 //// Nah.. vi supportere ikke nedarvnings injection

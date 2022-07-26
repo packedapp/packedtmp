@@ -44,9 +44,9 @@ import app.packed.inject.Factory;
 // Saa bliver BeanVariable
 
 public non-sealed interface BeanDependency extends BeanElement {
-    
+
     void provide(Factory<?> fac);
-    
+
     void provide(MethodHandle methodHandle);
 
     /**
@@ -65,7 +65,7 @@ public non-sealed interface BeanDependency extends BeanElement {
      *             overriden by itself).
      */
     void provideInstance(@Nullable Object obj);
-    
+
     /**
      * <p>
      * For raw er det automatisk en fejl
@@ -86,12 +86,12 @@ public non-sealed interface BeanDependency extends BeanElement {
     /**
      * Variable is resolvable at runtime.
      * <p>
-     * Cannot provide instance. Must provide an optional class or Null will represent a missing value.
-     * Maybe just optional class for now
+     * Cannot provide instance. Must provide an optional class or Null will represent a missing value. Maybe just optional
+     * class for now
      * 
      * @return
      */
-    BeanDependency runtimeOptional();
+    BeanDependency runtimeOptional(); // optionalAtRuntime
 
     BeanDependency specializeMirror(Supplier<? extends DependencyMirror> supplier);
 

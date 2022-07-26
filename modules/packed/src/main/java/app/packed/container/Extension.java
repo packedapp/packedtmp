@@ -513,7 +513,7 @@ class Zarchive {
      * @param extensionName
      *            fully qualified name of the extension class
      * @return the extension class if the extension could be loaded, otherwise empty
-     * @throws InternalExtensionException
+     * @throws UnsupportedOperationException
      *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
      *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
      *             this method was not called directly from an extension class initializer.

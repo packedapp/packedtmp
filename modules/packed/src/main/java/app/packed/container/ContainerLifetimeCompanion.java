@@ -13,32 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.container;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.container.Extension;
-
-//Alt konfigurationen omkring managed state maa ligger paa application/container driver
-// Det er udelukkende extension exponering
 
 /**
- * Det den her kan er at kommunikere paa tvaers af lifetime barriere
+ * Bruges til at kommunikere paa tvaers af en container lifetime
  * <p>
- * Hvorfor kan jeg ikke klare det paa andre maader?
  */
 
 // ManagedLifetime er ikke en Extension...
 // Restart vil jeg heller ikke mene er en extension? Eller er det
 
-
-
 // Til venstre er der altid en ContainerLifetimeBean vil jeg mene...
-
-// Maaske defineret nested paa ExtensionPoint?
-public interface /* ExtensionPoint.*/ LifetimeCompanion {
+//Alt konfigurationen omkring managed state maa ligger paa application/container driver
+//Det er udelukkende extension exponering
+// Maaske defineret nested paa ExtensionPoint? Eller paa ContainerDriver___
+public interface ContainerLifetimeCompanion {
 
     static <E extends Extension<E>> Builder<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
@@ -52,7 +46,7 @@ public interface /* ExtensionPoint.*/ LifetimeCompanion {
 
         <B, C> Builder<E> provide(Key<C> companionType, Class<B> extensionBeanType, Function<B, C> extractor);
 
-        LifetimeCompanion build();
+        ContainerLifetimeCompanion build();
     }
 }
 //ExtractSingleExportedService (not the whole ServiceLocator)

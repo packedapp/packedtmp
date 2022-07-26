@@ -29,7 +29,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.InternalExtensionException;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.dependency.DependencyMirror;
 import app.packed.service.ExportOperationMirror;
@@ -84,13 +83,13 @@ public class OperationMirror implements Mirror {
     /**
      * {@return the internal configuration of operation.}
      * 
-     * @throws InternalExtensionException
+     * @throws IllegalStateException
      *             if {@link #initialize(OperationSetup)} has not been called.
      */
     private OperationSetup operation() {
         OperationSetup o = operation;
         if (o == null) {
-            throw new InternalExtensionException(
+            throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return o;

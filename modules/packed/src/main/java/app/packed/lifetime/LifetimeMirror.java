@@ -9,7 +9,6 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.InternalExtensionException;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -53,13 +52,13 @@ public class LifetimeMirror implements Mirror {
     /**
      * {@return the internal configuration of operation.}
      * 
-     * @throws InternalExtensionException
+     * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
     private LifetimeSetup lifetime() {
         LifetimeSetup a = lifetime;
         if (a == null) {
-            throw new InternalExtensionException(
+            throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return a;

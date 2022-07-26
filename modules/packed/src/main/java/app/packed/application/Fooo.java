@@ -31,5 +31,7 @@ public class Fooo extends BaseAssembly {
     public static void main(String[] args) {
         App.print(new Fooo());
         System.out.println(App.mirror(new Fooo()).lifetime().originKind());
+        
+        throw new RuntimeException("Something went wrong [http://www.dr.dk]");
     }
 }

@@ -21,12 +21,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
 import app.packed.operation.dependency.BeanDependency.ProvisionHook;
@@ -223,7 +223,7 @@ public interface OldServiceLocator extends ServiceRegistry {
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
-    static ApplicationDriver<OldServiceLocator> driver() {
+    static ContainerDriver<OldServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
 
@@ -243,7 +243,7 @@ public interface OldServiceLocator extends ServiceRegistry {
 
     // maaske har vi launcher og Image...
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().mirrorOf(assembly, wirelets);
+        return driver().applicationMirrorOf(assembly, wirelets);
     }
 
     static ApplicationLauncher<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {

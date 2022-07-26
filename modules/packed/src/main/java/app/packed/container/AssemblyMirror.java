@@ -50,3 +50,16 @@ public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.Bui
      */
     Optional<AssemblyMirror> parent();
 }
+
+
+
+///**
+//* {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
+//* defines the application container.}
+//* 
+//* Altsaa hvis en application skal have et module... Skal container+Bean vel ogsaa
+//*/
+////Hmm, hvis applikation = Container specialization... Ved component
+////Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
+////Maaske vi skal have et realm mirror????
+//Module module();

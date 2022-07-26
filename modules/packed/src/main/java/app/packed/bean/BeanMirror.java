@@ -23,7 +23,7 @@ import internal.app.packed.operation.OperationSetup;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-public non-sealed class BeanMirror implements ComponentMirror , Mirror {
+public non-sealed class BeanMirror implements ComponentMirror, Mirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via

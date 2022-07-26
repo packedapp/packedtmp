@@ -38,11 +38,3 @@ public enum ApplicationExecutionModel {
 
 // EntryPoint single (Main) vs Many (CLI)
 // Daemon, fx Session
-
-//enum LifetimeModel {
-//    Synchronous, /// Has a synchronous start and stop
-//    
-//    Asynchronous, /// has an 
-//    
-//    Stateless, /// constucted and then no longer managed
-//}

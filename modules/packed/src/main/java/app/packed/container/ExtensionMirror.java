@@ -48,7 +48,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * as sub-classes might want to make use of such names.
      * 
      * This class contains a number of all* methods. There are no exact criteria for what methods to include. Only that they
-     * should generally helpful for people writing extension mirrors.
+     * should be generally helpful for developers extending this class.
      */
 
     /**
@@ -166,13 +166,13 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
     /**
      * {@return all the extensions that are being mirrored.}
      * 
-     * @throws InternalExtensionException
+     * @throws IllegalStateException
      *             if called from the constructor of the mirror
      */
     protected final ExtensionNavigator<E> navigator() {
         PackedExtensionNavigator<E> n = navigator;
         if (n == null) {
-            throw new InternalExtensionException(
+            throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
         }
         return n;

@@ -17,6 +17,7 @@ package app.packed.application;
 
 import app.packed.application.sandbox.UnhandledApplicationException;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.RunState;
 
@@ -31,14 +32,14 @@ import app.packed.lifetime.managed.RunState;
 // [Checked|Not-Checked]Launch, Mirror, Launcher, ReuseableLauncher
 public final class App {
 
-    /** The default application driver. */
-    private static final ApplicationDriver<Void> DEFAULT_DRIVER = ApplicationDriver.builder().buildVoid();
+    /** The default driver. */
+    private static final ContainerDriver<Void> DEFAULT_DRIVER = ContainerDriver.builder().buildVoid();
 
     /** Not today Satan, not today. */
     private App() {}
 
     /**
-     * Builds an application and returns a launcher that can be used to launch a <u>single</u> instance of the application.
+     * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
      * <p>
      * If you need to launch multiple instances of the same application use {@link #buildReusable(Assembly, Wirelet...)}. Or
      * maybe use that Application wirelet... I don't really think it is that common
@@ -49,6 +50,8 @@ public final class App {
      *            optional wirelets
      * @return a launcher that can be used to launch a single instance of the application
      */
+    // Builds an application but does run instead. Instead returning a launcher that can be used at a later point
+    // to run the application.
     public static ApplicationLauncher<Void> build(Assembly assembly, Wirelet... wirelets) {
         return DEFAULT_DRIVER.newImage(assembly, wirelets);
     }
@@ -63,12 +66,12 @@ public final class App {
      * @param wirelets
      *            optional wirelets
      * @throws ApplicationLaunchException
-     *             if the application failed to build
+     *             if the application failed to execute
      * @throws RuntimeException
      *             if the build
      */
     public static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationLaunchException {
-        DEFAULT_DRIVER.launch(assembly, wirelets);
+        DEFAULT_DRIVER.applicationLaunch(assembly, wirelets);
     }
 
     /**
@@ -91,7 +94,7 @@ public final class App {
      *             if the application could not be build
      */
     public static ApplicationMirror mirror(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
+        return DEFAULT_DRIVER.applicationMirrorOf(assembly, wirelets);
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
@@ -99,6 +102,11 @@ public final class App {
         // I think it is super usefull
         //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
         // ApplicationPrinter.Full, ApplicationPrinter.Normal
+        mirror(assembly, wirelets).print();
+    }
+
+    public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
+        // printDetails=Container, Assemblies,////
         mirror(assembly, wirelets).print();
     }
 
@@ -119,12 +127,12 @@ public final class App {
      * @see #checkedRun(Assembly, Wirelet...)
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
-        DEFAULT_DRIVER.launch(assembly, wirelets);
+        DEFAULT_DRIVER.applicationLaunch(assembly, wirelets);
     }
 
     public static void verify(Assembly assembly, Wirelet... wirelets) {
         // Det er jo bare Mirror uden at returnere det...
-        DEFAULT_DRIVER.launch(assembly, wirelets);
+        DEFAULT_DRIVER.applicationLaunch(assembly, wirelets);
     }
 
     // class probably... no need for an interface. Noone is going to call in

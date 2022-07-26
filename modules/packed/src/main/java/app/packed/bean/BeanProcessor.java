@@ -21,6 +21,7 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.dependency.BeanDependency;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -66,7 +67,7 @@ public abstract class BeanProcessor {
      * @param bean
      *            the bean we are scanning
      */
-    final void initialize(ExtensionSetup extension, BeanSetup bean) {
+    final void initialize(ExtensionModel extension, BeanSetup bean) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -98,7 +99,7 @@ public abstract class BeanProcessor {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         // We probably want to throw an internal extension exception instead
-        throw new InternalExtensionException(setup().extension.model.fullName() + " failed to handle bean method");
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle bean method");
     }
 
     /**
@@ -124,13 +125,13 @@ public abstract class BeanProcessor {
     /**
      * {@return the internal configuration class.}
      * 
-     * @throws InternalExtensionException
+     * @throws IllegalStateException
      *             if called from the constructor of the class
      */
     private Setup setup() {
         Setup s = setup;
         if (s == null) {
-            throw new InternalExtensionException("This method cannot be called from the constructor of " + getClass());
+            throw new IllegalStateException("This method cannot be called from the constructor of " + getClass());
         }
         return s;
     }
@@ -159,5 +160,5 @@ public abstract class BeanProcessor {
     // CheckRealmIsExtension
 
     /** A small utility record to hold the both the extension and the bean in one field. */
-    private record Setup(ExtensionSetup extension, BeanSetup bean) {}
+    private record Setup(ExtensionModel extension, BeanSetup bean) {}
 }

@@ -8,7 +8,6 @@ import internal.app.packed.container.PackedContainerDriver;
 
 // Ligegyldigt hvad tror jeg ikke det skal bruges af end usere...
 // Fx saadan noget med Lifetime og MethodHandle spawn
-
 public sealed interface ContainerHandle permits PackedContainerDriver {
 
     /**

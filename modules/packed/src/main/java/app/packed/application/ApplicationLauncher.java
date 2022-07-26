@@ -18,6 +18,7 @@ package app.packed.application;
 import java.util.function.Function;
 
 import app.packed.container.Assembly;
+import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.RunState;
 import internal.app.packed.application.PackedApplicationDriver.PackedApplicationLauncher;
@@ -63,6 +64,7 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
 // Saa det er vel snare en tynd wrapper over en MH som tager en single parameter or type
 // Wirelet[] wirelets
 
+// Jeg er ikke vild med navnet launch
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher {
 
@@ -105,7 +107,7 @@ public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher
      * Launches an instance of the application that this image represents.
      * <p>
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
-     * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
+     * The behaviour of this method is identical to {@link ContainerDriver#applicationLaunch(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets

@@ -82,7 +82,7 @@ public final class ApplicationSetup {
         // Create a new mirror
         ApplicationMirror mirror = driver.mirrorSupplier.get();
         if (mirror == null) {
-            throw new NullPointerException(driver.mirrorSupplier + " returned a null instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
+            throw new NullPointerException(driver.mirrorSupplier + " returned null, instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)

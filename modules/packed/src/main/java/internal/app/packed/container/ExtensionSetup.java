@@ -30,7 +30,7 @@ public final class ExtensionSetup {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanProcessor.class, "initialize",
-            void.class, ExtensionSetup.class, BeanSetup.class);
+            void.class, ExtensionModel.class, BeanSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -157,7 +157,7 @@ public final class ExtensionSetup {
         BeanProcessor bs;
         try {
             bs = (BeanProcessor) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
-            MH_BEAN_SCANNER_INITIALIZE.invokeExact(bs, extension, bean);
+            MH_BEAN_SCANNER_INITIALIZE.invokeExact(bs, extension.model, bean);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

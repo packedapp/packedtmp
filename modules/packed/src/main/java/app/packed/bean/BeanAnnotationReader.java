@@ -20,6 +20,10 @@ import java.lang.annotation.Annotation;
 /**
  *
  */
+
+
+// If we can, we should move this to BeanProcessor.AnnotationReader
+
 // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
 // AnnotatedBeanElement?
 // I think the only we reason we call it BeanAnnotationReader is because

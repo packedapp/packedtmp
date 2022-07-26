@@ -12,7 +12,6 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -24,21 +23,21 @@ import internal.app.packed.container.Mirror;
 public class ApplicationMirror implements Mirror {
 
     /**
-     * The internal configuration of the operation we are mirrored. Is initially null but populated via
-     * {@link #initialize(ExtensionSetup)}.
+     * The internal configuration of the application we are mirrored. Is initially null but populated via
+     * {@link #initialize(ApplicationSetup)}.
      */
     @Nullable
     private ApplicationSetup application;
 
     /**
-     * Create a new operation mirror.
+     * Create a new application mirror.
      * <p>
      * Subclasses should have a single package-protected constructor.
      */
     public ApplicationMirror() {}
 
     /**
-     * {@return the internal configuration of operation.}
+     * {@return the internal configuration of application.}
      * 
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
@@ -52,10 +51,30 @@ public class ApplicationMirror implements Mirror {
         return a;
     }
 
+    /** {@return a mirror of the assembly that defines the application.} */
+    public AssemblyMirror assembly() {
+        return container().assembly();
+    }
+
+    /** {@return a mirror of the root container in the application.} */
+    public ContainerMirror container() {
+        return application().container.mirror();
+    }
+
+    /** {@return a descriptor of the application.} */
+    public ApplicationBuildInfo descriptor() {
+        return application().info;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof ApplicationMirror m && application() == m.application();
+    }
+
+    /** {@return a {@link Set} view of every extension type that has been used in the application.} */
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
+        return container().extensionTypes();
     }
 
     /** {@inheritDoc} */
@@ -65,7 +84,7 @@ public class ApplicationMirror implements Mirror {
     }
 
     /**
-     * Invoked by {@link ApplicationSetup#mirror()} to set up this mirror.
+     * Invoked by {@link ApplicationSetup#mirror()} to initialize this mirror.
      * 
      * @param application
      *            the internal configuration of the application to mirror
@@ -75,26 +94,6 @@ public class ApplicationMirror implements Mirror {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
         this.application = application;
-    }
-
-    /** {@return the assembly that defines the application.} */
-    public AssemblyMirror assembly() {
-        return container().assembly();
-    }
-
-    /** {@return the root container in the application.} */
-    public ContainerMirror container() {
-        return application().container.mirror();
-    }
-
-    /** {@return a descriptor for the application.} */
-    public ApplicationBuildInfo descriptor() {
-        return application().info;
-    }
-
-    /** {@return a {@link Set} view of every extension type that has been used in the container.} */
-    public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container().extensionTypes();
     }
 
     /** {@return the application's lifetime.} */
@@ -132,6 +131,8 @@ public class ApplicationMirror implements Mirror {
     }
 
     /**
+     * Returns an extension mirror of the specified type.
+     * 
      * @param <T>
      *            The type of extension mirror
      * @param type
@@ -145,39 +146,17 @@ public class ApplicationMirror implements Mirror {
         return container().useExtension(type);
     }
 }
-//En application kan
-////Vaere ejet af bruger
-////Member of an extension (neeej sjaeldent, if ever...)
-////Controlled by an extension
-
-//Fx Session er controlled by WebExtension men er ikke member af den
-
-//// Tror det ville giver mening at have OperationMirrorList her...
-//// Kan ogsaa vaere vi bare skal smide den paa ComponentMirrorTree...
-//default <T extends OperationMirror> Collection<T> operations(Class<T> operationType) {
-//    throw new UnsupportedOperationException();
-//}
-///**
-// * {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
-// * defines the application container.}
-// * 
-// * Altsaa hvis en application skal have et module... Skal container+Bean vel ogsaa
-// */
-//// Hmm, hvis applikation = Container specialization... Ved component
-//// Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
-//// Maaske vi skal have et realm mirror????
-//Module module();
 
 //default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
 //    throw new UnsupportedOperationException();
 //}
-//
+
 //// Relations between to different applications
 //// Ret meget som ComponentRelation
 //
 ///// Maaske flyt til ApplicationMirror.relation...
 ///// Der er ingen der kommer til at lave dem selv...
-//
+
 //default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
 //  throw new UnsupportedOperationException();
 //}
@@ -189,13 +168,3 @@ public class ApplicationMirror implements Mirror {
 //
 //    // someComponent.walker().filter(c->c.application == SomeApp)...
 //}
-
-//
-///**
-// * Returns an immutable set containing any extensions that have been disabled.
-// * 
-// * @return an immutable set containing any extensions that have been disabled
-// * 
-// * @see ApplicationDriver.Builder#disableExtension(Class...)
-// */
-//Set<Class<? extends Extension<?>>> disabledExtensions();

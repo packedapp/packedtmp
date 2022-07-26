@@ -27,12 +27,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
-import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchException;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
+import app.packed.container.ContainerDriver;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
@@ -46,8 +46,8 @@ import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Implementation of {@link ApplicationDriver}. */
-public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
+/** Implementation of {@link ContainerDriver}. */
+public final class PackedApplicationDriver<A> implements ContainerDriver<A> {
 
     final Set<Class<? extends Extension<?>>> bannedExtensions;
 
@@ -100,7 +100,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public A launch(Assembly assembly, Wirelet... wirelets) {
+    public A applicationLaunch(Assembly assembly, Wirelet... wirelets) {
         // Create a new assembly realm which
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.LAUNCH, assembly, wirelets);
         realm.build();
@@ -115,7 +115,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
+    public ApplicationMirror applicationMirrorOf(Assembly assembly, Wirelet... wirelets) {
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.MIRROR, assembly, wirelets);
         realm.build();
         return realm.application.mirror();
@@ -157,13 +157,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public void verify(Assembly assembly, Wirelet... wirelets) {
+    public void applicationVerify(Assembly assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationDriver<A> with(Wirelet... wirelets) {
+    public ContainerDriver<A> with(Wirelet... wirelets) {
         // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
         return new PackedApplicationDriver<>(this, w);
@@ -183,8 +183,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         throw new UnsupportedOperationException();
     }
 
-    /** Single implementation of {@link ApplicationDriver.Builder}. */
-    public static final class Builder implements ApplicationDriver.Builder {
+    /** Single implementation of {@link ContainerDriver.Builder}. */
+    public static final class Builder implements ContainerDriver.Builder {
 
         /** A MethodHandle for invoking {@link ApplicationInitializationContext#name()}. */
         private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class, "name",
@@ -208,7 +208,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
+        public <S> ContainerDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
 
             // Find a method handle for the application shell's constructor
             InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
@@ -229,7 +229,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets) {
+        public <A> ContainerDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets) {
             // mh = mh.asType(mh.type().changeReturnType(Object.class));
             // TODO fix....
             this.mhConstructor = mh;
@@ -274,7 +274,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
+    /** Implementation of {@link ApplicationLauncher} used by {@link ContainerDriver#newImage(Assembly, Wirelet...)}. */
     public final /* primitive */ record PackedApplicationLauncher<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
             implements ApplicationLauncher<A> {
 

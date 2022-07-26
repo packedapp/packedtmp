@@ -15,10 +15,10 @@
  */
 package app.packed.lifetime.sandbox;
 
-import app.packed.lifetime.LifetimeCompanion;
+import app.packed.container.ContainerLifetimeCompanion;
 
 /**
- * A mirror of {@link LifetimeCompanion}
+ * A mirror of {@link ContainerLifetimeCompanion}
  */ 
 
 // !! Er udviklet videre i den anden ExtensionLifetimeFeature

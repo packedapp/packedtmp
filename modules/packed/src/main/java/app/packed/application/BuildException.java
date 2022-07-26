@@ -19,7 +19,7 @@ package app.packed.application;
  * An exception that is thrown during the build phase of an application.
  * <p>
  * This exception normally indicates a programmatic error and can usually only be recovered by updates to the underlying
- * code.
+ * code or configuration files.
  */
 // Taenker configurations fejl maaske smider ConfigException - Det kan jo baade vaere paa runtime og build time
 
@@ -57,10 +57,3 @@ public class BuildException extends RuntimeException {
         super(message, cause);
     }
 }
-//Or in lifecycle???? or base??? Hmmmmmm
-//Hed noget med artifact foer, men hvis vi faar dynamiske componenter...
-// InitializationException
-// ExecutionException (vi har den jo i juc...)
-//Skal vi have en liste af errors??? 
-//Evt i suppresed exceptions???
-//Skal vi have en lifecycle base extension for denne og InitializationExtception  

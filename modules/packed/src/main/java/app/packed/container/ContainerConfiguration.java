@@ -102,6 +102,7 @@ public class ContainerConfiguration {
     }
 
     /**
+     * Registers a callback that will be invoked whenever
      * <p>
      * If {@code Extension.class} is specified. The given action is invoked for every extension that is used.
      * 
@@ -111,6 +112,7 @@ public class ContainerConfiguration {
      * @param action
      *            the action to invoke
      */
+    // Skal vi have en version der tager en [Runnable alternative] hvis den ikke bliver installeret?
     public final <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
         // bruger assignable
         // onFirstUse(Extension.class, ()-> Extension isUsed);

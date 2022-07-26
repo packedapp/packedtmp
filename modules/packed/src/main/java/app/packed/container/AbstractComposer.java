@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceLocator;
@@ -170,7 +169,7 @@ public abstract class AbstractComposer {
      * 
      * @see AbstractComposer
      */
-    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer, BuildAction<? super C> action, Wirelet... wirelets) {
+    protected static <A, C extends AbstractComposer> A compose(ContainerDriver<A> driver, C composer, BuildAction<? super C> action, Wirelet... wirelets) {
         PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
         requireNonNull(composer, "composer is null");
         requireNonNull(action, "action is null");

@@ -18,6 +18,8 @@ package app.packed.application;
 /**
  *
  */
+//ApplicationException?
+//ApplicationExecutionException
 public class ApplicationLaunchException extends Exception {
 
     private static final long serialVersionUID = 1L;
