@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
@@ -35,7 +36,6 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerDriver;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -296,7 +296,7 @@ public interface ServiceLocator {
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
-    private static ContainerDriver<ServiceLocator> driver() {
+    private static ApplicationDriver<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
 
@@ -308,7 +308,7 @@ public interface ServiceLocator {
     }
 
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().applicationMirrorOf(assembly, wirelets);
+        return driver().mirrorOf(assembly, wirelets);
     }
 
     /**
@@ -344,7 +344,7 @@ public interface ServiceLocator {
      * @return a new service locator
      */
     static ServiceLocator of(Assembly assembly, Wirelet... wirelets) {
-        return driver().applicationLaunch(assembly, wirelets);
+        return driver().launch(assembly, wirelets);
     }
 
     static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
@@ -365,7 +365,7 @@ public interface ServiceLocator {
         private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
                 "serviceLocator", ServiceLocator.class);
 
-        private static final ContainerDriver<ServiceLocator> DRIVER = ContainerDriver.builder().build(MethodHandles.lookup(), ServiceLocator.class, CONV);
+        private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class, CONV);
 
         private boolean initialized;
 

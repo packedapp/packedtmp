@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
-import app.packed.application.App;
-import app.packed.application.ApplicationBuildInfo;
-import app.packed.application.ApplicationLauncher;
-import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildException;
+import app.packed.container.Assembly;
+import app.packed.container.ContainerWrapperCompanion;
+import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 
 /**
- * Application drivers are responsible for building applications.
+ * Application drivers are responsible for creating (root) applications.
  * <p>
  * Packed comes with a number of predefined application drivers:
  * <p>
@@ -53,7 +52,17 @@ import internal.app.packed.application.PackedApplicationDriver;
  */
 // Environment + Application Interface + Result
 @SuppressWarnings("rawtypes")
-public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
+public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
+
+    /**
+     * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
+     * <p>
+     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
+     * unsupported extensions
+     * 
+     * @return a set of disabled extensions
+     */
+    Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -74,7 +83,16 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
      *             if the application had an executing phase and it fails
      * @see App#run(Assembly, Wirelet...)
      */
-    A applicationLaunch(Assembly assembly, Wirelet... wirelets); // newInstance
+    A launch(Assembly assembly, Wirelet... wirelets); // newInstance
+
+    /**
+     * Returns whether or not applications produced by this driver have an {@link ManagedLifetimeController}.
+     * <p>
+     * Applications that are not runnable will always be launched in the Initial state.
+     * 
+     * @return whether or not the applications produced by this driver are runnable
+     */
+    LifetimeKind lifetimeKind();
 
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
@@ -87,50 +105,8 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
      *            optional wirelets
      * @return an application mirror
      */
-    ApplicationMirror applicationMirrorOf(Assembly assembly, Wirelet... wirelets);
+    ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
 
-    void applicationVerify(Assembly assembly, Wirelet... wirelets);
-
-    /**
-     * Returns the launch mode of applications created by this driver.
-     * <p>
-     * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(RunState)}.
-     * <p>
-     * Drivers for applications without a runtime will always return {@link RunState#INITIALIZED}.
-     * 
-     * @return the default launch mode of application's created by this driver
-     * @see #launch(Assembly, Wirelet...)
-     * @see #newImage(Assembly, Wirelet...)
-     */
-
-    /**
-     * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
-     * <p>
-     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
-     * unsupported extensions
-     * 
-     * @return a set of disabled extensions
-     */
-    Set<Class<? extends Extension<?>>> bannedExtensions();
-
-    // Foer var den som wirelet.
-    // Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
-    // vi har processeret alle wirelets
-
-    // Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
-
-    // eller selvstaendig metode -> Er nok den bedste for nu
-
-    // og saa ServiceLocator.newReusableImage
-
-    /**
-     * Returns whether or not applications produced by this driver have an {@link ManagedLifetimeController}.
-     * <p>
-     * Applications that are not runnable will always be launched in the Initial state.
-     * 
-     * @return whether or not the applications produced by this driver are runnable
-     */
-    LifetimeKind lifetimeKind();
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -149,6 +125,8 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
     ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets);
 
     ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets);
+
+    void verify(Assembly assembly, Wirelet... wirelets);
 
     /**
      * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
@@ -171,22 +149,31 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
      *            the wirelets to add
      * @return the augmented application driver
      */
-    ContainerDriver<A> with(Wirelet... wirelets);
+    ApplicationDriver<A> with(Wirelet... wirelets); // not much of usecase anymore I think
 
     /**
      * Returns a new {@code ApplicationDriver} builder.
      *
      * @return the new builder
      */
-    public static Builder builder() {
-        return new PackedApplicationDriver.Builder();
+    public static Builder<Void> builder() {
+        return new PackedApplicationDriver.Builder<>();
     }
 
+    public static <A> Builder<A> builder(Class<A> wrapperType, MethodHandle wrapperFactory) {
+        return new PackedApplicationDriver.Builder<>();
+    }
+    
+    public static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<? extends A> wrapperType) {
+        return new PackedApplicationDriver.Builder<>();
+    }
+    
+    
     /**
-     * A builder for an application driver. An instance of this interface is normally acquired via
-     * {@link ContainerDriver#builder()}.
+     * A builder for an application driver. An instance of this interface is acquired by calling
+     * {@link ApplicationDriver#builder()}.
      */
-    /* sealed */ interface Builder /* permits PackedApplicationDriver.Builder */ {
+    /* sealed */ interface Builder<A> /* permits PackedApplicationDriver.Builder */ {
 
         // Maaske konfigure man dem direkte paa extension support klassen
         //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
@@ -200,29 +187,29 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
+        <S> ApplicationDriver<S> build(Class<S> wrapperType, MethodHandle wrapperFactory, Wirelet... wirelets);
+
         /**
          * Creates a new artifact driver.
          * <p>
          * The specified implementation can have the following types injected.
          * 
-         * If the specified implementation implements {@link AutoCloseable} a {@link ManagedLifetimeController} can also be injected.
+         * If the specified implementation implements {@link AutoCloseable} a {@link ManagedLifetimeController} can also be
+         * injected.
          * <p>
          * Fields and methods are not processed.
          * 
-         * @param <S>
+         * @param <A>
          *            the type of artifacts the driver creates
          * @param caller
          *            a lookup object that must have full access to the specified implementation
-         * @param implementation
+         * @param wrapperType
          *            the implementation of the artifact
          * @return a new driver
          */
-        <S> ContainerDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> implementation, Wirelet... wirelets);
+        <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> wrapperType, Wirelet... wirelets);
 
-        // Hvorfor har vi en caller her???
-        <A> ContainerDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
-
-        ContainerDriver<Void> buildVoid(Wirelet... wirelets);
+        ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
 
         /**
          * Disables 1 or more extensions. Attempting to use a disabled extension will result in an RestrictedExtensionException
@@ -232,7 +219,7 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
          *            the types of extension to disable
          * @return
          */
-        Builder disableExtension(Class<? extends Extension<?>> extensionType);
+        Builder<A> disableExtension(Class<? extends Extension<?>> extensionType);
 
         /**
          * Application produced by the driver are executable. And will be launched by the specified launch mode by default.
@@ -241,19 +228,19 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
          * 
          * @return this builder
          */
-        Builder managedLifetime();
-        
+        Builder<A> managedLifetime();
+
         @SuppressWarnings("unchecked")
-        default Builder requireExtension(Class<? extends Extension>... extensionTypes) {
+        default Builder<A> requireExtension(Class<? extends Extension>... extensionTypes) {
 
             return this;
         }
 
-        default Builder restartable() {
+        default Builder<A> restartable() {
             return this;
         }
 
-        default Builder resultType(Class<?> resultType) {
+        default Builder<A> resultType(Class<?> resultType) {
             throw new UnsupportedOperationException();
         }
 
@@ -302,6 +289,16 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
 
     }
 }
+
+// Foer var den som wirelet.
+// Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
+// vi har processeret alle wirelets
+
+// Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
+
+// eller selvstaendig metode -> Er nok den bedste for nu
+
+// og saa ServiceLocator.newReusableImage
 ///**
 //* @param launchMode
 //* @return

@@ -62,9 +62,8 @@ public abstract class Assembly {
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the container instance has not yet been used to build
-     * anything.</li>
-     * <li>Then, as a part of the build process, it is initialized with the actual container configuration object.</li>
+     * <li>Initially, this field is null, indicating that the assembly has not yet been used to build anything.</li>
+     * <li>Then, as a part of the build process, it is initialized with a container configuration object.</li>
      * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
@@ -171,7 +170,7 @@ public abstract class Assembly {
      *            the lookup object
      */
     // For know this is bean install only. For all beans defined within the assembly.
-    
+
     // If we at some point get reflection Ops/Fns as in main(Op operation)
     // fx via FN.ofMethod(Method) then we might revisit it.
     // And extend it to functions

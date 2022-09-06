@@ -17,7 +17,6 @@ package app.packed.application;
 
 import app.packed.application.sandbox.UnhandledApplicationException;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.RunState;
 
@@ -33,7 +32,7 @@ import app.packed.lifetime.managed.RunState;
 public final class App {
 
     /** The default driver. */
-    private static final ContainerDriver<Void> DEFAULT_DRIVER = ContainerDriver.builder().buildVoid();
+    private static final ApplicationDriver<Void> DEFAULT_DRIVER = ApplicationDriver.builder().buildVoid();
 
     /** Not today Satan, not today. */
     private App() {}
@@ -71,7 +70,7 @@ public final class App {
      *             if the build
      */
     public static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationLaunchException {
-        DEFAULT_DRIVER.applicationLaunch(assembly, wirelets);
+        DEFAULT_DRIVER.launch(assembly, wirelets);
     }
 
     /**
@@ -94,7 +93,7 @@ public final class App {
      *             if the application could not be build
      */
     public static ApplicationMirror mirror(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.applicationMirrorOf(assembly, wirelets);
+        return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
@@ -127,12 +126,12 @@ public final class App {
      * @see #checkedRun(Assembly, Wirelet...)
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
-        DEFAULT_DRIVER.applicationLaunch(assembly, wirelets);
+        DEFAULT_DRIVER.launch(assembly, wirelets);
     }
 
     public static void verify(Assembly assembly, Wirelet... wirelets) {
         // Det er jo bare Mirror uden at returnere det...
-        DEFAULT_DRIVER.applicationLaunch(assembly, wirelets);
+        DEFAULT_DRIVER.launch(assembly, wirelets);
     }
 
     // class probably... no need for an interface. Noone is going to call in

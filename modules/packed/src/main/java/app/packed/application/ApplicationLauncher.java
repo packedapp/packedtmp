@@ -18,7 +18,6 @@ package app.packed.application;
 import java.util.function.Function;
 
 import app.packed.container.Assembly;
-import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.RunState;
 import internal.app.packed.application.PackedApplicationDriver.PackedApplicationLauncher;
@@ -107,7 +106,7 @@ public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher
      * Launches an instance of the application that this image represents.
      * <p>
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
-     * The behaviour of this method is identical to {@link ContainerDriver#applicationLaunch(Assembly, Wirelet...)}.
+     * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets

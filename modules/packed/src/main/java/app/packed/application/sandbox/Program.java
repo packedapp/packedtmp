@@ -18,10 +18,10 @@ package app.packed.application.sandbox;
 import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.managed.RunState;
@@ -101,11 +101,11 @@ public interface Program extends AutoCloseable {
     }
 
     /**
-     * Returns an {@link ContainerDriver artifact driver} for {@link Program}.
+     * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.
      * 
      * @return an artifact driver for App
      */
-    private static ContainerDriver<Program> driver() {
+    private static ApplicationDriver<Program> driver() {
         return ProgramImplementation.DRIVER;
     }
 
@@ -121,7 +121,7 @@ public interface Program extends AutoCloseable {
      *            optional wirelets
      * @return a new app image
      * @see ApplicationImageWirelets
-     * @see ContainerDriver#newImage(Assembly, Wirelet...)
+     * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
     static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().newImage(assembly, wirelets);
@@ -146,7 +146,7 @@ public interface Program extends AutoCloseable {
      *             if the application could not be build, initialized or started
      */
     static Program start(Assembly assembly, Wirelet... wirelets) {
-        return driver().applicationLaunch(assembly, wirelets);
+        return driver().launch(assembly, wirelets);
     }
 }
 
@@ -154,7 +154,7 @@ public interface Program extends AutoCloseable {
 record ProgramImplementation(String name, ServiceLocator services, ManagedLifetimeController runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ContainerDriver<Program> DRIVER = ContainerDriver.builder().managedLifetime().build(MethodHandles.lookup(),
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().managedLifetime().build(MethodHandles.lookup(),
             ProgramImplementation.class);
 
     /** {@inheritDoc} */

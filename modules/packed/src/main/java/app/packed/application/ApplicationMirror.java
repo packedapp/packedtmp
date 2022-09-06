@@ -1,6 +1,7 @@
 package app.packed.application;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
@@ -144,6 +145,10 @@ public class ApplicationMirror implements Mirror {
     // Maasker drop use, og bare have extension(ServiceExtensionMirror.class).
     public <T extends ExtensionMirror<?>> T useExtension(Class<T> type) {
         return container().useExtension(type);
+    }
+
+    public <T extends ExtensionMirror<?>> void useIfPresent(Class<T> type, Consumer<? super T> action) {
+        throw new UnsupportedOperationException();
     }
 }
 

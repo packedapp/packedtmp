@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import app.packed.bean.InstanceBeanConfiguration;
+
 /**
  *
  */
@@ -22,4 +24,16 @@ public class ContainerExtensionPoint extends ExtensionPoint<ContainerExtension> 
 
     /** Creates a new container extension point. */
     /* package-private */ ContainerExtensionPoint() {}
+    
+    public ContainerCustomizer.Installer containerInstaller() {
+        throw new UnsupportedOperationException();
+    }
+    
+    // alternativ har vi en speciel bean configuration
+    // Hvor man kan registrere companions. Og CWC som en nested interface maaske
+    public <T> InstanceBeanConfiguration<T> newContainerWrapper(Class<T> t, ContainerWrapperCompanion... companions) {
+        throw new UnsupportedOperationException();
+    }
+    // ContainerWrapperBeanConfiguration
+    
 }
