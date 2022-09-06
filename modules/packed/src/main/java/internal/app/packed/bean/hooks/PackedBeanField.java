@@ -23,7 +23,7 @@ import app.packed.bean.BeanField;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationTargetMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -61,13 +61,13 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode) {
+    public OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration newGetOperation(ExtensionBeanConfiguration<?> operator) {
+    public OperationCustomizer newGetOperation(ExtensionBeanConfiguration<?> operator) {
 //         return new RawOperationSetup<>(this, openClass.unreflectGetter(field));
 
         return null;
@@ -75,7 +75,7 @@ public final class PackedBeanField extends PackedBeanMember<Field> implements Be
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration newSetOperation(ExtensionBeanConfiguration<?> operator) {
+    public OperationCustomizer newSetOperation(ExtensionBeanConfiguration<?> operator) {
         // return new RawOperationSetup<>(this, openClass.unreflectSetter(field));
 
         return null;

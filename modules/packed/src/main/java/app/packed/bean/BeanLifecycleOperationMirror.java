@@ -26,7 +26,6 @@ import app.packed.operation.OperationMirror;
  */
 // Mit eneste problem er om vi fx har operationer der baade kan kalde paa flere tidspunkter??
 // OnInitialize, OnStart (Hvor tit sker det... Laver vi ikke bare flere operationer saa)
-
 public class BeanLifecycleOperationMirror extends OperationMirror {
 
     public String stage() {

@@ -21,8 +21,7 @@ import java.lang.reflect.Method;
 import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationInvocationType;
+import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import internal.app.packed.bean.hooks.PackedBeanMethod;
@@ -36,10 +35,10 @@ import internal.app.packed.bean.hooks.PackedBeanMethod;
 public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
 
     /** {@return a factory type for this method.} */
-    FactoryType factoryType();
+    FactoryType factoryType(); // I don't like the name factoryType.. signature? Coordinates?
 
     /**
-     * {@return the modifiers of then underlying method.}
+     * {@return the modifiers of the underlying method.}
      *
      * @see Method#getModifiers()
      * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
@@ -49,29 +48,30 @@ public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod 
     /**
      * @return
      */
-    boolean hasInvokeAccess(); // isOperational?
+    boolean hasInvokeAccess();
 
     /** {@return the underlying method.} */
     Method method();
 
     /**
+     * Creates a new operation that can invoke the underlying method.
      * <p>
-     * Any {@link OperationMirror} created from the operation, will have a {@link OperationTargetMirror.OfMethodInvoke} as
-     * its {@link OperationMirror#target()}.
+     * If an {@link OperationMirror} is created for this operation. It will report
+     * {@link OperationTargetMirror.OfMethodInvoke} as its {@link OperationMirror#target()}.
      * 
      * @param operator
      *            the extension bean that will invoke the operation. The extension bean must be located in the same (or a
      *            direct ancestor) container as the bean that declares this method.
-     * @return a new operation
+     * @return an operation customizer
      * 
      * @see Lookup#unreflect(Method)
      * @see BeanMethodHook#allowInvoke()
      * @see BeanClassHook#allowAllAccess()
      * 
      * @throws IllegalArgumentException
-     *             if the specified operator is not a direct ancestor of the method's bean.
+     *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
      */
-    OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationInvocationType operationType);
+    OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator);
 }
 
 /**

@@ -21,29 +21,30 @@ package app.packed.lifetime;
 // LifetimeManagement bare?
 // Maaske ender det bare med en boolean
 public enum LifetimeKind {
+    
     STATELESS,
 
-    UNMANAGED,
+    UNMANAGED, // has initialize
 
-    MANAGED;
+    MANAGED; // has start/stop
 }
-
-enum AlternativeNaming {
-    STATIC,
-
-    UNMANAGED_INSTANCE,
-
-    MANAGED_INSTANCE
-}
-
-// Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
-enum AlternativeNaming2 {
-    NONE, 
-
-    UNMANAGED,
-
-    MANAGED;
-}
+//
+//enum AlternativeNaming {
+//    STATIC,
+//
+//    UNMANAGED_INSTANCE,
+//
+//    MANAGED_INSTANCE
+//}
+//
+//// Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
+//enum AlternativeNaming2 {
+//    NONE, 
+//
+//    UNMANAGED,
+//
+//    MANAGED;
+//}
 
 // An Unmanaged Lifetime must not have active threads running inside of it
 // post startup

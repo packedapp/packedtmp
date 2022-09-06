@@ -8,6 +8,7 @@ import app.packed.operation.OperationMirror;
  * Instances of this mirror are normally acquired by calling various methods on a {@link EntryPointExtensionMirror}
  * instance.
  */
+// Ditch Operation at the end???
 public class EntryPointOperationMirror extends OperationMirror {
 
     /** The unique id of the entry point within the application. */

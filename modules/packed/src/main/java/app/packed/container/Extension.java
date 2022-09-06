@@ -113,6 +113,11 @@ public abstract class Extension<E extends Extension<E>> {
     protected final NamespacePath containerPath() {
         return setup().container.path();
     }
+    
+    protected final ContainerCustomizer.Installer containerBuilder(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+    
 
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
@@ -165,6 +170,9 @@ public abstract class Extension<E extends Extension<E>> {
 
     /**
      * 
+     * <p>
+     * This method should never return null.
+     * 
      * @return a new extension point
      * 
      * @throws UnsupportedOperationException
@@ -180,7 +188,7 @@ public abstract class Extension<E extends Extension<E>> {
      * The default implementation of this method will call {@link #onApplicationClose()} on every child. Either pre-order or
      * post-order tree iteration.
      * <p>
-     * Packed only calls this method on the root extension so if you want to iterate over all extensions in the tree you
+     * Packed only calls this method on the root extension. so if you want to iterate over all extensions in the tree you
      * should arrange to call <{@code super.onApplicationClose}.
      * <p>
      * <strong>NOTE:</strong> At this stage the set of extensions used by the container are fixed. It is not possible to add
@@ -196,15 +204,24 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Invoked (by the runtime) when.
+     * Invoked (by the runtime) after {@link Assembly#build()} has returned successfully from the container where this
+     * extension is used.
      * <p>
-     * This method should be used to fail fast.
+     * This method is typically use to
+     * 
+     * <p>
+     * Extensions that depends on this extension will always have their {@link #onAssemblyClose()} method executed before
+     * this extension. Therefore you can assume that noone will
+     * 
+     * If there are other extension that depends on this extension.
+     * 
+     * This method is always invoked after
      * 
      * <p>
      * This is the last opportunity to wire any components that requires extensions that have not already been added.
      * Attempting to wire extensions at a later time will fail with InternalExtensionException
      * <p>
-     * If you need, for example, to install extensors that depends on a particular dependency being installed (by other) You
+     * If you need, for example, to install bean that depends on a particular dependency being installed (by other) You
      * should installed via {@link #onApplicationClose()}.
      * 
      * @see #checkIsPreLinkage()
@@ -223,8 +240,8 @@ public abstract class Extension<E extends Extension<E>> {
      * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned successfully),
      * but before the new extension instance is made available to the user.
      * <p>
-     * Since most methods on {@code Extension} cannot be invoked from the constructor. This method can be used to perform
-     * post instantiation of the extension as needed.
+     * Since most methods on {@code Extension} cannot be invoked from the constructor. This method can be used instead to
+     * perform post instantiation of the extension as needed.
      * 
      * @see #onAssemblyClose()
      * @see #onApplicationClose()
@@ -332,6 +349,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     // I think we need some more use cases
     public static abstract class Bootstrap {
+
         protected abstract void bootstrap();
 
         protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
@@ -341,7 +359,6 @@ public abstract class Extension<E extends Extension<E>> {
         protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
             return alternative.get();
         }
-
     }
 
     public @interface BootstrapWith {

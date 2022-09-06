@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
+package app.packed.bean;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -26,10 +26,10 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.operation.dependency.DependencyMirror;
 
 /**
  *

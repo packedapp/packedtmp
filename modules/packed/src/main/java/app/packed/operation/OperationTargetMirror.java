@@ -68,7 +68,7 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
     /**
      * Represents an operation that simply return an instance
      */
-    public non-sealed interface OfInstanceReturn extends OperationTargetMirror {
+    public non-sealed interface OfInstanceAccess extends OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
         Optional<OperationTargetMirror> origin();
@@ -91,6 +91,7 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
         Method method();
     }
 
+    // Maybe just MethodHandleInvoke
     public non-sealed interface OfSyntheticInvoke extends OperationTargetMirror {
         MethodType methodType();
     }

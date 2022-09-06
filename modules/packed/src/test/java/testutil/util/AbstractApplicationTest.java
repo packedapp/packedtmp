@@ -55,7 +55,7 @@ public abstract class AbstractApplicationTest {
 
         @Override
         public void build() {
-            ca.accept(new ContainerConfigurationTester(container()));
+            ca.accept(new ContainerConfigurationTester(configuration()));
         }
     }
 }

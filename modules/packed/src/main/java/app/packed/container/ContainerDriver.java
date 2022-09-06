@@ -196,7 +196,7 @@ public sealed interface ContainerDriver<A> permits PackedApplicationDriver {
         // Hvilket ikke er muligt
 
         // noget optional??? ellers
-        default Builder addCompanion(ContainerLifetimeCompanion... companions) {
+        default Builder addCompanion(ContainerWrapperCompanion... companions) {
             return this;
         }
 

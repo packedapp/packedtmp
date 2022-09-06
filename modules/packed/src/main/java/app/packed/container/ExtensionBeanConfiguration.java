@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.BeanHandler;
+import app.packed.bean.BeanCustomizer;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.inject.Factory;
 
@@ -28,7 +28,7 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     /**
      * @param handle
      */
-    public ExtensionBeanConfiguration(BeanHandler<T> handle) {
+    public ExtensionBeanConfiguration(BeanCustomizer<T> handle) {
         super(handle);
         // Validate 
     }
@@ -41,7 +41,7 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         return this;
     }
 
-    public <P> void callbackOnInitialize(BeanHandler<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
+    public <P> void callbackOnInitialize(BeanCustomizer<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
         
     }
     // Same container I think

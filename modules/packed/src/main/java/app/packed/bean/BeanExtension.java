@@ -1,22 +1,16 @@
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.Consumer;
-
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ProvideableBeanConfiguration;
-import app.packed.service.ServiceLocator;
-import app.packed.service.ServiceTransformer;
 import internal.app.packed.bean.PackedBeanHandleBuilder;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension for installing beans into a container.
+ * All containers use this extension. As every container either defines at least 1 bean. Or has a container descendants who does.
  */
 public class BeanExtension extends Extension<BeanExtension> {
 
@@ -31,6 +25,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     public void filter(BaseAssembly.Linker l) {
         
     }
+    
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
      * application is initialized.
@@ -43,7 +38,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).build();
+        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -56,7 +51,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
+        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -72,7 +67,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).build();
+        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -95,39 +90,5 @@ public class BeanExtension extends Extension<BeanExtension> {
     @Override
     protected void onAssemblyClose() {
         container.injectionManager.resolve();
-    }
-
-    /**
-     * Provides every service from the specified locator.
-     * 
-     * @param locator
-     *            the locator to provide services from
-     * @throws IllegalArgumentException
-     *             if the specified locator is not implemented by Packed
-     */
-    public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-        if (!(locator instanceof AbstractServiceLocator l)) {
-            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-                    + " are currently not supported, locator type = " + locator.getClass().getName());
-        }
-        checkIsConfigurable();
-        container.injectionManager.provideAll(l);
-    }
-
-    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
-        // ST.contract throws UOE
-    }
-
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
-        return sbc.provide();
-    }
-
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.UNMANAGED, container, factory).build();
-        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
-        return sbc.provide();
     }
 }

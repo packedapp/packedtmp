@@ -28,11 +28,15 @@ public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.Bui
 
     /** {@return the application this assembly is a part of.} */
     ApplicationMirror application();
-    
+
     /** {@return the class that defines the assembly.} */
     Class<? extends Assembly> assemblyClass();
 
-    /** {@return a stream of all assemblies that have been linked from this assembly.} */
+    /**
+     * {@return a stream of any child assemblies defined by this assembly.}
+     * 
+     * @see ContainerConfiguration#link(Assembly, Wirelet...)
+     */
     Stream<AssemblyMirror> children();
 
     /** {@return the root container defined by this assembly.} */
@@ -45,12 +49,10 @@ public sealed interface AssemblyMirror extends Mirror permits UserRealmSetup.Bui
     boolean isRoot();
 
     /**
-     * {@return any assembly that linked this assembly, or empty if the assembly defined the root container of an
-     * application.}
+     * {@return the parent of this assembly, or empty if the assembly defines the root container of the application.}
      */
     Optional<AssemblyMirror> parent();
 }
-
 
 
 ///**

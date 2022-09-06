@@ -1,5 +1,6 @@
 package app.packed.lifetime;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -95,11 +96,41 @@ public class LifetimeMirror implements Mirror {
      * @return
      */
     public Optional<BeanMirror> managedByBean() {
-        return Optional.empty();
+        List<LifetimeOperationMirror> operations = operations();
+        return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
     }
 
     /** {@return a stream of child lifetimes of this lifetime.} */
     public Stream<LifetimeMirror> children() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * If this is container or application lifetime and it has a container lifetime wrapper bean. Returns the bean,
+     * otherwise empty.
+     * <p>
+     * A wrapper and {@link #managedByBean()} is always two different beans.
+     * 
+     * @return
+     */
+    public Optional<BeanMirror> wrapper() { // Do we need a ContainerWrapperBeanMirror?
+        return Optional.empty();
+    }
+
+    /**
+     * empty for statelss
+     * 
+     * 1 for unmananged
+     * 
+     * 1 or 2 for managed
+     * 
+     * <p>
+     * If this method returns more than 1 lifetime operation mirror. The returned operations will always be defined on the
+     * same bean
+     * 
+     * @return a list of this lifetime's lifetime operations
+     */
+    public List<LifetimeOperationMirror> operations() {
         throw new UnsupportedOperationException();
     }
 

@@ -19,16 +19,12 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.dependency.BeanDependency;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.container.ExtensionSetup;
 
 /**
- *
- *
  * @see Extension#newBeanScanner
- * @see BeanHandler.Builder#beanScanner(BeanScanner)
+ * @see BeanCustomizer.Builder#beanScanner(BeanScanner)
  */
 
 //BeanAnalyzer, BeanVisitor, BeanInspector, BeanIntrospector, BeanScanner
@@ -38,16 +34,27 @@ import internal.app.packed.container.ExtensionSetup;
 public abstract class BeanProcessor {
 
     /**
-     * The configuration of this scanner. Is initially null but populated via
-     * {@link #initialize(ExtensionSetup, BeanSetup)}.
+     * The configuration of this processor. Is initially null but populated via
+     * {@link #initialize(ExtensionModel, BeanSetup)}.
      */
     @Nullable
     private Setup setup;
 
     /** {@return an annotation reader for for the bean.} */
-    public final BeanAnnotationReader beanAnnotationReader() {
+    public final BeanProcessor$AnnotationReader beanAnnotations() {
         // AnnotationReader.of(beanClass());
         throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * @param postFix
+     *            the message to include in the final message
+     * 
+     * @throws BeanDefinitionException
+     *             always thrown
+     */
+    public void failWith(String postFix) {
+        throw new BeanDefinitionException("OOPS " + postFix);
     }
 
     public final Class<?> beanClass() {
@@ -66,6 +73,8 @@ public abstract class BeanProcessor {
      *            the extension that owns the scanner
      * @param bean
      *            the bean we are scanning
+     * @throws IllegalStateException
+     *             if called more than once
      */
     final void initialize(ExtensionModel extension, BeanSetup bean) {
         if (this.setup != null) {
@@ -107,9 +116,9 @@ public abstract class BeanProcessor {
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
-     * @see #onProcessStop()
+     * @see #onProcessingStop()
      */
-    public void onProcessStart() {}
+    public void onProcessingStart() {}
 
     /**
      * A callback method that is called after any other methods on this class.
@@ -118,9 +127,9 @@ public abstract class BeanProcessor {
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
      * 
-     * @see #onProcessStart()
+     * @see #onProcessingStart()
      */
-    public void onProcessStop() {}
+    public void onProcessingStop() {}
 
     /**
      * {@return the internal configuration class.}
@@ -140,7 +149,7 @@ public abstract class BeanProcessor {
     // BeanVariable bare
     public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanDependency {
 
-        default BeanAnnotationReader annotations() {
+        default BeanProcessor$AnnotationReader annotations() {
             throw new UnsupportedOperationException();
         }
 
@@ -159,6 +168,6 @@ public abstract class BeanProcessor {
     // CheckRealmIsApplication
     // CheckRealmIsExtension
 
-    /** A small utility record to hold the both the extension and the bean in one field. */
+    /** A small utility record to hold the both the extension model and the bean in one field. */
     private record Setup(ExtensionModel extension, BeanSetup bean) {}
 }

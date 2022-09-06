@@ -209,7 +209,6 @@ public final class PackedApplicationDriver<A> implements ContainerDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <S> ContainerDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
-
             // Find a method handle for the application shell's constructor
             InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);

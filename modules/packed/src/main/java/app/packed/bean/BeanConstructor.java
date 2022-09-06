@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.inject.FactoryType;
-import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationCustomizer;
 
 /**
  * This class represents a {@link Constructor} on a bean.
@@ -47,5 +47,5 @@ public non-sealed interface BeanConstructor extends BeanElement {
      */
     int getModifiers();
 
-    OperationConfiguration newOperation();
+    OperationCustomizer newOperation();
 }

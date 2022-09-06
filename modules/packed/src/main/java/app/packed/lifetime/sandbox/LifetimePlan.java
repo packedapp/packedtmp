@@ -15,23 +15,15 @@
  */
 package app.packed.lifetime.sandbox;
 
-import app.packed.container.ContainerWrapperCompanion;
-
 /**
- * A mirror of {@link ContainerWrapperCompanion}
- */ 
-
-// !! Er udviklet videre i den anden ExtensionLifetimeFeature
-// Bridge
-// LifetimeHolder eksistere jo ogsaa maaske vi skal knytte dem taettere sammen
-//
-
-// Tror ikke vi har et mirror... Ejeren er som regel syntetisk.
-// Med mindre vi hoster
-public interface LifetimeBeanCompanionMirror {
-
-    // All companions needs a (host) bean...
-    // Det betyder ogsaa at hvis stateless skal kunne bruge companions.
-    // Saa skal de jo bruge en bean...
-    //LifetimeBeanMirror bean();
+ *
+ */
+public sealed interface LifetimePlan {
+    
+    non-sealed interface InitializeOnly extends LifetimePlan{}
+    
+    // Ogsaa noget med Await
+    non-sealed interface MultiThreadMultiState extends LifetimePlan{}
 }
+// Maaske er de ikke tilknyttet selve operationer.
+// Men RunState->Plan

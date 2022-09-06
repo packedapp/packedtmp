@@ -21,9 +21,12 @@ import java.util.function.Function;
 import app.packed.base.Key;
 
 /**
- * Bruges til at kommunikere paa tvaers af en container lifetime
+ * Bruges til at kommunikere med en extension paa tvaers af en container lifetime
  * <p>
  */
+
+// ContainerLifetimeWrapperCompanion
+
 
 // ManagedLifetime er ikke en Extension...
 // Restart vil jeg heller ikke mene er en extension? Eller er det
@@ -32,7 +35,7 @@ import app.packed.base.Key;
 //Alt konfigurationen omkring managed state maa ligger paa application/container driver
 //Det er udelukkende extension exponering
 // Maaske defineret nested paa ExtensionPoint? Eller paa ContainerDriver___
-public interface ContainerLifetimeCompanion {
+public interface ContainerWrapperCompanion {
 
     static <E extends Extension<E>> Builder<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
@@ -46,7 +49,7 @@ public interface ContainerLifetimeCompanion {
 
         <B, C> Builder<E> provide(Key<C> companionType, Class<B> extensionBeanType, Function<B, C> extractor);
 
-        ContainerLifetimeCompanion build();
+        ContainerWrapperCompanion build();
     }
 }
 //ExtractSingleExportedService (not the whole ServiceLocator)

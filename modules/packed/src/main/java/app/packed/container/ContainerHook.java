@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Can be used on subclasses of Assembly or as a meta-annotation that can be applied to an Assembly subclass.
+ * Can be used on subclasses of {@link Assembly} or as a meta-annotation that can be applied to {@link Assembly} subclass.
  * 
  * Assembly : Will be applied to all containers installed by the user
  * 
@@ -22,8 +22,10 @@ import java.lang.invoke.MethodHandles;
  * 
  * Is ignored on any other classes.
  */
+
 // Vi inkludere alle containere defineret i en assembly.
 // Fordi det er det vi ogsaa goer med beans hook. Det giver ingen mening ikke at goere det.
+// Ligesom Lookup ogsaa gaelder alle containere
 
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,11 +36,13 @@ public @interface ContainerHook {
 
     /** {@return the processors that should be applied for every container the assembly defines.} */
     Class<? extends Processor>[] value();
-    
-    // By default the processor will be applied to all containers within a give assembly
-    boolean onlyProcessTopContainer() default false;
 
-    /** An annotation that allows for placing multiple assembly hook annotations on a single target. */
+    /**
+     * @return
+     */
+    boolean applyToRootOnly() default false;
+
+    /** An annotation that allows for placing multiple {@link ContainerHook} annotations on a single target. */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
     @Inherited
@@ -57,7 +61,6 @@ public @interface ContainerHook {
      * 
      * The realm of the container configuration will be this class. Any value specified to
      * {@link Assembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
-     * 
      */
     public interface Processor {
 
@@ -95,7 +98,6 @@ public @interface ContainerHook {
 
 //// is invoked exactly once per hook instance. As the first method.
 // default void onBootstrap(Bootstrap bootstrap) {};
-
 
 /// Den tager alle containere defineret af en Assembly.
 /// Men Ligesom Bean hooks gaelder alle beans...

@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import app.packed.bean.BeanDependency;
+import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanProcessor;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.dependency.BeanDependency;
-import app.packed.operation.dependency.BeanDependency.ProvisionHook;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
@@ -65,7 +65,7 @@ public final class BeanHookScanner {
         return extensions.computeIfAbsent(clazz, c -> {
             ExtensionSetup extension = bean.parent.useExtensionSetup(clazz, null);
             BeanProcessor scanner = extension.newBeanScanner(extension, bean);
-            scanner.onProcessStart();
+            scanner.onProcessingStart();
             return new ExtensionEntry(extension, scanner);
         });
     }
@@ -74,22 +74,13 @@ public final class BeanHookScanner {
         return false;
     }
 
-    public void scan() {
-        scan0(true, Object.class);
-
-        // Call into every BeanScanner and tell them its all over
-        for (ExtensionEntry e : extensions.values()) {
-            e.scanner.onProcessStop();
-        }
-    }
-
     /**
      * @param reflectOnFields
      *            whether or not to iterate over fields
      * @param baseType
      *            the base type
      */
-    final void scan0(boolean reflectOnFields, Class<?> baseType) {
+    public final void scan() {
 
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
 
@@ -114,6 +105,8 @@ public final class BeanHookScanner {
             }
         }
         
+        Class<?> baseType = Object.class;
+
         Class<?> classToScan = bean.beanClass();
         HashSet<Package> packages = new HashSet<>();
         HashMap<MethodHelper, HashSet<Package>> types = new HashMap<>();
@@ -140,13 +133,13 @@ public final class BeanHookScanner {
         // Maybe some kind of detection if current type (c) switches modules.
         for (Class<?> c = classToScan; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
-            if (reflectOnFields) {
-                Field[] fields = c.getDeclaredFields();
-                PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
-                for (Field field : c.getDeclaredFields()) {
-                    scanField(field);
-                }
+            // if (reflectOnFields) {
+            Field[] fields = c.getDeclaredFields();
+            PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
+            for (Field field : c.getDeclaredFields()) {
+                scanField(field);
             }
+            // }
 
             Method[] methods = c.getDeclaredMethods();
             PackedDevToolsIntegration.INSTANCE.reflectMembers(c, methods);
@@ -183,6 +176,13 @@ public final class BeanHookScanner {
                     scanMethod(m);
                 }
             }
+        }
+        
+        
+
+        // Call into every BeanScanner and tell them its all over
+        for (ExtensionEntry e : extensions.values()) {
+            e.scanner.onProcessingStop();
         }
     }
 

@@ -33,7 +33,7 @@ public final class ExtensionBeanSetup extends BeanSetup {
 
     /** A handle that can access BeanConfiguration#beanHandle. */
     private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "beanHandle",
-            PackedBeanHandler.class);
+            PackedBeanCustomizer.class);
 
     /** The extension the bean is a part of. */
     public final ExtensionSetup extension;
@@ -48,7 +48,7 @@ public final class ExtensionBeanSetup extends BeanSetup {
     }
 
     public static ExtensionBeanSetup from(ExtensionBeanConfiguration<?> configuration) {
-        PackedBeanHandler<?> bh = (PackedBeanHandler<?>) VH_HANDLE.get((BeanConfiguration) configuration);
+        PackedBeanCustomizer<?> bh = (PackedBeanCustomizer<?>) VH_HANDLE.get((BeanConfiguration) configuration);
         return (ExtensionBeanSetup) bh.bean();
     }
 }

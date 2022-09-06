@@ -21,26 +21,19 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanHandler;
-import app.packed.operation.OperationConfiguration;
+import app.packed.bean.BeanCustomizer;
 
 /**
- * The implementation of {@link BeanHandler}.
+ * The implementation of {@link BeanCustomizer}.
  * 
- * @apiNote we could just let {@link BeanSetup} implement {@link BeanHandler}, but we choose not to, to avoid parameterizing
+ * @apiNote we could just let {@link BeanSetup} implement {@link BeanCustomizer}, but we choose not to, to avoid parameterizing
  *          {@link BeanSetup}.
  */
-public /* primitive */ record PackedBeanHandler<T> (BeanSetup bean) implements BeanHandler<T> {
+public /* primitive */ record PackedBeanCustomizer<T> (BeanSetup bean) implements BeanCustomizer<T> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration functionalOperationBuilder(Object functionInstance) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PackedBeanHandler<T> addWiringAction(Runnable action) {
+    public PackedBeanCustomizer<T> onWireRun(Runnable action) {
         requireNonNull(action, "action is null");
         bean.wiringActions.add(action);
         return this;

@@ -20,15 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
-import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.bean.hooks.PackedBeanMember;
 import internal.app.packed.container.ExtensionSetup;
 
-/** Implementation if OperationBuilder. */
-public final class PackedOperationBuilder implements OperationConfiguration {
+/** Implementation of {@link OperationCustomizer}. */
+public final class PackedOperationCustomizer implements OperationCustomizer {
 
     /** The bean the operation is a part of. */
     final BeanSetup bean;
@@ -40,7 +40,7 @@ public final class PackedOperationBuilder implements OperationConfiguration {
     /** Supplies a mirror for the operation */
     Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
 
-    //Key<OperationPack> operationPackKey;
+    // Key<OperationPack> operationPackKey;
 
     /** The bean that invokes the operation. */
     final ExtensionBeanSetup operatorBean;
@@ -52,7 +52,7 @@ public final class PackedOperationBuilder implements OperationConfiguration {
     /**
      * @param member
      */
-    public PackedOperationBuilder(PackedBeanMember<?> member, ExtensionBeanSetup operatorBean, MethodHandle methodHandle) {
+    public PackedOperationCustomizer(PackedBeanMember<?> member, ExtensionBeanSetup operatorBean, MethodHandle methodHandle) {
         this.bean = member.bean;
         this.extensionSetup = member.operator;
         this.target = member;
@@ -63,7 +63,7 @@ public final class PackedOperationBuilder implements OperationConfiguration {
     public int build() {
         int p = packId;
         if (p == -1) {
-           // p = packId = operatorBean.operationPack(null).next();
+            // p = packId = operatorBean.operationPack(null).next();
         }
         build0();
         return p;
@@ -74,15 +74,15 @@ public final class PackedOperationBuilder implements OperationConfiguration {
         bean.addOperation(os);
     }
 
-    public OperationConfiguration specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        requireNonNull(supplier, "supplier is null");
-        this.mirrorSupplier = supplier;
-        return (OperationConfiguration) this;
+    /** {@inheritDoc} */
+    @Override
+    public <T> T computeInvoker(Class<T> handleType) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public <T> T computeHandle(Class<T> handleType) {
-        return null;
+    public OperationCustomizer specializeMirror(Supplier<? extends OperationMirror> supplier) {
+        this.mirrorSupplier = requireNonNull(supplier, "supplier is null");
+        return this;
     }
 }

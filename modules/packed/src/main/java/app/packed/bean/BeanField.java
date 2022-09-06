@@ -24,8 +24,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanProcessor.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.dependency.BeanDependency;
+import app.packed.operation.OperationCustomizer;
 import internal.app.packed.bean.hooks.PackedBeanField;
 
 /**
@@ -44,7 +43,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * represent a proper key.
      * <p>
      * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-     * key. As {@link BeanDependency} is typically used in cases where this is needed instead of this class.
+     * key. As {@link BeanDependency} is typically used in cases where this would be needed.
      * 
      * @return a key representing the field
      * 
@@ -73,7 +72,7 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
      * @throws IllegalArgumentException
      *             if the specified operator is not a direct ancestor of the bean that declares the field
      */
-    OperationConfiguration newGetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationCustomizer newGetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * @param operator
@@ -91,14 +90,14 @@ public sealed interface BeanField extends BeanElement permits PackedBeanField {
     // fordi
     // de altid bare laesaer den volatile vaerdi. Saa de har aldrig nogle gettere
     // Har stadig ikke en usecase for 2 VarHandle. Men get plus set, er dog ikke sikker paa det er noget vi vil supportere
-    OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
+    OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
      * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
      * 
      * @return an operation configuration object
      */
-    OperationConfiguration newSetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationCustomizer newSetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * {@return the underlying field represented as a {@code Variable}.}
@@ -128,7 +127,7 @@ interface Zandbox {
     // Or maybe just rawVarHandle() on IOH
     //// Ideen var lidt at man kunne kalde den her metode for at faa extra
     // Varhandles hvis man havde angivet mere end en access mode
-    default VarHandle varHandleOf(OperationConfiguration handle) {
+    default VarHandle varHandleOf(OperationCustomizer handle) {
         throw new UnsupportedOperationException();
     }
 }

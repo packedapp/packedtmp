@@ -22,9 +22,17 @@ import app.packed.operation.OperationMirror;
 /**
  * An operation that creates or destroys a lifetime.
  */
-// Har vi two subklasses????
-public class LifetimeOperationMirror extends /* Nested */ OperationMirror {
+// Taenker ikke 
+public final class LifetimeOperationMirror extends /* Nested */ OperationMirror {
 
+    
+    // Wehether or not this lifetime operation concerns the bean that defines it.
+    // Or a container
+    // Men 
+    public boolean managesOwnBean() {
+        return false; //managedLifetime.isContainer(); maybe we don't need a method
+    }
+    
     // Hmmm.. IDK Hvorfor skal den vaere paa en seperat bean (for beans?)
     // Kan vel ligges paa en ExtensionBean taenker jeg???
     public LifetimeMirror managesLifetime() {

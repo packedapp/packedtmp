@@ -22,14 +22,14 @@ import app.packed.application.BuildException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.OperationConfiguration;
+import app.packed.operation.OperationCustomizer;
 
 /** An extension point for {@link EntryPointExtension}. */
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {
 
     EntryPointExtensionPoint() {}
     
-    public OperationConfiguration specializeMirror(OperationConfiguration configuration, int id, Supplier<? extends EntryPointOperationMirror> supplier) {
+    public OperationCustomizer specializeMirror(OperationCustomizer configuration, int id, Supplier<? extends EntryPointOperationMirror> supplier) {
         // Ved ikke lige helt hvordan den skal fungere
         return configuration;
     }

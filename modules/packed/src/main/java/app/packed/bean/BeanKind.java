@@ -40,22 +40,22 @@ public enum BeanKind {
 // Container == Extension paa alt paanaer injection visibility
 
 // Scoped vs unscoped
-
-enum BeanLifetime {
-
-    /** Lives and dies with the container it is installed into. */
-    CONTAINER,
-
-    // Instantiated by an extensions that
-    // A single ideally operates within it
-    OPERATION,
-
-    // Instantiated and deconstructed by an extension and some point (For example, JPA entity)
-    MANAGED,
-
-    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
-    CONSTRUCTED,
-
-    /** Constructed by other people. For example a bean that must verified at some point. */
-    UNMANAGED;
-}
+//
+//enum BeanLifetime {
+//
+//    /** Lives and dies with the container it is installed into. */
+//    CONTAINER,
+//
+//    // Instantiated by an extensions that
+//    // A single ideally operates within it
+//    OPERATION,
+//
+//    // Instantiated and deconstructed by an extension and some point (For example, JPA entity)
+//    MANAGED,
+//
+//    /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
+//    CONSTRUCTED,
+//
+//    /** Constructed by other people. For example a bean that must verified at some point. */
+//    UNMANAGED;
+//}

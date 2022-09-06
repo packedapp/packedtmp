@@ -14,7 +14,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.Realm;
 import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
-import internal.app.packed.bean.hooks.BeanHookScanner;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.BeanInjectionManager;
@@ -59,10 +58,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
             this.injectionManager = null;
         }
 
-        if (builder.sourceType != SourceType.NONE) {
-            new BeanHookScanner(this).scan();
-        }
-
         // Wire the hook model
         if (beanModel != null) {
             // hookModel.onWire(this);
@@ -72,6 +67,10 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         }
     }
 
+    
+    final void initializeNameWithPrefix0(String name) {
+        initializeNameWithPrefix(name);
+    }
     public void addOperation(OperationSetup operation) {
         operations.add(requireNonNull(operation));
     }

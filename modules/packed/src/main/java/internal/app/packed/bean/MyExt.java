@@ -21,7 +21,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 
 import app.packed.application.App;
-import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanMethod;
 import app.packed.bean.BeanProcessor;
@@ -50,14 +49,16 @@ public class MyExt extends BaseAssembly {
             return new BeanProcessor() {
 
                 @Override
-                public void onProcessStart() {
+                public void onProcessingStart() {
                     if (!beanClass().isAnnotationPresent(Deprecated.class)) {
-                        throw new BeanDefinitionException("Beans that use @Foo must be annotated with Deprecated ");
+               //         failWith("Beans that use @Foo must be annotated with @Deprecated");
                     }
                 }
 
                 @Override
-                public void onMethod(BeanMethod method) {}
+                public void onMethod(BeanMethod method) {
+                    System.out.println("Nice method " + method.method());
+                }
             };
         }
     }

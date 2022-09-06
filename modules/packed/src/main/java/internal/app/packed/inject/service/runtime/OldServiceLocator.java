@@ -25,11 +25,11 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.inject.Provider;
-import app.packed.operation.dependency.BeanDependency.ProvisionHook;
 import app.packed.service.ServiceExtension;
 
 /**

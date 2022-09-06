@@ -3,7 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
-import internal.app.packed.bean.PackedBeanHandler;
+import internal.app.packed.bean.PackedBeanCustomizer;
 
 /**
  * The base configuration class for a bean.
@@ -11,7 +11,7 @@ import internal.app.packed.bean.PackedBeanHandler;
 public class BeanConfiguration {
 
     /** The bean handle. */
-    final PackedBeanHandler<?> beanHandle;
+    final PackedBeanCustomizer<?> beanHandle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -19,14 +19,14 @@ public class BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public BeanConfiguration(BeanHandler<?> handle) {
-        this.beanHandle = requireNonNull((PackedBeanHandler<?>) handle, "handle is null");
+    public BeanConfiguration(BeanCustomizer<?> handle) {
+        this.beanHandle = requireNonNull((PackedBeanCustomizer<?>) handle, "handle is null");
     }
 
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanHandler#beanClass()
+     * @see BeanCustomizer#beanClass()
      */
     public final Class<?> beanClass() {
         return beanHandle.beanClass();
@@ -35,7 +35,7 @@ public class BeanConfiguration {
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanHandler#beanKind()
+     * @see BeanCustomizer#beanKind()
      */
     public final BeanKind beanKind() {
         return beanHandle.bean().beanKind();
@@ -59,7 +59,7 @@ public class BeanConfiguration {
     }
 
     /** {@return a handle for the configuration of the bean.} */
-    protected BeanHandler<?> handle() {
+    protected BeanCustomizer<?> handle() {
         return beanHandle;
     }
 

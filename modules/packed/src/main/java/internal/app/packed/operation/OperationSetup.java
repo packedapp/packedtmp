@@ -48,7 +48,7 @@ public final class OperationSetup {
     /** The operator of the operation. */
     public final ExtensionBeanSetup operatorBean;
     
-    OperationSetup(PackedOperationBuilder builder) {
+    OperationSetup(PackedOperationCustomizer builder) {
         this.bean = builder.bean;
         this.operationTarget = builder.target;
         this.operatorBean = builder.operatorBean;

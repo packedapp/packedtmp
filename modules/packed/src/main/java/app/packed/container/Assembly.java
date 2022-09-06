@@ -40,8 +40,8 @@ import internal.app.packed.util.LookupUtil;
  * Assemblies are composable via linking.
  * 
  * <p>
- * Subclasses of this class supports 2 type based annotations. . Which
- * controls how containers and beans are added respectively.
+ * Subclasses of this class supports 2 type based annotations. . Which controls how containers and beans are added
+ * respectively.
  * <p>
  * Packed does not support any annotations on fields or methods. And will never perform any kind of reflection based
  * introspection of subclasses.
@@ -57,7 +57,7 @@ public abstract class Assembly {
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
-     * The configuration object all calls to.
+     * The configuration of the container that this assembly defines.
      * <p>
      * The value of this field goes through 3 states:
      * <p>
@@ -65,7 +65,7 @@ public abstract class Assembly {
      * <li>Initially, this field is null, indicating that the container instance has not yet been used to build
      * anything.</li>
      * <li>Then, as a part of the build process, it is initialized with the actual container configuration object.</li>
-     * <li>Finally, {@link #USED} is set to indicate that the assembly has been used.</li>
+     * <li>Finally, {@link ContainerConfiguration#USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
@@ -75,11 +75,12 @@ public abstract class Assembly {
 
     /** {@return a descriptor for the application being built.} */
     protected final ApplicationBuildInfo applicationInfo() {
-        return container().container.application.info;
+        return configuration().container.application.info;
     }
 
     /**
-     * Invoked by the runtime as part of the build process. This is where you should compose the application
+     * Invoked by the runtime as part of the build process. This method must be overridden by the application developer in
+     * order to configure the application.
      * <p>
      * This method will never be invoked more than once for a given assembly instance.
      * <p>
@@ -88,9 +89,9 @@ public abstract class Assembly {
     protected abstract void build();
 
     /**
-     * Checks that {@link #build()} has not already been invoked by the framework.
+     * Checks that {@link #build()} has not yet been invoked by the framework.
      * <p>
-     * This method is typically used by assemblies that define configuration methods that must be called before
+     * This method is typically used by assemblies that define configuration methods that can only be called before
      * {@link #build()}. Making sure that the assembly is still in a state to be configurable.
      * 
      * @throws IllegalStateException
@@ -98,7 +99,7 @@ public abstract class Assembly {
      */
     protected final void checkConfigurable() {
         if (configuration != null) {
-            throw new IllegalStateException("#build has already been called on the Assembly");
+            throw new IllegalStateException("Assembly#build has already been called");
         }
     }
 
@@ -111,7 +112,7 @@ public abstract class Assembly {
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
-    protected final ContainerConfiguration container() {
+    protected final ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
@@ -152,7 +153,7 @@ public abstract class Assembly {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
         } else {
-            // Can be this thread (recursively called) or another thread that is already using the assembly.
+            // Assembly is in the process of being used. Typically happens, if an assembly is linked recursively.
             throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
     }
@@ -162,18 +163,21 @@ public abstract class Assembly {
      * Unless your private
      * 
      * <p>
-     * Lookup obejcts are used throughout any beans defined within this assembly. Not only in the root contianer
+     * If you choose to use this method. You will typically only use it once and as the first statement in {@link #build()}.
+     * <p>
+     * Lookup objects are used throughout any beans defined within this assembly. Not only in the root contianer
      * 
      * @param lookup
      *            the lookup object
      */
-    // ??? Is this beans only????? Should we put it there? IDK
-    // Maaske... Kunne vaere super fedt jo hvis vi kunne
-    // Mnahhh, altsaa hvis vi faar noget FN paa et tidspunkt.
-    // Hvor vi tager reflection (a.la. Factory.ofMethod) saa
-    // skal vi jo ogsaa bruge den der. IDK
+    // For know this is bean install only. For all beans defined within the assembly.
+    
+    // If we at some point get reflection Ops/Fns as in main(Op operation)
+    // fx via FN.ofMethod(Method) then we might revisit it.
+    // And extend it to functions
+    // I'm not totally crazy about it though.
     protected final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        container().container.userRealm.lookup(lookup);
+        requireNonNull(lookup, "lookup cannot be null");
+        configuration().container.userRealm.lookup(lookup);
     }
 }

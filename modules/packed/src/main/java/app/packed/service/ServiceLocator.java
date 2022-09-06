@@ -29,6 +29,7 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
+import app.packed.bean.BeanDependency.ProvisionHook;
 import app.packed.bean.BeanExtension;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
@@ -39,7 +40,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provider;
-import app.packed.operation.dependency.BeanDependency.ProvisionHook;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.inject.service.PackedServiceLocator;
 import internal.app.packed.util.LookupUtil;
@@ -487,7 +487,7 @@ public interface ServiceLocator {
         // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
         public void provideAll(ServiceLocator injector) {
             extension();
-            container().use(BeanExtension.class).provideAll(injector);
+            container().use(ServiceExtension.class).provideAll(injector);
         }
 
         /**
@@ -514,12 +514,12 @@ public interface ServiceLocator {
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
             extension();
-            return container().use(BeanExtension.class).providePrototype(implementation);
+            return container().use(ServiceExtension.class).providePrototype(implementation);
         }
 
         public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
             extension();
-            return container().use(BeanExtension.class).providePrototype(factory);
+            return container().use(ServiceExtension.class).providePrototype(factory);
         }
 
         private static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {

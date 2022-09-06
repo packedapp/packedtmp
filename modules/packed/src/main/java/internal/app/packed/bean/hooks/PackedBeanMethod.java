@@ -21,12 +21,11 @@ import java.lang.reflect.Method;
 import app.packed.bean.BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
-import app.packed.operation.OperationConfiguration;
-import app.packed.operation.OperationInvocationType;
+import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationTargetMirror;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.PackedOperationBuilder;
+import internal.app.packed.operation.PackedOperationCustomizer;
 
 /** Internal implementation of BeanMethod */
 public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanMethod {
@@ -65,8 +64,8 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
 
     /** {@inheritDoc} */
     @Override
-    public OperationConfiguration newOperation(ExtensionBeanConfiguration<?> operator, OperationInvocationType operationType) {
-        return new PackedOperationBuilder(this, ExtensionBeanSetup.from(operator), newMethodHandle());
+    public OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator) {
+        return new PackedOperationCustomizer(this, ExtensionBeanSetup.from(operator), newMethodHandle());
     }
 
     /** An operation target mirror for a bean method.  */

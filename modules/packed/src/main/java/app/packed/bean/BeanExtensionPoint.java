@@ -26,35 +26,39 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /** Creates a new bean extension point */
                                              /* package-private */ BeanExtensionPoint() {}
 
-    public BeanHandler.Builder<?> beanBuilder(BeanKind kind) {
-        return PackedBeanHandleBuilder.ofNone(useSite(), kind, extension().container);
+    /**
+     * @return a new builder
+     */
+    public BeanCustomizer.Builder<?> beanBuilder() {
+        return PackedBeanHandleBuilder.ofNone(useSite(), BeanKind.FUNCTIONAL, extension().container);
     }
 
-    public <T> BeanHandler.Builder<T> beanBuilderFromClass(BeanKind kind, Class<T> implementation) {
+    public <T> BeanCustomizer.Builder<T> beanBuilderFromClass(BeanKind kind, Class<T> implementation) {
         return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
     }
 
-    public <T> BeanHandler.Builder<T> beanBuilderFromFactory(BeanKind kind, Factory<T> factory) {
+    public <T> BeanCustomizer.Builder<T> beanBuilderFromFactory(BeanKind kind, Factory<T> factory) {
         return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
     }
 
-    public <T> BeanHandler.Builder<T> beanBuilderFromInstance(BeanKind kind, T instance) {
-        return PackedBeanHandleBuilder.ofInstance(useSite(), kind, extension().container, instance);
+    public <T> BeanCustomizer.Builder<T> beanBuilderFromInstance(T instance) {
+        // Is always container...
+        return PackedBeanHandleBuilder.ofInstance(useSite(), BeanKind.CONTAINER, extension().container, instance);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation);
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
+        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, extension().container, implementation).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, extension().container, factory).ownedBy(useSite()).build();
+        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, extension().container, factory).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanHandler<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, extension().container, instance).ownedBy(useSite()).build();
+        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, extension().container, instance).ownedBy(useSite()).build();
         return new ExtensionBeanConfiguration<>(handle);
     }
 

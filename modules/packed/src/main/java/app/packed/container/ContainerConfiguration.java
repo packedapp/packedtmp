@@ -37,7 +37,7 @@ public class ContainerConfiguration {
      * @param handle
      *            the container handle
      */
-    public ContainerConfiguration(ContainerHandle handle) {
+    public ContainerConfiguration(ContainerCustomizer handle) {
         this.container = requireNonNull((PackedContainerDriver) handle, "handle is null").setup;
     }
 
@@ -138,7 +138,7 @@ public class ContainerConfiguration {
      * @return the component that was linked
      */
     //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
-    public ContainerMirror link(ContainerHandle driver, Assembly assembly, Wirelet... wirelets) {
+    public ContainerMirror link(ContainerCustomizer driver, Assembly assembly, Wirelet... wirelets) {
         PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
 
         // Check that the container is still configurable
@@ -214,16 +214,17 @@ public class ContainerConfiguration {
      * 
      * @param <E>
      *            the type of extension to return
-     * @param extensionType
-     *            the type of extension to return
+     * @param extensionClass
+     *            the Class object corresponding to the extension type
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the underlying container is no longer configurable and an extension of the specified type has not ben
+     *             if the underlying container is no longer configurable and the specified type of extension has not been
      *             used previously
      * @see #extensionsTypes()
+     * @see BaseAssembly#use(Class)
      */
-    public final <E extends Extension<?>> E use(Class<E> extensionType) {
-        return container.useExtension(extensionType);
+    public final <E extends Extension<?>> E use(Class<E> extensionClass) {
+        return container.useExtension(extensionClass);
     }
 }
 

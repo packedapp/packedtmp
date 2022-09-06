@@ -20,21 +20,22 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanCustomizer;
+import app.packed.bean.BeanCustomizer.Builder;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanHandler;
-import app.packed.bean.BeanHandler.Builder;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanProcessor;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
+import internal.app.packed.bean.hooks.BeanHookScanner;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
 
 /** Implementation of BeanHandle.Builder. */
-public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> {
+public final class PackedBeanHandleBuilder<T> implements BeanCustomizer.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
     final Class<?> beanClass;
@@ -87,7 +88,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanHandler<T> build() {
+    public BeanCustomizer<T> build() {
         checkNotBuild();
         RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
 
@@ -101,7 +102,13 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
         } else {
             bean = new ExtensionBeanSetup(owner.extension(), this, realm);
         }
-        return new PackedBeanHandler<>(bean);
+
+        // Scan the bean class for annotations unless the bean class is void or scanning is disabled
+        if (sourceType != SourceType.NONE) {
+            new BeanHookScanner(bean).scan();
+        }
+
+        return new PackedBeanCustomizer<>(bean);
     }
 
     /** {@inheritDoc} */
@@ -160,7 +167,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanHandler.Builder<T> 
 
     /** {@inheritDoc} */
     @Override
-    public Builder<T> beanScanner(BeanProcessor scanner) {
+    public Builder<T> beanProcess(BeanProcessor scanner) {
         requireNonNull(scanner, "scanner is null");
         if (kind == BeanKind.FUNCTIONAL) {
             throw new UnsupportedOperationException("Cannot specify a scanner on a functional bean");

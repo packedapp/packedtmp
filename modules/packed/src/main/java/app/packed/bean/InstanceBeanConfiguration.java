@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import app.packed.lifetime.managed.RunState;
 
 /**
- * Base configuration for beans that creates one or more instances of {@link BeanConfiguration#beanClass()} at runtime.
+ * A base configuration class for beans that creates instances of {@link BeanConfiguration#beanClass()} at runtime.
  * 
  * @param <T>
  *            the type of bean instances that will be created at runtime
@@ -35,7 +35,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanHandler<T> handle) {
+    public InstanceBeanConfiguration(BeanCustomizer<T> handle) {
         super(handle);
     }
 
@@ -71,8 +71,8 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    protected BeanHandler<T> handle() {
-        return (BeanHandler<T>) super.handle();
+    protected BeanCustomizer<T> handle() {
+        return (BeanCustomizer<T>) super.handle();
     }
 
     /** {@inheritDoc} */

@@ -16,6 +16,7 @@
 package app.packed.operation;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
@@ -68,10 +69,48 @@ public class OperationMirror implements Mirror {
      */
     public OperationMirror() {}
 
+    /** {@return the application the operation belongs to.} */
+    public ApplicationMirror application() {
+        return operation().bean.application.mirror();
+    }
+
+    /** {@return the services that are available at this injection site.} */
+    final Set<Key<?>> availableServices() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return the bean the operation belongs to.} */
+    public BeanMirror bean() {
+        return operation().bean.mirror();
+    }
+
+    /** {@return the container the operation belongs to.} */
+    public ContainerMirror container() {
+        return operation().bean.parent.mirror();
+    }
+
+    final boolean createsNewThread() {
+        // synchronous (in calling thread)
+        // Spawn (er jo en slags asynchronous...)
+        // Hoere det til i noget meta data per extension???
+        return false;
+    }
+
+    /** {@return any dependencies that the operation takes.} */
+    public List<DependencyMirror> dependencies() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof OperationMirror m && operation() == m.operation();
+    }
+
+    /** {@return how errors are handle when calling the operation.} */
+    final Object /* OperationErrorHandlingMirror */ errorHandling() {
+        // field??? Unhandled?
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -80,20 +119,19 @@ public class OperationMirror implements Mirror {
         return operation().hashCode();
     }
 
-    /**
-     * {@return the internal configuration of operation.}
-     * 
-     * @throws IllegalStateException
-     *             if {@link #initialize(OperationSetup)} has not been called.
-     */
-    private OperationSetup operation() {
-        OperationSetup o = operation;
-        if (o == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return o;
+    final Optional<Class<? extends Annotation>> hook() {
+        // Enten Provide eller ogsaa MetaAnnotation
+        // use source().annotationReader();
+
+        // Hvad hvis vi har @ScheduleAtFixRated + ScheduleAtFlatRate
+        // der sammen laver en operation
+
+        // Maybe this is on target???
+        // Maybe it is a list
+        throw new UnsupportedOperationException();
     }
+
+    //////////// Tvivlsomme
 
     /**
      * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
@@ -108,23 +146,8 @@ public class OperationMirror implements Mirror {
         this.operation = operation;
     }
 
-    /** {@return the application the operation belongs to.} */
-    public ApplicationMirror application() {
-        return operation().bean.application.mirror();
-    }
-
-    /** {@return the bean the operation belongs to.} */
-    public BeanMirror bean() {
-        return operation().bean.mirror();
-    }
-
-    /** {@return the container the operation belongs to.} */
-    public ContainerMirror container() {
-        return operation().bean.parent.mirror();
-    }
-
-    /** {@return any dependencies that the operation takes.} */
-    public List<DependencyMirror> dependencies() {
+    /** {@return any interceptors that are applied to the operation.} */
+    final List<Object /* OperationInterceptorMirror */> interceptors() {
         throw new UnsupportedOperationException();
     }
 
@@ -132,18 +155,6 @@ public class OperationMirror implements Mirror {
     public Class<? extends Extension<?>> invokedBy() {
         // ExtensionMirror??? Hmm, saa returnere vi en Single?
         return operation().operatorBean.extension.extensionType;
-    }
-
-    /** {@return the target of the operation.} */
-    public OperationTargetMirror target() {
-        return operation().operationTarget.mirror();
-    }
-
-    //////////// Tvivlsomme
-
-    /** {@return the services that are available at this injection site.} */
-    final Set<Key<?>> availableServices() {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -174,36 +185,6 @@ public class OperationMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    final boolean createsNewThread() {
-        // synchronous (in calling thread)
-        // Spawn (er jo en slags asynchronous...)
-        // Hoere det til i noget meta data per extension???
-        return false;
-    }
-
-    /** {@return how errors are handle when calling the operation.} */
-    final Object /* OperationErrorHandlingMirror */ errorHandling() {
-        // field??? Unhandled?
-        throw new UnsupportedOperationException();
-    }
-
-    final Optional<Class<? extends Annotation>> hook() {
-        // Enten Provide eller ogsaa MetaAnnotation
-        // use source().annotationReader();
-
-        // Hvad hvis vi har @ScheduleAtFixRated + ScheduleAtFlatRate
-        // der sammen laver en operation
-
-        // Maybe this is on target???
-        // Maybe it is a list
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return any interceptors that are applied to the operation.} */
-    final List<Object /* OperationInterceptorMirror */> interceptors() {
-        throw new UnsupportedOperationException();
-    }
-
     final String name() {
         // Maaske maa operationer godt have det samme navn????
 
@@ -222,6 +203,26 @@ public class OperationMirror implements Mirror {
         return "";
     }
 
+    /**
+     * {@return the internal configuration of operation.}
+     * 
+     * @throws IllegalStateException
+     *             if {@link #initialize(OperationSetup)} has not been called.
+     */
+    private OperationSetup operation() {
+        OperationSetup o = operation;
+        if (o == null) {
+            throw new IllegalStateException(
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
+        }
+        return o;
+    }
+
+    public final MethodType invocationType() {
+        // OperationTypeMirror? 
+        throw new UnsupportedOperationException();
+    }
+    
     final void printDependencyTree() {
         // Det er jo bare en trae af ServiceDependency
 
@@ -267,6 +268,11 @@ public class OperationMirror implements Mirror {
         // Type genericReturnType?
         // declaredResultType kan include wrapperen...
         return void.class;
+    }
+
+    /** {@return the target of the operation.} */
+    public OperationTargetMirror target() {
+        return operation().operationTarget.mirror();
     }
 
     public static <T extends OperationMirror> Stream<T> findAll(ApplicationMirror application, Class<T> operationType) {

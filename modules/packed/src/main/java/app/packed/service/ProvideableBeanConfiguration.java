@@ -18,10 +18,10 @@ package app.packed.service;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanHandler;
+import app.packed.bean.BeanCustomizer;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandler;
+import internal.app.packed.bean.PackedBeanCustomizer;
 import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.InternalServiceUtil;
 import internal.app.packed.inject.service.build.BeanInstanceServiceSetup;
@@ -38,10 +38,10 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @param handle
      *            the bean driver to use for creating the bean
      */
-    public ProvideableBeanConfiguration(BeanHandler<T> handle) {
+    public ProvideableBeanConfiguration(BeanCustomizer<T> handle) {
         super(handle);
-        this.sb = new ServiceableBean((PackedBeanHandler<?>) handle);
-        handle.addWiringAction(() -> sb.onWired());
+        this.sb = new ServiceableBean((PackedBeanCustomizer<?>) handle);
+        handle.onWireRun(() -> sb.onWired());
     }
 
 
@@ -112,9 +112,9 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         Key<?> provide;
 
-        final PackedBeanHandler<?> handle;
+        final PackedBeanCustomizer<?> handle;
 
-        ServiceableBean(PackedBeanHandler<?> handle) {
+        ServiceableBean(PackedBeanCustomizer<?> handle) {
             this.handle = handle;
             this.bean = handle.bean();
         }

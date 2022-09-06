@@ -98,12 +98,11 @@ public abstract class BaseAssembly extends Assembly {
         service().exportAll();
     }
 
-
     /**
-     * Sets the name of the root container defined by this assembly. The name must consists only of alphanumeric characters
-     * and '_', '-' or '.'. The name is case sensitive.
+     * Sets the name of this assembly's container. The name must consists only of alphanumeric characters and '_', '-' or
+     * '.'. The name is case sensitive.
      * <p>
-     * This method should be called as the first thing when configuring a container.
+     * This method should be called as the first thing when configuring this assembly.
      * <p>
      * If no name is set using this method. The framework will automatically assign a name to the container, in such a way
      * that it will have a unique name among other sibling container.
@@ -118,28 +117,30 @@ public abstract class BaseAssembly extends Assembly {
      *             if called from outside {@link #build()}
      */
     protected final void named(String name) {
-        container().named(name);
+        configuration().named(name);
     }
 
     /**
-     * Returns an instance of the specified extension for the root container defined by this assembly.
+     * Returns an extension of the specified type.
      * <p>
-     * The framework will lazily create a single instance of a particular extension when requested. Returning the same
-     * instance for subsequent calls.
+     * If this is the first time an extension of the specified type has been requested. This method will create a new
+     * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
+     * type.
      * 
-     * @param <T>
+     * @param <E>
      *            the type of extension to return
-     * @param extensionType
-     *            the type of extension to return
-     * @return an extension instance of the requested type
+     * @param extensionClass
+     *            the Class object corresponding to the extension type
+     * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the container is no longer configurable and the extension has not been created previously
-     * @see ContainerConfiguration#use(Class)
+     *             if the assembly's container is no longer configurable and the specified type of extension has not been
+     *             used previously
+     * @implNote this method delegates all calls to ContainerConfiguration#use(Class)
      */
-    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
-        return container().use(extensionType);
+    protected final <E extends Extension<E>> E use(Class<E> extensionClass) {
+        return configuration().use(extensionClass);
     }
-    
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -174,7 +175,7 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this container will have have component as its
-     * parent. 
+     * parent.
      *
      * @param instance
      *            the component instance to install
@@ -194,7 +195,7 @@ public abstract class BaseAssembly extends Assembly {
      *             if the specified extension type is {@link Extension}
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container().isExtensionUsed(extensionType);
+        return configuration().isExtensionUsed(extensionType);
     }
 
     /**
@@ -207,9 +208,8 @@ public abstract class BaseAssembly extends Assembly {
      * @return a mirror of the container that was linked
      * @see ContainerExtension#link(Assembly, Wirelet...)
      */
-    // Why not wire + wirelets???
     protected final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return container().link(assembly, wirelets);
+        return configuration().link(assembly, wirelets);
     }
 
     protected final ContainerMirror link2(Assembly assembly, Consumer<Linker> linker) {
@@ -217,7 +217,7 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     public interface Linker {
-        
+
     }
 
     /**
@@ -230,7 +230,7 @@ public abstract class BaseAssembly extends Assembly {
      * @see ContainerConfiguration#selectWirelets(Class)
      */
     protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return container().selectWirelets(wireletClass);
+        return configuration().selectWirelets(wireletClass);
     }
 
     /**
@@ -238,8 +238,8 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * This method is shortcut for ....
      * <p>
-     * The runtime will use {@link Factory#factoryOf(Class)} to find a valid constructor or method to instantiate the service
-     * instance once the injector is created.
+     * The runtime will use {@link Factory#factoryOf(Class)} to find a valid constructor or method to instantiate the
+     * service instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
      * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
@@ -270,7 +270,7 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     protected final void provideAll(ServiceLocator locator) {
-        bean().provideAll(locator);
+        service().provideAll(locator);
     }
 
     /**
@@ -291,31 +291,12 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     protected final <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        return bean().providePrototype(implementation);
+        return service().providePrototype(implementation);
     }
 
     protected final <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        return bean().providePrototype(factory);
+        return service().providePrototype(factory);
     }
-
-//    protected final void requireGuest() {
-//        // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
-//
-//        // Vi skal have en eller anden maade at kunne specificere det her
-//
-//    }
-//
-//    /**
-//     * Returns a {@link ScheduledJobExtension} instance.
-//     * <p>
-//     * Calling this method is short for {@code use(SchedulerExtension.class)}
-//     * 
-//     * @return a time extension instance
-//     * @see #use(Class)
-//     */
-//    protected final ScheduledJobExtension scheduler() {
-//        return use(ScheduledJobExtension.class);
-//    }
 
     /**
      * Returns a {@link ServiceExtension} instance.
@@ -328,20 +309,38 @@ public abstract class BaseAssembly extends Assembly {
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);
     }
-
-//    /**
-//     * Returns a {@link TimeExtension} instance.
-//     * <p>
-//     * Calling this method is short for {@code use(TimeExtension.class)}
-//     * 
-//     * @return a time extension instance
-//     * @see #use(Class)
-//     */
-//    protected final TimeExtension time() {
-//        return use(TimeExtension.class);
-//    }
 }
 
+//protected final void requireGuest() {
+//// requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
+//
+//// Vi skal have en eller anden maade at kunne specificere det her
+//
+//}
+//
+///**
+//* Returns a {@link ScheduledJobExtension} instance.
+//* <p>
+//* Calling this method is short for {@code use(SchedulerExtension.class)}
+//* 
+//* @return a time extension instance
+//* @see #use(Class)
+//*/
+//protected final ScheduledJobExtension scheduler() {
+//return use(ScheduledJobExtension.class);
+//}
+
+///**
+// * Returns a {@link TimeExtension} instance.
+// * <p>
+// * Calling this method is short for {@code use(TimeExtension.class)}
+// * 
+// * @return a time extension instance
+// * @see #use(Class)
+// */
+//protected final TimeExtension time() {
+//    return use(TimeExtension.class);
+//}
 // I don't think they are used that often...
 //protected final void require(Class<?> key) {
 //  service().require(Key.of(key));

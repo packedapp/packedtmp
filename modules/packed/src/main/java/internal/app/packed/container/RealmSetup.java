@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerHandle;
+import app.packed.container.ContainerCustomizer;
 import app.packed.container.Realm;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
@@ -93,7 +93,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
 
     /**
      * @see PackedBeanHandleBuilder#build()
-     * @see ContainerConfiguration#link(ContainerHandle, Assembly, Wirelet...)
+     * @see ContainerConfiguration#link(ContainerCustomizer, Assembly, Wirelet...)
      * @see RealmSetup#close()
      */
     // TODO add for PackedContainerHandleBuilder

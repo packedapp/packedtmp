@@ -36,6 +36,13 @@ import app.packed.operation.OperationMirror;
 //// TreeView<T extends Extension<?>>
 
 // Maaske er den bedre i .container?
+
+
+// Bliver den brugt andre steder end fra Lifetime????
+// Hvis ikke skal vi vel bare embedde den...
+
+
+
 public interface ComponentMirrorTree  {
 
     /** {@return {@code true} if this set contains no mirrors.} */

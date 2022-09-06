@@ -4,8 +4,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
+import app.packed.bean.BeanDependency;
 import app.packed.container.Extension;
-import app.packed.operation.dependency.BeanDependency;
 import app.packed.service.Provide;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.inject.service.runtime.ServiceRegistry;

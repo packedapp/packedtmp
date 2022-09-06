@@ -23,10 +23,13 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanField;
+import app.packed.bean.BeanCustomizer;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMethod;
 import app.packed.bean.BeanProcessor;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.inject.Factory;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.hooks.PackedBeanField;
 import internal.app.packed.bean.hooks.PackedBeanMethod;
@@ -37,6 +40,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.inject.DependencyNode;
 import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.inject.service.ServiceConfiguration;
+import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -258,6 +262,42 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
         injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
+    }
+    
+
+    /**
+     * Provides every service from the specified locator.
+     * 
+     * @param locator
+     *            the locator to provide services from
+     * @throws IllegalArgumentException
+     *             if the specified locator is not implemented by Packed
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+        if (!(locator instanceof AbstractServiceLocator l)) {
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+                    + " are currently not supported, locator type = " + locator.getClass().getName());
+        }
+        checkIsConfigurable();
+        injectionManager.provideAll(l);
+    }
+
+    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
+        // ST.contract throws UOE
+    }
+
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+     // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
+        BeanCustomizer<T> handle = bean().beanBuilderFromClass(BeanKind.UNMANAGED, implementation).build();
+        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
+        return sbc.provide();
+    }
+
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+        BeanCustomizer<T> handle = bean().beanBuilderFromFactory(BeanKind.UNMANAGED, factory).build();
+        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
+        return sbc.provide();
     }
 }
 //

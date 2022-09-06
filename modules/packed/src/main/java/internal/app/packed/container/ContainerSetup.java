@@ -44,13 +44,12 @@ import internal.app.packed.util.ThrowableUtil;
 public final class ContainerSetup extends ComponentSetup {
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
-    private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class, "initialize",
-            void.class, ContainerSetup.class);
+    private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
+            "initialize", void.class, ContainerSetup.class);
 
     /** Supplies a mirror for the container. */
     public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
 
-    
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
     public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
@@ -60,8 +59,8 @@ public final class ContainerSetup extends ComponentSetup {
     public ArrayList<ContainerSetup> containerChildren;
 
     /**
-     * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns
-     * a deterministic view.
+     * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns a
+     * deterministic view.
      */
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
@@ -93,7 +92,8 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, UserRealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
+    public ContainerSetup(ApplicationSetup application, UserRealmSetup realm, PackedContainerDriver handle, @Nullable ContainerSetup parent,
+            Wirelet[] wirelets) {
         super(application, realm, parent);
         requireNonNull(wirelets, "wirelets is null");
 
@@ -227,6 +227,22 @@ public final class ContainerSetup extends ComponentSetup {
         return Stream.concat(Stream.of(this), children.values().stream().flatMap(c -> c.stream()));
     }
 
+    /**
+     * Returns an extension of the specified type.
+     * <p>
+     * If this is the first time an extension of the specified type has been requested. This method will create a new
+     * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
+     * type.
+     * 
+     * @param <E>
+     *            the type of extension to return
+     * @param extensionClass
+     *            the Class object corresponding to the extension type
+     * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             if this container is no longer configurable and the specified type of extension has not been used
+     *             previously
+     */
     @SuppressWarnings("unchecked")
     public <E extends Extension<?>> E useExtension(Class<E> extensionClass) {
         ExtensionSetup extension = useExtensionSetup(extensionClass, /* requested by the user, not another extension */ null);
@@ -255,8 +271,8 @@ public final class ContainerSetup extends ComponentSetup {
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onNew.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
-            // Ny extensions skal installeres indefor Assembly::build 
-            
+            // Ny extensions skal installeres indefor Assembly::build
+
             if (realm.isClosed()) {
                 throw new IllegalStateException("Cannot install new extensions as the container is no longer configurable");
             }

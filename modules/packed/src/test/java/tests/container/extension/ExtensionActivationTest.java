@@ -40,11 +40,11 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
         Program.start(new BaseAssembly() {
             @Override
             public void build() {
-                assertThat(container().extensionTypes()).isEmpty();
+                assertThat(configuration().extensionTypes()).isEmpty();
                 WithMethodInstance.invoked = false;
                 installInstance(new WithMethodInstance());
                 assertThat(WithMethodInstance.invoked).isTrue();
-                assertThat(container().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
+                assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
             }
         });
     }
@@ -54,9 +54,9 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
         Program.start(new BaseAssembly() {
             @Override
             public void build() {
-                assertThat(container().extensionTypes()).isEmpty();
+                assertThat(configuration().extensionTypes()).isEmpty();
                 installInstance(new WithFieldStatic());
-                assertThat(container().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
+                assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
             }
         });
     }
@@ -66,9 +66,9 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
         Program.start(new BaseAssembly() {
             @Override
             public void build() {
-                assertThat(container().extensionTypes()).isEmpty();
+                assertThat(configuration().extensionTypes()).isEmpty();
                 installInstance(new WithFieldInstance());
-                assertThat(container().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
+                assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
             }
         });
     }
@@ -78,11 +78,11 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
         Program.start(new BaseAssembly() {
             @Override
             public void build() {
-                assertThat(container().extensionTypes()).isEmpty();
+                assertThat(configuration().extensionTypes()).isEmpty();
                 WithMethodStatic.invoked = false;
                 installInstance(new WithMethodStatic());
                 assertThat(WithMethodStatic.invoked).isTrue();
-                assertThat(container().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
+                assertThat(configuration().extensionTypes()).containsExactlyInAnyOrder(MyExtension.class);
             }
         });
     }
