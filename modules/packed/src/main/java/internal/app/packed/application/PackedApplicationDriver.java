@@ -35,12 +35,14 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.inject.Factory;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.invoke.InternalInfuser;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -48,6 +50,9 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
+
+    /** An application driver for application drivers. */
+    public static PackedApplicationDriver<Void> PREMORDIAL = new PackedApplicationDriver<>();
 
     final Set<Class<? extends Extension<?>>> bannedExtensions;
 
@@ -63,6 +68,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Optional (flattened) wirelets that will be applied to any applications created by this driver. */
     @Nullable
     public final Wirelet wirelet;
+
+    private PackedApplicationDriver() {
+        this.bannedExtensions = Set.of();
+        this.lifetimeKind = LifetimeKind.STATELESS;
+        // We need to create the exception as well
+        this.mhConstructor = MethodHandles.throwException(void.class, Error.class);
+        this.wirelet = null;
+    }
 
     /**
      * Create a new application driver using the specified builder.
@@ -123,7 +136,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
+    public ApplicationLauncher<A> imageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.BUILD, assembly, wirelets);
         realm.build();
         return new PackedApplicationLauncher<>(this, realm.application);
@@ -200,11 +213,32 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
 
+        /**
+         * All application drivers except {@link PackedApplicationDriver#PREMORDIAL} has either an unmanaged or managed
+         * lifetime.
+         */
         private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
 
         MethodHandle mhConstructor;
 
         private Wirelet wirelet;
+
+        @Nullable
+        InternalFactory<A> factory;
+
+        public Builder(Factory<A> factory) {
+            this.factory = factory == null ? null : InternalFactory.crackFactory(factory);
+
+            // Problemet med at komme laengere er lidt InternalInfuser som er bygget op omkring den faar en klasse
+            // og ikke et internal factory
+
+            // Maybe we will make an actual application????
+            // Paa den maade kan vi ogsaa lettere expose mirroret
+            if (factory != null) {
+                System.out.println(this.factory.dependencies());
+            }
+
+        }
 
         /** {@inheritDoc} */
         @Override

@@ -52,11 +52,11 @@ public final class App {
     // Builds an application but does run instead. Instead returning a launcher that can be used at a later point
     // to run the application.
     public static ApplicationLauncher<Void> build(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.newImage(assembly, wirelets);
+        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
     }
 
     public static ApplicationLauncher<Void> buildReusable(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.newImage(assembly, wirelets);
+        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
     }
 
     /**

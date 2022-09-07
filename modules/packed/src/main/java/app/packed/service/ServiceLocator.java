@@ -322,7 +322,7 @@ public interface ServiceLocator {
      * @see #driver()
      */
     static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+        return driver().imageOf(assembly, wirelets);
     }
 
     static ApplicationLauncher<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {

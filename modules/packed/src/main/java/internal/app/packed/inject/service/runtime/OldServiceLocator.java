@@ -238,7 +238,7 @@ public interface OldServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     static ApplicationLauncher<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+        return driver().imageOf(assembly, wirelets);
     }
 
     // maaske har vi launcher og Image...

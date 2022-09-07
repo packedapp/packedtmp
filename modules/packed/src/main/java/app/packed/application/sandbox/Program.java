@@ -124,7 +124,7 @@ public interface Program extends AutoCloseable {
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
     static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+        return driver().imageOf(assembly, wirelets);
     }
 
     /**

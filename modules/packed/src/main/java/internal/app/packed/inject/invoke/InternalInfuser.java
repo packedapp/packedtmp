@@ -22,17 +22,17 @@ import internal.app.packed.util.OpenClass;
 
 // Used by
 //// ApplicationInstance
-//// Assembly-ContainerHook
+//// Assembly-ContainerHook  (Burde kunne laves med TypeClasses)
 //// Extension (ExtensionModel)
 
 public final class InternalInfuser {
 
-    /** The services provided by this infuser. */
-    final Map<Key<?>, Entry> services;
-
     private final Lookup lookup;
 
     private final List<Class<?>> parameterTypes;
+
+    /** The services provided by this infuser. */
+    final Map<Key<?>, Entry> services;
 
     private InternalInfuser(Builder builder) {
         this.services = Map.copyOf(builder.services);
@@ -71,9 +71,9 @@ public final class InternalInfuser {
 
     public static class Builder {
         private final Class<?> clazz;
-        private final LinkedHashMap<Key<?>, Entry> services = new LinkedHashMap<>();
         private final Lookup lookup;
         private final List<Class<?>> parameterTypes;
+        private final LinkedHashMap<Key<?>, Entry> services = new LinkedHashMap<>();
 
         Builder(Lookup caller, Class<?> clazz, Class<?>... parameterTypes) {
             this.lookup = requireNonNull(caller, "caller is null");
@@ -145,20 +145,6 @@ public final class InternalInfuser {
                 return this;
             }
             
-            public ServiceEntry optionallyViaNullable() {
-                // Is optionally nullable, Can only be tested at runtime
-                nullOptional = true;
-                return this;
-            }
-
-            public ServiceEntry optionallyViaNullable(MethodHandle tester, int... dependencies) {
-                // Is optionally nullable..
-                // Can only be tested at runtime
-                
-                // tester is a faster way to check than original MH + null check.
-                return this;
-            }
-            
             public void invokeExact(MethodHandle methodHandle, int index) {
                 requireNonNull(methodHandle, "methodHandle is null");
                 Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
@@ -168,6 +154,20 @@ public final class InternalInfuser {
 //                }
                 // System.out.println("Adding transfoer " + transformer);
                 builder.add(this, new Entry(this, methodHandle, index));
+            }
+
+            public ServiceEntry optionallyViaNullable() {
+                // Is optionally nullable, Can only be tested at runtime
+                nullOptional = true;
+                return this;
+            }
+            
+            public ServiceEntry optionallyViaNullable(MethodHandle tester, int... dependencies) {
+                // Is optionally nullable..
+                // Can only be tested at runtime
+                
+                // tester is a faster way to check than original MH + null check.
+                return this;
             }
         }
     }

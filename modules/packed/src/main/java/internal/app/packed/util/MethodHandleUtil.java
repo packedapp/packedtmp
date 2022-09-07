@@ -34,6 +34,8 @@ public class MethodHandleUtil {
 
     public static final MethodHandle OPTIONAL_EMPTY = LookupUtil.lookupStaticPublic(Optional.class, "empty", Optional.class);
 
+//    public static final MethodHandle SUPPLIER_GET = LookupUtil.lookupStaticPublic(Supplier.class, "get", Supplier.class, Object.class);
+
     public static final MethodHandle OPTIONAL_OF = LookupUtil.lookupStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
     public static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.lookupStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
@@ -76,4 +78,13 @@ public class MethodHandleUtil {
     public static MethodHandle replaceParameter(MethodHandle target, int position, MethodHandle replaceWith) {
         return MethodHandles.filterArguments(target, position, replaceWith);
     }
+    
+//    public static MethodHandle throwSupplying(MethodType type, Supplier<? extends Throwable> supplier) {
+//       MethodHandle empty = MethodHandles.empty(type);
+//       
+//       empty.asType(type)
+//       MethodHandles.filterArguments( OPTIONAL_EMPTY, 0, null)
+//        return MethodHandles.filterArguments(target, position, replaceWith);
+//    }
+    
 }

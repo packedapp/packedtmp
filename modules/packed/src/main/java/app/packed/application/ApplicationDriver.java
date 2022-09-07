@@ -18,11 +18,14 @@ package app.packed.application;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import app.packed.bean.BeanExtensionPoint;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerWrapperCompanion;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.inject.Factory;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
@@ -51,6 +54,11 @@ import internal.app.packed.application.PackedApplicationDriver;
  * @see App#driver()
  */
 // Environment + Application Interface + Result
+
+// Refactoring
+//// En build(Wirelet... wirelets) metode
+//// Companion objects must be added in order of the recieving MethodHandle
+
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
@@ -107,7 +115,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
 
-
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
@@ -122,7 +129,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     // Andre image optimizations
     //// Don't cache beans info
     /// Nu bliver jeg i tvivl igen... Fx med Tester
-    ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets);
+    ApplicationLauncher<A> imageOf(Assembly assembly, Wirelet... wirelets);
 
     ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets);
 
@@ -152,23 +159,27 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     ApplicationDriver<A> with(Wirelet... wirelets); // not much of usecase anymore I think
 
     /**
-     * Returns a new {@code ApplicationDriver} builder.
+     * Returns a new {@code ApplicationDriver} builder that will build an application driver without a wrapper bean.
      *
      * @return the new builder
      */
-    public static Builder<Void> builder() {
-        return new PackedApplicationDriver.Builder<>();
+    static Builder<Void> builder() {
+        return new PackedApplicationDriver.Builder<>(null);
+    }
+//
+//    static <A> Builder<A> builder(Class<A> wrapperType, MethodHandle wrapperFactory) {
+//        // Maybe only have Factory...
+//        return new PackedApplicationDriver.Builder<>(null);
+//    }
+
+    static <A> Builder<A> builder(Factory<A> wrapperFactory) {
+        return new PackedApplicationDriver.Builder<>(wrapperFactory);
     }
 
-    public static <A> Builder<A> builder(Class<A> wrapperType, MethodHandle wrapperFactory) {
-        return new PackedApplicationDriver.Builder<>();
+    static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<A> wrapperType) {
+        return builder(BeanExtensionPoint.factoryOf(wrapperType).withLookup(caller));
     }
-    
-    public static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<? extends A> wrapperType) {
-        return new PackedApplicationDriver.Builder<>();
-    }
-    
-    
+
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
      * {@link ApplicationDriver#builder()}.
@@ -183,10 +194,20 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         // Hvilket ikke er muligt
 
         // noget optional??? ellers
+        /**
+         * @param companions
+         * @return this builder
+         * @throws UnsupportedOperationException
+         *             if this builder does not have a wrapper
+         */
         default Builder addCompanion(ContainerWrapperCompanion... companions) {
             return this;
         }
 
+        default ApplicationDriver<A> build(Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+        
         <S> ApplicationDriver<S> build(Class<S> wrapperType, MethodHandle wrapperFactory, Wirelet... wirelets);
 
         /**
@@ -236,10 +257,15 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
+        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
+            throw new UnsupportedOperationException();
+        }
+
         default Builder<A> restartable() {
             return this;
         }
 
+        // Det er jo ogsaa en companion
         default Builder<A> resultType(Class<?> resultType) {
             throw new UnsupportedOperationException();
         }
