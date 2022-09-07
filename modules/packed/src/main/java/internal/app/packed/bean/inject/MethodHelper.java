@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanProcessor$BeanMethod;
 import internal.app.packed.inject.DependencyProducer;
 import internal.app.packed.inject.InternalDependency;
 
@@ -36,7 +36,7 @@ public class MethodHelper extends DependencyHolder {
     /** A direct method handle to the field. */
     public final MethodHandle varHandle;
     
-    public MethodHelper(BeanMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
+    public MethodHelper(BeanProcessor$BeanMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(InternalDependency.fromExecutable(method.method()), provideAsConstant, provideAsKey);
         this.modifiers = requireNonNull(method.getModifiers());
         this.varHandle = requireNonNull(mh);

@@ -31,9 +31,9 @@ import internal.app.packed.bean.hooks.PackedBeanField;
  * This class represents a {@link Field} on a bean.
  * 
  * @see BeanExtensionPoint.FieldHook
- * @see BeanProcessor#onField(BeanField)
+ * @see BeanProcessor#onField(BeanProcessor$BeanField)
  */
-public sealed interface BeanField extends BeanElement permits PackedBeanField {
+public sealed interface BeanProcessor$BeanField extends BeanElement permits PackedBeanField {
 
     /** {@return the underlying field.} */
     Field field();
@@ -122,7 +122,7 @@ interface Zandbox {
     // Can only read stuff...
     // Then we can just passe it off to anyone
     // IDK know about usecases
-    BeanField unmodifiable();
+    //BeanProcessor$BeanField unmodifiable();
 
     // Or maybe just rawVarHandle() on IOH
     //// Ideen var lidt at man kunne kalde den her metode for at faa extra

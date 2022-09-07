@@ -32,7 +32,7 @@ import internal.app.packed.bean.hooks.PackedBeanMethod;
  * @see BeanExtensionPoint.MethodHook
  * @see BeanProcessor#onMethod(BeanMethod)
  */
-public sealed interface BeanMethod extends BeanElement permits PackedBeanMethod {
+public sealed interface BeanProcessor$BeanMethod extends BeanElement permits PackedBeanMethod {
 
     /** {@return a factory type for this method.} */
     FactoryType factoryType(); // I don't like the name factoryType.. signature? Coordinates?

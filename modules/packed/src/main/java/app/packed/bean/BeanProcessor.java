@@ -83,14 +83,14 @@ public abstract class BeanProcessor {
         this.setup = new Setup(extension, bean);
     }
 
-    public void onClass(BeanClass clazz) {}
+    public void onClass(BeanProcessor$BeanClass clazz) {}
 
     public void onDependency(BeanDependency dependency) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
-     * is annotated with an annotation that itself is annotated with {@link BeanField.FieldHook} and where
+     * is annotated with an annotation that itself is annotated with {@link BeanProcessor$BeanField.FieldHook} and where
      * {@link FieldHook#extension()} matches the type of this extension.
      * <p>
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
@@ -102,9 +102,9 @@ public abstract class BeanProcessor {
      */
     // onAnnotatedField(Set<Class<? extends Annotation<>> hooks, BeanField));
     // IDK Det kommer lidt an paa variable vil jeg mene...
-    public void onField(BeanField field) {}
+    public void onField(BeanProcessor$BeanField field) {}
 
-    public void onMethod(BeanMethod method) {
+    public void onMethod(BeanProcessor$BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         // We probably want to throw an internal extension exception instead
@@ -147,7 +147,7 @@ public abstract class BeanProcessor {
 
     // This is a place holder for now... Will be ditched it in the future
     // BeanVariable bare
-    public sealed interface BeanElement permits BeanClass, BeanConstructor, BeanField, BeanMethod, BeanDependency {
+    public sealed interface BeanElement permits BeanProcessor$BeanClass, BeanProcessor$BeanConstructor, BeanProcessor$BeanField, BeanProcessor$BeanMethod, BeanDependency {
 
         default BeanProcessor$AnnotationReader annotations() {
             throw new UnsupportedOperationException();

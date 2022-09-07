@@ -32,6 +32,9 @@ package app.packed.inject;
 
 // InaccessibleOperationException???
 // InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
+
+// FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
+// saa factory er et daarligt navn/
 public class InaccessibleMemberException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

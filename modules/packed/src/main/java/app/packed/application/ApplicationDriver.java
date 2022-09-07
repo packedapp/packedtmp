@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanExtensionPoint;
+import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerWrapperCompanion;
 import app.packed.container.Extension;
@@ -180,6 +181,13 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         return builder(BeanExtensionPoint.factoryOf(wrapperType).withLookup(caller));
     }
 
+    final class Composer extends AbstractComposer {
+        /// Hmm interessant
+        static ApplicationDriver<?> of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+
+    }
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
      * {@link ApplicationDriver#builder()}.

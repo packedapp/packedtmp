@@ -19,7 +19,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 
-import app.packed.bean.BeanField;
+import app.packed.bean.BeanProcessor$BeanField;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
@@ -31,9 +31,9 @@ import internal.app.packed.container.ExtensionSetup;
 /**
  * Implementation of BeanField.
  * 
- * @see Extension#hookOnBeanField(BeanField)
+ * @see Extension#hookOnBeanField(BeanProcessor$BeanField)
  */
-public final class PackedBeanField extends PackedBeanMember<Field> implements BeanField {
+public final class PackedBeanField extends PackedBeanMember<Field> implements BeanProcessor$BeanField {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;

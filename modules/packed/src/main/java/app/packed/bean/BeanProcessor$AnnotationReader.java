@@ -30,8 +30,14 @@ import java.lang.reflect.AnnotatedElement;
 
 public interface BeanProcessor$AnnotationReader {
 
-    //// foo bean was expected method to dddoooo to be annotated with
+    boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+
+    // Det er taenk
+    Annotation[] readAnyOf(Class<?>... annotationTypes);
+    
     /**
+     * Returns a annotation of the specified type or throws {@link BeanDefinitionException} if the annotation is not present
+     * 
      * @param <T>
      *            the type of the annotation to query for and return if present
      * @param annotationClass
@@ -39,21 +45,19 @@ public interface BeanProcessor$AnnotationReader {
      * @return the annotation for the specified annotation type if present
      * 
      * @throws BeanDefinitionException
-     *             if the specified annotation was not present on the bean element
+     *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
+     *             exactly 1 occurrences of it
      * 
      * @see AnnotatedElement#getAnnotation(Class)
      */
+    //// foo bean was expected method to dddoooo to be annotated with
     <T extends Annotation> T readRequired(Class<T> annotationClass);
-
-    // Det er taenk
-    Annotation[] readAnyOf(Class<?>... annotationTypes);
 }
 // Q) Skal vi bruge den udefra beans???
 // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
 // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
 // Paa hver bean som bruger den...
 // Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
-
 
 //I think the only we reason we call it BeanAnnotationReader is because
 //if we called AnnotationReader is should really be located in a utility package

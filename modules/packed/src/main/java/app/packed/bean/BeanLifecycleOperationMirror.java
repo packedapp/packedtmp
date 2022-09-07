@@ -29,6 +29,8 @@ import app.packed.operation.OperationMirror;
 public class BeanLifecycleOperationMirror extends OperationMirror {
 
     public String stage() {
+        // Maaske har vi en mere finindeling her end i runState()
+        // Saa vi fx ogsaa kan sige <<instantiate>>
         return "initilize";
     }
     
@@ -50,4 +52,21 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
     Optional<BeanLifecycleOperationMirror> previous() {
         return Optional.empty();
     }
+    
+    /**
+     * A mirror for an operation that creates a new instance of a bean.
+     * <p>
+     * The operator of this operation is always {@link BeanExtension}.
+     */
+    // IDK know if we want this 
+    public static class BeanInstantiationOperationMirror extends BeanLifecycleOperationMirror {}
+
+    // Hvis jeg register en instance har min bean ikke en
+    // Men factory og non-static class har altid en
+    // En void eller static bean har aldrig en
+
+    // Operatoren er vel altid operateren af lifetimen?
+    // Hmm hvad med @Conf <--- Her er operatoren vel ConfigExtension
+    // det betyder at operatoren maa vaere BeanExtension hvilket vel er aligned
+    // med @OnInitialize
 }

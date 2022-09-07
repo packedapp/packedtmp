@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 
 import app.packed.application.App;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
-import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanProcessor$BeanMethod;
 import app.packed.bean.BeanProcessor;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -56,7 +56,7 @@ public class MyExt extends BaseAssembly {
                 }
 
                 @Override
-                public void onMethod(BeanMethod method) {
+                public void onMethod(BeanProcessor$BeanMethod method) {
                     System.out.println("Nice method " + method.method());
                 }
             };

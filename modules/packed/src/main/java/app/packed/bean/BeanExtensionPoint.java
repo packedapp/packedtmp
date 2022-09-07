@@ -117,7 +117,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /** Whether or not the sidecar is allow to get the contents of a field. */
         boolean allowAllAccess() default false;
 
-        /** The hook's {@link BeanField} class. */
+        /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
     }
 
@@ -144,17 +144,17 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
+         * Methods such as {@link BeanProcessor$BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
          * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanMethod#operationBuilder(ExtensionBeanConfiguration)
+         * @see BeanProcessor$BeanMethod#operationBuilder(ExtensionBeanConfiguration)
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...
 
-        /** The hook's {@link BeanField} class. */
+        /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
     }
 }

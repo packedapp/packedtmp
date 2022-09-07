@@ -22,10 +22,10 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanField;
+import app.packed.bean.BeanProcessor$BeanField;
 import app.packed.bean.BeanCustomizer;
 import app.packed.bean.BeanKind;
-import app.packed.bean.BeanMethod;
+import app.packed.bean.BeanProcessor$BeanMethod;
 import app.packed.bean.BeanProcessor;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
@@ -155,7 +155,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onField(BeanField field) {
+            public void onField(BeanProcessor$BeanField field) {
                 // todo check not extension
                 
                 Key<?> key = field.fieldToKey();
@@ -171,7 +171,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onMethod(BeanMethod method) {
+            public void onMethod(BeanProcessor$BeanMethod method) {
                 Key<?> key = Key.convertMethodReturnType(method.method());
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 
