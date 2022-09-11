@@ -21,7 +21,6 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 
 import app.packed.bean.BeanIntrospector$BeanField;
-import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
 import app.packed.operation.OperationCustomizer;
@@ -30,10 +29,9 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- * Implementation of BeanField.
- * 
- * @see Extension#hookOnBeanField(BeanIntrospector$BeanField)
+ * Implementation of {@link BeanIntrospector$BeanField}.
  */
+// Is public for now because of ServiceExtension
 public final class PackedBeanField extends PackedBeanMember<Field> implements BeanIntrospector$BeanField {
 
     /** Whether or not the field can be read. */

@@ -65,7 +65,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
     /** {@inheritDoc} */
     @Override
     public OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator) {
-        return new PackedOperationCustomizer(this, ExtensionBeanSetup.from(operator), newMethodHandle());
+        return new PackedOperationCustomizer(bean, this, ExtensionBeanSetup.from(operator));
     }
 
     /** An operation target mirror for a bean method.  */

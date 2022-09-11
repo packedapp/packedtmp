@@ -17,15 +17,12 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
-import internal.app.packed.bean.hooks.PackedBeanMember;
-import internal.app.packed.container.ExtensionSetup;
 
 /** Implementation of {@link OperationCustomizer}. */
 public final class PackedOperationCustomizer implements OperationCustomizer {
@@ -33,43 +30,27 @@ public final class PackedOperationCustomizer implements OperationCustomizer {
     /** The bean the operation is a part of. */
     final BeanSetup bean;
 
-    final ExtensionSetup extensionSetup;
-
-    MethodHandle methodHandle;
-
     /** Supplies a mirror for the operation */
     Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
-
-    // Key<OperationPack> operationPackKey;
 
     /** The bean that invokes the operation. */
     final ExtensionBeanSetup operatorBean;
 
-    int packId = -1;
-
+    /** The target of the operation. Typically a bean member, a function or a plain MethodHandle. */
     final PackedOperationTarget target;
 
+    boolean isComputed;
+
     /**
-     * @param member
+     * @param target
      */
-    public PackedOperationCustomizer(PackedBeanMember<?> member, ExtensionBeanSetup operatorBean, MethodHandle methodHandle) {
-        this.bean = member.bean;
-        this.extensionSetup = member.operator;
-        this.target = member;
+    public PackedOperationCustomizer(BeanSetup bean, PackedOperationTarget target, ExtensionBeanSetup operatorBean) {
+        this.bean = bean;
+        this.target = target;
         this.operatorBean = operatorBean;
-        this.methodHandle = methodHandle;
     }
 
-    public int build() {
-        int p = packId;
-        if (p == -1) {
-            // p = packId = operatorBean.operationPack(null).next();
-        }
-        build0();
-        return p;
-    }
-
-    private void build0() {
+    public void build() {
         OperationSetup os = new OperationSetup(this);
         bean.addOperation(os);
     }
@@ -77,6 +58,10 @@ public final class PackedOperationCustomizer implements OperationCustomizer {
     /** {@inheritDoc} */
     @Override
     public <T> T computeInvoker(Class<T> handleType) {
+        if (isComputed) {
+            throw new IllegalStateException("Can only compute an invoker once");
+        }
+        isComputed = true;
         throw new UnsupportedOperationException();
     }
 
