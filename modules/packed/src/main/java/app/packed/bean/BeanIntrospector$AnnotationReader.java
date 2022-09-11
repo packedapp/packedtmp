@@ -28,7 +28,7 @@ import java.lang.reflect.AnnotatedElement;
 // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
 // AnnotatedBeanElement?
 
-public interface BeanProcessor$AnnotationReader {
+public interface BeanIntrospector$AnnotationReader {
 
     boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
 

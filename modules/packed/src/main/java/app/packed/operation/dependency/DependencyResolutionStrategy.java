@@ -15,9 +15,30 @@
  */
 package app.packed.operation.dependency;
 
+import java.lang.reflect.Field;
+
 /**
  *
  */
-public enum DependencyKind {
-    BY_KEY, BY_ANNOTATION, BY_CLASS, MANUAL; 
+// All dependencies have a resolution kind if those that are unresolved
+public enum DependencyResolutionStrategy {
+    
+    MANUAL,
+    
+    ANNOTATION,
+    
+    // COMPOSITE  if we add that at some point
+    
+    /**
+     * 
+     * @see Field#getType()
+     * @see Parameter#getType();
+     **/
+    TYPE, 
+    
+    KEY;
 }
+
+// Check if already manually bound
+// Check annotation for Prime annotations
+// check raw class for Prime Class

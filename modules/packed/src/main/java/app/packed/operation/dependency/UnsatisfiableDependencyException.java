@@ -15,11 +15,10 @@
  */
 package app.packed.operation.dependency;
 
-/**
- * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
- * could not be found.
- */
-public class UnsatisfiableDependencyException extends DependencyException {
+import app.packed.application.BuildException;
+
+/** An exception thrown at build-time when a required dependency could not be resolved. */
+public class UnsatisfiableDependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

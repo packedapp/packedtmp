@@ -17,7 +17,7 @@ package app.packed.bean;
 
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanProcessor.BeanElement;
+import app.packed.bean.BeanIntrospector.BeanElement;
 
 /**
  *
@@ -26,13 +26,13 @@ import app.packed.bean.BeanProcessor.BeanElement;
  */
 
 // Kig maaske i Maurizio Mirror thingy...
-public non-sealed interface BeanProcessor$BeanClass extends BeanElement {
+public non-sealed interface BeanIntrospector$BeanClass extends BeanElement {
 
-    boolean hasAllAccess();
+    boolean hasFullAccess();
     
-    void forEachConstructor(Consumer<? super BeanProcessor$BeanConstructor> m);
+    void forEachConstructor(Consumer<? super BeanIntrospector$BeanConstructor> m);
     
-    void forEachMethod(Consumer<? super BeanProcessor$BeanMethod> m);
+    void forEachMethod(Consumer<? super BeanIntrospector$BeanMethod> m);
 
     // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
     // Masske har vi BeanClass.Builder() istedet for???
@@ -42,4 +42,7 @@ public non-sealed interface BeanProcessor$BeanClass extends BeanElement {
 //        throw new UnsupportedOperationException();
 //    }
 
+    // Fields first, include subclasses, ... blabla
+    // Maybe on top of full access have boolean custom processing on ClassHook
+    void setProcessingStrategy(Object strategy);
 }

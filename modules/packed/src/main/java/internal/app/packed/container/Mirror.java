@@ -6,4 +6,7 @@ package internal.app.packed.container;
  */
 
 // http://bracha.org/mirrors.pdf
+
+// Maybe seal it, and the have
+// findAll(Class<? extends Mirror>);
 public interface Mirror {}

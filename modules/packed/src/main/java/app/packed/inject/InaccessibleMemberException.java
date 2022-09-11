@@ -15,6 +15,8 @@
  */
 package app.packed.inject;
 
+// An exception that is thrown when a operation could not be created because there was no access to the underlying.
+// Field, Constructor or Method
 /** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
 // UncheckedIllegalAccessException...
 // RuntimeIllegalAccessException

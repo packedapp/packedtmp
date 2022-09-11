@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanDependency;
-import app.packed.bean.BeanProcessor$BeanField;
-import app.packed.bean.BeanProcessor$BeanMethod;
+import app.packed.bean.BeanIntrospector$BeanField;
+import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Zarchive.OperationInvocationType;
 import internal.app.packed.operation.PackedOperationCustomizer;
@@ -48,10 +48,10 @@ import internal.app.packed.operation.PackedOperationCustomizer;
  * <ul>
  * </ul>
  * 
- * @see BeanProcessor$BeanField#newGetOperation(ExtensionBeanConfiguration)
- * @see BeanProcessor$BeanField#newSetOperation(ExtensionBeanConfiguration)
- * @see BeanProcessor$BeanField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
- * @see BeanProcessor$BeanMethod#newOperation(ExtensionBeanConfiguration, OperationInvocationType)
+ * @see BeanIntrospector$BeanField#newGetOperation(ExtensionBeanConfiguration)
+ * @see BeanIntrospector$BeanField#newSetOperation(ExtensionBeanConfiguration)
+ * @see BeanIntrospector$BeanField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
+ * @see BeanIntrospector$BeanMethod#newOperation(ExtensionBeanConfiguration, OperationInvocationType)
  */
 public sealed interface OperationCustomizer permits PackedOperationCustomizer {
 

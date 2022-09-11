@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanProcessor$BeanMethod;
-import app.packed.bean.BeanProcessor;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
@@ -57,8 +57,8 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     }
 
     @Override
-    protected BeanProcessor newBeanScanner() {
-        return new BeanProcessor() {
+    protected BeanIntrospector newBeanIntrospector() {
+        return new BeanIntrospector() {
 
             /**
              * Captures methods annotated with {@link Main}.
@@ -66,7 +66,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
              * {@inheritDoc}
              */
             @Override
-            public void onMethod(BeanProcessor$BeanMethod method) {
+            public void onMethod(BeanIntrospector$BeanMethod method) {
                 registerEntryPoint(null, true);
 
                 application.entryPoints = new EntryPointSetup();

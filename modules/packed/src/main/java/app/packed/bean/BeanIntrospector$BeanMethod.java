@@ -18,7 +18,7 @@ package app.packed.bean;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanProcessor.BeanElement;
+import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
@@ -30,9 +30,9 @@ import internal.app.packed.bean.hooks.PackedBeanMethod;
  * This class represents a {@link Method} on a bean.
  * 
  * @see BeanExtensionPoint.MethodHook
- * @see BeanProcessor#onMethod(BeanMethod)
+ * @see BeanIntrospector#onMethod(BeanMethod)
  */
-public sealed interface BeanProcessor$BeanMethod extends BeanElement permits PackedBeanMethod {
+public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits PackedBeanMethod {
 
     /** {@return a factory type for this method.} */
     FactoryType factoryType(); // I don't like the name factoryType.. signature? Coordinates?

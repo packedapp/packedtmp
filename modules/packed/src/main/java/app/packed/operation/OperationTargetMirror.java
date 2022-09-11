@@ -16,6 +16,7 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,8 +36,8 @@ import internal.app.packed.bean.hooks.PackedBeanMethod.BuildTimeMethodTargetMirr
 // Er det Saa Method invoke???Eller FunctionCall
 
 // Maaske drop Invoke til di
-// OperationTargetMirror tror jeg bedre jeg kunne lide
-/// OperationLocationmirror
+// OperationLocationmirror?
+// OperationKindMirror?
 public sealed interface OperationTargetMirror { // extends AnnotatedMember?
 
     // Members
@@ -50,6 +51,8 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
     /** Represents an operation that gets, sets or updates a field. */
     public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror {
 
+        AccessMode accessMode(); // TODO implement
+
         boolean allowGet();
 
         boolean allowSet();
@@ -59,15 +62,25 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
     }
 
     /**
-     * Represents an operation that calls a function.
+     * Represents an operation that calls the abstract method on a functional interface.
      * <p>
      * method on a functional interface.
      */
-    public non-sealed interface OfFunctionCall extends OperationTargetMirror {}
+    public non-sealed interface OfFunctionCall extends OperationTargetMirror {
+
+        default Method actualMethod() {
+            throw new UnsupportedOperationException();
+        }
+
+        default Method functionalInterfaceMethod() {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     /**
      * Represents an operation that simply return an instance
      */
+    // BeanSpace? ConstantSpace?
     public non-sealed interface OfInstanceAccess extends OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
@@ -77,7 +90,7 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
         // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
         // Giver ikke mening for provide...
         // Kan ikke komme paa andre brugbare ting end @Provide
-        
+
         // Er det her en speciel operation istedet for et target???
         /// InstanceProvide? IDK
 
@@ -87,7 +100,7 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
     /** Represents an operation that invokes a method. */
     public sealed interface OfMethodInvoke extends OperationTargetMirror permits BuildTimeMethodTargetMirror {
 
-        /** {@return the underlying method.} */
+        /** {@return the invokable method.} */
         Method method();
     }
 

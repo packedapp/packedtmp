@@ -49,15 +49,16 @@ import internal.app.packed.container.Mirror;
 
 public sealed interface DependencyMirror extends Mirror {
 
-    DependencyGraphMirror graph();
-
-    boolean isResolved();
+    DependencyResolutionState resolutionState();
 
     boolean isSatisfiable(); //isSatisfied?
 
     /** {@return the operation that declares this dependency.} */
     OperationMirror operation();
-
+    
+    // We need a better name. It is the index into the list of dependencies for operation
+    int operationIndex();
+    
     Optional<Realm> providedBy(); // BeanMirror?
 
     /**
@@ -69,8 +70,14 @@ public sealed interface DependencyMirror extends Mirror {
     // ConstantPoolReadOperationMirror
     // Er empty if Unesolved... Eller hvad.
     // Hvis vi fx er @Default ville vi vel gerne have nogle fake operationer
+    
+    // Altsaa den ikke super meget mening for keys..
+    // Her er constructeren for CustomerManager...
+    // Til gengaeld
+    
     Optional<OperationMirror> providingOperation();
 
+    // Tror det bliver ligesom OperationTarget
     non-sealed interface OfAnnotation extends DependencyMirror {
         abstract Annotation annotation();
 
@@ -81,6 +88,8 @@ public sealed interface DependencyMirror extends Mirror {
 
         abstract DependencyMirror dependencies();
 
+        // Tror ikke laengere vi bliver resolved som en compond.
+        // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
         abstract boolean isFuncionalInterface();
 
     }

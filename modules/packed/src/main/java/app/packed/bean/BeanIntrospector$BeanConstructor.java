@@ -17,19 +17,19 @@ package app.packed.bean;
 
 import java.lang.reflect.Constructor;
 
-import app.packed.bean.BeanProcessor.BeanElement;
+import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
 
 /**
  * This class represents a {@link Constructor} on a bean.
  * <p>
- * Unlike {@link BeanProcessor$BeanField} and {@link BeanProcessor$BeanMethod}. There are no way to define hooks on constructors. Instead they must
+ * Unlike {@link BeanIntrospector$BeanField} and {@link BeanIntrospector$BeanMethod}. There are no way to define hooks on constructors. Instead they must
  * be defined on a bean driver or a bean class. Which determines how constructors are processed.
  */
 // Do we need a BeanExecutable??? Not sure we have a use case
 // Or maybe we just have BeanMethod (Problem with constructor() though)
-public non-sealed interface BeanProcessor$BeanConstructor extends BeanElement {
+public non-sealed interface BeanIntrospector$BeanConstructor extends BeanElement {
 
     /** {@return the underlying constructor.} */
     Constructor<?> constructor();

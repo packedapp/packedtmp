@@ -18,7 +18,7 @@ package internal.app.packed.bean.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanProcessor$BeanMethod;
+import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
@@ -28,9 +28,9 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationCustomizer;
 
 /** Internal implementation of BeanMethod */
-public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanProcessor$BeanMethod {
+public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanIntrospector$BeanMethod {
 
-    PackedBeanMethod(BeanHookScanner scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
+    PackedBeanMethod(BeanIntrospectionHelper scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
         super(scanner.bean, scanner, operator, method);
     }
 

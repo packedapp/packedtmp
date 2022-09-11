@@ -18,9 +18,9 @@ package app.packed.operation.dependency;
 /**
  *
  */
-
-// Det er ligegyldig viden paa runtime vil jeg mene
-// Det giver kun mening for mirrors.
-public enum ServiceScope {
-    CONTAINER, BEAN, OPERATION;
+public enum DependencyResolutionState {
+    UNRESOLVED, RESOLVED, RUNTIME_RESOLVABLE;
+    // Resolved_At_Runtime when the application is initialized?
+    // Resolved_At_Runtime for each invocation
+    // Not sure we have this distiction
 }

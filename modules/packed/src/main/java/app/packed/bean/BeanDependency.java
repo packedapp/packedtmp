@@ -15,19 +15,12 @@
  */
 package app.packed.bean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanProcessor.BeanElement;
-import app.packed.container.Extension;
+import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.inject.Factory;
 import app.packed.operation.dependency.DependencyMirror;
 
@@ -96,15 +89,6 @@ public non-sealed interface BeanDependency extends BeanElement {
     BeanDependency specializeMirror(Supplier<? extends DependencyMirror> supplier);
 
     TypeInfo type();
-
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    public @interface ProvisionHook {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-    }
 
     interface TypeInfo {
 

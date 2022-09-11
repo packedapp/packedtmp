@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
+package app.packed.inject.m1;
 
 /**
  *
  */
-// Det er vel primaert hjaelpmetoder vi skal have her?
-// Vi kan jo "deep" explore enhver operation
+public enum ResolutionKind {
 
-// Giv mig alle steder vi bruger InjctionContext
-
-// resolved().isKeyBased().key == InjectionContxt();
-
-// OperationGraph????
-public interface DependencyGraphMirror {
-
+    BUILD_TIME_CONSTANT,
+    
+    RUNTIME_CONSTANT,
+    
+    RUNTIME_OPERATION,
+    
+    RUNTIME_MISSING_FROM_TIME_TO_TIME
 }

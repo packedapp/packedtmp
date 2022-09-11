@@ -9,8 +9,10 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- * An extension for installing beans into a container.
- * All containers use this extension. As every container either defines at least 1 bean. Or has a container descendants who does.
+ * A bean extension is used for installing beans into a container.
+ * <p>
+ * All containers use this extension. As every container either defines at least 1 bean. Or has a container descendants
+ * who does.
  */
 public class BeanExtension extends Extension<BeanExtension> {
 
@@ -23,9 +25,9 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     public void filter(BaseAssembly.Linker l) {
-        
+
     }
-    
+
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
      * application is initialized.

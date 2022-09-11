@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.BeanProcessor;
+import app.packed.bean.BeanIntrospector;
 import app.packed.inject.Ancestral;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -151,8 +151,8 @@ public abstract class Extension<E extends Extension<E>> {
      * 
      * @return a new bean scanner
      */
-    protected BeanProcessor newBeanScanner() {
-        return new BeanProcessor() {};
+    protected BeanIntrospector newBeanIntrospector() {
+        return new BeanIntrospector() {};
     }
 
     /**

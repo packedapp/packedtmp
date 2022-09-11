@@ -23,15 +23,15 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionModel;
 
 /**
- * @see Extension#newBeanScanner
- * @see BeanCustomizer.Builder#beanScanner(BeanScanner)
+ * @see Extension#newBeanIntrospector
+ * @see BeanCustomizer.Builder#introspectWith(BeanIntrospector)
  */
 
 //BeanAnalyzer, BeanVisitor, BeanInspector, BeanIntrospector, BeanScanner
 // BeanHookProcessor?
 
 // Move BeanMethod and friends into BeanScanner as nested classes???
-public abstract class BeanProcessor {
+public abstract class BeanIntrospector {
 
     /**
      * The configuration of this processor. Is initially null but populated via
@@ -41,7 +41,7 @@ public abstract class BeanProcessor {
     private Setup setup;
 
     /** {@return an annotation reader for for the bean.} */
-    public final BeanProcessor$AnnotationReader beanAnnotations() {
+    public final BeanIntrospector$AnnotationReader beanAnnotations() {
         // AnnotationReader.of(beanClass());
         throw new UnsupportedOperationException();
     }
@@ -83,14 +83,19 @@ public abstract class BeanProcessor {
         this.setup = new Setup(extension, bean);
     }
 
-    public void onClass(BeanProcessor$BeanClass clazz) {}
+    public final Class<? extends Extension<?>> registrant() {
+        // Ideen er at vi kan checke at vi selv er registranten...
+        throw new UnsupportedOperationException();
+    }
+    
+    public void onClass(BeanIntrospector$BeanClass clazz) {}
 
     public void onDependency(BeanDependency dependency) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
-     * is annotated with an annotation that itself is annotated with {@link BeanProcessor$BeanField.FieldHook} and where
+     * is annotated with an annotation that itself is annotated with {@link BeanIntrospector$BeanField.FieldHook} and where
      * {@link FieldHook#extension()} matches the type of this extension.
      * <p>
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
@@ -102,9 +107,9 @@ public abstract class BeanProcessor {
      */
     // onAnnotatedField(Set<Class<? extends Annotation<>> hooks, BeanField));
     // IDK Det kommer lidt an paa variable vil jeg mene...
-    public void onField(BeanProcessor$BeanField field) {}
+    public void onField(BeanIntrospector$BeanField field) {}
 
-    public void onMethod(BeanProcessor$BeanMethod method) {
+    public void onMethod(BeanIntrospector$BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         // We probably want to throw an internal extension exception instead
@@ -116,9 +121,9 @@ public abstract class BeanProcessor {
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
-     * @see #onProcessingStop()
+     * @see #onIntrospectionEnd()
      */
-    public void onProcessingStart() {}
+    public void onIntrospectionBegin() {}
 
     /**
      * A callback method that is called after any other methods on this class.
@@ -127,9 +132,9 @@ public abstract class BeanProcessor {
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
      * 
-     * @see #onProcessingStart()
+     * @see #onIntrospectionBegin()
      */
-    public void onProcessingStop() {}
+    public void onIntrospectionEnd() {}
 
     /**
      * {@return the internal configuration class.}
@@ -147,9 +152,9 @@ public abstract class BeanProcessor {
 
     // This is a place holder for now... Will be ditched it in the future
     // BeanVariable bare
-    public sealed interface BeanElement permits BeanProcessor$BeanClass, BeanProcessor$BeanConstructor, BeanProcessor$BeanField, BeanProcessor$BeanMethod, BeanDependency {
+    public sealed interface BeanElement permits BeanIntrospector$BeanClass, BeanIntrospector$BeanConstructor, BeanIntrospector$BeanField, BeanIntrospector$BeanMethod, BeanDependency {
 
-        default BeanProcessor$AnnotationReader annotations() {
+        default BeanIntrospector$AnnotationReader annotations() {
             throw new UnsupportedOperationException();
         }
 

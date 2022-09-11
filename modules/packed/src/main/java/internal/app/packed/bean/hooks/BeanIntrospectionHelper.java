@@ -23,13 +23,15 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 
-import app.packed.bean.BeanDependency;
-import app.packed.bean.BeanDependency.ProvisionHook;
+import app.packed.base.Nullable;
+import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
-import app.packed.bean.BeanProcessor;
+import app.packed.bean.BeanExtensionPoint.ProvisionHook;
+import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.bean.BeanSetup;
@@ -41,12 +43,12 @@ import internal.app.packed.util.OpenClass;
 /**
  * This class is responsible for finding fields, methods, parameters that have hook annotations.
  */
-public final class BeanHookScanner {
+public final class BeanIntrospectionHelper {
 
-    /** We never process classes that are located in the java.base module. */
+    /** We never process classes that are located in the {@code java.base} module. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
-    /** The bean that is being scanned. */
+    /** The bean that is being introspected. */
     final BeanSetup bean;
 
     // I think we need stable iteration order... AppendOnly identity map, stable iteration order
@@ -56,22 +58,34 @@ public final class BeanHookScanner {
     // Should be made lazily??? I think
     final OpenClass oc;
 
-    public BeanHookScanner(BeanSetup bean) {
+    @Nullable
+    final BeanIntrospector registrantIntrospector;
+
+    public BeanIntrospectionHelper(BeanSetup bean, @Nullable BeanIntrospector registrantIntrospector) {
         this.bean = bean;
+        this.registrantIntrospector = registrantIntrospector;
         this.oc = OpenClass.of(MethodHandles.lookup(), bean.beanClass());
     }
 
-    private ExtensionEntry findOrCreateEntry(Class<? extends Extension<?>> clazz) {
+    private ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> clazz, boolean fullAccess) {
         return extensions.computeIfAbsent(clazz, c -> {
+            // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.parent.useExtensionSetup(clazz, null);
-            BeanProcessor scanner = extension.newBeanScanner(extension, bean);
-            scanner.onProcessingStart();
-            return new ExtensionEntry(extension, scanner);
-        });
-    }
 
-    private boolean hasFullAccess(Class<? extends Extension<?>> extension) {
-        return false;
+            BeanIntrospector introspector;
+            if (registrantIntrospector != null && bean.operator() == clazz) {
+                // A special introspector has been set, don't
+                introspector = registrantIntrospector;
+                extension.initializeBeanIntrospector(introspector, extension, bean);
+            } else {
+                // Call Extension#newBeanIntrospector
+                introspector = extension.newBeanIntrospector(extension, bean);
+            }
+
+            // Notify the bean introspector that is being used
+            introspector.onIntrospectionBegin();
+            return new ExtensionEntry(extension, introspector, fullAccess);
+        });
     }
 
     /**
@@ -80,7 +94,7 @@ public final class BeanHookScanner {
      * @param baseType
      *            the base type
      */
-    public final void scan() {
+    public final void introspect() {
 
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
 
@@ -104,7 +118,7 @@ public final class BeanHookScanner {
                 return hash;
             }
         }
-        
+
         Class<?> baseType = Object.class;
 
         Class<?> classToScan = bean.beanClass();
@@ -114,7 +128,7 @@ public final class BeanHookScanner {
         // Hmm, skal skrive noget om de kan komme i enhver order
         // Lige nu kommer metoder foerend fields
 
-        scanClass(classToScan);
+        introspectClass(classToScan);
 
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
@@ -123,8 +137,7 @@ public final class BeanHookScanner {
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 types.put(new MethodHelper(m), packages);
-                // Should we also ignore methods on base assembly class????
-                scanMethod(m);// move this to step 2???
+                introspectMethod(m);// move this to step 2???
             }
         }
 
@@ -137,7 +150,7 @@ public final class BeanHookScanner {
             Field[] fields = c.getDeclaredFields();
             PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
             for (Field field : c.getDeclaredFields()) {
-                scanField(field);
+                introspectField(field);
             }
             // }
 
@@ -152,7 +165,7 @@ public final class BeanHookScanner {
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
                         // but not include static methods on interfaces.
-                        scanMethod(m);
+                        introspectMethod(m);
                     }
                 } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -173,76 +186,120 @@ public final class BeanHookScanner {
                     case Modifier.PRIVATE:
                         // Private methods are never overridden
                     }
-                    scanMethod(m);
+                    introspectMethod(m);
                 }
             }
         }
-        
-        
 
         // Call into every BeanScanner and tell them its all over
         for (ExtensionEntry e : extensions.values()) {
-            e.scanner.onProcessingStop();
+            e.introspector.onIntrospectionEnd();
         }
     }
 
-    private void scanClass(Class<?> clazz) {
+    private void introspectClass(Class<?> clazz) {
 
     }
 
     /**
+     * Introspect a single field on a bean.
+     * 
      * Look for hook annotations on a single field.
      * 
      * @param field
-     *            the field to look for annotations on
+     *            the field to introspect
+     * 
+     * @throws BeanDefinitionException
+     *             if there are multiple {@link ProvisionHook} on the field. Or if there are both {@link FieldHook} and
+     *             {@link ProvisionHook} annotations
+     * 
+     * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
+     *          allow it.
      */
-    private void scanField(Field field) {
-        // iterate through every annotation on the field
+    private void introspectField(Field field) {
+        // First, we get all annotations on the field
         Annotation[] annotations = field.getAnnotations();
+
+        // Than, we iterate through the annotations and look for usage of FieldHook or ProvisionHook meta annotations
         for (int i = 0; i < annotations.length; i++) {
             Annotation annotation = annotations[i];
-            Class<? extends Annotation> annotationType = annotation.annotationType();
 
-            // See if we can find a field hook model for the annotation
-            FieldHookModel hook = FieldHookModel.CACHE.get(annotationType);
+            // Look in the field annotation cache to see if the annotation is either a FieldHook or ProvisionHook annotation
+            FieldAnnotationCache e = FieldAnnotationCache.CACHE.get(annotation.annotationType());
 
-            if (hook != null) {
-                ExtensionEntry entry = findOrCreateEntry(hook.extensionType);
-
-                boolean hasFullAccess = hasFullAccess(hook.extensionType);
-                PackedBeanField f = new PackedBeanField(bean, BeanHookScanner.this, entry.extension, field, hook.isGettable || hasFullAccess,
-                        hook.isSettable || hasFullAccess);
-
-                entry.scanner.onField(f); // calls into BeanScanner.onField
+            // The annotation is neither a field or provision annotation
+            if (e == null) {
+                continue;
             }
-        }
-    }
 
-    void scanField2(Field field) {
-        // iterate through every annotation on the field
+            // A map that is used if have multi field hook annotations
+            record MultiField(Class<? extends Extension<?>> extensionClass, boolean allowGet, boolean allowSet, Annotation... annotations) {}
+            IdentityHashMap<Class<? extends Extension<?>>, MultiField> multiMatch = null;
 
-        // Der kan vaere en settable annotering???
+            // Look through remaining annotations.
+            //
+            for (int j = i; j < annotations.length; j++) {
+                Annotation annotation2 = annotations[j];
 
-        Annotation[] annotations = field.getAnnotations();
-        for (int i = 0; i < annotations.length; i++) {
-            // See if we can find a field hook model for the annotation
-            FieldHookModel model1 = FieldHookModel.CACHE.get(annotations[i].annotationType());
+                // Look in the field annotation cache to see if the annotation is either a FieldHook or ProvisionHook annotation
+                FieldAnnotationCache e2 = FieldAnnotationCache.CACHE.get(annotation2.annotationType());
 
-            if (model1 != null) {
-                for (int j = i + 1; j < annotations.length; j++) {
-                    FieldHookModel model2 = FieldHookModel.CACHE.get(annotations[j].annotationType());
-
-                    if (model2 != null) {
-
-                    }
+                // The annotation is neither a field or provision annotation
+                if (e2 == null) {
+                    continue;
                 }
 
-                ExtensionEntry ei = findOrCreateEntry(model1.extensionType);
-                boolean hasFullAccess = hasFullAccess(model1.extensionType);
-                PackedBeanField f = new PackedBeanField(bean, BeanHookScanner.this, ei.extension, field, model1.isGettable || hasFullAccess,
-                        model1.isSettable || hasFullAccess);
+                if (e.isProvision || e2.isProvision) {
+                    throw new BeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
+                }
 
-                ei.scanner.onField(f);
+                // Okay we have more than 1 valid annotation
+
+                // Check if we need to create the multi match map
+                if (multiMatch == null) {
+                    multiMatch = new IdentityHashMap<>();
+                    // Add the first match we add
+                    multiMatch.put(e.extensionType, new MultiField(e.extensionType, e.isGettable, e.isSettable, annotation));
+                }
+
+                // ADd this match
+                multiMatch.compute(e2.extensionType, (Class<? extends Extension<?>> key, MultiField value) -> {
+                    if (value == null) {
+                        return new MultiField(key, e2.isGettable, e2.isSettable, annotation2);
+                    } else {
+                        Annotation[] a = new Annotation[value.annotations.length + 1];
+                        for (int k = 0; k < value.annotations.length; k++) {
+                            a[k] = value.annotations[k];
+                        }
+                        a[a.length - 1] = annotation2;
+                        return new MultiField(key, e2.isGettable && value.allowGet, e2.isSettable && e2.isSettable, a);
+                    }
+                });
+            }
+
+            // See if we only had 1 match?
+            if (multiMatch == null) {
+                ExtensionEntry entry = computeExtensionEntry(e.extensionType, false);
+
+                // Create the wrapped field that is exposed to the extension
+                PackedBeanField f = new PackedBeanField(bean, BeanIntrospectionHelper.this, entry.extension, field, e.isGettable || entry.hasFullAccess,
+                        e.isSettable || entry.hasFullAccess, new Annotation[] { annotation });
+
+                // Call BeanIntrospection.onField
+                entry.introspector.onField(f);
+            } else {
+                // TODO sort by extension order if we have more than one
+
+                for (MultiField mf : multiMatch.values()) {
+                    ExtensionEntry entry = computeExtensionEntry(mf.extensionClass, false);
+
+                    // Create the wrapped field that is exposed to the extension
+                    PackedBeanField f = new PackedBeanField(bean, BeanIntrospectionHelper.this, entry.extension, field, mf.allowGet || entry.hasFullAccess,
+                            mf.allowSet || entry.hasFullAccess, annotations);
+
+                    // Call BeanIntrospection.onField
+                    entry.introspector.onField(f);
+                }
             }
         }
     }
@@ -253,18 +310,18 @@ public final class BeanHookScanner {
      * @param method
      *            the method to look for annotations on
      */
-    private void scanMethod(Method method) {
+    private void introspectMethod(Method method) {
         Annotation[] annotations = method.getAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
             MethodHookModel fh = MethodHookModel.CACHE.get(a1Type);
             if (fh != null) {
-                ExtensionEntry ei = findOrCreateEntry(fh.extensionType);
+                ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
 
-                PackedBeanMethod pbm = new PackedBeanMethod(BeanHookScanner.this, ei.extension, method, fh.isInvokable);
+                PackedBeanMethod pbm = new PackedBeanMethod(BeanIntrospectionHelper.this, ei.extension, method, fh.isInvokable);
 
-                ei.scanner.onMethod(pbm);
+                ei.introspector.onMethod(pbm);
             }
         }
     }
@@ -277,29 +334,32 @@ public final class BeanHookScanner {
         }
     }
 
-    private record ExtensionEntry(ExtensionSetup extension, BeanProcessor scanner) {}
+    private record ExtensionEntry(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
-    record FieldHookModel(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
-            boolean isProvision) {
+    /**
+     * Cache the various annotations that are placed on field
+     */
+    private record FieldAnnotationCache(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable,
+            boolean isSettable, boolean isProvision) {
 
         /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<FieldHookModel> CACHE = new ClassValue<>() {
+        private static final ClassValue<FieldAnnotationCache> CACHE = new ClassValue<>() {
 
             @Override
-            protected FieldHookModel computeValue(Class<?> type) {
+            protected FieldAnnotationCache computeValue(Class<?> type) {
                 @SuppressWarnings("unchecked")
                 Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
                 FieldHook fieldHook = type.getAnnotation(FieldHook.class);
-                BeanDependency.ProvisionHook provisionHook = type.getAnnotation(BeanDependency.ProvisionHook.class);
+                ProvisionHook provisionHook = type.getAnnotation(ProvisionHook.class);
 
                 if (provisionHook == fieldHook) { // check both null
                     return null;
                 } else if (provisionHook == null) {
                     checkExtensionClass(type, fieldHook.extension());
-                    return new FieldHookModel(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
+                    return new FieldAnnotationCache(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
                 } else if (fieldHook == null) {
                     checkExtensionClass(type, provisionHook.extension());
-                    return new FieldHookModel(annotationType, provisionHook.extension(), false, true, true);
+                    return new FieldAnnotationCache(annotationType, provisionHook.extension(), false, true, true);
                 } else {
                     throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + ProvisionHook.class);
                 }
@@ -307,7 +367,7 @@ public final class BeanHookScanner {
         };
     }
 
-    record MethodHookModel(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
+    private record MethodHookModel(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<MethodHookModel> CACHE = new ClassValue<>() {

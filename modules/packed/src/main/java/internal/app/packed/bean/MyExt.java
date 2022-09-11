@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 
 import app.packed.application.App;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
-import app.packed.bean.BeanProcessor$BeanMethod;
-import app.packed.bean.BeanProcessor;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -45,18 +45,18 @@ public class MyExt extends BaseAssembly {
     static class My extends Extension<My> {
 
         @Override
-        protected BeanProcessor newBeanScanner() {
-            return new BeanProcessor() {
+        protected BeanIntrospector newBeanIntrospector() {
+            return new BeanIntrospector() {
 
                 @Override
-                public void onProcessingStart() {
+                public void onIntrospectionBegin() {
                     if (!beanClass().isAnnotationPresent(Deprecated.class)) {
                //         failWith("Beans that use @Foo must be annotated with @Deprecated");
                     }
                 }
 
                 @Override
-                public void onMethod(BeanProcessor$BeanMethod method) {
+                public void onMethod(BeanIntrospector$BeanMethod method) {
                     System.out.println("Nice method " + method.method());
                 }
             };

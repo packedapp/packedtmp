@@ -144,17 +144,26 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanProcessor$BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
+         * Methods such as {@link BeanIntrospector$BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
          * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanProcessor$BeanMethod#operationBuilder(ExtensionBeanConfiguration)
+         * @see BeanIntrospector$BeanMethod#operationBuilder(ExtensionBeanConfiguration)
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...
 
         /** The extension the hook is a part of. */
+        Class<? extends Extension<?>> extension();
+    }
+
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface ProvisionHook {
+
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
     }
 }
@@ -209,6 +218,7 @@ class Sandbox {
         }
     }
 }
+
 //
 //public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {
 //  // Tror vi require en annoteringen...

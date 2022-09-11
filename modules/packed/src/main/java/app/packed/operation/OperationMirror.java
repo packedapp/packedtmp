@@ -120,6 +120,8 @@ public class OperationMirror implements Mirror {
     }
 
     final Optional<Class<? extends Annotation>> hook() {
+        // We should also add this to DependencyMirror
+        
         // Enten Provide eller ogsaa MetaAnnotation
         // use source().annotationReader();
 

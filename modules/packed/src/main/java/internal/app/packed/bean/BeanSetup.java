@@ -66,7 +66,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
             initializeNameWithPrefix(beanModel.simpleName());
         }
     }
-
     
     final void initializeNameWithPrefix0(String name) {
         initializeNameWithPrefix(name);

@@ -21,7 +21,7 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanProcessor.BeanElement;
+import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.inject.Variable;
 import app.packed.operation.OperationCustomizer;
@@ -31,9 +31,9 @@ import internal.app.packed.bean.hooks.PackedBeanField;
  * This class represents a {@link Field} on a bean.
  * 
  * @see BeanExtensionPoint.FieldHook
- * @see BeanProcessor#onField(BeanProcessor$BeanField)
+ * @see BeanIntrospector#onField(BeanProcessor$BeanField)
  */
-public sealed interface BeanProcessor$BeanField extends BeanElement permits PackedBeanField {
+public sealed interface BeanIntrospector$BeanField extends BeanElement permits PackedBeanField {
 
     /** {@return the underlying field.} */
     Field field();

@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import app.packed.operation.OperationCustomizer;
@@ -135,15 +136,18 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
         // Scan (disable, do scan) ???
 
         /**
-         * Special scan...
+         * Registers a bean introspector that will be used instead of the framework calling
+         * {@link Extension#newBeanIntrospector}.
          * 
-         * @param scanner
-         * @return
+         * @param introspector
+         * @return this builder
          * 
          * @throws UnsupportedOperationException
-         *             if called on a bean of kind functional
+         *             if the bean has a void bean class
+         * 
+         * @see Extension#newBeanIntrospector
          */
-        Builder<T> beanProcess(BeanProcessor scanner);
+        Builder<T> introspectWith(BeanIntrospector introspector);
 
         /**
          * Adds a new bean to the container and returns a handle for it.

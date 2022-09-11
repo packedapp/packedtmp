@@ -23,12 +23,12 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanCustomizer;
 import app.packed.bean.BeanCustomizer.Builder;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanProcessor;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
-import internal.app.packed.bean.hooks.BeanHookScanner;
+import internal.app.packed.bean.hooks.BeanIntrospectionHelper;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;
@@ -63,8 +63,9 @@ public final class PackedBeanHandleBuilder<T> implements BeanCustomizer.Builder<
     /** Supplies a mirror for the operation */
     final Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
 
+    /** A custom bean introspector that may be set via {@link #introspectWith(BeanIntrospector)}. */
     @Nullable
-    BeanProcessor scanner;
+    BeanIntrospector introspector;
 
     private PackedBeanHandleBuilder(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
             @Nullable Object source) {
@@ -105,7 +106,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanCustomizer.Builder<
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
         if (sourceType != SourceType.NONE) {
-            new BeanHookScanner(bean).scan();
+            new BeanIntrospectionHelper(bean, introspector).introspect();
         }
 
         return new PackedBeanCustomizer<>(bean);
@@ -167,12 +168,12 @@ public final class PackedBeanHandleBuilder<T> implements BeanCustomizer.Builder<
 
     /** {@inheritDoc} */
     @Override
-    public Builder<T> beanProcess(BeanProcessor scanner) {
-        requireNonNull(scanner, "scanner is null");
-        if (kind == BeanKind.FUNCTIONAL) {
-            throw new UnsupportedOperationException("Cannot specify a scanner on a functional bean");
+    public Builder<T> introspectWith(BeanIntrospector introspector) {
+        requireNonNull(introspector, "introspector is null");
+        if (beanClass == void.class) {
+            throw new UnsupportedOperationException("Cannot specify a introspector for beans that have void as their bean class");
         }
-        this.scanner = scanner;
+        this.introspector = introspector;
         return this;
 
     }

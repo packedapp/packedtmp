@@ -15,12 +15,12 @@
  */
 package app.packed.operation.dependency;
 
-/**
- * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
- * could not be found.
- */
+import app.packed.bean.BeanDefinitionException;
+
+/** An exception thrown at build-time when a an ill-formed dependency was encountered. */
 // @Nullable primitive
-public class InvalidDependencyException extends DependencyException {
+// Optional<Optional<Provider<UserService>>>
+public class InvalidDependencyException extends BeanDefinitionException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

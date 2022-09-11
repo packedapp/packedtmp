@@ -13,23 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package archive.bean.dependency;
-
-import app.packed.bean.BeanExtensionPoint.ProvisionHook;
-import app.packed.container.MirrorExtension;
+package app.packed.operation.context;
 
 /**
  *
  */
-@ProvisionHook(extension = MirrorExtension.class)
-// Hmm man kan jo ikke bare ignorere denne.... Hvis man har lyst...
-// Den kan kun bruges paa dependencies, ikke fx @Provide someField
-// Men hvad med de steder @Provide bliver brugt??? 
+public abstract class OperationContextFoobar {
 
-// Den er vel interessant begge veje. Hvem bruger jeg, og hvem bruger mig
-// Eller maaske er de seperate?
-public interface DependencyTracker<T> {
-    T get();
-    
-    // print graph
 }
