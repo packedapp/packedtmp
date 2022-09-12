@@ -20,7 +20,7 @@ public class BeanExtension extends Extension<BeanExtension> {
     final ContainerSetup container = ExtensionSetup.crack(this).container;
 
     /** Create a new bean extension. */
-                                       /* package-private */ BeanExtension() {}
+    BeanExtension() {}
 
     public void filter(BaseAssembly.Linker l) {
 

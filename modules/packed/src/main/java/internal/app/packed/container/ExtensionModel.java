@@ -15,11 +15,15 @@
  */
 package internal.app.packed.container;
 
+import static internal.app.packed.util.StringFormatter.format;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,7 +39,6 @@ import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Realm;
-import internal.app.packed.inject.invoke.InternalInfuser;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StringFormatter;
 
@@ -190,7 +193,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     Extension<?> newInstance(ExtensionSetup extension) {
         CONSTRUCT.set(new Wrapper(extension));
         try {
-            return (Extension<?>) mhConstructor.invokeExact(extension);
+            return (Extension<?>) mhConstructor.invokeExact();
         } catch (Throwable e) {
             throw new InternalExtensionException("An instance of the extension " + nameFull + " could not be created.", e);
         } finally {
@@ -301,26 +304,37 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 dependencies.add(dependencyType);
             }
 
-            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
-//            builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
+            if (Modifier.isAbstract(extensionClass.getModifiers())) {
+                throw new InternalExtensionException(format(extensionClass) + " cannot be an abstract class");
+            }
 
-//            ParameterizedType pt = GTypes.newParameterizedType(Ancestral.class, extensionClass);
-//            TypeToken<?> tt = TypeToken.fromType(pt);
-//            builder.provide(Key.ofTypeToken(tt)).invokeExact(MH_EXTRACT_EXTENSION, 0);
+            // An extension must provide an empty constructor
+            Constructor<?>[] constructors = extensionClass.getDeclaredConstructors();
+            if (constructors.length != 1) {
+                throw new InternalExtensionException(format(extensionClass) + " must declare exactly 1 constructor");
+            }
 
-            // Find a method handle for the extension's constructor
-            this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
+            Constructor<?> constructor = constructors[0];
+            if (constructor.getParameterCount() != 0) {
+                throw new InternalExtensionException(extensionClass + " must provide an empty constructor");
+            }
+
+            // The constructor must be non-public
+            if (Modifier.isPublic(constructor.getModifiers())) {
+                throw new InternalExtensionException(extensionClass + " cannot declare a public constructor");
+            }
+
+            // Create a MethodHandle for the constructor
+            try {
+                Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
+                // unreflect the constructor and cast from (ExtensionClass) -> (Extension)
+                this.mhConstructor = MethodHandles.explicitCastArguments(l.unreflectConstructor(constructor), MethodType.methodType(Extension.class));
+            } catch (IllegalAccessException e) {
+                throw new InternalExtensionException(extensionClass + " must be open to app.packed", e);
+            }
 
             return new ExtensionModel(this);
         }
-//
-//        static final MethodHandle MH_EXTRACT_EXTENSION = LookupUtil.lookupStatic(MethodHandles.lookup(), "extractParent", Ancestral.class,
-//                ExtensionSetup.class);
-//
-//        static Ancestral<?> extractParent(ExtensionSetup s) {
-//            ExtensionSetup es = s.parent;
-//            return es == null ? Ancestral.ofNullable(null) : Ancestral.ofNullable(es.instance());
-//        }
 
         /**
          * Adds the specified dependency to the caller class if valid.

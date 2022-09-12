@@ -21,12 +21,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanExtensionPoint.ProvisionHook;
 
 /**
  *
- * This class is currently used by Packed in two places.
- * 
- * It allows an extension to inject a parent extension if available
+ * This class is currently used by Packed to find a singleton bean.
  * 
  * It allows an extension bean to inject an ancestor extension bean of the same type as itself.
  * 
@@ -41,6 +41,10 @@ import app.packed.base.Nullable;
 
 // Maaske kunne vi have en general family??
 // Doo<List<Children>> idk
+
+// Maaske er det en Container class istedet for
+
+@ProvisionHook(extension = BeanExtension.class)
 public final /* value */ class Ancestral<T> {
 
     /** Shared instance for {@code root()}. */

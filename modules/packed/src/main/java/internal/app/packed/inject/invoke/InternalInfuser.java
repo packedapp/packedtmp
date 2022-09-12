@@ -23,7 +23,6 @@ import internal.app.packed.util.OpenClass;
 // Used by
 //// ApplicationInstance
 //// Assembly-ContainerHook  (Burde kunne laves med TypeClasses)
-//// Extension (ExtensionModel)
 
 public final class InternalInfuser {
 
