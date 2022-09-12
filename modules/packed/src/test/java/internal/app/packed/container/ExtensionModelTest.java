@@ -29,6 +29,7 @@ import app.packed.container.InternalExtensionException;
 public class ExtensionModelTest {
 
     @Test
+    @Disabled // We do not upport creating extension standalone anymore
     public void normal() {
         Extension<?> ne1 = ExtensionModel.of(NormalExtension.class).newInstance(null);
         Extension<?> ne2 = ExtensionModel.of(NormalExtension.class).newInstance(null);

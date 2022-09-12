@@ -23,7 +23,8 @@ import internal.app.packed.container.ExtensionSetup;
  */
 
 // For
-
+//// Container beans kunne staa med ContainerExtension som owner og de kunne
+//// Information omkring containere
 
 // Imod
 //// Vi har ikke nogle annoteringer der skal bruges
@@ -39,8 +40,8 @@ public class ContainerExtension extends Extension<ContainerExtension> {
     final ContainerSetup container;
 
     /** Create a new container extension. */
-    /* package-private */ ContainerExtension(/* hidden */ ExtensionSetup setup) {
-        this.container = setup.container;
+    /* package-private */ ContainerExtension() {
+        this.container = ExtensionSetup.crack(this).container;
     }
 
 }

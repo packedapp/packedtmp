@@ -24,13 +24,15 @@ import internal.app.packed.container.ExtensionModel;
 
 /**
  * @see Extension#newBeanIntrospector
- * @see BeanCustomizer.Builder#introspectWith(BeanIntrospector)
+ * @see BeanExtensionPoint$BeanCustomizer.Builder#introspectWith(BeanIntrospector)
  */
 
 //BeanAnalyzer, BeanVisitor, BeanInspector, BeanIntrospector, BeanScanner
 // BeanHookProcessor?
 
 // Move BeanMethod and friends into BeanScanner as nested classes???
+
+// Syntes godt vi kan smide den paa BeanExtensionPoint
 public abstract class BeanIntrospector {
 
     /**
@@ -90,7 +92,7 @@ public abstract class BeanIntrospector {
     
     public void onClass(BeanIntrospector$BeanClass clazz) {}
 
-    public void onDependency(BeanDependency dependency) {}
+    public void onDependency(BeanIntrospector$BeanDependency dependency) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
@@ -152,7 +154,7 @@ public abstract class BeanIntrospector {
 
     // This is a place holder for now... Will be ditched it in the future
     // BeanVariable bare
-    public sealed interface BeanElement permits BeanIntrospector$BeanClass, BeanIntrospector$BeanConstructor, BeanIntrospector$BeanField, BeanIntrospector$BeanMethod, BeanDependency {
+    public sealed interface BeanElement permits BeanIntrospector$BeanClass, BeanIntrospector$BeanConstructor, BeanIntrospector$BeanField, BeanIntrospector$BeanMethod, BeanIntrospector$BeanDependency {
 
         default BeanIntrospector$AnnotationReader annotations() {
             throw new UnsupportedOperationException();

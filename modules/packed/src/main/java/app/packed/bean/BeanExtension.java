@@ -17,12 +17,10 @@ import internal.app.packed.container.ExtensionSetup;
 public class BeanExtension extends Extension<BeanExtension> {
 
     /** The container we are installing beans into. */
-    final ContainerSetup container;
+    final ContainerSetup container = ExtensionSetup.crack(this).container;
 
     /** Create a new bean extension. */
-    /* package-private */ BeanExtension(/* hidden */ ExtensionSetup setup) {
-        this.container = setup.container;
-    }
+                                       /* package-private */ BeanExtension() {}
 
     public void filter(BaseAssembly.Linker l) {
 
@@ -40,7 +38,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.CONTAINER, container, implementation).build();
+        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.SINGLETON, container, implementation).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -53,7 +51,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
-        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.CONTAINER, container, factory).build();
+        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.SINGLETON, container, factory).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -69,7 +67,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.CONTAINER, container, instance).build();
+        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.SINGLETON, container, instance).build();
         return new ProvideableBeanConfiguration<>(handle);
     }
 

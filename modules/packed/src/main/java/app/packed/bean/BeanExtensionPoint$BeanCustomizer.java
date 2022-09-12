@@ -33,8 +33,9 @@ import internal.app.packed.bean.PackedBeanHandleBuilder;
 /**
  * A bean driver must be created via {@link BeanExtensionPoint}.
  */
+// Syntes vi smider den paa BeanExtensionPoint
 @SuppressWarnings("rawtypes")
-public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
+public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanCustomizer {
 
     // Kan man tilfoeje en function til alle beans?
     // funktioner er jo stateless...
@@ -109,7 +110,7 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
      *            a {@code Runnable} to invoke when the bean is wired
      */
     // ->onWire
-    BeanCustomizer<T> onWireRun(Runnable action);
+    BeanExtensionPoint$BeanCustomizer<T> onWireRun(Runnable action);
 
     /**
      * @param consumer
@@ -122,7 +123,7 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
     default void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
 
     /**
-     * A builder for {@link BeanCustomizer}. Is created using the various {@code beanBuilder} methods on
+     * A builder for {@link BeanExtensionPoint$BeanCustomizer}. Is created using the various {@code beanBuilder} methods on
      * {@link BeanExtensionPoint}.
      * 
      * @see BeanExtensionPoint#beanBuilder(BeanKind)
@@ -156,7 +157,7 @@ public sealed interface BeanCustomizer<T> permits PackedBeanCustomizer {
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        BeanCustomizer<T> build();
+        BeanExtensionPoint$BeanCustomizer<T> build();
 
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).

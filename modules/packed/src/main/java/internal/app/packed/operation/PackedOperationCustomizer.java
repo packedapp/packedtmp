@@ -39,6 +39,7 @@ public final class PackedOperationCustomizer implements OperationCustomizer {
     /** The target of the operation. Typically a bean member, a function or a plain MethodHandle. */
     final PackedOperationTarget target;
 
+    /** Whether or not an invoker has been computed */
     boolean isComputed;
 
     /**
@@ -67,6 +68,9 @@ public final class PackedOperationCustomizer implements OperationCustomizer {
 
     /** {@inheritDoc} */
     public OperationCustomizer specializeMirror(Supplier<? extends OperationMirror> supplier) {
+        if (isComputed) {
+            throw new IllegalStateException("Cannot set a mirror after an invoker has been computed");
+        }
         this.mirrorSupplier = requireNonNull(supplier, "supplier is null");
         return this;
     }

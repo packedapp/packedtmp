@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,19 +29,14 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Realm;
-import app.packed.inject.Ancestral;
 import internal.app.packed.inject.invoke.InternalInfuser;
-import internal.app.packed.thirdparty.guice.GTypes;
 import internal.app.packed.util.ClassUtil;
-import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 
 /**
@@ -174,6 +168,18 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return name;
     }
 
+    private static class Wrapper {
+
+        @Nullable
+        private ExtensionSetup setup;
+
+        private Wrapper(ExtensionSetup setup) {
+            this.setup = setup;
+        }
+    }
+
+    private static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
+
     /**
      * Creates a new instance of the extension.
      * 
@@ -182,11 +188,27 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @return a new extension instance
      */
     Extension<?> newInstance(ExtensionSetup extension) {
+        CONSTRUCT.set(new Wrapper(extension));
         try {
             return (Extension<?>) mhConstructor.invokeExact(extension);
         } catch (Throwable e) {
             throw new InternalExtensionException("An instance of the extension " + nameFull + " could not be created.", e);
+        } finally {
+            CONSTRUCT.remove();
         }
+    }
+
+    public static ExtensionSetup initalizeExtension(Extension<?> instance) {
+        Wrapper wrapper = CONSTRUCT.get();
+        if (wrapper == null) {
+            throw new UnsupportedOperationException("An extension class cannot be created standalone");
+        }
+        ExtensionSetup s = wrapper.setup;
+        wrapper.setup = null;
+        if (s == null) {
+            throw new IllegalStateException();
+        }
+        return s;
     }
 
     /** {@inheritDoc} */
@@ -280,25 +302,25 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
 
             InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
-            builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
+//            builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
 
-            ParameterizedType pt = GTypes.newParameterizedType(Ancestral.class, extensionClass);
-            TypeToken<?> tt = TypeToken.fromType(pt);
-            builder.provide(Key.ofTypeToken(tt)).invokeExact(MH_EXTRACT_EXTENSION, 0);
+//            ParameterizedType pt = GTypes.newParameterizedType(Ancestral.class, extensionClass);
+//            TypeToken<?> tt = TypeToken.fromType(pt);
+//            builder.provide(Key.ofTypeToken(tt)).invokeExact(MH_EXTRACT_EXTENSION, 0);
 
             // Find a method handle for the extension's constructor
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
 
             return new ExtensionModel(this);
         }
-
-        static final MethodHandle MH_EXTRACT_EXTENSION = LookupUtil.lookupStatic(MethodHandles.lookup(), "extractParent", Ancestral.class,
-                ExtensionSetup.class);
-
-        static Ancestral<?> extractParent(ExtensionSetup s) {
-            ExtensionSetup es = s.parent;
-            return es == null ? Ancestral.ofNullable(null) : Ancestral.ofNullable(es.instance());
-        }
+//
+//        static final MethodHandle MH_EXTRACT_EXTENSION = LookupUtil.lookupStatic(MethodHandles.lookup(), "extractParent", Ancestral.class,
+//                ExtensionSetup.class);
+//
+//        static Ancestral<?> extractParent(ExtensionSetup s) {
+//            ExtensionSetup es = s.parent;
+//            return es == null ? Ancestral.ofNullable(null) : Ancestral.ofNullable(es.instance());
+//        }
 
         /**
          * Adds the specified dependency to the caller class if valid.

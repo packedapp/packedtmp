@@ -19,14 +19,14 @@ public class BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public BeanConfiguration(BeanCustomizer<?> handle) {
+    public BeanConfiguration(BeanExtensionPoint$BeanCustomizer<?> handle) {
         this.beanHandle = requireNonNull((PackedBeanCustomizer<?>) handle, "handle is null");
     }
 
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanCustomizer#beanClass()
+     * @see BeanExtensionPoint$BeanCustomizer#beanClass()
      */
     public final Class<?> beanClass() {
         return beanHandle.beanClass();
@@ -35,7 +35,7 @@ public class BeanConfiguration {
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanCustomizer#beanKind()
+     * @see BeanExtensionPoint$BeanCustomizer#beanKind()
      */
     public final BeanKind beanKind() {
         return beanHandle.bean().beanKind();
@@ -59,7 +59,7 @@ public class BeanConfiguration {
     }
 
     /** {@return a handle for the configuration of the bean.} */
-    protected BeanCustomizer<?> handle() {
+    protected BeanExtensionPoint$BeanCustomizer<?> handle() {
         return beanHandle;
     }
 

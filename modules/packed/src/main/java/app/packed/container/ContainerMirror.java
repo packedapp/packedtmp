@@ -24,7 +24,7 @@ import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.StreamUtil;
 
 /**
- * A mirror of a container.
+ * A mirror of a single container.
  * <p>
  * Instances of this class is typically via {@link ApplicationMirror}.
  */
@@ -44,6 +44,32 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
      */
     public ContainerMirror() {}
 
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationMirror application() {
+        return container().application.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AssemblyMirror assembly() {
+        return container().userRealm.mirror();
+    }
+
+    /** {@return a {@link Collection} view of all the beans defined in the container.} */
+    public Collection<BeanMirror> beans() {
+        // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
+        throw new UnsupportedOperationException();
+        // we need a filter on the view...
+        // size, isEmpty, is going to get a bit slower.
+    }
+
+    /** {@return an unmodifiable view of all of the children of this component.} */
+    /* Sequenced */ 
+    public Collection<ContainerMirror> children() {
+        return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
+    }
+
     /**
      * {@return the internal configuration of the container we are mirroring.}
      * 
@@ -61,35 +87,14 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object other) {
-        return this == other || other instanceof ContainerMirror m && container() == m.container();
+    public int depth() {
+        return container().depth;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final int hashCode() {
-        return container().hashCode();
-    }
-
-    /**
-     * Invoked by the runtime with the internal configuration of the container to mirror.
-     * 
-     * @param bean
-     *            the internal configuration of the container to mirror
-     */
-    final void initialize(ContainerSetup container) {
-        if (this.container != null) {
-            throw new IllegalStateException("This mirror has already been initialized.");
-        }
-        this.container = container;
-    }
-
-    /** {@return a {@link Collection} view of all the beans defined in the container.} */
-    public Collection<BeanMirror> beans() {
-        // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
-        throw new UnsupportedOperationException();
-        // we need a filter on the view...
-        // size, isEmpty, is going to get a bit slower.
+    public final boolean equals(Object other) {
+        return this == other || other instanceof ContainerMirror m && container() == m.container();
     }
 
     /** {@return a {@link Set} view of every extension that have been used in the container.} */
@@ -103,18 +108,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
             result.add(ExtensionMirrorHelper.newMirrorOfUnknownType(extension));
         }
         return Set.copyOf(result);
-    }
-
-    /** {@return an unmodifiable view of all of the children of this component.} */
-    /* Sequenced */ 
-    public Collection<ContainerMirror> children() {
-        return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
-    }
-
-    /** {@return the parent container of this container. Or empty if the root container.} */
-    public Optional<ContainerMirror> parent() {
-        ContainerSetup p = container().parent;
-        return p == null ? Optional.empty() : Optional.of(p.mirror());
     }
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
@@ -136,6 +129,25 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
         return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.newMirrorOrNull(container(), mirrorType));
     }
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return container().hashCode();
+    }
+    
+    /**
+     * Invoked by the runtime with the internal configuration of the container to mirror.
+     * 
+     * @param bean
+     *            the internal configuration of the container to mirror
+     */
+    final void initialize(ContainerSetup container) {
+        if (this.container != null) {
+            throw new IllegalStateException("This mirror has already been initialized.");
+        }
+        this.container = container;
+    }
+    
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
      * 
@@ -150,10 +162,46 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     
     /** {@inheritDoc} */
     @Override
+    public LifetimeMirror lifetime() {
+        return container().lifetime.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return container().name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Stream<OperationMirror> operations() {
+        return StreamUtil.filterAssignable(BeanSetup.class, container().children.values().stream()).flatMap(b -> b.mirror().operations());
+    }
+
+    /** {@return the parent container of this container. Or empty if the root container.} */
+    public Optional<ContainerMirror> parent() {
+        ContainerSetup p = container().parent;
+        return p == null ? Optional.empty() : Optional.of(p.mirror());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespacePath path() {
+        return container().path();
+    }
+
+    /** {@inheritDoc} */
+    public final Stream<ComponentMirror> stream() {
+        return container().stream().map(c -> c.mirror());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "ContainerMirror (" + path() + ")";
     }
-    
+
+
     /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws
      * {@link NoSuchElementException} if the container does not use the specified extension type.
@@ -171,53 +219,5 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
      */
     public <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public Stream<OperationMirror> operations() {
-        return StreamUtil.filterAssignable(BeanSetup.class, container().children.values().stream()).flatMap(b -> b.mirror().operations());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationMirror application() {
-        return container().application.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public AssemblyMirror assembly() {
-        return container().userRealm.mirror();
-    }
-
-    /** {@inheritDoc} */
-    public final Stream<ComponentMirror> stream() {
-        return container().stream().map(c -> c.mirror());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int depth() {
-        return container().depth;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public LifetimeMirror lifetime() {
-        return container().lifetime.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String name() {
-        return container().name;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public NamespacePath path() {
-        return container().path();
     }
 }

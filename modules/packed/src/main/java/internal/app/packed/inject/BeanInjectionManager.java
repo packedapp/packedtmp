@@ -57,13 +57,13 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleBuilder<?> driver) {
         this.bean = bean;
         ContainerSetup container = bean.parent;
-        this.singletonHandle = driver.beanKind() == BeanKind.CONTAINER ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
+        this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
 
         // Can only register a single extension bean of a particular type
 
         if (bean.realm instanceof ExtensionRealmSetup e) {
             ExtensionInjectionManager eim = e.injectionManagerFor(bean);
-            if (driver.beanKind() == BeanKind.CONTAINER) {
+            if (driver.beanKind() == BeanKind.SINGLETON) {
                 eim.addBean(bean);
             }
             parent = eim;

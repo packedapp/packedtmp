@@ -18,7 +18,7 @@ package app.packed.service;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanCustomizer;
+import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanCustomizer;
@@ -38,7 +38,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @param handle
      *            the bean driver to use for creating the bean
      */
-    public ProvideableBeanConfiguration(BeanCustomizer<T> handle) {
+    public ProvideableBeanConfiguration(BeanExtensionPoint$BeanCustomizer<T> handle) {
         super(handle);
         this.sb = new ServiceableBean((PackedBeanCustomizer<?>) handle);
         handle.onWireRun(() -> sb.onWired());

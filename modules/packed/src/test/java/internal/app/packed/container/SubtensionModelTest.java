@@ -9,7 +9,7 @@ import testutil.stubs.Throwables;
 
 public class SubtensionModelTest {
 
-    TestExtension te = new TestExtension();
+    //TestExtension te = new TestExtension();
 
     // Disse test er udkommenterede efter vi introducere ExtensionSupportContext
     // Nu tager vi et ExtensionTree... og det er bare knapt saa let at simulere

@@ -18,6 +18,7 @@ package tests.container.extension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
@@ -36,6 +37,7 @@ public class BasicExtensionTest extends AbstractApplicationTest {
     // }
 
     /** Checks that we cannot call certain methods from the constructor of an extension. */
+    @Disabled // this is okay now
     @Test
     public void cannotCallExtensionsFromConstructor() {
         appOf(c -> assertThat(c.use(CallingMethodsFromTheConstructor.class)).isNotNull());

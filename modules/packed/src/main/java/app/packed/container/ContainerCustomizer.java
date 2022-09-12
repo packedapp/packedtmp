@@ -32,6 +32,10 @@ public sealed interface ContainerCustomizer permits PackedContainerDriver {
     
     interface Installer {
 
+        Installer allowRuntimeWirelets();
+        
+        ContainerCustomizer install();
+        
         // Only Managed-Operation does not require a wrapper
         default void wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
             // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
@@ -39,10 +43,6 @@ public sealed interface ContainerCustomizer permits PackedContainerDriver {
             
             // Det betyder ogsaa vi skal lave en wrapper bean alene
         }
-        
-        Installer allowRuntimeWirelets();
-        
-        ContainerCustomizer install();
     }
 }
 

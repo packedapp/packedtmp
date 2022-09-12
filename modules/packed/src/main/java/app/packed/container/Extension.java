@@ -29,10 +29,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
-import app.packed.inject.Ancestral;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionModel;
@@ -63,11 +61,11 @@ import internal.app.packed.util.ThrowableUtil;
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
  * 'app.packed.base'
  * <p>
- * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
- * taking a single parameter of type {@link Ancestral}. The constructor should have package private accessibility to
- * make sure users do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. The
- * extension subclass should not be declared final as it is expected that future versions of Packed will supports some
- * debug configuration that relies on extending extensions. And capturing interactions with the extension.
+ * Every extension implementations must provide either an empty constructor. The constructor should have package private
+ * accessibility to make sure users do not try an manually instantiate it, but instead use
+ * {@link ContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected that
+ * future versions of Packed will supports some debug configuration that relies on extending extensions. And capturing
+ * interactions with the extension.
  * 
  * @see ExtensionDescriptor
  * 
@@ -76,20 +74,18 @@ import internal.app.packed.util.ThrowableUtil;
  */
 public abstract class Extension<E extends Extension<E>> {
 
-    /**
-     * The internal configuration of the extension that all methods on {@code Extension} delegate to.
-     * <p>
-     * This field is initialized in {@link ExtensionSetup#initialize()} via a var handle. The field is _not_ nulled out
-     * after the configuration of the extension has completed. This allows for invoking methods such as
-     * {@link #checkIsConfigurable()} at any time.
-     * <p>
-     * This field should only be accessed via {@link #setup()}.
-     */
-    @Nullable
-    private ExtensionSetup setup;
+    /** The internal configuration of the extension. */
+    private final ExtensionSetup setup;
 
-    /** Creates a new extension. Subclasses should have a single package-private constructor. */
-    protected Extension() {}
+    /**
+     * Creates a new extension. Subclasses should have a single package-private constructor.
+     * 
+     * @throws IllegalStateException
+     *             if attempting to construct the extension outside of packed
+     */
+    protected Extension() {
+        this.setup = ExtensionModel.initalizeExtension(this);
+    }
 
     /** {@return an extension point for the bean extension.} */
     protected final BeanExtensionPoint bean() {
@@ -103,21 +99,20 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkIsConfigurable() {
-        ExtensionRealmSetup realm = setup().extensionRealm;
+        ExtensionRealmSetup realm = setup.extensionRealm;
         if (realm.isClosed()) {
             throw new IllegalStateException(realm.realmType() + " is no longer configurable");
         }
     }
 
-    /** {@return the path of the container that this extension belongs to.} */
-    protected final NamespacePath containerPath() {
-        return setup().container.path();
-    }
-    
     protected final ContainerCustomizer.Installer containerBuilder(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-    
+
+    /** {@return the path of the container that this extension belongs to.} */
+    protected final NamespacePath containerPath() {
+        return setup.container.path();
+    }
 
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
     // Problemet er at den ikke fungere skide godt paa fx JFR extension.
@@ -132,7 +127,7 @@ public abstract class Extension<E extends Extension<E>> {
      *           questions about what exact extension is using another extension
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return setup().container.isExtensionUsed(extensionType);
+        return setup.container.isExtensionUsed(extensionType);
     }
 
     /**
@@ -142,8 +137,8 @@ public abstract class Extension<E extends Extension<E>> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionNavigator<E> navigator() {
-        ExtensionSetup setup = setup();
-        return new PackedExtensionNavigator(setup, setup.extensionType);
+        ExtensionSetup s = setup;
+        return new PackedExtensionNavigator(s, s.extensionType);
     }
 
     /**
@@ -198,7 +193,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     // Hmm InternalExtensionException hvis det er brugerens skyld??
     protected void onApplicationClose() {
-        for (ExtensionSetup c = setup().childFirst; c != null; c = c.childSiebling) {
+        for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
             c.instance().onApplicationClose();
         }
     }
@@ -228,9 +223,9 @@ public abstract class Extension<E extends Extension<E>> {
      */
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
-        ExtensionSetup setup = setup();
-        for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
-            if (c.container.userRealm == setup.container.userRealm) {
+        ExtensionSetup s = setup;
+        for (ExtensionSetup c = s.childFirst; c != null; c = c.childSiebling) {
+            if (c.container.userRealm == s.container.userRealm) {
                 c.instance().onAssemblyClose();
             }
         }
@@ -248,6 +243,13 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected void onNew() {}
 
+    /** @return the parent of this extension if present. */
+    @SuppressWarnings("unchecked")
+    protected final Optional<E> parent() {
+        ExtensionSetup parent = setup.parent;
+        return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
+    }
+
     /**
      * Returns a selection of all wirelets of the specified type that have not already been processed.
      * <p>
@@ -264,17 +266,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             wirelet class is not a proper subclass of ContainerWirelet.
      */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        return setup().selectWirelets(wireletClass);
-    }
-
-    /** {@return the internal configuration of the extension.} */
-    private final ExtensionSetup setup() {
-        ExtensionSetup s = setup;
-        if (s == null) {
-            throw new IllegalStateException("This operation cannot be invoked from the constructor of an extension. If you need to perform "
-                    + "initialization before the extension is returned to the user, override Extension#onNew()");
-        }
-        return s;
+        return setup.selectWirelets(wireletClass);
     }
 
     /**
@@ -299,7 +291,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     @SuppressWarnings("unchecked")
     protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointType) {
-        return (P) ExtensionPointHelper.newExtensionPoint(setup(), extensionPointType);
+        return (P) ExtensionPointHelper.newExtensionPoint(setup, extensionPointType);
     }
 
     // Vi kan sagtens lave den en normal metode taenker jeg maaske paa en utility klasse...
@@ -502,7 +494,7 @@ class Zarchive {
 //   * @return a configuration object for this extension
 //   */
 //  protected final ExtensionConfiguration configuration() {
-//      return setup();
+//      return setup;
 //  }
 
 //    /**

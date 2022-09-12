@@ -15,7 +15,6 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
-import app.packed.inject.Ancestral;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
@@ -46,9 +45,10 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-    /* package-private */ EntryPointExtension(Ancestral<EntryPointExtension> parent, /* hidden */ ExtensionSetup setup) {
+    /* package-private */ EntryPointExtension() {
+        ExtensionSetup setup = ExtensionSetup.crack(this);
         this.application = setup.container.application;
-        this.share = parent.map(e -> e.share).orElseGet(ApplicationShare::new);
+        this.share = parent().map(e -> e.share).orElseGet(ApplicationShare::new);
     }
 
     @Override

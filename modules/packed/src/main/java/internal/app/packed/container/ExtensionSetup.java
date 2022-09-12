@@ -25,8 +25,8 @@ import internal.app.packed.util.ThrowableUtil;
 public final class ExtensionSetup {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_BEAN_SCANNER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "newBeanIntrospector",
-            BeanIntrospector.class);
+    private static final MethodHandle MH_EXTENSION_NEW_BEAN_SCANNER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "newBeanIntrospector", BeanIntrospector.class);
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
@@ -92,7 +92,7 @@ public final class ExtensionSetup {
      * @param extensionType
      *            the type of extension this setup class represents
      */
-    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
+    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
@@ -114,12 +114,14 @@ public final class ExtensionSetup {
         this.model = requireNonNull(extensionRealm.extensionModel);
     }
 
-    void initialize() {
-        // Creates a new extension instance
-        instance = model.newInstance(this);
+    static ExtensionSetup newExtension(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionClass) {
+        ExtensionSetup es = new ExtensionSetup(parent, container, extensionClass);
+        es.initialize();
+        return es;
+    }
 
-        // Set Extension.setup = this
-        VH_EXTENSION_SETUP.set(instance, this);
+    private void initialize() {
+        instance = model.newInstance(this);
 
         // Add the extension to the container's map of extensions
         container.extensions.put(extensionType, this);
@@ -153,6 +155,17 @@ public final class ExtensionSetup {
         return e;
     }
 
+    /**
+     * Returns Extension#setup, is mainly used for core extensions that need special functionality
+     * 
+     * @param extension
+     *            the extension to crack
+     * @return the extension setup
+     */
+    public static ExtensionSetup crack(Extension<?> extension) {
+        return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
+    }
+
     public BeanIntrospector newBeanIntrospector(ExtensionSetup extension, BeanSetup bean) {
         BeanIntrospector bs;
         try {
@@ -172,7 +185,7 @@ public final class ExtensionSetup {
         }
         return introspector;
     }
-    
+
     /**
      * Invokes {@link Extension#onApplicationClose()}.
      * <p>

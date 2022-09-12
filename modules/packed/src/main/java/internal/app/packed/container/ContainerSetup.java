@@ -268,7 +268,7 @@ public final class ContainerSetup extends ComponentSetup {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
-        // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onNew.
+        // We do not use #computeIfAbsent, because extensions might install other extensions when initializing.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
             // Ny extensions skal installeres indefor Assembly::build
@@ -294,15 +294,12 @@ public final class ContainerSetup extends ComponentSetup {
                 }
             }
 
-            // make sure it is recursively installed into the root container
+            // The extension must be recursively installed into the root container if not already installed in parent
             ExtensionSetup extensionParent = parent == null ? null : parent.useExtensionSetup(extensionClass, requestedByExtension);
 
-            // Create a extension and initialize it.
-            extension = new ExtensionSetup(extensionParent, this, extensionClass);
-
-            extension.initialize();
+            // Create the extension. (This will also add an entry to #extensions)
+            extension = ExtensionSetup.newExtension(extensionParent, this, extensionClass);
         }
         return extension;
     }
-
 }

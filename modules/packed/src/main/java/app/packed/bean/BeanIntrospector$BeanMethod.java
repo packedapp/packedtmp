@@ -60,8 +60,8 @@ public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits 
      * {@link OperationTargetMirror.OfMethodInvoke} as its {@link OperationMirror#target()}.
      * 
      * @param operator
-     *            the extension bean that will invoke the operation. The extension bean must be located in the same (or a
-     *            direct ancestor) container as the bean that declares this method.
+     *            the extension bean that will invoke the operation. The extension bean must be located in the same (or in a
+     *            direct ancestor) container as the bean that declares the method.
      * @return an operation customizer
      * 
      * @see Lookup#unreflect(Method)

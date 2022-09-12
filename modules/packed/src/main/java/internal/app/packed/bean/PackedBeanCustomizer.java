@@ -21,15 +21,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanCustomizer;
+import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
 
 /**
- * The implementation of {@link BeanCustomizer}.
+ * The implementation of {@link BeanExtensionPoint$BeanCustomizer}.
  * 
- * @apiNote we could just let {@link BeanSetup} implement {@link BeanCustomizer}, but we choose not to, to avoid parameterizing
+ * @apiNote we could just let {@link BeanSetup} implement {@link BeanExtensionPoint$BeanCustomizer}, but we choose not to, to avoid parameterizing
  *          {@link BeanSetup}.
  */
-public /* primitive */ record PackedBeanCustomizer<T> (BeanSetup bean) implements BeanCustomizer<T> {
+public /* primitive */ record PackedBeanCustomizer<T> (BeanSetup bean) implements BeanExtensionPoint$BeanCustomizer<T> {
 
     /** {@inheritDoc} */
     @Override

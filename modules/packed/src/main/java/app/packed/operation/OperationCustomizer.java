@@ -20,14 +20,14 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanDependency;
+import app.packed.bean.BeanIntrospector$BeanDependency;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.operation.Zarchive.OperationInvocationType;
 import internal.app.packed.operation.PackedOperationCustomizer;
 
 /**
@@ -48,11 +48,13 @@ import internal.app.packed.operation.PackedOperationCustomizer;
  * <ul>
  * </ul>
  * 
+ * 
  * @see BeanIntrospector$BeanField#newGetOperation(ExtensionBeanConfiguration)
  * @see BeanIntrospector$BeanField#newSetOperation(ExtensionBeanConfiguration)
  * @see BeanIntrospector$BeanField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
- * @see BeanIntrospector$BeanMethod#newOperation(ExtensionBeanConfiguration, OperationInvocationType)
+ * @see BeanIntrospector$BeanMethod#newOperation(ExtensionBeanConfiguration)
  */
+// no functionality for reading annotations, use BeanField, BeanMethod, ect
 public sealed interface OperationCustomizer permits PackedOperationCustomizer {
 
     /**
@@ -61,16 +63,11 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
      * @return
      */
     default Optional<AccessMode> accessMode() {
-        throw new UnsupportedOperationException();
+        return Optional.empty();
     }
 
+    // i think just support compMH or compVH
     <T> T computeInvoker(Class<T> invokerType);
-
-    default <T> T computeInvoker(TypeToken<T> invokerType) {
-
-        /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * @return
@@ -89,6 +86,25 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
         return computeInvoker(VarHandle.class);
     }
 
+    default OperationCustomizer mapReturn(MethodHandle mh) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    default <F, T> OperationCustomizer mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    default InvocationType invocationType() {
+        throw new UnsupportedOperationException();
+    }
+
+    default OperationCustomizer invokeAs(InvocationType type) {
+        // This method must be called before any dependencies have been customized
+        return this;
+    }
+
     // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
     // Eller vi bare kan genbruge BeanDependency
 
@@ -99,8 +115,8 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
      * 
      * @return a unmodifiable list of the dependencies of this operation
      */
-    // Dependencies that are not explicitly bound 
-    default List<BeanDependency> dependencies() {
+    // Dependencies that are not explicitly bound
+    default List<BeanIntrospector$BeanDependency> dependencies() {
         throw new UnsupportedOperationException();
     }
 
@@ -122,6 +138,12 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
 }
 
 interface Sandbox {
+
+    default <T> T computeInvoker(TypeToken<T> invokerType) {
+
+        /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
+        throw new UnsupportedOperationException();
+    }
 
     Sandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value
 

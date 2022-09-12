@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanCustomizer;
-import app.packed.bean.BeanCustomizer.Builder;
+import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
+import app.packed.bean.BeanExtensionPoint$BeanCustomizer.Builder;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
@@ -35,7 +35,7 @@ import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
 
 /** Implementation of BeanHandle.Builder. */
-public final class PackedBeanHandleBuilder<T> implements BeanCustomizer.Builder<T> {
+public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$BeanCustomizer.Builder<T> {
 
     /** The bean class, is typical void.class for functional beans. */
     final Class<?> beanClass;
@@ -89,7 +89,7 @@ public final class PackedBeanHandleBuilder<T> implements BeanCustomizer.Builder<
 
     /** {@inheritDoc} */
     @Override
-    public BeanCustomizer<T> build() {
+    public BeanExtensionPoint$BeanCustomizer<T> build() {
         checkNotBuild();
         RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
 

@@ -21,12 +21,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanCustomizer;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
+import app.packed.bean.BeanKind;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Factory;
@@ -88,17 +88,12 @@ import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
-    private final ContainerInjectionManager injectionManager;
+    private final ContainerInjectionManager injectionManager = ExtensionSetup.crack(this).container.injectionManager;
 
     /**
      * Create a new service extension.
-     * 
-     * @param configuration
-     *            an extension configuration object.
      */
-    ServiceExtension(/* hidden */ ExtensionSetup setup) {
-        this.injectionManager = setup.container.injectionManager;
-    }
+    ServiceExtension() {}
 
     // Validates the outward facing contract
     public void checkContract(Consumer<? super ServiceContract> validator) {
@@ -157,7 +152,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             @Override
             public void onField(BeanIntrospector$BeanField field) {
                 // todo check not extension
-                
+
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 
@@ -186,7 +181,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             }
         };
     }
-    
+
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {
@@ -263,7 +258,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
         injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
     }
-    
 
     /**
      * Provides every service from the specified locator.
@@ -288,14 +282,14 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-     // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        BeanCustomizer<T> handle = bean().beanBuilderFromClass(BeanKind.UNMANAGED, implementation).build();
+        // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
+        BeanExtensionPoint$BeanCustomizer<T> handle = bean().beanBuilderFromClass(BeanKind.UNMANAGED, implementation).build();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanCustomizer<T> handle = bean().beanBuilderFromFactory(BeanKind.UNMANAGED, factory).build();
+        BeanExtensionPoint$BeanCustomizer<T> handle = bean().beanBuilderFromFactory(BeanKind.UNMANAGED, factory).build();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }

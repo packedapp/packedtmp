@@ -40,6 +40,7 @@ public @interface ContainerHook {
     /**
      * @return
      */
+    // applyToAllContainersInAssembly instead?
     boolean applyToRootOnly() default false;
 
     /** An annotation that allows for placing multiple {@link ContainerHook} annotations on a single target. */

@@ -5,8 +5,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 
+import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -28,6 +30,14 @@ public final /* primitive */ class AssemblyModel {
                 if (a instanceof ContainerHook h) {
                     for (Class<? extends ContainerHook.Processor> b : h.value()) {
                         if (ContainerHook.Processor.class.isAssignableFrom(b)) {
+                            try {
+                                MethodHandles.lookup().findConstructor(b, MethodType.methodType(b));
+                            } catch (NoSuchMethodException e) {
+                                throw new BuildException("A container hook must provide an empty constructor, hook = " + h, e);
+                            } catch (IllegalAccessException e) {
+                                throw new BuildException("Can't see it sorry, hook = " + h, e);
+                            }
+                            
                             InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), b, Class.class);
                             builder.provide(new Key<Class<? extends Assembly>>() {}).adaptArgument(0);
                             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast

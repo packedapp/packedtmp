@@ -5,21 +5,32 @@ package app.packed.bean;
 // Maybe once we clear up lifetime this will work better
 public enum BeanKind {
 
-    /** Lives and dies with the container it is installed into. */
-    CONTAINER,
-
     /** Will always return void as the bean type. */
     FUNCTIONAL,
+
+    /** A static bean is stateless bean that has a non-void bean class. */
+    STATIC,
+
+    /**
+     * Lives and dies with the container it is installed into. Is eagerly created. Only a single bean of the specified type
+     * may exists in the container. Think we need to check other bean types as well.
+     * <p>
+     * non-void
+     * 
+     */
+    SINGLETON,
+
+    MANYTON,
 
     /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
     UNMANAGED,
 
     // Instantiated by an extensions that
     // A single ideally operates within it
-    OPERATION,
+    MANAGED_OPERATION,
 
     // Instantiated and deconstructed by an extension and some point (For example,
-    MANAGED;
+    MANAGED_LIFETIME;
 
 //    /// Er det virkelig sin egen bean????
 //    /// Eller gaelder der bare andre visibility regler for extensions...

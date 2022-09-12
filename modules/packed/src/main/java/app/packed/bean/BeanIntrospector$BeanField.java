@@ -43,7 +43,7 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
      * represent a proper key.
      * <p>
      * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-     * key. As {@link BeanDependency} is typically used in cases where this would be needed.
+     * key. As {@link BeanIntrospector$BeanDependency} is typically used in cases where this would be needed.
      * 
      * @return a key representing the field
      * 
