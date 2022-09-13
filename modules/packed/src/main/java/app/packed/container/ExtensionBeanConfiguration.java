@@ -30,31 +30,38 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
      */
     public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
-        // Validate 
+        // Validate
     }
 
     public <V> void bindDelayed(Class<V> key, Supplier<V> supplier) {
-        
+
     }
+
     public <V> ExtensionBeanConfiguration<T> bindDelayed(Key<V> key, Supplier<V> supplier) {
+        // delayedInitiatedWith
+        // Taenker vi har et filled array som er available when initiating the lifetime
+
+        // Her skal vi ogsaa taenke ind at det skal vaere en application singleton vi injecter ind i.
+        // Altsaa vi vil helst ikke initiere en Session extension bean med MHs hver gang
         
         return this;
     }
 
     public <P> void callbackOnInitialize(BeanHandle<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
-        
+
     }
+
     // Same container I think
     public <P> void callbackOnInitialize(InstanceBeanConfiguration<P> beanToInitialize, BiConsumer<? super T, ? super P> consumer) {
         // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
-        // Ja  det syntes jeg...
+        // Ja det syntes jeg...
         // Skal de vaere samme container??
 
         // Packed will call consumer(T, P) once provideBean has been initialized
         // Skal vi checke provideBean depends on consumerBean
         // framework will call
         // consumer(T, P) at initialization time
-        
+
     }
 
     /** {@inheritDoc} */

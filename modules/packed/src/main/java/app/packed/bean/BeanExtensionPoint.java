@@ -8,7 +8,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.Type;
-import java.util.function.Consumer;
 
 import app.packed.base.TypeToken;
 import app.packed.container.Extension;
@@ -27,18 +26,29 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
                                              /* package-private */ BeanExtensionPoint() {}
 
     /**
-     * @return a new builder
+     * Create a new installer without a source.
+     * 
+     * @return the new installer
      */
     public BeanHandle.Installer<?> beanInstaller() {
         return PackedBeanHandleInstaller.ofNone(useSite(), extension().container);
     }
 
-    public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Factory<T> factory) {
-        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, factory);
+    /**
+     * Create a new installer from a class source.
+     * 
+     * @param <T>
+     *            type of bean
+     * @param clazz
+     *            the clazz
+     * @return the new installer
+     */
+    public <T> BeanHandle.Installer<T> beanInstallerFromClass(Class<T> clazz) {
+        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
     }
 
-    public <T> BeanHandle.Installer<T> beanInstallerFromClass(Class<T> implementation) {
-        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, implementation);
+    public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Factory<T> factory) {
+        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, factory);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
@@ -58,11 +68,6 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
         BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
-    }
-
-    <T> ExtensionBeanConfiguration<T> installOnce(Class<T> implementation, Consumer<? super T> consumer) {
-        // maaske hellere bare et installEBean felt i extensionen...
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -168,6 +173,38 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
 class Sandbox {
 
+    <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+    
+    <T> ExtensionBeanConfiguration<T> installMany(Class<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    <T> ExtensionBeanConfiguration<T> installMany(Factory<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    <T> ExtensionBeanConfiguration<T> installManyInstance(T instance) {
+        throw new UnsupportedOperationException();
+    }
+    
+    <T> ExtensionBeanConfiguration<T> installLazy(Class<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    <T> ExtensionBeanConfiguration<T> installLazy(Factory<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    <T> ExtensionBeanConfiguration<T> installManyLazy(Class<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    <T> ExtensionBeanConfiguration<T> installManyLazy(Factory<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+    
     // I don't think we will use it
 //
 //    /**

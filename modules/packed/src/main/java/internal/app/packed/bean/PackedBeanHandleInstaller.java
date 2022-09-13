@@ -62,7 +62,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     final PackedExtensionPointContext operator;
 
     @Nullable
-    PackedExtensionPointContext owner;
+    PackedExtensionPointContext extensionOwner;
 
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
@@ -95,7 +95,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     public Installer<T> forExtension(UseSite context) {
         requireNonNull(context, "context is null");
         checkNotBuild();
-        this.owner = (PackedExtensionPointContext) context;
+        this.extensionOwner = (PackedExtensionPointContext) context;
         return this;
     }
 
@@ -103,17 +103,17 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     @Override
     public BeanHandle<T> install() {
         checkNotBuild();
-        RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
+        RealmSetup realm = extensionOwner == null ? container.realm : extensionOwner.extension().extensionRealm;
 
         // Can we call it more than once??? Why not
         realm.wireCurrentComponent();
 
         // Skal lave saa mange checks som muligt inde vi laver BeanSetup
         BeanSetup bean;
-        if (owner == null) {
+        if (extensionOwner == null) {
             bean = new BeanSetup(this, realm);
         } else {
-            bean = new ExtensionBeanSetup(owner.extension(), this, realm);
+            bean = new ExtensionBeanSetup(extensionOwner.extension(), this, realm);
         }
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
@@ -157,10 +157,10 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return this;
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofClass(@Nullable UseSite operator, ContainerSetup container, Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
+    public static <T> PackedBeanHandleInstaller<T> ofClass(@Nullable UseSite operator, ContainerSetup container, Class<T> clazz) {
+        requireNonNull(clazz, "clazz is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleInstaller<>(operator, container, implementation, BeanSourceKind.CLASS, implementation);
+        return new PackedBeanHandleInstaller<>(operator, container, clazz, BeanSourceKind.CLASS, clazz);
     }
 
     public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Factory<T> factory) {

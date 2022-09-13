@@ -26,39 +26,34 @@ import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
+import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 
 /**
- * A bean driver must be created via {@link BeanExtensionPoint}.
+ * A bean handle represents an installed bean. Instances of {@code BeanHandle} are only exposed to end-users by wrapping
+ * them in {@link BeanConfiguration} or a subclass of it.
+ * 
+ * 
  */
-// Syntes vi smider den paa BeanExtensionPoint.. Nah...
+//Vi har beans uden lifecycle men med instancer
+
+//Fx en validerings bean <--
+
+//LifetimeConfig
+////Unmanaged Bean instantiated and initialized by packed  (Init lifetime does not take bean instance)
+////Unmanaged Bean instantiated by the user and initialzied by packed (Init lifetime takes bean instance)
+
+////Stateless (with instance) validation bean only supports fx validation annotations?
+
+////
+//Unmanaged
+
+//Setup - Teardown
+
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
-
-    // Kan man tilfoeje en function til alle beans?
-    // funktioner er jo stateless...
-    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
-    // Det skal den heller ikke.
-    default <F> OperationCustomizer addFunctionalOperation(Class<F> tt, F function) {
-        throw new UnsupportedOperationException();
-    }
-
-    default OperationCustomizer addFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Problemet er her at det virker meget underligt lige pludselig at skulle tilfoeje lanes
-    // Og hvordan HttpRequest, Response er 2 separate lanes... det er lidt sort magi
-    // Skal vi bruge et hint???
-    default OperationCustomizer addFunctionalOperation2(Object functionInstance, Class<?> functionType, Class<?>... typeVariables) {
-        throw new UnsupportedOperationException();
-    }
-
-    default OperationCustomizer addSyntheticOperation(MethodHandle methodHandle /* , boolean firstParamIsBeanInstance */) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * @return
@@ -66,7 +61,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * @see BeanConfiguration#beanClass()
      * @see BeanMirror#beanClass()
      */
-    Class<?> beanClass(); // beanSource instead??
+    Class<?> beanClass();
 
     /**
      * @param decorator
@@ -103,6 +98,37 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         return List.of();
     }
 
+    // Kan man tilfoeje en function til alle beans?
+    // funktioner er jo stateless...
+    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
+    // Det skal den heller ikke.
+    default <F> OperationCustomizer newFunctionalOperation(Class<F> tt, F function) {
+        throw new UnsupportedOperationException();
+    }
+
+    default OperationCustomizer newFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Problemet er her at det virker meget underligt lige pludselig at skulle tilfoeje lanes
+    // Og hvordan HttpRequest, Response er 2 separate lanes... det er lidt sort magi
+    // Skal vi bruge et hint???
+    default OperationCustomizer newFunctionalOperation2(Object functionInstance, Class<?> functionType, Class<?>... typeVariables) {
+        throw new UnsupportedOperationException();
+    }
+
+    default OperationCustomizer newOperation(MethodHandle methodHandle /* , boolean firstParamIsBeanInstance */) {
+        throw new UnsupportedOperationException();
+    }
+
+    default OperationCustomizer newOperation(MethodHandle methodHandle, FactoryType type /* , boolean firstParamIsBeanInstance */) {
+        throw new UnsupportedOperationException();
+    }
+
+    default OperationCustomizer newOperation(Factory factory/* , boolean firstParamIsBeanInstance */) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Registers a wiring action to run when the bean becomes fully wired.
      * 
@@ -123,16 +149,19 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     default void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
 
     /**
-     * A builder for {@link BeanHandle}. Is created using the various {@code beanBuilder} methods on
+     * An installer used to create {@link BeanHandle}. Is created using the various {@code beanInstaller} methods on
      * {@link BeanExtensionPoint}.
+     * <p>
+     * The main purpose of this interface is to allow various configuration that is needed before the bean is introspected.
+     * If the configuration is not needed before introspection the functionality such be present on {@code BeanHandle}
+     * instead.
      * 
-     * @see BeanExtensionPoint#beanBuilder(BeanKind)
-     * @see BeanExtensionPoint#beanInstallerFromClass(BeanKind, Class)
-     * @see BeanExtensionPoint#beanInstallerFromFactory(BeanKind, Factory)
-     * @see BeanExtensionPoint#beanBuilderFromInstance(BeanKind, Object)
+     * @see BeanExtensionPoint#beanInstaller()
+     * @see BeanExtensionPoint#beanInstallerFromClass(Class)
+     * @see BeanExtensionPoint#beanInstallerFromFactory(Factory)
+     * @see BeanExtensionPoint#beanBuilderFromInstance(Object)
      */
-    // Could also have, scan(), scan(BeanScanner), noScan() instead of build()
-    // Scan (disable, do scan) ???
+    // Could have, introspectionDisable()/noIntrospection
     sealed interface Installer<T> permits PackedBeanHandleInstaller {
 
         /**
@@ -145,16 +174,25 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          *             if build has previously been called on the builder
          */
         Installer<T> forExtension(UseSite context);
-        
+
         /**
          * Adds a new bean to the container and returns a handle for it.
          * 
          * @return the new handle
          * @throws IllegalStateException
-         *             if build has previously been called on the builder
+         *             if install has previously been called
          */
         BeanHandle<T> install();
-        
+
+        /**
+         * There will never be any bean instances.
+         * <p>
+         * This method can only be used together with {@link BeanExtensionPoint#beanInstallerFromClass(Class)}.
+         * 
+         * @return this installer
+         * @throws IllegalStateException
+         *             if used without source kind {@code class}
+         */
         Installer<T> instanceless();
 
         /**
@@ -171,10 +209,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         Installer<T> introspectWith(BeanIntrospector introspector);
 
+        Installer<T> kindSingleton();
+
         Installer<T> kindUnmanaged();
 
-        Installer<T> kindSingleton();
-        
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
@@ -232,6 +270,3 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 //  throw new UnsupportedOperationException();
 //}
 //
-//default void addOperation(OperationDriver2 driver) {
-//  throw new UnsupportedOperationException();
-//}
