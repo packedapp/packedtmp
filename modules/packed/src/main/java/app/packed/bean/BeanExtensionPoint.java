@@ -30,7 +30,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * @return a new builder
      */
     public BeanHandle.Installer<?> beanInstaller() {
-        return PackedBeanHandleInstaller.ofNone(useSite(), extension().container).kind(BeanKind.FUNCTIONAL);
+        return PackedBeanHandleInstaller.ofNone(useSite(), extension().container);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Factory<T> factory) {
@@ -46,20 +46,17 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, extension().container, implementation).forExtension(useSite()).kind(BeanKind.SINGLETON)
-                .install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, extension().container, implementation).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, extension().container, factory).forExtension(useSite()).kind(BeanKind.SINGLETON)
-                .install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, extension().container, factory).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kind(BeanKind.SINGLETON)
-                .install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 

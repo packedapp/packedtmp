@@ -132,25 +132,30 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * @see BeanExtensionPoint#beanBuilderFromInstance(BeanKind, Object)
      */
     // Could also have, scan(), scan(BeanScanner), noScan() instead of build()
+    // Scan (disable, do scan) ???
     sealed interface Installer<T> permits PackedBeanHandleInstaller {
 
-        // Scan (disable, do scan) ???
-
-        Installer<T> kind(BeanKind kind);
-        
-        Installer<T> noInstances();
+        /**
+         * Marks the bean as owned by the extension representing by specified extension point context
+         * 
+         * @param context
+         *            an extension point context representing the extension that owns the bean
+         * @return this builder
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
+         */
+        Installer<T> forExtension(UseSite context);
         
         /**
-         * Allows for multiple beans of the same type in a single container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
+         * Adds a new bean to the container and returns a handle for it.
          * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
+         * @return the new handle
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
          */
-        Installer<T> nonUnique();
+        BeanHandle<T> install();
+        
+        Installer<T> instanceless();
 
         /**
          * Registers a bean introspector that will be used instead of the framework calling
@@ -166,15 +171,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         Installer<T> introspectWith(BeanIntrospector introspector);
 
-        /**
-         * Adds a new bean to the container and returns a handle for it.
-         * 
-         * @return the new handle
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
-         */
-        BeanHandle<T> install();
+        Installer<T> kindUnmanaged();
 
+        Installer<T> kindSingleton();
+        
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
@@ -195,15 +195,16 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         }
 
         /**
-         * Marks the bean as owned by the extension representing by specified extension point context
+         * Allows for multiple beans of the same type in a single container.
+         * <p>
+         * By default, a container only allows a single bean of particular type if non-void.
          * 
-         * @param context
-         *            an extension point context representing the extension that owns the bean
          * @return this builder
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if {@code void} bean class
          */
-        Installer<T> forExtension(UseSite context);
+        Installer<T> nonUnique();
     }
 }
 //INFO (type, kind)

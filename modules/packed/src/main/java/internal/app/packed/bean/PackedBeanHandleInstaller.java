@@ -24,7 +24,6 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.Installer;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.ExtensionPoint.UseSite;
@@ -39,10 +38,12 @@ import internal.app.packed.inject.factory.InternalFactory;
 public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<T> {
 
     /** The bean class, is typical void.class for functional beans. */
-    final Class<?> beanClass;
+    public final Class<?> beanClass;
 
     /** The container the new bean will be installed into. */
     final ContainerSetup container;
+
+    public boolean instanceless;
 
     /** A custom bean introspector that may be set via {@link #introspectWith(BeanIntrospector)}. */
     @Nullable
@@ -54,16 +55,14 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     /** Supplies a mirror for the operation */
     final Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
 
+    boolean nonUnique;
+
     /** The operator of the bean, or {@code null} for {@link BeanExtension}. */
     @Nullable
     final PackedExtensionPointContext operator;
 
     @Nullable
     PackedExtensionPointContext owner;
-
-    boolean nonUnique;
-
-    boolean noInstances;
 
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
@@ -79,11 +78,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = requireNonNull(source);
-    }
-
-    /** {@inheritDoc} */
-    public Class<?> beanClass() {
-        return beanClass;
+        this.instanceless = source == null;
     }
 
     /** {@inheritDoc} */
@@ -91,8 +86,16 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return kind;
     }
 
-    public PackedBeanHandleInstaller<T> kind(BeanKind kind) {
-        this.kind = requireNonNull(kind);
+    private void checkNotBuild() {
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Installer<T> forExtension(UseSite context) {
+        requireNonNull(context, "context is null");
+        checkNotBuild();
+        this.owner = (PackedExtensionPointContext) context;
         return this;
     }
 
@@ -121,19 +124,6 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return new PackedBeanHandle<>(bean);
     }
 
-    private void checkNotBuild() {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Installer<T> forExtension(UseSite context) {
-        requireNonNull(context, "context is null");
-        checkNotBuild();
-        this.owner = (PackedExtensionPointContext) context;
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Installer<T> introspectWith(BeanIntrospector introspector) {
@@ -145,6 +135,18 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         this.introspector = introspector;
         return this;
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Installer<T> instanceless() {
+        if (sourceKind == BeanSourceKind.NONE) {
+            throw new IllegalStateException("Beans that are specified without a source are already instanceless");
+        } else if (sourceKind != BeanSourceKind.CLASS) {
+            throw new IllegalStateException("Cannot call this method when a factory or instance source was specified when creating the installer");
+        }
+        instanceless = true;
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -190,8 +192,15 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
     /** {@inheritDoc} */
     @Override
-    public Installer<T> noInstances() {
-        noInstances = true;
+    public Installer<T> kindUnmanaged() {
+        kind = BeanKind.UNMANAGED;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Installer<T> kindSingleton() {
+        kind = BeanKind.SINGLETON;
         return this;
     }
 }

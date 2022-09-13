@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Extension;
@@ -32,8 +31,8 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Nullable
     public final BeanClassModel beanModel;
 
-    /** The builder that was used to create the bean. */
-    public final PackedBeanHandleInstaller<?> builder;
+    /** The installer that was used to create the bean. */
+    public final PackedBeanHandleInstaller<?> installer;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
@@ -50,9 +49,9 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
      */
     public BeanSetup(PackedBeanHandleInstaller<?> builder, RealmSetup owner) {
         super(builder.container.application, owner, builder.container);
-        this.builder = builder;
-        this.beanModel = builder.sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
-        if (builder.beanKind() != BeanKind.FUNCTIONAL) {
+        this.installer = builder;
+        this.beanModel = builder.sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(builder.beanClass);// realm.accessor().beanModelOf(driver.beanClass());
+        if (builder.beanClass != void.class) { // Not sure exactly when we need it
             this.injectionManager = new BeanInjectionManager(this, builder);
         } else {
             this.injectionManager = null;
@@ -77,15 +76,15 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {
-        return builder.beanClass();
+        return installer.beanClass;
     }
 
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
         // Create a new BeanMirror
-        BeanMirror mirror = builder.mirrorSupplier.get();
+        BeanMirror mirror = installer.mirrorSupplier.get();
         if (mirror == null) {
-            throw new NullPointerException(builder.mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
+            throw new NullPointerException(installer.mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
@@ -100,7 +99,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> operator() {
-        return builder.operator == null ? BeanExtension.class : builder.operator.extension().extensionType;
+        return installer.operator == null ? BeanExtension.class : installer.operator.extension().extensionType;
     }
 
     /** {@inheritDoc} */

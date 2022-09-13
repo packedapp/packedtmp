@@ -26,7 +26,6 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
-import app.packed.bean.BeanKind;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.inject.Factory;
@@ -283,13 +282,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation).kind(BeanKind.UNMANAGED).install();
+        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation).kindUnmanaged().install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanHandle<T> handle = bean().beanInstallerFromFactory(factory).kind(BeanKind.UNMANAGED).install();
+        BeanHandle<T> handle = bean().beanInstallerFromFactory(factory).kindUnmanaged().install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }

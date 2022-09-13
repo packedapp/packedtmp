@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
+import internal.app.packed.bean.BeanKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;
@@ -57,7 +57,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         this.bean = bean;
         ContainerSetup container = bean.parent;
-        this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
+        this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime.pool.reserve(driver.beanClass) : null;
 
         // Can only register a single extension bean of a particular type
 
@@ -71,7 +71,8 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             parent = container.injectionManager;
         }
 
-        if (bean.builder.sourceKind == BeanSourceKind.NONE) {
+        // Only create an instance node if we have instances
+        if (bean.installer.instanceless) {
             this.instanceNode = null;
         } else if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             Object instance = driver.source;
@@ -113,8 +114,8 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
 
-        if (bean.builder.sourceKind == BeanSourceKind.INSTANCE) {
-            Object instance = bean.builder.source;
+        if (bean.installer.sourceKind == BeanSourceKind.INSTANCE) {
+            Object instance = bean.installer.source;
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, LifetimeConstantPool.class);
             // return MethodHandles.constant(instance.getClass(), instance);

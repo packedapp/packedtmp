@@ -167,7 +167,7 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
     // var Optional<Class<? extends Extension<?>>> registrant
     // Giver strengt tagt kun mening paa beans nu..
     public Class<? extends Extension<?>> operator() {
-        return bean.operator();
+        return bean().operator();
     }
 
     public Stream<OperationMirror> operations() {
@@ -183,12 +183,12 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
      * @return the type (class) of the bean.
      */
     public Class<?> beanClass() {
-        return bean().builder.beanClass();
+        return bean().installer.beanClass;
     }
 
     /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
     public ContainerMirror container() {
-        return bean.parent.mirror();
+        return bean().parent.mirror();
     }
 }
 
