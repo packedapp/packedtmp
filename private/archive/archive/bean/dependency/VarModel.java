@@ -12,7 +12,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.base.Nullable;
-import app.packed.inject.Variable;
+import app.packed.operation.Variable;
 import internal.app.packed.util.TypeUtil;
 
 public final class VarModel {

@@ -31,15 +31,15 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.Provider;
 import app.packed.bean.BeanExtensionPoint.ProvisionHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
+import app.packed.operation.op.Op;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
-import app.packed.inject.Factory;
-import app.packed.inject.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.inject.service.PackedServiceLocator;
 import internal.app.packed.util.LookupUtil;
@@ -398,7 +398,7 @@ public interface ServiceLocator {
 
         /**
          * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-         * together with the injector. The runtime will use {@link Factory#factoryOf(Class)} to find the constructor or method
+         * together with the injector. The runtime will use {@link Op#factoryOf(Class)} to find the constructor or method
          * used for instantiation.
          * <p>
          * The default key for the service will be the specified {@code implementation}. If the
@@ -435,7 +435,7 @@ public interface ServiceLocator {
          * Binds the specified factory to a new service. When the injector is created the factory will be invoked <b>once</b> to
          * instantiate the service instance.
          * <p>
-         * The default key for the service is determined by {@link Factory#key()}.
+         * The default key for the service is determined by {@link Op#key()}.
          * 
          * @param <T>
          *            the type of service to bind
@@ -443,7 +443,7 @@ public interface ServiceLocator {
          *            the factory to bind
          * @return a service configuration for the service
          */
-        public <T> ProvideableBeanConfiguration<T> provide(Factory<T> factory) {
+        public <T> ProvideableBeanConfiguration<T> provide(Op<T> factory) {
             extension();
             return container().use(BeanExtension.class).install(factory).provide();
         }
@@ -517,7 +517,7 @@ public interface ServiceLocator {
             return container().use(ServiceExtension.class).providePrototype(implementation);
         }
 
-        public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+        public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
             extension();
             return container().use(ServiceExtension.class).providePrototype(factory);
         }

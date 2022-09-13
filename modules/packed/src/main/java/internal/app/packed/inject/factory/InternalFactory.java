@@ -29,9 +29,9 @@ import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.inject.CapturingFactory;
-import app.packed.inject.Factory;
-import app.packed.inject.Variable;
+import app.packed.operation.Variable;
+import app.packed.operation.op.CapturingOp;
+import app.packed.operation.op.Op;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
@@ -39,10 +39,10 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public abstract non-sealed class InternalFactory<R> extends Factory<R> {
+public abstract non-sealed class InternalFactory<R> extends Op<R> {
 
     /** {@inheritDoc} */
-    public final Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
+    public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
 
         List<InternalDependency> dependencies = dependencies();
@@ -84,7 +84,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
 
     public abstract List<InternalDependency> dependencies();
 
-    public final Factory<R> peek(Consumer<? super R> action) {
+    public final Op<R> peek(Consumer<? super R> action) {
         return new PeekableFactory<>(this, action);
     }
 
@@ -96,7 +96,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <R> InternalFactory<R> crackFactory(Factory<R> factory) {
+    public static <R> InternalFactory<R> crackFactory(Op<R> factory) {
         requireNonNull(factory, "factory is null");
         if (factory instanceof InternalFactory<R> f) {
             return f;
@@ -166,7 +166,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
         }
     }
 
-    /** A factory that provides the same value every time, used by {@link Factory#ofInstance(Object)}. */
+    /** A factory that provides the same value every time, used by {@link Op#ofInstance(Object)}. */
     public static final class ConstantFactory<R> extends InternalFactory<R> {
 
         /** The value that is returned every time. */
@@ -213,7 +213,7 @@ public abstract non-sealed class InternalFactory<R> extends Factory<R> {
     public static final class InternalCapturingInternalFactory<R> extends InternalFactory<R> {
 
         /** A var handle that can update the {@link #container()} field in this class. */
-        private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingFactory.class, "factory",
+        private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "factory",
                 InternalCapturingInternalFactory.class);
 
         // Ideen er lidt at saa snart vi bruger et CapturingFactory saa smider vi den ind her

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiFunction;
 
 /**
- * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
+ * A {@link Op} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
  * to the bi-function being the two dependencies.
  * 
  * 
@@ -31,20 +31,20 @@ import java.util.function.BiFunction;
  * @param <R>
  *            the type of objects this factory constructs
  * 
- * @see Factory0
- * @see Factory1
+ * @see Op0
+ * @see Op1
  */
-public abstract class Factory2<T, U, R> extends CapturingFactory<R> {
+public abstract class Op2<T, U, R> extends CapturingOp<R> {
 
     /**
      * Creates a new factory, that uses the specified function to provide instances.
      *
      * @param function
      *            the function that provide instances.
-     * @throws FactoryException
+     * @throws OpException
      *             if any of type variables could not be determined.
      */
-    protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
+    protected Op2(BiFunction<? super T, ? super U, ? extends R> function) {
         super(requireNonNull(function, "function is null"));
     }
 }

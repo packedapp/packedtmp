@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.inject.Provider;
+import app.packed.bean.Provider;
 import internal.app.packed.inject.service.sandbox.Service;
 
 /** Implementation of {@link ServiceSelection}. */

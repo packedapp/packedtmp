@@ -30,7 +30,7 @@ import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.inject.service.sandbox.Service;
 
@@ -143,19 +143,19 @@ public abstract /* sealed */ class ServiceComposer extends AbstractComposer /* p
     // som provide med constant er styret af det der kommer ind...
     // in most situations you probably want to use this one
 
-    public abstract void map(Factory<?> factory);
+    public abstract void map(Op<?> factory);
 
     public void prototype(Class<?> implementation) {
         prototype(BeanExtensionPoint.factoryOf(implementation));
     }
 
-    public abstract void prototype(Factory<?> factory);
+    public abstract void prototype(Op<?> factory);
 
     public void provide(Class<?> implementation) {
         provide(BeanExtensionPoint.factoryOf(implementation));
     }
 
-    public abstract void provide(Factory<?> factory);
+    public abstract void provide(Op<?> factory);
 
     // addAll??? nogle af dem er jo prototypes.
     /**
@@ -334,13 +334,13 @@ public abstract /* sealed */ class ServiceComposer extends AbstractComposer /* p
     }
 
     /**
-     * Similar to {@link #map(Factory)} except that it will automatically remove all dependencies of the factory once the
+     * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the
      * mapping has finished.
      * 
      * @param factory
      *            the factory
      */
-    public abstract void replace(Factory<?> factory);
+    public abstract void replace(Op<?> factory);
 
     public void retain(Class<?>... keys) {
         retain(Key.of(keys));
@@ -468,19 +468,19 @@ abstract class ZBadIdeas {
 
     public abstract ZBadIdeas map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
-    public abstract ZBadIdeas map(Factory<?> factory, int... resolveInternally);
+    public abstract ZBadIdeas map(Op<?> factory, int... resolveInternally);
 
     // Eller ogsaa skal vi have endnu en lag
     // Foerend alle services bliver brugt....
     // Syntes ikke den her fin
-    public abstract ZBadIdeas mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+    public abstract ZBadIdeas mapResolveInternally(Op<?> factory, int... variablesToResolveInternally);
 
     public abstract Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // JPMS-> Record must be readable for Packed
     // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
     // Man maa lave noget midlertigt hulumhej, som ma saa remover
-    public abstract ZBadIdeas multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+    public abstract ZBadIdeas multiMap(Op<? /* extends Record */> factory, int... resolveInternally);
 
     // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
     // If the specified factory has itself as a variable.

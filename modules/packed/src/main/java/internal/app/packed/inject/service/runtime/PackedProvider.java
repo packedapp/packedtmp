@@ -15,7 +15,7 @@
  */
 package internal.app.packed.inject.service.runtime;
 
-import app.packed.inject.Provider;
+import app.packed.bean.Provider;
 
 /**
  *

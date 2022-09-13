@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.inject.FactoryType;
+import app.packed.operation.op.OpType;
 
 /**
  *
@@ -48,7 +48,7 @@ public interface InvokerConfiguration {
     // som parameter. Men selv instancen...
     MethodType invocationType();
 
-    FactoryType targetType();
+    OpType targetType();
     
     //// Bliver det kaldt before extension.close???
     //// Vi skal fx have mulighed for at kalde MHS.freezeArray()

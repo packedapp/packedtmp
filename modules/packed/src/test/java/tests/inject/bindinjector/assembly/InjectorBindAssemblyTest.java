@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
-import app.packed.inject.Factory0;
+import app.packed.operation.op.Op0;
 import app.packed.service.ServiceLocator;
 import testutil.assertj.Assertions;
 
@@ -86,7 +86,7 @@ public class InjectorBindAssemblyTest {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
-                providePrototype(new Factory0<Long>(al::incrementAndGet) {}).export();
+                providePrototype(new Op0<Long>(al::incrementAndGet) {}).export();
             }
         };
 

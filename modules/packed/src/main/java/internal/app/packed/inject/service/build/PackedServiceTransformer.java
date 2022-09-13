@@ -29,7 +29,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import app.packed.service.ServiceTransformer;
 import internal.app.packed.inject.service.InternalService;
 import internal.app.packed.inject.service.runtime.OldServiceLocator;
@@ -55,7 +55,7 @@ public final class PackedServiceTransformer implements ServiceTransformer {
         this.services = (Map<Key<?>, InternalService>) requireNonNull(services);
     }
 
-    private void add(Factory<?> factory, boolean auto, boolean isConstant, boolean replace) {
+    private void add(Op<?> factory, boolean auto, boolean isConstant, boolean replace) {
         requireNonNull(factory, "factory is null");
         // Det er saa her hvor vi skal til at bruge en realm...
         // Altsaa der er vel ingen grund til vi ikke checker allerede nu...
@@ -87,17 +87,17 @@ public final class PackedServiceTransformer implements ServiceTransformer {
 
     /** {@inheritDoc} */
     @Override
-    public void map(Factory<?> factory) {
+    public void map(Op<?> factory) {
         add(factory, true, false, false);
     }
 
     /** {@inheritDoc} */
-    public void prototype(Factory<?> factory) {
+    public void prototype(Op<?> factory) {
         add(factory, false, false, false);
     }
 
     /** {@inheritDoc} */
-    public void provide(Factory<?> factory) {
+    public void provide(Op<?> factory) {
         add(factory, false, true, false);
     }
 
@@ -153,7 +153,7 @@ public final class PackedServiceTransformer implements ServiceTransformer {
 
     /** {@inheritDoc} */
     @Override
-    public void replace(Factory<?> factory) {
+    public void replace(Op<?> factory) {
         add(factory, true, false, true);
     }
 

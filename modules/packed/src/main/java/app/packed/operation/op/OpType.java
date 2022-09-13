@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
+import app.packed.operation.Variable;
+
 /**
  * A function type represents the arguments and return type accepted and returned by an invokable function.
  * 
@@ -36,7 +38,7 @@ import java.util.StringJoiner;
 // Mit problem med den her er lidt method return type...
 // Altsaa annoteringer er jo ikke noedvendigvis knyttede til retur typen, fx @Get
 
-public final /* primitive */ class FactoryType {
+public final /* primitive */ class OpType {
 
     private static final Variable[] NO_VARS = {};
 
@@ -46,7 +48,7 @@ public final /* primitive */ class FactoryType {
     /** The return variable. */
     private final Variable returnVar;
 
-    private FactoryType(Variable returnVar, Variable... variables) {
+    private OpType(Variable returnVar, Variable... variables) {
         this.returnVar = returnVar;
         this.parameterArray = variables;
     }
@@ -59,9 +61,9 @@ public final /* primitive */ class FactoryType {
      *            the variable a field descriptor for the new return type
      * @return the new factory type
      */
-    public FactoryType changeReturnVar(Variable newReturn) {
+    public OpType changeReturnVar(Variable newReturn) {
         requireNonNull(newReturn, "newReturn is null");
-        return new FactoryType(newReturn, parameterArray);
+        return new OpType(newReturn, parameterArray);
     }
 
     /**
@@ -166,18 +168,18 @@ public final /* primitive */ class FactoryType {
      *            the return variable
      * @return a function type with the given return variable
      */
-    public static FactoryType of(Variable returnVar) {
+    public static OpType of(Variable returnVar) {
         requireNonNull(returnVar, "returnVar is null");
-        return new FactoryType(returnVar, NO_VARS);
+        return new OpType(returnVar, NO_VARS);
     }
 
-    public static FactoryType of(Variable returnVar, Variable var) {
+    public static OpType of(Variable returnVar, Variable var) {
         requireNonNull(returnVar, "returnVar is null");
         requireNonNull(returnVar, "var is null");
-        return new FactoryType(returnVar, var);
+        return new OpType(returnVar, var);
     }
 
-    public static FactoryType of(Variable returnVar, Variable... vars) {
+    public static OpType of(Variable returnVar, Variable... vars) {
         throw new UnsupportedOperationException();
     }
 
@@ -187,7 +189,7 @@ public final /* primitive */ class FactoryType {
      * @param executable
      *            the executable to return a factory type for.
      */
-    public static FactoryType ofExecutable(Executable executable) {
+    public static OpType ofExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
         if (executable instanceof Method m) {
             return ofExecutable(Variable.ofMethodReturnType(m), executable);
@@ -196,7 +198,7 @@ public final /* primitive */ class FactoryType {
         }
     }
 
-    private static FactoryType ofExecutable(Variable returnVar, Executable executable) {
+    private static OpType ofExecutable(Variable returnVar, Executable executable) {
         
         Parameter[] parameters = executable.getParameters();
         if (parameters.length == 0) {
@@ -209,7 +211,7 @@ public final /* primitive */ class FactoryType {
         return of(returnVar, vars);
     }
     
-    static FactoryType ofMethodType(MethodType methodType) {
+    static OpType ofMethodType(MethodType methodType) {
         throw new UnsupportedOperationException();
     }
 }

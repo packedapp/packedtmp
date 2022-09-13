@@ -19,14 +19,14 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 
 /**
  *
  */
-public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T>> {
+public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Op<T>> {
 
-    public FactoryAssert(Factory<T> actual) {
+    public FactoryAssert(Op<T> actual) {
         super(actual, FactoryAssert.class);
     }
 

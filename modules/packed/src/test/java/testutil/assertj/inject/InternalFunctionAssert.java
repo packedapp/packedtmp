@@ -19,14 +19,14 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 
 /**
  *
  */
-public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAssert<T>, Factory<T>> {
+public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAssert<T>, Op<T>> {
 
-    public InternalFunctionAssert(Factory<T> actual) {
+    public InternalFunctionAssert(Op<T> actual) {
         super(actual, InternalFunctionAssert.class);
     }
 

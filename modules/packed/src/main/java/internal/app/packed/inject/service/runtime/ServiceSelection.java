@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.inject.Provider;
+import app.packed.bean.Provider;
 import internal.app.packed.inject.service.sandbox.Service;
 
 /**

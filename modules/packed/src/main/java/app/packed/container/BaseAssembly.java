@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.OnStart;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import app.packed.service.Provide;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceExtension;
@@ -142,7 +142,7 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
@@ -158,15 +158,15 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * <p>
      * 
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see BaseAssembly#install(Factory)
+     * @see BaseAssembly#install(Op)
      */
-    protected final <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
+    protected final <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
         return bean().install(factory);
     }
 
@@ -238,7 +238,7 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * This method is shortcut for ....
      * <p>
-     * The runtime will use {@link Factory#factoryOf(Class)} to find a valid constructor or method to instantiate the
+     * The runtime will use {@link Op#factoryOf(Class)} to find a valid constructor or method to instantiate the
      * service instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
@@ -265,7 +265,7 @@ public abstract class BaseAssembly extends Assembly {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ProvideableBeanConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ProvideableBeanConfiguration<T> provide(Op<T> factory) {
         return install(factory).provide();
     }
 
@@ -294,7 +294,7 @@ public abstract class BaseAssembly extends Assembly {
         return service().providePrototype(implementation);
     }
 
-    protected final <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    protected final <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
         return service().providePrototype(factory);
     }
 

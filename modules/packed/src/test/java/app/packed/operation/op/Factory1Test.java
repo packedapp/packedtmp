@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.checkThat;
@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.inject.factory.InternalFactory;
 
-/** Tests {@link Factory1}. */
+/** Tests {@link Op1}. */
 public class Factory1Test {
 
     /**
@@ -35,7 +35,7 @@ public class Factory1Test {
     @Test
     public void IntegerFactory0() {
 
-        Factory1<String, Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
+        Op1<String, Integer> f = new Op1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
         List<InternalDependency> dependencies = InternalFactory.crackFactory(f).dependencies();
         assertThat(dependencies).hasSize(1);

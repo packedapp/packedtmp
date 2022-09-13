@@ -13,7 +13,7 @@ import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 
@@ -47,7 +47,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
     }
 
-    public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Factory<T> factory) {
+    public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Op<T> factory) {
         return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, factory);
     }
 
@@ -60,7 +60,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new ExtensionBeanConfiguration<>(handle);
     }
 
-    public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
+    public <T> ExtensionBeanConfiguration<T> install(Op<T> factory) {
         BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, extension().container, factory).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
@@ -107,9 +107,9 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     // Flyt til BeanFactories
     // InjectableFactoryOf
     @SuppressWarnings("unchecked")
-    public static <T> Factory<T> factoryOf(Class<T> implementation) {
+    public static <T> Op<T> factoryOf(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return (Factory<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
+        return (Op<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
     }
 
     @Target(ElementType.ANNOTATION_TYPE)
@@ -181,7 +181,7 @@ class Sandbox {
         throw new UnsupportedOperationException();
     }
 
-    <T> ExtensionBeanConfiguration<T> installMany(Factory<T> implementation) {
+    <T> ExtensionBeanConfiguration<T> installMany(Op<T> implementation) {
         throw new UnsupportedOperationException();
     }
 
@@ -193,7 +193,7 @@ class Sandbox {
         throw new UnsupportedOperationException();
     }
 
-    <T> ExtensionBeanConfiguration<T> installLazy(Factory<T> implementation) {
+    <T> ExtensionBeanConfiguration<T> installLazy(Op<T> implementation) {
         throw new UnsupportedOperationException();
     }
 
@@ -201,7 +201,7 @@ class Sandbox {
         throw new UnsupportedOperationException();
     }
 
-    <T> ExtensionBeanConfiguration<T> installManyLazy(Factory<T> implementation) {
+    <T> ExtensionBeanConfiguration<T> installManyLazy(Op<T> implementation) {
         throw new UnsupportedOperationException();
     }
     
@@ -236,7 +236,7 @@ class Sandbox {
     @SuppressWarnings("unchecked")
     // Hmm vi har jo ikke parameterized beans???
     // Ved ikke om vi skal droppe den...
-    public static <T> Factory<T> defaultFactoryFor(TypeToken<T> implementation) {
+    public static <T> Op<T> defaultFactoryFor(TypeToken<T> implementation) {
         // Can cache it with a Class[] array corresponding to type parameters...
         requireNonNull(implementation, "implementation is null");
         if (!implementation.isCanonicalized()) {
@@ -246,7 +246,7 @@ class Sandbox {
         }
         Type t = implementation.type();
         if (t instanceof Class<?> cl) {
-            return (Factory<T>) BeanExtensionPoint.factoryOf(cl);
+            return (Op<T>) BeanExtensionPoint.factoryOf(cl);
         } else {
             ExecutableFactory<?> f = ExecutableFactory.DEFAULT_FACTORY.get(implementation.rawType());
             return new ExecutableFactory<>(f, implementation);

@@ -27,7 +27,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import internal.app.packed.bean.hooks.BeanIntrospectionHelper;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -163,7 +163,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return new PackedBeanHandleInstaller<>(operator, container, clazz, BeanSourceKind.CLASS, clazz);
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Factory<T> factory) {
+    public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Op<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
         return new PackedBeanHandleInstaller<>(operator, container, fac.rawReturnType(), BeanSourceKind.FACTORY, fac);
@@ -173,7 +173,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Factory.class.isInstance(instance)) {
+        } else if (Op.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
         }
 

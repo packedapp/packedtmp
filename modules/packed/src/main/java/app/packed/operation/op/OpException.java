@@ -13,31 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
-// An exception that is thrown when a operation could not be created because there was no access to the underlying.
-// Field, Constructor or Method
-/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
-// UncheckedIllegalAccessException...
-// RuntimeIllegalAccessException
-
-// AccessRestrictedException <- General one, could sound really securish, maybe have a name
-// which makes it clear it is relevant to reflection/method handlers
-// NotOpenedException
-// UndeclaredAccessException
-// Was UncheckedIllegalAccessException
-
-// InaccessibleRealmException or
-// InaccessibleModuleException
-
-// Maybe it is a build exception??? Skal jo helst klare det under build..
-
-// InaccessibleOperationException???
-// InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
-
-// FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
-// saa factory er et daarligt navn/
-public class InaccessibleMemberException extends RuntimeException {
+/**
+ * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
+ * could not be found.
+ */
+public class OpException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -50,9 +32,8 @@ public class InaccessibleMemberException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleMemberException(String message) {
+    public OpException(String message) {
         super(message);
-
     }
 
     /**
@@ -65,7 +46,7 @@ public class InaccessibleMemberException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleMemberException(String message, Throwable cause) {
+    public OpException(String message, Throwable cause) {
         super(message, cause);
     }
 }

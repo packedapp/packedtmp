@@ -28,8 +28,8 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.TypeToken;
-import app.packed.inject.InaccessibleMemberException;
-import app.packed.inject.Variable;
+import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.operation.Variable;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 import internal.app.packed.inject.factory.ReflectiveFactory.FieldFactory;
@@ -124,7 +124,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
 
             } catch (IllegalAccessException e) {
                 String name = executable instanceof Constructor ? "constructor" : "method";
-                throw new InaccessibleMemberException("No access to the " + name + " " + executable + " with the specified lookup object", e);
+                throw new InaccessibleBeanMemberException("No access to the " + name + " " + executable + " with the specified lookup object", e);
             }
 
             MethodHandle mh = methodHandle;
@@ -189,7 +189,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
                 }
                 handle = lookup.unreflectGetter(field);
             } catch (IllegalAccessException e) {
-                throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+                throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
             return handle;
         }

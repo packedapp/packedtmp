@@ -15,7 +15,7 @@
  */
 package app.packed.bean;
 
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 
 /**
  * The source used when creating a bean.
@@ -28,7 +28,7 @@ public enum BeanSourceKind {
     /** A bean instance was specified when creating the bean. */
     INSTANCE,
 
-    /** A {@link Factory} was specified when creating the bean. */
+    /** A {@link Op} was specified when creating the bean. */
     FACTORY,
 
     /** A {@link Class} was specified when creating the bean. */

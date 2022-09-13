@@ -20,7 +20,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.inject.Provider;
+import app.packed.bean.Provider;
 
 /**
  *

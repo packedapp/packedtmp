@@ -28,7 +28,7 @@ import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.hooks.PackedBeanField;
 import internal.app.packed.bean.hooks.PackedBeanMethod;
@@ -287,7 +287,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         return sbc.provide();
     }
 
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
         BeanHandle<T> handle = bean().beanInstallerFromFactory(factory).kindUnmanaged().install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();

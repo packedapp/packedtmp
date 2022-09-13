@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.inject.Provider;
+import app.packed.bean.Provider;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.inject.service.runtime.RuntimeService;
 

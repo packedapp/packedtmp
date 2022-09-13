@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import testutil.assertj.inject.FactoryAssert;
 
 /**
@@ -45,7 +45,7 @@ public class Assertions {
         assertThatNullPointerException().isThrownBy(() -> c.accept(t, null)).withMessage(nameU + " is null").withNoCause();
     }
 
-    public static <T> FactoryAssert<T> checkThat(Factory<T> factory) {
+    public static <T> FactoryAssert<T> checkThat(Op<T> factory) {
         return new FactoryAssert<>(factory);
     }
 }

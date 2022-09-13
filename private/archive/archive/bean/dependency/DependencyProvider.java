@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
-import app.packed.inject.Factory;
-import app.packed.inject.Variable;
+import app.packed.operation.Variable;
+import app.packed.operation.op.Op;
 
 /**
  *
@@ -46,7 +46,7 @@ public interface DependencyProvider {
 
     Object /*  AnnotationReader  */ annotations();
 
-    void provide(Factory<?> fac);
+    void provide(Op<?> fac);
 
     void provide(MethodHandle methodHandle);
     

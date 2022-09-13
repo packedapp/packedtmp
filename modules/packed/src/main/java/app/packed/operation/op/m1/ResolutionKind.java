@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op.m1;
 
 /**
  *
  */
-public class Factory2Test {
+public enum ResolutionKind {
 
+    BUILD_TIME_CONSTANT,
+    
+    RUNTIME_CONSTANT,
+    
+    RUNTIME_OPERATION,
+    
+    RUNTIME_MISSING_FROM_TIME_TO_TIME
 }

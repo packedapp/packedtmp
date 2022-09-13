@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.operation.op;
 
 /**
- * Provides the dependency injection model that is used throughout Packed.
+ *
  */
-package app.packed.inject;
+public class Factory2Test {
+
+}

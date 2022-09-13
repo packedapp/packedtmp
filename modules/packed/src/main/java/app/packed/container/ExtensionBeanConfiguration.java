@@ -7,7 +7,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 
 /**
  * A special type of bean that can only be installed by an extension.
@@ -15,7 +15,7 @@ import app.packed.inject.Factory;
  * Lifetime / Lifecycle <> InjectionScope
  * 
  * @see BeanExtensionPoint#install(Class)
- * @see BeanExtensionPoint#install(Factory)
+ * @see BeanExtensionPoint#install(Op)
  * @see BeanExtensionPoint#installInstance(Object)
  */
 // Har vi behov for T??? Egentlig ikke men inject/onState fra InstanceBean er rare.

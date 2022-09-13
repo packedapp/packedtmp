@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.BeanElement;
-import app.packed.inject.Factory;
 import app.packed.operation.dependency.DependencyMirror;
+import app.packed.operation.op.Op;
 
 /**
  *
@@ -38,7 +38,7 @@ import app.packed.operation.dependency.DependencyMirror;
 
 public non-sealed interface BeanIntrospector$BeanDependency extends BeanElement {
 
-    void provide(Factory<?> fac);
+    void provide(Op<?> fac);
 
     void provide(MethodHandle methodHandle);
 

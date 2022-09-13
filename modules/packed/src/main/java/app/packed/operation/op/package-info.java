@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.m1;
 
 /**
- *
+ * Provides the dependency injection model that is used throughout Packed.
  */
-public enum ResolutionKind {
-
-    BUILD_TIME_CONSTANT,
-    
-    RUNTIME_CONSTANT,
-    
-    RUNTIME_OPERATION,
-    
-    RUNTIME_MISSING_FROM_TIME_TO_TIME
-}
+package app.packed.operation.op;

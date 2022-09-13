@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Test;
 
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link FactoryException}. */
+/** Tests {@link OpException}. */
 public class FactoryExceptionTest {
 
     /** Tests the various constructors.  */
     @Test
     public void test() {
-        assertThat(new FactoryException("foo")).hasNoCause();
-        assertThat(new FactoryException("foo")).hasMessage("foo");
-        assertThat(new FactoryException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new FactoryException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new OpException("foo")).hasNoCause();
+        assertThat(new OpException("foo")).hasMessage("foo");
+        assertThat(new OpException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new OpException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

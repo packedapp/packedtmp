@@ -23,8 +23,8 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.inject.Variable;
 import app.packed.operation.OperationCustomizer;
+import app.packed.operation.Variable;
 import internal.app.packed.bean.hooks.PackedBeanField;
 
 /**

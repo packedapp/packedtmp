@@ -35,9 +35,9 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.inject.Factory;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.operation.op.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.CompositeWirelet;
@@ -226,7 +226,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         @Nullable
         InternalFactory<A> factory;
 
-        public Builder(Factory<A> factory) {
+        public Builder(Op<A> factory) {
             this.factory = factory == null ? null : InternalFactory.crackFactory(factory);
 
             // Problemet med at komme laengere er lidt InternalInfuser som er bygget op omkring den faar en klasse

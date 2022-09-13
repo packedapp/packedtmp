@@ -20,9 +20,9 @@ import java.lang.reflect.Method;
 
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.op.OpType;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationCustomizer;
@@ -36,8 +36,8 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
 
     /** {@inheritDoc} */
     @Override
-    public FactoryType factoryType() {
-        return FactoryType.ofExecutable(member);
+    public OpType factoryType() {
+        return OpType.ofExecutable(member);
     }
 
     /** {@inheritDoc} */

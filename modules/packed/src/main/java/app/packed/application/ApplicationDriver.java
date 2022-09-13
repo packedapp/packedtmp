@@ -26,9 +26,9 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerWrapperCompanion;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.inject.Factory;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.operation.op.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 
@@ -173,7 +173,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 //        return new PackedApplicationDriver.Builder<>(null);
 //    }
 
-    static <A> Builder<A> builder(Factory<A> wrapperFactory) {
+    static <A> Builder<A> builder(Op<A> wrapperFactory) {
         return new PackedApplicationDriver.Builder<>(wrapperFactory);
     }
 

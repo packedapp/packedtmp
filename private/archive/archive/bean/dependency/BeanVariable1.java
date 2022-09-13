@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import java.util.function.Supplier;
 
 import app.packed.container.Extension;
-import app.packed.inject.Variable;
+import app.packed.operation.Variable;
 
 /**
  *

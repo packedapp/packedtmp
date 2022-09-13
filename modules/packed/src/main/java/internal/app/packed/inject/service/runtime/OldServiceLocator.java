@@ -26,9 +26,9 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.bean.Provider;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.inject.Provider;
 
 /**
  * Extends {@link ServiceRegistry} with method for acquiring service instances.

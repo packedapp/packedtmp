@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.Factory1;
+import app.packed.operation.op.Op1;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceWirelets;
 
@@ -49,7 +49,7 @@ public class ImportTest {
         @Override
         protected void build() {
             provideInstance(ZoneId.systemDefault()).provideAs(ZoneId.class).export();
-            providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
+            providePrototype(new Op1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
 
         }
     }
@@ -60,7 +60,7 @@ public class ImportTest {
         @Override
         protected void build() {
             provideInstance(ZoneId.of("Europe/London")).provideAs(ZoneId.class);
-            providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
+            providePrototype(new Op1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
         }
     }
 
@@ -70,7 +70,7 @@ public class ImportTest {
         @Override
         protected void build() {
             provideInstance(ZoneId.of("Europe/Berlin")).provideAs(ZoneId.class);
-            providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
+            providePrototype(new Op1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).export();
         }
     }
 

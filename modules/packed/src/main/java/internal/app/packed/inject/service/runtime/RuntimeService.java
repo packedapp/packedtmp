@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.Provider;
+import app.packed.bean.Provider;
 import internal.app.packed.inject.service.InternalService;
 
 /** Represents a service at runtime. */

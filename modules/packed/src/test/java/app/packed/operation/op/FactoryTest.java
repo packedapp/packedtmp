@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static testutil.assertj.Assertions.checkThat;
@@ -27,12 +27,12 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 
-/** Test of {@link Factory}. */
+/** Test of {@link Op}. */
 public class FactoryTest {
 
     @Test
     public void ofInstance() {
-        Factory<String> f = Factory.ofInstance("foo");
+        Op<String> f = Op.ofInstance("foo");
         checkThat(f).is(new Key<String>() {});
         // checkThat(f).hasBound(String.class, String.class);
 
@@ -42,7 +42,7 @@ public class FactoryTest {
 
         @Test
         public void testNpe() {
-            npe(Factory::ofInstance, "instance");
+            npe(Op::ofInstance, "instance");
 
             // assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
         }

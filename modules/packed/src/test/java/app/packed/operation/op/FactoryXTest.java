@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static testutil.assertj.Assertions.checkThat;
@@ -26,13 +26,13 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
 
-/** Tests {@link Factory}. */
+/** Tests {@link Op}. */
 public class FactoryXTest {
 
     /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
     @Test
     public void integerFactory0() {
-        Factory<Integer> f = new Factory0<>(() -> 1) {};
+        Op<Integer> f = new Op0<>(() -> 1) {};
         checkThat(f).is(Integer.class);
         checkThat(f).hasNoDependencies();
 
@@ -44,7 +44,7 @@ public class FactoryXTest {
     /** Tests that we can capture information about a simple factory producing lists of integers instances. */
     @Test
     public void listIntegerFactory0() {
-        Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
+        Op<List<Integer>> f = new Op0<>(() -> List.of(1)) {};
         checkThat(f).is(new TypeToken<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
 
@@ -61,11 +61,11 @@ public class FactoryXTest {
     @Test
     public void typeParameterIndeterminable() {
         // TODO change to Factory instead of BaseFactory
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <R> for Factory<R> on class app.packed.inject.");
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Op0(() -> 1) {}).withNoCause()
+                .withMessageStartingWith("Cannot determine type variable <R> for " + Op.class.getSimpleName() + "<R> on class " + Op.class.getPackageName());
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <T> for Factory<R> on class app.packed.inject.Factory");
+                .withMessageStartingWith("Cannot determine type variable <T> for " + Op.class.getSimpleName() + "<R> on class " + FactoryXTest.class.getCanonicalName());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class FactoryXTest {
     }
 
     /** Check that we can have an intermediate abstract class. */
-    static abstract class Intermediate<S, T, R> extends Factory0<T> {
+    static abstract class Intermediate<S, T, R> extends Op0<T> {
         protected Intermediate(Supplier<T> supplier) {
             super(supplier);
         }

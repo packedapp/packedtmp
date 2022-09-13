@@ -25,9 +25,8 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.inject.Factory;
-import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
+import app.packed.operation.op.Op;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 
@@ -117,15 +116,11 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         throw new UnsupportedOperationException();
     }
 
-    default OperationCustomizer newOperation(MethodHandle methodHandle /* , boolean firstParamIsBeanInstance */) {
-        throw new UnsupportedOperationException();
+    default OperationCustomizer newOperation(MethodHandle methodHandle) {
+        return newOperation(Op.ofMethodHandle(methodHandle));
     }
 
-    default OperationCustomizer newOperation(MethodHandle methodHandle, FactoryType type /* , boolean firstParamIsBeanInstance */) {
-        throw new UnsupportedOperationException();
-    }
-
-    default OperationCustomizer newOperation(Factory factory/* , boolean firstParamIsBeanInstance */) {
+    default OperationCustomizer newOperation(Op operation) {
         throw new UnsupportedOperationException();
     }
 
@@ -158,7 +153,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * 
      * @see BeanExtensionPoint#beanInstaller()
      * @see BeanExtensionPoint#beanInstallerFromClass(Class)
-     * @see BeanExtensionPoint#beanInstallerFromFactory(Factory)
+     * @see BeanExtensionPoint#beanInstallerFromFactory(Op)
      * @see BeanExtensionPoint#beanBuilderFromInstance(Object)
      */
     // Could have, introspectionDisable()/noIntrospection

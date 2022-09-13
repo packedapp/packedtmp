@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -52,7 +52,7 @@ import java.util.function.Supplier;
 
 //TODO fix example
 /**
- * A special {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
+ * A special {@link Op} type that wraps a {@link Supplier} in order to dynamically provide new instances.
  * <p>
  * Is typically used like this:
  *
@@ -67,20 +67,20 @@ import java.util.function.Supplier;
  *            The type of the single dependency that this factory takes
  * @param <R>
  *            the type of objects this factory constructs
- * @see Factory0
- * @see Factory2
+ * @see Op0
+ * @see Op2
  */
-public abstract class Factory1<T, R> extends CapturingFactory<R> {
+public abstract class Op1<T, R> extends CapturingOp<R> {
 
     /**
      * Creates a new factory, that uses the specified function to provide instances.
      *
      * @param function
      *            the function that provide instances.
-     * @throws FactoryException
+     * @throws OpException
      *             if any of type variables could not be determined.
      */
-    protected Factory1(Function<? super T, ? extends R> function) {
+    protected Op1(Function<? super T, ? extends R> function) {
         super(requireNonNull(function, "function is null"));
     }
 }

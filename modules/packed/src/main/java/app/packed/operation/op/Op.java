@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,9 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.Inject;
+import app.packed.operation.Variable;
 import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.InternalFactory.ConstantFactory;
 import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;
@@ -46,7 +48,7 @@ import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
  * This class does not expose any methods that actually create new objects, this is all hidden in the internals of
  * Packed. This might change in the future, but for now users can only create factories, and not consume their output.
  * <p>
- * A {@link Factory} type that uses a {@link Supplier} to provide instances.
+ * A {@link Op} type that uses a {@link Supplier} to provide instances.
  * <p>
  * This class is typically used like this:
  * 
@@ -74,7 +76,7 @@ import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 
 // Kunne vi have CapturingFactory extends InternalFactory??? saa alt altid er InternalFactory
 @SuppressWarnings("rawtypes")
-public abstract sealed class Factory<R> permits CapturingFactory, InternalFactory {
+public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
 
     /**
      * Binds the specified argument(s) to a variable with the specified index as returned by {@link #variables()}. This
@@ -99,7 +101,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      *             if the specified argument is null and the variable does not represent a reference type
      */
     // Smid CCE istedet for NPE?
-    public abstract Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
+    public abstract Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
 
     /**
      * Binds the first variable to the specified argument.
@@ -116,15 +118,15 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @throws NullPointerException
      *             if the specified argument is null and the variable does not represent a reference type
      */
-    public final Factory<R> bind(@Nullable Object argument) {
+    public final Op<R> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
 
-    final Factory<R> bindSupplier(int position, Supplier<?> supplier) {
+    final Op<R> bindSupplier(int position, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
     }
 
-    final <T> Factory<T> mapTo(Class<T> key, Function<? super T, ? extends T> mapper) {
+    final <T> Op<T> mapTo(Class<T> key, Function<? super T, ? extends T> mapper) {
 
         // Ideen er at kunne lave en transformation for alt...
         // Tilfoej denne metode, representeret ved denne klasse...
@@ -159,7 +161,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @return a new mapped factory
      */
     // How do we handle key??? Think we might need a version that also takes a key.
-    final <T> Factory<T> mapTo(TypeToken<T> type, Function<? super T, ? extends T> mapper) {
+    final <T> Op<T> mapTo(TypeToken<T> type, Function<? super T, ? extends T> mapper) {
         // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
         // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
         throw new UnsupportedOperationException();
@@ -180,7 +182,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
     // Haelder nok til den vi har mappet til?????
     // Kan vi finde en usecase???
-    final <T> Factory<T> mapTo0(Factory1<? super R, ? extends R> mapper) {
+    final <T> Op<T> mapTo0(Op1<? super R, ? extends R> mapper) {
         // Factory<String> f = null;
         // @SuppressWarnings({ "null", "unused" })
         // Create a factory by taking the output and mapping it...
@@ -214,7 +216,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      *            the action to run after the factory has returned an object
      * @return the new factory
      */
-    public abstract Factory<R> peek(Consumer<? super R> action);
+    public abstract Op<R> peek(Consumer<? super R> action);
 
     /**
      * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
@@ -234,7 +236,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      */
     public abstract TypeToken<R> typeLiteral();
 
-    final Factory<R> useExactType(Class<? extends R> type) {
+    final Op<R> useExactType(Class<? extends R> type) {
         // TypeHint.. withExactType
 
         // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
@@ -271,7 +273,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when accessing the underlying member
-     * @throws InaccessibleMemberException
+     * @throws InaccessibleBeanMemberException
      *             if the specified lookup object does not give access to the underlying member
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a field, constructor or method.
@@ -291,7 +293,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     // openResult(Lookup) <---- maaske er den baa en
     // open()????
     // openTo(Lookup, xxx)
-    public final Factory<R> withLookup(MethodHandles.Lookup lookup) {
+    public final Op<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (this instanceof ReflectiveFactory<R> f) {
             return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
@@ -301,7 +303,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     }
 
     // ReflectionFactory.of
-    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
+    public static <T> Op<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
         requireNonNull(type, "type is null");
         return ofConstructor(constructor, TypeToken.of(type));
     }
@@ -310,7 +312,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
 //  * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
 //  * });
 //  * </pre>
-    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
+    public static <T> Op<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
         requireNonNull(constructor, "constructor is null");
         // TODO we probably need to validate the type literal here
         return new ExecutableFactory<>(type, constructor);
@@ -323,7 +325,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      *            the constructor used for creating new instances
      * @return the new factory
      */
-    public static <T> Factory<T> ofConstructor(Constructor<T> constructor) {
+    public static <T> Op<T> ofConstructor(Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
         TypeToken<T> tl = TypeToken.of(constructor.getDeclaringClass());
         return new ExecutableFactory<>(tl, constructor);
@@ -343,7 +345,7 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @return the factory
      */
     // Move to Factory0?
-    public static <T> Factory<T> ofInstance(T instance) {
+    public static <T> Op<T> ofInstance(T instance) {
         requireNonNull(instance, "instance is null");
         return new ConstantFactory<T>(instance);
     }
@@ -351,13 +353,13 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
     // Hvad goer vi med en klasse der er mere restri
     // If the specified instance is not a static method. An extra variable
     // use bind(Foo) to bind the variable.
-    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
+    public static <T> Op<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
         requireNonNull(returnType, "returnType is null");
         return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
     }
 
     // Annotations will be retained from the method
-    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
+    public static <T> Op<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
         throw new UnsupportedOperationException();
     }
 
@@ -375,13 +377,13 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
      * @return a factory that wraps the specified method
      * @see #ofMethod(Method, TypeToken)
      */
-    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
+    public static <T> Op<T> ofMethod(Method method, Class<T> returnType) {
         requireNonNull(returnType, "returnType is null");
         return ofMethod(method, TypeToken.of(returnType));
     }
 
     // Den her sletter evt. Qualifier paa metoden...
-    public static <T> Factory<T> ofMethod(Method method, TypeToken<T> returnType) {
+    public static <T> Op<T> ofMethod(Method method, TypeToken<T> returnType) {
         requireNonNull(method, "method is null");
         requireNonNull(returnType, "returnType is null");
 
@@ -391,11 +393,11 @@ public abstract sealed class Factory<R> permits CapturingFactory, InternalFactor
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofMethodHandle(MethodHandle methodHandle) {
+    public static <T> Op<T> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofMethodHandle(MethodHandle methodHandle, List<Variable> variables) {
+    public static <T> Op<T> ofMethodHandle(MethodHandle methodHandle, List<Variable> variables) {
         // Variables must match the method handle
         throw new UnsupportedOperationException();
     }

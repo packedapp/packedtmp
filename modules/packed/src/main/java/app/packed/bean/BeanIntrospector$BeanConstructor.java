@@ -18,8 +18,8 @@ package app.packed.bean;
 import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanIntrospector.BeanElement;
-import app.packed.inject.FactoryType;
 import app.packed.operation.OperationCustomizer;
+import app.packed.operation.op.OpType;
 
 /**
  * This class represents a {@link Constructor} on a bean.
@@ -35,7 +35,7 @@ public non-sealed interface BeanIntrospector$BeanConstructor extends BeanElement
     Constructor<?> constructor();
 
     /** {@return a factory type for this method.} */
-    FactoryType factoryType();
+    OpType factoryType();
 
     /**
      * Returns the modifiers of the constructor.

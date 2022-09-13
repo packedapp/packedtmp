@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.operation.Variable;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.InternalFactory.InternalCapturingInternalFactory;
@@ -40,7 +41,7 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  * A abstract factory that captures the type an annotated return type and annotated type apra
  */
-public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
+public abstract non-sealed class CapturingOp<R> extends Op<R> {
 
     /** A cache of extracted type variables from subclasses of this class. */
     static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
@@ -48,7 +49,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         protected TypeToken<?> computeValue(Class<?> type) {
-            return TypeToken.fromTypeVariable((Class) type, Factory.class, 0);
+            return TypeToken.fromTypeVariable((Class) type, Op.class, 0);
         }
     };
 
@@ -70,7 +71,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected List<InternalDependency> computeValue(Class<?> type) {
-            return InternalDependency.fromTypeVariables((Class) type, Factory2.class, 0, 1);
+            return InternalDependency.fromTypeVariables((Class) type, Op2.class, 0, 1);
         }
     };
 
@@ -81,7 +82,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected List<InternalDependency> computeValue(Class<?> type) {
-            return InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0);
+            return InternalDependency.fromTypeVariables((Class) type, Op1.class, 0);
         }
     };
 
@@ -96,19 +97,19 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
      *            the function instance
      */
     @SuppressWarnings("unchecked")
-    CapturingFactory(Object function) {
+    CapturingOp(Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        TypeToken<R> typeLiteral = (TypeToken<R>) CapturingFactory.CACHE.get(getClass());
+        TypeToken<R> typeLiteral = (TypeToken<R>) CapturingOp.CACHE.get(getClass());
         // analyze();
 
         final MethodHandle methodHandle;
         final List<InternalDependency> dependencies;
         Class<?> rawType = typeLiteral.rawType();
-        if (this instanceof Factory0) {
+        if (this instanceof Op0) {
             MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
             methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
             dependencies = List.of();
-        } else if (this instanceof Factory1) {
+        } else if (this instanceof Op1) {
             dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
 
             Class<?> param = dependencies.get(0).rawType();
@@ -132,18 +133,18 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
         Class<?> t = getClass();
         Class<?> baseClass = t.getSuperclass();
-        while (baseClass.getSuperclass() != CapturingFactory.class) {
+        while (baseClass.getSuperclass() != CapturingOp.class) {
             baseClass = baseClass.getSuperclass();
         }
         
         
         Constructor<?>[] con = baseClass.getDeclaredConstructors();
         if (con.length != 1) {
-            throw new FactoryException(baseClass + " must declare a single constructor");
+            throw new OpException(baseClass + " must declare a single constructor");
         }
         Constructor<?> c = con[0];
         if (c.getParameterCount() != 1) {
-            throw new FactoryException(baseClass + " must declare a single constructor taking a single parameter");
+            throw new OpException(baseClass + " must declare a single constructor taking a single parameter");
         }
 
         Parameter p = c.getParameters()[0];
@@ -158,7 +159,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
         try {
             mh = MethodHandles.publicLookup().unreflect(m);
         } catch (IllegalAccessException e) {
-            throw new FactoryException(m + " must be accessible via MethodHandles.publicLookup()", e);
+            throw new OpException(m + " must be accessible via MethodHandles.publicLookup()", e);
         }
         
         System.out.println(mh);
@@ -166,7 +167,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
     /** {@inheritDoc} */
     @Override
-    public Factory<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
+    public Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         return factory.bind(position, argument, additionalArguments);
     }
 
@@ -176,7 +177,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
 
     /** {@inheritDoc} */
     @Override
-    public final Factory<R> peek(Consumer<? super R> action) {
+    public final Op<R> peek(Consumer<? super R> action) {
         return factory.peek(action);
     }
 
@@ -203,11 +204,11 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
             String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
             if (value == null) {
                 // NPE???
-                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
+                throw new OpException("The " + type + " '" + supplierOrFunction + "' must not return null");
             } else {
                 // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
                 // instance.getClass());
-                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
+                throw new OpException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
                         + " but returned a " + value.getClass().getName() + " instance");
             }
         }
@@ -223,7 +224,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
      * @param expectedType
      *            the type we expect the supplier to return
      * @return the value that was supplied by the specified supplier
-     * @throws FactoryException
+     * @throws OpException
      *             if the created value is null or not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
@@ -245,7 +246,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
      * @param object
      *            the single argument to the function
      * @return the value that was supplied by the specified supplier
-     * @throws FactoryException
+     * @throws OpException
      *             if the created value is null or not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
@@ -269,7 +270,7 @@ public abstract non-sealed class CapturingFactory<R> extends Factory<R> {
      * @param obj2
      *            the 2nd argument to the function
      * @return the value that was supplied by the specified supplier
-     * @throws FactoryException
+     * @throws OpException
      *             if the created value is null or not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE

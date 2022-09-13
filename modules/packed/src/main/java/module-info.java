@@ -14,7 +14,7 @@ module app.packed {
     exports app.packed.service;
 
     // temporary
-    exports app.packed.inject;
+    exports app.packed.operation.op;
     exports app.packed.lifetime.managed;
     exports app.packed.lifetime.sandbox;
     exports app.packed.operation.dependency;

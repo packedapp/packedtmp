@@ -27,7 +27,7 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 
 /**
  *
@@ -130,7 +130,7 @@ public interface ServiceTransformer {
     // som provide med constant er styret af det der kommer ind...
     // in most situations you probably want to use this one
 
-    void map(Factory<?> factory);
+    void map(Op<?> factory);
     
     default <T> void peek(Class<T> key, Consumer<? super T> consumer) {
         peek(Key.of(key), consumer);
@@ -355,13 +355,13 @@ public interface ServiceTransformer {
 //    }
 
     /**
-     * Similar to {@link #map(Factory)} except that it will automatically remove all dependencies of the factory once the
+     * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the
      * mapping has finished.
      * 
      * @param factory
      *            the factory
      */
-    public abstract void replace(Factory<?> factory);
+    public abstract void replace(Op<?> factory);
 
     default void retain(Class<?>... keys) {
         retain(Key.of(keys));

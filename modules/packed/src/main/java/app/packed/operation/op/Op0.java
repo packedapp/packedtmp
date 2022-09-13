@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.base.VarToken;
 
 /**
- * A {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
+ * A {@link Op} type that wraps a {@link Supplier} in order to dynamically provide new instances.
  * <p>
  * Is typically used like this:
  *
@@ -37,42 +37,42 @@ import app.packed.base.VarToken;
  * 
  * @param <R>
  *            the type of objects this factory constructs
- * @see Factory1
- * @see Factory2
+ * @see Op1
+ * @see Op2
  */
-public abstract class Factory0<R> extends CapturingFactory<R> {
+public abstract class Op0<R> extends CapturingOp<R> {
 
     /**
      * Creates a new factory, that use the specified supplier to provide values.
      *
      * @param supplier
      *            the supplier that will provide the actual values.
-     * @throws FactoryException
+     * @throws OpException
      *             if the type variable R could not be determined.
      */
-    protected Factory0(Supplier<? extends R> supplier) {
+    protected Op0(Supplier<? extends R> supplier) {
         super(requireNonNull(supplier, "supplier is null"));
     }
 
-    static <R> Factory0<R> ofInstancex(R instance) {
+    static <R> Op0<R> ofInstancex(R instance) {
         throw new UnsupportedOperationException();
     }
 
-    static <R> Factory0<R> ofInstance(Class<R> r, R instance) {
+    static <R> Op0<R> ofInstance(Class<R> r, R instance) {
         throw new UnsupportedOperationException();
     }
 
-    static <R> Factory0<R> ofInstance(VarToken<R> r, R instance) {
+    static <R> Op0<R> ofInstance(VarToken<R> r, R instance) {
         throw new UnsupportedOperationException();
     }
 
-    static <R> Factory0<R> of(Class<R> key, Supplier<R> supplier) {
+    static <R> Op0<R> of(Class<R> key, Supplier<R> supplier) {
         throw new UnsupportedOperationException();
     }
 
     // Given ikke mening at have baade Variable og VarToken... Eller maaske goer det...
     // Maaske er VarToken implements Variable
-    static <R> Factory0<R> of(VarToken<R> r, Supplier<R> supplier) {
+    static <R> Op0<R> of(VarToken<R> r, Supplier<R> supplier) {
         new VarToken<@Nullable List<String>>() {};
         throw new UnsupportedOperationException();
     }

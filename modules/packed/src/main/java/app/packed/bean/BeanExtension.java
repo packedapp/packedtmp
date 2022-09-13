@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.inject.Factory;
+import app.packed.operation.op.Op;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;
@@ -43,14 +43,14 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * 
      * @param factory
      *            the factory to install
      * @return the configuration of the bean
-     * @see CommonContainerAssembly#install(Factory)
+     * @see CommonContainerAssembly#install(Op)
      */
-    public <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
+    public <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
         BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, container, factory).kindSingleton().install();
         return new ProvideableBeanConfiguration<>(handle);
     }
