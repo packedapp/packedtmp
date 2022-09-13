@@ -21,9 +21,9 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
+import app.packed.bean.BeanSourceKind;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandleBuilder;
-import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
+import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
@@ -54,7 +54,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
     @Nullable
     public final PoolEntryHandle singletonHandle;
 
-    public BeanInjectionManager(BeanSetup bean, PackedBeanHandleBuilder<?> driver) {
+    public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         this.bean = bean;
         ContainerSetup container = bean.parent;
         this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime.pool.reserve(driver.beanClass()) : null;
@@ -71,9 +71,9 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             parent = container.injectionManager;
         }
 
-        if (bean.builder.sourceType == SourceType.NONE) {
+        if (bean.builder.sourceKind == BeanSourceKind.NONE) {
             this.instanceNode = null;
-        } else if (driver.sourceType == SourceType.INSTANCE) {
+        } else if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             Object instance = driver.source;
 
             // We either have no bean instances or an instance was explicitly provided.
@@ -92,7 +92,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             // Or maybe just bind the instance directly in the method handles.
         } else {
             InternalFactory<?> factory;
-            if (driver.sourceType == SourceType.CLASS) {
+            if (driver.sourceKind == BeanSourceKind.CLASS) {
                 factory = ReflectiveFactory.DEFAULT_FACTORY.get((Class<?>) driver.source);
             } else {
                 factory = (InternalFactory<?>) driver.source;
@@ -113,7 +113,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
 
-        if (bean.builder.sourceType == SourceType.INSTANCE) {
+        if (bean.builder.sourceKind == BeanSourceKind.INSTANCE) {
             Object instance = bean.builder.source;
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, LifetimeConstantPool.class);

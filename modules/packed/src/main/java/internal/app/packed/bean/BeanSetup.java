@@ -11,9 +11,9 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanSourceKind;
 import app.packed.container.Extension;
 import app.packed.container.Realm;
-import internal.app.packed.bean.PackedBeanHandleBuilder.SourceType;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.BeanInjectionManager;
@@ -33,7 +33,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     public final BeanClassModel beanModel;
 
     /** The builder that was used to create the bean. */
-    public final PackedBeanHandleBuilder<?> builder;
+    public final PackedBeanHandleInstaller<?> builder;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
@@ -48,11 +48,11 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
      * @param builder
      *            the handle builder
      */
-    public BeanSetup(PackedBeanHandleBuilder<?> builder, RealmSetup owner) {
+    public BeanSetup(PackedBeanHandleInstaller<?> builder, RealmSetup owner) {
         super(builder.container.application, owner, builder.container);
         this.builder = builder;
-        this.beanModel = builder.sourceType == SourceType.NONE ? null : new BeanClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
-        if (beanKind() != BeanKind.FUNCTIONAL) {
+        this.beanModel = builder.sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(builder.beanClass());// realm.accessor().beanModelOf(driver.beanClass());
+        if (builder.beanKind() != BeanKind.FUNCTIONAL) {
             this.injectionManager = new BeanInjectionManager(this, builder);
         } else {
             this.injectionManager = null;
@@ -78,12 +78,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Override
     public Class<?> beanClass() {
         return builder.beanClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanKind beanKind() {
-        return builder.beanKind();
     }
 
     /** {@return a new mirror.} */

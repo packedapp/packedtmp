@@ -186,11 +186,6 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
         return bean().builder.beanClass();
     }
 
-    /** {@return the bean's kind.} */
-    public BeanKind beanKind() {
-        return bean.builder.beanKind();
-    }
-
     /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
     public ContainerMirror container() {
         return bean.parent.mirror();

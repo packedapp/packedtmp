@@ -24,7 +24,7 @@ import internal.app.packed.container.ExtensionModel;
 
 /**
  * @see Extension#newBeanIntrospector
- * @see BeanExtensionPoint$BeanCustomizer.Builder#introspectWith(BeanIntrospector)
+ * @see BeanHandle.Installer#introspectWith(BeanIntrospector)
  */
 
 //BeanAnalyzer, BeanVisitor, BeanInspector, BeanIntrospector, BeanScanner
@@ -61,11 +61,6 @@ public abstract class BeanIntrospector {
 
     public final Class<?> beanClass() {
         return setup().bean.beanClass();
-    }
-
-    /** {@return the kind of bean being scanned.} */
-    public final BeanKind beanKind() {
-        return setup().bean.beanKind();
     }
 
     /**

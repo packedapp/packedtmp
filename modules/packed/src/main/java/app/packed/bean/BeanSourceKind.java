@@ -22,12 +22,10 @@ import app.packed.inject.Factory;
  */
 public enum BeanSourceKind {
 
-    /**
-     * No source was specified when creating the bean. This is typically used  for functional beans.
-     */
+    /** No source was specified when creating the bean. */
     NONE,
 
-    /** An instance was specified when creating the bean. */
+    /** A bean instance was specified when creating the bean. */
     INSTANCE,
 
     /** A {@link Factory} was specified when creating the bean. */

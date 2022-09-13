@@ -3,7 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
-import internal.app.packed.bean.PackedBeanCustomizer;
+import internal.app.packed.bean.PackedBeanHandle;
 
 /**
  * The base configuration class for a bean.
@@ -11,7 +11,7 @@ import internal.app.packed.bean.PackedBeanCustomizer;
 public class BeanConfiguration {
 
     /** The bean handle. */
-    final PackedBeanCustomizer<?> beanHandle;
+    final PackedBeanHandle<?> handle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -19,27 +19,19 @@ public class BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public BeanConfiguration(BeanExtensionPoint$BeanCustomizer<?> handle) {
-        this.beanHandle = requireNonNull((PackedBeanCustomizer<?>) handle, "handle is null");
+    public BeanConfiguration(BeanHandle<?> handle) {
+        this.handle = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
     }
 
     /**
      * {@return the kind of bean that is being configured.}
      * 
-     * @see BeanExtensionPoint$BeanCustomizer#beanClass()
+     * @see BeanHandle#beanClass()
      */
     public final Class<?> beanClass() {
-        return beanHandle.beanClass();
+        return handle.beanClass();
     }
 
-    /**
-     * {@return the kind of bean that is being configured.}
-     * 
-     * @see BeanExtensionPoint$BeanCustomizer#beanKind()
-     */
-    public final BeanKind beanKind() {
-        return beanHandle.bean().beanKind();
-    }
 
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not.
@@ -48,19 +40,19 @@ public class BeanConfiguration {
      *             if the bean is no longer configurable
      */
     protected final void checkIsConfigurable() {
-        if (!beanHandle.isConfigurable()) {
+        if (!handle.isConfigurable()) {
             throw new IllegalStateException("The bean is no longer configurable");
         }
     }
 
     /** {@inheritDoc} */
     protected final void checkIsCurrent() {
-        beanHandle.bean().checkIsCurrent();
+        handle.bean().checkIsCurrent();
     }
 
     /** {@return a handle for the configuration of the bean.} */
-    protected BeanExtensionPoint$BeanCustomizer<?> handle() {
-        return beanHandle;
+    protected BeanHandle<?> handle() {
+        return handle;
     }
 
     /**
@@ -79,7 +71,7 @@ public class BeanConfiguration {
      * @see BeanMirror#name()
      */
     public BeanConfiguration named(String name) {
-        beanHandle.bean().named(name);
+        handle.bean().named(name);
         return this;
     }
 
@@ -97,12 +89,12 @@ public class BeanConfiguration {
      * @return the path of this configuration.
      */
     public final NamespacePath path() {
-        return beanHandle.bean().path();
+        return handle.bean().path();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return beanHandle.bean().toString();
+        return handle.bean().toString();
     }
 }

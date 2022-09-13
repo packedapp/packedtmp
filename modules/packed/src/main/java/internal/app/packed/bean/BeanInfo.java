@@ -15,7 +15,6 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.bean.BeanKind;
 import app.packed.container.Extension;
 import app.packed.container.Realm;
 
@@ -35,9 +34,6 @@ public interface BeanInfo {
 
     /** {@return the bean class.} */
     Class<?> beanClass();
-
-    /** {@return the kind of bean.} */
-    BeanKind beanKind();
 
     /** {@return the extension that operates the bean.} */
     Class<? extends Extension<?>> operator();

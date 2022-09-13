@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
@@ -283,13 +283,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        BeanExtensionPoint$BeanCustomizer<T> handle = bean().beanBuilderFromClass(BeanKind.UNMANAGED, implementation).build();
+        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation).kind(BeanKind.UNMANAGED).install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Factory<T> factory) {
-        BeanExtensionPoint$BeanCustomizer<T> handle = bean().beanBuilderFromFactory(BeanKind.UNMANAGED, factory).build();
+        BeanHandle<T> handle = bean().beanInstallerFromFactory(factory).kind(BeanKind.UNMANAGED).install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }

@@ -21,19 +21,19 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
+import app.packed.bean.BeanHandle;
 
 /**
- * The implementation of {@link BeanExtensionPoint$BeanCustomizer}.
+ * Implementation of {@link BeanHandle}.
  * 
- * @apiNote we could just let {@link BeanSetup} implement {@link BeanExtensionPoint$BeanCustomizer}, but we choose not to, to avoid parameterizing
+ * @apiNote we could let {@link BeanSetup} implement {@link BeanHandle}, but we choose not to, to avoid parameterizing
  *          {@link BeanSetup}.
  */
-public /* primitive */ record PackedBeanCustomizer<T> (BeanSetup bean) implements BeanExtensionPoint$BeanCustomizer<T> {
+public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements BeanHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedBeanCustomizer<T> onWireRun(Runnable action) {
+    public PackedBeanHandle<T> onWireRun(Runnable action) {
         requireNonNull(action, "action is null");
         bean.wiringActions.add(action);
         return this;

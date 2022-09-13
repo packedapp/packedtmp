@@ -45,16 +45,16 @@ import app.packed.bean.BeanExtensionPoint.ProvisionHook;
 // Maaske er det en Container class istedet for
 
 @ProvisionHook(extension = BeanExtension.class)
-public final /* value */ class Ancestral<T> {
+public final /* value */ class LookupAncestor<T> {
 
     /** Shared instance for {@code root()}. */
-    private static final Ancestral<?> ROOT = new Ancestral<>(null);
+    private static final LookupAncestor<?> ROOT = new LookupAncestor<>(null);
 
     /** Ancestor, or {@code null} if root. */
     @Nullable
     private final T ancestor;
 
-    private Ancestral(T ancestor) {
+    private LookupAncestor(T ancestor) {
         this.ancestor = ancestor;
     }
 
@@ -71,12 +71,12 @@ public final /* value */ class Ancestral<T> {
         return ancestor != null ? ancestor : supplier.get();
     }
 
-    public <U> Ancestral<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> LookupAncestor<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper);
         if (isRoot()) {
             return root();
         } else {
-            return Ancestral.ofNullable(mapper.apply(ancestor));
+            return LookupAncestor.ofNullable(mapper.apply(ancestor));
         }
     }
 
@@ -97,12 +97,12 @@ public final /* value */ class Ancestral<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Ancestral<T> ofNullable(T ancestor) {
-        return ancestor == null ? (Ancestral<T>) ROOT : new Ancestral<>(ancestor);
+    public static <T> LookupAncestor<T> ofNullable(T ancestor) {
+        return ancestor == null ? (LookupAncestor<T>) ROOT : new LookupAncestor<>(ancestor);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Ancestral<T> root() {
-        return (Ancestral<T>) ROOT;
+    public static <T> LookupAncestor<T> root() {
+        return (LookupAncestor<T>) ROOT;
     }
 }

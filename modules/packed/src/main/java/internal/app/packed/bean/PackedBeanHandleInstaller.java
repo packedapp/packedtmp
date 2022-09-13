@@ -20,12 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanExtensionPoint$BeanCustomizer;
-import app.packed.bean.BeanExtensionPoint$BeanCustomizer.Builder;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandle.Installer;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanSourceKind;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import internal.app.packed.bean.hooks.BeanIntrospectionHelper;
@@ -35,7 +36,7 @@ import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
 
 /** Implementation of BeanHandle.Builder. */
-public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$BeanCustomizer.Builder<T> {
+public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<T> {
 
     /** The bean class, is typical void.class for functional beans. */
     final Class<?> beanClass;
@@ -43,8 +44,15 @@ public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$Bean
     /** The container the new bean will be installed into. */
     final ContainerSetup container;
 
+    /** A custom bean introspector that may be set via {@link #introspectWith(BeanIntrospector)}. */
+    @Nullable
+    BeanIntrospector introspector;
+
     /** The kind of bean. */
-    final BeanKind kind;
+    BeanKind kind;
+
+    /** Supplies a mirror for the operation */
+    final Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
 
     /** The operator of the bean, or {@code null} for {@link BeanExtension}. */
     @Nullable
@@ -53,28 +61,24 @@ public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$Bean
     @Nullable
     PackedExtensionPointContext owner;
 
+    boolean nonUnique;
+
+    boolean noInstances;
+
     /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
     @Nullable
     public final Object source;
 
     /** The type of source the driver is created from. */
-    public final SourceType sourceType;
+    public final BeanSourceKind sourceKind;
 
-    /** Supplies a mirror for the operation */
-    final Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
-
-    /** A custom bean introspector that may be set via {@link #introspectWith(BeanIntrospector)}. */
-    @Nullable
-    BeanIntrospector introspector;
-
-    private PackedBeanHandleBuilder(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<?> beanType, SourceType sourceType,
+    private PackedBeanHandleInstaller(@Nullable UseSite operator, ContainerSetup container, Class<?> beanClass, BeanSourceKind sourceKind,
             @Nullable Object source) {
         this.operator = (@Nullable PackedExtensionPointContext) operator;
-        this.kind = requireNonNull(kind, "kind is null");
         this.container = requireNonNull(container);
-        this.beanClass = requireNonNull(beanType);
+        this.beanClass = requireNonNull(beanClass);
+        this.sourceKind = requireNonNull(sourceKind);
         this.source = requireNonNull(source);
-        this.sourceType = sourceType;
     }
 
     /** {@inheritDoc} */
@@ -87,9 +91,14 @@ public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$Bean
         return kind;
     }
 
+    public PackedBeanHandleInstaller<T> kind(BeanKind kind) {
+        this.kind = requireNonNull(kind);
+        return this;
+    }
+
     /** {@inheritDoc} */
     @Override
-    public BeanExtensionPoint$BeanCustomizer<T> build() {
+    public BeanHandle<T> install() {
         checkNotBuild();
         RealmSetup realm = owner == null ? container.realm : owner.extension().extensionRealm;
 
@@ -105,43 +114,60 @@ public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$Bean
         }
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
-        if (sourceType != SourceType.NONE) {
+        if (sourceKind != BeanSourceKind.NONE) {
             new BeanIntrospectionHelper(bean, introspector).introspect();
         }
 
-        return new PackedBeanCustomizer<>(bean);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Builder<T> ownedBy(UseSite context) {
-        requireNonNull(context, "context is null");
-        checkNotBuild();
-        this.owner = (PackedExtensionPointContext) context;
-        return this;
-    }
-
-    static BeanKind checkKind(BeanKind kind, int type) {
-        return kind;
+        return new PackedBeanHandle<>(bean);
     }
 
     private void checkNotBuild() {
 
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofClass(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Class<T> implementation) {
+    /** {@inheritDoc} */
+    @Override
+    public Installer<T> forExtension(UseSite context) {
+        requireNonNull(context, "context is null");
+        checkNotBuild();
+        this.owner = (PackedExtensionPointContext) context;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Installer<T> introspectWith(BeanIntrospector introspector) {
+        requireNonNull(introspector, "introspector is null");
+        if (beanClass == void.class) {
+            throw new UnsupportedOperationException("Cannot specify a introspector for beans that have void as their bean class");
+        }
+        checkNotBuild();
+        this.introspector = introspector;
+        return this;
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Installer<T> nonUnique() {
+        checkNotBuild();
+        nonUnique = true;
+        return this;
+    }
+
+    public static <T> PackedBeanHandleInstaller<T> ofClass(@Nullable UseSite operator, ContainerSetup container, Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleBuilder<>(operator, kind, container, implementation, SourceType.CLASS, implementation);
+        return new PackedBeanHandleInstaller<>(operator, container, implementation, BeanSourceKind.CLASS, implementation);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofFactory(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, Factory<T> factory) {
+    public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Factory<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         InternalFactory<T> fac = InternalFactory.crackFactory(factory);
-        return new PackedBeanHandleBuilder<>(operator, kind, container, fac.rawReturnType(), SourceType.FACTORY, fac);
+        return new PackedBeanHandleInstaller<>(operator, container, fac.rawReturnType(), BeanSourceKind.FACTORY, fac);
     }
 
-    public static <T> PackedBeanHandleBuilder<T> ofInstance(@Nullable UseSite operator, BeanKind kind, ContainerSetup container, T instance) {
+    public static <T> PackedBeanHandleInstaller<T> ofInstance(@Nullable UseSite operator, ContainerSetup container, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -155,26 +181,17 @@ public final class PackedBeanHandleBuilder<T> implements BeanExtensionPoint$Bean
 
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleBuilder<>(operator, kind, container, instance.getClass(), SourceType.INSTANCE, instance);
+        return new PackedBeanHandleInstaller<>(operator, container, instance.getClass(), BeanSourceKind.INSTANCE, instance);
     }
 
-    public static PackedBeanHandleBuilder<?> ofNone(@Nullable UseSite operator, BeanKind kind, ContainerSetup container) {
-        return new PackedBeanHandleBuilder<>(operator, kind, container, void.class, SourceType.NONE, null);
-    }
-
-    public enum SourceType {
-        CLASS, FACTORY, INSTANCE, NONE;
+    public static PackedBeanHandleInstaller<?> ofNone(@Nullable UseSite operator, ContainerSetup container) {
+        return new PackedBeanHandleInstaller<>(operator, container, void.class, BeanSourceKind.NONE, null);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Builder<T> introspectWith(BeanIntrospector introspector) {
-        requireNonNull(introspector, "introspector is null");
-        if (beanClass == void.class) {
-            throw new UnsupportedOperationException("Cannot specify a introspector for beans that have void as their bean class");
-        }
-        this.introspector = introspector;
+    public Installer<T> noInstances() {
+        noInstances = true;
         return this;
-
     }
 }

@@ -27,15 +27,15 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.inject.Factory;
 import app.packed.operation.OperationCustomizer;
-import internal.app.packed.bean.PackedBeanCustomizer;
-import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.bean.PackedBeanHandleInstaller;
 
 /**
  * A bean driver must be created via {@link BeanExtensionPoint}.
  */
-// Syntes vi smider den paa BeanExtensionPoint
+// Syntes vi smider den paa BeanExtensionPoint.. Nah...
 @SuppressWarnings("rawtypes")
-public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanCustomizer {
+public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Kan man tilfoeje en function til alle beans?
     // funktioner er jo stateless...
@@ -110,7 +110,7 @@ public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanC
      *            a {@code Runnable} to invoke when the bean is wired
      */
     // ->onWire
-    BeanExtensionPoint$BeanCustomizer<T> onWireRun(Runnable action);
+    BeanHandle<T> onWireRun(Runnable action);
 
     /**
      * @param consumer
@@ -123,18 +123,34 @@ public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanC
     default void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
 
     /**
-     * A builder for {@link BeanExtensionPoint$BeanCustomizer}. Is created using the various {@code beanBuilder} methods on
+     * A builder for {@link BeanHandle}. Is created using the various {@code beanBuilder} methods on
      * {@link BeanExtensionPoint}.
      * 
      * @see BeanExtensionPoint#beanBuilder(BeanKind)
-     * @see BeanExtensionPoint#beanBuilderFromClass(BeanKind, Class)
-     * @see BeanExtensionPoint#beanBuilderFromFactory(BeanKind, Factory)
+     * @see BeanExtensionPoint#beanInstallerFromClass(BeanKind, Class)
+     * @see BeanExtensionPoint#beanInstallerFromFactory(BeanKind, Factory)
      * @see BeanExtensionPoint#beanBuilderFromInstance(BeanKind, Object)
      */
     // Could also have, scan(), scan(BeanScanner), noScan() instead of build()
-    sealed interface Builder<T> permits PackedBeanHandleBuilder {
+    sealed interface Installer<T> permits PackedBeanHandleInstaller {
 
         // Scan (disable, do scan) ???
+
+        Installer<T> kind(BeanKind kind);
+        
+        Installer<T> noInstances();
+        
+        /**
+         * Allows for multiple beans of the same type in a single container.
+         * <p>
+         * By default, a container only allows a single bean of particular type if non-void.
+         * 
+         * @return this builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if {@code void} bean class
+         */
+        Installer<T> nonUnique();
 
         /**
          * Registers a bean introspector that will be used instead of the framework calling
@@ -148,7 +164,7 @@ public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanC
          * 
          * @see Extension#newBeanIntrospector
          */
-        Builder<T> introspectWith(BeanIntrospector introspector);
+        Installer<T> introspectWith(BeanIntrospector introspector);
 
         /**
          * Adds a new bean to the container and returns a handle for it.
@@ -157,7 +173,7 @@ public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanC
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        BeanExtensionPoint$BeanCustomizer<T> build();
+        BeanHandle<T> install();
 
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
@@ -172,7 +188,7 @@ public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanC
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        default Builder<T> namePrefix(String prefix) {
+        default Installer<T> namePrefix(String prefix) {
             // Bean'en bliver foerst lavet naar vi tilkobler en configuration
 
             return this;
@@ -187,7 +203,7 @@ public sealed interface BeanExtensionPoint$BeanCustomizer<T> permits PackedBeanC
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        Builder<T> ownedBy(UseSite context);
+        Installer<T> forExtension(UseSite context);
     }
 }
 //INFO (type, kind)

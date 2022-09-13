@@ -4,7 +4,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -38,7 +38,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.SINGLETON, container, implementation).build();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, container, implementation).kind(BeanKind.SINGLETON).install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -51,7 +51,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Factory)
      */
     public <T> ProvideableBeanConfiguration<T> install(Factory<T> factory) {
-        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.SINGLETON, container, factory).build();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, container, factory).kind(BeanKind.SINGLETON).install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -67,7 +67,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.SINGLETON, container, instance).build();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, container, instance).kind(BeanKind.SINGLETON).install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 

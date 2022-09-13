@@ -35,7 +35,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
      * @param handle
      *            the bean handle
      */
-    public InstanceBeanConfiguration(BeanExtensionPoint$BeanCustomizer<T> handle) {
+    public InstanceBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
 
@@ -71,8 +71,8 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    protected BeanExtensionPoint$BeanCustomizer<T> handle() {
-        return (BeanExtensionPoint$BeanCustomizer<T>) super.handle();
+    protected BeanHandle<T> handle() {
+        return (BeanHandle<T>) super.handle();
     }
 
     /** {@inheritDoc} */

@@ -15,7 +15,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.inject.Factory;
-import internal.app.packed.bean.PackedBeanHandleBuilder;
+import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 
 /**
@@ -29,36 +29,37 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /**
      * @return a new builder
      */
-    public BeanExtensionPoint$BeanCustomizer.Builder<?> beanBuilder() {
-        return PackedBeanHandleBuilder.ofNone(useSite(), BeanKind.FUNCTIONAL, extension().container);
+    public BeanHandle.Installer<?> beanInstaller() {
+        return PackedBeanHandleInstaller.ofNone(useSite(), extension().container).kind(BeanKind.FUNCTIONAL);
     }
 
-    public <T> BeanExtensionPoint$BeanCustomizer.Builder<T> beanBuilderFromClass(BeanKind kind, Class<T> implementation) {
-        return PackedBeanHandleBuilder.ofClass(useSite(), kind, extension().container, implementation);
+    public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Factory<T> factory) {
+        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, factory);
     }
 
-    public <T> BeanExtensionPoint$BeanCustomizer.Builder<T> beanBuilderFromFactory(BeanKind kind, Factory<T> factory) {
-        return PackedBeanHandleBuilder.ofFactory(useSite(), kind, extension().container, factory);
+    public <T> BeanHandle.Installer<T> beanInstallerFromClass(Class<T> implementation) {
+        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, implementation);
     }
 
-    public <T> BeanExtensionPoint$BeanCustomizer.Builder<T> beanBuilderFromInstance(T instance) {
-        // Is always container...
-        return PackedBeanHandleBuilder.ofInstance(useSite(), BeanKind.SINGLETON, extension().container, instance);
+    public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
+        return PackedBeanHandleInstaller.ofInstance(useSite(), extension().container, instance);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        PackedBeanHandleBuilder.ofClass(null, BeanKind.SINGLETON, extension().container, implementation);
-        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofClass(null, BeanKind.SINGLETON, extension().container, implementation).ownedBy(useSite()).build();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, extension().container, implementation).forExtension(useSite()).kind(BeanKind.SINGLETON)
+                .install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Factory<T> factory) {
-        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofFactory(null, BeanKind.SINGLETON, extension().container, factory).ownedBy(useSite()).build();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, extension().container, factory).forExtension(useSite()).kind(BeanKind.SINGLETON)
+                .install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanExtensionPoint$BeanCustomizer<T> handle = PackedBeanHandleBuilder.ofInstance(null, BeanKind.SINGLETON, extension().container, instance).ownedBy(useSite()).build();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kind(BeanKind.SINGLETON)
+                .install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
@@ -144,8 +145,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanIntrospector$BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
-         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
+         * Methods such as {@link BeanIntrospector$BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail
+         * with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
