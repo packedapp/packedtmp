@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.container.UserOrExtension;
+package app.packed.operation.bindings.sandbox;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
-
-    /** {@inheritDoc} */
-    @Override
-    public UserOrExtension realm() {
-        return extension.extensionRealm.extensionModel.realm();
-    }
+// Ved ikke hvor meget den giver mening at expose
+interface HowDepIsProvidedKind {
+    
+    // Build-time Constant
+    
+    // Result of an operation?
+    
+    // Background input param to operation
+    
+    // Lookup in some datastructed (service) Er det ikke bare result af en operation?
 }

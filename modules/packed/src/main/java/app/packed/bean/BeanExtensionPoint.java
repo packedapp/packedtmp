@@ -15,7 +15,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.operation.op.Op;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
-import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
+import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
 
 /**
  * An extension point class for {@link BeanExtension}.
@@ -47,12 +47,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
     }
 
-    public <T> BeanHandle.Installer<T> beanInstallerFromFactory(Op<T> factory) {
-        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, factory);
-    }
-
     public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
         return PackedBeanHandleInstaller.ofInstance(useSite(), extension().container, instance);
+    }
+
+    public <T> BeanHandle.Installer<T> beanInstallerFromOp(Op<T> op) {
+        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, op);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
@@ -109,7 +109,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     @SuppressWarnings("unchecked")
     public static <T> Op<T> factoryOf(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return (Op<T>) ExecutableFactory.DEFAULT_FACTORY.get(implementation);
+        return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
     }
 
     @Target(ElementType.ANNOTATION_TYPE)
@@ -173,10 +173,14 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
 class Sandbox {
 
-    <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
+    <T> ExtensionBeanConfiguration<T> installLazy(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
     
+    <T> ExtensionBeanConfiguration<T> installLazy(Op<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
     <T> ExtensionBeanConfiguration<T> installMany(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
@@ -184,16 +188,8 @@ class Sandbox {
     <T> ExtensionBeanConfiguration<T> installMany(Op<T> implementation) {
         throw new UnsupportedOperationException();
     }
-
-    <T> ExtensionBeanConfiguration<T> installManyInstance(T instance) {
-        throw new UnsupportedOperationException();
-    }
     
-    <T> ExtensionBeanConfiguration<T> installLazy(Class<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    <T> ExtensionBeanConfiguration<T> installLazy(Op<T> implementation) {
+    <T> ExtensionBeanConfiguration<T> installManyInstance(T instance) {
         throw new UnsupportedOperationException();
     }
 
@@ -202,6 +198,10 @@ class Sandbox {
     }
 
     <T> ExtensionBeanConfiguration<T> installManyLazy(Op<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
     
@@ -248,8 +248,8 @@ class Sandbox {
         if (t instanceof Class<?> cl) {
             return (Op<T>) BeanExtensionPoint.factoryOf(cl);
         } else {
-            ExecutableFactory<?> f = ExecutableFactory.DEFAULT_FACTORY.get(implementation.rawType());
-            return new ExecutableFactory<>(f, implementation);
+            ExecutableOp<?> f = ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
+            return new ExecutableOp<>(f, implementation);
         }
     }
 }

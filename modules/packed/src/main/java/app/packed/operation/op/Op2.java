@@ -41,7 +41,7 @@ public abstract class Op2<T, U, R> extends CapturingOp<R> {
      *
      * @param function
      *            the function that provide instances.
-     * @throws OpException
+     * @throws IllegalArgumentException
      *             if any of type variables could not be determined.
      */
     protected Op2(BiFunction<? super T, ? super U, ? extends R> function) {

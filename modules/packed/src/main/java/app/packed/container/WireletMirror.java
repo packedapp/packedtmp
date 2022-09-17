@@ -22,7 +22,7 @@ interface WireletMirror {
     // Der har vi issuen omkring Packed, Extension or user..
     // Maaske er der bare ikke mirrors paa wirelets.
     // Eller maaske er der bare ikke mirrors paa internal wirelets
-    Optional<Realm> registrant(); //operator
+    Optional<UserOrExtension> registrant(); //operator
 
     boolean isUserWirelet();
 }

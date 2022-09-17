@@ -15,10 +15,22 @@
  */
 package app.packed.operation.op;
 
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
 /**
- * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
- * could not be found.
+ * This exception is thrown when an op could not be created. For example, because a valid constructor or method could
+ * not be found.
  */
+
+// TypeVariable
+// Ved ikke om vi skal smide den naar vi ikke kan finde
+
+//// 2 situation
+// Creation time. Primaert capturing. Syntes bare vi skal smide I
+
 public class OpException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
@@ -48,5 +60,19 @@ public class OpException extends RuntimeException {
      */
     public OpException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public static void main(String[] args) {
+        StringJoiner sj = new StringJoiner(", ", "[", "]");
+
+        // Sort all system properties
+        List<Entry<Object, Object>> sorted = System.getProperties().entrySet().stream()
+                .sorted((e1, e2) -> e1.getKey().toString().compareTo(e2.getKey().toString())).collect(Collectors.toList());
+
+        // Add them to String joiner, removing new line so it is all on one line
+        sorted.forEach(e -> sj.add(e.getKey() + "=" + e.getValue().toString().replace("\n", "").replace("\r", "")));
+
+        // Print to console
+        System.out.println("System.properties -> " + sj.toString());
     }
 }

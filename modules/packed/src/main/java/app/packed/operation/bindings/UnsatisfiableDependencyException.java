@@ -13,31 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.operation.bindings;
 
-// An exception that is thrown when a operation could not be created because there was no access to the underlying.
-// Field, Constructor or Method
-/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
-// UncheckedIllegalAccessException...
-// RuntimeIllegalAccessException
+import app.packed.application.BuildException;
 
-// AccessRestrictedException <- General one, could sound really securish, maybe have a name
-// which makes it clear it is relevant to reflection/method handlers
-// NotOpenedException
-// UndeclaredAccessException
-// Was UncheckedIllegalAccessException
-
-// InaccessibleRealmException or
-// InaccessibleModuleException
-
-// Maybe it is a build exception??? Skal jo helst klare det under build..
-
-// InaccessibleOperationException???
-// InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
-
-// FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
-// saa factory er et daarligt navn/
-public class InaccessibleBeanMemberException extends RuntimeException {
+/** An exception thrown at build-time when a required dependency could not be resolved. */
+public class UnsatisfiableDependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -50,9 +31,8 @@ public class InaccessibleBeanMemberException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleBeanMemberException(String message) {
+    public UnsatisfiableDependencyException(String message) {
         super(message);
-
     }
 
     /**
@@ -65,7 +45,7 @@ public class InaccessibleBeanMemberException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleBeanMemberException(String message, Throwable cause) {
+    public UnsatisfiableDependencyException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -52,21 +52,3 @@ public final class ExtensionBeanSetup extends BeanSetup {
         return (ExtensionBeanSetup) bh.bean();
     }
 }
-
-// public static final Key<OperationPack> OPERATION_PACK_KEY = Key.of(OperationPack.class);
-
-//
-//public PackedOperationPackSetup operationPack(@Nullable Key<OperationPack> key) {
-//  PackedOperationPackSetup p = operationPack;
-//  if (p == null) {
-//      p = operationPack = new PackedOperationPackSetup();
-//  }
-//  return p;
-//}
-//
-//public void provideOperationPack(BeanDependency provider) {
-//  Key<?> key = provider.readKey();
-//  @SuppressWarnings("unchecked")
-//  PackedOperationPackSetup s = operationPack((Key<OperationPack>) key);
-//  provider.provide(new Factory0<OperationPack>(() -> s.build()) {});
-//}

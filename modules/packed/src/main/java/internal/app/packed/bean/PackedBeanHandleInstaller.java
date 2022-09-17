@@ -40,7 +40,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
-    /** The container the new bean will be installed into. */
+    /** The container the bean will be installed into. */
     final ContainerSetup container;
 
     public boolean instanceless;
@@ -64,12 +64,14 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     @Nullable
     PackedExtensionPointContext extensionOwner;
 
-    /** The source ({@code null}, {@link Class}, {@link InternalFactory} (cracked factory), Instance) */
+    /** The source ({@code null}, {@link Class}, {@link InternalFactory}, or an instance) */
     @Nullable
     public final Object source;
 
-    /** The type of source the driver is created from. */
+    /** The type of source the installer is created from. */
     public final BeanSourceKind sourceKind;
+
+    private BeanSetup bean;
 
     private PackedBeanHandleInstaller(@Nullable UseSite operator, ContainerSetup container, Class<?> beanClass, BeanSourceKind sourceKind,
             @Nullable Object source) {
@@ -87,7 +89,9 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     }
 
     private void checkNotBuild() {
-
+        if (bean != null) {
+            throw new IllegalStateException("This installer can only be used once");
+        }
     }
 
     /** {@inheritDoc} */
@@ -111,9 +115,9 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         // Skal lave saa mange checks som muligt inde vi laver BeanSetup
         BeanSetup bean;
         if (extensionOwner == null) {
-            bean = new BeanSetup(this, realm);
+            this.bean = bean = new BeanSetup(this, realm);
         } else {
-            bean = new ExtensionBeanSetup(extensionOwner.extension(), this, realm);
+            this.bean = bean = new ExtensionBeanSetup(extensionOwner.extension(), this, realm);
         }
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
@@ -134,7 +138,6 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         checkNotBuild();
         this.introspector = introspector;
         return this;
-
     }
 
     /** {@inheritDoc} */
@@ -145,6 +148,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         } else if (sourceKind != BeanSourceKind.CLASS) {
             throw new IllegalStateException("Cannot call this method when a factory or instance source was specified when creating the installer");
         }
+        checkNotBuild();
         instanceless = true;
         return this;
     }
@@ -165,7 +169,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
     public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Op<T> factory) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
-        InternalFactory<T> fac = InternalFactory.crackFactory(factory);
+        InternalFactory<T> fac = InternalFactory.crack(factory);
         return new PackedBeanHandleInstaller<>(operator, container, fac.rawReturnType(), BeanSourceKind.FACTORY, fac);
     }
 

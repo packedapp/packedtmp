@@ -44,6 +44,7 @@ import app.packed.bean.BeanExtensionPoint.ProvisionHook;
 
 // Maaske er det en Container class istedet for
 
+//https://www.umanitoba.ca/faculties/arts/anthropology/tutor/glossary.html
 @ProvisionHook(extension = BeanExtension.class)
 public final /* value */ class LookupAncestor<T> {
 

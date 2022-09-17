@@ -11,7 +11,7 @@ import app.packed.base.Nullable;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
@@ -80,7 +80,7 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
     }
 
     /** {@return the owner of the component.} */
-    public Realm owner() {
+    public UserOrExtension owner() {
         return bean().realm.realm();
     }
 

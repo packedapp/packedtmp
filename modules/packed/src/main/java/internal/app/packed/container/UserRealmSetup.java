@@ -26,7 +26,7 @@ import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 
 /**
  *
@@ -90,8 +90,8 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
 
     /** {@inheritDoc} */
     @Override
-    public final Realm realm() {
-        return Realm.application();
+    public final UserOrExtension realm() {
+        return UserOrExtension.application();
     }
 
     /** Implementation of {@link AssemblyMirror}. */

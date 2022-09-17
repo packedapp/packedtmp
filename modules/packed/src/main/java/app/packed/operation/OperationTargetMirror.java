@@ -38,6 +38,7 @@ import internal.app.packed.bean.hooks.PackedBeanMethod.BuildTimeMethodTargetMirr
 // Maaske drop Invoke til di
 // OperationLocationmirror?
 // OperationKindMirror?
+// InvocationSiteMirror
 public sealed interface OperationTargetMirror { // extends AnnotatedMember?
 
     // Members

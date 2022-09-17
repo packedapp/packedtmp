@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op.m1;
+package internal.app.packed.inject.factory;
+
+import app.packed.operation.op.CapturingOp;
+import app.packed.operation.op.Op;
 
 /**
  *
  */
-public enum ResolutionKind {
+@SuppressWarnings("rawtypes")
+public abstract sealed class PackedOp<R> extends Op<R> permits InternalFactory, CapturingOp {
 
-    BUILD_TIME_CONSTANT,
     
-    RUNTIME_CONSTANT,
+    // Knows the OpType
+
+    //// Subtype
+    // DelegatingOp
+    // KnowMHOp
+    // DontknowMH
     
-    RUNTIME_OPERATION,
-    
-    RUNTIME_MISSING_FROM_TIME_TO_TIME
 }

@@ -27,7 +27,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.InaccessibleBeanException;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -79,7 +79,7 @@ public final class OpenClass {
             if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
                 String otherModule = type.getModule().getName();
                 String m = APP_PACKED_BASE_MODULE.getName();
-                throw new InaccessibleBeanMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule
+                throw new InaccessibleBeanException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule
                         + "' must be open to '" + m + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m
                         + ";' to the module-info.java file of " + otherModule);
             }
@@ -95,7 +95,7 @@ public final class OpenClass {
             // Fjernede lookup... Skal vitterligt have samlet det i en klasse
             return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
+            throw new InaccessibleBeanException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }
     }
 
@@ -114,7 +114,7 @@ public final class OpenClass {
      * @param method
      *            the method to unreflect
      * @return a method handle for the unreflected method
-     * @throws InaccessibleBeanMemberException
+     * @throws InaccessibleBeanException
      *             if the method could not be unreflected
      * @see Lookup#unreflect(Method)
      */
@@ -124,7 +124,7 @@ public final class OpenClass {
         try {
             return lookup.unreflect(method);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("stuff", e);
+            throw new InaccessibleBeanException("stuff", e);
         }
     }
 
@@ -134,7 +134,7 @@ public final class OpenClass {
         try {
             return lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleBeanException("Could not create a MethodHandle", e);
         }
     }
 
@@ -144,7 +144,7 @@ public final class OpenClass {
         try {
             return lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleBeanException("Could not create a MethodHandle", e);
         }
     }
 
@@ -154,7 +154,7 @@ public final class OpenClass {
         try {
             return lookup.unreflectSetter(field);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            throw new InaccessibleBeanException("Could not create a MethodHandle", e);
         }
     }
 
@@ -164,7 +164,7 @@ public final class OpenClass {
         try {
             return lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleBeanMemberException("Could not create a VarHandle", e);
+            throw new InaccessibleBeanException("Could not create a VarHandle", e);
         }
     }
 

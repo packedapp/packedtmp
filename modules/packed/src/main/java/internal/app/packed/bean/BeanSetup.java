@@ -12,7 +12,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Extension;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.inject.BeanInjectionManager;
@@ -104,7 +104,7 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
 
     /** {@inheritDoc} */
     @Override
-    public Realm owner() {
+    public UserOrExtension owner() {
         return realm.realm();
     }
 

@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.operation.sandbox;
 
 /**
  *
  */
-// Hvordan er en lifetime managed
-// Er i virkeligheden LifetimeKind og saa bare Managed splittet op.
-// Jeg ved ikke om vi vil beholde den her klasse, smide den ind under lifetime kind
-// Eller noget helt 3. Har den bare med for at kunne summe lidt over den
-public enum LifetimeManagementKind {
-    Stateless,  //Stregn taget er der vel ikke model her... Der er ingen lifetimes
+public enum ResolutionKind {
+
+    BUILD_TIME_CONSTANT,
     
-    Unmanaged,
+    RUNTIME_CONSTANT,
     
-    Managed_Async, // Start + Stop seperately
+    RUNTIME_OPERATION,
     
-    Managed_sync // One LifetimeOperation
+    RUNTIME_MISSING_FROM_TIME_TO_TIME
 }

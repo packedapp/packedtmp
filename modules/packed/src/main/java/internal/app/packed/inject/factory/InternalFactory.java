@@ -29,6 +29,7 @@ import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import app.packed.operation.op.CapturingOp;
 import app.packed.operation.op.Op;
@@ -39,7 +40,12 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public abstract non-sealed class InternalFactory<R> extends Op<R> {
+public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
+
+    @Override
+    public final OperationType type() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
@@ -96,12 +102,13 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <R> InternalFactory<R> crackFactory(Op<R> factory) {
+    public static <R> InternalFactory<R> crack(Op<R> factory) {
         requireNonNull(factory, "factory is null");
         if (factory instanceof InternalFactory<R> f) {
             return f;
         } else {
-            Object result = InternalCapturingInternalFactory.VH_CF_FACTORY.get(factory);
+            // if capturingop had a canonicalizde we could just call that and get an IFa
+            Object result = PackedCapturingOp.VH_CF_FACTORY.get(factory);
             return (InternalFactory<R>) result;
         }
     }
@@ -156,18 +163,19 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
         }
 
         @Override
-        public int variableCount() {
-            return variables.size();
-        }
-
-        @Override
         public List<Variable> variables() {
             return variables;
         }
     }
 
-    /** A factory that provides the same value every time, used by {@link Op#ofInstance(Object)}. */
-    public static final class ConstantFactory<R> extends InternalFactory<R> {
+    public static final class AdaptedOp<R> {
+        
+        // Den egentligt taenkt til vi adoptere OperationType typen...
+        
+    }
+    
+    /** An op taking no the same value every time, used by {@link Op#ofInstance(Object)}. */
+    public static final class ConstantOp<R> extends InternalFactory<R> {
 
         /** The value that is returned every time. */
         private final R instance;
@@ -176,7 +184,7 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
         private final TypeToken<R> typeLiteral;
 
         @SuppressWarnings("unchecked")
-        public ConstantFactory(R instance) {
+        public ConstantOp(R instance) {
             this.typeLiteral = (TypeToken<R>) TypeToken.of(instance.getClass());
             this.instance = instance;
         }
@@ -200,21 +208,16 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
         }
 
         @Override
-        public int variableCount() {
-            return 0;
-        }
-
-        @Override
         public List<Variable> variables() {
             return List.of();
         }
     }
 
-    public static final class InternalCapturingInternalFactory<R> extends InternalFactory<R> {
+    public static final class PackedCapturingOp<R> extends InternalFactory<R> {
 
         /** A var handle that can update the {@link #container()} field in this class. */
-        private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "factory",
-                InternalCapturingInternalFactory.class);
+        private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "delegate",
+                PackedCapturingOp.class);
 
         // Ideen er lidt at saa snart vi bruger et CapturingFactory saa smider vi den ind her
 
@@ -231,7 +234,7 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
         /**
          * @param typeLiteralOrKey
          */
-        public InternalCapturingInternalFactory(TypeToken<R> typeLiteralOrKey, MethodHandle methodHandle, List<InternalDependency> dependencies) {
+        public PackedCapturingOp(TypeToken<R> typeLiteralOrKey, MethodHandle methodHandle, List<InternalDependency> dependencies) {
             this.typeLiteral = requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
             this.dependencies = dependencies;
             this.methodHandle = methodHandle;
@@ -253,12 +256,6 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
         @Override
         public TypeToken<R> typeLiteral() {
             return typeLiteral;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int variableCount() {
-            return dependencies.size();
         }
     }
 
@@ -300,19 +297,13 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
 
         /** {@inheritDoc} */
         @Override
-        public int variableCount() {
-            return delegate.variableCount();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public List<Variable> variables() {
             return delegate.variables();
         }
 
     }
 
-    /** A factory for {@link #peek(Consumer)}}. */
+    /** An implementation of the {@link Op#peek(Consumer)}} method. */
     public static final class PeekableFactory<R> extends InternalFactory<R> {
 
         /** A method handle for {@link Function#apply(Object)}. */
@@ -352,12 +343,6 @@ public abstract non-sealed class InternalFactory<R> extends Op<R> {
         @Override
         public TypeToken<R> typeLiteral() {
             return typeLiteral;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int variableCount() {
-            return delegate.variableCount();
         }
 
         /** {@inheritDoc} */

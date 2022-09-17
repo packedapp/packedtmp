@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.BeanElement;
-import app.packed.operation.dependency.DependencyMirror;
+import app.packed.operation.bindings.BindingMirror;
 import app.packed.operation.op.Op;
 
 /**
@@ -88,7 +88,7 @@ public non-sealed interface BeanIntrospector$BeanDependency extends BeanElement 
     // Saa maaske bindAtRuntime
     BeanIntrospector$BeanDependency bindAtRuntime();
 
-    BeanIntrospector$BeanDependency specializeMirror(Supplier<? extends DependencyMirror> supplier);
+    BeanIntrospector$BeanDependency specializeMirror(Supplier<? extends BindingMirror> supplier);
 
     TypeInfo type();
 

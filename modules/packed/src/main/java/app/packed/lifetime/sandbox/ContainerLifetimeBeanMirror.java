@@ -23,7 +23,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimeOperationMirror;
-import app.packed.operation.dependency.DependencyMirror;
+import app.packed.operation.bindings.BindingMirror;
 
 // Why lifetime bean
 // Det startede lidt med problemet omkring Application "wrapper" objekter som AsyncApp/Injector osv.
@@ -156,7 +156,7 @@ interface Zandbox1 {
      * @return a list of dependencies for this lifetime holder
      */
     // Er jo ogsaa paa
-    List<DependencyMirror> dependencies();
+    List<BindingMirror> dependencies();
 
     // er jo beanClass nu
     Class<?> holderClass();

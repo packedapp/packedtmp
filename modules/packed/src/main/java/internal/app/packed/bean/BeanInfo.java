@@ -16,7 +16,7 @@
 package internal.app.packed.bean;
 
 import app.packed.container.Extension;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 
 /**
  * Information about a bean.
@@ -39,5 +39,5 @@ public interface BeanInfo {
     Class<? extends Extension<?>> operator();
 
     /** {@return the owner of the bean.} */
-    Realm owner();
+    UserOrExtension owner();
 }

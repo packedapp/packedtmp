@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,19 +26,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.operation.Variable;
+import app.packed.base.Key;
 
 /**
- * A function type represents the arguments and return type accepted and returned by an invokable function.
+ * An operation type represents the arguments and return type for an operation.
  * 
- * @apiNote This class is modelled after {@link MethodType}. But includes information about annotations and detailed
+ * @apiNote This class is modelled after {@link MethodType}. But includes information about annotations and unerased
  *          type information.
  */
 
 // Mit problem med den her er lidt method return type...
 // Altsaa annoteringer er jo ikke noedvendigvis knyttede til retur typen, fx @Get
-
-public final /* primitive */ class OpType {
+public final /* primitive */ class OperationType {
 
     private static final Variable[] NO_VARS = {};
 
@@ -48,7 +47,7 @@ public final /* primitive */ class OpType {
     /** The return variable. */
     private final Variable returnVar;
 
-    private OpType(Variable returnVar, Variable... variables) {
+    private OperationType(Variable returnVar, Variable... variables) {
         this.returnVar = returnVar;
         this.parameterArray = variables;
     }
@@ -61,9 +60,9 @@ public final /* primitive */ class OpType {
      *            the variable a field descriptor for the new return type
      * @return the new factory type
      */
-    public OpType changeReturnVar(Variable newReturn) {
+    public OperationType changeReturnVar(Variable newReturn) {
         requireNonNull(newReturn, "newReturn is null");
-        return new OpType(newReturn, parameterArray);
+        return new OperationType(newReturn, parameterArray);
     }
 
     /**
@@ -101,13 +100,13 @@ public final /* primitive */ class OpType {
      * Return an array of field descriptors for the parameter types of the method type described by this descriptor
      * 
      * @return field descriptors for the parameter types
-     * @apiNote freezeable arrays might be supported in the future.
+     * @apiNote freezeable arrays might be supported in the future. In which case we will not return a copy
      */
     public Variable[] parameterArray() {
         return Arrays.copyOf(parameterArray, parameterArray.length);
     }
 
-    /** {@return the number of parameter variables in this function type.} */
+    /** {@return the number of parameter variables in this operation type.} */
     public int parameterCount() {
         return parameterArray.length;
     }
@@ -134,6 +133,12 @@ public final /* primitive */ class OpType {
         return returnVar;
     }
 
+    /** {@return the return variable.} */
+    public Key<?> returnVarAsKey() {
+        
+        throw new UnsupportedOperationException();
+    }
+    
     /** { @return extracts the raw types for each variable and returns them as a MethodType.} */
     public MethodType toMethodType() {
         return switch (parameterArray.length) {
@@ -168,38 +173,34 @@ public final /* primitive */ class OpType {
      *            the return variable
      * @return a function type with the given return variable
      */
-    public static OpType of(Variable returnVar) {
+    public static OperationType of(Variable returnVar) {
         requireNonNull(returnVar, "returnVar is null");
-        return new OpType(returnVar, NO_VARS);
+        return new OperationType(returnVar, NO_VARS);
     }
 
-    public static OpType of(Variable returnVar, Variable var) {
+    public static OperationType of(Variable returnVar, Variable var) {
         requireNonNull(returnVar, "returnVar is null");
         requireNonNull(returnVar, "var is null");
-        return new OpType(returnVar, var);
+        return new OperationType(returnVar, var);
     }
 
-    public static OpType of(Variable returnVar, Variable... vars) {
+    public static OperationType of(Variable returnVar, Variable... vars) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * {@return a factory type representing the specified executable.}
-     * 
-     * @param executable
-     *            the executable to return a factory type for.
-     */
-    public static OpType ofExecutable(Executable executable) {
-        requireNonNull(executable, "executable is null");
-        if (executable instanceof Method m) {
-            return ofExecutable(Variable.ofMethodReturnType(m), executable);
-        } else {
-            return ofExecutable(Variable.ofConstructor((Constructor<?>) executable), executable);
-        }
+    public static OperationType of(Class<?> returnVar, Class<?>... vars) {
+        return ofMethodType(MethodType.methodType(returnVar, vars));
     }
 
-    private static OpType ofExecutable(Variable returnVar, Executable executable) {
-        
+    /**
+     * {@return an op type representing the signature of the specified executable.}
+     * 
+     * @param executable
+     *            the executable to return a op type for.
+     */
+    public static OperationType ofExecutable(Executable executable) {
+        requireNonNull(executable, "executable is null");
+        Variable returnVar = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructor((Constructor<?>) executable);
         Parameter[] parameters = executable.getParameters();
         if (parameters.length == 0) {
             return of(returnVar);
@@ -211,7 +212,7 @@ public final /* primitive */ class OpType {
         return of(returnVar, vars);
     }
     
-    static OpType ofMethodType(MethodType methodType) {
+    public static OperationType ofMethodType(MethodType methodType) {
         throw new UnsupportedOperationException();
     }
 }

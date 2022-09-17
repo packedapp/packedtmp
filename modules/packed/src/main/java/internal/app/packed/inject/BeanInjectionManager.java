@@ -27,7 +27,7 @@ import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.ReflectiveFactory;
+import internal.app.packed.inject.factory.ReflectiveOp;
 import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
 
@@ -94,7 +94,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
         } else {
             InternalFactory<?> factory;
             if (driver.sourceKind == BeanSourceKind.CLASS) {
-                factory = ReflectiveFactory.DEFAULT_FACTORY.get((Class<?>) driver.source);
+                factory = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) driver.source);
             } else {
                 factory = (InternalFactory<?>) driver.source;
             }

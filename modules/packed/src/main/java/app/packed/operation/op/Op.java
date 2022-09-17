@@ -30,14 +30,15 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.InaccessibleBeanException;
 import app.packed.bean.Inject;
+import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.InternalFactory.ConstantFactory;
+import internal.app.packed.inject.factory.InternalFactory.ConstantOp;
 import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;
-import internal.app.packed.inject.factory.ReflectiveFactory;
-import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
+import internal.app.packed.inject.factory.PackedOp;
+import internal.app.packed.inject.factory.ReflectiveOp;
+import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -74,59 +75,77 @@ import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
 // og saa kalde Factory igennem den...
 // Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
 
-// Kunne vi have CapturingFactory extends InternalFactory??? saa alt altid er InternalFactory
 @SuppressWarnings("rawtypes")
-public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
+public abstract sealed class Op<R> permits PackedOp {
 
     /**
-     * Binds the specified argument(s) to a variable with the specified index as returned by {@link #variables()}. This
-     * method is typically used to bind arguments to parameters on a method or constructors. A typical example is a
-     * constructor with two parameters of the same type.
+     * Binds the specified argument(s) to a variable with the specified index.
+     * <p>
+     * This method is typically used to bind arguments to parameters on a method or constructors. A typical example is a
+     * constructor which takes two parameters of the same type.
      * 
      * @param position
-     *            the index of the variable to bind
+     *            the index of the first variable to bind
      * @param argument
      *            the (nullable) argument to bind
      * @param additionalArguments
      *            any additional (nullable) arguments to bind
-     * @return a new factory
-     * @throws IndexOutOfBoundsException
-     *             if the specified index does not represent a valid variable in {@link #variables()}
+     * @return a new operation
      * @throws ClassCastException
-     *             if an argument does not match the corresponding variable type.
-     * @throws IllegalArgumentException
+     *             if any of the arguments does not match their corresponding variable type.
+     * @throws IndexOutOfBoundsException
      *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
-     *             number of dependencies and {@code L} is the length of the additional argument array.
+     *             number of variables and {@code L} is the length of the additional argument array.
      * @throws NullPointerException
-     *             if the specified argument is null and the variable does not represent a reference type
+     *             if any of specified arguments are null and the corresponding variable does not represent a reference type
      */
-    // Smid CCE istedet for NPE?
     public abstract Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
 
     /**
-     * Binds the first variable to the specified argument.
-     * <p>
+     * Binds the first variable of the operation to the specified argument.
      * 
      * @param argument
      *            the argument to bind.
-     * @return a new factory
+     * @return a new operation
      * 
      * @throws ClassCastException
      *             if the argument does not match the leading variable type.
-     * @throws UnsupportedOperationException
-     *             if the factory does not have a leading variable
+     * @throws IndexOutOfBoundsException
+     *             if the operation does not have a leading variable
      * @throws NullPointerException
-     *             if the specified argument is null and the variable does not represent a reference type
+     *             if the specified argument is null and the leading variable does not represent a reference type
      */
     public final Op<R> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
 
-    final Op<R> bindSupplier(int position, Supplier<?> supplier) {
+    /**
+     * 
+     * <p>
+     * At invocationtime
+     * 
+     * {@link NullPointerException} will be thrown if the supplier return null, but does not take a reference type
+     * 
+     * {@link ClassCastException} if we create something that does not match
+     * 
+     * @param position
+     *            the index of the first variable to bind
+     * @param supplier
+     *            the supplier
+     * @return a new operation
+     * 
+     * @throws IndexOutOfBoundsException
+     *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
+     *             number of variables and {@code L} is the length of the additional argument array.
+     */
+    final Op<R> bindSupplier(int position, Supplier<?> supplier, Supplier<?>... additionalSuppliers) {
+        // IOBE -> now
+        // NPE -> Later
+        // CCE -> Later
         throw new UnsupportedOperationException();
     }
 
-    final <T> Op<T> mapTo(Class<T> key, Function<? super T, ? extends T> mapper) {
+    final <T> Op<T> mapResult(Class<T> type, Function<? super R, ? extends T> mapper) {
 
         // Ideen er at kunne lave en transformation for alt...
         // Tilfoej denne metode, representeret ved denne klasse...
@@ -146,7 +165,7 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
         // FactoryMapper...
         // FactoryMapper.of(dddd).removeMethodsStartingWithX().toFactory();
 
-        return mapTo(TypeToken.of(key), mapper);
+        return mapTo(TypeToken.of(type), mapper);
     }
 
     /**
@@ -161,7 +180,7 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
      * @return a new mapped factory
      */
     // How do we handle key??? Think we might need a version that also takes a key.
-    final <T> Op<T> mapTo(TypeToken<T> type, Function<? super T, ? extends T> mapper) {
+    final <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
         // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
         // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
         throw new UnsupportedOperationException();
@@ -208,13 +227,19 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
         return false;
     }
 
+    /** {@return the type of this op.} */
+    public abstract OperationType type();
+
     /**
-     * Returns a new factory that will perform the specified action immediately after the factory has constructed an object.
-     * And before the object is returned to the runtime.
+     * Returns a new operation that will perform the specified action immediately after the invocation before returning
+     * result to the runtime.
+     * <p>
+     * If the op has void return type {@link MethodHandles#zero(Class)} will be used to find a fitting value to provide to
+     * the action.
      * 
      * @param action
-     *            the action to run after the factory has returned an object
-     * @return the new factory
+     *            the consume that will be run with the result of each invocation
+     * @return the new op
      */
     public abstract Op<R> peek(Consumer<? super R> action);
 
@@ -223,10 +248,15 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
      * for example, for finding fields annotated with {@link Inject}.
      *
      * @return the raw type of the type of objects this factory provide
-     * @see #typeLiteral()
      */
     public final Class<?> rawReturnType() {
         return typeLiteral().rawType();
+    }
+
+    // Will retain annotations
+    // adaptReturn <--- will do something about annotations
+    <T> Op<T> castReturn(Class<T> returnType) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -250,8 +280,8 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return The number of variables this factory takes.} */
-    public abstract int variableCount();
+//    /** {@return The number of variables this factory takes.} */
+//    public abstract int variableCount();
 
     /** {@return The variables this factory takes.} */
     public abstract List<Variable> variables();
@@ -273,7 +303,7 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when accessing the underlying member
-     * @throws InaccessibleBeanMemberException
+     * @throws InaccessibleBeanException
      *             if the specified lookup object does not give access to the underlying member
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a field, constructor or method.
@@ -295,78 +325,64 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
     // openTo(Lookup, xxx)
     public final Op<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectiveFactory<R> f) {
+        if (this instanceof ReflectiveOp<R> f) {
             return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
-    // ReflectionFactory.of
-    public static <T> Op<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
-        requireNonNull(type, "type is null");
-        return ofConstructor(constructor, TypeToken.of(type));
-    }
-
-    // * <pre>
-//  * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
-//  * });
-//  * </pre>
-    public static <T> Op<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
-        requireNonNull(constructor, "constructor is null");
-        // TODO we probably need to validate the type literal here
-        return new ExecutableFactory<>(type, constructor);
-    }
-
     /**
-     * Creates a new factory that uses the specified constructor to create new instances.
-     *
+     * Creates a new op that can invoke the specified constructor.
+     * 
      * @param constructor
-     *            the constructor used for creating new instances
-     * @return the new factory
+     *            the constructor that will be called when operation is invoked
+     * @return the new operation
      */
     public static <T> Op<T> ofConstructor(Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
         TypeToken<T> tl = TypeToken.of(constructor.getDeclaringClass());
-        return new ExecutableFactory<>(tl, constructor);
+        return new ExecutableOp<>(tl, constructor);
     }
 
     /**
-     * Returns a factory that returns the specified instance every time the factory must provide a value.
-     * <p>
-     * If the specified instance makes use of field or method injection the returned factory should not be used more than
-     * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
-     * factory.
+     * Returns a operation that returns the specified instance every time the operation is invoked.
      * 
      * @param <T>
-     *            the type of value returned by the factory
+     *            the type of value returned by the operation
      * @param instance
-     *            the instance to return on every request
-     * @return the factory
+     *            the instance to return on every invocation
+     * @return the new operation
      */
-    // Move to Factory0?
+//    * Produces a method handle of the requested return type which returns the given
+//    * constant value every time it is invoked.
+    // Hedder MethodHandle.constant
     public static <T> Op<T> ofInstance(T instance) {
+//        * <p>
+//        * If the specified instance makes use of field or method injection the returned factory should not be used more than
+//        * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
+//        * factory.
         requireNonNull(instance, "instance is null");
-        return new ConstantFactory<T>(instance);
+        return new ConstantOp<T>(instance);
     }
 
     // Hvad goer vi med en klasse der er mere restri
     // If the specified instance is not a static method. An extra variable
     // use bind(Foo) to bind the variable.
-    public static <T> Op<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
-        requireNonNull(returnType, "returnType is null");
-        return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
-    }
-
-    // Annotations will be retained from the method
-    public static <T> Op<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
-        throw new UnsupportedOperationException();
-    }
+//    public static <T> Op<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
+//        requireNonNull(returnType, "returnType is null");
+//        return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
+//    }
+//
+//    // Annotations will be retained from the method
+//    public static <T> Op<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
-     * first variable. Use  to bind an instance of the declaring class.
+     * first variable. Use to bind an instance of the declaring class.
      * 
      * @param <T>
      *            the type of value returned by the method
@@ -375,30 +391,32 @@ public abstract sealed class Op<R> permits CapturingOp, InternalFactory {
      * @param returnType
      *            the type of value returned by the method
      * @return a factory that wraps the specified method
-     * @see #ofMethod(Method, TypeToken)
      */
-    public static <T> Op<T> ofMethod(Method method, Class<T> returnType) {
-        requireNonNull(returnType, "returnType is null");
-        return ofMethod(method, TypeToken.of(returnType));
-    }
-
-    // Den her sletter evt. Qualifier paa metoden...
-    public static <T> Op<T> ofMethod(Method method, TypeToken<T> returnType) {
+    public static Op<?> ofMethod(Method method) {
         requireNonNull(method, "method is null");
-        requireNonNull(returnType, "returnType is null");
-
-        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
-        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
-        // Map.of(), new MethodMirror(method)));
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Op<T> ofMethodHandle(MethodHandle methodHandle) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> Op<T> ofMethodHandle(MethodHandle methodHandle, List<Variable> variables) {
-        // Variables must match the method handle
+    public static Op<?> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
 }
+
+
+// TODO Hmm do we cast the return type to type????
+
+//// ofConstructor().castReturn(Class<T>)
+//public static <T> Op<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
+//    requireNonNull(type, "type is null");
+//    return ofConstructor(constructor, TypeToken.of(type));
+//}
+//
+//// * <pre>
+////* Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+////* });
+////* </pre>
+//public static <T> Op<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
+//    requireNonNull(constructor, "constructor is null");
+//    // TODO we probably need to validate the type literal here
+//    return new ExecutableFactory<>(type, constructor);
+//}

@@ -17,7 +17,7 @@ module app.packed {
     exports app.packed.operation.op;
     exports app.packed.lifetime.managed;
     exports app.packed.lifetime.sandbox;
-    exports app.packed.operation.dependency;
+    exports app.packed.operation.bindings;
 
     /* Special support for packed-devtoolks */
     uses internal.app.packed.integrate.devtools.PackedDevToolsIntegration;

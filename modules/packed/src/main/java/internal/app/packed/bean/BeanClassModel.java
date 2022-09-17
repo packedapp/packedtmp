@@ -18,7 +18,7 @@ package internal.app.packed.bean;
 import app.packed.base.Key;
 
 /**
- *
+ * 
  */
 // Altsaa Vi har jo lidt brug for den i forbindelse med extension beans taenker jeg...
 // Der er ingen grund til at scanne dem flere gange...

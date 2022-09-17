@@ -28,11 +28,11 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.InaccessibleBeanException;
 import app.packed.operation.Variable;
 import internal.app.packed.inject.InternalDependency;
-import internal.app.packed.inject.factory.ReflectiveFactory.ExecutableFactory;
-import internal.app.packed.inject.factory.ReflectiveFactory.FieldFactory;
+import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
+import internal.app.packed.inject.factory.ReflectiveOp.FieldOp;
 
 /**
  * A factory that needs a {@link Lookup} object.
@@ -41,19 +41,19 @@ import internal.app.packed.inject.factory.ReflectiveFactory.FieldFactory;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>permits ExecutableFactory, FieldFactory {
+public abstract sealed class ReflectiveOp<T> extends InternalFactory<T>permits ExecutableOp, FieldOp {
 
     /** A cache of factories used by {@link #factoryOf(Class)}. */
-    public static final ClassValue<ExecutableFactory<?>> DEFAULT_FACTORY = new ClassValue<>() {
+    public static final ClassValue<ExecutableOp<?>> DEFAULT_FACTORY = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-            return new ExecutableFactory<>(TypeToken.of(implementation), implementation);
+        protected ExecutableOp<?> computeValue(Class<?> implementation) {
+            return new ExecutableOp<>(TypeToken.of(implementation), implementation);
         }
     };
 
     /** A factory that wraps a method or constructor. */
-    public static final class ExecutableFactory<T> extends ReflectiveFactory<T> {
+    public static final class ExecutableOp<T> extends ReflectiveOp<T> {
 
         private final List<InternalDependency> dependencies;
 
@@ -63,19 +63,19 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         /** The type of objects this factory creates. */
         private final TypeToken<T> typeLiteral;
 
-        public ExecutableFactory(ExecutableFactory<?> from, TypeToken<T> key) {
+        public ExecutableOp(ExecutableOp<?> from, TypeToken<T> key) {
             typeLiteral = requireNonNull(key);
             this.executable = from.executable;
             this.dependencies = from.dependencies;
         }
 
-        public ExecutableFactory(TypeToken<T> key, Class<?> findConstructorOn) {
+        public ExecutableOp(TypeToken<T> key, Class<?> findConstructorOn) {
             typeLiteral = requireNonNull(key);
             this.executable = ConstructorFinder.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
             this.dependencies = InternalDependency.fromExecutable(executable);
         }
 
-        public ExecutableFactory(TypeToken<T> key, Constructor<?> constructor) {
+        public ExecutableOp(TypeToken<T> key, Constructor<?> constructor) {
             typeLiteral = requireNonNull(key);
             this.executable = constructor;
             this.dependencies = InternalDependency.fromExecutable(executable);
@@ -124,7 +124,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
 
             } catch (IllegalAccessException e) {
                 String name = executable instanceof Constructor ? "constructor" : "method";
-                throw new InaccessibleBeanMemberException("No access to the " + name + " " + executable + " with the specified lookup object", e);
+                throw new InaccessibleBeanException("No access to the " + name + " " + executable + " with the specified lookup object", e);
             }
 
             MethodHandle mh = methodHandle;
@@ -144,16 +144,10 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         public TypeToken<T> typeLiteral() {
             return typeLiteral;
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public int variableCount() {
-            return dependencies.size();
-        }
     }
 
     /** An invoker that can read and write fields. */
-    public static final class FieldFactory<T> extends ReflectiveFactory<T> {
+    public static final class FieldOp<T> extends ReflectiveOp<T> {
 
         /** The field we invoke. */
         private final Field field;
@@ -162,7 +156,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         private final TypeToken<T> typeLiteral;
 
         @SuppressWarnings("unchecked")
-        public FieldFactory(Field field) {
+        public FieldOp(Field field) {
             typeLiteral = (TypeToken<T>) TypeToken.fromField(field);
             this.field = field;
         }
@@ -189,7 +183,7 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
                 }
                 handle = lookup.unreflectGetter(field);
             } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+                throw new InaccessibleBeanException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
             return handle;
         }
@@ -198,11 +192,6 @@ public abstract sealed class ReflectiveFactory<T> extends InternalFactory<T>perm
         @Override
         public TypeToken<T> typeLiteral() {
             return typeLiteral;
-        }
-
-        @Override
-        public int variableCount() {
-            return 0;
         }
 
         @Override

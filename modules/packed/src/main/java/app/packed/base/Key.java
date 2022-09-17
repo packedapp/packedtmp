@@ -509,6 +509,11 @@ public abstract class Key<T> {
         return new CanonicalizedKey<>(token.canonicalize(), (Annotation[]) null);
     }
 
+    
+    public static Set<Key<?>> setOf(Class<?>... keys) {
+        return Set.of(of(keys));
+    }
+
     public static Key<?>[] of(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Key<?>[] result = new Key<?>[keys.length];

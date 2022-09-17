@@ -31,6 +31,7 @@ import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanExtensionPoint.ProvisionHook;
+import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -46,36 +47,42 @@ import internal.app.packed.util.OpenClass;
 public final class BeanIntrospectionHelper {
 
     /** We never process classes that are located in the {@code java.base} module. */
-    private static final Module JAVA_BASE_MODULE = Class.class.getModule();
+    private static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** The bean that is being introspected. */
-    final BeanSetup bean;
+    private final BeanSetup bean;
+
+    /** The class we are introspecting. */
+    private final Class<?> beanClass;
+
+    /** Non-null if a introspector was set via {@link BeanHandle.Installer#introspectWith(BeanIntrospector)}. */
+    @Nullable
+    private final BeanIntrospector beanHandleIntrospector;
 
     // I think we need stable iteration order... AppendOnly identity map, stable iteration order
+    // I think we sort in BeanFields...
     /** Every extension that is activated by a hook. */
-    final LinkedHashMap<Class<? extends Extension<?>>, ExtensionEntry> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension<?>>, ExtensionEntry> extensions = new LinkedHashMap<>();
 
     // Should be made lazily??? I think
     final OpenClass oc;
 
-    @Nullable
-    final BeanIntrospector registrantIntrospector;
-
-    public BeanIntrospectionHelper(BeanSetup bean, @Nullable BeanIntrospector registrantIntrospector) {
+    public BeanIntrospectionHelper(BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
         this.bean = bean;
-        this.registrantIntrospector = registrantIntrospector;
-        this.oc = OpenClass.of(MethodHandles.lookup(), bean.beanClass());
+        this.beanClass = bean.beanClass();
+        this.beanHandleIntrospector = beanHandleIntrospector;
+        this.oc = OpenClass.of(MethodHandles.lookup(), beanClass);
     }
 
-    private ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> clazz, boolean fullAccess) {
-        return extensions.computeIfAbsent(clazz, c -> {
+    private ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+        return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
-            ExtensionSetup extension = bean.parent.useExtensionSetup(clazz, null);
+            ExtensionSetup extension = bean.parent.useExtensionSetup(extensionType, null);
 
             BeanIntrospector introspector;
-            if (registrantIntrospector != null && bean.operator() == clazz) {
+            if (beanHandleIntrospector != null && bean.operator() == extensionType) {
                 // A special introspector has been set, don't
-                introspector = registrantIntrospector;
+                introspector = beanHandleIntrospector;
                 extension.initializeBeanIntrospector(introspector, extension, bean);
             } else {
                 // Call Extension#newBeanIntrospector
@@ -95,6 +102,11 @@ public final class BeanIntrospectionHelper {
      *            the base type
      */
     public final void introspect() {
+        // We start by processing annotations on the bean class
+        introspectClass();
+
+        // Then we process all bean fields
+        introspectFields(beanClass);
 
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
 
@@ -118,21 +130,12 @@ public final class BeanIntrospectionHelper {
                 return hash;
             }
         }
-
-        Class<?> baseType = Object.class;
-
-        Class<?> classToScan = bean.beanClass();
         HashSet<Package> packages = new HashSet<>();
         HashMap<MethodHelper, HashSet<Package>> types = new HashMap<>();
 
-        // Hmm, skal skrive noget om de kan komme i enhver order
-        // Lige nu kommer metoder foerend fields
-
-        introspectClass(classToScan);
-
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
-        for (Method m : classToScan.getMethods()) {
+        for (Method m : beanClass.getMethods()) {
             // Filter methods whose from java.base module and bridge methods
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
@@ -144,22 +147,13 @@ public final class BeanIntrospectionHelper {
         // Step 2 process all declared methods
 
         // Maybe some kind of detection if current type (c) switches modules.
-        for (Class<?> c = classToScan; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
-            // First process every field
-            // if (reflectOnFields) {
-            Field[] fields = c.getDeclaredFields();
-            PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
-            for (Field field : c.getDeclaredFields()) {
-                introspectField(field);
-            }
-            // }
-
+        for (Class<?> c = beanClass; c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             Method[] methods = c.getDeclaredMethods();
             PackedDevToolsIntegration.INSTANCE.reflectMembers(c, methods);
             for (Method m : methods) {
                 int mod = m.getModifiers();
                 if (Modifier.isStatic(mod)) {
-                    if (c == classToScan && !Modifier.isPublic(mod)) { // we have already processed public static methods
+                    if (c == beanClass && !Modifier.isPublic(mod)) { // we have already processed public static methods
                         // only include static methods in the top level class
                         // We do this, because it would be strange to include
                         // static methods on any interfaces this class implements.
@@ -197,9 +191,7 @@ public final class BeanIntrospectionHelper {
         }
     }
 
-    private void introspectClass(Class<?> clazz) {
-
-    }
+    private void introspectClass() {}
 
     /**
      * Introspect a single field on a bean.
@@ -232,12 +224,11 @@ public final class BeanIntrospectionHelper {
                 continue;
             }
 
-            // A map that is used if have multi field hook annotations
+            // A record + map that we use if have multi field hook annotations
             record MultiField(Class<? extends Extension<?>> extensionClass, boolean allowGet, boolean allowSet, Annotation... annotations) {}
             IdentityHashMap<Class<? extends Extension<?>>, MultiField> multiMatch = null;
 
             // Look through remaining annotations.
-            //
             for (int j = i; j < annotations.length; j++) {
                 Annotation annotation2 = annotations[j];
 
@@ -255,10 +246,10 @@ public final class BeanIntrospectionHelper {
 
                 // Okay we have more than 1 valid annotation
 
-                // Check if we need to create the multi match map
+                // Check to see if we need to create the multi match map
                 if (multiMatch == null) {
                     multiMatch = new IdentityHashMap<>();
-                    // Add the first match we add
+                    // Start by adding the first match
                     multiMatch.put(e.extensionType, new MultiField(e.extensionType, e.isGettable, e.isSettable, annotation));
                 }
 
@@ -277,8 +268,10 @@ public final class BeanIntrospectionHelper {
                 });
             }
 
+            // All done. Let us see if we only had a single match, or we had multiple valid matches
             // See if we only had 1 match?
             if (multiMatch == null) {
+                // Get the matching extension, installing it if needed.
                 ExtensionEntry entry = computeExtensionEntry(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
@@ -304,6 +297,21 @@ public final class BeanIntrospectionHelper {
         }
     }
 
+    private void introspectFields(Class<?> clazz) {
+        // See if the class is in the java.base module in which we never process it.
+        if (clazz.getModule() != JAVA_BASE_MODULE) {
+            // Recursively call into superclass
+            introspectFields(clazz.getSuperclass());
+
+            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
+
+            // Iterate over all declared fields
+            for (Field field : clazz.getDeclaredFields()) {
+                introspectField(field);
+            }
+        }
+    }
+
     /**
      * Look for hook annotations on a single method.
      * 
@@ -315,11 +323,11 @@ public final class BeanIntrospectionHelper {
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
-            MethodHookModel fh = MethodHookModel.CACHE.get(a1Type);
+            MethodAnnotationCache fh = MethodAnnotationCache.CACHE.get(a1Type);
             if (fh != null) {
                 ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
 
-                PackedBeanMethod pbm = new PackedBeanMethod(BeanIntrospectionHelper.this, ei.extension, method, fh.isInvokable);
+                PackedBeanMethod pbm = new PackedBeanMethod(bean, BeanIntrospectionHelper.this, ei.extension, method, fh.isInvokable);
 
                 ei.introspector.onMethod(pbm);
             }
@@ -367,19 +375,19 @@ public final class BeanIntrospectionHelper {
         };
     }
 
-    private record MethodHookModel(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
+    private record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
 
         /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<MethodHookModel> CACHE = new ClassValue<>() {
+        private static final ClassValue<MethodAnnotationCache> CACHE = new ClassValue<>() {
 
             @Override
-            protected MethodHookModel computeValue(Class<?> type) {
+            protected MethodAnnotationCache computeValue(Class<?> type) {
                 MethodHook h = type.getAnnotation(MethodHook.class);
                 if (h == null) {
                     return null;
                 }
                 checkExtensionClass(type, h.extension());
-                return new MethodHookModel(h.extension(), h.allowInvoke());
+                return new MethodAnnotationCache(h.extension(), h.allowInvoke());
             }
         };
     }

@@ -52,7 +52,7 @@ import internal.app.packed.util.ThrowableUtil;
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** An application driver for application drivers. */
-    public static PackedApplicationDriver<Void> PREMORDIAL = new PackedApplicationDriver<>();
+    public static PackedApplicationDriver<Void> PRIMORDIAL = new PackedApplicationDriver<>();
 
     final Set<Class<? extends Extension<?>>> bannedExtensions;
 
@@ -71,7 +71,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     private PackedApplicationDriver() {
         this.bannedExtensions = Set.of();
-        this.lifetimeKind = LifetimeKind.STATELESS;
+        this.lifetimeKind = LifetimeKind.UNMANAGED; // The primordial application does not need to be closed
         // We need to create the exception as well
         this.mhConstructor = MethodHandles.throwException(void.class, Error.class);
         this.wirelet = null;
@@ -214,7 +214,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
 
         /**
-         * All application drivers except {@link PackedApplicationDriver#PREMORDIAL} has either an unmanaged or managed
+         * All application drivers except {@link PackedApplicationDriver#PRIMORDIAL} has either an unmanaged or managed
          * lifetime.
          */
         private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
@@ -227,7 +227,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         InternalFactory<A> factory;
 
         public Builder(Op<A> factory) {
-            this.factory = factory == null ? null : InternalFactory.crackFactory(factory);
+            this.factory = factory == null ? null : InternalFactory.crack(factory);
 
             // Problemet med at komme laengere er lidt InternalInfuser som er bygget op omkring den faar en klasse
             // og ikke et internal factory

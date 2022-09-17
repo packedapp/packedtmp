@@ -22,7 +22,8 @@ import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationTargetMirror;
-import app.packed.operation.op.OpType;
+import app.packed.operation.OperationType;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationCustomizer;
@@ -30,14 +31,14 @@ import internal.app.packed.operation.PackedOperationCustomizer;
 /** Internal implementation of BeanMethod */
 public final class PackedBeanMethod extends PackedBeanMember<Method> implements BeanIntrospector$BeanMethod {
 
-    PackedBeanMethod(BeanIntrospectionHelper scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
-        super(scanner.bean, scanner, operator, method);
+    PackedBeanMethod(BeanSetup bean, BeanIntrospectionHelper scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
+        super(bean, scanner, operator, method);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OpType factoryType() {
-        return OpType.ofExecutable(member);
+    public OperationType factoryType() {
+        return OperationType.ofExecutable(member);
     }
 
     /** {@inheritDoc} */

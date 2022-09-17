@@ -31,17 +31,19 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.InternalFactory.InternalCapturingInternalFactory;
+import internal.app.packed.inject.factory.InternalFactory.PackedCapturingOp;
+import internal.app.packed.inject.factory.PackedOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
  * A abstract factory that captures the type an annotated return type and annotated type apra
  */
-public abstract non-sealed class CapturingOp<R> extends Op<R> {
+public abstract non-sealed class CapturingOp<R> extends PackedOp<R> {
 
     /** A cache of extracted type variables from subclasses of this class. */
     static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
@@ -86,8 +88,8 @@ public abstract non-sealed class CapturingOp<R> extends Op<R> {
         }
     };
 
-    /** The type of objects this factory creates. */
-    private final InternalCapturingInternalFactory<R> factory;
+    /** The op that all methods delegate to. */
+    private final PackedCapturingOp<R> delegate;
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
@@ -124,7 +126,7 @@ public abstract non-sealed class CapturingOp<R> extends Op<R> {
             MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
-        this.factory = new InternalCapturingInternalFactory<>(typeLiteral, methodHandle, dependencies);
+        this.delegate = new PackedCapturingOp<>(typeLiteral, methodHandle, dependencies);
 
     }
 
@@ -137,7 +139,7 @@ public abstract non-sealed class CapturingOp<R> extends Op<R> {
             baseClass = baseClass.getSuperclass();
         }
         
-        
+        // Maaske er det fint at smide en error?
         Constructor<?>[] con = baseClass.getDeclaredConstructors();
         if (con.length != 1) {
             throw new OpException(baseClass + " must declare a single constructor");
@@ -168,7 +170,7 @@ public abstract non-sealed class CapturingOp<R> extends Op<R> {
     /** {@inheritDoc} */
     @Override
     public Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
-        return factory.bind(position, argument, additionalArguments);
+        return delegate.bind(position, argument, additionalArguments);
     }
 
     InternalFactory<R> canonicalize() {
@@ -178,25 +180,23 @@ public abstract non-sealed class CapturingOp<R> extends Op<R> {
     /** {@inheritDoc} */
     @Override
     public final Op<R> peek(Consumer<? super R> action) {
-        return factory.peek(action);
+        return delegate.peek(action);
     }
 
     /** {@inheritDoc} */
     @Override
-    public TypeToken<R> typeLiteral() {
-        return factory.typeLiteral();
+    public final TypeToken<R> typeLiteral() {
+        return delegate.typeLiteral();
+    }
+    
+    public final OperationType type() {
+        return delegate.type();
     }
 
     /** {@inheritDoc} */
     @Override
-    public int variableCount() {
-        return factory.variableCount();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Variable> variables() {
-        return factory.variables();
+    public final List<Variable> variables() {
+        return delegate.variables();
     }
 
     static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {

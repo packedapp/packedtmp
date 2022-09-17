@@ -77,10 +77,16 @@ public abstract class Op1<T, R> extends CapturingOp<R> {
      *
      * @param function
      *            the function that provide instances.
-     * @throws OpException
+     * @throws IllegalArgumentException
      *             if any of type variables could not be determined.
      */
     protected Op1(Function<? super T, ? extends R> function) {
         super(requireNonNull(function, "function is null"));
+    }
+
+    // Casts the return value of function dynamically.. Hmmm
+    // Tror man selv maa skrive det
+    public static <T> Op<T> dynOp(Class<T> from, Class<?> returnValue, Function<T, ?> function) {
+        throw new UnsupportedOperationException();
     }
 }

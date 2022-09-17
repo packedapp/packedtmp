@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.service;
 
-import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.container.UserOrExtension;
+import app.packed.container.ContainerMirror;
+import app.packed.operation.bindings.BindingMirror;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+public interface ServiceBindingMirror extends BindingMirror.OfKey {
 
-    /** {@inheritDoc} */
-    @Override
-    public UserOrExtension realm() {
-        return extension.extensionRealm.extensionModel.realm();
-    }
+    ContainerMirror container();
+    
+    
 }

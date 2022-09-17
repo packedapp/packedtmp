@@ -22,10 +22,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.OperationCustomizer;
+import app.packed.operation.OperationType;
 import app.packed.operation.op.Op;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
@@ -97,24 +97,29 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         return List.of();
     }
 
-    // Kan man tilfoeje en function til alle beans?
-    // funktioner er jo stateless...
-    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
-    // Det skal den heller ikke.
-    default <F> OperationCustomizer newFunctionalOperation(Class<F> tt, F function) {
-        throw new UnsupportedOperationException();
-    }
+//    // Kan man tilfoeje en function til alle beans?
+//    // funktioner er jo stateless...
+//    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
+//    // Det skal den heller ikke.
+//    default <F> OperationCustomizer newFunctionalOperation(Class<F> tt, F function) {
+//        throw new UnsupportedOperationException();
+//    }
+//    
+//    // Problemet er her at det virker meget underligt lige pludselig at skulle tilfoeje lanes
+//    // Og hvordan HttpRequest, Response er 2 separate lanes... det er lidt sort magi
+//    // Skal vi bruge et hint???
+//    default OperationCustomizer newFunctionalOperation2(Object functionInstance, Class<?> functionType, Class<?>... typeVariables) {
+//        throw new UnsupportedOperationException();
+//    }
+//    default OperationCustomizer newFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
+//        throw new UnsupportedOperationException();
+//    }
 
-    default OperationCustomizer newFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
+    default OperationCustomizer newFunctionalOperation(Class<?> functionalInterface, OperationType type, Object functionInstance) {
+        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
         throw new UnsupportedOperationException();
     }
-
-    // Problemet er her at det virker meget underligt lige pludselig at skulle tilfoeje lanes
-    // Og hvordan HttpRequest, Response er 2 separate lanes... det er lidt sort magi
-    // Skal vi bruge et hint???
-    default OperationCustomizer newFunctionalOperation2(Object functionInstance, Class<?> functionType, Class<?>... typeVariables) {
-        throw new UnsupportedOperationException();
-    }
+ 
 
     default OperationCustomizer newOperation(MethodHandle methodHandle) {
         return newOperation(Op.ofMethodHandle(methodHandle));
@@ -153,7 +158,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * 
      * @see BeanExtensionPoint#beanInstaller()
      * @see BeanExtensionPoint#beanInstallerFromClass(Class)
-     * @see BeanExtensionPoint#beanInstallerFromFactory(Op)
+     * @see BeanExtensionPoint#beanInstallerFromOp(Op)
      * @see BeanExtensionPoint#beanBuilderFromInstance(Object)
      */
     // Could have, introspectionDisable()/noIntrospection
@@ -238,8 +243,31 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          *             if {@code void} bean class
          */
         Installer<T> nonUnique();
+        
+        
+        default Installer<T> lifetime(LifetimeFoo lifetime) {
+            throw new UnsupportedOperationException();
+        }
+        // instanceless-> can never set separate lifetime
+        // instance specified -> can never set...
+        
+        // lifetimeUnmanaged();
+        // lifetimeManaged(boolean seperateOperations);
+    }
+    
+    
+    // Tjahhh man kan vel maaske have flere end 2???
+    // Lad os sige pause(), suspend(), open, close;
+    // Umiddelbart har f.x @OnUpgrade jo ikke noget med lifetime at goere.
+    // Men tilgaengaeld noget med life cycle at goere
+    
+    // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
+    
+    public class LifetimeFoo {
+        
     }
 }
+
 //INFO (type, kind)
 
 //BeanCustomizer?? Syntes maaske handle er lidt mere runtime

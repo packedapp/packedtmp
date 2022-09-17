@@ -20,11 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Member;
 import java.util.List;
-import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.inject.DependencyNode;
 import internal.app.packed.inject.DependencyProducer;
@@ -33,7 +30,7 @@ import internal.app.packed.inject.InternalDependency;
 /**
  *
  */
-public abstract class DependencyHolder extends KeyProvidable{
+public abstract class DependencyHolder extends KeyProvidable {
 
     /** Dependencies that needs to be resolved. */
     public final List<InternalDependency> dependencies;
@@ -47,15 +44,11 @@ public abstract class DependencyHolder extends KeyProvidable{
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
 
-    @Nullable
-    private final Supplier<? extends OperationMirror> supplier;
-
     DependencyHolder(List<InternalDependency> dependencies, boolean provideAsConstant, Key<?> provideAsKey) {
         super(provideAsKey);
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = provideAsConstant;
         // this.processor = builder.processor;
-        this.supplier = null;
     }
 
     public void onWire(BeanSetup bean) {
@@ -63,8 +56,7 @@ public abstract class DependencyHolder extends KeyProvidable{
         DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
 
         bean.parent.injectionManager.addConsumer(node);
-        
-        
+
 //        if (processor != null) {
 //            processor.accept(bean);
 //        }

@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
+package app.packed.operation.bindings;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.bindings.sandbox.ResolutionState;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -46,10 +47,10 @@ import internal.app.packed.container.Mirror;
 
 // Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
 // Eller maaske goer det? Taenker ikke man kan vaere alle dele
+@SuppressWarnings("exports")
+public sealed interface BindingMirror extends Mirror {
 
-public sealed interface DependencyMirror extends Mirror {
-
-    DependencyResolutionState resolutionState();
+    ResolutionState resolutionState();
 
     boolean isSatisfiable(); //isSatisfied?
 
@@ -59,7 +60,7 @@ public sealed interface DependencyMirror extends Mirror {
     // We need a better name. It is the index into the list of dependencies for operation
     int operationIndex();
     
-    Optional<Realm> providedBy(); // BeanMirror?
+    Optional<UserOrExtension> providedBy(); // BeanMirror?
 
     /**
      * If this dependency is the result of another operation.
@@ -78,15 +79,15 @@ public sealed interface DependencyMirror extends Mirror {
     Optional<OperationMirror> providingOperation();
 
     // Tror det bliver ligesom OperationTarget
-    non-sealed interface OfAnnotation extends DependencyMirror {
+    non-sealed interface OfAnnotation extends BindingMirror {
         abstract Annotation annotation();
 
         abstract Class<? extends Annotation> annotationType();
     }
 
-    non-sealed interface OfComposite extends DependencyMirror {
+    non-sealed interface OfComposite extends BindingMirror {
 
-        abstract DependencyMirror dependencies();
+        abstract BindingMirror bindings();
 
         // Tror ikke laengere vi bliver resolved som en compond.
         // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
@@ -94,13 +95,13 @@ public sealed interface DependencyMirror extends Mirror {
 
     }
 
-    non-sealed interface OfKey extends DependencyMirror {
+    non-sealed interface OfKey extends BindingMirror {
         abstract Key<?> key();
     }
 
-    non-sealed interface OfOther extends DependencyMirror {}
+    non-sealed interface OfOther extends BindingMirror {}
 
-    non-sealed interface OfTyped extends DependencyMirror {
+    non-sealed interface OfTyped extends BindingMirror {
         abstract Class<?> typed();
     }
 }

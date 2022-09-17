@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.container.UserOrExtension;
+package app.packed.operation.bindings.sandbox;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+public interface DefaultMirror {
 
-    /** {@inheritDoc} */
-    @Override
-    public UserOrExtension realm() {
-        return extension.extensionRealm.extensionModel.realm();
-    }
 }

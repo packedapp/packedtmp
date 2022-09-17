@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.container.Extension;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.inject.ExtensionInjectionManager;
 
@@ -70,7 +70,7 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public Realm realm() {
+    public UserOrExtension realm() {
         return extensionModel.realm();
     }
 

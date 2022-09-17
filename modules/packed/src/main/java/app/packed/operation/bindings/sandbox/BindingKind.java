@@ -13,19 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.operation.bindings.sandbox;
 
-import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.container.UserOrExtension;
+import java.lang.reflect.Field;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
-
-    /** {@inheritDoc} */
-    @Override
-    public UserOrExtension realm() {
-        return extension.extensionRealm.extensionModel.realm();
-    }
+// All dependencies have a resolution kind if those that are unresolved
+public enum BindingKind {
+    
+    MANUAL,
+    
+    ANNOTATION,
+    
+    COMPOSITE,
+    
+    /**
+     * 
+     * @see Field#getType()
+     * @see Parameter#getType();
+     **/
+    TYPE, 
+    
+    KEY;
 }
+
+// Check if already manually bound
+// Check annotation for Prime annotations
+// check raw class for Prime Class

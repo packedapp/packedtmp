@@ -24,7 +24,7 @@ import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerCustomizer;
-import app.packed.container.Realm;
+import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
@@ -82,7 +82,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSe
         this.accessor = beanAccessor().withLookup(lookup);
     }
 
-    public abstract Realm realm();
+    public abstract UserOrExtension realm();
 
     /**
      * Returns the type that was used to create this realm.

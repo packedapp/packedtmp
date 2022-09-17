@@ -13,12 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
+package app.packed.bean;
 
-import app.packed.application.BuildException;
+// An exception that is thrown when a operation could not be created because there was no access to the underlying.
+// Field, Constructor or Method
+/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
+// UncheckedIllegalAccessException...
+// RuntimeIllegalAccessException
 
-/** An exception thrown at build-time when a required dependency could not be resolved. */
-public class UnsatisfiableDependencyException extends BuildException {
+// AccessRestrictedException <- General one, could sound really securish, maybe have a name
+// which makes it clear it is relevant to reflection/method handlers
+// NotOpenedException
+// UndeclaredAccessException
+// Was UncheckedIllegalAccessException
+
+// InaccessibleRealmException or
+// InaccessibleModuleException
+
+// Maybe it is a build exception??? Skal jo helst klare det under build..
+
+// InaccessibleOperationException???
+// InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
+
+// FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
+// saa factory er et daarligt navn/
+public class InaccessibleBeanException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -31,8 +50,9 @@ public class UnsatisfiableDependencyException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableDependencyException(String message) {
+    public InaccessibleBeanException(String message) {
         super(message);
+
     }
 
     /**
@@ -45,7 +65,7 @@ public class UnsatisfiableDependencyException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableDependencyException(String message, Throwable cause) {
+    public InaccessibleBeanException(String message, Throwable cause) {
         super(message, cause);
     }
 }

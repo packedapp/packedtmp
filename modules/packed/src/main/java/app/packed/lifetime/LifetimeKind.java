@@ -21,13 +21,18 @@ package app.packed.lifetime;
 // LifetimeManagement bare?
 // Maaske ender det bare med en boolean
 public enum LifetimeKind {
-    
-    STATELESS,
-
     UNMANAGED, // has initialize
 
     MANAGED; // has start/stop
 }
+
+
+// We had stateless once... because of functional beans
+// But now they are in the same lifetime as the container in which they are registered.
+// Because even though they are stateless they should be called outside of the containers
+// lifetime
+
+
 //
 //enum AlternativeNaming {
 //    STATIC,

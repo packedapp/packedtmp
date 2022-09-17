@@ -21,6 +21,9 @@ import app.packed.operation.OperationMirror;
 /**
  *
  */
+// ServiceProvisionMirror
+
+// permits InternalOp
 public abstract class ProvideOperationMirror extends OperationMirror {
 
     /** {@return the key of the service.} */

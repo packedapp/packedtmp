@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.inject.DependencyNode;
@@ -37,6 +38,7 @@ public final class OperationSetup {
     /** The bean that defines the operation. */
     public final BeanSetup bean;
 
+    // Vil vi gerne embedde den her????
     public DependencyNode depNode;
 
     /** Supplies a mirror for the operation */
@@ -45,9 +47,12 @@ public final class OperationSetup {
     /** The target of the operation. */
     public final PackedOperationTarget operationTarget;
 
-    /** The operator of the operation. */
+    /** The extension that operates the operation. */
     public final ExtensionBeanSetup operatorBean;
-    
+
+    /** The type of the operation. */
+    public final OperationType type = null;
+
     OperationSetup(PackedOperationCustomizer builder) {
         this.bean = builder.bean;
         this.operationTarget = builder.target;

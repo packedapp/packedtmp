@@ -18,17 +18,17 @@ import internal.app.packed.util.ClassUtil;
 // Er ikke paa det er en Realm... anyway
 // En AssemblyRealm
 
-public /* primitive */ final class Realm {
+public /* primitive */ final class UserOrExtension {
 
     /** The application realm. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static final Realm APPLICATION = new Realm((Class) Extension.class);
+    private static final UserOrExtension APPLICATION = new UserOrExtension((Class) Extension.class);
 
     /** The extension the realms represents. Or {@code app.packed.extension.Extension} for the application realm. */
     @SuppressWarnings("rawtypes")
     private final Class extension;
 
-    private Realm(Class<? extends Extension<?>> extension) {
+    private UserOrExtension(Class<? extends Extension<?>> extension) {
         this.extension = extension;
     }
 
@@ -55,7 +55,7 @@ public /* primitive */ final class Realm {
     }
 
     /** {@return the application realm.} */
-    public static Realm application() {
+    public static UserOrExtension application() {
         return APPLICATION;
     }
 
@@ -68,8 +68,8 @@ public /* primitive */ final class Realm {
      * @throws IllegalArgumentException
      *             if the specified class is not a proper subclass of Extension
      */
-    public static Realm extension(Class<? extends Extension<?>> extensionType) {
+    public static UserOrExtension extension(Class<? extends Extension<?>> extensionType) {
         ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
-        return new Realm(extensionType);
+        return new UserOrExtension(extensionType);
     }
 }

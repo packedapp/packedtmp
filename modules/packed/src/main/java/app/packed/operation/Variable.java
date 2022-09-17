@@ -76,6 +76,9 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     
     TypeToken<?> typeToken();
 
+    
+    // ofClassType <--- will not retain annotations on the class 
+    
     /**
      * Returns a variable from the specified field.
      * <p>
@@ -118,5 +121,4 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     static Variable ofTypeVariable(TypeVariable<?> typeVariable) {
         return new PackedVariable(typeVariable, new VariableTypeWrapper.OfTypeVariable(typeVariable));
     }
-
 }

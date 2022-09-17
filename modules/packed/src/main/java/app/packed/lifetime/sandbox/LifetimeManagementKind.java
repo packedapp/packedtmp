@@ -13,32 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.dependency;
-
-import java.lang.reflect.Field;
+package app.packed.lifetime.sandbox;
 
 /**
  *
  */
-// All dependencies have a resolution kind if those that are unresolved
-public enum DependencyResolutionStrategy {
+// Hvordan er en lifetime managed
+// Er i virkeligheden LifetimeKind og saa bare Managed splittet op.
+// Jeg ved ikke om vi vil beholde den her klasse, smide den ind under lifetime kind
+// Eller noget helt 3. Har den bare med for at kunne summe lidt over den
+public enum LifetimeManagementKind {
+    Stateless,  //Stregn taget er der vel ikke model her... Der er ingen lifetimes
     
-    MANUAL,
+    Unmanaged,
     
-    ANNOTATION,
+    Managed_Async, // Start + Stop seperately
     
-    // COMPOSITE  if we add that at some point
-    
-    /**
-     * 
-     * @see Field#getType()
-     * @see Parameter#getType();
-     **/
-    TYPE, 
-    
-    KEY;
+    Managed_sync // One LifetimeOperation
 }
-
-// Check if already manually bound
-// Check annotation for Prime annotations
-// check raw class for Prime Class

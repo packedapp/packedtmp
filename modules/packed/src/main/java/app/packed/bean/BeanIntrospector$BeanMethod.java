@@ -23,7 +23,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
-import app.packed.operation.op.OpType;
+import app.packed.operation.OperationType;
 import internal.app.packed.bean.hooks.PackedBeanMethod;
 
 /**
@@ -35,7 +35,7 @@ import internal.app.packed.bean.hooks.PackedBeanMethod;
 public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits PackedBeanMethod {
 
     /** {@return a factory type for this method.} */
-    OpType factoryType(); // I don't like the name factoryType.. signature? Coordinates?
+    OperationType factoryType(); // I don't like the name factoryType.. signature? Coordinates?
 
     /**
      * {@return the modifiers of the underlying method.}

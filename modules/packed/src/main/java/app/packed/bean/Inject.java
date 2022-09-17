@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
-import app.packed.operation.op.OpException;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -31,7 +30,7 @@ import app.packed.operation.op.OpException;
  * situations an annotation can be used for providing greater control over how dependencies are being injected.
  * <p>
  * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
- * throwing an {@link OpException}.
+ * throwing an exception
  * <p>
  * While we support direct injection onto fields and into methods. We recommend using constructor injection where ever
  * possible. List reasons...
@@ -46,6 +45,9 @@ import app.packed.operation.op.OpException;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+
+// Instead of FieldHook is is a provision hook long term
+
 @FieldHook(extension = BeanExtension.class, allowSet = true)
 @MethodHook(extension = BeanExtension.class, allowInvoke = true)
 public @interface Inject {}

@@ -47,7 +47,7 @@ public abstract class Op0<R> extends CapturingOp<R> {
      *
      * @param supplier
      *            the supplier that will provide the actual values.
-     * @throws OpException
+     * @throws IllegalArgumentException
      *             if the type variable R could not be determined.
      */
     protected Op0(Supplier<? extends R> supplier) {
