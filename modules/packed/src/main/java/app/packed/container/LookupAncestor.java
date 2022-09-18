@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanExtensionPoint.ProvisionHook;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 
 /**
  *
@@ -45,7 +45,7 @@ import app.packed.bean.BeanExtensionPoint.ProvisionHook;
 // Maaske er det en Container class istedet for
 
 //https://www.umanitoba.ca/faculties/arts/anthropology/tutor/glossary.html
-@ProvisionHook(extension = BeanExtension.class)
+@BindingHook(extension = BeanExtension.class)
 public final /* value */ class LookupAncestor<T> {
 
     /** Shared instance for {@code root()}. */

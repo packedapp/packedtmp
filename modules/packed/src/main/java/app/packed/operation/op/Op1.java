@@ -57,7 +57,7 @@ import java.util.function.Supplier;
  * Is typically used like this:
  *
  * <pre> {@code
- * Factory<Long> f = new Factory1<>(System::currentTimeMillis) {}};</pre>
+ * Op<Long> f = new Op1<>(System::currentTimeMillis) {}};</pre>
  * <p>
  * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
  * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining

@@ -135,10 +135,10 @@ public final /* primitive */ class OperationType {
 
     /** {@return the return variable.} */
     public Key<?> returnVarAsKey() {
-        
+
         throw new UnsupportedOperationException();
     }
-    
+
     /** { @return extracts the raw types for each variable and returns them as a MethodType.} */
     public MethodType toMethodType() {
         return switch (parameterArray.length) {
@@ -197,6 +197,7 @@ public final /* primitive */ class OperationType {
      * 
      * @param executable
      *            the executable to return a op type for.
+     * @throws Exception if there are type variables
      */
     public static OperationType ofExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
@@ -211,7 +212,7 @@ public final /* primitive */ class OperationType {
         }
         return of(returnVar, vars);
     }
-    
+
     public static OperationType ofMethodType(MethodType methodType) {
         throw new UnsupportedOperationException();
     }

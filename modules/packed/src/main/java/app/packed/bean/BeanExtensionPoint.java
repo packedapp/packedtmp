@@ -164,7 +164,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)
     @Documented
-    public @interface ProvisionHook {
+    public @interface BindingHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
