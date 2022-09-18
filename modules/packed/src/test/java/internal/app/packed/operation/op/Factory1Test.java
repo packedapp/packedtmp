@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package internal.app.packed.operation.op;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.checkThat;
@@ -23,8 +23,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
+import app.packed.operation.Op1;
 import internal.app.packed.inject.InternalDependency;
-import internal.app.packed.inject.factory.InternalFactory;
 
 /** Tests {@link Op1}. */
 public class Factory1Test {
@@ -37,7 +37,7 @@ public class Factory1Test {
 
         Op1<String, Integer> f = new Op1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<InternalDependency> dependencies = InternalFactory.crack(f).dependencies();
+        List<InternalDependency> dependencies = PackedOp.crack(f).dependencies();
         assertThat(dependencies).hasSize(1);
         InternalDependency d = dependencies.get(0);
 

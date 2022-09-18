@@ -28,7 +28,7 @@ import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.hooks.PackedBeanField;
 import internal.app.packed.bean.hooks.PackedBeanMethod;

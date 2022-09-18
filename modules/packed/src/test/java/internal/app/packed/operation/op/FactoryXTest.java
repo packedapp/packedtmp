@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package internal.app.packed.operation.op;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static testutil.assertj.Assertions.checkThat;
@@ -25,6 +25,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
+import app.packed.operation.CapturingOp;
+import app.packed.operation.Op;
+import app.packed.operation.Op0;
 
 /** Tests {@link Op}. */
 public class FactoryXTest {
@@ -62,7 +65,7 @@ public class FactoryXTest {
     public void typeParameterIndeterminable() {
         // TODO change to Factory instead of BaseFactory
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Op0(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <R> for " + CapturingOp.class.getSimpleName() + "<R> on class " + Op.class.getPackageName());
+                .withMessageStartingWith("Cannot determine type variable <R> for " + CapturingOp.class.getSimpleName() + "<R> on class " + FactoryXTest.class.getPackageName());
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
                 .withMessageStartingWith("Cannot determine type variable <T> for " + CapturingOp.class.getSimpleName() + "<R> on class " + FactoryXTest.class.getCanonicalName());

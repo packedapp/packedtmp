@@ -30,7 +30,7 @@ import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.inject.service.sandbox.Service;
 

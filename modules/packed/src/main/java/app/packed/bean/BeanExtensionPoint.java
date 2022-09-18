@@ -13,9 +13,9 @@ import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
-import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
+import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
 /**
  * An extension point class for {@link BeanExtension}.

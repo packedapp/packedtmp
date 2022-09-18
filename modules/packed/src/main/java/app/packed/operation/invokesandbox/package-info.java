@@ -13,31 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
-
-import java.lang.invoke.MethodType;
 
 /**
- *
+ * Provides the dependency injection model that is used throughout Packed.
  */
-
-
-public interface InvocationType {
-
-    MethodType methodType();
-
-    
-    // Tror vi styrer return type her.
-    // Man boer smide custom fejl beskeder
-    
-    default InvocationType returnObject() {
-        return returnType(Object.class);
-    }
-
-    InvocationType returnType(Class<?> type);
-    
-    
-    static InvocationType defaults() {
-        throw new UnsupportedOperationException();
-    }
-}
+package app.packed.operation.invokesandbox;

@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.operation.OperationType;
-import app.packed.operation.Variable;
-import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.InternalFactory.PackedCapturingOp;
-import internal.app.packed.inject.factory.PackageCapturingOpHelper;
+import internal.app.packed.operation.op.PackageCapturingOpHelper;
+import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 
 /**
  * A abstract factory that captures the type an annotated return type and annotated type apra
@@ -50,17 +49,17 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /** {@inheritDoc} */
     @Override
-    public Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
+    public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         return delegate.bind(position, argument, additionalArguments);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Op<R> bind(@Nullable Object argument) {
+    public final Op<R> bind(@Nullable Object argument) {
         return delegate.bind(argument);
     }
 
-    InternalFactory<R> canonicalize() {
+    PackedOp<R> canonicalize() {
         throw new UnsupportedOperationException();
     }
 
@@ -85,5 +84,11 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
     @Override
     public final List<Variable> variables() {
         return delegate.variables();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Op<R> withLookup(Lookup lookup) {
+        return delegate.withLookup(lookup);
     }
 }

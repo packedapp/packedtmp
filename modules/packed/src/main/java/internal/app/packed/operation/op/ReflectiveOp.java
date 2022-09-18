@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.inject.factory;
+package internal.app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,8 +31,8 @@ import app.packed.base.TypeToken;
 import app.packed.bean.InaccessibleBeanException;
 import app.packed.operation.Variable;
 import internal.app.packed.inject.InternalDependency;
-import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
-import internal.app.packed.inject.factory.ReflectiveOp.FieldOp;
+import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
+import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 
 /**
  * A factory that needs a {@link Lookup} object.
@@ -41,7 +41,7 @@ import internal.app.packed.inject.factory.ReflectiveOp.FieldOp;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveOp<T> extends InternalFactory<T>permits ExecutableOp, FieldOp {
+public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits ExecutableOp, FieldOp {
 
     /** A cache of factories used by {@link #factoryOf(Class)}. */
     public static final ClassValue<ExecutableOp<?>> DEFAULT_FACTORY = new ClassValue<>() {

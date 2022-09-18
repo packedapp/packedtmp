@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
@@ -47,4 +47,5 @@ public abstract class Op2<T, U, R> extends CapturingOp<R> {
     protected Op2(BiFunction<? super T, ? super U, ? extends R> function) {
         super(requireNonNull(function, "function is null"));
     }
+    
 }

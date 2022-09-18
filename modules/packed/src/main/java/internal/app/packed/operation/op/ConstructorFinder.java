@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.inject.factory;
+package internal.app.packed.operation.op;
 
 import static internal.app.packed.util.StringFormatter.format;
 

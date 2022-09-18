@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.BeanElement;
+import app.packed.operation.Op;
 import app.packed.operation.bindings.BindingMirror;
-import app.packed.operation.op.Op;
 
 /**
  *

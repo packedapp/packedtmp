@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,13 +32,9 @@ import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.bean.InaccessibleBeanException;
 import app.packed.bean.Inject;
-import app.packed.operation.OperationType;
-import app.packed.operation.Variable;
-import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.InternalFactory.ConstantOp;
-import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;
-import internal.app.packed.inject.factory.ReflectiveOp;
-import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
+import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.op.PackedOp.ConstantOp;
+import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -76,7 +72,7 @@ import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
 // Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
 
 @SuppressWarnings("rawtypes") // eclipse being difficult
-public sealed interface Op<R> permits InternalFactory, CapturingOp {
+public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /**
      * Binds the specified argument(s) to a variable with the specified index.
@@ -130,16 +126,6 @@ public sealed interface Op<R> permits InternalFactory, CapturingOp {
      */
     Op<R> peek(Consumer<? super R> action);
 
-    /**
-     * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
-     * for example, for finding fields annotated with {@link Inject}.
-     *
-     * @return the raw type of the type of objects this factory provide
-     */
-    default Class<?> rawReturnType() {
-        return typeLiteral().rawType();
-    }
-
     /** {@return the type of this op.} */
     OperationType type();
 
@@ -190,14 +176,7 @@ public sealed interface Op<R> permits InternalFactory, CapturingOp {
     // openResult(Lookup) <---- maaske er den baa en
     // open()????
     // openTo(Lookup, xxx)
-    default Op<R> withLookup(MethodHandles.Lookup lookup) {
-        requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectiveOp<R> f) {
-            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
-        }
-        throw new UnsupportedOperationException(
-                "This method is only supported by ops created from a field, constructor or method. And must be applied as the first operation after creating the factory");
-    }
+    Op<R> withLookup(MethodHandles.Lookup lookup);
 
     /**
      * Creates a new op that can invoke the specified constructor.
@@ -399,6 +378,17 @@ interface ZandboxOp<R> {
         // istedet for
         // @Inject
         // SomeServiceImpl create();
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
+     * for example, for finding fields annotated with {@link Inject}.
+     *
+     * @return the raw type of the type of objects this factory provide
+     */
+    @Deprecated
+    default Class<?> rawReturnType() {
         throw new UnsupportedOperationException();
     }
 

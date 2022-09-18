@@ -7,7 +7,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 
 /**
  * A special type of bean that can only be installed by an extension.

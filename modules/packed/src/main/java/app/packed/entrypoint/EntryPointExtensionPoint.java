@@ -22,7 +22,7 @@ import app.packed.application.BuildException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationCustomizer;
 
 /** An extension point for {@link EntryPointExtension}. */
 public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension> {

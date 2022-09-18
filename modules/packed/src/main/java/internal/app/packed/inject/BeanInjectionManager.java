@@ -26,10 +26,10 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
-import internal.app.packed.inject.factory.InternalFactory;
-import internal.app.packed.inject.factory.ReflectiveOp;
 import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
+import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.op.ReflectiveOp;
 
 /**
  * An injection manager for a bean.
@@ -92,11 +92,11 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
 
             // Or maybe just bind the instance directly in the method handles.
         } else {
-            InternalFactory<?> factory;
+            PackedOp<?> factory;
             if (driver.sourceKind == BeanSourceKind.CLASS) {
                 factory = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) driver.source);
             } else {
-                factory = (InternalFactory<?>) driver.source;
+                factory = (PackedOp<?>) driver.source;
             }
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(factory);

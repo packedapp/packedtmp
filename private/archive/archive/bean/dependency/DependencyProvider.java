@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
+import app.packed.operation.Op;
 import app.packed.operation.Variable;
-import app.packed.operation.op.Op;
 
 /**
  *

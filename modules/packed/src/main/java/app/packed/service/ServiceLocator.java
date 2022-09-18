@@ -35,7 +35,7 @@ import app.packed.bean.Provider;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;

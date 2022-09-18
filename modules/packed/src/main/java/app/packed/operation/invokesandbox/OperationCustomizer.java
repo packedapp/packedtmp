@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.invokesandbox;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
@@ -28,6 +28,7 @@ import app.packed.bean.BeanIntrospector$BeanDependency;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.PackedOperationCustomizer;
 
 /**

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.operation.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationCustomizer;
 import internal.app.packed.container.PackedContainerDriver;
 
 // Maaske er det mere en Builder paa ContainerConfiguration

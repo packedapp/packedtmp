@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.inject.factory;
+package internal.app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,13 +29,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.operation.op.CapturingOp;
-import app.packed.operation.op.Op0;
-import app.packed.operation.op.Op1;
-import app.packed.operation.op.Op2;
-import app.packed.operation.op.OpException;
+import app.packed.operation.CapturingOp;
+import app.packed.operation.Op0;
+import app.packed.operation.Op1;
+import app.packed.operation.Op2;
+import app.packed.operation.OpException;
 import internal.app.packed.inject.InternalDependency;
-import internal.app.packed.inject.factory.InternalFactory.PackedCapturingOp;
+import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -95,7 +95,7 @@ public class PackageCapturingOpHelper {
      *            the function instance
      */
     @SuppressWarnings("unchecked")
-    public static <R> InternalFactory.PackedCapturingOp<R> create(Class<?> clazz, Object function) {
+    public static <R> PackedOp.PackedCapturingOp<R> create(Class<?> clazz, Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
         TypeToken<R> typeLiteral = (TypeToken<R>) PackageCapturingOpHelper.CACHE.get(clazz);
         // analyze();

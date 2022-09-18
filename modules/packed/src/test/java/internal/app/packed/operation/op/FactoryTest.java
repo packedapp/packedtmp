@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package internal.app.packed.operation.op;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static testutil.assertj.Assertions.checkThat;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
+import app.packed.operation.Op;
 
 /** Test of {@link Op}. */
 public class FactoryTest {

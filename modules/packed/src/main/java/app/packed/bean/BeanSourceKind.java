@@ -15,7 +15,7 @@
  */
 package app.packed.bean;
 
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 
 /**
  * The source used when creating a bean.

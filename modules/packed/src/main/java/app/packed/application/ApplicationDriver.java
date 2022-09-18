@@ -28,7 +28,7 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 

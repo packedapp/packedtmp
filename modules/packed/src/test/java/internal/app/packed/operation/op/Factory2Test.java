@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
-
-import app.packed.bean.BeanIntrospector$BeanDependency;
+package internal.app.packed.operation.op;
 
 /**
  *
  */
-public abstract class OperationContextSpec<T> {
+public class Factory2Test {
 
-    
-    // IDK
-    protected void notInContext(BeanIntrospector$BeanDependency dep) {
-        
-    }
 }

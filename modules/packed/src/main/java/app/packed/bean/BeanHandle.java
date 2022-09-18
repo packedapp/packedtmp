@@ -24,9 +24,9 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.operation.OperationCustomizer;
+import app.packed.operation.Op;
 import app.packed.operation.OperationType;
-import app.packed.operation.op.Op;
+import app.packed.operation.invokesandbox.OperationCustomizer;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 

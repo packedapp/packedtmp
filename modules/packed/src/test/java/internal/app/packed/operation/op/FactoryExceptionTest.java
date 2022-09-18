@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.op;
+package internal.app.packed.operation.op;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.operation.OpException;
 import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link OpException}. */

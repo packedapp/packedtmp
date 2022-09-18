@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Supplier;
 
-import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.invokesandbox.OperationCustomizer;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 

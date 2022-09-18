@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import internal.app.packed.inject.factory.InternalFactory;
+import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.LookupValue;
 import internal.app.packed.util.OpenClass;
@@ -68,7 +68,7 @@ public abstract sealed class BeanMemberAccessor {
      *            the factory to extract a method handle for
      * @return the method handle
      */
-    public final MethodHandle toMethodHandle(InternalFactory<?> factory) {
+    public final MethodHandle toMethodHandle(PackedOp<?> factory) {
         return factory.toMethodHandle(lookup());
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.inject.factory;
+package internal.app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,10 +29,10 @@ import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.operation.CapturingOp;
+import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import app.packed.operation.op.CapturingOp;
-import app.packed.operation.op.Op;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
@@ -40,8 +40,18 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public abstract non-sealed class InternalFactory<R> implements Op<R> {
+public abstract non-sealed class PackedOp<R> implements Op<R> {
 
+   public final Op<R> withLookup(MethodHandles.Lookup lookup) {
+        requireNonNull(lookup, "lookup is null");
+        if (this instanceof ReflectiveOp<R> f) {
+            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
+        }
+        throw new UnsupportedOperationException(
+                "This method is only supported by ops created from a field, constructor or method. And must be applied as the first operation after creating the factory");
+    }
+
+    
     /** {@inheritDoc} */
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
@@ -106,14 +116,14 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <R> InternalFactory<R> crack(Op<R> factory) {
+    public static <R> PackedOp<R> crack(Op<R> factory) {
         requireNonNull(factory, "factory is null");
-        if (factory instanceof InternalFactory<R> f) {
+        if (factory instanceof PackedOp<R> f) {
             return f;
         } else {
             // if capturingop had a canonicalizde we could just call that and get an IFa
             Object result = PackedCapturingOp.VH_CF_FACTORY.get(factory);
-            return (InternalFactory<R>) result;
+            return (PackedOp<R>) result;
         }
     }
 
@@ -127,12 +137,12 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
     // A simple version of Binding... Maybe just only have one
-    public static final class BoundFactory<R> extends InternalFactory<R> {
+    public static final class BoundFactory<R> extends PackedOp<R> {
 
         private final Object[] arguments;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<R> delegate;
+        private final PackedOp<R> delegate;
 
         private final List<InternalDependency> dependencies;
 
@@ -144,7 +154,7 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
 
         private final List<Variable> variables;
 
-        public BoundFactory(InternalFactory<R> delegate, int index, InternalDependency[] dd, List<Variable> variables, Object[] arguments) {
+        public BoundFactory(PackedOp<R> delegate, int index, InternalDependency[] dd, List<Variable> variables, Object[] arguments) {
             this.typeLiteral = delegate.typeLiteral();
             this.index = index;
             this.delegate = requireNonNull(delegate);
@@ -179,7 +189,7 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
     }
 
     /** An op taking no the same value every time, used by {@link Op#ofInstance(Object)}. */
-    public static final class ConstantOp<R> extends InternalFactory<R> {
+    public static final class ConstantOp<R> extends PackedOp<R> {
 
         /** The value that is returned every time. */
         private final R instance;
@@ -218,10 +228,10 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
-    public static final class LookedUpFactory<R> extends InternalFactory<R> {
+    public static final class LookedUpFactory<R> extends PackedOp<R> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<R> delegate;
+        private final PackedOp<R> delegate;
 
         /** The method handle that was unreflected. */
         private final MethodHandle methodHandle;
@@ -229,7 +239,7 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
         /** The type of objects this factory creates. */
         private final TypeToken<R> typeLiteral;
 
-        public LookedUpFactory(InternalFactory<R> delegate, MethodHandle methodHandle) {
+        public LookedUpFactory(PackedOp<R> delegate, MethodHandle methodHandle) {
             this.typeLiteral = delegate.typeLiteral();
             this.delegate = delegate;
             this.methodHandle = requireNonNull(methodHandle);
@@ -261,7 +271,7 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
 
     }
 
-    public static final class PackedCapturingOp<R> extends InternalFactory<R> {
+    public static final class PackedCapturingOp<R> extends PackedOp<R> {
 
         /** A var handle that can update the {@link #container()} field in this class. */
         private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "delegate",
@@ -308,7 +318,7 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
     }
 
     /** An implementation of the {@link Op#peek(Consumer)}} method. */
-    public static final class PeekableFactory<R> extends InternalFactory<R> {
+    public static final class PeekableFactory<R> extends PackedOp<R> {
 
         /** A method handle for {@link Function#apply(Object)}. */
         private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
@@ -317,16 +327,16 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
         private final MethodHandle consumer;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<R> delegate;
+        private final PackedOp<R> delegate;
 
         /** The type of objects this factory creates. */
         private final TypeToken<R> typeLiteral;
 
-        public PeekableFactory(InternalFactory<R> delegate, Consumer<? super R> action) {
+        public PeekableFactory(PackedOp<R> delegate, Consumer<? super R> action) {
             this.typeLiteral = delegate.typeLiteral();
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
-            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawReturnType(), rawReturnType()));
+            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(typeLiteral.rawType(), typeLiteral.rawType()));
         }
 
         /** {@inheritDoc} */
@@ -340,7 +350,7 @@ public abstract non-sealed class InternalFactory<R> implements Op<R> {
         public MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle mh = delegate.toMethodHandle(lookup);
             mh = MethodHandles.filterReturnValue(mh, consumer);
-            return MethodHandleUtil.castReturnType(mh, rawReturnType());
+            return MethodHandleUtil.castReturnType(mh, typeLiteral.rawType());
         }
 
         /** {@inheritDoc} */

@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ContainerSetup;

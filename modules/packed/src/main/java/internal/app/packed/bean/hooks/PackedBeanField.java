@@ -22,9 +22,9 @@ import java.lang.reflect.Field;
 
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.operation.OperationCustomizer;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.Variable;
+import app.packed.operation.invokesandbox.OperationCustomizer;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.OnStart;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import app.packed.service.Provide;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceExtension;

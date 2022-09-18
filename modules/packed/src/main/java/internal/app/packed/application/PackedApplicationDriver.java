@@ -37,13 +37,13 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.operation.op.Op;
+import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.invoke.InternalInfuser;
+import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -224,10 +224,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private Wirelet wirelet;
 
         @Nullable
-        InternalFactory<A> factory;
+        PackedOp<A> factory;
 
         public Builder(Op<A> factory) {
-            this.factory = factory == null ? null : InternalFactory.crack(factory);
+            this.factory = factory == null ? null : PackedOp.crack(factory);
 
             // Problemet med at komme laengere er lidt InternalInfuser som er bygget op omkring den faar en klasse
             // og ikke et internal factory

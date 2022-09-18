@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.operation.invokesandbox;
+
+import app.packed.bean.BeanIntrospector$BeanDependency;
 
 /**
- * Provides the dependency injection model that is used throughout Packed.
+ *
  */
-package app.packed.operation.op;
+public abstract class OperationContextSpec<T> {
+
+    
+    // IDK
+    protected void notInContext(BeanIntrospector$BeanDependency dep) {
+        
+    }
+}
