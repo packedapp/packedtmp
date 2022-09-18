@@ -33,7 +33,6 @@ import app.packed.operation.CapturingOp;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
-import app.packed.operation.OpException;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 import internal.app.packed.util.LookupUtil;
@@ -122,7 +121,7 @@ public class PackageCapturingOpHelper {
             MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
-       return new PackedCapturingOp<>(typeLiteral, methodHandle, dependencies);
+        return new PackedCapturingOp<>(typeLiteral, methodHandle, dependencies);
 
     }
 
@@ -134,15 +133,15 @@ public class PackageCapturingOpHelper {
         while (baseClass.getSuperclass() != CapturingOp.class) {
             baseClass = baseClass.getSuperclass();
         }
-        
+
         // Maaske er det fint at smide en error?
         Constructor<?>[] con = baseClass.getDeclaredConstructors();
         if (con.length != 1) {
-            throw new OpException(baseClass + " must declare a single constructor");
+            throw new Error(baseClass + " must declare a single constructor");
         }
         Constructor<?> c = con[0];
         if (c.getParameterCount() != 1) {
-            throw new OpException(baseClass + " must declare a single constructor taking a single parameter");
+            throw new Error(baseClass + " must declare a single constructor taking a single parameter");
         }
 
         Parameter p = c.getParameters()[0];
@@ -157,24 +156,23 @@ public class PackageCapturingOpHelper {
         try {
             mh = MethodHandles.publicLookup().unreflect(m);
         } catch (IllegalAccessException e) {
-            throw new OpException(m + " must be accessible via MethodHandles.publicLookup()", e);
+            throw new Error(m + " must be accessible via MethodHandles.publicLookup()", e);
         }
-        
+
         System.out.println(mh);
     }
-
 
     static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
         if (!expectedType.isInstance(value)) {
             String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
             if (value == null) {
                 // NPE???
-                throw new OpException("The " + type + " '" + supplierOrFunction + "' must not return null");
+                throw new NullPointerException("The " + type + " '" + supplierOrFunction + "' must not return null");
             } else {
                 // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
                 // instance.getClass());
-                throw new OpException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
-                        + " but returned a " + value.getClass().getName() + " instance");
+                throw new ClassCastException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type "
+                        + expectedType.getName() + " but returned a " + value.getClass().getName() + " instance");
             }
         }
     }
@@ -189,8 +187,10 @@ public class PackageCapturingOpHelper {
      * @param expectedType
      *            the type we expect the supplier to return
      * @return the value that was supplied by the specified supplier
-     * @throws OpException
-     *             if the created value is null or not assignable to the raw type of the factory
+     * @throws NullPointerException
+     *             if the created value is null
+     * @throws ClassCastException
+     *             if the created value is not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create0(Supplier<? extends T> supplier, Class<?> expectedType) {
@@ -211,8 +211,10 @@ public class PackageCapturingOpHelper {
      * @param object
      *            the single argument to the function
      * @return the value that was supplied by the specified supplier
-     * @throws OpException
-     *             if the created value is null or not assignable to the raw type of the factory
+     * @throws NullPointerException
+     *             if the created value is null
+     * @throws ClassCastException
+     *             if the created value is not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create1(Function<Object, ? extends T> function, Class<?> expectedType, Object object) {
@@ -235,8 +237,10 @@ public class PackageCapturingOpHelper {
      * @param obj2
      *            the 2nd argument to the function
      * @return the value that was supplied by the specified supplier
-     * @throws OpException
-     *             if the created value is null or not assignable to the raw type of the factory
+     * @throws NullPointerException
+     *             if the created value is null
+     * @throws ClassCastException
+     *             if the created value is not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create2(BiFunction<Object, Object, ? extends T> function, Class<?> expectedType, Object obj1, Object obj2) {

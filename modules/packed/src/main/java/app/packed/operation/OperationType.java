@@ -75,7 +75,7 @@ public final /* primitive */ class OperationType {
      */
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        return obj instanceof OperationType t && returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterArray, t.parameterArray);
     }
 
     /**
@@ -163,7 +163,10 @@ public final /* primitive */ class OperationType {
             sj.add(parameterArray[i].toString());
         }
         return sj.toString();
+    }
 
+    public static OperationType of(Class<?> returnVar, Class<?>... vars) {
+        return ofMethodType(MethodType.methodType(returnVar, vars));
     }
 
     /**
@@ -188,16 +191,13 @@ public final /* primitive */ class OperationType {
         throw new UnsupportedOperationException();
     }
 
-    public static OperationType of(Class<?> returnVar, Class<?>... vars) {
-        return ofMethodType(MethodType.methodType(returnVar, vars));
-    }
-
     /**
      * {@return an op type representing the signature of the specified executable.}
      * 
      * @param executable
      *            the executable to return a op type for.
-     * @throws Exception if there are type variables
+     * @throws Exception
+     *             if there are type variables
      */
     public static OperationType ofExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");

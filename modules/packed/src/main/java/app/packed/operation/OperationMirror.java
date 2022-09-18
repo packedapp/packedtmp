@@ -238,7 +238,7 @@ class SandboxOp {
         return "";
     }
 
-    final void printDependencyTree() {
+    final void printBindings() {
         // Det er jo bare en trae af ServiceDependency
 
         // ResolvedVariable -> Status Unresolved but Optional.
