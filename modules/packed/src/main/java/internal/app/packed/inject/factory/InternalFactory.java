@@ -40,12 +40,7 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
-
-    @Override
-    public final OperationType type() {
-        throw new UnsupportedOperationException();
-    }
+public abstract non-sealed class InternalFactory<R> implements Op<R> {
 
     /** {@inheritDoc} */
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
@@ -88,6 +83,10 @@ public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
         return new BoundFactory<>(this, position, dd, List.of(vars), args);
     }
 
+    public final Op<R> bind(@Nullable Object argument) {
+        return bind(0, argument);
+    }
+
     public abstract List<InternalDependency> dependencies();
 
     public final Op<R> peek(Consumer<? super R> action) {
@@ -95,6 +94,11 @@ public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
     }
 
     public abstract MethodHandle toMethodHandle(Lookup lookup);
+
+    @Override
+    public final OperationType type() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return The variables this factory takes.} */
     public List<Variable> variables() {
@@ -114,6 +118,12 @@ public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
     }
 
     /** {@return The number of variables this factory takes.} */
+
+    public static final class AdaptedOp<R> {
+
+        // Den egentligt taenkt til vi adoptere OperationType typen...
+
+    }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
     // A simple version of Binding... Maybe just only have one
@@ -168,12 +178,6 @@ public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
         }
     }
 
-    public static final class AdaptedOp<R> {
-        
-        // Den egentligt taenkt til vi adoptere OperationType typen...
-        
-    }
-    
     /** An op taking no the same value every time, used by {@link Op#ofInstance(Object)}. */
     public static final class ConstantOp<R> extends InternalFactory<R> {
 
@@ -211,6 +215,50 @@ public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
         public List<Variable> variables() {
             return List.of();
         }
+    }
+
+    /** A special factory created via {@link #withLookup(Lookup)}. */
+    public static final class LookedUpFactory<R> extends InternalFactory<R> {
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final InternalFactory<R> delegate;
+
+        /** The method handle that was unreflected. */
+        private final MethodHandle methodHandle;
+
+        /** The type of objects this factory creates. */
+        private final TypeToken<R> typeLiteral;
+
+        public LookedUpFactory(InternalFactory<R> delegate, MethodHandle methodHandle) {
+            this.typeLiteral = delegate.typeLiteral();
+            this.delegate = delegate;
+            this.methodHandle = requireNonNull(methodHandle);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public List<InternalDependency> dependencies() {
+            return delegate.dependencies();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle toMethodHandle(Lookup ignore) {
+            return methodHandle;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<R> typeLiteral() {
+            return typeLiteral;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public List<Variable> variables() {
+            return delegate.variables();
+        }
+
     }
 
     public static final class PackedCapturingOp<R> extends InternalFactory<R> {
@@ -257,50 +305,6 @@ public abstract non-sealed class InternalFactory<R> extends PackedOp<R> {
         public TypeToken<R> typeLiteral() {
             return typeLiteral;
         }
-    }
-
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    public static final class LookedUpFactory<R> extends InternalFactory<R> {
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final InternalFactory<R> delegate;
-
-        /** The method handle that was unreflected. */
-        private final MethodHandle methodHandle;
-
-        /** The type of objects this factory creates. */
-        private final TypeToken<R> typeLiteral;
-
-        public LookedUpFactory(InternalFactory<R> delegate, MethodHandle methodHandle) {
-            this.typeLiteral = delegate.typeLiteral();
-            this.delegate = delegate;
-            this.methodHandle = requireNonNull(methodHandle);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return delegate.dependencies();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle toMethodHandle(Lookup ignore) {
-            return methodHandle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<R> typeLiteral() {
-            return typeLiteral;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<Variable> variables() {
-            return delegate.variables();
-        }
-
     }
 
     /** An implementation of the {@link Op#peek(Consumer)}} method. */

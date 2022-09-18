@@ -17,78 +17,23 @@ package app.packed.operation.op;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.InternalFactory.PackedCapturingOp;
-import internal.app.packed.inject.factory.PackedOp;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.MethodHandleUtil;
+import internal.app.packed.inject.factory.PackageCapturingOpHelper;
 
 /**
  * A abstract factory that captures the type an annotated return type and annotated type apra
  */
-public abstract non-sealed class CapturingOp<R> extends PackedOp<R> {
+public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
-    /** A cache of extracted type variables from subclasses of this class. */
-    static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        protected TypeToken<?> computeValue(Class<?> type) {
-            return TypeToken.fromTypeVariable((Class) type, Op.class, 0);
-        }
-    };
-
-    /** A method handle for invoking {@link #create(Supplier, Class)}. */
-    private static final MethodHandle CREATE0 = LookupUtil.lookupStatic(MethodHandles.lookup(), "create0", Object.class, Supplier.class, Class.class);
-
-    /** A method handle for invoking {@link #create(Function, Class, Object)}. */
-    private static final MethodHandle CREATE1 = LookupUtil.lookupStatic(MethodHandles.lookup(), "create1", Object.class, Function.class, Class.class,
-            Object.class);
-
-    /** A method handle for invoking {@link #create(BiFunction, Class, Object, Object)}. */
-    private static final MethodHandle CREATE2 = LookupUtil.lookupStatic(MethodHandles.lookup(), "create2", Object.class, BiFunction.class, Class.class,
-            Object.class, Object.class);
-
-    /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<List<InternalDependency>> DEPENDENCY_CACHE2 = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected List<InternalDependency> computeValue(Class<?> type) {
-            return InternalDependency.fromTypeVariables((Class) type, Op2.class, 0, 1);
-        }
-    };
-
-    /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    static final ClassValue<List<InternalDependency>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected List<InternalDependency> computeValue(Class<?> type) {
-            return InternalDependency.fromTypeVariables((Class) type, Op1.class, 0);
-        }
-    };
-
-    /** The op that all methods delegate to. */
+    /** The op that we delegate everything to. */
     private final PackedCapturingOp<R> delegate;
 
     /**
@@ -98,79 +43,21 @@ public abstract non-sealed class CapturingOp<R> extends PackedOp<R> {
      * @param function
      *            the function instance
      */
-    @SuppressWarnings("unchecked")
     CapturingOp(Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        TypeToken<R> typeLiteral = (TypeToken<R>) CapturingOp.CACHE.get(getClass());
-        // analyze();
-
-        final MethodHandle methodHandle;
-        final List<InternalDependency> dependencies;
-        Class<?> rawType = typeLiteral.rawType();
-        if (this instanceof Op0) {
-            MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
-            methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
-            dependencies = List.of();
-        } else if (this instanceof Op1) {
-            dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
-
-            Class<?> param = dependencies.get(0).rawType();
-            MethodHandle mh = CREATE1.bindTo(function).bindTo(rawType); // (Function, Class, Object)Object -> (Object)Object
-            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, param)); // (Object)Object -> (T)R
-
-        } else {
-            dependencies = DEPENDENCY_CACHE2.get(getClass());
-
-            Class<?> parem1 = dependencies.get(0).rawType();
-            Class<?> parem2 = dependencies.get(1).rawType();
-            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
-            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
-        }
-        this.delegate = new PackedCapturingOp<>(typeLiteral, methodHandle, dependencies);
-
-    }
-
-    void analyze() {
-        // Altsaa jeg ved ikke om vi spiller tiden ved ikke at afvente og se hvad der kommer med generiks
-
-        Class<?> t = getClass();
-        Class<?> baseClass = t.getSuperclass();
-        while (baseClass.getSuperclass() != CapturingOp.class) {
-            baseClass = baseClass.getSuperclass();
-        }
-        
-        // Maaske er det fint at smide en error?
-        Constructor<?>[] con = baseClass.getDeclaredConstructors();
-        if (con.length != 1) {
-            throw new OpException(baseClass + " must declare a single constructor");
-        }
-        Constructor<?> c = con[0];
-        if (c.getParameterCount() != 1) {
-            throw new OpException(baseClass + " must declare a single constructor taking a single parameter");
-        }
-
-        Parameter p = c.getParameters()[0];
-
-        Class<?> samType = p.getType();
-        Method m = samType.getMethods()[0];
-
-        // check SAM interface type
-
-        // Hvorfor skal det vaere public
-        MethodHandle mh;
-        try {
-            mh = MethodHandles.publicLookup().unreflect(m);
-        } catch (IllegalAccessException e) {
-            throw new OpException(m + " must be accessible via MethodHandles.publicLookup()", e);
-        }
-        
-        System.out.println(mh);
+        delegate = PackageCapturingOpHelper.create(getClass(), function);
     }
 
     /** {@inheritDoc} */
     @Override
     public Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         return delegate.bind(position, argument, additionalArguments);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Op<R> bind(@Nullable Object argument) {
+        return delegate.bind(argument);
     }
 
     InternalFactory<R> canonicalize() {
@@ -184,115 +71,19 @@ public abstract non-sealed class CapturingOp<R> extends PackedOp<R> {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public final TypeToken<R> typeLiteral() {
-        return delegate.typeLiteral();
-    }
-    
     public final OperationType type() {
         return delegate.type();
     }
 
     /** {@inheritDoc} */
     @Override
+    public final TypeToken<R> typeLiteral() {
+        return delegate.typeLiteral();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final List<Variable> variables() {
         return delegate.variables();
-    }
-
-    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
-        if (!expectedType.isInstance(value)) {
-            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
-            if (value == null) {
-                // NPE???
-                throw new OpException("The " + type + " '" + supplierOrFunction + "' must not return null");
-            } else {
-                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
-                // instance.getClass());
-                throw new OpException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
-                        + " but returned a " + value.getClass().getName() + " instance");
-            }
-        }
-    }
-
-    /**
-     * Supplies a value.
-     * 
-     * @param <T>
-     *            the type of value supplied
-     * @param supplier
-     *            the supplier that supplies the actual value
-     * @param expectedType
-     *            the type we expect the supplier to return
-     * @return the value that was supplied by the specified supplier
-     * @throws OpException
-     *             if the created value is null or not assignable to the raw type of the factory
-     */
-    @SuppressWarnings("unused") // only invoked via #CREATE
-    private static <T> T create0(Supplier<? extends T> supplier, Class<?> expectedType) {
-        T value = supplier.get();
-        checkReturnValue(expectedType, value, supplier);
-        return value;
-    }
-
-    /**
-     * Supplies a value.
-     * 
-     * @param <T>
-     *            the type of value supplied
-     * @param function
-     *            the function that supplies the actual value
-     * @param expectedType
-     *            the type we expect the supplier to return
-     * @param object
-     *            the single argument to the function
-     * @return the value that was supplied by the specified supplier
-     * @throws OpException
-     *             if the created value is null or not assignable to the raw type of the factory
-     */
-    @SuppressWarnings("unused") // only invoked via #CREATE
-    private static <T> T create1(Function<Object, ? extends T> function, Class<?> expectedType, Object object) {
-        T value = function.apply(object);
-        checkReturnValue(expectedType, value, function);
-        return value;
-    }
-
-    /**
-     * Supplies a value.
-     * 
-     * @param <T>
-     *            the type of value supplied
-     * @param function
-     *            the function that supplies the actual value
-     * @param expectedType
-     *            the type we expect the supplier to return
-     * @param obj1
-     *            the 1st argument to the function
-     * @param obj2
-     *            the 2nd argument to the function
-     * @return the value that was supplied by the specified supplier
-     * @throws OpException
-     *             if the created value is null or not assignable to the raw type of the factory
-     */
-    @SuppressWarnings("unused") // only invoked via #CREATE
-    private static <T> T create2(BiFunction<Object, Object, ? extends T> function, Class<?> expectedType, Object obj1, Object obj2) {
-        T value = function.apply(obj1, obj2);
-        checkReturnValue(expectedType, value, function);
-        return value;
-    }
-
-    // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
-    // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
-
-    // Den kommer ind i InternalFactory
-    record FactoryMetadata() {
-        // find single Constructor... extract information about function type
-
-        // must be a public type readable for anyone
-
-        // create MH to access it
-
-        // store it
-
-        // and keep it for all furt
     }
 }

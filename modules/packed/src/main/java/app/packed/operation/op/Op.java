@@ -34,9 +34,9 @@ import app.packed.bean.InaccessibleBeanException;
 import app.packed.bean.Inject;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
+import internal.app.packed.inject.factory.InternalFactory;
 import internal.app.packed.inject.factory.InternalFactory.ConstantOp;
 import internal.app.packed.inject.factory.InternalFactory.LookedUpFactory;
-import internal.app.packed.inject.factory.PackedOp;
 import internal.app.packed.inject.factory.ReflectiveOp;
 import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
 
@@ -75,8 +75,8 @@ import internal.app.packed.inject.factory.ReflectiveOp.ExecutableOp;
 // og saa kalde Factory igennem den...
 // Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
 
-@SuppressWarnings("rawtypes")
-public abstract sealed class Op<R> permits PackedOp {
+@SuppressWarnings("rawtypes") // eclipse being difficult
+public sealed interface Op<R> permits InternalFactory, CapturingOp {
 
     /**
      * Binds the specified argument(s) to a variable with the specified index.
@@ -99,7 +99,7 @@ public abstract sealed class Op<R> permits PackedOp {
      * @throws NullPointerException
      *             if any of specified arguments are null and the corresponding variable does not represent a reference type
      */
-    public abstract Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
+    Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments);
 
     /**
      * Binds the first variable of the operation to the specified argument.
@@ -115,120 +115,7 @@ public abstract sealed class Op<R> permits PackedOp {
      * @throws NullPointerException
      *             if the specified argument is null and the leading variable does not represent a reference type
      */
-    public final Op<R> bind(@Nullable Object argument) {
-        return bind(0, argument);
-    }
-
-    /**
-     * 
-     * <p>
-     * At invocationtime
-     * 
-     * {@link NullPointerException} will be thrown if the supplier return null, but does not take a reference type
-     * 
-     * {@link ClassCastException} if we create something that does not match
-     * 
-     * @param position
-     *            the index of the first variable to bind
-     * @param supplier
-     *            the supplier
-     * @return a new operation
-     * 
-     * @throws IndexOutOfBoundsException
-     *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
-     *             number of variables and {@code L} is the length of the additional argument array.
-     */
-    final Op<R> bindSupplier(int position, Supplier<?> supplier, Supplier<?>... additionalSuppliers) {
-        // IOBE -> now
-        // NPE -> Later
-        // CCE -> Later
-        throw new UnsupportedOperationException();
-    }
-
-    final <T> Op<T> mapResult(Class<T> type, Function<? super R, ? extends T> mapper) {
-
-        // Ideen er at kunne lave en transformation for alt...
-        // Tilfoej denne metode, representeret ved denne klasse...
-
-        // ComponentTransformer.of(Class).....
-        // Produces a factory??? Ved ikke hvad vi ellers skulle lave....
-        // FactoryN har ikke brug for det taenker jeg...
-
-        // MetaClass
-        // addAnnotationToParameter2OnMethodX()..
-        // F.eks. for assisted inject...
-        // c
-        // mapAnnotations(javax.inject.Inject).to(app.packed.inject)
-
-        // I thinkg
-
-        // FactoryMapper...
-        // FactoryMapper.of(dddd).removeMethodsStartingWithX().toFactory();
-
-        return mapTo(TypeToken.of(type), mapper);
-    }
-
-    /**
-     * Returns a new factory that maps every object this factory create using the specified mapper.
-     * 
-     * @param <R>
-     *            the type of result to map to
-     * @param type
-     *            the type of the mapped value
-     * @param mapper
-     *            the mapper used to map the result
-     * @return a new mapped factory
-     */
-    // How do we handle key??? Think we might need a version that also takes a key.
-    final <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
-        // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
-        // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a new factory that maps every object this factory create using the specified mapper.
-     * 
-     * @param <R>
-     *            the type of result to map to
-     * @param mapper
-     *            the mapper used to map the result
-     * @return a new mapped factory
-     */
-    // Men keys er vel ikke laengere compatible saa... f.eks. hvis vi har Factory<String> f
-    // f.map(UUID.class, e->new UUID(e)); -> Factory<UUID> ff, ff.key=String.class();
-
-    // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
-    // Haelder nok til den vi har mappet til?????
-    // Kan vi finde en usecase???
-    final <T> Op<T> mapTo0(Op1<? super R, ? extends R> mapper) {
-        // Factory<String> f = null;
-        // @SuppressWarnings({ "null", "unused" })
-        // Create a factory by taking the output and mapping it...
-        // Factory<Integer> fi = f.mapTo0(new Factory1<>(e -> e.length()) {});
-        throw new UnsupportedOperationException();
-    }
-
-    // needsRealm???
-    boolean needsLookup() {
-
-//      final boolean needsLookup() {
-        // Needs Realm?
-
-//          // Tror ikke rigtig den fungere...
-//          // Det skal jo vaere relativt til en klasse...
-//          // F.eks. hvis X en public klasse, med en public constructor.
-//          // Og X er readable til A, men ikke B.
-//          // Saa har A ikke brug for et Lookup Object, men B har.
-//          // Ved ikke rigtig hvad denne skal bruges til....
-//          // Maa betyde om man skal
-//          return false;
-//      }
-        return false;
-    }
-
-    /** {@return the type of this op.} */
-    public abstract OperationType type();
+    Op<R> bind(@Nullable Object argument);
 
     /**
      * Returns a new operation that will perform the specified action immediately after the invocation before returning
@@ -241,7 +128,7 @@ public abstract sealed class Op<R> permits PackedOp {
      *            the consume that will be run with the result of each invocation
      * @return the new op
      */
-    public abstract Op<R> peek(Consumer<? super R> action);
+    Op<R> peek(Consumer<? super R> action);
 
     /**
      * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
@@ -249,42 +136,22 @@ public abstract sealed class Op<R> permits PackedOp {
      *
      * @return the raw type of the type of objects this factory provide
      */
-    public final Class<?> rawReturnType() {
+    default Class<?> rawReturnType() {
         return typeLiteral().rawType();
     }
 
-    // Will retain annotations
-    // adaptReturn <--- will do something about annotations
-    <T> Op<T> castReturn(Class<T> returnType) {
-        throw new UnsupportedOperationException();
-    }
+    /** {@return the type of this op.} */
+    OperationType type();
 
     /**
      * Returns the type of the type of objects this factory provide.
      *
      * @return the type of the type of objects this factory provide
      */
-    public abstract TypeToken<R> typeLiteral();
-
-    final Op<R> useExactType(Class<? extends R> type) {
-        // TypeHint.. withExactType
-
-        // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
-        // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
-        // fulde info om implementation
-        // @Inject
-        // SomeService create();
-        // istedet for
-        // @Inject
-        // SomeServiceImpl create();
-        throw new UnsupportedOperationException();
-    }
-
-//    /** {@return The number of variables this factory takes.} */
-//    public abstract int variableCount();
+    TypeToken<R> typeLiteral();
 
     /** {@return The variables this factory takes.} */
-    public abstract List<Variable> variables();
+    List<Variable> variables();
 
     /**
      * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
@@ -323,13 +190,13 @@ public abstract sealed class Op<R> permits PackedOp {
     // openResult(Lookup) <---- maaske er den baa en
     // open()????
     // openTo(Lookup, xxx)
-    public final Op<R> withLookup(MethodHandles.Lookup lookup) {
+    default Op<R> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (this instanceof ReflectiveOp<R> f) {
             return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
         }
         throw new UnsupportedOperationException(
-                "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
+                "This method is only supported by ops created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
     /**
@@ -402,7 +269,140 @@ public abstract sealed class Op<R> permits PackedOp {
     }
 }
 
+interface ZandboxOp<R> {
 
+    /**
+     * 
+     * <p>
+     * At invocationtime
+     * 
+     * {@link NullPointerException} will be thrown if the supplier return null, but does not take a reference type
+     * 
+     * {@link ClassCastException} if we create something that does not match
+     * 
+     * @param position
+     *            the index of the first variable to bind
+     * @param supplier
+     *            the supplier
+     * @return a new operation
+     * 
+     * @throws IndexOutOfBoundsException
+     *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
+     *             number of variables and {@code L} is the length of the additional argument array.
+     */
+    default Op<R> bindSupplier(int position, Supplier<?> supplier, Supplier<?>... additionalSuppliers) {
+        // IOBE -> now
+        // NPE -> Later
+        // CCE -> Later
+        throw new UnsupportedOperationException();
+    }
+
+//  /** {@return The number of variables this factory takes.} */
+//  public abstract int variableCount();
+
+    // Will retain annotations
+    // adaptReturn <--- will do something about annotations
+    default <T> Op<T> castReturn(Class<T> returnType) {
+        throw new UnsupportedOperationException();
+    }
+
+    default <T> Op<T> mapResult(Class<T> type, Function<? super R, ? extends T> mapper) {
+
+        // Ideen er at kunne lave en transformation for alt...
+        // Tilfoej denne metode, representeret ved denne klasse...
+
+        // ComponentTransformer.of(Class).....
+        // Produces a factory??? Ved ikke hvad vi ellers skulle lave....
+        // FactoryN har ikke brug for det taenker jeg...
+
+        // MetaClass
+        // addAnnotationToParameter2OnMethodX()..
+        // F.eks. for assisted inject...
+        // c
+        // mapAnnotations(javax.inject.Inject).to(app.packed.inject)
+
+        // I thinkg
+
+        // FactoryMapper...
+        // FactoryMapper.of(dddd).removeMethodsStartingWithX().toFactory();
+
+        return mapTo(TypeToken.of(type), mapper);
+    }
+
+    /**
+     * Returns a new factory that maps every object this factory create using the specified mapper.
+     * 
+     * @param <R>
+     *            the type of result to map to
+     * @param type
+     *            the type of the mapped value
+     * @param mapper
+     *            the mapper used to map the result
+     * @return a new mapped factory
+     */
+    // How do we handle key??? Think we might need a version that also takes a key.
+    default <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
+        // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
+        // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a new factory that maps every object this factory create using the specified mapper.
+     * 
+     * @param <R>
+     *            the type of result to map to
+     * @param mapper
+     *            the mapper used to map the result
+     * @return a new mapped factory
+     */
+    // Men keys er vel ikke laengere compatible saa... f.eks. hvis vi har Factory<String> f
+    // f.map(UUID.class, e->new UUID(e)); -> Factory<UUID> ff, ff.key=String.class();
+
+    // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
+    // Haelder nok til den vi har mappet til?????
+    // Kan vi finde en usecase???
+    default <T> Op<T> mapTo0(Op1<? super R, ? extends R> mapper) {
+        // Factory<String> f = null;
+        // @SuppressWarnings({ "null", "unused" })
+        // Create a factory by taking the output and mapping it...
+        // Factory<Integer> fi = f.mapTo0(new Factory1<>(e -> e.length()) {});
+        throw new UnsupportedOperationException();
+    }
+
+    // needsRealm???
+    default boolean needsLookup() {
+
+//      final boolean needsLookup() {
+        // Needs Realm?
+
+//          // Tror ikke rigtig den fungere...
+//          // Det skal jo vaere relativt til en klasse...
+//          // F.eks. hvis X en public klasse, med en public constructor.
+//          // Og X er readable til A, men ikke B.
+//          // Saa har A ikke brug for et Lookup Object, men B har.
+//          // Ved ikke rigtig hvad denne skal bruges til....
+//          // Maa betyde om man skal
+//          return false;
+//      }
+        return false;
+    }
+
+    default Op<R> useExactType(Class<? extends R> type) {
+        // TypeHint.. withExactType
+
+        // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
+        // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
+        // fulde info om implementation
+        // @Inject
+        // SomeService create();
+        // istedet for
+        // @Inject
+        // SomeServiceImpl create();
+        throw new UnsupportedOperationException();
+    }
+
+}
 // TODO Hmm do we cast the return type to type????
 
 //// ofConstructor().castReturn(Class<T>)
