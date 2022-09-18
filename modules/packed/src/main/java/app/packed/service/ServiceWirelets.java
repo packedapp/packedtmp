@@ -91,7 +91,7 @@ public final class ServiceWirelets {
      * <p>
      * This wirelet is processed at the linkage site.
      * <p>
-     * The contract being provided is never effected previous transformations, for example, via {@link #from(Consumer)}.
+     * The contract being provided is never effected previous transformations, for example, via {@link #crack(Consumer)}.
      * 
      * @param action
      *            the action to perform
@@ -137,7 +137,7 @@ public final class ServiceWirelets {
 //    }
 
     /**
-     * This method is similar to {@link #from(Consumer)} but also provides the service of the child.
+     * This method is similar to {@link #crack(Consumer)} but also provides the service of the child.
      * <p>
      * This wirelet is processed in the 1st stage, immediately after a container has been linked.
      * 

@@ -164,7 +164,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             /** {@inheritDoc} */
             @Override
             public void onMethodHook(BeanIntrospector$BeanMethod method) {
-                Key<?> key = Key.convertMethodReturnType(method.method());
+                Key<?> key = method.methodToKey();
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 
                 BeanSetup bean = ((PackedBeanMethod) method).bean;

@@ -37,7 +37,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
 
     /** {@inheritDoc} */
     @Override
-    public OperationType factoryType() {
+    public OperationType operationType() {
         return OperationType.ofExecutable(member);
     }
 
@@ -66,7 +66,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator) {
-        return new PackedOperationHandle(bean, this, ExtensionBeanSetup.from(operator));
+        return new PackedOperationHandle(bean, this, ExtensionBeanSetup.crack(operator));
     }
 
     /** An operation target mirror for a bean method.  */

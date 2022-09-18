@@ -22,6 +22,7 @@ import internal.app.packed.bean.hooks.PackedBeanMember;
 
 /** The target of an operation. */
 @SuppressWarnings("rawtypes")
+// Tror vi laver en nu klasse som vi kopiere over i
 public sealed interface PackedOperationTarget permits PackedBeanMember, PackedFunctionOperationTarget {
 
     default MethodHandle methodHandle() {

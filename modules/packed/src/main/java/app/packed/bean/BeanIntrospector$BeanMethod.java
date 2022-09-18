@@ -17,7 +17,9 @@ package app.packed.bean;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
+import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.OperationMirror;
@@ -34,9 +36,21 @@ import internal.app.packed.bean.hooks.PackedBeanMethod;
  */
 public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits PackedBeanMethod {
 
-    /** {@return a factory type for this method.} */
-    OperationType factoryType(); // I don't like the name factoryType.. signature? Coordinates?
-
+    /**
+     * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanDefinitionException} if the field does not
+     * represent a proper key.
+     * <p>
+     * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
+     * key. As {@link BeanIntrospector$BeanVariableBinder} is typically used in cases where this would be needed.
+     * 
+     * @return a key representing the field
+     * 
+     * @throws BeanDefinitionException
+     *             if the field does not represent a proper key
+     */
+    default Key<?> methodToKey() {
+        return Key.convertMethodReturnType(method());
+    }
     /**
      * {@return the modifiers of the underlying method.}
      *
@@ -72,6 +86,9 @@ public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits 
      *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
      */
     OperationHandle newOperation(ExtensionBeanConfiguration<?> operator);
+
+    /** {@return a operation type for this method.} */
+    OperationType operationType();
 }
 
 /**

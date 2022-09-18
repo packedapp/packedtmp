@@ -77,6 +77,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 mc.cs = ((PackedBeanMethod) method).bean;
                 mc.methodHandle = ((PackedBeanMethod) method).newMethodHandle();
 
+                
                 // installMain(() -> {});
 //                oldOperation().useMirror(() -> new EntryPointMirror(0));
             }

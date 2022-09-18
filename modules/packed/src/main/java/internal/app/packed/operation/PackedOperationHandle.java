@@ -42,9 +42,6 @@ public final class PackedOperationHandle implements OperationHandle {
     /** Whether or not an invoker has been computed */
     boolean isComputed;
 
-    /**
-     * @param target
-     */
     public PackedOperationHandle(BeanSetup bean, PackedOperationTarget target, ExtensionBeanSetup operatorBean) {
         this.bean = bean;
         this.target = target;

@@ -47,7 +47,7 @@ public final class ExtensionBeanSetup extends BeanSetup {
         this.extension = requireNonNull(extension);
     }
 
-    public static ExtensionBeanSetup from(ExtensionBeanConfiguration<?> configuration) {
+    public static ExtensionBeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
         PackedBeanHandle<?> bh = (PackedBeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
         return (ExtensionBeanSetup) bh.bean();
     }

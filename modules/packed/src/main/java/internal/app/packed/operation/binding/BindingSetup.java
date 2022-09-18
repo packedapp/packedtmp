@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.mh;
-
-import java.lang.invoke.MethodType;
+package internal.app.packed.operation.binding;
 
 /**
  *
  */
+public class BindingSetup {
 
-public interface Infuser {
-
-    MethodType methodType();
-    
-    interface Builder {
-        
-    }
 }

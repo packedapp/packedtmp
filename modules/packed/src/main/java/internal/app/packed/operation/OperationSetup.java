@@ -25,6 +25,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.inject.DependencyNode;
+import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -53,11 +54,15 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type = null;
 
+    public final BindingSetup[] bindings;
+
     OperationSetup(PackedOperationHandle builder) {
         this.bean = builder.bean;
         this.operationTarget = builder.target;
         this.operatorBean = builder.operatorBean;
         this.mirrorSupplier = builder.mirrorSupplier;
+        this.bindings = null;
+
     }
 
     /** {@return a new mirror.} */

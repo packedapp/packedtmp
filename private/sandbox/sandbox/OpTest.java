@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.mh;
+package sandbox;
 
-import static internal.app.packed.operation.mh.MethodHandleUtilx.afterInterceptor;
-import static internal.app.packed.operation.mh.MethodHandleUtilx.aroundInterceptor;
-import static internal.app.packed.operation.mh.MethodHandleUtilx.beforeInterceptor;
-import static internal.app.packed.operation.mh.MethodHandleUtilx.invokeAndReturnArg;
+import static sandbox.methodhandle.MethodHandleUtilx.afterInterceptor;
+import static sandbox.methodhandle.MethodHandleUtilx.aroundInterceptor;
+import static sandbox.methodhandle.MethodHandleUtilx.beforeInterceptor;
+import static sandbox.methodhandle.MethodHandleUtilx.invokeAndReturnArg;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
