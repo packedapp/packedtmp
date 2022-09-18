@@ -18,11 +18,9 @@ package app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import internal.app.packed.operation.op.PackageCapturingOpHelper;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
@@ -72,18 +70,6 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
     /** {@inheritDoc} */
     public final OperationType type() {
         return delegate.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final TypeToken<R> typeLiteral() {
-        return delegate.typeLiteral();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final List<Variable> variables() {
-        return delegate.variables();
     }
 
     /** {@inheritDoc} */

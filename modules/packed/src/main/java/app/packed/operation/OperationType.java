@@ -129,6 +129,10 @@ public final /* primitive */ class OperationType {
     }
 
     /** {@return the return variable.} */
+    public Class<?> returnType() {
+        return returnVar.getType();
+    }
+    /** {@return the return variable.} */
     public Variable returnVar() {
         return returnVar;
     }
@@ -165,6 +169,11 @@ public final /* primitive */ class OperationType {
         return sj.toString();
     }
 
+    public static OperationType of(Class<?> returnVar) {
+        requireNonNull(returnVar, "returnVar is null");
+        return new OperationType(Variable.of(returnVar), NO_VARS);
+    }
+    
     public static OperationType of(Class<?> returnVar, Class<?>... vars) {
         return ofMethodType(MethodType.methodType(returnVar, vars));
     }
@@ -210,10 +219,16 @@ public final /* primitive */ class OperationType {
         for (int i = 0; i < vars.length; i++) {
             vars[i] = Variable.ofParameter(parameters[i]);
         }
-        return of(returnVar, vars);
+        return new OperationType(returnVar, vars);
     }
 
     public static OperationType ofMethodType(MethodType methodType) {
-        throw new UnsupportedOperationException();
+        Variable returnVar = Variable.of(methodType.returnType());
+        Variable[] vars = new Variable[methodType.parameterCount()];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = Variable.of(methodType.parameterType(i));
+        }
+        return new OperationType(returnVar, vars);
+
     }
 }

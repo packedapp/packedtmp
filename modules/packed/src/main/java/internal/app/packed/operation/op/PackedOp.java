@@ -28,7 +28,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
@@ -42,23 +41,19 @@ import internal.app.packed.util.MethodHandleUtil;
  */
 public abstract non-sealed class PackedOp<R> implements Op<R> {
 
-   public final Op<R> withLookup(MethodHandles.Lookup lookup) {
-        requireNonNull(lookup, "lookup is null");
-        if (this instanceof ReflectiveOp<R> f) {
-            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
-        }
-        throw new UnsupportedOperationException(
-                "This method is only supported by ops created from a field, constructor or method. And must be applied as the first operation after creating the factory");
+    private final OperationType type;
+
+    PackedOp(OperationType type) {
+        this.type = requireNonNull(type, "type is null");
     }
 
-    
     /** {@inheritDoc} */
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
 
         List<InternalDependency> dependencies = dependencies();
 
-        List<Variable> variables = variables();
+        List<Variable> variables = List.of(type().parameterArray());
 
         Objects.checkIndex(position, dependencies.size());
         int len = 1 + additionalArguments.length;
@@ -93,12 +88,14 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         return new BoundFactory<>(this, position, dd, List.of(vars), args);
     }
 
+    /** {@inheritDoc} */
     public final Op<R> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
 
     public abstract List<InternalDependency> dependencies();
 
+    /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
         return new PeekableFactory<>(this, action);
     }
@@ -107,22 +104,26 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
     @Override
     public final OperationType type() {
-        throw new UnsupportedOperationException();
+        return type;
     }
 
-    /** {@return The variables this factory takes.} */
-    public List<Variable> variables() {
-        throw new UnsupportedOperationException();
+    public final Op<R> withLookup(MethodHandles.Lookup lookup) {
+        requireNonNull(lookup, "lookup is null");
+        if (this instanceof ReflectiveOp<R> f) {
+            return new LookedUpFactory<>(f, f.toMethodHandle(lookup));
+        }
+        throw new UnsupportedOperationException(
+                "This method is only supported by ops created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
     @SuppressWarnings("unchecked")
-    public static <R> PackedOp<R> crack(Op<R> factory) {
-        requireNonNull(factory, "factory is null");
-        if (factory instanceof PackedOp<R> f) {
-            return f;
+    public static <R> PackedOp<R> crack(Op<R> op) {
+        requireNonNull(op, "op is null");
+        if (op instanceof PackedOp<R> pop) {
+            return pop;
         } else {
             // if capturingop had a canonicalizde we could just call that and get an IFa
-            Object result = PackedCapturingOp.VH_CF_FACTORY.get(factory);
+            Object result = PackedCapturingOp.VH_CF_FACTORY.get(op);
             return (PackedOp<R>) result;
         }
     }
@@ -149,17 +150,11 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<R> typeLiteral;
-
-        private final List<Variable> variables;
-
         public BoundFactory(PackedOp<R> delegate, int index, InternalDependency[] dd, List<Variable> variables, Object[] arguments) {
-            this.typeLiteral = delegate.typeLiteral();
+            super(delegate.type); // TODO fix type
             this.index = index;
             this.delegate = requireNonNull(delegate);
             this.arguments = arguments;
-            this.variables = variables;
             this.dependencies = List.of(dd);
         }
 
@@ -175,31 +170,16 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
             MethodHandle mh = delegate.toMethodHandle(lookup);
             return MethodHandles.insertArguments(mh, index, arguments);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<R> typeLiteral() {
-            return typeLiteral;
-        }
-
-        @Override
-        public List<Variable> variables() {
-            return variables;
-        }
     }
 
     /** An op taking no the same value every time, used by {@link Op#ofInstance(Object)}. */
     public static final class ConstantOp<R> extends PackedOp<R> {
 
-        /** The value that is returned every time. */
+        /** The constant that is returned on every invocation. */
         private final R instance;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<R> typeLiteral;
-
-        @SuppressWarnings("unchecked")
         public ConstantOp(R instance) {
-            this.typeLiteral = (TypeToken<R>) TypeToken.of(instance.getClass());
+            super(OperationType.of(instance.getClass()));
             this.instance = instance;
         }
 
@@ -214,17 +194,6 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         public MethodHandle toMethodHandle(Lookup ignore) {
             return MethodHandles.constant(instance.getClass(), instance);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<R> typeLiteral() {
-            return typeLiteral;
-        }
-
-        @Override
-        public List<Variable> variables() {
-            return List.of();
-        }
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
@@ -236,11 +205,8 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         /** The method handle that was unreflected. */
         private final MethodHandle methodHandle;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<R> typeLiteral;
-
         public LookedUpFactory(PackedOp<R> delegate, MethodHandle methodHandle) {
-            this.typeLiteral = delegate.typeLiteral();
+            super(delegate.type);
             this.delegate = delegate;
             this.methodHandle = requireNonNull(methodHandle);
         }
@@ -256,19 +222,6 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         public MethodHandle toMethodHandle(Lookup ignore) {
             return methodHandle;
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<R> typeLiteral() {
-            return typeLiteral;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<Variable> variables() {
-            return delegate.variables();
-        }
-
     }
 
     public static final class PackedCapturingOp<R> extends PackedOp<R> {
@@ -286,14 +239,11 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
         public final MethodHandle methodHandle;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<R> typeLiteral;
-
         /**
          * @param typeLiteralOrKey
          */
-        public PackedCapturingOp(TypeToken<R> typeLiteralOrKey, MethodHandle methodHandle, List<InternalDependency> dependencies) {
-            this.typeLiteral = requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
+        public PackedCapturingOp(OperationType type, MethodHandle methodHandle, List<InternalDependency> dependencies) {
+            super(type);
             this.dependencies = dependencies;
             this.methodHandle = methodHandle;
         }
@@ -309,12 +259,6 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         public MethodHandle toMethodHandle(Lookup lookup) {
             return methodHandle;
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<R> typeLiteral() {
-            return typeLiteral;
-        }
     }
 
     /** An implementation of the {@link Op#peek(Consumer)}} method. */
@@ -329,14 +273,11 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final PackedOp<R> delegate;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<R> typeLiteral;
-
         public PeekableFactory(PackedOp<R> delegate, Consumer<? super R> action) {
-            this.typeLiteral = delegate.typeLiteral();
+            super(delegate.type);
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
-            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(typeLiteral.rawType(), typeLiteral.rawType()));
+            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(delegate.type().returnType(), delegate.type().returnType()));
         }
 
         /** {@inheritDoc} */
@@ -350,19 +291,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         public MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle mh = delegate.toMethodHandle(lookup);
             mh = MethodHandles.filterReturnValue(mh, consumer);
-            return MethodHandleUtil.castReturnType(mh, typeLiteral.rawType());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<R> typeLiteral() {
-            return typeLiteral;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<Variable> variables() {
-            return delegate.variables();
+            return MethodHandleUtil.castReturnType(mh, delegate.type().returnType());
         }
 
         @SuppressWarnings({ "unchecked", "unused", "rawtypes" })

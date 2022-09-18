@@ -33,6 +33,7 @@ import app.packed.operation.CapturingOp;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
+import app.packed.operation.OperationType;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 import internal.app.packed.util.LookupUtil;
@@ -102,6 +103,7 @@ public class PackageCapturingOpHelper {
         final MethodHandle methodHandle;
         final List<InternalDependency> dependencies;
         Class<?> rawType = typeLiteral.rawType();
+
         if (Op0.class.isAssignableFrom(clazz)) {
             MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
             methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
@@ -121,7 +123,8 @@ public class PackageCapturingOpHelper {
             MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
-        return new PackedCapturingOp<>(typeLiteral, methodHandle, dependencies);
+        OperationType type = OperationType.ofMethodType(methodHandle.type());
+        return new PackedCapturingOp<>(type, methodHandle, dependencies);
 
     }
 

@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -130,16 +129,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     OperationType type();
 
     /**
-     * Returns the type of the type of objects this factory provide.
-     *
-     * @return the type of the type of objects this factory provide
-     */
-    TypeToken<R> typeLiteral();
-
-    /** {@return The variables this factory takes.} */
-    List<Variable> variables();
-
-    /**
      * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
      * the specified lookup object to access any underlying member whenever this framework needs to access.
      * <p>
@@ -187,8 +176,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      */
     public static <T> Op<T> ofConstructor(Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
-        TypeToken<T> tl = TypeToken.of(constructor.getDeclaringClass());
-        return new ExecutableOp<>(tl, constructor);
+        return new ExecutableOp<>(constructor);
     }
 
     /**

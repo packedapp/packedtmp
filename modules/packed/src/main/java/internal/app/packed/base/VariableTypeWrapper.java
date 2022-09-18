@@ -38,6 +38,28 @@ public interface VariableTypeWrapper {
 
     TypeToken<?> typeToken();
 
+    record OfClass(Class<?> clazz) implements VariableTypeWrapper {
+        public OfClass {
+            requireNonNull(clazz, "clazz is null");
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> getType() {
+            return clazz;
+        }
+
+        public Optional<String> name() {
+            return Optional.empty();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public TypeToken<?> typeToken() {
+            throw new UnsupportedOperationException();
+        }
+    }
+    
     record OfTypeVariable(TypeVariable<?> typeVariable) implements VariableTypeWrapper {
 
         public OfTypeVariable {

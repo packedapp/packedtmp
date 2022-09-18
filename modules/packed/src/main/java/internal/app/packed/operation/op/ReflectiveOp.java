@@ -15,8 +15,6 @@
  */
 package internal.app.packed.operation.op;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -27,9 +25,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import app.packed.base.TypeToken;
 import app.packed.bean.InaccessibleBeanException;
-import app.packed.operation.Variable;
+import app.packed.operation.OperationType;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
@@ -43,12 +40,17 @@ import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits ExecutableOp, FieldOp {
 
+    ReflectiveOp(OperationType type) {
+        super(type);
+    }
+
     /** A cache of factories used by {@link #factoryOf(Class)}. */
     public static final ClassValue<ExecutableOp<?>> DEFAULT_FACTORY = new ClassValue<>() {
 
         /** {@inheritDoc} */
         protected ExecutableOp<?> computeValue(Class<?> implementation) {
-            return new ExecutableOp<>(TypeToken.of(implementation), implementation);
+            Executable executable = ConstructorFinder.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
+            return new ExecutableOp<>(executable);
         }
     };
 
@@ -60,23 +62,14 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
         /** A factory with an executable as a target. */
         public final Executable executable;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<T> typeLiteral;
-
-        public ExecutableOp(ExecutableOp<?> from, TypeToken<T> key) {
-            typeLiteral = requireNonNull(key);
+        public ExecutableOp(ExecutableOp<?> from) {
+            super(OperationType.ofExecutable(from.executable));
             this.executable = from.executable;
             this.dependencies = from.dependencies;
         }
 
-        public ExecutableOp(TypeToken<T> key, Class<?> findConstructorOn) {
-            typeLiteral = requireNonNull(key);
-            this.executable = ConstructorFinder.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
-            this.dependencies = InternalDependency.fromExecutable(executable);
-        }
-
-        public ExecutableOp(TypeToken<T> key, Constructor<?> constructor) {
-            typeLiteral = requireNonNull(key);
+        public ExecutableOp(Executable constructor) {
+            super(OperationType.ofExecutable(constructor));
             this.executable = constructor;
             this.dependencies = InternalDependency.fromExecutable(executable);
         }
@@ -98,7 +91,7 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
 
                     // For some reason the lookup objects that comes here might not have full privilege access
                     lookup = MethodHandles.lookup();
-                    
+
 //                    System.out.println(lookup.hasFullPrivilegeAccess());
 //
 //                    Module m1 = BeanExtension.class.getModule();
@@ -114,7 +107,7 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
 //    
                     lookup = MethodHandles.privateLookupIn(executable.getDeclaringClass(), lookup);
                     //
-                    //System.out.println(lookup);
+                    // System.out.println(lookup);
                 }
                 if (executable instanceof Constructor<?> c) {
                     methodHandle = lookup.unreflectConstructor(c);
@@ -138,26 +131,18 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
         public String toString() {
             return executable.toString();
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<T> typeLiteral() {
-            return typeLiteral;
-        }
     }
 
     /** An invoker that can read and write fields. */
+    // Don't know if we want this?
+    // ofFieldGet()
     public static final class FieldOp<T> extends ReflectiveOp<T> {
 
         /** The field we invoke. */
         private final Field field;
 
-        /** The type of objects this factory creates. */
-        private final TypeToken<T> typeLiteral;
-
-        @SuppressWarnings("unchecked")
-        public FieldOp(Field field) {
-            typeLiteral = (TypeToken<T>) TypeToken.fromField(field);
+        public FieldOp(OperationType type, Field field) {
+            super(type);
             this.field = field;
         }
 
@@ -186,17 +171,6 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
                 throw new InaccessibleBeanException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
             return handle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public TypeToken<T> typeLiteral() {
-            return typeLiteral;
-        }
-
-        @Override
-        public List<Variable> variables() {
-            return List.of();
         }
     }
 }

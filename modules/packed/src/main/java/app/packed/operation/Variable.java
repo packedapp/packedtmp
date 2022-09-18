@@ -73,12 +73,15 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     default Type getGenericType() {
         throw new UnsupportedOperationException();
     }
-    
+
     TypeToken<?> typeToken();
 
-    
-    // ofClassType <--- will not retain annotations on the class 
-    
+    // ofClassType <--- will not retain annotations on the class
+
+    static Variable of(Class<?> clazz) {
+        return new PackedVariable(clazz);
+    }
+
     /**
      * Returns a variable from the specified field.
      * <p>
@@ -87,6 +90,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
      *            the field to return a variable from
      * @return a variable representing the field
      */
+    // convert or from
     static Variable ofField(Field field) {
         return new PackedVariable(field, new VariableTypeWrapper.OfField(field));
     }
@@ -94,7 +98,7 @@ public sealed interface Variable extends AnnotatedElement permits PackedVariable
     static Variable ofConstructor(Constructor<?> constructor) {
         return new PackedVariable(constructor, new VariableTypeWrapper.OfConstructor(constructor));
     }
-    
+
     /**
      * Returns a variable from the return type of the specified method.
      * 

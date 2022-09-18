@@ -167,10 +167,10 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return new PackedBeanHandleInstaller<>(operator, container, clazz, BeanSourceKind.CLASS, clazz);
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Op<T> factory) {
+    public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Op<T> op) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
-        PackedOp<T> fac = PackedOp.crack(factory);
-        return new PackedBeanHandleInstaller<>(operator, container, fac.typeLiteral().rawType(), BeanSourceKind.OP, fac);
+        PackedOp<T> pop = PackedOp.crack(op);
+        return new PackedBeanHandleInstaller<>(operator, container, pop.type().returnType(), BeanSourceKind.OP, pop);
     }
 
     public static <T> PackedBeanHandleInstaller<T> ofInstance(@Nullable UseSite operator, ContainerSetup container, T instance) {

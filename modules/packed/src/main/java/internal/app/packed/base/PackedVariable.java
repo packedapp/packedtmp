@@ -24,6 +24,14 @@ import app.packed.operation.Variable;
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */
 public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrapper typeWrapper) implements Variable {
 
+    public PackedVariable(Class<?> clazz) {
+        this(PackedVariable.class, new VariableTypeWrapper.OfClass(clazz));
+    }
+
+    public PackedVariable(VariableTypeWrapper typeWrapper) {
+        this(PackedVariable.class, typeWrapper);
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
