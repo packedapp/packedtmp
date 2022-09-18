@@ -15,13 +15,13 @@
  */
 package archive.bean.dependency;
 
-import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.bean.BeanExtensionPoint.VariableBindingHook;
 import app.packed.container.MirrorExtension;
 
 /**
  *
  */
-@BindingHook(extension = MirrorExtension.class)
+@VariableBindingHook(extension = MirrorExtension.class)
 // Hmm man kan jo ikke bare ignorere denne.... Hvis man har lyst...
 // Den kan kun bruges paa dependencies, ikke fx @Provide someField
 // Men hvad med de steder @Provide bliver brugt??? 

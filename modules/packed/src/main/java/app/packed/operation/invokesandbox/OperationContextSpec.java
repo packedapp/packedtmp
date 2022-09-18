@@ -15,7 +15,7 @@
  */
 package app.packed.operation.invokesandbox;
 
-import app.packed.bean.BeanIntrospector$BeanDependency;
+import app.packed.bean.BeanIntrospector$BeanVariableBinder;
 
 /**
  *
@@ -24,7 +24,7 @@ public abstract class OperationContextSpec<T> {
 
     
     // IDK
-    protected void notInContext(BeanIntrospector$BeanDependency dep) {
+    protected void notInContext(BeanIntrospector$BeanVariableBinder dep) {
         
     }
 }

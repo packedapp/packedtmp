@@ -32,7 +32,7 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.Provider;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.bean.BeanExtensionPoint.VariableBindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.operation.Op;
@@ -111,7 +111,7 @@ import internal.app.packed.util.LookupUtil;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@BindingHook(extension = BeanExtension.class)
+@VariableBindingHook(extension = BeanExtension.class)
 public interface ServiceLocator {
 
     /**

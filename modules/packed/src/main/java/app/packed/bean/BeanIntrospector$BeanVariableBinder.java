@@ -36,7 +36,7 @@ import app.packed.operation.bindings.BindingMirror;
 // Saa kan vi strippe af paa BeanVariable
 // Saa bliver BeanVariable
 
-public non-sealed interface BeanIntrospector$BeanDependency extends BeanElement {
+public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElement {
 
     void provide(Op<?> fac);
 
@@ -86,9 +86,9 @@ public non-sealed interface BeanIntrospector$BeanDependency extends BeanElement 
      */
     // Hmm, resolve at runtime ved jeg ikke hvor meget passer. extensionen ligger jo fast
     // Saa maaske bindAtRuntime
-    BeanIntrospector$BeanDependency bindAtRuntime();
+    BeanIntrospector$BeanVariableBinder bindAtRuntime();
 
-    BeanIntrospector$BeanDependency specializeMirror(Supplier<? extends BindingMirror> supplier);
+    BeanIntrospector$BeanVariableBinder specializeMirror(Supplier<? extends BindingMirror> supplier);
 
     TypeInfo type();
 

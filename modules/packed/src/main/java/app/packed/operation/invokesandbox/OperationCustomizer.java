@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanIntrospector$BeanDependency;
+import app.packed.bean.BeanIntrospector$BeanVariableBinder;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
@@ -117,7 +117,7 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
      * @return a unmodifiable list of the dependencies of this operation
      */
     // Dependencies that are not explicitly bound
-    default List<BeanIntrospector$BeanDependency> dependencies() {
+    default List<BeanIntrospector$BeanVariableBinder> dependencies() {
         throw new UnsupportedOperationException();
     }
 

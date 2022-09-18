@@ -28,8 +28,8 @@ public enum BeanSourceKind {
     /** A bean instance was specified when creating the bean. */
     INSTANCE,
 
-    /** A {@link Op} was specified when creating the bean. */
-    FACTORY,
+    /** An {@link Op} was specified when creating the bean. */
+    OP,
 
     /** A {@link Class} was specified when creating the bean. */
     CLASS;

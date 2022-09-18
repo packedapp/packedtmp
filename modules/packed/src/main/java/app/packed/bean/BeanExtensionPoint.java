@@ -139,6 +139,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         Class<? extends Extension<?>> extension();
     }
 
+    /**
+     *
+     * @see BeanIntrospector#onMethodHook(BeanIntrospector$BeanMethod)
+     */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
@@ -164,7 +168,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)
     @Documented
-    public @interface BindingHook {
+    // BindingVariableHook? BindableVariableHook
+    public @interface VariableBindingHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();

@@ -59,7 +59,7 @@ public abstract class BeanIntrospector {
      * @throws BeanDefinitionException
      *             always thrown
      */
-    public void failWith(String postFix) {
+    public final void failWith(String postFix) {
         throw new BeanDefinitionException("OOPS " + postFix);
     }
 
@@ -82,7 +82,7 @@ public abstract class BeanIntrospector {
 
     public void onClassHook(BeanIntrospector$BeanClass clazz) {}
 
-    public void onBindingHook(BeanIntrospector$BeanDependency dependency) {}
+    public void onBindingHook(BeanIntrospector$BeanVariableBinder dependency) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
@@ -121,7 +121,7 @@ public abstract class BeanIntrospector {
     /**
      * A callback method that is invoked before any calls to {@link #onClass(BeanIntrospector$BeanClass)},
      * {@link #onFieldHook(BeanIntrospector$BeanField)}, {@link #onMethod(BeanIntrospector$BeanMethod)} or
-     * {@link #onDependency(BeanIntrospector$BeanDependency)}.
+     * {@link #onDependency(BeanIntrospector$BeanVariableBinder)}.
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
@@ -150,7 +150,7 @@ public abstract class BeanIntrospector {
 
     // This is a place holder for now... Will be ditched it in the future
     // BeanVariable bare
-    public sealed interface BeanElement permits BeanIntrospector$BeanClass, BeanIntrospector$BeanConstructor, BeanIntrospector$BeanField, BeanIntrospector$BeanMethod, BeanIntrospector$BeanDependency {
+    public sealed interface BeanElement permits BeanIntrospector$BeanClass, BeanIntrospector$BeanConstructor, BeanIntrospector$BeanField, BeanIntrospector$BeanMethod, BeanIntrospector$BeanVariableBinder {
 
         default BeanIntrospector$AnnotationReader annotations() {
             throw new UnsupportedOperationException();
