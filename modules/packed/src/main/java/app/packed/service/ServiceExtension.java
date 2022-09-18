@@ -149,7 +149,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onField(BeanIntrospector$BeanField field) {
+            public void onFieldHook(BeanIntrospector$BeanField field) {
                 // todo check not extension
 
                 Key<?> key = field.fieldToKey();
@@ -165,7 +165,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onMethod(BeanIntrospector$BeanMethod method) {
+            public void onMethodHook(BeanIntrospector$BeanMethod method) {
                 Key<?> key = Key.convertMethodReturnType(method.method());
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 

@@ -47,7 +47,11 @@ public abstract class BeanIntrospector {
         // AnnotationReader.of(beanClass());
         throw new UnsupportedOperationException();
     }
-    
+
+    public final Class<?> beanClass() {
+        return setup().bean.beanClass();
+    }
+
     /**
      * @param postFix
      *            the message to include in the final message
@@ -57,10 +61,6 @@ public abstract class BeanIntrospector {
      */
     public void failWith(String postFix) {
         throw new BeanDefinitionException("OOPS " + postFix);
-    }
-
-    public final Class<?> beanClass() {
-        return setup().bean.beanClass();
     }
 
     /**
@@ -80,14 +80,9 @@ public abstract class BeanIntrospector {
         this.setup = new Setup(extension, bean);
     }
 
-    public final Class<? extends Extension<?>> registrant() {
-        // Ideen er at vi kan checke at vi selv er registranten...
-        throw new UnsupportedOperationException();
-    }
-    
-    public void onClass(BeanIntrospector$BeanClass clazz) {}
+    public void onClassHook(BeanIntrospector$BeanClass clazz) {}
 
-    public void onDependency(BeanIntrospector$BeanDependency dependency) {}
+    public void onBindingHook(BeanIntrospector$BeanDependency dependency) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
@@ -102,25 +97,15 @@ public abstract class BeanIntrospector {
      *            the bean field
      * @see BeanExtensionPoint.FieldHook
      */
-    // onAnnotatedField(Set<Class<? extends Annotation<>> hooks, BeanField));
-    // IDK Det kommer lidt an paa variable vil jeg mene...
-    public void onField(BeanIntrospector$BeanField field) {}
+    // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
+    public void onFieldHook(BeanIntrospector$BeanField field) {}
 
-    public void onMethod(BeanIntrospector$BeanMethod method) {
+    public void onMethodHook(BeanIntrospector$BeanMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         // We probably want to throw an internal extension exception instead
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle bean method");
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method hook");
     }
-
-    /**
-     * A callback method that is called before any other methods on this class.
-     * <p>
-     * This method can be used to setup data structures or perform validation.
-     * 
-     * @see #onIntrospectionEnd()
-     */
-    public void onIntrospectionBegin() {}
 
     /**
      * A callback method that is called after any other methods on this class.
@@ -129,9 +114,25 @@ public abstract class BeanIntrospector {
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
      * 
-     * @see #onIntrospectionBegin()
+     * @see #onPreIntrospect()
      */
-    public void onIntrospectionEnd() {}
+    public void onPostIntrospect() {}
+
+    /**
+     * A callback method that is invoked before any calls to {@link #onClass(BeanIntrospector$BeanClass)},
+     * {@link #onFieldHook(BeanIntrospector$BeanField)}, {@link #onMethod(BeanIntrospector$BeanMethod)} or
+     * {@link #onDependency(BeanIntrospector$BeanDependency)}.
+     * <p>
+     * This method can be used to setup data structures or perform validation.
+     * 
+     * @see #onPostIntrospect()
+     */
+    public void onPreIntrospect() {}
+
+    public final Class<? extends Extension<?>> registrant() {
+        // Ideen er at vi kan checke at vi selv er registranten...
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * {@return the internal configuration class.}

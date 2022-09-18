@@ -28,9 +28,9 @@ import java.util.LinkedHashMap;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
-import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
@@ -90,7 +90,7 @@ public final class BeanIntrospectionHelper {
             }
 
             // Notify the bean introspector that is being used
-            introspector.onIntrospectionBegin();
+            introspector.onPreIntrospect();
             return new ExtensionEntry(extension, introspector, fullAccess);
         });
     }
@@ -187,7 +187,7 @@ public final class BeanIntrospectionHelper {
 
         // Call into every BeanScanner and tell them its all over
         for (ExtensionEntry e : extensions.values()) {
-            e.introspector.onIntrospectionEnd();
+            e.introspector.onPostIntrospect();
         }
     }
 
@@ -279,7 +279,7 @@ public final class BeanIntrospectionHelper {
                         e.isSettable || entry.hasFullAccess, new Annotation[] { annotation });
 
                 // Call BeanIntrospection.onField
-                entry.introspector.onField(f);
+                entry.introspector.onFieldHook(f);
             } else {
                 // TODO sort by extension order if we have more than one
 
@@ -291,7 +291,7 @@ public final class BeanIntrospectionHelper {
                             mf.allowSet || entry.hasFullAccess, annotations);
 
                     // Call BeanIntrospection.onField
-                    entry.introspector.onField(f);
+                    entry.introspector.onFieldHook(f);
                 }
             }
         }
@@ -329,7 +329,7 @@ public final class BeanIntrospectionHelper {
 
                 PackedBeanMethod pbm = new PackedBeanMethod(bean, BeanIntrospectionHelper.this, ei.extension, method, fh.isInvokable);
 
-                ei.introspector.onMethod(pbm);
+                ei.introspector.onMethodHook(pbm);
             }
         }
     }

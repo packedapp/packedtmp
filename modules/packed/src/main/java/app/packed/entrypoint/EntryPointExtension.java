@@ -66,7 +66,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
              * {@inheritDoc}
              */
             @Override
-            public void onMethod(BeanIntrospector$BeanMethod method) {
+            public void onMethodHook(BeanIntrospector$BeanMethod method) {
                 registerEntryPoint(null, true);
 
                 application.entryPoints = new EntryPointSetup();
