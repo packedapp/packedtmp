@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Variable;
-import app.packed.operation.invokesandbox.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationHandle;
 import internal.app.packed.bean.hooks.PackedBeanField;
 
 /**
@@ -72,7 +72,7 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
      * @throws IllegalArgumentException
      *             if the specified operator is not a direct ancestor of the bean that declares the field
      */
-    OperationCustomizer newGetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * @param operator
@@ -90,14 +90,14 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
     // fordi
     // de altid bare laesaer den volatile vaerdi. Saa de har aldrig nogle gettere
     // Har stadig ikke en usecase for 2 VarHandle. Men get plus set, er dog ikke sikker paa det er noget vi vil supportere
-    OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
+    OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
      * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
      * 
      * @return an operation configuration object
      */
-    OperationCustomizer newSetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator);
 
     /**
      * {@return the underlying field represented as a {@code Variable}.}
@@ -127,7 +127,7 @@ interface Zandbox {
     // Or maybe just rawVarHandle() on IOH
     //// Ideen var lidt at man kunne kalde den her metode for at faa extra
     // Varhandles hvis man havde angivet mere end en access mode
-    default VarHandle varHandleOf(OperationCustomizer handle) {
+    default VarHandle varHandleOf(OperationHandle handle) {
         throw new UnsupportedOperationException();
     }
 }

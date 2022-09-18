@@ -29,7 +29,7 @@ import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.operation.PackedOperationCustomizer;
+import internal.app.packed.operation.PackedOperationHandle;
 
 /**
  * This class currently supports:
@@ -56,7 +56,7 @@ import internal.app.packed.operation.PackedOperationCustomizer;
  * @see BeanIntrospector$BeanMethod#newOperation(ExtensionBeanConfiguration)
  */
 // no functionality for reading annotations, use BeanField, BeanMethod, ect
-public sealed interface OperationCustomizer permits PackedOperationCustomizer {
+public sealed interface OperationHandle permits PackedOperationHandle {
 
     /**
      * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
@@ -87,12 +87,12 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
         return computeInvoker(VarHandle.class);
     }
 
-    default OperationCustomizer mapReturn(MethodHandle mh) {
+    default OperationHandle mapReturn(MethodHandle mh) {
         // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
     }
 
-    default <F, T> OperationCustomizer mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
+    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
         // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
     }
@@ -101,7 +101,7 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
         throw new UnsupportedOperationException();
     }
 
-    default OperationCustomizer invokeAs(InvocationType type) {
+    default OperationHandle invokeAs(InvocationType type) {
         // This method must be called before any dependencies have been customized
         return this;
     }
@@ -135,7 +135,7 @@ public sealed interface OperationCustomizer permits PackedOperationCustomizer {
     // to someone they cannot specialize with a mirror that is not a subtype of the specified type
     // For example, LifetimeOperationMirror.
     // However, the best thing we can do is a runtime exception. As the supplier is lazy
-    OperationCustomizer specializeMirror(Supplier<? extends OperationMirror> supplier);
+    OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
 }
 
 interface Sandbox {

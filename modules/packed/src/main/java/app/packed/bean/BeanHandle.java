@@ -23,10 +23,11 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
-import app.packed.operation.invokesandbox.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationHandle;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 
@@ -54,6 +55,21 @@ import internal.app.packed.bean.PackedBeanHandleInstaller;
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
+    // We need a extension bean
+    default OperationHandle addFunctionalOperation(ExtensionBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
+            Object functionInstance) {
+        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
+        throw new UnsupportedOperationException();
+    }
+
+    default OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, MethodHandle methodHandle) {
+        return addOperation(operator, Op.ofMethodHandle(methodHandle));
+    }
+
+    default OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op operation) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @return
      * 
@@ -78,25 +94,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      */
     Key<?> defaultKey();
 
-    boolean isConfigurable();
-
-    default boolean isCurrent() {
-        return false;
-    }
-
-    /**
-     * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
-     * <p>
-     * The operations in the returned list must be computed exactly once. For example, via
-     * {@link OperationCustomizer#computeMethodHandleInvoker()}. Otherwise a build exception will be thrown. Maybe this goes
-     * for all operation customizers.
-     * 
-     * @return
-     */
-    default List<OperationCustomizer> lifetimeOperations() {
-        return List.of();
-    }
-
 //    // Kan man tilfoeje en function til alle beans?
 //    // funktioner er jo stateless...
 //    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
@@ -115,18 +112,23 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 //        throw new UnsupportedOperationException();
 //    }
 
-    default OperationCustomizer newFunctionalOperation(Class<?> functionalInterface, OperationType type, Object functionInstance) {
-        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
-        throw new UnsupportedOperationException();
-    }
- 
+    boolean isConfigurable();
 
-    default OperationCustomizer newOperation(MethodHandle methodHandle) {
-        return newOperation(Op.ofMethodHandle(methodHandle));
+    default boolean isCurrent() {
+        return false;
     }
 
-    default OperationCustomizer newOperation(Op operation) {
-        throw new UnsupportedOperationException();
+    /**
+     * If the bean is registered with its own lifetime. This method returns a list of the lifetime operations of the bean.
+     * <p>
+     * The operations in the returned list must be computed exactly once. For example, via
+     * {@link OperationHandle#computeMethodHandleInvoker()}. Otherwise a build exception will be thrown. Maybe this goes for
+     * all operation customizers.
+     * 
+     * @return
+     */
+    default List<OperationHandle> lifetimeOperations() {
+        return List.of();
     }
 
     /**
@@ -213,6 +215,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
         Installer<T> kindUnmanaged();
 
+        default Installer<T> lifetime(LifetimeFoo lifetime) {
+            throw new UnsupportedOperationException();
+        }
+
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
@@ -243,28 +249,22 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          *             if {@code void} bean class
          */
         Installer<T> nonUnique();
-        
-        
-        default Installer<T> lifetime(LifetimeFoo lifetime) {
-            throw new UnsupportedOperationException();
-        }
         // instanceless-> can never set separate lifetime
         // instance specified -> can never set...
-        
+
         // lifetimeUnmanaged();
         // lifetimeManaged(boolean seperateOperations);
     }
-    
-    
+
     // Tjahhh man kan vel maaske have flere end 2???
     // Lad os sige pause(), suspend(), open, close;
     // Umiddelbart har f.x @OnUpgrade jo ikke noget med lifetime at goere.
     // Men tilgaengaeld noget med life cycle at goere
-    
+
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
-    
+
     public class LifetimeFoo {
-        
+
     }
 }
 

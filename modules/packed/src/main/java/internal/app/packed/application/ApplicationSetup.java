@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerDriver;
+import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.UserRealmSetup;
 import internal.app.packed.inject.ApplicationInjectionManager;
 import internal.app.packed.lifetime.PackedManagedLifetime;
@@ -70,7 +70,7 @@ public final class ApplicationSetup {
         this.info = new PackedApplicationInfo(buildKind);
 
         // Create the root container of the application
-        this.container = new ContainerSetup(this, realm, new PackedContainerDriver(null), null, wirelets);
+        this.container = new ContainerSetup(this, realm, new PackedContainerHandle(null), null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool

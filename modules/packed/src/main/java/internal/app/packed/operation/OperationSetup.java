@@ -53,7 +53,7 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type = null;
 
-    OperationSetup(PackedOperationCustomizer builder) {
+    OperationSetup(PackedOperationHandle builder) {
         this.bean = builder.bean;
         this.operationTarget = builder.target;
         this.operatorBean = builder.operatorBean;

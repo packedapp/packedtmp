@@ -197,9 +197,13 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 //        * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
 //        * factory.
         requireNonNull(instance, "instance is null");
+        // Really no need for a ConstantOp..
+        // should just be able to cll ofMethodHAndle(OperationType.of(instance.getClass), Mh);
+        // toString() is nice though... Maybe keep it
         return new ConstantOp<T>(instance);
     }
 
+    
     // Hvad goer vi med en klasse der er mere restri
     // If the specified instance is not a static method. An extra variable
     // use bind(Foo) to bind the variable.

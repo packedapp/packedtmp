@@ -89,9 +89,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     private final ContainerInjectionManager injectionManager = ExtensionSetup.crack(this).container.injectionManager;
 
-    /**
-     * Create a new service extension.
-     */
+    /** Create a new service extension. */
     ServiceExtension() {}
 
     // Validates the outward facing contract

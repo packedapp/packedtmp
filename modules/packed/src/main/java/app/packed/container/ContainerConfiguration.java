@@ -9,7 +9,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerDriver;
+import internal.app.packed.container.PackedContainerHandle;
 
 /**
  * The configuration of a container.
@@ -37,8 +37,8 @@ public class ContainerConfiguration {
      * @param handle
      *            the container handle
      */
-    public ContainerConfiguration(ContainerCustomizer handle) {
-        this.container = requireNonNull((PackedContainerDriver) handle, "handle is null").setup;
+    public ContainerConfiguration(ContainerHandle handle) {
+        this.container = requireNonNull((PackedContainerHandle) handle, "handle is null").setup;
     }
 
     // On container or assembly???
@@ -123,7 +123,7 @@ public class ContainerConfiguration {
     }
 
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return link(new PackedContainerDriver(container), assembly, wirelets);
+        return link(new PackedContainerHandle(container), assembly, wirelets);
     }
 
     /**
@@ -138,8 +138,8 @@ public class ContainerConfiguration {
      * @return the component that was linked
      */
     //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
-    public ContainerMirror link(ContainerCustomizer driver, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerDriver d = (PackedContainerDriver) requireNonNull(driver, "driver is null");
+    public ContainerMirror link(ContainerHandle driver, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(driver, "driver is null");
 
         // Check that the container is still configurable
         checkIsConfigurable();

@@ -23,11 +23,13 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.application.BuildException;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
@@ -38,7 +40,6 @@ import internal.app.packed.container.ExtensionPointHelper;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionNavigator;
-import internal.app.packed.inject.invoke.InternalInfuser;
 import internal.app.packed.util.StackWalkerUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -81,7 +82,7 @@ public abstract class Extension<E extends Extension<E>> {
      * Creates a new extension. Subclasses should have a single package-private constructor.
      * 
      * @throws IllegalStateException
-     *             if attempting to construct the extension outside of packed
+     *             if attempting to construct the extension manually
      */
     protected Extension() {
         this.setup = ExtensionModel.initalizeExtension(this);
@@ -96,7 +97,7 @@ public abstract class Extension<E extends Extension<E>> {
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * 
      * @throws IllegalStateException
-     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
+     *             if the extension is no longer configurable.
      */
     protected final void checkIsConfigurable() {
         ExtensionRealmSetup realm = setup.extensionRealm;
@@ -105,7 +106,7 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
-    protected final ContainerCustomizer.Installer containerBuilder(Wirelet... wirelets) {
+    protected final ContainerHandle.Installer containerBuilder(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -320,13 +321,19 @@ public abstract class Extension<E extends Extension<E>> {
             throw new IllegalArgumentException();
         }
 
-        // Create and return a single instance of the bootstrap class
-        InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), c);
-        MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
+        MethodHandle constructor;
+        // TODO fix visibility
+        try {
+            constructor = MethodHandles.lookup().findConstructor(c, MethodType.methodType(void.class));
+        } catch (NoSuchMethodException e) {
+            throw new BuildException("A container hook must provide an empty constructor, hook = " + c, e);
+        } catch (IllegalAccessException e) {
+            throw new BuildException("Can't see it sorry, hook = " + c, e);
+        }
         Object result;
 
         try {
-            result = mh.invoke();
+            result = constructor.invoke();
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

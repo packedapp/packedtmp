@@ -4,18 +4,18 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerCustomizer;
+import app.packed.container.ContainerHandle;
 import app.packed.container.Extension;
 
-/** Implementation of {@link ContainerCustomizer}. */
-public final class PackedContainerDriver implements ContainerCustomizer {
+/** Implementation of {@link ContainerHandle}. */
+public final class PackedContainerHandle implements ContainerHandle {
 
     @Nullable
     final ContainerSetup parent;
 
     public ContainerSetup setup;
 
-    public PackedContainerDriver(@Nullable ContainerSetup parent) {
+    public PackedContainerHandle(@Nullable ContainerSetup parent) {
         this.parent = parent;
     }
 

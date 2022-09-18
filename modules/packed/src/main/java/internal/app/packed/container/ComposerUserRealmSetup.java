@@ -51,7 +51,7 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     }
 
     public <C extends AbstractComposer> void build(C composer) {
-        ContainerConfiguration componentConfiguration = new PackedContainerDriver(null).toConfiguration(application.container);
+        ContainerConfiguration componentConfiguration = new PackedContainerHandle(null).toConfiguration(application.container);
 
         // Invoke AbstractComposer#doBuild which in turn will invoke consumer.accept
         try {

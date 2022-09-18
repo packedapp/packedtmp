@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.operation.OperationType;
-import app.packed.operation.invokesandbox.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationHandle;
 
 /**
  * This class represents a {@link Constructor} on a bean.
@@ -47,5 +47,5 @@ public non-sealed interface BeanIntrospector$BeanConstructor extends BeanElement
      */
     int getModifiers();
 
-    OperationCustomizer newOperation();
+    OperationHandle newOperation();
 }

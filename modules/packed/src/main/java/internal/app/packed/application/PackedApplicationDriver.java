@@ -234,9 +234,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
             // Maybe we will make an actual application????
             // Paa den maade kan vi ogsaa lettere expose mirroret
-            if (factory != null) {
-                System.out.println(this.factory.dependencies());
-            }
 
         }
 

@@ -9,12 +9,9 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 
 import app.packed.application.BuildException;
-import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHook;
-import app.packed.container.InternalExtensionException;
-import internal.app.packed.inject.invoke.InternalInfuser;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A model of an {@link Assembly}. */
@@ -30,30 +27,21 @@ public final /* primitive */ class AssemblyModel {
                 if (a instanceof ContainerHook h) {
                     for (Class<? extends ContainerHook.Processor> b : h.value()) {
                         if (ContainerHook.Processor.class.isAssignableFrom(b)) {
+                            MethodHandle constructor;
+                            // TODO fix visibility
+                            // Maybe common findConstructorMethod
                             try {
-                                MethodHandles.lookup().findConstructor(b, MethodType.methodType(b));
+                                constructor = MethodHandles.lookup().findConstructor(b, MethodType.methodType(void.class));
                             } catch (NoSuchMethodException e) {
                                 throw new BuildException("A container hook must provide an empty constructor, hook = " + h, e);
                             } catch (IllegalAccessException e) {
                                 throw new BuildException("Can't see it sorry, hook = " + h, e);
                             }
-                            
-                            InternalInfuser.Builder builder = InternalInfuser.builder(MethodHandles.lookup(), b, Class.class);
-                            builder.provide(new Key<Class<? extends Assembly>>() {}).adaptArgument(0);
-                            // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
-                            // builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
-                            // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
-                            // MethodHandle mh =
-                            // ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
-                            // builder.provideHidden(extensionClass).invokeExact(mh, 0);
-
-                            // Find a method handle for the extension's constructor
-
-                            MethodHandle constructor = builder.findConstructor(ContainerHook.Processor.class, m -> new InternalExtensionException(m));
+                            constructor = constructor.asType(MethodType.methodType(ContainerHook.Processor.class));
 
                             ContainerHook.Processor instance;
                             try {
-                                instance = (ContainerHook.Processor) constructor.invokeExact(type);
+                                instance = (ContainerHook.Processor) constructor.invokeExact();
                             } catch (Throwable t) {
                                 throw ThrowableUtil.orUndeclared(t);
                             }

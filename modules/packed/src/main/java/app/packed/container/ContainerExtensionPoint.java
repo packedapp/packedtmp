@@ -25,7 +25,7 @@ public class ContainerExtensionPoint extends ExtensionPoint<ContainerExtension> 
     /** Creates a new container extension point. */
     /* package-private */ ContainerExtensionPoint() {}
     
-    public ContainerCustomizer.Installer containerInstaller() {
+    public ContainerHandle.Installer containerInstaller() {
         throw new UnsupportedOperationException();
     }
     

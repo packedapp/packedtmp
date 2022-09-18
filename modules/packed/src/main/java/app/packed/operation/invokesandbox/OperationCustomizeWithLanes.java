@@ -36,7 +36,7 @@ public interface OperationCustomizeWithLanes {
 
     OperationCustomizeWithLanes laneAddInvocationContext(); // OperationInvocationContext?
 
-    default OperationCustomizer lanesClear() {
+    default OperationHandle lanesClear() {
         // No interceptors
         throw new UnsupportedOperationException();
     }
@@ -77,7 +77,7 @@ interface Zarchive {
     // Hmm det er jo ogsaa mere end bare invocation det er ogsaa contexts som er tilgaengelig
     // Problemet med at skille den ud, er at context er saa taet bundet til argument pladsen
     // At det ikke giver mening at skille dem ad
-    default OperationCustomizer invokeWith(OperationInvocationType oit) {
+    default OperationHandle invokeWith(OperationInvocationType oit) {
         // Grunden til vi tager den her. Er fordi det bliver for besvarligt at tage OperationInvocationType hver gang vi skal
         // lave en operation.
         // Fx mht til LifetimeOperations for beans og containers. Nu kan vi bare returnere en liste af operationer.

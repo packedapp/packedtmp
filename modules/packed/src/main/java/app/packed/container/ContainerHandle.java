@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.operation.invokesandbox.OperationCustomizer;
-import internal.app.packed.container.PackedContainerDriver;
+import app.packed.operation.invokesandbox.OperationHandle;
+import internal.app.packed.container.PackedContainerHandle;
 
 // Maaske er det mere en Builder paa ContainerConfiguration
 
@@ -14,7 +14,7 @@ import internal.app.packed.container.PackedContainerDriver;
 
 
 // stateless containers are not supported (obviously)
-public sealed interface ContainerCustomizer permits PackedContainerDriver {
+public sealed interface ContainerHandle permits PackedContainerHandle {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -26,7 +26,7 @@ public sealed interface ContainerCustomizer permits PackedContainerDriver {
      */
     public abstract Set<Class<? extends Extension<?>>> bannedExtensions();
     
-    default List<OperationCustomizer> lifetimeOperations() {
+    default List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
     
@@ -34,7 +34,7 @@ public sealed interface ContainerCustomizer permits PackedContainerDriver {
 
         Installer allowRuntimeWirelets();
         
-        ContainerCustomizer install();
+        ContainerHandle install();
         
         // Only Managed-Operation does not require a wrapper
         default void wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {

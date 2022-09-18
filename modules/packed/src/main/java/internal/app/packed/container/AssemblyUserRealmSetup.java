@@ -51,7 +51,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
 
     // Naar vi har faaet styr paa container drivers osv.
     // Flytter vi dem ned i UserRealm
-    private final PackedContainerDriver driver;
+    private final PackedContainerHandle driver;
 
     /**
      * Builds an application using the specified assembly and optional wirelets.
@@ -70,10 +70,10 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
 
         this.container = application.container;
-        this.driver = new PackedContainerDriver(container);
+        this.driver = new PackedContainerHandle(container);
     }
 
-    public AssemblyUserRealmSetup(PackedContainerDriver driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyUserRealmSetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.application = linkTo.application;
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.assemblyModel = AssemblyModel.of(assembly.getClass());

@@ -13,28 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.inject.service;
+package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.base.Key;
+import app.packed.application.App;
+import app.packed.container.Tee.MyHook;
 
 /**
  *
  */
-public final class TransientService {
-    final Class<?> assignableTo;
+@ContainerHook(MyHook.class)
+public class Tee extends BaseAssembly {
 
-    final boolean isExported;
-
-    Key<?> key;
-
-    public TransientService(Class<?> assignableTo, boolean isExport) {
-        this.assignableTo = requireNonNull(assignableTo);
-        this.isExported = isExport;
+    public static void main(String[] args) {
+        App.run(new Tee());
+        
+    }
+    
+    public static class MyHook implements ContainerHook.Processor {
+       public MyHook() {
+            System.out.println("NEW gook");
+        }
     }
 
-    public void provideAs(Key<?> key) {
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {}
 
-    }
 }

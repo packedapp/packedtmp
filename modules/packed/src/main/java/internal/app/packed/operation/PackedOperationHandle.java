@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Supplier;
 
 import app.packed.operation.OperationMirror;
-import app.packed.operation.invokesandbox.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationHandle;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 
-/** Implementation of {@link OperationCustomizer}. */
-public final class PackedOperationCustomizer implements OperationCustomizer {
+/** Implementation of {@link OperationHandle}. */
+public final class PackedOperationHandle implements OperationHandle {
 
     /** The bean the operation is a part of. */
     final BeanSetup bean;
@@ -45,7 +45,7 @@ public final class PackedOperationCustomizer implements OperationCustomizer {
     /**
      * @param target
      */
-    public PackedOperationCustomizer(BeanSetup bean, PackedOperationTarget target, ExtensionBeanSetup operatorBean) {
+    public PackedOperationHandle(BeanSetup bean, PackedOperationTarget target, ExtensionBeanSetup operatorBean) {
         this.bean = bean;
         this.target = target;
         this.operatorBean = operatorBean;
@@ -67,7 +67,7 @@ public final class PackedOperationCustomizer implements OperationCustomizer {
     }
 
     /** {@inheritDoc} */
-    public OperationCustomizer specializeMirror(Supplier<? extends OperationMirror> supplier) {
+    public OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
         if (isComputed) {
             throw new IllegalStateException("Cannot set a mirror after an invoker has been computed");
         }

@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import internal.app.packed.container.ExtensionSetup;
-
 /**
  * This extension is used to provide mirrors at runtime.
  * 
@@ -29,7 +27,6 @@ import internal.app.packed.container.ExtensionSetup;
 // ApplicationMirror
 // ContainerMirror
 // BeanMirror
-
 public class MirrorExtension extends Extension<MirrorExtension> {
 
     /**
@@ -38,7 +35,7 @@ public class MirrorExtension extends Extension<MirrorExtension> {
      * @param configuration
      *            an extension configuration object.
      */
-       /* package-private */ MirrorExtension(/* hidden */ ExtensionSetup setup) {}
+    MirrorExtension() {}
 }
 
 //DebugExtension???? Clearly indicates that it is not normal usage

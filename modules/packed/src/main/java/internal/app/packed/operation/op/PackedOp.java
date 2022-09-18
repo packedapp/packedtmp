@@ -37,9 +37,13 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
- *
+ * Base implementation of Op.
  */
 public abstract non-sealed class PackedOp<R> implements Op<R> {
+
+    /** A var handle that can update the {@link #container()} field in this class. */
+    private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "delegate",
+            PackedCapturingOp.class);
 
     private final OperationType type;
 
@@ -93,7 +97,9 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         return bind(0, argument);
     }
 
-    public abstract List<InternalDependency> dependencies();
+    public List<InternalDependency> dependencies() {
+        return List.of();
+    }
 
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
@@ -123,7 +129,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
             return pop;
         } else {
             // if capturingop had a canonicalizde we could just call that and get an IFa
-            Object result = PackedCapturingOp.VH_CF_FACTORY.get(op);
+            Object result = VH_CF_FACTORY.get(op);
             return (PackedOp<R>) result;
         }
     }
@@ -175,24 +181,18 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     /** An op taking no the same value every time, used by {@link Op#ofInstance(Object)}. */
     public static final class ConstantOp<R> extends PackedOp<R> {
 
-        /** The constant that is returned on every invocation. */
-        private final R instance;
+        /** A precomputed constant method handle. */
+        private final MethodHandle methodHandle;
 
         public ConstantOp(R instance) {
             super(OperationType.of(instance.getClass()));
-            this.instance = instance;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return List.of();
+            this.methodHandle = MethodHandles.constant(instance.getClass(), instance);
         }
 
         /** {@inheritDoc} */
         @Override
         public MethodHandle toMethodHandle(Lookup ignore) {
-            return MethodHandles.constant(instance.getClass(), instance);
+            return methodHandle;
         }
     }
 
@@ -224,13 +224,8 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         }
     }
 
+    // Should just create eagerly create a MH and use Op.ofMethodHandle
     public static final class PackedCapturingOp<R> extends PackedOp<R> {
-
-        /** A var handle that can update the {@link #container()} field in this class. */
-        private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "delegate",
-                PackedCapturingOp.class);
-
-        // Ideen er lidt at saa snart vi bruger et CapturingFactory saa smider vi den ind her
 
         /** The dependencies of this factory, extracted from the type variables of the subclass. */
         // Taenker vi laver en private record delegate der holder begge ting...
@@ -277,7 +272,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
             super(delegate.type);
             this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
-            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(delegate.type().returnType(), delegate.type().returnType()));
+            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
         }
 
         /** {@inheritDoc} */
@@ -291,7 +286,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         public MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle mh = delegate.toMethodHandle(lookup);
             mh = MethodHandles.filterReturnValue(mh, consumer);
-            return MethodHandleUtil.castReturnType(mh, delegate.type().returnType());
+            return MethodHandleUtil.castReturnType(mh, type().returnType());
         }
 
         @SuppressWarnings({ "unchecked", "unused", "rawtypes" })

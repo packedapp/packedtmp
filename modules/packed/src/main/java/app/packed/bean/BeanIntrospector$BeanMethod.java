@@ -23,7 +23,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
-import app.packed.operation.invokesandbox.OperationCustomizer;
+import app.packed.operation.invokesandbox.OperationHandle;
 import internal.app.packed.bean.hooks.PackedBeanMethod;
 
 /**
@@ -71,7 +71,7 @@ public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits 
      * @throws IllegalArgumentException
      *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
      */
-    OperationCustomizer newOperation(ExtensionBeanConfiguration<?> operator);
+    OperationHandle newOperation(ExtensionBeanConfiguration<?> operator);
 }
 
 /**
