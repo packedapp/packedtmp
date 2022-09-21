@@ -80,7 +80,7 @@ public final /* primitive */ class OperationType {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof OperationType t && returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterVars, t.parameterVars);
+        return obj instanceof OperationType t && (this == obj || returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterVars, t.parameterVars));
     }
 
     /**
@@ -271,7 +271,6 @@ public final /* primitive */ class OperationType {
         return OperationType.of(Variable.of(void.class), Variable.ofField(field));
     }
 
-
     class NonStatic {
         List<?> f;
 
@@ -287,16 +286,16 @@ public final /* primitive */ class OperationType {
 
         public void me(List<?> l) {}
     }
-    
+
     public static void mainx(String[] args) throws Throwable {
         Field f = OperationType.class.getDeclaredField("NO_PARAMETERS");
         System.out.println(f);
         VarHandle vh = MethodHandles.lookup().unreflectVarHandle(f);
-        
+
         vh.getVolatile();
         MethodHandles.lookup().unreflectGetter(f).invoke();
         System.out.println(vh.hasInvokeExactBehavior());
-        
+
         MethodType mt = vh.accessModeType(AccessMode.COMPARE_AND_EXCHANGE);
         System.out.println(OperationType.ofFieldAccess(f, AccessMode.COMPARE_AND_EXCHANGE_RELEASE));
         System.out.println(mt);

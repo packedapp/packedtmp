@@ -99,49 +99,6 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
-     * Sets the name of this assembly's container. The name must consists only of alphanumeric characters and '_', '-' or
-     * '.'. The name is case sensitive.
-     * <p>
-     * This method should be called as the first thing when configuring this assembly.
-     * <p>
-     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way
-     * that it will have a unique name among other sibling container.
-     *
-     * @param name
-     *            the name of the container
-     * @see ContainerConfiguration#named(String)
-     * @throws IllegalArgumentException
-     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-     *             characters and '_', '-' or '.'
-     * @throws IllegalStateException
-     *             if called from outside {@link #build()}
-     */
-    protected final void named(String name) {
-        configuration().named(name);
-    }
-
-    /**
-     * Returns an extension of the specified type.
-     * <p>
-     * If this is the first time an extension of the specified type has been requested. This method will create a new
-     * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
-     * type.
-     * 
-     * @param <E>
-     *            the type of extension to return
-     * @param extensionClass
-     *            the Class object corresponding to the extension type
-     * @return an extension of the specified type
-     * @throws IllegalStateException
-     *             if the assembly's container is no longer configurable and the specified type of extension has not been
-     *             used previously
-     * @implNote this method delegates all calls to ContainerConfiguration#use(Class)
-     */
-    protected final <E extends Extension<E>> E use(Class<E> extensionClass) {
-        return configuration().use(extensionClass);
-    }
-
-    /**
      * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
@@ -158,16 +115,17 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
-     * Installs a component that will use the specified {@link Op} to instantiate the component instance.
-     * <p>
+     * Installs a bean that will use the specified {@link Op} to instantiate the bean.
      * 
-     * @param factory
-     *            the factory to install
-     * @return the configuration of the component
+     * @param <T>
+     *            the type of bean to install
+     * @param op
+     *            the operation using for instantiating the bean
+     * @return the configuration of the bean
      * @see BaseAssembly#install(Op)
      */
-    protected final <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
-        return bean().install(factory);
+    protected final <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+        return bean().install(op);
     }
 
     /**
@@ -216,21 +174,26 @@ public abstract class BaseAssembly extends Assembly {
         throw new UnsupportedOperationException();
     }
 
-    public interface Linker {
-
-    }
-
     /**
-     * 
-     * @param <W>
-     *            the type of wirelets to select
-     * @param wireletClass
-     *            the type of wirelets to select
-     * @return a wirelet selection
-     * @see ContainerConfiguration#selectWirelets(Class)
+     * Sets the name of this assembly's container. The name must consists only of alphanumeric characters and '_', '-' or
+     * '.'. The name is case sensitive.
+     * <p>
+     * This method should be called as the first thing when configuring this assembly.
+     * <p>
+     * If no name is set using this method. The framework will automatically assign a name to the container, in such a way
+     * that it will have a unique name among other sibling container.
+     *
+     * @param name
+     *            the name of the container
+     * @see ContainerConfiguration#named(String)
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     * @throws IllegalStateException
+     *             if called from outside {@link #build()}
      */
-    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return configuration().selectWirelets(wireletClass);
+    protected final void named(String name) {
+        configuration().named(name);
     }
 
     /**
@@ -238,8 +201,8 @@ public abstract class BaseAssembly extends Assembly {
      * <p>
      * This method is shortcut for ....
      * <p>
-     * The runtime will use {@link Op#factoryOf(Class)} to find a valid constructor or method to instantiate the
-     * service instance once the injector is created.
+     * The runtime will use {@link Op#factoryOf(Class)} to find a valid constructor or method to instantiate the service
+     * instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
      * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
@@ -299,6 +262,19 @@ public abstract class BaseAssembly extends Assembly {
     }
 
     /**
+     * 
+     * @param <W>
+     *            the type of wirelets to select
+     * @param wireletClass
+     *            the type of wirelets to select
+     * @return a wirelet selection
+     * @see ContainerConfiguration#selectWirelets(Class)
+     */
+    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
+        return configuration().selectWirelets(wireletClass);
+    }
+
+    /**
      * Returns a {@link ServiceExtension} instance.
      * <p>
      * Calling this method is short for {@code use(ServiceExtension.class)}
@@ -308,6 +284,31 @@ public abstract class BaseAssembly extends Assembly {
      */
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);
+    }
+
+    /**
+     * Returns an extension of the specified type.
+     * <p>
+     * If this is the first time an extension of the specified type has been requested. This method will create a new
+     * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
+     * type.
+     * 
+     * @param <E>
+     *            the type of extension to return
+     * @param extensionClass
+     *            the Class object corresponding to the extension type
+     * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             if the assembly's container is no longer configurable and the specified type of extension has not been
+     *             used previously
+     * @implNote this method delegates all calls to ContainerConfiguration#use(Class)
+     */
+    protected final <E extends Extension<E>> E use(Class<E> extensionClass) {
+        return configuration().use(extensionClass);
+    }
+
+    public interface Linker {
+
     }
 }
 

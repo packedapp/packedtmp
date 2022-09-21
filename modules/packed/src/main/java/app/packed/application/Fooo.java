@@ -16,6 +16,7 @@
 package app.packed.application;
 
 import app.packed.container.BaseAssembly;
+import app.packed.operation.Op;
 
 /**
  *
@@ -26,12 +27,15 @@ public class Fooo extends BaseAssembly {
     @Override
     protected void build() {
         installInstance("Foo");
+        install(Op.ofInstance("HEjHEj").peek(e -> System.out.println("Nice " + e)));
     }
 
     public static void main(String[] args) {
         App.print(new Fooo());
         System.out.println(App.mirror(new Fooo()).lifetime().originKind());
-        
+
+        App.run(new Fooo());
+
         throw new RuntimeException("Something went wrong [http://www.dr.dk]");
     }
 }

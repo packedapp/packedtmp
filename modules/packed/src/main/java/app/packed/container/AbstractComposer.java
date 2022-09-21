@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
-import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.PackedApplicationDriver;
@@ -125,9 +124,6 @@ public abstract class AbstractComposer {
      * <p>
      * This method can be invoked multiple times. In all cases the object being bound or installed will use the latest
      * registered lookup object.
-     * <p>
-     * Lookup objects that have been explicitly set using {@link Op#withLookup(java.lang.invoke.MethodHandles.Lookup)}
-     * are never overridden by any lookup object set by this method.
      * <p>
      * If no lookup is specified using this method, the runtime will use the public lookup object
      * ({@link MethodHandles#publicLookup()}) for member access.

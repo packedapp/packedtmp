@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
@@ -29,7 +30,6 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.bean.InaccessibleBeanException;
 import app.packed.bean.Inject;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.PackedOp.ConstantOp;
@@ -48,7 +48,7 @@ import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
  * <p>
  * This class is typically used like this:
  * 
- * <pre> {@code Factory<Long> f = new Factory<>(System::currentTimeMillis) {};}</pre>
+ * <pre> {@code Op<Long> f = new Op0<>(System::currentTimeMillis) {};}</pre>
  * <p>
  * In this example we create a new class that extends Factory0 is order to capture information about the suppliers type
  * variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining type
@@ -56,19 +56,13 @@ import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
  * <p>
  * Qualifier annotations can be used if they have {@link ElementType#TYPE_USE} in their {@link Target}:
  * 
- * <pre> {@code Factory<Long> f = new Factory<@SomeQualifier Long>(() -> 1L) {};}</pre>
+ * <pre> {@code Op<Long> f = new Op0<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
- * @apiNote Factory implementations does generally not implement {@link #hashCode()} or {@link #equals(Object)}.
+ * @apiNote Op implementations does not generally implement {@link #hashCode()} or {@link #equals(Object)}.
  */
-// Rename to Func I think...
-// Make into sealed interface???? Why not will make it easier to use records
 
 // toMethodHandle??? Ja hvorfor ikke... hvis man har et Factory, kan man jo altid bare registrere det og bruge det...
 // Skal vi tage et Lookup object??? IDK
-
-// Altsaa hvis vi har et Factory kan vi jo altid bare registrere den et eller andet sted i Packed
-// og saa kalde Factory igennem den...
-// Saa det der med at det kun er Packed der kan invokere den er vel lidt ligegyldigt....
 
 @SuppressWarnings("rawtypes") // eclipse being difficult
 public sealed interface Op<R> permits PackedOp, CapturingOp {
@@ -125,47 +119,8 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      */
     Op<R> peek(Consumer<? super R> action);
 
-    /** {@return the type of this op.} */
+    /** {@return the type of this operation.} */
     OperationType type();
-
-    /**
-     * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
-     * the specified lookup object to access any underlying member whenever this framework needs to access.
-     * <p>
-     * This method is useful, for example, to make a factory publically available for an class that does not have a public
-     * constructor.
-     * <p>
-     * The specified lookup object will always be preferred, even when, for example, being registered with a container who
-     * has its own lookup object.
-     * <p>
-     * If you have split-module class hierarchies with an abstract class in one module a concrete class in another module.
-     * 
-     * Remember to register the support class via the standard service loading mechanism as outlined in ....
-     * 
-     * @param lookup
-     *            the lookup object
-     * @return a new factory with uses the specified lookup object when accessing the underlying member
-     * @throws InaccessibleBeanException
-     *             if the specified lookup object does not give access to the underlying member
-     * @throws UnsupportedOperationException
-     *             if this factory was not created from either a field, constructor or method.
-     */
-    // Goddamn, what about static create method on one object, and the actuak object in another module.
-    // Her taenker jeg ogsaa paa at det lookup object bliver brugt til Hooks, o.s.v.
-    // Igen der er kun et problem, hvis metoden
-    // Maaske skal vi tillade stacked MethodHandles..
-    // Maaske skal vi endda have en SelectiveMethodHandle
-    //// Ideen er at man kan pakke en method handle ind...
-    // Stacked lookups..
-    // Vi skal have en hel section omkring method handlers.
-    // Lookup object paa et factory. Kan bruges til alle metoder....Ikke kun dem med inject
-    // Giver ikke mening andet...
-
-    // open(Lookup)
-    // openResult(Lookup) <---- maaske er den baa en
-    // open()????
-    // openTo(Lookup, xxx)
-    Op<R> withLookup(MethodHandles.Lookup lookup);
 
     /**
      * Creates a new op that can invoke the specified constructor.
@@ -175,6 +130,11 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      * @return the new operation
      */
     public static <T> Op<T> ofConstructor(Constructor<T> constructor) {
+        requireNonNull(constructor, "constructor is null");
+        return new ExecutableOp<>(constructor);
+    }
+
+    public static <T> Op<T> ofConstructor(Constructor<T> constructor, Lookup lookup) {
         requireNonNull(constructor, "constructor is null");
         return new ExecutableOp<>(constructor);
     }
@@ -203,20 +163,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
         return new ConstantOp<T>(instance);
     }
 
-    
-    // Hvad goer vi med en klasse der er mere restri
-    // If the specified instance is not a static method. An extra variable
-    // use bind(Foo) to bind the variable.
-//    public static <T> Op<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
-//        requireNonNull(returnType, "returnType is null");
-//        return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
-//    }
-//
-//    // Annotations will be retained from the method
-//    public static <T> Op<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
-//        throw new UnsupportedOperationException();
-//    }
-
     /**
      * <p>
      * If the specified method is not a static method. The returned factory will have the method's declaring class as its
@@ -235,7 +181,16 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
         throw new UnsupportedOperationException();
     }
 
+    public static Op<?> ofMethod(Method method, Lookup lookup) {
+        requireNonNull(method, "method is null");
+        throw new UnsupportedOperationException();
+    }
+
     public static Op<?> ofMethodHandle(MethodHandle methodHandle) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public static Op<?> ofMethodHandle(MethodHandle methodHandle, OperationType type) {
         throw new UnsupportedOperationException();
     }
 }
@@ -359,6 +314,17 @@ interface ZandboxOp<R> {
         return false;
     }
 
+    /**
+     * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
+     * for example, for finding fields annotated with {@link Inject}.
+     *
+     * @return the raw type of the type of objects this factory provide
+     */
+    @Deprecated
+    default Class<?> rawReturnType() {
+        throw new UnsupportedOperationException();
+    }
+
     default Op<R> useExactType(Class<? extends R> type) {
         // TypeHint.. withExactType
 
@@ -372,19 +338,21 @@ interface ZandboxOp<R> {
         // SomeServiceImpl create();
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
-     * for example, for finding fields annotated with {@link Inject}.
-     *
-     * @return the raw type of the type of objects this factory provide
-     */
-    @Deprecated
-    default Class<?> rawReturnType() {
-        throw new UnsupportedOperationException();
-    }
-
 }
+
+// Hvad goer vi med en klasse der er mere restri
+// If the specified instance is not a static method. An extra variable
+// use bind(Foo) to bind the variable.
+//public static <T> Op<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
+//    requireNonNull(returnType, "returnType is null");
+//    return ofMethod(implementation, name, TypeToken.of(returnType), parameters);
+//}
+//
+//// Annotations will be retained from the method
+//public static <T> Op<T> ofMethod(Class<?> implementation, String name, TypeToken<T> returnType, Class<?>... parameters) {
+//    throw new UnsupportedOperationException();
+//}
+
 // TODO Hmm do we cast the return type to type????
 
 //// ofConstructor().castReturn(Class<T>)

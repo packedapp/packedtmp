@@ -189,6 +189,41 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         return new ServiceExtensionMirror(injectionManager);
     }
 
+    /**
+     * Provides every service from the specified locator.
+     * 
+     * @param locator
+     *            the locator to provide services from
+     * @throws IllegalArgumentException
+     *             if the specified locator is not implemented by Packed
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+        if (!(locator instanceof AbstractServiceLocator l)) {
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+                    + " are currently not supported, locator type = " + locator.getClass().getName());
+        }
+        checkIsConfigurable();
+        injectionManager.provideAll(l);
+    }
+
+    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
+        // ST.contract throws UOE
+    }
+
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
+        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation).kindUnmanaged().install();
+        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
+        return sbc.provide();
+    }
+
+    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
+        BeanHandle<T> handle = bean().beanInstallerFromOp(op).kindUnmanaged().install();
+        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
+        return sbc.provide();
+    }
+
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();
     public void require(Class<?>... keys) {
@@ -258,41 +293,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
         injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
-    }
-
-    /**
-     * Provides every service from the specified locator.
-     * 
-     * @param locator
-     *            the locator to provide services from
-     * @throws IllegalArgumentException
-     *             if the specified locator is not implemented by Packed
-     */
-    public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-        if (!(locator instanceof AbstractServiceLocator l)) {
-            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-                    + " are currently not supported, locator type = " + locator.getClass().getName());
-        }
-        checkIsConfigurable();
-        injectionManager.provideAll(l);
-    }
-
-    public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
-        // ST.contract throws UOE
-    }
-
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation).kindUnmanaged().install();
-        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
-        return sbc.provide();
-    }
-
-    public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> factory) {
-        BeanHandle<T> handle = bean().beanInstallerFromOp(factory).kindUnmanaged().install();
-        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
-        return sbc.provide();
     }
 }
 //

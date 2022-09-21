@@ -439,13 +439,13 @@ public interface ServiceLocator {
          * 
          * @param <T>
          *            the type of service to bind
-         * @param factory
+         * @param op
          *            the factory to bind
          * @return a service configuration for the service
          */
-        public <T> ProvideableBeanConfiguration<T> provide(Op<T> factory) {
+        public <T> ProvideableBeanConfiguration<T> provide(Op<T> op) {
             extension();
-            return container().use(BeanExtension.class).install(factory).provide();
+            return container().use(BeanExtension.class).install(op).provide();
         }
 
         /**

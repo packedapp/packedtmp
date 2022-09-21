@@ -17,7 +17,6 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
@@ -30,7 +29,7 @@ import internal.app.packed.operation.op.PackedOp;
 public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /** The op that we delegate everything to. */
-    private final PackedOp<R> delegate;
+    private final PackedOp<R> op;
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
@@ -41,19 +40,19 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      */
     CapturingOp(Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        delegate = PackageCapturingOpHelper.create(getClass(), function);
+        op = PackageCapturingOpHelper.create(getClass(), function);
     }
 
     /** {@inheritDoc} */
     @Override
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
-        return delegate.bind(position, argument, additionalArguments);
+        return op.bind(position, argument, additionalArguments);
     }
 
     /** {@inheritDoc} */
     @Override
     public final Op<R> bind(@Nullable Object argument) {
-        return delegate.bind(argument);
+        return op.bind(argument);
     }
 
     PackedOp<R> canonicalize() {
@@ -63,17 +62,11 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
     /** {@inheritDoc} */
     @Override
     public final Op<R> peek(Consumer<? super R> action) {
-        return delegate.peek(action);
+        return op.peek(action);
     }
 
     /** {@inheritDoc} */
     public final OperationType type() {
-        return delegate.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Op<R> withLookup(Lookup lookup) {
-        return delegate.withLookup(lookup);
+        return op.type();
     }
 }

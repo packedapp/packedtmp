@@ -178,7 +178,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     }
 
     static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<A> wrapperType) {
-        return builder(BeanExtensionPoint.factoryOf(wrapperType).withLookup(caller));
+        return builder(BeanExtensionPoint.factoryOf(wrapperType));
     }
 
     final class Composer extends AbstractComposer {
