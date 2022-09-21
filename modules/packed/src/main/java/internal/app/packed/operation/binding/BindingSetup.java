@@ -34,12 +34,14 @@ public class BindingSetup {
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
+    /** The index into {@link OperationSetup#bindings}. */
+    public final int index;
+
     /** Supplies a mirror for the operation */
     private Supplier<? extends BindingMirror> mirrorSupplier;
 
+    /** The underlying operation. */
     public final OperationSetup operation;
-
-    public final int index;
 
     BindingSetup(OperationSetup operation, int index) {
         this.operation = operation;

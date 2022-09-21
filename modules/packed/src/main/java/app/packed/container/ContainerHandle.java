@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.operation.invokesandbox.OperationHandle;
+import app.packed.operation.OperationHandle;
 import internal.app.packed.container.PackedContainerHandle;
 
 // Maaske er det mere en Builder paa ContainerConfiguration

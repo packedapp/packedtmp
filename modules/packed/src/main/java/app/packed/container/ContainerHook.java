@@ -10,7 +10,8 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Can be used on subclasses of {@link Assembly} or as a meta-annotation that can be applied to {@link Assembly} subclass.
+ * Can be used on subclasses of {@link Assembly} or as a meta-annotation that can be applied to {@link Assembly}
+ * subclass.
  * 
  * Assembly : Will be applied to all containers installed by the user
  * 
@@ -41,7 +42,7 @@ public @interface ContainerHook {
      * @return
      */
     // applyToAllContainersInAssembly instead?
-    boolean applyToRootOnly() default false;
+    boolean applyToRootOnly() default false; // maybe to true anyway
 
     /** An annotation that allows for placing multiple {@link ContainerHook} annotations on a single target. */
     @Retention(RetentionPolicy.RUNTIME)

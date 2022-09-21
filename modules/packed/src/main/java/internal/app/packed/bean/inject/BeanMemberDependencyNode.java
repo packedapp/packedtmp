@@ -22,13 +22,13 @@ import java.lang.reflect.Modifier;
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.inject.DependencyNode;
-import internal.app.packed.inject.DependencyProducer;
-import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.inject.service.build.BeanMemberServiceSetup;
-import internal.app.packed.inject.service.build.ServiceSetup;
 import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
+import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.operation.bindings.DependencyProducer;
+import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.build.BeanMemberServiceSetup;
+import internal.app.packed.service.build.ServiceSetup;
 
 /**
  *
@@ -36,7 +36,7 @@ import internal.app.packed.lifetime.pool.PoolEntryHandle;
 public final class BeanMemberDependencyNode extends DependencyNode {
 
     @Nullable
-    protected final KeyProvidable sourceMember;
+    protected final DependencyHolder sourceMember;
 
     @Nullable
     protected final BeanMemberServiceSetup service;

@@ -42,7 +42,7 @@ import app.packed.operation.OperationMirror;
 // Hvis ikke skal vi vel bare embedde den...
 
 
-
+// Rename ComponentMirror -> LifetimeElementMirror?
 public interface ComponentMirrorTree  {
 
     /** {@return {@code true} if this set contains no mirrors.} */

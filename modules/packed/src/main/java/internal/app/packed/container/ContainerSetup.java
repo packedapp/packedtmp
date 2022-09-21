@@ -36,7 +36,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.inject.service.ContainerInjectionManager;
+import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 

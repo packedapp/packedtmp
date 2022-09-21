@@ -22,30 +22,33 @@ import java.lang.reflect.Member;
 import java.util.List;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.inject.DependencyNode;
-import internal.app.packed.inject.DependencyProducer;
-import internal.app.packed.inject.InternalDependency;
+import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.operation.bindings.DependencyProducer;
+import internal.app.packed.operation.bindings.InternalDependency;
 
 /**
  *
  */
-public abstract class DependencyHolder extends KeyProvidable {
+abstract class DependencyHolder {
 
     /** Dependencies that needs to be resolved. */
-    public final List<InternalDependency> dependencies;
+    final List<InternalDependency> dependencies;
 //
 //    @Nullable
 //    public final Consumer<? super ComponentSetup> processor = null;
 
-    public final boolean provideAsConstant;
+    final boolean provideAsConstant;
 
     // Jeg tror man loeber alle parameterene igennem og ser om der
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
+    @Nullable
+    public final Key<?> provideAskey;
 
     DependencyHolder(List<InternalDependency> dependencies, boolean provideAsConstant, Key<?> provideAsKey) {
-        super(provideAsKey);
+        this.provideAskey = provideAsKey;
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = provideAsConstant;
         // this.processor = builder.processor;

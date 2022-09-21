@@ -30,16 +30,16 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.hooks.PackedBeanField;
-import internal.app.packed.bean.hooks.PackedBeanMethod;
 import internal.app.packed.bean.inject.BeanMemberDependencyNode;
-import internal.app.packed.bean.inject.FieldHelper;
-import internal.app.packed.bean.inject.MethodHelper;
+import internal.app.packed.bean.inject.FieldDependencyHolder;
+import internal.app.packed.bean.inject.MethodDependencyHolder;
+import internal.app.packed.bean.introspection.PackedBeanField;
+import internal.app.packed.bean.introspection.PackedBeanMethod;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.inject.DependencyNode;
-import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.inject.service.ServiceConfiguration;
-import internal.app.packed.inject.service.runtime.AbstractServiceLocator;
+import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.ServiceConfiguration;
+import internal.app.packed.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -154,7 +154,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 
                 BeanSetup bean = ((PackedBeanField) field).bean;
-                FieldHelper fh = new FieldHelper(field, ((PackedBeanField) field).newVarHandle(), constant, key);
+                FieldDependencyHolder fh = new FieldDependencyHolder(field, ((PackedBeanField) field).newVarHandle(), constant, key);
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
                 field.newSetOperation(null);
 
@@ -172,7 +172,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 //                method.newOperation(null);
 
                 BeanSetup bean = ((PackedBeanMethod) method).bean;
-                MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
+                MethodDependencyHolder fh = new MethodDependencyHolder(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
                 // Er ikke sikker paa vi har en runtime bean...

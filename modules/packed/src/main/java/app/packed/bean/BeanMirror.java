@@ -98,18 +98,6 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
 
     /** {@inheritDoc} */
     @Override
-    public Stream<ComponentMirror> stream() {
-        return Stream.of(this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int depth() {
-        return bean().depth;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public LifetimeMirror lifetime() {
         return bean().lifetime.mirror();
     }

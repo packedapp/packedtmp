@@ -22,8 +22,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import internal.app.packed.bean.hooks.PackedBeanField.BuildTimeFieldTargetMirror;
-import internal.app.packed.bean.hooks.PackedBeanMethod.BuildTimeMethodTargetMirror;
+import internal.app.packed.bean.introspection.PackedBeanField.BuildTimeFieldTargetMirror;
+import internal.app.packed.bean.introspection.PackedBeanMethod.BuildTimeMethodTargetMirror;
 
 /**
  * The target of an operation.

@@ -18,8 +18,8 @@ package app.packed.bean;
 import java.lang.reflect.Constructor;
 
 import app.packed.bean.BeanIntrospector.BeanElement;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import app.packed.operation.invokesandbox.OperationHandle;
 
 /**
  * This class represents a {@link Constructor} on a bean.

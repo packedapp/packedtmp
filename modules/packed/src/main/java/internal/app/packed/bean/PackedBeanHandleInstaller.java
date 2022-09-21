@@ -28,7 +28,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.Op;
-import internal.app.packed.bean.hooks.BeanIntrospectionHelper;
+import internal.app.packed.bean.introspection.BeanIntrospectionHelper;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;

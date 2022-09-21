@@ -36,7 +36,6 @@ public interface Binding2Mirror extends Mirror {
 
     ResolutionState resolutionState();
 
-    Binding binding();
     
     BindingKind bindingKind();
 

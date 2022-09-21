@@ -23,8 +23,8 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
-import internal.app.packed.inject.DependencyNode;
 import internal.app.packed.operation.binding.BindingSetup;
+import internal.app.packed.operation.bindings.DependencyNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -42,7 +42,7 @@ public final class OperationSetup {
     public DependencyNode depNode;
 
     /** Supplies a mirror for the operation */
-    private final Supplier<? extends OperationMirror> mirrorSupplier;
+    private Supplier<? extends OperationMirror> mirrorSupplier;
 
     /** The target of the operation. */
     public final PackedOperationTarget operationTarget;

@@ -26,10 +26,10 @@ import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.inject.service.ContainerInjectionManager;
 import internal.app.packed.lifetime.PackedManagedLifetime;
 import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
+import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

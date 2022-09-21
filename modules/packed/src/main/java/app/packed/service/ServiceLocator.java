@@ -41,7 +41,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.inject.service.PackedServiceLocator;
+import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.LookupUtil;
 
 /**

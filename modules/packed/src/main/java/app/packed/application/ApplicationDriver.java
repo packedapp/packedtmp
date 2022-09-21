@@ -186,8 +186,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         static ApplicationDriver<?> of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
-
     }
+    
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
      * {@link ApplicationDriver#builder()}.

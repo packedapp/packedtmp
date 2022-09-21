@@ -15,8 +15,8 @@ import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.RealmSetup;
-import internal.app.packed.inject.BeanInjectionManager;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.bindings.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 

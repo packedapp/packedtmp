@@ -29,29 +29,10 @@ import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
- * A mirror for a dependency.
+ * A mirror of binding.
+ * 
+ * @see OperationMirror#bindings()
  */
-// ; // What are we having injected... Giver det mening for functions????
-
-// BiFunction(WebRequest, WebResponse) vs
-// foo(WebRequest req, WebResponse res)
-// Hvorfor ikke...
-// Ja det giver mening!
-
-// @WebRequst
-// (HttpRequest, HttpResponse) == (r, p) -> ....
-
-// Req + Response -> er jo operations variable...
-// Tjah ikke
-
-// Men er det dependencies??? Ja det er vel fx for @Provide
-// Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
-
-// f.eks @Provide for et field ville ikke have dependencies
-
-// Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
-// Eller maaske goer det? Taenker ikke man kan vaere alle dele
-@SuppressWarnings("exports")
 public abstract class BindingMirror implements Mirror {
 
     /**
@@ -84,7 +65,7 @@ public abstract class BindingMirror implements Mirror {
     }
 
     /** {@return the index of this binding into OperationMirror#bindings().} */
-    public int bindingIndex() {
+    public int bindingIndex() { // alternative parameterIndex
         return binding().index;
     }
 
@@ -118,21 +99,41 @@ public abstract class BindingMirror implements Mirror {
         return binding().operation.mirror();
     }
 
-    /** {@return the variable that has been bound.} */
+    /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
         return b.operation.type.parameter(b.index);
     }
+}
+//; // What are we having injected... Giver det mening for functions????
 
-    public UserOrExtension providedBy() {
-        // Er det bare extension???
-        
-        // Hvad med manual bindings?
-        
-        // HttpRequst<?> Optional<Integer> er jo stadig provided af WebExtension...
-        
-        throw new UnsupportedOperationException();
-    }
+//BiFunction(WebRequest, WebResponse) vs
+//foo(WebRequest req, WebResponse res)
+//Hvorfor ikke...
+//Ja det giver mening!
+
+//@WebRequst
+//(HttpRequest, HttpResponse) == (r, p) -> ....
+
+//Req + Response -> er jo operations variable...
+//Tjah ikke
+
+//Men er det dependencies??? Ja det er vel fx for @Provide
+//Skal man kunne trace hvor de kommer fra??? Det vil jeg mene
+
+//f.eks @Provide for et field ville ikke have dependencies
+
+//Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
+//Eller maaske goer det? Taenker ikke man kan vaere alle dele
+interface Sandbox {
+
+    // Er det bare extension???
+
+    // Hvad med manual bindings?
+
+    // HttpRequst<?> Optional<Integer> er jo stadig provided af WebExtension...
+
+    public UserOrExtension providedBy();
 
     /**
      * If this dependency is the result of another operation.
@@ -148,16 +149,10 @@ public abstract class BindingMirror implements Mirror {
     // Her er constructeren for CustomerManager...
     // Til gengaeld
 
-    public Optional<OperationMirror> providingOperation() {
-        throw new UnsupportedOperationException();
-    }
+    public Optional<OperationMirror> providingOperation();
 
-    public ResolutionState resolutionState() {
-        throw new UnsupportedOperationException();
-    }
+    public ResolutionState resolutionState();
 
-    
-    
     // Tror det bliver ligesom OperationTarget
     abstract class OfAnnotation extends BindingMirror {
         abstract Annotation annotation();

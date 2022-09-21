@@ -168,7 +168,7 @@ public class CollectionUtil {
         }
 
     }
-    
+
     public static final class ForwardingMap<K, V> implements Map<K, V> {
         final Map<K, V> delegate;
         final ForwardingStrategy strategy;
@@ -309,9 +309,7 @@ public class CollectionUtil {
 // or on the view itself
     public static class ForwardingStrategy {
 
-        protected void checkInsert(Object instance) {
-
-        }
+        protected void checkInsert(Object instance) {}
 
         protected void checkRemove(Object instance) {}
 
@@ -334,7 +332,7 @@ public class CollectionUtil {
 
         @Override
         public Iterator<T> iterator() {
-            record MappedUnmodifiableIterator<F, T>(Iterator<? extends F> iterator, Function<? super F, ? extends T> mapper)  implements Iterator<T> {
+            record MappedUnmodifiableIterator<F, T> (Iterator<? extends F> iterator, Function<? super F, ? extends T> mapper) implements Iterator<T> {
 
                 @Override
                 public final boolean hasNext() {
@@ -346,7 +344,7 @@ public class CollectionUtil {
                     return mapper.apply(iterator.next());
                 }
             }
-            
+
             return new MappedUnmodifiableIterator<>(collection.iterator(), mapper);
         }
 

@@ -26,8 +26,8 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import app.packed.operation.invokesandbox.OperationHandle;
 import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 

@@ -87,12 +87,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
 
     /** {@inheritDoc} */
     @Override
-    public int depth() {
-        return container().depth;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof ContainerMirror m && container() == m.container();
     }
@@ -190,7 +184,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
         return container().path();
     }
 
-    /** {@inheritDoc} */
     public final Stream<ComponentMirror> stream() {
         return container().stream().map(c -> c.mirror());
     }

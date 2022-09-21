@@ -23,7 +23,7 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import internal.app.packed.inject.InternalDependency;
+import internal.app.packed.operation.bindings.InternalDependency;
 
 /**
  *

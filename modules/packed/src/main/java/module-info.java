@@ -14,7 +14,7 @@ module app.packed {
     exports app.packed.service;
 
     // temporary
-    exports app.packed.operation.invokesandbox;
+    exports app.packed.operation.lanes;
     exports app.packed.lifetime.managed;
     exports app.packed.lifetime.sandbox;
     exports app.packed.operation.bindings;

@@ -42,11 +42,11 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.inject.invoke.InternalInfuser;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
+import internal.deprecated.invoke.InternalInfuser;
 
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {

@@ -22,9 +22,9 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.inject.service.ContainerInjectionManager;
-import internal.app.packed.inject.service.InternalServiceUtil;
-import internal.app.packed.inject.service.build.BeanInstanceServiceSetup;
+import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceUtil;
+import internal.app.packed.service.build.BeanInstanceServiceSetup;
 
 /**
  * A configuration of a container bean.

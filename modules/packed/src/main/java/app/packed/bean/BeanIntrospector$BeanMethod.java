@@ -22,11 +22,11 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
-import app.packed.operation.invokesandbox.OperationHandle;
-import internal.app.packed.bean.hooks.PackedBeanMethod;
+import internal.app.packed.bean.introspection.PackedBeanMethod;
 
 /**
  * This class represents a {@link Method} on a bean.

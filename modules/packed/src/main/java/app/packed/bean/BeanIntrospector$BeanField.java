@@ -23,9 +23,9 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.Variable;
-import app.packed.operation.invokesandbox.OperationHandle;
-import internal.app.packed.bean.hooks.PackedBeanField;
+import internal.app.packed.bean.introspection.PackedBeanField;
 
 /**
  * This class represents a {@link Field} on a bean.

@@ -52,6 +52,5 @@ public class KeyTst extends BaseAssembly {
                 bean().filter(l);
             });
         }
-
     }
 }

@@ -18,7 +18,7 @@ import app.packed.container.ExtensionPoint;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
-import internal.app.packed.bean.hooks.PackedBeanMethod;
+import internal.app.packed.bean.introspection.PackedBeanMethod;
 import internal.app.packed.container.ExtensionSetup;
 
 /**

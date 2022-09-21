@@ -43,9 +43,6 @@ public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMir
     /** {@return the assembly where the component is defined.} */
     AssemblyMirror assembly();
 
-    /** {@return the distance to the root component in the application, the root component having depth {@code 0}.} */
-    int depth(); // Er sikkert mest interessant for indentions
-
     /** {@return the component's lifetime.} */
     LifetimeMirror lifetime();
 
@@ -82,9 +79,6 @@ public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMir
         // Super useful...
         throw new UnsupportedOperationException();
     }
-
-    /** {@return a stream containing this mirror and all descendents.} */
-    Stream<ComponentMirror> stream();
 
     // Now that we have parents...
     // add Optional<Component> tryResolve(CharSequence path);

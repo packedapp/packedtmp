@@ -97,5 +97,4 @@ public final class BasePackageAccess {
          */
         TypeToken<?> toTypeLiteral(Type type);
     }
-
 }
