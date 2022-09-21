@@ -15,9 +15,51 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.function.Supplier;
+
+import app.packed.operation.OperationMirror;
+import app.packed.operation.bindings.BindingMirror;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
+
 /**
  *
  */
 public class BindingSetup {
 
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
+            void.class, BindingSetup.class);
+
+    /** Supplies a mirror for the operation */
+    private Supplier<? extends BindingMirror> mirrorSupplier;
+
+    public final OperationSetup operation;
+
+    public final int index;
+
+    BindingSetup(OperationSetup operation, int index) {
+        this.operation = operation;
+        this.index = index;
+    }
+
+    /** {@return a new mirror.} */
+    public BindingMirror mirror() {
+        // Create a new OperationMirror
+        BindingMirror mirror = mirrorSupplier.get();
+        if (mirror == null) {
+            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + BindingMirror.class.getSimpleName() + " instance");
+        }
+
+        // Initialize BindingMirror by calling BindingMirror#initialize(BindingSetup)
+        try {
+            MH_BINDING_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
+    }
 }

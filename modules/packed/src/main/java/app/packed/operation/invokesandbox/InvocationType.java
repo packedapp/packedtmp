@@ -21,22 +21,20 @@ import java.lang.invoke.MethodType;
  *
  */
 
-
 public interface InvocationType {
 
+    /** {@return the method type of the invocation.} */
     MethodType methodType();
 
-    
     // Tror vi styrer return type her.
     // Man boer smide custom fejl beskeder
-    
+
     default InvocationType returnObject() {
         return returnType(Object.class);
     }
 
     InvocationType returnType(Class<?> type);
-    
-    
+
     static InvocationType defaults() {
         throw new UnsupportedOperationException();
     }

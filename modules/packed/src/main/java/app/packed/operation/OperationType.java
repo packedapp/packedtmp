@@ -17,9 +17,13 @@ package app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
+import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -29,7 +33,7 @@ import java.util.StringJoiner;
 import app.packed.base.Key;
 
 /**
- * An operation type represents the arguments and return type for an operation.
+ * An operation type represents the arguments and return variable for an operation.
  * 
  * @apiNote This class is modelled after {@link MethodType}. But includes information about annotations and unerased
  *          type information.
@@ -39,35 +43,36 @@ import app.packed.base.Key;
 // Altsaa annoteringer er jo ikke noedvendigvis knyttede til retur typen, fx @Get
 public final /* primitive */ class OperationType {
 
-    private static final Variable[] NO_VARS = {};
+    /** May be used for operation types without parameter variables. */
+    private static volatile Variable[] NO_PARAMETERS = {};
 
     /** The parameter variables. */
-    private final Variable[] parameterArray;
+    private final Variable[] parameterVars;
 
     /** The return variable. */
     private final Variable returnVar;
 
     private OperationType(Variable returnVar, Variable... variables) {
         this.returnVar = returnVar;
-        this.parameterArray = variables;
+        this.parameterVars = variables;
     }
 
     /**
-     * Return a factory type that is identical to this one, except that the return variable has been changed to the
+     * Return an operation type that is identical to this one, except that the return variable has been changed to the
      * specified variable.
      *
      * @param newReturn
-     *            the variable a field descriptor for the new return type
-     * @return the new factory type
+     *            the variable used for the new return type
+     * @return the new operation type
      */
-    public OperationType changeReturnVar(Variable newReturn) {
+    public OperationType changeReturnVariable(Variable newReturn) {
         requireNonNull(newReturn, "newReturn is null");
-        return new OperationType(newReturn, parameterArray);
+        return new OperationType(newReturn, parameterVars);
     }
 
     /**
-     * Compares the specified object with this function type for equality. That is, it returns {@code true} if and only if
-     * the specified object is also a function type with exactly the same parameters and return variable.
+     * Compares the specified object with this optional type for equality. That is, it returns {@code true} if and only if
+     * the specified object is also an operation type with exactly the same parameters and return variable.
      * 
      * @param obj
      *            object to compare
@@ -75,12 +80,14 @@ public final /* primitive */ class OperationType {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof OperationType t && returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterArray, t.parameterArray);
+        return obj instanceof OperationType t && returnVar.equals(t.returnVar) && Arrays.deepEquals(parameterVars, t.parameterVars);
     }
 
     /**
-     * Returns the hash code value for this function type. It is defined to be the same as the hash code of a List whose
-     * elements are the return variable followed by the parameter variables.
+     * Returns the hash code value for this operation type.
+     * <p>
+     * It is defined to be the same as the hash code of a List whose elements are the return variable followed by the
+     * parameter variables.
      * 
      * @return the hash code value for this function type
      * @see Object#hashCode()
@@ -90,7 +97,7 @@ public final /* primitive */ class OperationType {
     @Override
     public int hashCode() {
         int hashCode = 31 + returnVar.hashCode();
-        for (Variable ptype : parameterArray) {
+        for (Variable ptype : parameterVars) {
             hashCode = 31 * hashCode + ptype.hashCode();
         }
         return hashCode;
@@ -103,27 +110,31 @@ public final /* primitive */ class OperationType {
      * @apiNote freezeable arrays might be supported in the future. In which case we will not return a copy
      */
     public Variable[] parameterArray() {
-        return Arrays.copyOf(parameterArray, parameterArray.length);
+        return Arrays.copyOf(parameterVars, parameterVars.length);
+    }
+
+    public Variable parameter(int index) {
+        return parameterVars[index];
     }
 
     /** {@return the number of parameter variables in this operation type.} */
     public int parameterCount() {
-        return parameterArray.length;
+        return parameterVars.length;
     }
 
     /**
-     * Return an immutable list of field descriptors for the parameter types of the method type described by this descriptor
+     * Return an immutable list of the parameter variable of this operation typer
      * 
      * @return field descriptors for the parameter types
      */
     public List<Variable> parameterList() {
-        return List.of(parameterArray);
+        return List.of(parameterVars);
     }
 
     private Class<?>[] rawParameterTypeArray() {
-        Class<?>[] params = new Class<?>[parameterArray.length];
+        Class<?>[] params = new Class<?>[parameterVars.length];
         for (int i = 0; i < params.length; i++) {
-            params[i] = parameterArray[i].getType();
+            params[i] = parameterVars[i].getType();
         }
         return params;
     }
@@ -132,22 +143,24 @@ public final /* primitive */ class OperationType {
     public Class<?> returnType() {
         return returnVar.getType();
     }
+
     /** {@return the return variable.} */
-    public Variable returnVar() {
+    public Variable returnVariable() {
         return returnVar;
     }
 
     /** {@return the return variable.} */
-    public Key<?> returnVarAsKey() {
-
+    public Key<?> returnVariableToKey() {
         throw new UnsupportedOperationException();
     }
 
-    /** { @return extracts the raw types for each variable and returns them as a MethodType.} */
+    /**
+     * {@return the return variable and each parameter variable as a MethodType.}
+     */
     public MethodType toMethodType() {
-        return switch (parameterArray.length) {
+        return switch (parameterVars.length) {
         case 0 -> MethodType.methodType(returnVar.getType());
-        case 1 -> MethodType.methodType(returnVar.getType(), parameterArray[0].getType());
+        case 1 -> MethodType.methodType(returnVar.getType(), parameterVars[0].getType());
         default -> MethodType.methodType(returnVar.getType(), rawParameterTypeArray());
         };
     }
@@ -163,17 +176,17 @@ public final /* primitive */ class OperationType {
     public String toString() {
         // TODO We should probably call something else that toString();
         StringJoiner sj = new StringJoiner(",", "(", ")" + returnVar.toString());
-        for (int i = 0; i < parameterArray.length; i++) {
-            sj.add(parameterArray[i].toString());
+        for (int i = 0; i < parameterVars.length; i++) {
+            sj.add(parameterVars[i].toString());
         }
         return sj.toString();
     }
 
-    public static OperationType of(Class<?> returnVar) {
-        requireNonNull(returnVar, "returnVar is null");
-        return new OperationType(Variable.of(returnVar), NO_VARS);
+    public static OperationType of(Class<?> returnType) {
+        requireNonNull(returnType, "returnType is null");
+        return new OperationType(Variable.of(returnType), NO_PARAMETERS);
     }
-    
+
     public static OperationType of(Class<?> returnVar, Class<?>... vars) {
         return ofMethodType(MethodType.methodType(returnVar, vars));
     }
@@ -181,23 +194,29 @@ public final /* primitive */ class OperationType {
     /**
      * Returns a function type with the given return variable. The resulting function type has no parameter variables.
      * 
-     * @param rtype
+     * @param returnVariable
      *            the return variable
-     * @return a function type with the given return variable
+     * @return a operation type with the given return and no parameters
      */
-    public static OperationType of(Variable returnVar) {
-        requireNonNull(returnVar, "returnVar is null");
-        return new OperationType(returnVar, NO_VARS);
+    public static OperationType of(Variable returnVariable) {
+        requireNonNull(returnVariable, "returnVariable is null");
+        return new OperationType(returnVariable, NO_PARAMETERS);
     }
 
-    public static OperationType of(Variable returnVar, Variable var) {
-        requireNonNull(returnVar, "returnVar is null");
-        requireNonNull(returnVar, "var is null");
-        return new OperationType(returnVar, var);
+    public static OperationType of(Variable returnVariable, Variable parameter) {
+        requireNonNull(returnVariable, "returnVariable is null");
+        requireNonNull(parameter, "parameter");
+        return new OperationType(returnVariable, parameter);
     }
 
-    public static OperationType of(Variable returnVar, Variable... vars) {
-        throw new UnsupportedOperationException();
+    public static OperationType of(Variable returnVariable, Variable... parameters) {
+        requireNonNull(returnVariable, "returnVar is null");
+        requireNonNull(parameters, "parameters is null");
+        Variable[] vars = new Variable[parameters.length];
+        for (int i = 0; i < vars.length; i++) {
+            vars[i] = requireNonNull(parameters[i]);
+        }
+        return new OperationType(returnVariable, vars);
     }
 
     /**
@@ -205,30 +224,111 @@ public final /* primitive */ class OperationType {
      * 
      * @param executable
      *            the executable to return a op type for.
-     * @throws Exception
-     *             if there are type variables
      */
     public static OperationType ofExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
-        Variable returnVar = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructor((Constructor<?>) executable);
+        Variable returnVariable = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructor((Constructor<?>) executable);
         Parameter[] parameters = executable.getParameters();
         if (parameters.length == 0) {
-            return of(returnVar);
+            return new OperationType(returnVariable, NO_PARAMETERS);
+        } else {
+            Variable[] vars = new Variable[parameters.length];
+            for (int i = 0; i < vars.length; i++) {
+                vars[i] = Variable.ofParameter(parameters[i]);
+            }
+            return new OperationType(returnVariable, vars);
         }
-        Variable[] vars = new Variable[parameters.length];
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = Variable.ofParameter(parameters[i]);
-        }
-        return new OperationType(returnVar, vars);
     }
 
+    /**
+     * {@return an operation type representing the signature of the specified executable.}
+     * 
+     * @param methodType
+     *            the method type to convert
+     */
     public static OperationType ofMethodType(MethodType methodType) {
+        requireNonNull(methodType, "methodType is null");
         Variable returnVar = Variable.of(methodType.returnType());
-        Variable[] vars = new Variable[methodType.parameterCount()];
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = Variable.of(methodType.parameterType(i));
+        int count = methodType.parameterCount();
+        if (count == 0) {
+            return new OperationType(returnVar, NO_PARAMETERS);
+        } else {
+            Variable[] vars = new Variable[count];
+            for (int i = 0; i < count; i++) {
+                vars[i] = Variable.of(methodType.parameterType(i));
+            }
+            return new OperationType(returnVar, vars);
         }
-        return new OperationType(returnVar, vars);
+    }
 
+    public static OperationType ofFieldGet(Field field) {
+        requireNonNull(field, "field is null");
+        return OperationType.of(Variable.ofField(field));
+    }
+
+    public static OperationType ofFieldSet(Field field) {
+        requireNonNull(field, "field is null");
+        return OperationType.of(Variable.of(void.class), Variable.ofField(field));
+    }
+
+
+    class NonStatic {
+        List<?> f;
+
+        NonStatic(List<?> l) {}
+
+        public void me(List<?> l) {}
+    }
+
+    static class Static {
+        List<?> f;
+
+        Static(List<?> l) {}
+
+        public void me(List<?> l) {}
+    }
+    
+    public static void mainx(String[] args) throws Throwable {
+        Field f = OperationType.class.getDeclaredField("NO_PARAMETERS");
+        System.out.println(f);
+        VarHandle vh = MethodHandles.lookup().unreflectVarHandle(f);
+        
+        vh.getVolatile();
+        MethodHandles.lookup().unreflectGetter(f).invoke();
+        System.out.println(vh.hasInvokeExactBehavior());
+        
+        MethodType mt = vh.accessModeType(AccessMode.COMPARE_AND_EXCHANGE);
+        System.out.println(OperationType.ofFieldAccess(f, AccessMode.COMPARE_AND_EXCHANGE_RELEASE));
+        System.out.println(mt);
+    }
+
+    public static OperationType ofFieldAccess(Field field, AccessMode accessMode) {
+        requireNonNull(field, "field is null");
+        requireNonNull(accessMode, "accessMode is null");
+        Variable fieldVar = Variable.ofField(field);
+        switch (accessMode) {
+        case GET:
+        case GET_VOLATILE:
+        case GET_ACQUIRE:
+        case GET_OPAQUE:
+            return of(fieldVar);
+        case SET:
+        case SET_VOLATILE:
+        case SET_RELEASE:
+        case SET_OPAQUE:
+            return of(Variable.of(void.class), fieldVar);
+        case COMPARE_AND_SET:
+        case WEAK_COMPARE_AND_SET:
+        case WEAK_COMPARE_AND_SET_ACQUIRE:
+        case WEAK_COMPARE_AND_SET_PLAIN:
+        case WEAK_COMPARE_AND_SET_RELEASE:
+            return of(Variable.of(boolean.class), fieldVar);
+        case COMPARE_AND_EXCHANGE:
+        case COMPARE_AND_EXCHANGE_ACQUIRE:
+        case COMPARE_AND_EXCHANGE_RELEASE:
+            return of(fieldVar, fieldVar, fieldVar);
+        default: // getAndUpdate
+            return of(fieldVar, fieldVar);
+        }
     }
 }

@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
@@ -62,7 +61,6 @@ public final class OperationSetup {
         this.operatorBean = builder.operatorBean;
         this.mirrorSupplier = builder.mirrorSupplier;
         this.bindings = null;
-
     }
 
     /** {@return a new mirror.} */
@@ -70,7 +68,7 @@ public final class OperationSetup {
         // Create a new OperationMirror
         OperationMirror mirror = mirrorSupplier.get();
         if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
+            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + OperationMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)

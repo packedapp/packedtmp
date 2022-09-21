@@ -77,6 +77,8 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
     /**
      * @param operator
      * @param accessMode
+     *            the access mode determines the operation type as exposed via the mirror api. However, extensions are free
+     *            to use any access mode they want
      * @return
      * 
      * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
@@ -86,10 +88,7 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
      *          matter what we must declare the invocation types when we create the operation, so we can check access before
      *          creating the actual operation
      */
-    // Tror man maa lave 2 operationer hvis man behov for det. JUC bruger aldrig mere end 1 VarHandle. Men det er jo ogsaa
-    // fordi
-    // de altid bare laesaer den volatile vaerdi. Saa de har aldrig nogle gettere
-    // Har stadig ikke en usecase for 2 VarHandle. Men get plus set, er dog ikke sikker paa det er noget vi vil supportere
+    // Skal vi have en separat VarHandle operation????
     OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
 
     /**
@@ -122,7 +121,7 @@ interface Zandbox {
     // Can only read stuff...
     // Then we can just passe it off to anyone
     // IDK know about usecases
-    //BeanProcessor$BeanField unmodifiable();
+    // BeanProcessor$BeanField unmodifiable();
 
     // Or maybe just rawVarHandle() on IOH
     //// Ideen var lidt at man kunne kalde den her metode for at faa extra

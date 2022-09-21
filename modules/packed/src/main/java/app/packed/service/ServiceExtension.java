@@ -167,6 +167,10 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = method.methodToKey();
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 
+                // Vi slipper maaske ikke for at have saadan en bean faetter
+                // Det samme med entry point...
+//                method.newOperation(null);
+
                 BeanSetup bean = ((PackedBeanMethod) method).bean;
                 MethodHelper fh = new MethodHelper(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());

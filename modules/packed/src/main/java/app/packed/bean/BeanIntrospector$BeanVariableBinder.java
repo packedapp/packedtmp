@@ -22,6 +22,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.operation.Op;
+import app.packed.operation.Variable;
 import app.packed.operation.bindings.BindingMirror;
 
 /**
@@ -38,10 +39,6 @@ import app.packed.operation.bindings.BindingMirror;
 
 public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElement {
 
-    void provide(Op<?> fac);
-
-    void provide(MethodHandle methodHandle);
-
     /**
      * <p>
      * Vi tager Nullable med saa vi bruge raw.
@@ -57,24 +54,7 @@ public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElem
      *             if a provide method has already been called on this instance (I think it is fine to allow it to be
      *             overriden by itself).
      */
-    void provideInstance(@Nullable Object obj);
-
-    /**
-     * <p>
-     * For raw er det automatisk en fejl
-     */
-    // provideUnresolved();
-    void provideMissing();
-
-    /**
-     * @return
-     * 
-     * @throws BeanDefinitionException
-     *             if the variable was a proper key
-     */
-    default Key<?> readKey() {
-        throw new UnsupportedOperationException();
-    }
+    void bind(@Nullable Object obj);
 
     /**
      * Variable is resolvable at runtime.
@@ -88,9 +68,32 @@ public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElem
     // Saa maaske bindAtRuntime
     BeanIntrospector$BeanVariableBinder bindAtRuntime();
 
+    /**
+     * <p>
+     * For raw er det automatisk en fejl
+     */
+    // provideUnresolved();
+    void bindMissing(); // Giver ikke mening for rawModel
+
+    void provide(MethodHandle methodHandle);
+
+    void provide(Op<?> fac);
+
+    /**
+     * @return
+     * 
+     * @throws BeanDefinitionException
+     *             if the variable was a proper key
+     */
+    default Key<?> readKey() {
+        throw new UnsupportedOperationException();
+    }
+
     BeanIntrospector$BeanVariableBinder specializeMirror(Supplier<? extends BindingMirror> supplier);
 
     TypeInfo type();
+    
+    Variable variable();
 
     interface TypeInfo {
 

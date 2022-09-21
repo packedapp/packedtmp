@@ -20,6 +20,8 @@ import static internal.app.packed.util.StringFormatter.format;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
 
+import app.packed.operation.Variable;
+
 /**
  *
  */
@@ -77,6 +79,12 @@ public final class ErrorMessageBuilder implements CharSequence {
     public static ErrorMessageBuilder of(Parameter p) {
         ErrorMessageBuilder emb = new ErrorMessageBuilder();
         emb.sb.append("parameter " + p.getName());
+        return emb;
+    }
+    
+    public static ErrorMessageBuilder of(Variable v) {
+        ErrorMessageBuilder emb = new ErrorMessageBuilder();
+        emb.sb.append("variable " + v);
         return emb;
     }
 }

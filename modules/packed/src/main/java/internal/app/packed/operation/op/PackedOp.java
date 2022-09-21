@@ -237,7 +237,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         /**
          * @param typeLiteralOrKey
          */
-        public PackedCapturingOp(OperationType type, MethodHandle methodHandle, List<InternalDependency> dependencies) {
+        PackedCapturingOp(OperationType type, MethodHandle methodHandle, List<InternalDependency> dependencies) {
             super(type);
             this.dependencies = dependencies;
             this.methodHandle = methodHandle;

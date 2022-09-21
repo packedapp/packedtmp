@@ -15,20 +15,20 @@
  */
 package app.packed.service;
 
-import app.packed.base.Key;
-import app.packed.container.ContainerMirror;
-import app.packed.operation.bindings.BindingMirror;
+import app.packed.application.BuildException;
 
 /**
  *
  */
-public class ServiceBindingMirror extends BindingMirror {
+public class ServiceMissingException extends BuildException {
 
-    public Key<?> key() {
-        throw new UnsupportedOperationException();
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public ServiceMissingException(String message) {
+        super(message);
     }
-    
-    public ContainerMirror container() {
-        throw new UnsupportedOperationException();
-    }
+
 }

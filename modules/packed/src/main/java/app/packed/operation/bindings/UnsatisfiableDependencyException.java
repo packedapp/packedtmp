@@ -18,6 +18,7 @@ package app.packed.operation.bindings;
 import app.packed.application.BuildException;
 
 /** An exception thrown at build-time when a required dependency could not be resolved. */
+// Valid but the 
 public class UnsatisfiableDependencyException extends BuildException {
 
     /** <code>serialVersionUID</code>. */

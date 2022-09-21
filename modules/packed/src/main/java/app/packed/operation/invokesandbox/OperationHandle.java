@@ -16,17 +16,14 @@
 package app.packed.operation.invokesandbox;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.VarHandle;
-import java.lang.invoke.VarHandle.AccessMode;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanIntrospector$BeanVariableBinder;
 import app.packed.bean.BeanIntrospector$BeanField;
 import app.packed.bean.BeanIntrospector$BeanMethod;
+import app.packed.bean.BeanIntrospector$BeanVariableBinder;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.PackedOperationHandle;
@@ -59,18 +56,6 @@ import internal.app.packed.operation.PackedOperationHandle;
 public sealed interface OperationHandle permits PackedOperationHandle {
 
     /**
-     * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
-     * 
-     * @return
-     */
-    default Optional<AccessMode> accessMode() {
-        return Optional.empty();
-    }
-
-    // i think just support compMH or compVH
-    <T> T computeInvoker(Class<T> invokerType);
-
-    /**
      * @return
      * 
      * @throws IllegalStateException
@@ -79,13 +64,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if method handle are not supported
      * @see ExtensionBeanConfiguration#bindDelayed(Class, Supplier)
      */
-    default MethodHandle computeMethodHandleInvoker() {
-        return computeInvoker(MethodHandle.class);
-    }
-
-    default VarHandle computeVarHandleInvoker() {
-        return computeInvoker(VarHandle.class);
-    }
+    MethodHandle computeMethodHandle();
 
     default OperationHandle mapReturn(MethodHandle mh) {
         // Vi kan fx sige String -> StringReturnWrapper
@@ -102,7 +81,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
     }
 
     default OperationHandle invokeAs(InvocationType type) {
-        // This method must be called before any dependencies have been customized
+        // This method must be called before any parameters have been bound
         return this;
     }
 
@@ -117,7 +96,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * @return a unmodifiable list of the dependencies of this operation
      */
     // Dependencies that are not explicitly bound
-    default List<BeanIntrospector$BeanVariableBinder> dependencies() {
+    default List<BeanIntrospector$BeanVariableBinder> bindables() {
         throw new UnsupportedOperationException();
     }
 
@@ -139,7 +118,14 @@ public sealed interface OperationHandle permits PackedOperationHandle {
 }
 
 interface Sandbox {
-
+//  /**
+//  * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
+//  * 
+//  * @return
+//  */
+// default Optional<AccessMode> accessMode() {
+//     return Optional.empty();
+// }
     default <T> T computeInvoker(TypeToken<T> invokerType) {
 
         /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
@@ -148,7 +134,7 @@ interface Sandbox {
 
     Sandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value
 
-    Sandbox resultVoid(); // ignores any return value
+    Sandbox resultVoid(); // returnIgnore?
 
     Sandbox resultVoidOrFail(); // fails if non-void with BeanDeclarationException
 }

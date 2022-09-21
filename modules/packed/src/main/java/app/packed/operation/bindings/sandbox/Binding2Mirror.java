@@ -27,12 +27,6 @@ import internal.app.packed.container.Mirror;
  */
 public interface Binding2Mirror extends Mirror {
 
-    /** {@return the operation that declares this dependency.} */
-    OperationMirror operation();
-
-    // The index into the list of dependencies on the operation
-    int index();
-
     Optional<DefaultMirror> fallback(); // Do we parse it even if we have been build-time resolved????
     
     // Resolved
@@ -48,8 +42,6 @@ public interface Binding2Mirror extends Mirror {
 
     // Unresolved->Empty or Composite->Empty
     Optional<UserOrExtension> resolvedBy();
-
-    Variable variable(); // non-processed
 
     Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
     

@@ -28,8 +28,15 @@ public record PackedVariable(AnnotatedElement annotatedElement, VariableTypeWrap
         this(PackedVariable.class, new VariableTypeWrapper.OfClass(clazz));
     }
 
+    public String toString() {
+//        StringBuilder sb = new StringBuilder();
+        
+        
+        return typeWrapper.getType().getSimpleName();
+    }
+
     public PackedVariable(VariableTypeWrapper typeWrapper) {
-        this(PackedVariable.class, typeWrapper);
+        this(/* Class with no annotations */ PackedVariable.class, typeWrapper);
     }
 
     /** {@inheritDoc} */

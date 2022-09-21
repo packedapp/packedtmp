@@ -32,8 +32,10 @@ import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 
 /**
- * A bean handle represents an installed bean. Instances of {@code BeanHandle} are only exposed to end-users by wrapping
- * them in {@link BeanConfiguration} or a subclass of it.
+ * A bean handle represents a private configuration installed bean.
+ * <p>
+ * Instances of {@code BeanHandle} are normally never exposed directly to end-users. Instead they are returned wrapped
+ * in {@link BeanConfiguration} or a subclass hereof.
  * 
  * 
  */
@@ -51,6 +53,8 @@ import internal.app.packed.bean.PackedBeanHandleInstaller;
 //Unmanaged
 
 //Setup - Teardown
+
+// Hvis
 
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {

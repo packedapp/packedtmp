@@ -55,7 +55,8 @@ import internal.app.packed.base.VariableTypeWrapper;
  */
 // extends AnnotatedType???? It is more or less AnnotatedType...
 // VariableType, VarType?
-
+// Maaske supportere vi capture... 
+// Man kan sige at Class<?> er jo egentlig ikke noget der genere vaesentligt
 public sealed interface Variable extends AnnotatedElement permits PackedVariable {
 
     /**

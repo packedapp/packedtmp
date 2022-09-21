@@ -35,6 +35,8 @@ import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.operation.OperationType;
+import app.packed.operation.Variable;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.BasePackageAccess;
 import internal.app.packed.util.ClassUtil;
@@ -98,13 +100,13 @@ public final class InternalDependency {
             if (type == Optional.class) {
                 throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
             } else if (type == OptionalInt.class) {
-                return new InternalDependency(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
+                return new InternalDependency(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT);
             } else if (type == OptionalLong.class) {
-                return new InternalDependency(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
+                return new InternalDependency(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG);
             } else if (type == OptionalDouble.class) {
-                return new InternalDependency(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
+                return new InternalDependency(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE);
             }
-            return new InternalDependency(type, Key.of(type), Optionality.REQUIRED, null);
+            return new InternalDependency(type, Key.of(type), Optionality.REQUIRED);
         }
     };
 
@@ -116,7 +118,7 @@ public final class InternalDependency {
 
     /** The variable of this dependency. */
     @Nullable
-    private final Parameter variable;
+    private final Variable variable;
 
     final Type type;
 
@@ -130,11 +132,11 @@ public final class InternalDependency {
      * @param variable
      *            an optional field or parameter
      */
-    private InternalDependency(Type type, Key<?> key, Optionality optionality, @Nullable Parameter variable) {
+    private InternalDependency(Type type, Key<?> key, Optionality optionality) {
         this.type = requireNonNull(type);
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
-        this.variable = variable;
+        this.variable = null;
     }
 
     /**
@@ -197,7 +199,6 @@ public final class InternalDependency {
         return key;
     }
 
-    
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -252,6 +253,7 @@ public final class InternalDependency {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
+    @Deprecated
     public static List<InternalDependency> fromExecutable(Executable executable) {
         Parameter[] parameters = executable.getParameters();
         return switch (parameters.length) {
@@ -267,7 +269,24 @@ public final class InternalDependency {
         }
         };
     }
-
+    
+    public static List<InternalDependency> fromOperationType(OperationType t) {
+        Variable[] parameters = t.parameterArray();
+        return switch (parameters.length) {
+        case 0 -> List.of();
+        case 1 -> List.of(fromVariable(parameters[0]));
+        case 2 -> List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
+        default -> {
+            InternalDependency[] sd = new InternalDependency[parameters.length];
+            for (int i = 0; i < sd.length; i++) {
+                sd[i] = fromVariable(parameters[i]);
+            }
+            yield List.of(sd);
+        }
+        };
+    }
+    
+    @Deprecated
     public static <T> InternalDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
 
@@ -298,9 +317,9 @@ public final class InternalDependency {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new InternalDependency(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType);
     }
-
+    @Deprecated
     public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
         ArrayList<InternalDependency> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
@@ -309,8 +328,66 @@ public final class InternalDependency {
         return List.copyOf(result);
     }
 
+    public static <T> InternalDependency fromVariable(Variable v) {
+        requireNonNull(v, "variable is null");
+
+        TypeToken<?> tl = v.typeToken();
+
+        Annotation[] qualifiers = QualifierUtil.findQualifier(v.getAnnotations());
+
+        // Illegal
+        // Optional<Optional*>
+        Optionality optionallaity = null;
+        Class<?> rawType = tl.rawType();
+
+        // if (desc instanceof ParameterDescriptor) {
+        // ParameterDescriptor pd = (ParameterDescriptor) desc;
+        // if (pd.isVarArgs()) {
+        // throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("use varargs for injection for " +
+        // pd.getDeclaringExecutable()));
+        // }
+        // }
+        if (rawType.isPrimitive()) {
+            tl = tl.wrap();
+        } else if (rawType == Optional.class) {
+            optionallaity = Optionality.OPTIONAL;
+            Type cl = ((ParameterizedType) tl.type()).getActualTypeArguments()[0];
+            tl = BasePackageAccess.base().toTypeLiteral(cl);
+            if (ClassUtil.isOptional(tl.rawType())) {
+                throw new BuildException(ErrorMessageBuilder.of(v).cannot("have multiple layers of optionals such as " + cl).toString());
+            }
+        } else if (rawType == OptionalLong.class) {
+            optionallaity = Optionality.OPTIONAL_LONG;
+            tl = TypeToken.of(Long.class);
+        } else if (rawType == OptionalInt.class) {
+            optionallaity = Optionality.OPTIONAL_INT;
+            tl = TypeToken.of(Integer.class);
+        } else if (rawType == OptionalDouble.class) {
+            optionallaity = Optionality.OPTIONAL_DOUBLE;
+            tl = TypeToken.of(Double.class);
+        }
+
+        if (v.isAnnotationPresent(Nullable.class)) {
+            if (optionallaity != null) {
+                // TODO fix name() to something more readable
+                throw new BuildException(ErrorMessageBuilder.of(v).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
+                        .toResolve("remove the @Nullable annotation, or make it a non-optional type").toString());
+            }
+            optionallaity = Optionality.OPTIONAL_NULLABLE;
+        }
+
+        if (optionallaity == null) {
+            optionallaity = Optionality.REQUIRED;
+        }
+        // TL is free from Optional
+        Key<?> key = Key.convertTypeLiteralNullableAnnotation(v, tl, qualifiers);
+
+        return new InternalDependency(v.getType(), key, optionallaity);
+    }
+
     // Taenker den her skal laves fra en Infuser...
     // Som bestemmer om vi f.eks. forstaar Provider, Optional osv.
+    @Deprecated
     public static <T> InternalDependency fromVariable(Parameter parameter, int index) {
         requireNonNull(parameter, "variable is null");
 
@@ -367,7 +444,7 @@ public final class InternalDependency {
         // TL is free from Optional
         Key<?> key = Key.convertTypeLiteralNullableAnnotation(parameter, tl, qualifiers);
 
-        return new InternalDependency(getParameterizedType, key, optionallaity, parameter);
+        return new InternalDependency(getParameterizedType, key, optionallaity);
     }
 
     /**
@@ -377,11 +454,13 @@ public final class InternalDependency {
      *            the class to return a dependency for
      * @return a service dependency for the specified class
      */
+    @Deprecated
     public static InternalDependency of(Class<?> key) {
         requireNonNull(key, "key is null");
         return CLASS_CACHE.get(key);
     }
 
+    @Deprecated
     public static InternalDependency of(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifiers()) {
@@ -390,7 +469,7 @@ public final class InternalDependency {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new InternalDependency(key.typeToken().type(), key, Optionality.REQUIRED, null);
+        return new InternalDependency(key.typeToken().type(), key, Optionality.REQUIRED);
     }
 
     private enum Optionality {

@@ -33,7 +33,7 @@ import internal.app.packed.util.ReflectionUtil;
  * A wrapper for the type part of a {@link Variable}.
  */
 public interface VariableTypeWrapper {
-    
+
     Class<?> getType();
 
     TypeToken<?> typeToken();
@@ -53,13 +53,17 @@ public interface VariableTypeWrapper {
             return Optional.empty();
         }
 
+        public String toString() {
+            return clazz.getCanonicalName();
+        }
+
         /** {@inheritDoc} */
         @Override
         public TypeToken<?> typeToken() {
             throw new UnsupportedOperationException();
         }
     }
-    
+
     record OfTypeVariable(TypeVariable<?> typeVariable) implements VariableTypeWrapper {
 
         public OfTypeVariable {
@@ -70,6 +74,10 @@ public interface VariableTypeWrapper {
         @Override
         public Class<?> getType() {
             return typeVariable.getGenericDeclaration().getClass();
+        }
+
+        public String toString() {
+            return typeVariable.toString();
         }
 
         public Optional<String> name() {
@@ -98,6 +106,10 @@ public interface VariableTypeWrapper {
         @Override
         public Class<?> getType() {
             return parameter.getType();
+        }
+
+        public String toString() {
+            return parameter.getParameterizedType().toString();
         }
 
         /** {@inheritDoc} */
@@ -170,6 +182,10 @@ public interface VariableTypeWrapper {
         @Override
         public Class<?> getType() {
             return field.getType();
+        }
+
+        public String toString() {
+            return field.getType().toString();
         }
 
         /** {@inheritDoc} */

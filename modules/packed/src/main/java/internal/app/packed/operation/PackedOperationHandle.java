@@ -17,6 +17,7 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.operation.OperationMirror;
@@ -55,9 +56,9 @@ public final class PackedOperationHandle implements OperationHandle {
 
     /** {@inheritDoc} */
     @Override
-    public <T> T computeInvoker(Class<T> handleType) {
+    public MethodHandle computeMethodHandle() {
         if (isComputed) {
-            throw new IllegalStateException("Can only compute an invoker once");
+            throw new IllegalStateException("This method can only be called once");
         }
         isComputed = true;
         throw new UnsupportedOperationException();

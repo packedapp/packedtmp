@@ -18,11 +18,15 @@ package app.packed.operation.bindings;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.Variable;
 import app.packed.operation.bindings.sandbox.ResolutionState;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror for a dependency.
@@ -48,19 +52,87 @@ import internal.app.packed.container.Mirror;
 // Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
 // Eller maaske goer det? Taenker ikke man kan vaere alle dele
 @SuppressWarnings("exports")
-public sealed interface BindingMirror extends Mirror {
+public abstract class BindingMirror implements Mirror {
 
-    ResolutionState resolutionState();
+    /**
+     * The internal configuration of the binding we are mirrored. Is initially null but populated via
+     * {@link #initialize(BindingSetup)}.
+     */
+    @Nullable
+    private BindingSetup binding;
 
-    boolean isSatisfiable(); //isSatisfied?
+    /**
+     * Create a new binding mirror.
+     * <p>
+     * Subclasses should have a single package-protected constructor.
+     */
+    public BindingMirror() {}
 
-    /** {@return the operation that declares this dependency.} */
-    OperationMirror operation();
-    
-    // We need a better name. It is the index into the list of dependencies for operation
-    int operationIndex();
-    
-    Optional<UserOrExtension> providedBy(); // BeanMirror?
+    /**
+     * {@return the internal configuration of the binding.}
+     * 
+     * @throws IllegalStateException
+     *             if {@link #initialize(BindingSetup)} has not been called.
+     */
+    private BindingSetup binding() {
+        BindingSetup b = binding;
+        if (b == null) {
+            throw new IllegalStateException(
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
+        }
+        return b;
+    }
+
+    /** {@return the index of this binding into OperationMirror#bindings().} */
+    public int bindingIndex() {
+        return binding().index;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object other) {
+        return this == other || other instanceof BindingMirror m && binding() == m.binding();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return binding().hashCode();
+    }
+
+    /**
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
+     * 
+     * @param owner
+     *            the internal configuration of the extension to mirror
+     */
+    final void initialize(BindingSetup binding) {
+        if (this.binding != null) {
+            throw new IllegalStateException("This mirror has already been initialized.");
+        }
+        this.binding = binding;
+    }
+
+    /** {@return the operation that declares this binding.} */
+    public OperationMirror operation() {
+        return binding().operation.mirror();
+    }
+
+    /** {@return the variable that has been bound.} */
+    public Variable variable() {
+        BindingSetup b = binding();
+        return b.operation.type.parameter(b.index);
+    }
+
+    public UserOrExtension providedBy() {
+        // Er det bare extension???
+        
+        // Hvad med manual bindings?
+        
+        // HttpRequst<?> Optional<Integer> er jo stadig provided af WebExtension...
+        
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * If this dependency is the result of another operation.
@@ -71,37 +143,29 @@ public sealed interface BindingMirror extends Mirror {
     // ConstantPoolReadOperationMirror
     // Er empty if Unesolved... Eller hvad.
     // Hvis vi fx er @Default ville vi vel gerne have nogle fake operationer
-    
+
     // Altsaa den ikke super meget mening for keys..
     // Her er constructeren for CustomerManager...
     // Til gengaeld
-    
-    Optional<OperationMirror> providingOperation();
 
+    public Optional<OperationMirror> providingOperation() {
+        throw new UnsupportedOperationException();
+    }
+
+    public ResolutionState resolutionState() {
+        throw new UnsupportedOperationException();
+    }
+
+    
+    
     // Tror det bliver ligesom OperationTarget
-    non-sealed interface OfAnnotation extends BindingMirror {
+    abstract class OfAnnotation extends BindingMirror {
         abstract Annotation annotation();
 
         abstract Class<? extends Annotation> annotationType();
     }
 
-    non-sealed interface OfComposite extends BindingMirror {
-
-        abstract BindingMirror bindings();
-
-        // Tror ikke laengere vi bliver resolved som en compond.
-        // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-        abstract boolean isFuncionalInterface();
-
-    }
-
-    non-sealed interface OfKey extends BindingMirror {
-        abstract Key<?> key();
-    }
-
-    non-sealed interface OfOther extends BindingMirror {}
-
-    non-sealed interface OfTyped extends BindingMirror {
+    public abstract class OfTyped extends BindingMirror {
         abstract Class<?> typed();
     }
 }

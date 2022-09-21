@@ -59,6 +59,7 @@ public final class PackedBeanMethod extends PackedBeanMember<Method> implements 
         return new BuildTimeMethodTargetMirror(this);
     }
 
+    // Taenker vi goer det her naar vi laver en operation
     public MethodHandle newMethodHandle() {
         return openClass.unreflect(member);
     }
