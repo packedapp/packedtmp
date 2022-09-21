@@ -23,11 +23,9 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
 import app.packed.bean.InaccessibleBeanException;
 import app.packed.operation.OperationType;
-import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 
@@ -57,27 +55,12 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
     /** A factory that wraps a method or constructor. */
     public static final class ExecutableOp<T> extends ReflectiveOp<T> {
 
-        private final List<InternalDependency> dependencies;
-
         /** A factory with an executable as a target. */
         public final Executable executable;
-
-        public ExecutableOp(ExecutableOp<?> from) {
-            super(OperationType.ofExecutable(from.executable));
-            this.executable = from.executable;
-            this.dependencies = from.dependencies;
-        }
 
         public ExecutableOp(Executable constructor) {
             super(OperationType.ofExecutable(constructor));
             this.executable = constructor;
-            this.dependencies = InternalDependency.fromExecutable(executable);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return dependencies;
         }
 
         /** {@inheritDoc} */
@@ -144,12 +127,6 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
         public FieldOp(OperationType type, Field field) {
             super(type);
             this.field = field;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return List.of();
         }
 
         /**

@@ -101,7 +101,7 @@ public final class BeanInjectionManager extends InjectionManager implements Depe
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(factory);
 
-            List<InternalDependency> dependencies = factory.dependencies();
+            List<InternalDependency> dependencies = InternalDependency.fromOperationType(factory.type());// null;//factory.dependencies();
             this.instanceNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
 
             bean.parent.injectionManager.addConsumer(instanceNode);

@@ -32,7 +32,6 @@ import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -43,7 +42,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
     /** A var handle that can update the {@link #container()} field in this class. */
     private static final VarHandle VH_CF_FACTORY = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "delegate",
-            PackedCapturingOp.class);
+            PackedOp.class);
 
     private final OperationType type;
 
@@ -55,13 +54,13 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
 
-        List<InternalDependency> dependencies = dependencies();
+        OperationType type = type();
 
         List<Variable> variables = List.of(type().parameterArray());
 
-        Objects.checkIndex(position, dependencies.size());
+        Objects.checkIndex(position, type.parameterCount());
         int len = 1 + additionalArguments.length;
-        int newLen = dependencies.size() - len;
+        int newLen = type.parameterCount() - len;
         if (newLen < 0) {
             throw new IllegalArgumentException(
                     "Cannot specify more than " + (len - position) + " arguments for position = " + position + ", but arguments array was size " + len);
@@ -70,13 +69,10 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         // Removing dependencies that are being replaced
 
         Variable[] vars = new Variable[newLen];
-        InternalDependency[] dd = new InternalDependency[newLen];
         for (int i = 0; i < position; i++) {
-            dd[i] = dependencies.get(i);
             vars[i] = variables.get(i);
         }
-        for (int i = position; i < dd.length; i++) {
-            dd[i] = dependencies.get(i + len);
+        for (int i = position; i < vars.length; i++) {
             vars[i] = variables.get(i + len);
         }
 
@@ -89,16 +85,13 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
         // TODO check types...
 
-        return new BoundFactory<>(this, position, dd, List.of(vars), args);
+        OperationType newType = null;
+        return new BoundFactory<>(newType, this, position, args);
     }
 
     /** {@inheritDoc} */
     public final Op<R> bind(@Nullable Object argument) {
         return bind(0, argument);
-    }
-
-    public List<InternalDependency> dependencies() {
-        return List.of();
     }
 
     /** {@inheritDoc} */
@@ -142,32 +135,23 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
     }
 
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    // A simple version of Binding... Maybe just only have one
-    public static final class BoundFactory<R> extends PackedOp<R> {
+    /** A binding op. */
+    static final class BoundFactory<R> extends PackedOp<R> {
 
+        /** The arguments to insert. */
         private final Object[] arguments;
 
-        /** The ExecutableFactor or FieldFactory to delegate to. */
+        /** The previous op. */
         private final PackedOp<R> delegate;
-
-        private final List<InternalDependency> dependencies;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
 
-        public BoundFactory(PackedOp<R> delegate, int index, InternalDependency[] dd, List<Variable> variables, Object[] arguments) {
-            super(delegate.type); // TODO fix type
+        BoundFactory(OperationType type, PackedOp<R> delegate, int index, Object[] arguments) {
+            super(type);
             this.index = index;
-            this.delegate = requireNonNull(delegate);
+            this.delegate = delegate;
             this.arguments = arguments;
-            this.dependencies = List.of(dd);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return dependencies;
         }
 
         /** {@inheritDoc} */
@@ -197,24 +181,18 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
-    public static final class LookedUpFactory<R> extends PackedOp<R> {
+    static final class LookedUpFactory<R> extends PackedOp<R> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final PackedOp<R> delegate;
+        final PackedOp<R> delegate; // not currently used
 
         /** The method handle that was unreflected. */
         private final MethodHandle methodHandle;
 
-        public LookedUpFactory(PackedOp<R> delegate, MethodHandle methodHandle) {
+        LookedUpFactory(PackedOp<R> delegate, MethodHandle methodHandle) {
             super(delegate.type);
             this.delegate = delegate;
             this.methodHandle = requireNonNull(methodHandle);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return delegate.dependencies();
         }
 
         /** {@inheritDoc} */
@@ -227,26 +205,14 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     // Should just create eagerly create a MH and use Op.ofMethodHandle
     public static final class PackedCapturingOp<R> extends PackedOp<R> {
 
-        /** The dependencies of this factory, extracted from the type variables of the subclass. */
-        // Taenker vi laver en private record delegate der holder begge ting...
-        // Og saa laeser
-        public final List<InternalDependency> dependencies;
-
         public final MethodHandle methodHandle;
 
         /**
          * @param typeLiteralOrKey
          */
-        PackedCapturingOp(OperationType type, MethodHandle methodHandle, List<InternalDependency> dependencies) {
+        PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
             super(type);
-            this.dependencies = dependencies;
             this.methodHandle = methodHandle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return dependencies;
         }
 
         /** {@inheritDoc} */
@@ -257,7 +223,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     }
 
     /** An implementation of the {@link Op#peek(Consumer)}} method. */
-    public static final class PeekableFactory<R> extends PackedOp<R> {
+    static final class PeekableFactory<R> extends PackedOp<R> {
 
         /** A method handle for {@link Function#apply(Object)}. */
         private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
@@ -268,17 +234,11 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final PackedOp<R> delegate;
 
-        public PeekableFactory(PackedOp<R> delegate, Consumer<? super R> action) {
+        PeekableFactory(PackedOp<R> delegate, Consumer<? super R> action) {
             super(delegate.type);
-            this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
             this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public List<InternalDependency> dependencies() {
-            return delegate.dependencies();
+            this.delegate = delegate;
         }
 
         /** {@inheritDoc} */
@@ -296,121 +256,3 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         }
     }
 }
-//TODO Qualifiers on Methods, Types together with findInjectable????
-//Yes need to pick those up!!!!
-//probably rename defaultKey to key.
-
-//Split-module class hierachies, must
-
-//Factories only
-//
-//Is it the responsibility of the factory or the injector to inject fields and methods???
-//+ Factory
-//
-//+ Injector
-//Then we can disable it on a case to case basis
-//You can actually use factories without injection
-//-------------------------
-//ServiceDescriptor
-//Refereres fra InjectorDescriptor....
-//Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
-
-//Does this belong in app.packed.service????
-//No because components also uses it...
-
-//This class used to provide some bind methods...
-//But we don't do that no more. Because it was just impossible to
-//see what was what...
-////////TYPES (Raw)
-//ExactType... -> Instance, Constructor
-//LowerBoundType, Field, Method
-//PromisedType -> Fac0,Fac1,Fac2,
-
-/// TypeLiteral<- Always the promised, key must be assignable via raw type
-///////////////
-
-//TypeLiteral
-//actual type
-
-//Correctness
-//Instance -> Lowerbound correct, upper correct
-//Executable -> Lower bound maybe correct (if exposedType=return type), upper correct if final return type
-//Rest, unknown all
-//Bindable -> has no effect..
-
-//static {
-//Dependency.of(String.class);// Initializes InternalApis for InternalFactory
-//}
-
-//Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
-
-///**
-//* Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
-//* annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
-//*
-//* @return stuff
-//*/
-////We should make this public...
-////InjectableType
-//Class<? super T> scannableType() {
-//  return rawType();
-//}
-
-///** {@inheritDoc} */
-//@Override
-//public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
-//
-//// Do we allow binding non-matching keys???
-//// Could be useful from Prime annotations...
-//
-//// Tror vi skal have to forskellige
-//
-//// bindParameter(int index).... retains index....
-//// Throws
-//
-//// bindWithKey();
-//
-//// bindRaw(); <---- Only takes a class, ignores nullable.....
-//
-//// Hvordan klarer vi Foo(String firstName, String lastName)...
-//// Eller
-//
-//// Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
-//
-//// Det eneste der er forskel er parameter index'et...
-//// Maaske bliver man bare noedt til at lave en statisk metoder....
-//
-//// Skal vi have en speciel MemberFactory?????
-//
-////
-//
-//// bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
-//
-//// resolveDependency()...
-//// Its not really an argument its a dependency that we resolve...
-//
-//// withArgumentSupplier
-//throw new UnsupportedOperationException();
-//}
-
-///** {@inheritDoc} */
-////Required/Optional - Key - Variable?
-////Requirement
-//
-
-//Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
-//F.eks. for dooo(String x, String y)
-//Og det gider vi ikke....
-//Saa variables stay the same -> Why shouldn't we able to bind them...
-
-//Maaske er index ligegyldigt...
-//Og det er bare en speciel mode for MethodSidecar
-//Hvor man kan sige jeg tager denne variable ud af ligningen...
-
-//Maybe add isVariableBound(int index)
-
-//Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
-
-//Har vi en optional MemberDescriptor?????
-
-//Hvis man nu vil injecte en composite....

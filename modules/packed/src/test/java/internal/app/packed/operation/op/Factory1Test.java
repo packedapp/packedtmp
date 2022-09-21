@@ -15,16 +15,11 @@
  */
 package internal.app.packed.operation.op;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.checkThat;
-
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.Key;
 import app.packed.operation.Op1;
-import internal.app.packed.inject.InternalDependency;
 
 /** Tests {@link Op1}. */
 public class Factory1Test {
@@ -37,12 +32,6 @@ public class Factory1Test {
 
         Op1<String, Integer> f = new Op1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<InternalDependency> dependencies = PackedOp.crack(f).dependencies();
-        assertThat(dependencies).hasSize(1);
-        InternalDependency d = dependencies.get(0);
-
-        assertThat(d.isOptional()).isFalse();
-        assertThat(d.key()).isEqualTo(Key.of(String.class));
         // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
         // String.class)
         //assertThat(d.variable()).isEmpty();

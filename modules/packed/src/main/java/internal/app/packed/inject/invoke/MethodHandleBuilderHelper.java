@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.operation.Variable;
 import internal.app.packed.inject.InternalDependency;
 import internal.app.packed.inject.service.InternalServiceUtil;
 import internal.app.packed.inject.service.build.ServiceSetup;
@@ -113,7 +114,7 @@ class MethodHandleBuilderHelper {
 
         for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
-            InternalDependency sd = InternalDependency.fromVariable(p, i);
+            InternalDependency sd = InternalDependency.fromVariable(Variable.ofParameter(p));
             Class<?> askingForType = sd.key().rawType();
             MethodHandleBuilder.AnnoClassEntry anno = find(aa, p);
 

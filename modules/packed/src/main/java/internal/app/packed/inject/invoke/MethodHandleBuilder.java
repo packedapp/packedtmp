@@ -36,7 +36,7 @@ import internal.app.packed.util.OpenClass;
 // TODO Add @AnnotationHandler...
 // Add Composite
 // Everything is instance for now
-public final class MethodHandleBuilder {
+final class MethodHandleBuilder {
 
     final HashMap<Class<? extends Annotation>, AnnoClassEntry> annoations = new HashMap<>();
 

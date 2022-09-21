@@ -66,18 +66,7 @@ public class PackageCapturingOpHelper {
             Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<List<InternalDependency>> DEPENDENCY_CACHE2 = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected List<InternalDependency> computeValue(Class<?> type) {
-            return InternalDependency.fromTypeVariables((Class) type, Op2.class, 0, 1);
-        }
-    };
-
-    /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    static final ClassValue<List<InternalDependency>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
+    static final ClassValue<List<InternalDependency>> OP1_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -87,46 +76,16 @@ public class PackageCapturingOpHelper {
         }
     };
 
-    /**
-     * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
-     * constructor in this (super) class.
-     * 
-     * @param function
-     *            the function instance
-     */
-    @SuppressWarnings("unchecked")
-    public static <R> PackedOp.PackedCapturingOp<R> create(Class<?> clazz, Object function) {
-        requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        TypeToken<R> typeLiteral = (TypeToken<R>) PackageCapturingOpHelper.CACHE.get(clazz);
-        // analyze();
+    /** A cache of extracted type variables and dependencies from subclasses of this class. */
+    private static final ClassValue<List<InternalDependency>> OP2_CACHE = new ClassValue<>() {
 
-        final MethodHandle methodHandle;
-        final List<InternalDependency> dependencies;
-        Class<?> rawType = typeLiteral.rawType();
-
-        if (Op0.class.isAssignableFrom(clazz)) {
-            MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
-            methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
-            dependencies = List.of();
-        } else if (Op1.class.isAssignableFrom(clazz)) {
-            dependencies = FACTORY1_DEPENDENCY_CACHE.get(clazz);
-
-            Class<?> param = dependencies.get(0).rawType();
-            MethodHandle mh = CREATE1.bindTo(function).bindTo(rawType); // (Function, Class, Object)Object -> (Object)Object
-            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, param)); // (Object)Object -> (T)R
-
-        } else {
-            dependencies = DEPENDENCY_CACHE2.get(clazz);
-
-            Class<?> parem1 = dependencies.get(0).rawType();
-            Class<?> parem2 = dependencies.get(1).rawType();
-            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
-            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected List<InternalDependency> computeValue(Class<?> type) {
+            return InternalDependency.fromTypeVariables((Class) type, Op2.class, 0, 1);
         }
-        OperationType type = OperationType.ofMethodType(methodHandle.type());
-        return new PackedCapturingOp<>(type, methodHandle, dependencies);
-
-    }
+    };
 
     void analyze() {
         // Altsaa jeg ved ikke om vi spiller tiden ved ikke at afvente og se hvad der kommer med generiks
@@ -178,6 +137,45 @@ public class PackageCapturingOpHelper {
                         + expectedType.getName() + " but returned a " + value.getClass().getName() + " instance");
             }
         }
+    }
+
+    /**
+     * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
+     * constructor in this (super) class.
+     * 
+     * @param function
+     *            the function instance
+     */
+    @SuppressWarnings("unchecked")
+    public static <R> PackedOp<R> create(Class<?> clazz, Object function) {
+        requireNonNull(function, "function is null"); // should have already been checked by subclasses
+        TypeToken<R> typeLiteral = (TypeToken<R>) PackageCapturingOpHelper.CACHE.get(clazz);
+        // analyze();
+
+        final MethodHandle methodHandle;
+        Class<?> rawType = typeLiteral.rawType();
+
+        if (Op0.class.isAssignableFrom(clazz)) {
+            MethodHandle mh = CREATE0.bindTo(function).bindTo(rawType); // (Supplier, Class)Object -> ()Object
+            methodHandle = MethodHandleUtil.castReturnType(mh, rawType); // ()Object -> ()R
+        } else if (Op1.class.isAssignableFrom(clazz)) {
+            List<InternalDependency> dependencies = OP1_CACHE.get(clazz);
+
+            Class<?> param = dependencies.get(0).rawType();
+            MethodHandle mh = CREATE1.bindTo(function).bindTo(rawType); // (Function, Class, Object)Object -> (Object)Object
+            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, param)); // (Object)Object -> (T)R
+
+        } else {
+            List<InternalDependency> dependencies = OP2_CACHE.get(clazz);
+
+            Class<?> parem1 = dependencies.get(0).rawType();
+            Class<?> parem2 = dependencies.get(1).rawType();
+            MethodHandle mh = CREATE2.bindTo(function).bindTo(rawType); // (Function, Class, Object, Object)Object -> (Object, Object)Object
+            methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
+        }
+        OperationType type = OperationType.ofMethodType(methodHandle.type()); // TODO fix
+        return new PackedCapturingOp<>(type, methodHandle);
+
     }
 
     /**

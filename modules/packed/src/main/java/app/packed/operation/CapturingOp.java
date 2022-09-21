@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import app.packed.base.Nullable;
 import internal.app.packed.operation.op.PackageCapturingOpHelper;
 import internal.app.packed.operation.op.PackedOp;
-import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 
 /**
  * A abstract op that captures the type an annotated return type and annotated type apra
@@ -31,7 +30,7 @@ import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
     /** The op that we delegate everything to. */
-    private final PackedCapturingOp<R> delegate;
+    private final PackedOp<R> delegate;
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a

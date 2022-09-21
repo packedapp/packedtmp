@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -41,7 +40,6 @@ import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.BasePackageAccess;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.QualifierUtil;
-import internal.app.packed.util.ReflectionUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
@@ -246,30 +244,6 @@ public final class InternalDependency {
         return optionality.wrapIfOptional(requireNonNull(object, "object is null"));
     }
 
-    /**
-     * Returns a list of dependencies from the specified executable.
-     * 
-     * @param executable
-     *            the executable to return a list of dependencies for
-     * @return a list of dependencies from the specified executable
-     */
-    @Deprecated
-    public static List<InternalDependency> fromExecutable(Executable executable) {
-        Parameter[] parameters = executable.getParameters();
-        return switch (parameters.length) {
-        case 0 -> List.of();
-        case 1 -> List.of(fromVariable(parameters[0], 0));
-        case 2 -> List.of(fromVariable(parameters[0], 0), fromVariable(parameters[1], 1));
-        default -> {
-            InternalDependency[] sd = new InternalDependency[parameters.length];
-            for (int i = 0; i < sd.length; i++) {
-                sd[i] = fromVariable(parameters[i], i);
-            }
-            yield List.of(sd);
-        }
-        };
-    }
-    
     public static List<InternalDependency> fromOperationType(OperationType t) {
         Variable[] parameters = t.parameterArray();
         return switch (parameters.length) {
@@ -285,8 +259,7 @@ public final class InternalDependency {
         }
         };
     }
-    
-    @Deprecated
+
     public static <T> InternalDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
 
@@ -319,7 +292,7 @@ public final class InternalDependency {
         // TODO check that there are no qualifier annotations on the type.
         return new InternalDependency(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType);
     }
-    @Deprecated
+
     public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
         ArrayList<InternalDependency> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
@@ -385,68 +358,6 @@ public final class InternalDependency {
         return new InternalDependency(v.getType(), key, optionallaity);
     }
 
-    // Taenker den her skal laves fra en Infuser...
-    // Som bestemmer om vi f.eks. forstaar Provider, Optional osv.
-    @Deprecated
-    public static <T> InternalDependency fromVariable(Parameter parameter, int index) {
-        requireNonNull(parameter, "variable is null");
-
-        Type getParameterizedType = ReflectionUtil.getParameterizedType(parameter, index);
-
-        TypeToken<?> tl = TypeToken.fromType(getParameterizedType);
-
-        Annotation[] qualifiers = QualifierUtil.findQualifier(parameter.getAnnotations());
-
-        // Illegal
-        // Optional<Optional*>
-        Optionality optionallaity = null;
-        Class<?> rawType = tl.rawType();
-
-        // if (desc instanceof ParameterDescriptor) {
-        // ParameterDescriptor pd = (ParameterDescriptor) desc;
-        // if (pd.isVarArgs()) {
-        // throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("use varargs for injection for " +
-        // pd.getDeclaringExecutable()));
-        // }
-        // }
-        if (rawType.isPrimitive()) {
-            tl = tl.wrap();
-        } else if (rawType == Optional.class) {
-            optionallaity = Optionality.OPTIONAL;
-            Type cl = ((ParameterizedType) getParameterizedType).getActualTypeArguments()[0];
-            tl = BasePackageAccess.base().toTypeLiteral(cl);
-            if (ClassUtil.isOptional(tl.rawType())) {
-                throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl).toString());
-            }
-        } else if (rawType == OptionalLong.class) {
-            optionallaity = Optionality.OPTIONAL_LONG;
-            tl = TypeToken.of(Long.class);
-        } else if (rawType == OptionalInt.class) {
-            optionallaity = Optionality.OPTIONAL_INT;
-            tl = TypeToken.of(Integer.class);
-        } else if (rawType == OptionalDouble.class) {
-            optionallaity = Optionality.OPTIONAL_DOUBLE;
-            tl = TypeToken.of(Double.class);
-        }
-
-        if (parameter.isAnnotationPresent(Nullable.class)) {
-            if (optionallaity != null) {
-                // TODO fix name() to something more readable
-                throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
-                        .toResolve("remove the @Nullable annotation, or make it a non-optional type").toString());
-            }
-            optionallaity = Optionality.OPTIONAL_NULLABLE;
-        }
-
-        if (optionallaity == null) {
-            optionallaity = Optionality.REQUIRED;
-        }
-        // TL is free from Optional
-        Key<?> key = Key.convertTypeLiteralNullableAnnotation(parameter, tl, qualifiers);
-
-        return new InternalDependency(getParameterizedType, key, optionallaity);
-    }
-
     /**
      * Returns a service dependency on the specified class.
      *
@@ -454,22 +365,9 @@ public final class InternalDependency {
      *            the class to return a dependency for
      * @return a service dependency for the specified class
      */
-    @Deprecated
     public static InternalDependency of(Class<?> key) {
         requireNonNull(key, "key is null");
         return CLASS_CACHE.get(key);
-    }
-
-    @Deprecated
-    public static InternalDependency of(Key<?> key) {
-        requireNonNull(key, "key is null");
-        if (!key.hasQualifiers()) {
-            TypeToken<?> tl = key.typeToken();
-            if (tl.type() == tl.rawType()) {
-                return CLASS_CACHE.get(tl.rawType());
-            }
-        }
-        return new InternalDependency(key.typeToken().type(), key, Optionality.REQUIRED);
     }
 
     private enum Optionality {

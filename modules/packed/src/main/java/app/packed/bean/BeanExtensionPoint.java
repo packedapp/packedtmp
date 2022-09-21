@@ -253,8 +253,7 @@ class Sandbox {
         if (t instanceof Class<?> cl) {
             return (Op<T>) BeanExtensionPoint.factoryOf(cl);
         } else {
-            ExecutableOp<?> f = ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
-            return new ExecutableOp<>(f);
+            return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
         }
     }
 }
