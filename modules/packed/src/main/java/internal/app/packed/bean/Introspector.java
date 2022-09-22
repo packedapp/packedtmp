@@ -35,8 +35,8 @@ import app.packed.bean.BeanIntrospector.FieldHook;
 import app.packed.bean.BeanIntrospector.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
 import internal.app.packed.util.ClassUtil;
 
 /**

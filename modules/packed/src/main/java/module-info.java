@@ -15,8 +15,8 @@ module app.packed {
     exports app.packed.lifetime.sandbox;
 
     /* Special support for packed-devtoolks */
-    uses internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
-    exports internal.app.packed.integrate.devtools to app.packed.devtools;
+    uses internal.app.packed.base.devtools.PackedDevToolsIntegration;
+    exports internal.app.packed.base.devtools to app.packed.devtools;
 }
 
 // requires static org.graalvm.sdk;

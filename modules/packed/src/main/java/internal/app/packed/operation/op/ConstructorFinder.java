@@ -24,7 +24,7 @@ import java.util.StringJoiner;
 import java.util.function.Function;
 
 import app.packed.bean.Inject;
-import internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
+import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.util.StringFormatter;
 
 /**
