@@ -35,6 +35,7 @@ import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror for a bean operation.
@@ -80,7 +81,18 @@ public class OperationMirror implements Mirror {
 
     /** {@return the bindings of this operation.} */
     public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
+        BindingSetup[] bindings = operation().bindings;
+        if (bindings.length == 0) {
+            return List.of();
+        }
+        BindingMirror[] hooks = new BindingMirror[bindings.length];
+        for (int i = 0; i < hooks.length; i++) {
+            BindingSetup bs = bindings[i];
+            if (bs != null) {
+                hooks[i] = bs.mirror();
+            }
+        }
+        return List.of(hooks);
     }
 
     /** {@return the container the operation belongs to.} */
@@ -137,7 +149,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the target of the operation.} */
     public OperationTargetMirror target() {
-        return operation().handle.wrapper;
+        return operation().wrapper;
     }
 
     /** {@return the type of the operation.} */

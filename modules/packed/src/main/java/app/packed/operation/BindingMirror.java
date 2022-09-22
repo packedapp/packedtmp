@@ -22,6 +22,8 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.UserOrExtension;
+import app.packed.operation.bindings.BindingKind;
+import app.packed.operation.bindings.DefaultMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.binding.BindingSetup;
@@ -31,7 +33,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * 
  * @see OperationMirror#bindings()
  */
-public abstract class BindingMirror implements Mirror {
+public class BindingMirror implements Mirror {
 
     /**
      * The internal configuration of the binding we are mirrored. Is initially null but populated via
@@ -124,6 +126,35 @@ public abstract class BindingMirror implements Mirror {
 //Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
 //Eller maaske goer det? Taenker ikke man kan vaere alle dele
 interface Sandbox {
+    Optional<DefaultMirror> fallback(); // Do we parse it even if we have been build-time resolved????
+    
+    // Resolved
+    // Unresolved + [Optional|Default]
+    // RuntimeResolvable
+    // Composite -> composite.all.isSatisfiable
+
+
+    
+    BindingKind bindingKind();
+
+    // Unresolved->Empty or Composite->Empty
+    Optional<UserOrExtension> resolvedBy();
+
+    Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
+    
+    /**
+     * If this dependency is the result of another operation.
+     * 
+     * @return
+     */
+    // Talking about some caching here makes sense
+    // ConstantPoolReadOperationMirror
+    // Er empty if Unesolved... Eller hvad.
+    // Hvis vi fx er @Default ville vi vel gerne have nogle fake operationer
+
+    // Altsaa den ikke super meget mening for keys..
+    // Her er constructeren for CustomerManager...
+    // Til gengaeld
 
     // Er det bare extension???
 

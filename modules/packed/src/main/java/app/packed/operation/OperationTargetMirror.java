@@ -29,9 +29,9 @@ import app.packed.operation.OperationTargetMirror.OfInstanceAccess;
 import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
 import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
 import internal.app.packed.bean.introspection.PackedBeanField.BuildTimeFieldTargetMirror;
-import internal.app.packed.operation.PackedOperationHandle.Wrapper;
-import internal.app.packed.operation.PackedOperationHandle.Wrapper.FieldWrapper;
-import internal.app.packed.operation.PackedOperationHandle.Wrapper.MethodWrapper;
+import internal.app.packed.operation.OperationSetup.Wrapper;
+import internal.app.packed.operation.OperationSetup.Wrapper.FieldWrapper;
+import internal.app.packed.operation.OperationSetup.Wrapper.MethodWrapper;
 
 /**
  * The target of an operation.

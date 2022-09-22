@@ -21,6 +21,7 @@ import java.lang.reflect.AnnotatedElement;
 /**
  * An annotation reader can be used to process annotations on bean elements.
  * 
+ * @see AnnotatedElement
  */
 
 // If we can, we should move this to BeanProcessor.AnnotationReader
@@ -30,11 +31,14 @@ import java.lang.reflect.AnnotatedElement;
 
 public interface BeanIntrospector$AnnotationReader {
 
+    /** {@return whether or not there are any annotations to read.} */
+    boolean hasAnnotations();
+
     boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
 
     // Det er taenk
     Annotation[] readAnyOf(Class<?>... annotationTypes);
-    
+
     /**
      * Returns a annotation of the specified type or throws {@link BeanDefinitionException} if the annotation is not present
      * 

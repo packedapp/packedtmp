@@ -32,14 +32,14 @@ import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.Wrapper.FieldWrapper;
 import internal.app.packed.operation.PackedOperationHandle;
-import internal.app.packed.operation.PackedOperationHandle.Wrapper.FieldWrapper;
-import internal.app.packed.operation.PackedOperationTarget;
 
 /**
  * Implementation of {@link BeanIntrospector$OnFieldHook}.
  */
-public final class PackedBeanField implements PackedOperationTarget , BeanIntrospector$OnFieldHook {
+public final class PackedBeanField implements BeanIntrospector$OnFieldHook {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -94,16 +94,21 @@ public final class PackedBeanField implements PackedOperationTarget , BeanIntros
     public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle mh = openClass.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return new PackedOperationHandle(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean, this,
+        OperationSetup os = new OperationSetup(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean,
                 new FieldWrapper(mh, field, accessMode));
+        bean.addOperation(os);
+        return new PackedOperationHandle(os);
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
         MethodHandle mh = openClass.unreflectVarHandle(field).toMethodHandle(accessMode);
-        return new PackedOperationHandle(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean, this,
+        OperationSetup os = new OperationSetup(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean,
                 new FieldWrapper(mh, field, accessMode));
+        bean.addOperation(os);
+
+        return new PackedOperationHandle(os);
     }
 
     /** {@inheritDoc} */
@@ -111,8 +116,11 @@ public final class PackedBeanField implements PackedOperationTarget , BeanIntros
     public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle mh = openClass.unreflectSetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        return new PackedOperationHandle(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean, this,
+        OperationSetup os = new OperationSetup(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean,
                 new FieldWrapper(mh, field, accessMode));
+        bean.addOperation(os);
+
+        return new PackedOperationHandle(os);
     }
 
     public VarHandle newVarHandle() {

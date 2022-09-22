@@ -49,7 +49,7 @@ public final class BeanIntrospectionHelper {
     private static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** The bean that is being introspected. */
-    private final BeanSetup bean;
+    public final BeanSetup bean;
 
     /** The class we are introspecting. */
     private final Class<?> beanClass;
@@ -325,7 +325,7 @@ public final class BeanIntrospectionHelper {
             if (fh != null) {
                 ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
 
-                PackedBeanMethod pbm = new PackedBeanMethod(bean, BeanIntrospectionHelper.this, ei.extension, method, fh.isInvokable);
+                PackedBeanMethod pbm = new PackedBeanMethod(BeanIntrospectionHelper.this, ei.extension, method, annotations, fh.isInvokable);
 
                 ei.introspector.onMethodHook(pbm);
             }

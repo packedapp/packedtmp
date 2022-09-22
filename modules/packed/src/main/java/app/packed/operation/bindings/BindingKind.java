@@ -21,6 +21,8 @@ import java.lang.reflect.Field;
  *
  */
 // All dependencies have a resolution kind if those that are unresolved
+
+// Maaske den doer???
 public enum BindingKind {
     
     MANUAL,

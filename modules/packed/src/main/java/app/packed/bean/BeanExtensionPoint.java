@@ -64,6 +64,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
+    // should not call anything on the returned bean
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:

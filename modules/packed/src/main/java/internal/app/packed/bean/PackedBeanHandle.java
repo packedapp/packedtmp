@@ -19,9 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanMirror;
 
 /**
  * Implementation of {@link BeanHandle}.
@@ -66,5 +68,11 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
     @Override
     public boolean isConfigurable() {
         return !bean.realm.isClosed();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {
+        throw new UnsupportedOperationException();
     }
 }

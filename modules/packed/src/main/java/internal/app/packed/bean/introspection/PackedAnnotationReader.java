@@ -27,6 +27,11 @@ public record PackedAnnotationReader(Annotation[] annotations) implements BeanIn
     /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        for (int i = 0; i < annotations.length; i++) {
+            if (annotations[i].annotationType() == annotationClass) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -40,6 +45,12 @@ public record PackedAnnotationReader(Annotation[] annotations) implements BeanIn
     @Override
     public <T extends Annotation> T readRequired(Class<T> annotationClass) {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasAnnotations() {
+        return annotations.length != 0;
     }
 
 }

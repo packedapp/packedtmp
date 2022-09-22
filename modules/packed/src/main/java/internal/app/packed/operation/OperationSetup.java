@@ -15,16 +15,24 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle.AccessMode;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
+import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.InvocationType;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.bindings.DependencyNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -38,32 +46,33 @@ public final class OperationSetup {
     /** The bean that defines the operation. */
     public final BeanSetup bean;
 
-    // Vil vi gerne embedde den her????
-    public DependencyNode depNode;
-
-    /** Supplies a mirror for the operation */
-    private Supplier<? extends OperationMirror> mirrorSupplier;
-
-    /** The target of the operation. */
-    public final PackedOperationTarget operationTarget;
-
     /** The extension that operates the operation. */
     public final ExtensionBeanSetup operatorBean;
 
     /** The type of the operation. */
-    public final OperationType type = null;
+    public final OperationType type;
 
     public final BindingSetup[] bindings;
 
-    public final PackedOperationHandle handle;
+    public final InvocationType invocationType;
 
-    OperationSetup(PackedOperationHandle builder) {
-        this.bean = builder.bean;
-        this.handle = builder;
-        this.operationTarget = builder.target;
-        this.operatorBean = builder.operatorBean;
-        this.mirrorSupplier = builder.mirrorSupplier;
-        this.bindings = null;
+    /** Whether or not an invoker has been computed */
+    boolean isComputed;
+
+    /** Supplies a mirror for the operation */
+    Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
+
+    public final Wrapper wrapper;
+
+    public OperationSetup(OperationType type, ExtensionBeanConfiguration<?> operator, InvocationType invocationType, BeanSetup bean,
+            Wrapper wrapper) {
+        this.type = type;
+        this.bean = bean;
+        this.wrapper = wrapper;
+        this.invocationType = requireNonNull(invocationType, "invocationType is null");
+        requireNonNull(operator, "operator is null");
+        this.operatorBean = ExtensionBeanSetup.crack(operator);
+        this.bindings = new BindingSetup[type.parameterCount()];
     }
 
     /** {@return a new mirror.} */
@@ -81,5 +90,82 @@ public final class OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public static non-sealed abstract class Wrapper implements OperationTargetMirror {
+
+        final boolean isStatic;
+
+        final MethodHandle methodHandle;
+
+        Wrapper(MethodHandle methodHandle, boolean isStatic) {
+            this.methodHandle = methodHandle;
+            this.isStatic = isStatic;
+        }
+
+        public static final class FieldWrapper extends Wrapper implements OperationTargetMirror.OfFieldAccess {
+
+            private final AccessMode accessMode;
+
+            private final Field field;
+
+            /**
+             * @param methodHandle
+             * @param isStatic
+             */
+            public FieldWrapper(MethodHandle methodHandle, Field field, AccessMode accessMode) {
+                super(methodHandle, Modifier.isStatic(field.getModifiers()));
+                this.field = field;
+                this.accessMode = accessMode;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public AccessMode accessMode() {
+                return accessMode;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public boolean allowGet() {
+                throw new UnsupportedOperationException();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public boolean allowSet() {
+                throw new UnsupportedOperationException();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public Field field() {
+                return field;
+            }
+
+        }
+
+        public static final class MethodWrapper extends Wrapper implements OperationTargetMirror.OfMethodInvoke {
+
+            private final Method method;
+
+            /**
+             * @param methodHandle
+             * @param isStatic
+             */
+            public MethodWrapper(MethodHandle methodHandle, Method method) {
+                super(methodHandle, Modifier.isStatic(method.getModifiers()));
+                this.method = method;
+            }
+
+            /** {@return the invokable method.} */
+            public Method method() {
+                return method;
+            }
+            
+            public String toString() {
+                return method.toString();
+            }
+        }
     }
 }

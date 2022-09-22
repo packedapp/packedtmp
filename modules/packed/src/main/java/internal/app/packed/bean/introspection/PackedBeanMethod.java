@@ -15,6 +15,7 @@
  */
 package internal.app.packed.bean.introspection;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
@@ -25,42 +26,41 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.Wrapper.MethodWrapper;
 import internal.app.packed.operation.PackedOperationHandle;
-import internal.app.packed.operation.PackedOperationHandle.Wrapper.MethodWrapper;
-import internal.app.packed.operation.PackedOperationTarget;
 
 /** Internal implementation of BeanMethod */
 // Taenker den bliver en inner class ad PackedBeanIntrospector?
-public final class PackedBeanMethod implements PackedOperationTarget , BeanIntrospector$OnMethodHook {
+public final class PackedBeanMethod implements BeanIntrospector$OnMethodHook {
 
-    /** The bean that declares the member */
-    public final BeanSetup bean;
+    /** The internal introspector */
+    public final BeanIntrospectionHelper introspector;
 
     /** The underlying method. */
-    protected final Method method;
-
-    final OpenClass openClass;
+    private final Method method;
 
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    /** The operation type (lazily calculated). */
+    /** The operation type (lazily created). */
     @Nullable
     private OperationType type;
 
-    PackedBeanMethod(BeanSetup bean, BeanIntrospectionHelper scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
-        this.openClass = scanner.oc;
-        this.bean = bean;
+    private final Annotation[] annotations;
+
+    PackedBeanMethod(BeanIntrospectionHelper introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
+        this.introspector = introspector;
         this.operator = operator;
         this.method = method;
+        this.annotations = annotations;
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanIntrospector$AnnotationReader annotations() {
-        return null;
+        return new PackedAnnotationReader(annotations);
     }
 
     /** {@return modifiers for the member.} */
@@ -82,7 +82,7 @@ public final class PackedBeanMethod implements PackedOperationTarget , BeanIntro
 
     // Taenker vi goer det her naar vi laver en operation
     public MethodHandle newMethodHandle() {
-        return openClass.unreflect(method);
+        return introspector.oc.unreflect(method);
     }
 
     /** {@inheritDoc} */
@@ -90,7 +90,9 @@ public final class PackedBeanMethod implements PackedOperationTarget , BeanIntro
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle methodHandle = newMethodHandle();
         // Hvad hvis vi koere raw???? Tror det er det samme
-        return new PackedOperationHandle(operationType(), operator, invocationType, bean, this, new MethodWrapper(methodHandle, method));
+        OperationSetup os = new OperationSetup(operationType(), operator, invocationType, introspector.bean, new MethodWrapper(methodHandle, method));
+        introspector.bean.addOperation(os);
+        return new PackedOperationHandle(os);
     }
 
     /** {@inheritDoc} */

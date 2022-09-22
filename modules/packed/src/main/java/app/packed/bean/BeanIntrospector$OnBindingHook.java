@@ -101,9 +101,11 @@ public non-sealed interface BeanIntrospector$OnBindingHook extends BeanElement {
 
     BeanIntrospector$OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier);
 
-    TypeInfo type();
-
     Variable variable();
+    
+    default TypeInfo type() {
+        throw new UnsupportedOperationException();
+    }
 
     // Har vi altid en?
     // Det er saa here hvor BeanMethod.bindings() er lidt traels...

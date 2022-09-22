@@ -28,7 +28,7 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public class BindingSetup {
+public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
@@ -38,12 +38,12 @@ public class BindingSetup {
     public final int index;
 
     /** Supplies a mirror for the operation */
-    private Supplier<? extends BindingMirror> mirrorSupplier;
+    private Supplier<? extends BindingMirror> mirrorSupplier = () -> new BindingMirror();
 
     /** The underlying operation. */
     public final OperationSetup operation;
 
-    BindingSetup(OperationSetup operation, int index) {
+    public BindingSetup(OperationSetup operation, int index) {
         this.operation = operation;
         this.index = index;
     }
@@ -64,4 +64,5 @@ public class BindingSetup {
         }
         return mirror;
     }
+
 }

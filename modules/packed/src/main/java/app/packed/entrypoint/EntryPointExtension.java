@@ -74,7 +74,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 MainThreadOfControl mc = application.entryPoints.mainThread();
 
                 mc.isStatic = Modifier.isStatic(method.getModifiers());
-                mc.cs = ((PackedBeanMethod) method).bean;
+                mc.cs = ((PackedBeanMethod) method).introspector.bean;
                 mc.methodHandle = ((PackedBeanMethod) method).newMethodHandle();
 
                 

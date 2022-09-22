@@ -13,13 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package internal.app.packed.operation.binding;
 
-import internal.app.packed.bean.introspection.PackedBeanField;
-import internal.app.packed.bean.introspection.PackedBeanMethod;
+import app.packed.base.Nullable;
+import internal.app.packed.operation.OperationSetup;
 
-/** The target of an operation. */
-// Tror vi laver en nu klasse som vi kopiere over i
-public sealed interface PackedOperationTarget permits PackedBeanField, PackedBeanMethod, PackedFunctionOperationTarget {
+/**
+ *
+ */
+public class ConstantBindingSetup extends BindingSetup {
+
+    @Nullable
+    final Object constant;
+
+    /**
+     * @param operation
+     * @param index
+     */
+    public ConstantBindingSetup(OperationSetup operation, int index, @Nullable Object constant) {
+        super(operation, index);
+        this.constant = constant;
+    }
 
 }

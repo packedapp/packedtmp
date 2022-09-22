@@ -101,15 +101,6 @@ public final class OpenClass {
     }
 
     /**
-     * Returns the class that is processed.
-     * 
-     * @return the class that is processed
-     */
-    public Class<?> type() {
-        return type;
-    }
-
-    /**
      * Unreflects the specified method.
      * 
      * @param method

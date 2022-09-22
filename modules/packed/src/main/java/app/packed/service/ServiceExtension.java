@@ -171,7 +171,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 // Det samme med entry point...
 //                method.newOperation(null);
 
-                BeanSetup bean = ((PackedBeanMethod) method).bean;
+                BeanSetup bean = ((PackedBeanMethod) method).introspector.bean;
                 MethodDependencyHolder fh = new MethodDependencyHolder(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 

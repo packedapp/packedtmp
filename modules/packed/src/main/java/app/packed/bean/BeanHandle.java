@@ -152,7 +152,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Hvis vi aabner op for specialized bean mirrors
     // maybe just name it mirror?
-    default void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {}
+     void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
 
     /**
      * An installer used to create {@link BeanHandle}. Is created using the various {@code beanInstaller} methods on

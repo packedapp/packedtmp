@@ -1,7 +1,9 @@
 package app.packed.container;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -15,6 +17,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionMirrorHelper;
 import internal.app.packed.container.ExtensionSetup;
@@ -58,14 +61,21 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
 
     /** {@return a {@link Collection} view of all the beans defined in the container.} */
     public Collection<BeanMirror> beans() {
+        // not technically a view but will do for now
+        ArrayList<BeanMirror> beans = new ArrayList<>();
+        for (ComponentSetup s : container.children.values()) {
+            if (s instanceof BeanSetup b) {
+                beans.add(b.mirror());
+            }
+        }
+        return List.copyOf(beans);
         // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
-        throw new UnsupportedOperationException();
         // we need a filter on the view...
         // size, isEmpty, is going to get a bit slower.
     }
 
     /** {@return an unmodifiable view of all of the children of this component.} */
-    /* Sequenced */ 
+    /* Sequenced */
     public Collection<ContainerMirror> children() {
         return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
     }
@@ -108,6 +118,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return container().extensionTypes();
     }
+
     /**
      * <p>
      * If you know for certain that extension is used in the container you can use {@link #useExtension(Class)} instead.
@@ -123,12 +134,13 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
         return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.newMirrorOrNull(container(), mirrorType));
     }
+
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
         return container().hashCode();
     }
-    
+
     /**
      * Invoked by the runtime with the internal configuration of the container to mirror.
      * 
@@ -141,7 +153,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
         }
         this.container = container;
     }
-    
+
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
      * 
@@ -153,7 +165,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public LifetimeMirror lifetime() {
@@ -193,7 +205,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     public String toString() {
         return "ContainerMirror (" + path() + ")";
     }
-
 
     /**
      * Returns an mirror of the specified type if the container is using the extension the mirror is a part of. Or throws
