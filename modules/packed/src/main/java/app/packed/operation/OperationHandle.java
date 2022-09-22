@@ -50,7 +50,6 @@ import internal.app.packed.operation.PackedOperationHandle;
  * @see BeanIntrospector$OnFieldHook#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
  * @see BeanIntrospector$OnMethodHook#newOperation(ExtensionBeanConfiguration)
  */
-// no functionality for reading annotations, use BeanField, BeanMethod, ect
 public sealed interface OperationHandle permits PackedOperationHandle {
 
     /**
@@ -60,12 +59,13 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * 
      * @return a unmodifiable list of the dependencies of this operation
      */
-    // Dependencies that are not explicitly bound
-    default List<BeanIntrospector$OnBindingHook> bindables() {
-        throw new UnsupportedOperationException();
-    }
+    List<BeanIntrospector$OnBindingHook> bindings();
 
     /**
+     * 
+     * <p>
+     * The method type of the returned method handle will be {@code invocationType().methodType()}.
+     * 
      * @return
      * 
      * @throws IllegalStateException
@@ -74,25 +74,10 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if method handle are not supported
      * @see ExtensionBeanConfiguration#bindDelayed(Class, Supplier)
      */
-    MethodHandle computeMethodHandle();
+    MethodHandle buildInvoker(); //was computeMethodHandle()?
 
+    /** {@return the invocation type of this operation.} */
     InvocationType invocationType();
-
-    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
-
-    // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
-    // Additional parameters will be like any other bindings
-    // Will it create an additional operation? I would think so if it needs injection
-    default OperationHandle mapReturn(MethodHandle mh) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
-
-    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
-    // Eller vi bare kan genbruge BeanDependency
 
     /**
      * Adds a supplier that creates the mirror that will be returned when a mirror for the operation is requested.
@@ -110,12 +95,13 @@ public sealed interface OperationHandle permits PackedOperationHandle {
     // However, the best thing we can do is a runtime exception. As the supplier is lazy
     OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
 
-    /** {@return the type of the operation.} */
+    /** {@return the type of this operation.} */
     OperationType type();
 }
 
-interface Sandbox {
-//  /**
+interface ZandboxOperationHandle {
+
+    // /**
 //  * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
 //  * 
 //  * @return
@@ -126,6 +112,28 @@ interface Sandbox {
     default <T> T computeInvoker(TypeToken<T> invokerType) {
 
         /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
+        throw new UnsupportedOperationException();
+    }
+
+    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
+    // Additional parameters will be like any other bindings
+    // Will it create an additional operation? I would think so if it needs injection
+    default OperationHandle mapReturn(MethodHandle mh) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
+    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
+    // Eller vi bare kan genbruge BeanDependency
+
+// non void return matching invocation type
+    default OperationHandle mapReturn(Op<?> op) {
+        // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
     }
 

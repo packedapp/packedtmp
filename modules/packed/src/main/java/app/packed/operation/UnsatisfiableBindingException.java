@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.operation;
 
-import app.packed.bean.BeanDefinitionException;
+import app.packed.application.BuildException;
 
-/** An exception thrown at build-time when a an ill-formed dependency was encountered. */
-// @Nullable primitive
-// Optional<Optional<Provider<UserService>>>
-// IllegalBindingException? InvalidBindingException, UncreateableBindingException
-public class CouldNotCreateBindingException extends BeanDefinitionException {
+/** An exception thrown at build-time when a required dependency could not be resolved. */
+// Valid but the 
+// Binding
+public class UnsatisfiableBindingException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -34,7 +33,7 @@ public class CouldNotCreateBindingException extends BeanDefinitionException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CouldNotCreateBindingException(String message) {
+    public UnsatisfiableBindingException(String message) {
         super(message);
     }
 
@@ -48,7 +47,7 @@ public class CouldNotCreateBindingException extends BeanDefinitionException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CouldNotCreateBindingException(String message, Throwable cause) {
+    public UnsatisfiableBindingException(String message, Throwable cause) {
         super(message, cause);
     }
 }

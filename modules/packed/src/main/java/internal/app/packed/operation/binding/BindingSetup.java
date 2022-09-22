@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
+import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.bindings.BindingMirror;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;

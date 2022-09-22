@@ -1,23 +1,18 @@
 module app.packed {
-
-    exports app.packed.base;
-
     exports app.packed.application;
-    exports app.packed.container;
+    exports app.packed.base;
     exports app.packed.bean;
+    exports app.packed.container;
     exports app.packed.operation;
-
     exports app.packed.lifetime;
 
     // Essential extensions
     exports app.packed.entrypoint;
     exports app.packed.service;
 
-    // temporary
-    exports app.packed.operation.lanes;
+    // temporary sandbox thingies
     exports app.packed.lifetime.managed;
     exports app.packed.lifetime.sandbox;
-    exports app.packed.operation.bindings;
 
     /* Special support for packed-devtoolks */
     uses internal.app.packed.integrate.devtools.PackedDevToolsIntegration;

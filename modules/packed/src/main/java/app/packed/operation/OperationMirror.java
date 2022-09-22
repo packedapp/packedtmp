@@ -31,7 +31,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.bindings.BindingMirror;
 import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;

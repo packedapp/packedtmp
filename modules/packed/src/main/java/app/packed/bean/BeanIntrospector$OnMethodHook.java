@@ -54,6 +54,13 @@ public sealed interface BeanIntrospector$OnMethodHook extends BeanElement permit
      */
     boolean hasInvokeAccess();
 
+    /**
+     * @return
+     */
+    default Set<Class<?>> hooks() {
+        return Set.of();
+    }
+
     /** {@return the underlying method.} */
     Method method();
 
@@ -95,15 +102,9 @@ public sealed interface BeanIntrospector$OnMethodHook extends BeanElement permit
 
     /** {@return a operation type for this method.} */
     OperationType operationType();
-
-    /**
-     * @return
-     */
-    default Set<Class<?>> hooks() {
-        return Set.of();
-    }
 }
 
+// Support for raw methods handles???
 /**
  * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
  * that may have been configured elsewhere).

@@ -13,30 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.lanes;
+package app.packed.operation;
 
 import java.lang.invoke.MethodType;
 import java.util.List;
 
-import app.packed.operation.OperationHandle;
-
 /**
  * alle lane operation boer starte med laneX
  */
-public interface OldInvocationType {
+interface InvocationTypeOld {
 
     default MethodType invocationType() {
         throw new UnsupportedOperationException();
     }
 
     // Cannot add more than one bean instance lane
-    default OldInvocationType laneAddBeanInstance() {
+    default InvocationTypeOld laneAddBeanInstance() {
         return laneAddBeanInstance(Object.class);
     }
 
-    OldInvocationType laneAddBeanInstance(Class<?> type);
+    InvocationTypeOld laneAddBeanInstance(Class<?> type);
 
-    OldInvocationType laneAddInvocationContext(); // OperationInvocationContext?
+    InvocationTypeOld laneAddInvocationContext(); // OperationInvocationContext?
 
     default OperationHandle lanesClear() {
         // No interceptors

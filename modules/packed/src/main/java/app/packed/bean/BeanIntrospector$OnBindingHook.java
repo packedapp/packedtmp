@@ -22,9 +22,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.Extension;
+import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
-import app.packed.operation.bindings.BindingMirror;
 
 /**
  *

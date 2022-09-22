@@ -17,7 +17,7 @@ package app.packed.service;
 
 import app.packed.base.Key;
 import app.packed.container.ContainerMirror;
-import app.packed.operation.bindings.BindingMirror;
+import app.packed.operation.BindingMirror;
 
 /**
  *

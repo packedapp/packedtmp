@@ -13,14 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings.sandbox;
+package app.packed.operation;
+
+import java.util.List;
 
 /**
- *
+ * A composite binding mirror
  */
-public enum ResolutionState {
-    UNRESOLVED, RESOLVED, RUNTIME_RESOLVABLE;
-    // Resolved_At_Runtime when the application is initialized?
-    // Resolved_At_Runtime for each invocation
-    // Not sure we have this distiction
+public class CompositeBindingMirror extends BindingMirror {
+
+    public List<BindingMirror> bindings() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Tror ikke laengere vi bliver resolved som en compond.
+    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
+    public boolean isFuncionalInterface() {
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -22,8 +22,10 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanIntrospector$OnBindingHook;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
@@ -68,6 +70,12 @@ public final class PackedOperationHandle implements OperationHandle {
         this.operatorBean = ExtensionBeanSetup.crack(operator);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<BeanIntrospector$OnBindingHook> bindings() {
+        throw new UnsupportedOperationException();
+    }
+
     public void build() {
         OperationSetup os = new OperationSetup(this);
         bean.addOperation(os);
@@ -75,7 +83,7 @@ public final class PackedOperationHandle implements OperationHandle {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle computeMethodHandle() {
+    public MethodHandle buildInvoker() {
         if (isComputed) {
             throw new IllegalStateException("This method can only be called once");
         }

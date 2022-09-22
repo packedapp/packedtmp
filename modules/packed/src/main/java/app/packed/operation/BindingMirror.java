@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.operation;
 
 import java.lang.annotation.Annotation;
 import java.util.Optional;
@@ -22,9 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.UserOrExtension;
-import app.packed.operation.OperationMirror;
-import app.packed.operation.Variable;
-import app.packed.operation.bindings.sandbox.ResolutionState;
+import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.binding.BindingSetup;
 

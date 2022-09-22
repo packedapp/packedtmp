@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings.sandbox;
+package app.packed.operation.context;
+
+import app.packed.bean.BeanIntrospector$OnBindingHook;
 
 /**
  *
  */
-// Ved ikke hvor meget den giver mening at expose
-interface HowDepIsProvidedKind {
+public abstract class OperationContextSpec<T> {
+
     
-    // Build-time Constant
-    
-    // Result of an operation?
-    
-    // Background input param to operation
-    
-    // Lookup in some datastructed (service) Er det ikke bare result af en operation?
+    // IDK
+    protected void notInContext(BeanIntrospector$OnBindingHook dep) {
+        
+    }
 }

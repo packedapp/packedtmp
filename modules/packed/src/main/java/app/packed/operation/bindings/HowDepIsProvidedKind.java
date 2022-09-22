@@ -15,21 +15,17 @@
  */
 package app.packed.operation.bindings;
 
-import java.util.List;
-
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
-
-    public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Tror ikke laengere vi bliver resolved som en compond.
-    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-    public boolean isFuncionalInterface() {
-        throw new UnsupportedOperationException();
-    }
-
+// Ved ikke hvor meget den giver mening at expose
+interface HowDepIsProvidedKind {
+    
+    // Build-time Constant
+    
+    // Result of an operation?
+    
+    // Background input param to operation
+    
+    // Lookup in some datastructed (service) Er det ikke bare result af en operation?
 }
