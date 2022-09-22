@@ -18,10 +18,12 @@ package app.packed.bean;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
@@ -34,23 +36,11 @@ import internal.app.packed.bean.introspection.PackedBeanMethod;
  * @see BeanExtensionPoint.MethodHook
  * @see BeanIntrospector#onMethod(BeanMethod)
  */
-public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits PackedBeanMethod {
+public sealed interface BeanIntrospector$OnMethodHook extends BeanElement permits PackedBeanMethod {
 
-    /**
-     * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanDefinitionException} if the field does not
-     * represent a proper key.
-     * <p>
-     * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-     * key. As {@link BeanIntrospector$BeanVariableBinder} is typically used in cases where this would be needed.
-     * 
-     * @return a key representing the field
-     * 
-     * @throws BeanDefinitionException
-     *             if the field does not represent a proper key
-     */
-    default Key<?> methodToKey() {
-        return Key.convertMethodReturnType(method());
-    }
+    /** {@return an annotation reader for the method.} */
+    BeanIntrospector$AnnotationReader annotations();
+
     /**
      * {@return the modifiers of the underlying method.}
      *
@@ -66,6 +56,22 @@ public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits 
 
     /** {@return the underlying method.} */
     Method method();
+
+    /**
+     * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanDefinitionException} if the field does not
+     * represent a proper key.
+     * <p>
+     * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
+     * key. As {@link BeanIntrospector$OnBindingHook} is typically used in cases where this would be needed.
+     * 
+     * @return a key representing the field
+     * 
+     * @throws BeanDefinitionException
+     *             if the field does not represent a proper key
+     */
+    default Key<?> methodToKey() {
+        return Key.convertMethodReturnType(method());
+    }
 
     /**
      * Creates a new operation that can invoke the underlying method.
@@ -85,10 +91,17 @@ public sealed interface BeanIntrospector$BeanMethod extends BeanElement permits 
      * @throws IllegalArgumentException
      *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
      */
-    OperationHandle newOperation(ExtensionBeanConfiguration<?> operator);
+    OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType);
 
     /** {@return a operation type for this method.} */
     OperationType operationType();
+
+    /**
+     * @return
+     */
+    default Set<Class<?>> hooks() {
+        return Set.of();
+    }
 }
 
 /**

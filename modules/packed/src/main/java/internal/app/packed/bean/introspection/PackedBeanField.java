@@ -16,25 +16,30 @@
 package internal.app.packed.bean.introspection;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import app.packed.bean.BeanIntrospector$AnnotationReader;
-import app.packed.bean.BeanIntrospector$BeanField;
+import app.packed.bean.BeanIntrospector$OnFieldHook;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.PackedOperationHandle;
+import internal.app.packed.operation.PackedOperationHandle.Wrapper.FieldWrapper;
 import internal.app.packed.operation.PackedOperationTarget;
-import internal.app.packed.util.OpenClass;
 
 /**
- * Implementation of {@link BeanIntrospector$BeanField}.
+ * Implementation of {@link BeanIntrospector$OnFieldHook}.
  */
-public final class PackedBeanField implements PackedOperationTarget , BeanIntrospector$BeanField {
+public final class PackedBeanField implements PackedOperationTarget , BeanIntrospector$OnFieldHook {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -79,37 +84,35 @@ public final class PackedBeanField implements PackedOperationTarget , BeanIntros
         return field;
     }
 
-    /** {@return modifiers for the member.} */
-    public final int getModifiers() {
+    /** {@inheritDoc} */
+    public int modifiers() {
         return field.getModifiers();
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationTargetMirror mirror() {
-        return new BuildTimeFieldTargetMirror(this);
+    public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
+        MethodHandle mh = openClass.unreflectGetter(field);
+        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
+        return new PackedOperationHandle(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean, this,
+                new FieldWrapper(mh, field, accessMode));
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator) {
-//         return new RawOperationSetup<>(this, openClass.unreflectGetter(field));
-
-        return null;
+    public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
+        MethodHandle mh = openClass.unreflectVarHandle(field).toMethodHandle(accessMode);
+        return new PackedOperationHandle(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean, this,
+                new FieldWrapper(mh, field, accessMode));
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator) {
-        // return new RawOperationSetup<>(this, openClass.unreflectSetter(field));
-
-        return null;
+    public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
+        MethodHandle mh = openClass.unreflectSetter(field);
+        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
+        return new PackedOperationHandle(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean, this,
+                new FieldWrapper(mh, field, accessMode));
     }
 
     public VarHandle newVarHandle() {

@@ -71,6 +71,11 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
         return this;
     }
 
+    /**
+     * 
+     */
+    public void provide() {}
+
 //    // ebc.bind(OPPack.class)
 //    // Det er jo faktisk et (syncthetic) factory vi skal binde...
 //    // Gerne til BeanExtension?

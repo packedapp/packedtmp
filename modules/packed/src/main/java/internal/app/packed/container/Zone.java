@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.bindings;
+package internal.app.packed.container;
+
+import java.util.IdentityHashMap;
 
 /**
  *
  */
-public abstract sealed class InjectionManager permits ContainerOrExtensionInjectionManager, BeanInjectionManager {
+public class Zone {
 
+    IdentityHashMap<Class<?>, ZoneEntry> unique = new IdentityHashMap<>();
+
+    static enum ZoneEntry {
+        SINGLETON, MANYTON;
+    }
 }

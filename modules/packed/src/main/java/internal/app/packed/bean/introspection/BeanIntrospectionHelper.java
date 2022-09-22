@@ -28,18 +28,17 @@ import java.util.LinkedHashMap;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanDefinitionException;
-import app.packed.bean.BeanExtensionPoint.FieldHook;
-import app.packed.bean.BeanExtensionPoint.MethodHook;
-import app.packed.bean.BeanExtensionPoint.VariableBindingHook;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanIntrospector.BindingHook;
+import app.packed.bean.BeanIntrospector.FieldHook;
+import app.packed.bean.BeanIntrospector.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
 import internal.app.packed.util.ClassUtil;
-import internal.app.packed.util.OpenClass;
 
 /**
  * This class is responsible for finding fields, methods, parameters that have hook annotations.
@@ -202,8 +201,8 @@ public final class BeanIntrospectionHelper {
      *            the field to introspect
      * 
      * @throws BeanDefinitionException
-     *             if there are multiple {@link VariableBindingHook} on the field. Or if there are both {@link FieldHook} and
-     *             {@link VariableBindingHook} annotations
+     *             if there are multiple {@link BindingHook} on the field. Or if there are both {@link FieldHook} and
+     *             {@link BindingHook} annotations
      * 
      * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
      *          allow it.
@@ -357,7 +356,7 @@ public final class BeanIntrospectionHelper {
                 @SuppressWarnings("unchecked")
                 Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
                 FieldHook fieldHook = type.getAnnotation(FieldHook.class);
-                VariableBindingHook provisionHook = type.getAnnotation(VariableBindingHook.class);
+                BindingHook provisionHook = type.getAnnotation(BindingHook.class);
 
                 if (provisionHook == fieldHook) { // check both null
                     return null;
@@ -368,7 +367,7 @@ public final class BeanIntrospectionHelper {
                     checkExtensionClass(type, provisionHook.extension());
                     return new FieldAnnotationCache(annotationType, provisionHook.extension(), false, true, true);
                 } else {
-                    throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + VariableBindingHook.class);
+                    throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
                 }
             }
         };

@@ -23,7 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanIntrospector$BeanField;
+import app.packed.bean.BeanIntrospector$OnFieldHook;
 import internal.app.packed.operation.bindings.DependencyProducer;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -38,9 +38,9 @@ public class FieldDependencyHolder extends DependencyHolder {
     /** A direct method handle to the field. */
     public final VarHandle varHandle;
     
-    public FieldDependencyHolder(BeanIntrospector$BeanField field, VarHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
+    public FieldDependencyHolder(BeanIntrospector$OnFieldHook field, VarHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(List.of(), provideAsConstant, provideAsKey);
-        this.modifiers = requireNonNull(field.getModifiers());
+        this.modifiers = requireNonNull(field.modifiers());
         this.varHandle = requireNonNull(mh);
     }
 

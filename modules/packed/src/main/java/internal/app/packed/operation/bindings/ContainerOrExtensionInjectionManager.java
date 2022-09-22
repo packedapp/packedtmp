@@ -20,6 +20,6 @@ import internal.app.packed.service.ContainerInjectionManager;
 /**
  *
  */
-public abstract sealed class ContainerOrExtensionInjectionManager extends InjectionManager permits ContainerInjectionManager, ExtensionInjectionManager {
+public abstract sealed class ContainerOrExtensionInjectionManager permits ContainerInjectionManager, ExtensionInjectionManager {
 
 }

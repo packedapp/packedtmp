@@ -15,9 +15,16 @@
  */
 package app.packed.bean;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import app.packed.base.Nullable;
-import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionModel;
@@ -80,15 +87,15 @@ public abstract class BeanIntrospector {
         this.setup = new Setup(extension, bean);
     }
 
-    public void onClassHook(BeanIntrospector$BeanClass clazz) {}
+    public void onClassHook(BeanIntrospector$OnClassHook clazz) {}
 
-    public void onBindingHook(BeanIntrospector$BeanVariableBinder dependency) {}
+    public void onBindingHook(BeanIntrospector$OnBindingHook dependency) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
-     * is annotated with an annotation that itself is annotated with {@link BeanIntrospector$BeanField.FieldHook} and where
-     * {@link FieldHook#extension()} matches the type of this extension.
+     * is annotated with an annotation that itself is annotated with {@link BeanIntrospector$OnFieldHook.FieldHook} and
+     * where {@link FieldHook#extension()} matches the type of this extension.
      * <p>
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
      * annotations on the same field.
@@ -98,13 +105,14 @@ public abstract class BeanIntrospector {
      * @see BeanExtensionPoint.FieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void onFieldHook(BeanIntrospector$BeanField field) {}
+    public void onFieldHook(BeanIntrospector$OnFieldHook field) {
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + field.hooks());
+    }
 
-    public void onMethodHook(BeanIntrospector$BeanMethod method) {
+    public void onMethodHook(BeanIntrospector$OnMethodHook method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
-        // We probably want to throw an internal extension exception instead
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method hook");
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + method.hooks());
     }
 
     /**
@@ -119,9 +127,9 @@ public abstract class BeanIntrospector {
     public void onPostIntrospect() {}
 
     /**
-     * A callback method that is invoked before any calls to {@link #onClass(BeanIntrospector$BeanClass)},
-     * {@link #onFieldHook(BeanIntrospector$BeanField)}, {@link #onMethod(BeanIntrospector$BeanMethod)} or
-     * {@link #onDependency(BeanIntrospector$BeanVariableBinder)}.
+     * A callback method that is invoked before any calls to {@link #onClass(BeanIntrospector$OnClassHook)},
+     * {@link #onFieldHook(BeanIntrospector$OnFieldHook)}, {@link #onMethod(BeanIntrospector$OnMethodHook)} or
+     * {@link #onDependency(BeanIntrospector$OnBindingHook)}.
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
@@ -150,11 +158,7 @@ public abstract class BeanIntrospector {
 
     // This is a place holder for now... Will be ditched it in the future
     // BeanVariable bare
-    public sealed interface BeanElement permits BeanIntrospector$BeanClass, BeanIntrospector$BeanConstructor, BeanIntrospector$BeanField, BeanIntrospector$BeanMethod, BeanIntrospector$BeanVariableBinder {
-
-        default BeanIntrospector$AnnotationReader annotations() {
-            throw new UnsupportedOperationException();
-        }
+    public sealed interface BeanElement permits BeanIntrospector$OnClassHook, BeanIntrospector$OnConstructorHook, BeanIntrospector$OnFieldHook, BeanIntrospector$OnMethodHook, BeanIntrospector$OnBindingHook {
 
         /**
          * @param postFix
@@ -168,6 +172,72 @@ public abstract class BeanIntrospector {
         }
     }
 
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface ClassHook {
+
+        /** Whether or not the sidecar is allow to get the contents of a field. */
+        boolean allowAllAccess() default false;
+
+        /** The extension the hook is a part of. */
+        Class<? extends Extension<?>> extension();
+    }
+
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface FieldHook {
+
+        /** Whether or not the owning extension is allow to get the contents of the field. */
+        boolean allowGet() default false;
+
+        /** Whether or not the owning extension is allow to set the contents of the field. */
+        boolean allowSet() default false;
+
+        /** The extension the hook is a part of. */
+        Class<? extends Extension<?>> extension();
+    }
+
+    /**
+     *
+     * @see BeanIntrospector#onMethodHook(BeanIntrospector$OnMethodHook)
+     */
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Retention(RUNTIME)
+    @Documented
+    public @interface MethodHook {
+
+        /**
+         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
+         * <p>
+         * Methods such as {@link BeanIntrospector$OnMethodHook#operationBuilder(ExtensionBeanConfiguration)} and... will fail
+         * with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
+         * 
+         * @return whether or not the implementation is allowed to invoke the target method
+         * 
+         * @see BeanIntrospector$OnMethodHook#operationBuilder(ExtensionBeanConfiguration)
+         */
+        // maybe just invokable = true, idk og saa Field.gettable and settable
+        boolean allowInvoke() default false; // allowIntercept...
+
+        /** The extension the hook is a part of. */
+        Class<? extends Extension<?>> extension();
+    }
+
+    /**
+     *
+     * @see BeanIntrospector.OnBindingHook
+     * @see BeanIntrospector#onBindingHook(BeanIntrospector$OnBindingHook)
+     */
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface BindingHook {
+
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+        Class<? extends Extension<?>> extension();
+    }
     // CheckRealmIsApplication
     // CheckRealmIsExtension
 

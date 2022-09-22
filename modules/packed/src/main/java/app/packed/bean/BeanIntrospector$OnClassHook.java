@@ -26,13 +26,13 @@ import app.packed.bean.BeanIntrospector.BeanElement;
  */
 
 // Kig maaske i Maurizio Mirror thingy...
-public non-sealed interface BeanIntrospector$BeanClass extends BeanElement {
+public non-sealed interface BeanIntrospector$OnClassHook extends BeanElement {
 
     boolean hasFullAccess();
     
-    void forEachConstructor(Consumer<? super BeanIntrospector$BeanConstructor> m);
+    void forEachConstructor(Consumer<? super BeanIntrospector$OnConstructorHook> m);
     
-    void forEachMethod(Consumer<? super BeanIntrospector$BeanMethod> m);
+    void forEachMethod(Consumer<? super BeanIntrospector$OnMethodHook> m);
 
     // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
     // Masske har vi BeanClass.Builder() istedet for???

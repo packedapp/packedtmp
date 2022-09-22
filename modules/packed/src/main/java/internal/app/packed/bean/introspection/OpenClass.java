@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util;
+package internal.app.packed.bean.introspection;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.InaccessibleBeanException;
+import internal.app.packed.util.StringFormatter;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -58,7 +59,7 @@ public final class OpenClass {
         this.type = requireNonNull(clazz);
     }
 
-    private Lookup lookup(Member member) {
+    Lookup lookup(Member member) {
         if (!member.getDeclaringClass().isAssignableFrom(type)) {
             throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + type);
         }
@@ -120,7 +121,6 @@ public final class OpenClass {
      */
     public MethodHandle unreflect(Method method) {
         Lookup lookup = lookup(method);
-
         try {
             return lookup.unreflect(method);
         } catch (IllegalAccessException e) {

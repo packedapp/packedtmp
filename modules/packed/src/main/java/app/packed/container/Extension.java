@@ -244,11 +244,27 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected void onNew() {}
 
+    /**
+     * @return
+     */
+    protected final boolean isRoot() {
+        return setup.parent == null;
+    }
+
     /** @return the parent of this extension if present. */
     @SuppressWarnings("unchecked")
     protected final Optional<E> parent() {
         ExtensionSetup parent = setup.parent;
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final E root() {
+        ExtensionSetup s = setup;
+        while (s.parent != null) {
+            s = s.parent;
+        }
+        return (E) s.instance();
     }
 
     /**

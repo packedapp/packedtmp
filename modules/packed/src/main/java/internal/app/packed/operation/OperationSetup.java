@@ -55,8 +55,11 @@ public final class OperationSetup {
 
     public final BindingSetup[] bindings;
 
+    public final PackedOperationHandle handle;
+
     OperationSetup(PackedOperationHandle builder) {
         this.bean = builder.bean;
+        this.handle = builder;
         this.operationTarget = builder.target;
         this.operatorBean = builder.operatorBean;
         this.mirrorSupplier = builder.mirrorSupplier;

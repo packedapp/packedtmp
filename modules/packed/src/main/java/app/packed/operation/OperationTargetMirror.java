@@ -22,8 +22,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import app.packed.operation.OperationTargetMirror.OfConstructorInvoke;
+import app.packed.operation.OperationTargetMirror.OfFieldAccess;
+import app.packed.operation.OperationTargetMirror.OfFunctionCall;
+import app.packed.operation.OperationTargetMirror.OfInstanceAccess;
+import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
+import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
 import internal.app.packed.bean.introspection.PackedBeanField.BuildTimeFieldTargetMirror;
-import internal.app.packed.bean.introspection.PackedBeanMethod.BuildTimeMethodTargetMirror;
+import internal.app.packed.operation.PackedOperationHandle.Wrapper;
+import internal.app.packed.operation.PackedOperationHandle.Wrapper.FieldWrapper;
+import internal.app.packed.operation.PackedOperationHandle.Wrapper.MethodWrapper;
 
 /**
  * The target of an operation.
@@ -39,7 +47,9 @@ import internal.app.packed.bean.introspection.PackedBeanMethod.BuildTimeMethodTa
 // OperationLocationmirror?
 // OperationKindMirror?
 // InvocationSiteMirror
-public sealed interface OperationTargetMirror { // extends AnnotatedMember?
+public sealed interface OperationTargetMirror permits Wrapper, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfInstanceAccess, OfMethodInvoke, OfSyntheticInvoke {
+    
+    // AnnotataionReader annotations()???
 
     // Members
     /** Represents an operation that invokes a constructor. */
@@ -50,7 +60,7 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
     }
 
     /** Represents an operation that gets, sets or updates a field. */
-    public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror {
+    public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror, FieldWrapper {
 
         AccessMode accessMode(); // TODO implement
 
@@ -99,7 +109,7 @@ public sealed interface OperationTargetMirror { // extends AnnotatedMember?
     } // ofLifetimePool? Hmm
 
     /** Represents an operation that invokes a method. */
-    public sealed interface OfMethodInvoke extends OperationTargetMirror permits BuildTimeMethodTargetMirror {
+    public sealed interface OfMethodInvoke extends OperationTargetMirror permits MethodWrapper {
 
         /** {@return the invokable method.} */
         Method method();

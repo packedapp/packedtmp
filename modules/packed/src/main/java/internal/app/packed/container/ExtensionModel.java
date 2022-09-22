@@ -25,6 +25,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -306,6 +307,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             if (Modifier.isAbstract(extensionClass.getModifiers())) {
                 throw new InternalExtensionException(format(extensionClass) + " cannot be an abstract class");
+            } else if (ClassUtil.isInnerOrLocal(extensionClass)) {
+                throw new InternalExtensionException(format(extensionClass) + " cannot be an an inner or local class");
             }
 
             // An extension must provide an empty constructor
@@ -316,7 +319,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             Constructor<?> constructor = constructors[0];
             if (constructor.getParameterCount() != 0) {
-                throw new InternalExtensionException(extensionClass + " must provide an empty constructor");
+                throw new InternalExtensionException(
+                        extensionClass + " must provide an empty constructor, but constructor required " + Arrays.toString(constructor.getParameters()));
             }
 
             // The constructor must be non-public

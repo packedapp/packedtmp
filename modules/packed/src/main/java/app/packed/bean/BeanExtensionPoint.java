@@ -1,16 +1,11 @@
 package app.packed.bean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
 import app.packed.base.TypeToken;
-import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.operation.Op;
@@ -111,69 +106,6 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         requireNonNull(implementation, "implementation is null");
         return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
     }
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface ClassHook {
-
-        /** Whether or not the sidecar is allow to get the contents of a field. */
-        boolean allowAllAccess() default false;
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-    }
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface FieldHook {
-
-        /** Whether or not the owning extension is allow to get the contents of the field. */
-        boolean allowGet() default false;
-
-        /** Whether or not the owning extension is allow to set the contents of the field. */
-        boolean allowSet() default false;
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-    }
-
-    /**
-     *
-     * @see BeanIntrospector#onMethodHook(BeanIntrospector$BeanMethod)
-     */
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface MethodHook {
-
-        /**
-         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
-         * <p>
-         * Methods such as {@link BeanIntrospector$BeanMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail
-         * with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
-         * 
-         * @return whether or not the implementation is allowed to invoke the target method
-         * 
-         * @see BeanIntrospector$BeanMethod#operationBuilder(ExtensionBeanConfiguration)
-         */
-        // maybe just invokable = true, idk og saa Field.gettable and settable
-        boolean allowInvoke() default false; // allowIntercept...
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-    }
-
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    // BindingVariableHook? BindableVariableHook
-    public @interface VariableBindingHook {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-    }
 }
 
 class Sandbox {
@@ -181,7 +113,7 @@ class Sandbox {
     <T> ExtensionBeanConfiguration<T> installLazy(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
-    
+
     <T> ExtensionBeanConfiguration<T> installLazy(Op<T> implementation) {
         throw new UnsupportedOperationException();
     }
@@ -193,7 +125,7 @@ class Sandbox {
     <T> ExtensionBeanConfiguration<T> installMany(Op<T> implementation) {
         throw new UnsupportedOperationException();
     }
-    
+
     <T> ExtensionBeanConfiguration<T> installManyInstance(T instance) {
         throw new UnsupportedOperationException();
     }
@@ -209,7 +141,16 @@ class Sandbox {
     <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
+
+    // The problem is when we start calling methods such as .provide()
+    // It doesn't really work to call such methods more than once.
+    // Or at least the logic to ignore subsequent calls would be a bit annoying
     
+    // should not call anything on the returned bean
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
+
     // I don't think we will use it
 //
 //    /**

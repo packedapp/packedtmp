@@ -10,7 +10,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector$BeanMethod;
+import app.packed.bean.BeanIntrospector$OnMethodHook;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
@@ -66,7 +66,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
              * {@inheritDoc}
              */
             @Override
-            public void onMethodHook(BeanIntrospector$BeanMethod method) {
+            public void onMethodHook(BeanIntrospector$OnMethodHook method) {
                 registerEntryPoint(null, true);
 
                 application.entryPoints = new EntryPointSetup();

@@ -15,9 +15,6 @@
  */
 package internal.app.packed.operation;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.operation.OperationTargetMirror;
 import internal.app.packed.bean.introspection.PackedBeanField;
 import internal.app.packed.bean.introspection.PackedBeanMethod;
 
@@ -25,10 +22,4 @@ import internal.app.packed.bean.introspection.PackedBeanMethod;
 // Tror vi laver en nu klasse som vi kopiere over i
 public sealed interface PackedOperationTarget permits PackedBeanField, PackedBeanMethod, PackedFunctionOperationTarget {
 
-    default MethodHandle methodHandle() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@return a mirror representing the target.} */
-    public abstract OperationTargetMirror mirror();
 }

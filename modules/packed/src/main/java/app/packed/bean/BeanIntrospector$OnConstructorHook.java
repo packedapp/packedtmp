@@ -24,18 +24,18 @@ import app.packed.operation.OperationType;
 /**
  * This class represents a {@link Constructor} on a bean.
  * <p>
- * Unlike {@link BeanIntrospector$BeanField} and {@link BeanIntrospector$BeanMethod}. There are no way to define hooks on constructors. Instead they must
+ * Unlike {@link BeanIntrospector$OnFieldHook} and {@link BeanIntrospector$OnMethodHook}. There are no way to define hooks on constructors. Instead they must
  * be defined on a bean driver or a bean class. Which determines how constructors are processed.
  */
 // Do we need a BeanExecutable??? Not sure we have a use case
 // Or maybe we just have BeanMethod (Problem with constructor() though)
-public non-sealed interface BeanIntrospector$BeanConstructor extends BeanElement {
+public non-sealed interface BeanIntrospector$OnConstructorHook extends BeanElement {
 
     /** {@return the underlying constructor.} */
     Constructor<?> constructor();
 
     /** {@return a factory type for this method.} */
-    OperationType factoryType();
+    OperationType operationType();
 
     /**
      * Returns the modifiers of the constructor.

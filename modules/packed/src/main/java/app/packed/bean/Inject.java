@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanExtensionPoint.FieldHook;
-import app.packed.bean.BeanExtensionPoint.MethodHook;
+import app.packed.bean.BeanIntrospector.FieldHook;
+import app.packed.bean.BeanIntrospector.MethodHook;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -46,7 +46,8 @@ import app.packed.bean.BeanExtensionPoint.MethodHook;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 
-// Instead of FieldHook is is a provision hook long term
+// Instead of FieldHook is is a provision hook long term.
+// IDK vi injecter vel kun services?
 
 @FieldHook(extension = BeanExtension.class, allowSet = true)
 @MethodHook(extension = BeanExtension.class, allowInvoke = true)

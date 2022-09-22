@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.BeanElement;
+import app.packed.container.Extension;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
 import app.packed.operation.bindings.BindingMirror;
@@ -37,7 +38,13 @@ import app.packed.operation.bindings.BindingMirror;
 // Saa kan vi strippe af paa BeanVariable
 // Saa bliver BeanVariable
 
-public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElement {
+// OnBindingHook?
+public non-sealed interface BeanIntrospector$OnBindingHook extends BeanElement {
+
+    Class<? extends Extension<?>> invokingExtension();
+
+    // Hmm idk about the unwrapping and stuff here
+    BeanIntrospector$AnnotationReader annotations();
 
     /**
      * <p>
@@ -56,6 +63,9 @@ public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElem
      */
     void bind(@Nullable Object obj);
 
+    // UOE if invokingExtension!= introspector.extension...
+    void bindToInvocationArgument(int index); // EH.bindToInvocationArgument(0)
+
     /**
      * Variable is resolvable at runtime.
      * <p>
@@ -66,7 +76,7 @@ public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElem
      */
     // Hmm, resolve at runtime ved jeg ikke hvor meget passer. extensionen ligger jo fast
     // Saa maaske bindAtRuntime
-    BeanIntrospector$BeanVariableBinder bindAtRuntime();
+    BeanIntrospector$OnBindingHook bindAtRuntime();
 
     /**
      * <p>
@@ -89,11 +99,16 @@ public non-sealed interface BeanIntrospector$BeanVariableBinder extends BeanElem
         throw new UnsupportedOperationException();
     }
 
-    BeanIntrospector$BeanVariableBinder specializeMirror(Supplier<? extends BindingMirror> supplier);
+    BeanIntrospector$OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier);
 
     TypeInfo type();
-    
+
     Variable variable();
+
+    // Har vi altid en?
+    // Det er saa here hvor BeanMethod.bindings() er lidt traels...
+    // Maaske smider den bare UOE? Ja det taenker jeg
+    Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
     interface TypeInfo {
 

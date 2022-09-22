@@ -15,20 +15,18 @@
  */
 package internal.app.packed.operation;
 
-import app.packed.operation.OperationTargetMirror;
-
 /**
  *
  */
 public final class PackedFunctionOperationTarget implements PackedOperationTarget {
 
-    /** {@inheritDoc} */
-    @Override
-    public OperationTargetMirror mirror() {
-        return new BuildTimeMethodTargetMirror(this);
-    }
-
-    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget target) implements OperationTargetMirror.OfFunctionCall {
-
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public OperationTargetMirror mirror() {
+//        return new BuildTimeMethodTargetMirror(this);
+//    }
+//
+//    private record BuildTimeMethodTargetMirror(PackedFunctionOperationTarget target) implements OperationTargetMirror.OfFunctionCall {
+//
+//    }
 }

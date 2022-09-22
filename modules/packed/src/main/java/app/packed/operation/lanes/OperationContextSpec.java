@@ -15,7 +15,7 @@
  */
 package app.packed.operation.lanes;
 
-import app.packed.bean.BeanIntrospector$BeanVariableBinder;
+import app.packed.bean.BeanIntrospector$OnBindingHook;
 
 /**
  *
@@ -24,7 +24,7 @@ public abstract class OperationContextSpec<T> {
 
     
     // IDK
-    protected void notInContext(BeanIntrospector$BeanVariableBinder dep) {
+    protected void notInContext(BeanIntrospector$OnBindingHook dep) {
         
     }
 }

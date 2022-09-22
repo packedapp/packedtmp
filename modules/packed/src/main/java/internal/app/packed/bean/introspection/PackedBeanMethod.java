@@ -18,20 +18,22 @@ package internal.app.packed.bean.introspection;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
-import app.packed.bean.BeanIntrospector$BeanMethod;
+import app.packed.base.Nullable;
+import app.packed.bean.BeanIntrospector$AnnotationReader;
+import app.packed.bean.BeanIntrospector$OnMethodHook;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.ExtensionBeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.PackedOperationHandle;
+import internal.app.packed.operation.PackedOperationHandle.Wrapper.MethodWrapper;
 import internal.app.packed.operation.PackedOperationTarget;
-import internal.app.packed.util.OpenClass;
 
 /** Internal implementation of BeanMethod */
-public final class PackedBeanMethod implements PackedOperationTarget, BeanIntrospector$BeanMethod {
+// Taenker den bliver en inner class ad PackedBeanIntrospector?
+public final class PackedBeanMethod implements PackedOperationTarget , BeanIntrospector$OnMethodHook {
 
     /** The bean that declares the member */
     public final BeanSetup bean;
@@ -44,11 +46,21 @@ public final class PackedBeanMethod implements PackedOperationTarget, BeanIntros
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
+    /** The operation type (lazily calculated). */
+    @Nullable
+    private OperationType type;
+
     PackedBeanMethod(BeanSetup bean, BeanIntrospectionHelper scanner, ExtensionSetup operator, Method method, boolean allowInvoke) {
         this.openClass = scanner.oc;
         this.bean = bean;
         this.operator = operator;
         this.method = method;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanIntrospector$AnnotationReader annotations() {
+        return null;
     }
 
     /** {@return modifiers for the member.} */
@@ -68,12 +80,6 @@ public final class PackedBeanMethod implements PackedOperationTarget, BeanIntros
         return method;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OperationTargetMirror mirror() {
-        return new BuildTimeMethodTargetMirror(this);
-    }
-
     // Taenker vi goer det her naar vi laver en operation
     public MethodHandle newMethodHandle() {
         return openClass.unreflect(method);
@@ -81,23 +87,19 @@ public final class PackedBeanMethod implements PackedOperationTarget, BeanIntros
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator) {
-        return new PackedOperationHandle(bean, this, ExtensionBeanSetup.crack(operator));
+    public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
+        MethodHandle methodHandle = newMethodHandle();
+        // Hvad hvis vi koere raw???? Tror det er det samme
+        return new PackedOperationHandle(operationType(), operator, invocationType, bean, this, new MethodWrapper(methodHandle, method));
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationType operationType() {
-        return OperationType.ofExecutable(method);
-    }
-
-    /** An operation target mirror for a bean method. */
-    public record BuildTimeMethodTargetMirror(PackedBeanMethod pbm) implements OperationTargetMirror.OfMethodInvoke {
-
-        /** {@inheritDoc} */
-        @Override
-        public Method method() {
-            return pbm.method();
+        OperationType t = type;
+        if (t == null) {
+            t = type = OperationType.ofExecutable(method);
         }
+        return t;
     }
 }

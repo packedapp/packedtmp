@@ -19,10 +19,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.BeanElement;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.introspection.PackedBeanField;
@@ -32,8 +34,13 @@ import internal.app.packed.bean.introspection.PackedBeanField;
  * 
  * @see BeanExtensionPoint.FieldHook
  * @see BeanIntrospector#onField(BeanProcessor$BeanField)
+ * 
+ * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
  */
-public sealed interface BeanIntrospector$BeanField extends BeanElement permits PackedBeanField {
+public sealed interface BeanIntrospector$OnFieldHook extends BeanElement permits PackedBeanField {
+
+    /** {@return an annotation reader for the field.} */
+    BeanIntrospector$AnnotationReader annotations();
 
     /** {@return the underlying field.} */
     Field field();
@@ -43,7 +50,7 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
      * represent a proper key.
      * <p>
      * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
-     * key. As {@link BeanIntrospector$BeanVariableBinder} is typically used in cases where this would be needed.
+     * key. As {@link BeanIntrospector$OnBindingHook} is typically used in cases where this would be needed.
      * 
      * @return a key representing the field
      * 
@@ -55,24 +62,31 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
     }
 
     /**
+     * @return
+     */
+    default Set<Class<?>> hooks() {
+        return Set.of();
+    }
+
+    /**
      * {@return the modifiers of the field.}
      * 
      * @see Field#getModifiers()
      * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Field#getModifiers()}
      */
-    int getModifiers();
+    int modifiers();
 
     /**
-     * Creates a new operation that reads a field as specified by {@link Lookup#unreflectGetter(Field)}.
+     * Creates a new operation that reads the field as specified by {@link Lookup#unreflectGetter(Field)}.
      * 
      * @param operator
      *            the bean that will invoke the operation. The operator must be defined in the same container (or in a
      *            parent container) as the bean that declares the field
-     * @return an operation configuration object
+     * @return an operation handle
      * @throws IllegalArgumentException
      *             if the specified operator is not a direct ancestor of the bean that declares the field
      */
-    OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType);
 
     /**
      * @param operator
@@ -88,15 +102,14 @@ public sealed interface BeanIntrospector$BeanField extends BeanElement permits P
      *          matter what we must declare the invocation types when we create the operation, so we can check access before
      *          creating the actual operation
      */
-    // Skal vi have en separat VarHandle operation????
-    OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode);
+    OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode, InvocationType invocationType);
 
     /**
      * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
      * 
      * @return an operation configuration object
      */
-    OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator);
+    OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType);
 
     /**
      * {@return the underlying field represented as a {@code Variable}.}

@@ -138,7 +138,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the target of the operation.} */
     public OperationTargetMirror target() {
-        return operation().operationTarget.mirror();
+        return operation().handle.wrapper;
     }
 
     /** {@return the type of the operation.} */

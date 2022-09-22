@@ -23,10 +23,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
+import internal.app.packed.bean.introspection.OpenClass;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.LookupValue;
-import internal.app.packed.util.OpenClass;
 
 /**
  * This class exists because we have two ways to access the members of a bean:

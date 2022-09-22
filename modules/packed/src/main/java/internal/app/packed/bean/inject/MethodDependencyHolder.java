@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanIntrospector$BeanMethod;
+import app.packed.bean.BeanIntrospector$OnMethodHook;
 import internal.app.packed.operation.bindings.DependencyProducer;
 import internal.app.packed.operation.bindings.InternalDependency;
 
@@ -36,7 +36,7 @@ public class MethodDependencyHolder extends DependencyHolder {
     /** A direct method handle to the field. */
     public final MethodHandle varHandle;
     
-    public MethodDependencyHolder(BeanIntrospector$BeanMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
+    public MethodDependencyHolder(BeanIntrospector$OnMethodHook method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(InternalDependency.fromOperationType(method.operationType()), provideAsConstant, provideAsKey);
         this.modifiers = requireNonNull(method.getModifiers());
         this.varHandle = requireNonNull(mh);

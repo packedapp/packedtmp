@@ -21,11 +21,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanIntrospector$BeanField;
-import app.packed.bean.BeanIntrospector$BeanMethod;
-import app.packed.bean.BeanIntrospector$BeanVariableBinder;
+import app.packed.bean.BeanIntrospector$OnBindingHook;
+import app.packed.bean.BeanIntrospector$OnFieldHook;
+import app.packed.bean.BeanIntrospector$OnMethodHook;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.operation.lanes.InvocationType;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -46,13 +45,25 @@ import internal.app.packed.operation.PackedOperationHandle;
  * <ul>
  * </ul>
  * 
- * @see BeanIntrospector$BeanField#newGetOperation(ExtensionBeanConfiguration)
- * @see BeanIntrospector$BeanField#newSetOperation(ExtensionBeanConfiguration)
- * @see BeanIntrospector$BeanField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
- * @see BeanIntrospector$BeanMethod#newOperation(ExtensionBeanConfiguration)
+ * @see BeanIntrospector$OnFieldHook#newGetOperation(ExtensionBeanConfiguration)
+ * @see BeanIntrospector$OnFieldHook#newSetOperation(ExtensionBeanConfiguration)
+ * @see BeanIntrospector$OnFieldHook#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
+ * @see BeanIntrospector$OnMethodHook#newOperation(ExtensionBeanConfiguration)
  */
 // no functionality for reading annotations, use BeanField, BeanMethod, ect
 public sealed interface OperationHandle permits PackedOperationHandle {
+
+    /**
+     * Returns a unmodifiable list of the dependencies of this operation.
+     * <p>
+     * These dependencies can be used to customize injection for this particular operation.
+     * 
+     * @return a unmodifiable list of the dependencies of this operation
+     */
+    // Dependencies that are not explicitly bound
+    default List<BeanIntrospector$OnBindingHook> bindables() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * @return
@@ -65,39 +76,23 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      */
     MethodHandle computeMethodHandle();
 
-    default OperationHandle mapReturn(MethodHandle mh) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
+    InvocationType invocationType();
 
     default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
         // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
     }
 
-    default InvocationType invocationType() {
+    // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
+    // Additional parameters will be like any other bindings
+    // Will it create an additional operation? I would think so if it needs injection
+    default OperationHandle mapReturn(MethodHandle mh) {
+        // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
-    }
-
-    default OperationHandle invokeAs(InvocationType type) {
-        // This method must be called before any parameters have been bound
-        return this;
     }
 
     // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
     // Eller vi bare kan genbruge BeanDependency
-
-    /**
-     * Returns a unmodifiable list of the dependencies of this operation.
-     * <p>
-     * These dependencies can be used to customize injection for this particular operation.
-     * 
-     * @return a unmodifiable list of the dependencies of this operation
-     */
-    // Dependencies that are not explicitly bound
-    default List<BeanIntrospector$BeanVariableBinder> bindables() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Adds a supplier that creates the mirror that will be returned when a mirror for the operation is requested.
@@ -114,6 +109,9 @@ public sealed interface OperationHandle permits PackedOperationHandle {
     // For example, LifetimeOperationMirror.
     // However, the best thing we can do is a runtime exception. As the supplier is lazy
     OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
+
+    /** {@return the type of the operation.} */
+    OperationType type();
 }
 
 interface Sandbox {

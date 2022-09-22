@@ -33,7 +33,7 @@ import internal.app.packed.operation.op.ReflectiveOp;
 /**
  * An injection manager for a bean.
  */
-public final class BeanInjectionManager extends InjectionManager implements DependencyProducer {
+public final class BeanInjectionManager implements DependencyProducer {
 
     /** The bean this injection manager belongs to. */
     private final BeanSetup bean;

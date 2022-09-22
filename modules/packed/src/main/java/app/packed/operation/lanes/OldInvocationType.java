@@ -23,20 +23,20 @@ import app.packed.operation.OperationHandle;
 /**
  * alle lane operation boer starte med laneX
  */
-public interface OperationCustomizeWithLanes {
+public interface OldInvocationType {
 
     default MethodType invocationType() {
         throw new UnsupportedOperationException();
     }
 
     // Cannot add more than one bean instance lane
-    default OperationCustomizeWithLanes laneAddBeanInstance() {
+    default OldInvocationType laneAddBeanInstance() {
         return laneAddBeanInstance(Object.class);
     }
 
-    OperationCustomizeWithLanes laneAddBeanInstance(Class<?> type);
+    OldInvocationType laneAddBeanInstance(Class<?> type);
 
-    OperationCustomizeWithLanes laneAddInvocationContext(); // OperationInvocationContext?
+    OldInvocationType laneAddInvocationContext(); // OperationInvocationContext?
 
     default OperationHandle lanesClear() {
         // No interceptors

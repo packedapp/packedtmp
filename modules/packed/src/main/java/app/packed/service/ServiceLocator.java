@@ -31,15 +31,15 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanIntrospector.BindingHook;
 import app.packed.bean.Provider;
-import app.packed.bean.BeanExtensionPoint.VariableBindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
-import app.packed.operation.Op;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
+import app.packed.operation.Op;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.LookupUtil;
@@ -111,7 +111,7 @@ import internal.app.packed.util.LookupUtil;
  * <p>
  * Unless otherwise specified the set of services provided by a service locator is always unchangeable.
  */
-@VariableBindingHook(extension = BeanExtension.class)
+@BindingHook(extension = BeanExtension.class)
 public interface ServiceLocator {
 
     /**
