@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.introspection;
+package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
@@ -22,7 +22,7 @@ import app.packed.bean.BeanIntrospector.AnnotationReader;
 /**
  *
  */
-public record PackedAnnotationReader(Annotation[] annotations) implements AnnotationReader {
+public record IntrospectorAnnotationReader(Annotation[] annotations) implements AnnotationReader {
 
     /** {@inheritDoc} */
     @Override
@@ -52,5 +52,4 @@ public record PackedAnnotationReader(Annotation[] annotations) implements Annota
     public boolean hasAnnotations() {
         return annotations.length != 0;
     }
-
 }

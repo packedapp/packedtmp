@@ -34,8 +34,8 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror for a bean operation.
@@ -149,7 +149,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the target of the operation.} */
     public OperationTargetMirror target() {
-        return operation().wrapper;
+        return operation().target;
     }
 
     /** {@return the type of the operation.} */

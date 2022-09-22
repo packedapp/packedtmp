@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.introspection;
+package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
@@ -35,7 +35,6 @@ import app.packed.bean.BeanIntrospector.FieldHook;
 import app.packed.bean.BeanIntrospector.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.integrate.devtools.PackedDevToolsIntegration;
 import internal.app.packed.util.ClassUtil;
@@ -43,7 +42,7 @@ import internal.app.packed.util.ClassUtil;
 /**
  * This class is responsible for finding fields, methods, parameters that have hook annotations.
  */
-public final class BeanIntrospectionHelper {
+public final class Introspector {
 
     /** We never process classes that are located in the {@code java.base} module. */
     private static final Module JAVA_BASE_MODULE = Object.class.getModule();
@@ -66,7 +65,7 @@ public final class BeanIntrospectionHelper {
     // Should be made lazily??? I think
     final OpenClass oc;
 
-    public BeanIntrospectionHelper(BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
+    public Introspector(BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
         this.bean = bean;
         this.beanClass = bean.beanClass();
         this.beanHandleIntrospector = beanHandleIntrospector;
@@ -273,7 +272,7 @@ public final class BeanIntrospectionHelper {
                 ExtensionEntry entry = computeExtensionEntry(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
-                PackedBeanField f = new PackedBeanField(bean, BeanIntrospectionHelper.this, entry.extension, field, e.isGettable || entry.hasFullAccess,
+                IntrospectorOnField f = new IntrospectorOnField(bean, Introspector.this, entry.extension, field, e.isGettable || entry.hasFullAccess,
                         e.isSettable || entry.hasFullAccess, new Annotation[] { annotation });
 
                 // Call BeanIntrospection.onField
@@ -285,7 +284,7 @@ public final class BeanIntrospectionHelper {
                     ExtensionEntry entry = computeExtensionEntry(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    PackedBeanField f = new PackedBeanField(bean, BeanIntrospectionHelper.this, entry.extension, field, mf.allowGet || entry.hasFullAccess,
+                    IntrospectorOnField f = new IntrospectorOnField(bean, Introspector.this, entry.extension, field, mf.allowGet || entry.hasFullAccess,
                             mf.allowSet || entry.hasFullAccess, annotations);
 
                     // Call BeanIntrospection.onField
@@ -325,7 +324,7 @@ public final class BeanIntrospectionHelper {
             if (fh != null) {
                 ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
 
-                PackedBeanMethod pbm = new PackedBeanMethod(BeanIntrospectionHelper.this, ei.extension, method, annotations, fh.isInvokable);
+                IntrospectorOnMethod pbm = new IntrospectorOnMethod(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
 
                 ei.introspector.onMethodHook(pbm);
             }

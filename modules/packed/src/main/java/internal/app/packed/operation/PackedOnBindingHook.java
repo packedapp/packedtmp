@@ -25,16 +25,14 @@ import app.packed.container.Extension;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.introspection.PackedAnnotationReader;
-import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.binding.ConstantBindingSetup;
+import internal.app.packed.bean.IntrospectorAnnotationReader;
 
 /**
  *
  */
 // extends BindingHandle??? Jeg taenker lidt hvordan vi kan tilfoeje
 // Manuelt tilfoejet operationer. Men det er maaske kun funktioner???
-public class PackedOnBindingHook implements OnBindingHook {
+public final class PackedOnBindingHook implements OnBindingHook {
 
     private final int index;
 
@@ -51,7 +49,7 @@ public class PackedOnBindingHook implements OnBindingHook {
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
-        return new PackedAnnotationReader(variable().getAnnotations());
+        return new IntrospectorAnnotationReader(variable().getAnnotations());
     }
 
     /** {@inheritDoc} */

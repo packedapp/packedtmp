@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.util;
+package internal.app.packed.operation;
 
-/** A consumable interface that throws. */
-public interface ThrowableConsumer<E, T extends Throwable> {
+import app.packed.base.Nullable;
+
+/**
+ *
+ */
+public class ConstantBindingSetup extends BindingSetup {
+
+    @Nullable
+    final Object constant;
 
     /**
-     * Performs this operation on the given argument.
-     *
-     * @param t
-     *            the input argument
+     * @param operation
+     * @param index
      */
-    void accept(E t) throws T;
+    public ConstantBindingSetup(OperationSetup operation, int index, @Nullable Object constant) {
+        super(operation, index);
+        this.constant = constant;
+    }
+
 }

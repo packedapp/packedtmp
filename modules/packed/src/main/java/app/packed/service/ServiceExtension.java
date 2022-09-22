@@ -28,11 +28,11 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.IntrospectorOnField;
+import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.bean.inject.BeanMemberDependencyNode;
 import internal.app.packed.bean.inject.FieldDependencyHolder;
 import internal.app.packed.bean.inject.MethodDependencyHolder;
-import internal.app.packed.bean.introspection.PackedBeanField;
-import internal.app.packed.bean.introspection.PackedBeanMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.bindings.DependencyNode;
 import internal.app.packed.service.ContainerInjectionManager;
@@ -151,8 +151,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 
-                BeanSetup bean = ((PackedBeanField) field).bean;
-                FieldDependencyHolder fh = new FieldDependencyHolder(field, ((PackedBeanField) field).newVarHandle(), constant, key);
+                BeanSetup bean = ((IntrospectorOnField) field).bean;
+                FieldDependencyHolder fh = new FieldDependencyHolder(field, ((IntrospectorOnField) field).newVarHandle(), constant, key);
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 //                field.newSetOperation(null, InvocationType.defaults());
 
@@ -169,8 +169,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 // Det samme med entry point...
 //                method.newOperation(null);
 
-                BeanSetup bean = ((PackedBeanMethod) method).introspector.bean;
-                MethodDependencyHolder fh = new MethodDependencyHolder(method, ((PackedBeanMethod) method).newMethodHandle(), constant, key);
+                BeanSetup bean = ((IntrospectorOnMethod) method).introspector.bean;
+                MethodDependencyHolder fh = new MethodDependencyHolder(method, ((IntrospectorOnMethod) method).newMethodHandle(), constant, key);
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
                 // Er ikke sikker paa vi har en runtime bean...

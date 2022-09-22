@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.introspection;
+package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -30,16 +30,15 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.Wrapper.FieldWrapper;
+import internal.app.packed.operation.OperationSetup.OperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
  * Implementation of {@link OnFieldHook}.
  */
-public final class PackedBeanField implements OnFieldHook {
+public final class IntrospectorOnField implements OnFieldHook {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -61,7 +60,7 @@ public final class PackedBeanField implements OnFieldHook {
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    PackedBeanField(BeanSetup bean, BeanIntrospectionHelper scanner, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet,
+    IntrospectorOnField(BeanSetup bean, Introspector scanner, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations) {
         this.openClass = scanner.oc;
         this.bean = bean;
@@ -75,7 +74,7 @@ public final class PackedBeanField implements OnFieldHook {
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
-        return new PackedAnnotationReader(annotations);
+        return new IntrospectorAnnotationReader(annotations);
     }
 
     /** {@inheritDoc} */
@@ -94,8 +93,8 @@ public final class PackedBeanField implements OnFieldHook {
     public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle mh = openClass.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        OperationSetup os = new OperationSetup(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean,
-                new FieldWrapper(mh, field, accessMode));
+        OperationSetup os = new OperationSetup(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
+                new FieldOperationTarget(mh, field, accessMode));
         bean.addOperation(os);
         return new PackedOperationHandle(os);
     }
@@ -104,8 +103,8 @@ public final class PackedBeanField implements OnFieldHook {
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
         MethodHandle mh = openClass.unreflectVarHandle(field).toMethodHandle(accessMode);
-        OperationSetup os = new OperationSetup(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean,
-                new FieldWrapper(mh, field, accessMode));
+        OperationSetup os = new OperationSetup(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
+                new FieldOperationTarget(mh, field, accessMode));
         bean.addOperation(os);
 
         return new PackedOperationHandle(os);
@@ -116,8 +115,8 @@ public final class PackedBeanField implements OnFieldHook {
     public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle mh = openClass.unreflectSetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        OperationSetup os = new OperationSetup(OperationType.ofFieldAccess(field, accessMode), operator, invocationType, bean,
-                new FieldWrapper(mh, field, accessMode));
+        OperationSetup os = new OperationSetup(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
+                new FieldOperationTarget(mh, field, accessMode));
         bean.addOperation(os);
 
         return new PackedOperationHandle(os);
@@ -133,49 +132,47 @@ public final class PackedBeanField implements OnFieldHook {
         return Variable.ofField(field);
     }
 
-    /** A mirror of {@code OperationTargetMirror.OfFieldAccess}. */
-    public record BuildTimeFieldTargetMirror(PackedBeanField pbf) implements OperationTargetMirror.OfFieldAccess {
 
-        /** {@inheritDoc} */
-        @Override
-        public boolean allowGet() {
-            return pbf.allowGet;
-        }
+    public static final class FieldOperationTarget extends OperationTarget implements OperationTargetMirror.OfFieldAccess {
 
-        /** {@inheritDoc} */
-        @Override
-        public boolean allowSet() {
-            return pbf.allowSet;
-        }
+        private final AccessMode accessMode;
 
-        /** {@inheritDoc} */
-        @Override
-        public Field field() {
-            return pbf.field;
+        private final Field field;
+
+        /**
+         * @param methodHandle
+         * @param isStatic
+         */
+        public FieldOperationTarget(MethodHandle methodHandle, Field field, AccessMode accessMode) {
+            super(methodHandle, Modifier.isStatic(field.getModifiers()));
+            this.field = field;
+            this.accessMode = accessMode;
         }
 
         /** {@inheritDoc} */
         @Override
         public AccessMode accessMode() {
-            return null;
+            return accessMode;
         }
 
         /** {@inheritDoc} */
         @Override
-        public boolean equals(Object obj) {
-            return false;
+        public boolean allowGet() {
+            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */
         @Override
-        public int hashCode() {
-            return 0;
+        public boolean allowSet() {
+            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */
         @Override
-        public String toString() {
-            return null;
+        public Field field() {
+            return field;
         }
+
     }
+
 }

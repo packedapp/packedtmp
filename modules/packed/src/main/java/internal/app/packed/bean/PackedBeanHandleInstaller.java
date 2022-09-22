@@ -28,7 +28,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.Op;
-import internal.app.packed.bean.introspection.BeanIntrospectionHelper;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;
@@ -122,7 +121,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
         if (sourceKind != BeanSourceKind.NONE) {
-            new BeanIntrospectionHelper(bean, introspector).introspect();
+            new Introspector(bean, introspector).introspect();
         }
 
         return new PackedBeanHandle<>(bean);

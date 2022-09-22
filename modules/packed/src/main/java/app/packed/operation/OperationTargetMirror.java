@@ -28,10 +28,9 @@ import app.packed.operation.OperationTargetMirror.OfFunctionCall;
 import app.packed.operation.OperationTargetMirror.OfInstanceAccess;
 import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
 import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
-import internal.app.packed.bean.introspection.PackedBeanField.BuildTimeFieldTargetMirror;
-import internal.app.packed.operation.OperationSetup.Wrapper;
-import internal.app.packed.operation.OperationSetup.Wrapper.FieldWrapper;
-import internal.app.packed.operation.OperationSetup.Wrapper.MethodWrapper;
+import internal.app.packed.bean.IntrospectorOnField.FieldOperationTarget;
+import internal.app.packed.bean.IntrospectorOnMethod.MethodOperationTarget;
+import internal.app.packed.operation.OperationSetup.OperationTarget;
 
 /**
  * The target of an operation.
@@ -47,8 +46,8 @@ import internal.app.packed.operation.OperationSetup.Wrapper.MethodWrapper;
 // OperationLocationmirror?
 // OperationKindMirror?
 // InvocationSiteMirror
-public sealed interface OperationTargetMirror permits Wrapper, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfInstanceAccess, OfMethodInvoke, OfSyntheticInvoke {
-    
+public sealed interface OperationTargetMirror permits OperationTarget, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfInstanceAccess, OfMethodInvoke, OfSyntheticInvoke {
+
     // AnnotataionReader annotations()???
 
     // Members
@@ -60,7 +59,7 @@ public sealed interface OperationTargetMirror permits Wrapper, OfConstructorInvo
     }
 
     /** Represents an operation that gets, sets or updates a field. */
-    public sealed interface OfFieldAccess extends OperationTargetMirror permits BuildTimeFieldTargetMirror, FieldWrapper {
+    public sealed interface OfFieldAccess extends OperationTargetMirror permits FieldOperationTarget {
 
         AccessMode accessMode(); // TODO implement
 
@@ -109,7 +108,7 @@ public sealed interface OperationTargetMirror permits Wrapper, OfConstructorInvo
     } // ofLifetimePool? Hmm
 
     /** Represents an operation that invokes a method. */
-    public sealed interface OfMethodInvoke extends OperationTargetMirror permits MethodWrapper {
+    public sealed interface OfMethodInvoke extends OperationTargetMirror permits MethodOperationTarget {
 
         /** {@return the invokable method.} */
         Method method();
