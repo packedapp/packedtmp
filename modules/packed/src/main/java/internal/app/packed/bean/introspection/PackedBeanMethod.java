@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanIntrospector$AnnotationReader;
-import app.packed.bean.BeanIntrospector$OnMethodHook;
+import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
@@ -33,7 +33,7 @@ import internal.app.packed.operation.PackedOperationHandle;
 
 /** Internal implementation of BeanMethod */
 // Taenker den bliver en inner class ad PackedBeanIntrospector?
-public final class PackedBeanMethod implements BeanIntrospector$OnMethodHook {
+public final class PackedBeanMethod implements OnMethod {
 
     /** The internal introspector */
     public final BeanIntrospectionHelper introspector;
@@ -59,7 +59,7 @@ public final class PackedBeanMethod implements BeanIntrospector$OnMethodHook {
 
     /** {@inheritDoc} */
     @Override
-    public BeanIntrospector$AnnotationReader annotations() {
+    public AnnotationReader annotations() {
         return new PackedAnnotationReader(annotations);
     }
 

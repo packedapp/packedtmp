@@ -24,8 +24,6 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector$OnFieldHook;
-import app.packed.bean.BeanIntrospector$OnMethodHook;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.Op;
@@ -147,7 +145,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onFieldHook(BeanIntrospector$OnFieldHook field) {
+            public void onFieldHook(OnFieldHook field) {
                 // todo check not extension
 
                 Key<?> key = field.fieldToKey();
@@ -163,7 +161,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onMethodHook(BeanIntrospector$OnMethodHook method) {
+            public void onMethodHook(OnMethod method) {
                 Key<?> key = method.methodToKey();
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 

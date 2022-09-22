@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector$OnBindingHook;
+import app.packed.bean.BeanIntrospector.OnBindingHook;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
@@ -32,8 +32,8 @@ public record PackedOperationHandle(OperationSetup os) implements OperationHandl
 
     /** {@inheritDoc} */
     @Override
-    public List<BeanIntrospector$OnBindingHook> bindings() {
-        BeanIntrospector$OnBindingHook[] hooks = new BeanIntrospector$OnBindingHook[os.type.parameterCount()];
+    public List<OnBindingHook> bindings() {
+        OnBindingHook[] hooks = new OnBindingHook[os.type.parameterCount()];
         for (int i = 0; i < hooks.length; i++) {
             hooks[i] = new PackedOnBindingHook(os, i);
         }

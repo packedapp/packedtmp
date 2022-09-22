@@ -22,8 +22,8 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.BeanIntrospector$AnnotationReader;
-import app.packed.bean.BeanIntrospector$OnFieldHook;
+import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.OnFieldHook;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
@@ -37,9 +37,9 @@ import internal.app.packed.operation.OperationSetup.Wrapper.FieldWrapper;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
- * Implementation of {@link BeanIntrospector$OnFieldHook}.
+ * Implementation of {@link OnFieldHook}.
  */
-public final class PackedBeanField implements BeanIntrospector$OnFieldHook {
+public final class PackedBeanField implements OnFieldHook {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -74,7 +74,7 @@ public final class PackedBeanField implements BeanIntrospector$OnFieldHook {
 
     /** {@inheritDoc} */
     @Override
-    public BeanIntrospector$AnnotationReader annotations() {
+    public AnnotationReader annotations() {
         return new PackedAnnotationReader(annotations);
     }
 

@@ -18,7 +18,7 @@ package app.packed.operation;
 import java.lang.invoke.MethodType;
 import java.util.OptionalInt;
 
-import app.packed.bean.BeanIntrospector$OnBindingHook;
+import app.packed.bean.BeanIntrospector.OnBindingHook;
 
 /**
  *
@@ -47,7 +47,7 @@ public interface InvocationType {
      * @param type
      * @return
      * 
-     * @see BeanIntrospector$OnBindingHook#bindToInvocationArgument(int)
+     * @see OnBindingHook#bindToInvocationArgument(int)
      */
     InvocationType withArg(Class<?> type);
 

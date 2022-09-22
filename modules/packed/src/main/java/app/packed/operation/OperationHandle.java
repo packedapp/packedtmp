@@ -21,9 +21,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.bean.BeanIntrospector$OnBindingHook;
-import app.packed.bean.BeanIntrospector$OnFieldHook;
-import app.packed.bean.BeanIntrospector$OnMethodHook;
+import app.packed.bean.BeanIntrospector.OnBindingHook;
+import app.packed.bean.BeanIntrospector.OnFieldHook;
+import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import internal.app.packed.operation.PackedOperationHandle;
 
@@ -45,10 +45,10 @@ import internal.app.packed.operation.PackedOperationHandle;
  * <ul>
  * </ul>
  * 
- * @see BeanIntrospector$OnFieldHook#newGetOperation(ExtensionBeanConfiguration)
- * @see BeanIntrospector$OnFieldHook#newSetOperation(ExtensionBeanConfiguration)
- * @see BeanIntrospector$OnFieldHook#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
- * @see BeanIntrospector$OnMethodHook#newOperation(ExtensionBeanConfiguration)
+ * @see OnFieldHook#newGetOperation(ExtensionBeanConfiguration)
+ * @see OnFieldHook#newSetOperation(ExtensionBeanConfiguration)
+ * @see OnFieldHook#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
+ * @see OnMethod#newOperation(ExtensionBeanConfiguration)
  */
 public sealed interface OperationHandle permits PackedOperationHandle {
 
@@ -59,7 +59,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * 
      * @return a unmodifiable list of the dependencies of this operation
      */
-    List<BeanIntrospector$OnBindingHook> bindings();
+    List<OnBindingHook> bindings();
 
     /**
      * 

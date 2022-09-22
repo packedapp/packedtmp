@@ -15,7 +15,7 @@
  */
 package app.packed.operation.context;
 
-import app.packed.bean.BeanIntrospector$OnBindingHook;
+import app.packed.bean.BeanIntrospector.OnBindingHook;
 
 /**
  *
@@ -24,7 +24,7 @@ public abstract class OperationContextSpec<T> {
 
     
     // IDK
-    protected void notInContext(BeanIntrospector$OnBindingHook dep) {
+    protected void notInContext(OnBindingHook dep) {
         
     }
 }

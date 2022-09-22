@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanIntrospector$AnnotationReader;
-import app.packed.bean.BeanIntrospector$OnBindingHook;
+import app.packed.bean.BeanIntrospector.AnnotationReader;
+import app.packed.bean.BeanIntrospector.OnBindingHook;
 import app.packed.container.Extension;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
@@ -34,7 +34,7 @@ import internal.app.packed.operation.binding.ConstantBindingSetup;
  */
 // extends BindingHandle??? Jeg taenker lidt hvordan vi kan tilfoeje
 // Manuelt tilfoejet operationer. Men det er maaske kun funktioner???
-public class PackedOnBindingHook implements BeanIntrospector$OnBindingHook {
+public class PackedOnBindingHook implements OnBindingHook {
 
     private final int index;
 
@@ -50,7 +50,7 @@ public class PackedOnBindingHook implements BeanIntrospector$OnBindingHook {
 
     /** {@inheritDoc} */
     @Override
-    public BeanIntrospector$AnnotationReader annotations() {
+    public AnnotationReader annotations() {
         return new PackedAnnotationReader(variable().getAnnotations());
     }
 
@@ -83,7 +83,7 @@ public class PackedOnBindingHook implements BeanIntrospector$OnBindingHook {
 
     /** {@inheritDoc} */
     @Override
-    public BeanIntrospector$OnBindingHook bindAtRuntime() {
+    public OnBindingHook bindAtRuntime() {
         return null;
     }
 
@@ -117,7 +117,7 @@ public class PackedOnBindingHook implements BeanIntrospector$OnBindingHook {
 
     /** {@inheritDoc} */
     @Override
-    public BeanIntrospector$OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier) {
+    public OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier) {
         return null;
     }
 

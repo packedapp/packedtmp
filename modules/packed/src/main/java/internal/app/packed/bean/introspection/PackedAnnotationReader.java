@@ -17,12 +17,12 @@ package internal.app.packed.bean.introspection;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanIntrospector$AnnotationReader;
+import app.packed.bean.BeanIntrospector.AnnotationReader;
 
 /**
  *
  */
-public record PackedAnnotationReader(Annotation[] annotations) implements BeanIntrospector$AnnotationReader {
+public record PackedAnnotationReader(Annotation[] annotations) implements AnnotationReader {
 
     /** {@inheritDoc} */
     @Override

@@ -17,30 +17,92 @@ package app.packed.bean;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
+import app.packed.operation.BindingMirror;
+import app.packed.operation.InvocationType;
+import app.packed.operation.Op;
+import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationType;
+import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.introspection.PackedBeanField;
+import internal.app.packed.bean.introspection.PackedBeanMethod;
 import internal.app.packed.container.ExtensionModel;
 
 /**
  * @see Extension#newBeanIntrospector
  * @see BeanHandle.Installer#introspectWith(BeanIntrospector)
  */
-
-//BeanAnalyzer, BeanVisitor, BeanInspector, BeanIntrospector, BeanScanner
-// BeanHookProcessor?
-
-// Move BeanMethod and friends into BeanScanner as nested classes???
-
-// Syntes godt vi kan smide den paa BeanExtensionPoint
 public abstract class BeanIntrospector {
+    /**
+     * An annotation reader can be used to process annotations on bean elements.
+     * 
+     * @see AnnotatedElement
+     */
+    // If we can, we should move this to BeanProcessor.AnnotationReader
+    // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
+    // AnnotatedBeanElement?
+    public interface AnnotationReader {
+
+        /** {@return whether or not there are any annotations to read.} */
+        boolean hasAnnotations();
+
+        boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+
+        // Det er taenk
+        Annotation[] readAnyOf(Class<?>... annotationTypes);
+
+        /**
+         * Returns a annotation of the specified type or throws {@link BeanDefinitionException} if the annotation is not present
+         * 
+         * @param <T>
+         *            the type of the annotation to query for and return if present
+         * @param annotationClass
+         *            the Class object corresponding to the annotation type
+         * @return the annotation for the specified annotation type if present
+         * 
+         * @throws BeanDefinitionException
+         *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
+         *             exactly 1 occurrences of it
+         * 
+         * @see AnnotatedElement#getAnnotation(Class)
+         */
+        //// foo bean was expected method to dddoooo to be annotated with
+        <T extends Annotation> T readRequired(Class<T> annotationClass);
+        
+     // Q) Skal vi bruge den udefra beans???
+     // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
+     // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
+     // Paa hver bean som bruger den...
+     // Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
+
+     //I think the only we reason we call it BeanAnnotationReader is because
+     //if we called AnnotationReader is should really be located in a utility package
+    }
+
 
     /**
      * The configuration of this processor. Is initially null but populated via
@@ -50,15 +112,13 @@ public abstract class BeanIntrospector {
     private Setup setup;
 
     /** {@return an annotation reader for for the bean.} */
-    public final BeanIntrospector$AnnotationReader beanAnnotations() {
+    public final AnnotationReader beanAnnotations() {
         // AnnotationReader.of(beanClass());
         throw new UnsupportedOperationException();
     }
-
     public final Class<?> beanClass() {
         return setup().bean.beanClass();
     }
-
     /**
      * @param postFix
      *            the message to include in the final message
@@ -69,7 +129,6 @@ public abstract class BeanIntrospector {
     public final void failWith(String postFix) {
         throw new BeanDefinitionException("OOPS " + postFix);
     }
-
     /**
      * Invoked by a MethodHandle from ExtensionSetup.
      * 
@@ -86,15 +145,15 @@ public abstract class BeanIntrospector {
         }
         this.setup = new Setup(extension, bean);
     }
+    
+    public void onBindingHook(OnBindingHook dependency) {}
 
-    public void onClassHook(BeanIntrospector$OnClassHook clazz) {}
-
-    public void onBindingHook(BeanIntrospector$OnBindingHook dependency) {}
+    public void onClassHook(OnClassHook clazz) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
      * 
-     * is annotated with an annotation that itself is annotated with {@link BeanIntrospector$OnFieldHook.FieldHook} and
+     * is annotated with an annotation that itself is annotated with {@link FieldHook} and
      * where {@link FieldHook#extension()} matches the type of this extension.
      * <p>
      * This method is never invoked more than once for a given field and extension. Even if there are multiple matching hook
@@ -105,11 +164,11 @@ public abstract class BeanIntrospector {
      * @see BeanExtensionPoint.FieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void onFieldHook(BeanIntrospector$OnFieldHook field) {
+    public void onFieldHook(OnFieldHook field) {
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + field.hooks());
     }
 
-    public void onMethodHook(BeanIntrospector$OnMethodHook method) {
+    public void onMethodHook(OnMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + method.hooks());
@@ -127,9 +186,9 @@ public abstract class BeanIntrospector {
     public void onPostIntrospect() {}
 
     /**
-     * A callback method that is invoked before any calls to {@link #onClass(BeanIntrospector$OnClassHook)},
-     * {@link #onFieldHook(BeanIntrospector$OnFieldHook)}, {@link #onMethod(BeanIntrospector$OnMethodHook)} or
-     * {@link #onDependency(BeanIntrospector$OnBindingHook)}.
+     * A callback method that is invoked before any calls to {@link #onClassHook(OnClassHook)},
+     * {@link #onFieldHook(OnFieldHook)}, {@link #onMethodHook(OnMethod)} or
+     * {@link #onBindingHook(OnBindingHook)}.
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
@@ -156,20 +215,16 @@ public abstract class BeanIntrospector {
         return s;
     }
 
-    // This is a place holder for now... Will be ditched it in the future
-    // BeanVariable bare
-    public sealed interface BeanElement permits BeanIntrospector$OnClassHook, BeanIntrospector$OnConstructorHook, BeanIntrospector$OnFieldHook, BeanIntrospector$OnMethodHook, BeanIntrospector$OnBindingHook {
+    /**
+     *
+     */
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface BindingHook {
 
-        /**
-         * @param postFix
-         *            the message to include in the final message
-         * 
-         * @throws BeanDefinitionException
-         *             always thrown
-         */
-        default void failWith(String postFix) {
-            throw new BeanDefinitionException("OOPS " + postFix);
-        }
+        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
+        Class<? extends Extension<?>> extension();
     }
 
     @Target(ElementType.ANNOTATION_TYPE)
@@ -183,7 +238,6 @@ public abstract class BeanIntrospector {
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
     }
-
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
@@ -199,9 +253,9 @@ public abstract class BeanIntrospector {
         Class<? extends Extension<?>> extension();
     }
 
+   
     /**
      *
-     * @see BeanIntrospector#onMethodHook(BeanIntrospector$OnMethodHook)
      */
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RUNTIME)
@@ -211,12 +265,12 @@ public abstract class BeanIntrospector {
         /**
          * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
          * <p>
-         * Methods such as {@link BeanIntrospector$OnMethodHook#operationBuilder(ExtensionBeanConfiguration)} and... will fail
+         * Methods such as {@link BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail
          * with {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
          * 
          * @return whether or not the implementation is allowed to invoke the target method
          * 
-         * @see BeanIntrospector$OnMethodHook#operationBuilder(ExtensionBeanConfiguration)
+         * @see BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         boolean allowInvoke() default false; // allowIntercept...
@@ -226,20 +280,367 @@ public abstract class BeanIntrospector {
     }
 
     /**
-     *
-     * @see BeanIntrospector.OnBindingHook
-     * @see BeanIntrospector#onBindingHook(BeanIntrospector$OnBindingHook)
-     */
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    public @interface BindingHook {
+    *
+    */
+   // Eller ogsaa peeler vi inde vi kalder provide
 
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-    }
+   // Med alle de andre bean ting. Saa har vi en BeanField->Operation
+   // Skal vi have noget lige saadan her BeanDependency->Provisioning
+   // eller BeanVariable -> Dependency???
+   // Saa kan vi strippe af paa BeanVariable
+   // Saa bliver BeanVariable
+
+   public interface OnBindingHook {
+       
+       // Hmm idk about the unwrapping and stuff here
+       AnnotationReader annotations();
+       
+       /**
+        * <p>
+        * Vi tager Nullable med saa vi bruge raw.
+        * <p>
+        * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
+        * 
+        * @param instance
+        *            the instance to provide to the variable
+        * 
+        * @throws ClassCastException
+        *             if the type of the instance does not match the type of the variable
+        * @throws IllegalStateException
+        *             if a provide method has already been called on this instance (I think it is fine to allow it to be
+        *             overriden by itself).
+        */
+       void bind(@Nullable Object obj);
+
+       /**
+        * Variable is resolvable at runtime.
+        * <p>
+        * Cannot provide instance. Must provide an optional class or Null will represent a missing value. Maybe just optional
+        * class for now
+        * 
+        * @return
+        */
+       // Hmm, resolve at runtime ved jeg ikke hvor meget passer. extensionen ligger jo fast
+       // Saa maaske bindAtRuntime
+       OnBindingHook bindAtRuntime();
+
+       /**
+        * <p>
+        * For raw er det automatisk en fejl
+        */
+       // provideUnresolved();
+       void bindMissing(); // Giver ikke mening for rawModel
+
+       // UOE if invokingExtension!= introspector.extension...
+       void bindToInvocationArgument(int index); // EH.bindToInvocationArgument(0)
+
+       /**
+        * @param postFix
+        *            the message to include in the final message
+        * 
+        * @throws BeanDefinitionException
+        *             always thrown
+        */
+       default void failWith(String postFix) {
+           throw new BeanDefinitionException("OOPS " + postFix);
+       }
+
+       // Har vi altid en?
+       // Det er saa here hvor BeanMethod.bindings() er lidt traels...
+       // Maaske smider den bare UOE? Ja det taenker jeg
+       Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
+
+       Class<? extends Extension<?>> invokingExtension();
+
+       void provide(MethodHandle methodHandle);
+
+       void provide(Op<?> fac);
+
+       /**
+        * @return
+        * 
+        * @throws BeanDefinitionException
+        *             if the variable was a proper key
+        */
+       default Key<?> readKey() {
+           throw new UnsupportedOperationException();
+       }
+
+       OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier);
+       
+       default TypeInfo type() {
+           throw new UnsupportedOperationException();
+       }
+
+       Variable variable();
+
+       interface TypeInfo {
+
+           void checkAssignable(Class<?> clazz, Class<?>... additionalClazzes);
+
+           boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes);
+
+           Class<?> rawType();
+       }
+   }
     // CheckRealmIsApplication
     // CheckRealmIsExtension
+    /**
+    *
+    * <p>
+    * Members from the {@code java.lang.Object} class are never returned.
+    */
+
+   // Kig maaske i Maurizio Mirror thingy...
+   public interface OnClassHook  {
+
+       void forEachConstructor(Consumer<? super OnConstructorHook> m);
+       
+       void forEachMethod(Consumer<? super OnMethod> m);
+       
+       boolean hasFullAccess();
+
+       // Hvad med Invokeable thingies??? FX vi tager ExtensionContext for invokables
+       // Masske har vi BeanClass.Builder() istedet for???
+
+       // Cute men vi gider ikke supportere det
+//       static BeanClass of(MethodHandles.Lookup caller, Class<?> clazz) {
+//           throw new UnsupportedOperationException();
+//       }
+
+       // Fields first, include subclasses, ... blabla
+       // Maybe on top of full access have boolean custom processing on ClassHook
+       void setProcessingStrategy(Object strategy);
+   }
+
+    /**
+     * This class represents a {@link Constructor} on a bean.
+     * <p>
+     * Unlike field and methods hooks. There are no way to define hooks on constructors. Instead they must
+     * be defined on a bean driver or a bean class. Which determines how constructors are processed.
+     */
+    // Do we need a BeanExecutable??? Not sure we have a use case
+    // Or maybe we just have BeanMethod (Problem with constructor() though)
+    public interface OnConstructorHook {
+
+        /** {@return the underlying constructor.} */
+        Constructor<?> constructor();
+
+        /**
+         * Returns the modifiers of the constructor.
+         * 
+         * @return the modifiers of the constructor
+         * @see Constructor#getModifiers()
+         * @apiNote the method is named getModifiers instead of modifiers to be consistent with
+         *          {@link Constructor#getModifiers()}
+         */
+        int getModifiers();
+
+        OperationHandle newOperation();
+
+        /** {@return a factory type for this method.} */
+        OperationType operationType();
+    }
+
+    /**
+     * This class represents a {@link Field} on a bean.
+     * 
+     * @see BeanExtensionPoint.FieldHook
+     * @see BeanIntrospector#onField(BeanProcessor$BeanField)
+     * 
+     * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
+     */
+    public sealed interface OnFieldHook permits PackedBeanField {
+    
+        /** {@return an annotation reader for the field.} */
+        AnnotationReader annotations();
+    
+        /**
+         * @param postFix
+         *            the message to include in the final message
+         * 
+         * @throws BeanDefinitionException
+         *             always thrown
+         */
+        default void failWith(String postFix) {
+            throw new BeanDefinitionException("OOPS " + postFix);
+        }
+    
+        /** {@return the underlying field.} */
+        Field field();
+    
+        /**
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanDefinitionException} if the field does not
+         * represent a proper key.
+         * <p>
+         * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
+         * key. As a binding hook is typically used in cases where this would be needed.
+         * 
+         * @return a key representing the field
+         * 
+         * @throws BeanDefinitionException
+         *             if the field does not represent a proper key
+         */
+        default Key<?> fieldToKey() {
+            return Key.convertField(field());
+        }
+    
+        /**
+         * @return
+         */
+        default Set<Class<?>> hooks() {
+            return Set.of();
+        }
+    
+        /**
+         * {@return the modifiers of the field.}
+         * 
+         * @see Field#getModifiers()
+         * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Field#getModifiers()}
+         */
+        int modifiers();
+    
+        /**
+         * Creates a new operation that reads the field as specified by {@link Lookup#unreflectGetter(Field)}.
+         * 
+         * @param operator
+         *            the bean that will invoke the operation. The operator must be defined in the same container (or in a
+         *            parent container) as the bean that declares the field
+         * @return an operation handle
+         * @throws IllegalArgumentException
+         *             if the specified operator is not a direct ancestor of the bean that declares the field
+         */
+        OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType);
+    
+        /**
+         * @param operator
+         * @param accessMode
+         *            the access mode determines the operation type as exposed via the mirror api. However, extensions are free
+         *            to use any access mode they want
+         * @return
+         * 
+         * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
+         * 
+         * @apiNote there are currently no way to create more than 1 MethodHandle or VarHandle per operation. If this is needed
+         *          at some point. We could take a varargs of access modes and then allow repeat calls to methodHandleNow. No
+         *          matter what we must declare the invocation types when we create the operation, so we can check access before
+         *          creating the actual operation
+         */
+        OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode, InvocationType invocationType);
+    
+        /**
+         * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
+         * 
+         * @return an operation configuration object
+         */
+        OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType);
+    
+        /**
+         * {@return the underlying field represented as a {@code Variable}.}
+         * 
+         * @see Variable#ofField(Field)
+         */
+        Variable variable(); // mayby toVariable (kun hvis den fejler taenker jeg)
+    }
+
+    /**
+     * This class represents a {@link Method} on a bean.
+     * 
+     */
+    public sealed interface OnMethod permits PackedBeanMethod {
+
+        /** {@return an annotation reader for the method.} */
+        AnnotationReader annotations();
+
+        /**
+         * @param postFix
+         *            the message to include in the final message
+         * 
+         * @throws BeanDefinitionException
+         *             always thrown
+         */
+        default void failWith(String postFix) {
+            throw new BeanDefinitionException("OOPS " + postFix);
+        }
+
+        /**
+         * {@return the modifiers of the underlying method.}
+         *
+         * @see Method#getModifiers()
+         * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Method#getModifiers()}
+         */
+        int getModifiers();
+
+        /**
+         * @return
+         */
+        boolean hasInvokeAccess();
+
+        /**
+         * @return
+         */
+        default Set<Class<?>> hooks() {
+            return Set.of();
+        }
+
+        /** {@return the underlying method.} */
+        Method method();
+
+        /**
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link BeanDefinitionException} if the field does not
+         * represent a proper key.
+         * <p>
+         * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
+         * key. As a binding hook is typically used in cases where this would be needed.
+         * 
+         * @return a key representing the field
+         * 
+         * @throws BeanDefinitionException
+         *             if the field does not represent a proper key
+         */
+        default Key<?> methodToKey() {
+            return Key.convertMethodReturnType(method());
+        }
+
+        /**
+         * Creates a new operation that can invoke the underlying method.
+         * <p>
+         * If an {@link OperationMirror} is created for this operation. It will report
+         * {@link OperationTargetMirror.OfMethodInvoke} as its {@link OperationMirror#target()}.
+         * 
+         * @param operator
+         *            the extension bean that will invoke the operation. The extension bean must be located in the same (or in a
+         *            direct ancestor) container as the bean that declares the method.
+         * @return an operation customizer
+         * 
+         * @see Lookup#unreflect(Method)
+         * @see BeanMethodHook#allowInvoke()
+         * @see BeanClassHook#allowAllAccess()
+         * 
+         * @throws IllegalArgumentException
+         *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
+         */
+        OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType);
+
+        /** {@return a operation type for this method.} */
+        OperationType operationType();
+
+        //
+    ////Support for raw methods handles???
+    ///**
+    //* Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
+    //* that may have been configured elsewhere).
+    //* 
+    //* @return a direct method handle to the underlying method
+    //* @see Lookup#unreflect(Method)
+    //* @see BeanMethodHook#allowInvoke()
+    //* @see BeanClassHook#allowAllAccess()
+    //* 
+    //* @throws UnsupportedOperationException
+    //*             if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
+    //*             BeanClassHook#allowAllAccess()
+    //*/
+    }
 
     /** A small utility record to hold the both the extension model and the bean in one field. */
     private record Setup(ExtensionModel extension, BeanSetup bean) {}
