@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.build.BeanMemberServiceSetup;
 import internal.app.packed.service.build.ServiceSetup;
 
@@ -44,7 +44,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
             if (!smm.isStatic() && bean.injectionManager.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
-            ContainerInjectionManager sbm = bean.parent.injectionManager;
+            InternalServiceExtension sbm = bean.parent.injectionManager;
             ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addService(sa);
         } else {

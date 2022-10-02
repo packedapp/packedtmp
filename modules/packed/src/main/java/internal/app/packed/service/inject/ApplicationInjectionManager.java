@@ -23,10 +23,10 @@ import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.pool.LifetimePoolSetup;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link ContainerInjectionManager service composers}
+ * A service multi-composer is responsible for managing 1 or more {@link InternalServiceExtension service composers}
  * that are directly connected and part of the same build.
  * <p>
  * This class server two main purposes:

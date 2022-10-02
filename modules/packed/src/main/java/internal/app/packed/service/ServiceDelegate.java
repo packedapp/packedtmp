@@ -34,7 +34,7 @@ public class ServiceDelegate {
         return service;
     }
 
-    void resolve(ContainerInjectionManager sbm, ServiceSetup b) {
+    void resolve(InternalServiceExtension sbm, ServiceSetup b) {
         if (service != null) {
             LinkedHashSet<ServiceSetup> hs = sbm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
             hs.add(b); // might be added multiple times, hence we use a Set, but add existing first

@@ -25,12 +25,9 @@ import app.packed.base.Nullable;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.ExtensionBeanSetup;
-import internal.app.packed.bean.IntrospectorOnField.FieldOperationTarget;
-import internal.app.packed.bean.IntrospectorOnMethod.MethodOperationTarget;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -74,7 +71,7 @@ public final class OperationSetup {
         this.operatorBean = null;
         this.bindings = new BindingSetup[type.parameterCount()];
     }
-    
+
     public OperationSetup(BeanSetup bean, OperationType type, ExtensionBeanConfiguration<?> operator, InvocationType invocationType, OperationTarget target) {
         this.bean = bean;
         this.type = type;
@@ -99,17 +96,5 @@ public final class OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
-    }
-
-    public static sealed abstract class OperationTarget implements OperationTargetMirror permits FieldOperationTarget, MethodOperationTarget {
-
-        public final boolean isStatic;
-
-        public final MethodHandle methodHandle;
-
-        protected OperationTarget(MethodHandle methodHandle, boolean isStatic) {
-            this.methodHandle = methodHandle;
-            this.isStatic = isStatic;
-        }
     }
 }

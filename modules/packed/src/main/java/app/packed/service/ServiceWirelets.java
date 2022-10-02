@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.Service1stPassWirelet;
 import internal.app.packed.service.Service2ndPassWirelet;
 import internal.app.packed.service.build.PackedServiceTransformer;
@@ -155,7 +155,7 @@ public final class ServiceWirelets {
         return new Service1stPassWirelet() {
             /** {@inheritDoc} */
             @Override
-            protected void process(ContainerInjectionManager child) {
+            protected void process(InternalServiceExtension child) {
                 child.ios.exportsOrCreate().transform(transformation);
             }
         };
@@ -165,7 +165,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ContainerInjectionManager parent, ContainerInjectionManager child, Map<Key<?>, ServiceSetup> map) {
+            protected void process(@Nullable InternalServiceExtension parent, InternalServiceExtension child, Map<Key<?>, ServiceSetup> map) {
                 // child.ios.newServiceContract() to calc service contract
                 PackedServiceTransformer.transformInplace(map, transformation);
             }

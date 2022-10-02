@@ -82,7 +82,7 @@ public class ServiceManagerFailureSetup {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ContainerInjectionManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceSetup>> dublicateNodes) {
+    public static void addUnresolvedExports(InternalServiceExtension node, HashMap<Key<?>, LinkedHashSet<ExportedServiceSetup>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 

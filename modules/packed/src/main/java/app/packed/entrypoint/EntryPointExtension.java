@@ -77,8 +77,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 mc.methodHandle = ((IntrospectorOnMethod) method).newMethodHandle();
 
                 
-                // installMain(() -> {});
-//                oldOperation().useMirror(() -> new EntryPointMirror(0));
+
             }
 
         };

@@ -28,9 +28,9 @@ import app.packed.operation.OperationTargetMirror.OfFunctionCall;
 import app.packed.operation.OperationTargetMirror.OfInstanceAccess;
 import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
 import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
-import internal.app.packed.bean.IntrospectorOnField.FieldOperationTarget;
-import internal.app.packed.bean.IntrospectorOnMethod.MethodOperationTarget;
-import internal.app.packed.operation.OperationSetup.OperationTarget;
+import internal.app.packed.operation.OperationTarget;
+import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
+import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 
 /**
  * The target of an operation.
@@ -61,7 +61,7 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
     /** Represents an operation that gets, sets or updates a field. */
     public sealed interface OfFieldAccess extends OperationTargetMirror permits FieldOperationTarget {
 
-        AccessMode accessMode(); // TODO implement
+        AccessMode accessMode();
 
         boolean allowGet();
 

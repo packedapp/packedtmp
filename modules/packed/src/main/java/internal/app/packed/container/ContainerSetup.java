@@ -36,7 +36,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -66,7 +66,7 @@ public final class ContainerSetup extends ComponentSetup {
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /** The container's injection manager. */
-    public final ContainerInjectionManager injectionManager;
+    public final InternalServiceExtension injectionManager;
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -98,7 +98,7 @@ public final class ContainerSetup extends ComponentSetup {
         super(application, realm, parent);
         requireNonNull(wirelets, "wirelets is null");
 
-        this.injectionManager = new ContainerInjectionManager(this);
+        this.injectionManager = new InternalServiceExtension(this);
 
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.

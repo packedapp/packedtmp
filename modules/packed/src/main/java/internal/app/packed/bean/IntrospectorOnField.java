@@ -27,12 +27,11 @@ import app.packed.bean.BeanIntrospector.OnFieldHook;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.OperationTarget;
+import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -125,47 +124,5 @@ public final class IntrospectorOnField implements OnFieldHook {
     @Override
     public Variable variable() {
         return Variable.ofField(field);
-    }
-
-
-    public static final class FieldOperationTarget extends OperationTarget implements OperationTargetMirror.OfFieldAccess {
-
-        private final AccessMode accessMode;
-
-        private final Field field;
-
-        /**
-         * @param methodHandle
-         * @param isStatic
-         */
-        public FieldOperationTarget(MethodHandle methodHandle, Field field, AccessMode accessMode) {
-            super(methodHandle, Modifier.isStatic(field.getModifiers()));
-            this.field = field;
-            this.accessMode = accessMode;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public AccessMode accessMode() {
-            return accessMode;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean allowGet() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean allowSet() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Field field() {
-            return field;
-        }
     }
 }

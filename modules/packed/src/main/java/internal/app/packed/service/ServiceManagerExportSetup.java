@@ -56,7 +56,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     private final LinkedHashMap<Key<?>, ServiceSetup> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
-    private final ContainerInjectionManager sm;
+    private final InternalServiceExtension sm;
 
     @Nullable
     Consumer<? super ServiceTransformer> transformer;
@@ -67,7 +67,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceManagerExportSetup(ContainerInjectionManager sm) {
+    ServiceManagerExportSetup(InternalServiceExtension sm) {
         this.sm = requireNonNull(sm);
     }
 
@@ -150,7 +150,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
      * any point, even before the
      */
-    public void resolve(ContainerInjectionManager sm) {
+    public void resolve(InternalServiceExtension sm) {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
         // Process every exported build entry

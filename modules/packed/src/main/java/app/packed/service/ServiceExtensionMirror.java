@@ -6,15 +6,15 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** The service manager */
-    private final ContainerInjectionManager services;
+    private final InternalServiceExtension services;
 
-    ServiceExtensionMirror(ContainerInjectionManager services) {
+    ServiceExtensionMirror(InternalServiceExtension services) {
         this.services = requireNonNull(services);
     }
 

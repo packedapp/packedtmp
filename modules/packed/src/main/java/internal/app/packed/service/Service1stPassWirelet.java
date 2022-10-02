@@ -19,6 +19,6 @@ import app.packed.container.Wirelet;
 
 /** A wirelet that is processed in a first pass. */
 public abstract class Service1stPassWirelet extends Wirelet {
-    protected abstract void process(ContainerInjectionManager sm);
+    protected abstract void process(InternalServiceExtension sm);
 }
  

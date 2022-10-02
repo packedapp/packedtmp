@@ -15,8 +15,6 @@
  */
 package internal.app.packed.service.inject;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
@@ -41,9 +39,9 @@ public final class DependencyHolder {
     @Nullable
     public final Key<?> provideAskey;
 
-    public DependencyHolder(List<InternalDependency> dependencies, boolean provideAsConstant, Key<?> provideAsKey, boolean isStatic, MethodHandle mh) {
+    public DependencyHolder(boolean provideAsConstant, Key<?> provideAsKey, boolean isStatic, MethodHandle mh) {
         this.provideAskey = provideAsKey;
-        this.dependencies = requireNonNull(dependencies);
+        this.dependencies = List.of();
         this.provideAsConstant = provideAsConstant;
         this.isStatic = isStatic;
         this.mh = mh;

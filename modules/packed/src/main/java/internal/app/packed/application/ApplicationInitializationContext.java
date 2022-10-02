@@ -29,7 +29,7 @@ import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.PackedManagedLifetime;
 import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -88,7 +88,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        ContainerInjectionManager sm = application.container.injectionManager;
+        InternalServiceExtension sm = application.container.injectionManager;
         return sm == null ? ServiceLocator.of() : sm.newNewServiceLocator(application.driver, pool);
     }
     

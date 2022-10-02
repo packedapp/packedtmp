@@ -32,7 +32,7 @@ import internal.app.packed.service.sandbox.Service;
  */
 public final class ContainerServiceBinder {
 
-    final ContainerInjectionManager cim;
+    final InternalServiceExtension cim;
 
     /** Deals with everything about exporting services to a parent container. */
     private ServiceManagerExportSetup exports;
@@ -40,7 +40,7 @@ public final class ContainerServiceBinder {
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     private ServiceManagerRequirementsSetup requirements;
 
-    ContainerServiceBinder(ContainerInjectionManager cim) {
+    ContainerServiceBinder(InternalServiceExtension cim) {
         this.cim = requireNonNull(cim);
     }
 

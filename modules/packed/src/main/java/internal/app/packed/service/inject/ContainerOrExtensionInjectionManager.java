@@ -15,11 +15,11 @@
  */
 package internal.app.packed.service.inject;
 
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 
 /**
  *
  */
-public abstract sealed class ContainerOrExtensionInjectionManager permits ContainerInjectionManager, ExtensionInjectionManager {
+public abstract sealed class ContainerOrExtensionInjectionManager permits InternalServiceExtension, ExtensionInjectionManager {
 
 }

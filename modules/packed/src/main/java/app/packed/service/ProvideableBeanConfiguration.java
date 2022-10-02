@@ -22,7 +22,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.InternalServiceUtil;
 import internal.app.packed.service.build.BeanInstanceServiceSetup;
 
@@ -128,7 +128,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
             if (provide == null && export == null) {
                 return;
             }
-            ContainerInjectionManager sms = bean.parent.injectionManager;
+            InternalServiceExtension sms = bean.parent.injectionManager;
             BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean, provide);
             if (provide != null) {
                 sms.addService(setup);

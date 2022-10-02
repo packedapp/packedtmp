@@ -46,7 +46,7 @@ import internal.app.packed.service.runtime.ServiceInstantiationContext;
 /**
  * A service manager is responsible for managing the services for a single container at build time.
  */
-public final class ContainerInjectionManager extends ContainerOrExtensionInjectionManager {
+public final class InternalServiceExtension extends ContainerOrExtensionInjectionManager {
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
@@ -65,7 +65,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
 
     /** Any parent this composer might have. */
     @Nullable
-    private final ContainerInjectionManager parent;
+    private final InternalServiceExtension parent;
 
     //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
     /** All locators added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
@@ -78,7 +78,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
      * @param root
      *            the container this service manager is a part of
      */
-    public ContainerInjectionManager(ContainerSetup container) {
+    public InternalServiceExtension(ContainerSetup container) {
         this.container = container;
         // TODO Husk at checke om man har en extension realm inde
         this.parent = container.parent == null ? null : container.parent.injectionManager;
@@ -150,7 +150,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
         // Process exports from any children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ContainerInjectionManager child = c.injectionManager;
+                InternalServiceExtension child = c.injectionManager;
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
@@ -181,7 +181,7 @@ public final class ContainerInjectionManager extends ContainerOrExtensionInjecti
         // Process child requirements to children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ContainerInjectionManager m = c.injectionManager;
+                InternalServiceExtension m = c.injectionManager;
                 if (m != null) {
                     m.processWirelets(container);
                 }

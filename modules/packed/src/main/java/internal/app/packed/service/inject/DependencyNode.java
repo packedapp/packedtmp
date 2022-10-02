@@ -32,7 +32,7 @@ import internal.app.packed.lifetime.pool.LifetimeConstantPool;
 import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.ServiceDelegate;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -117,7 +117,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
 
     protected abstract PoolEntryHandle poolAccessor();
 
-    public void resolve(ContainerInjectionManager sbm) {
+    public void resolve(InternalServiceExtension sbm) {
         boolean buildMH = true;
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
@@ -137,7 +137,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     }
 
     @Nullable
-    private DependencyProducer resolve0(ContainerInjectionManager sbm, InternalDependency sd, int i) {
+    private DependencyProducer resolve0(InternalServiceExtension sbm, InternalDependency sd, int i) {
         DependencyProducer e = null;
 
         //// Checker om der er hooks der provider servicen

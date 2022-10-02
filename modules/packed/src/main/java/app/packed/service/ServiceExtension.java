@@ -18,7 +18,6 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -35,7 +34,7 @@ import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.service.ContainerInjectionManager;
+import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.ServiceConfiguration;
 import internal.app.packed.service.inject.BeanMemberDependencyNode;
 import internal.app.packed.service.inject.DependencyHolder;
@@ -89,7 +88,7 @@ import internal.app.packed.util.MethodHandleUtil;
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
-    private final ContainerInjectionManager injectionManager = ExtensionSetup.crack(this).container.injectionManager;
+    private final InternalServiceExtension delegate = ExtensionSetup.crack(this).container.injectionManager;
 
     /** Create a new service extension. */
     ServiceExtension() {}
@@ -140,7 +139,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkIsConfigurable();
-        injectionManager.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        delegate.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     @Override
@@ -154,15 +153,20 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
                 IntrospectorOnField iof = (IntrospectorOnField) field;
-
+                
                 int modifiers = field.modifiers();
 
-                DependencyHolder fh = new DependencyHolder(List.of(), constant, key, Modifier.isStatic(modifiers),
+                DependencyHolder fh = new DependencyHolder(constant, key, Modifier.isStatic(modifiers),
                         MethodHandleUtil.getFromField(modifiers, iof.newVarHandle()));
 
                 add(iof.introspector, fh);
             }
 
+            private void add(Introspector os, DependencyHolder h) {
+                DependencyNode node = new BeanMemberDependencyNode(os.bean, h);
+
+                os.bean.parent.injectionManager.addConsumer(node);
+            }
             /** {@inheritDoc} */
             @Override
             public void onMethodHook(OnMethod method) {
@@ -171,17 +175,17 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
                 IntrospectorOnMethod iom = (IntrospectorOnMethod) method;
 
-                OperationSetup operation = iom.newOperation(InvocationType.defaults());
+                OperationSetup operation = iom.newInternalOperation(InvocationType.defaults());
 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
 
-                add(iom.introspector, fh);
+                add(operation, fh);
             }
 
-            private void add(Introspector is, DependencyHolder h) {
-                DependencyNode node = new BeanMemberDependencyNode(is.bean, h);
+            private void add(OperationSetup os, DependencyHolder h) {
+                DependencyNode node = new BeanMemberDependencyNode(os.bean, h);
 
-                is.bean.parent.injectionManager.addConsumer(node);
+                os.bean.parent.injectionManager.addConsumer(node);
             }
         };
     }
@@ -189,7 +193,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {
-        return new ServiceExtensionMirror(injectionManager);
+        return new ServiceExtensionMirror(delegate);
     }
 
     /**
@@ -207,7 +211,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
         checkIsConfigurable();
-        injectionManager.provideAll(l);
+        delegate.provideAll(l);
     }
 
     public void provideAll(ServiceLocator locator, Consumer<ServiceTransformer> transformer) {
@@ -255,7 +259,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            injectionManager.ios.requirementsOrCreate().require(key, false /* , cs */);
+            delegate.ios.requirementsOrCreate().require(key, false /* , cs */);
         }
     }
 
@@ -280,7 +284,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            injectionManager.ios.requirementsOrCreate().require(key, true /* , cs */);
+            delegate.ios.requirementsOrCreate().require(key, true /* , cs */);
         }
     }
 
@@ -295,7 +299,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
      *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceTransformer> transformer) {
-        injectionManager.ios.exportsOrCreate().setExportTransformer(transformer);
+        delegate.ios.exportsOrCreate().setExportTransformer(transformer);
     }
 }
 //

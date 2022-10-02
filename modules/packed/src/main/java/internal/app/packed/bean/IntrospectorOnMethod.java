@@ -18,7 +18,6 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
@@ -26,16 +25,18 @@ import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.OperationTarget;
+import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /** Internal implementation of BeanMethod */
 // Taenker den bliver en inner class ad PackedBeanIntrospector?
 public final class IntrospectorOnMethod implements OnMethod {
+
+    /** Annotations on the method read via {@link Method#getAnnotations()}. */
+    private final Annotation[] annotations;
 
     /** The internal introspector */
     public final Introspector introspector;
@@ -49,8 +50,6 @@ public final class IntrospectorOnMethod implements OnMethod {
     /** The operation type (lazily created). */
     @Nullable
     private OperationType type;
-
-    private final Annotation[] annotations;
 
     IntrospectorOnMethod(Introspector introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
         this.introspector = introspector;
@@ -82,6 +81,13 @@ public final class IntrospectorOnMethod implements OnMethod {
         return method;
     }
 
+    public OperationSetup newInternalOperation(InvocationType invocationType) {
+        MethodHandle methodHandle = newMethodHandle();
+        OperationSetup os = new OperationSetup(introspector.bean, operationType(), invocationType, new MethodOperationTarget(methodHandle, method));
+        introspector.bean.addOperation(os);
+        return os;
+    }
+
     // Taenker vi goer det her naar vi laver en operation
     public MethodHandle newMethodHandle() {
         return introspector.oc.unreflect(method);
@@ -96,13 +102,6 @@ public final class IntrospectorOnMethod implements OnMethod {
         return new PackedOperationHandle(os);
     }
 
-    public OperationSetup newOperation(InvocationType invocationType) {
-        MethodHandle methodHandle = newMethodHandle();
-        OperationSetup os = new OperationSetup(introspector.bean, operationType(), invocationType, new MethodOperationTarget(methodHandle, method));
-        introspector.bean.addOperation(os);
-        return os;
-    }
-
     /** {@inheritDoc} */
     @Override
     public OperationType operationType() {
@@ -111,28 +110,5 @@ public final class IntrospectorOnMethod implements OnMethod {
             t = type = OperationType.ofExecutable(method);
         }
         return t;
-    }
-
-    public static final class MethodOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodInvoke {
-
-        private final Method method;
-
-        /**
-         * @param methodHandle
-         * @param isStatic
-         */
-        public MethodOperationTarget(MethodHandle methodHandle, Method method) {
-            super(methodHandle, Modifier.isStatic(method.getModifiers()));
-            this.method = method;
-        }
-
-        /** {@return the invokable method.} */
-        public Method method() {
-            return method;
-        }
-
-        public String toString() {
-            return method.toString();
-        }
     }
 }
