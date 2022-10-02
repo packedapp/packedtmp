@@ -167,7 +167,5 @@ public final class IntrospectorOnField implements OnFieldHook {
         public Field field() {
             return field;
         }
-
     }
-
 }

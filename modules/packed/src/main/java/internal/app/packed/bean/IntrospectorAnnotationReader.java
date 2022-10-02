@@ -42,9 +42,15 @@ public record IntrospectorAnnotationReader(Annotation[] annotations) implements 
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Annotation> T readRequired(Class<T> annotationClass) {
-        return null;
+        for (int i = 0; i < annotations.length; i++) {
+            if (annotations[i].annotationType() == annotationClass) {
+                return (T) annotations[i];
+            }
+        }
+        throw new IllegalStateException();
     }
 
     /** {@inheritDoc} */

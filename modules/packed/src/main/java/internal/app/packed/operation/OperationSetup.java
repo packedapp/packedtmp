@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
+import app.packed.base.Nullable;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationMirror;
@@ -56,6 +57,7 @@ public final class OperationSetup {
     Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
 
     /** The extension that operates the operation. */
+    @Nullable
     public final ExtensionBeanSetup operatorBean;
 
     /** The target of the operation. */
@@ -64,6 +66,15 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
+    public OperationSetup(BeanSetup bean, OperationType type, InvocationType invocationType, OperationTarget target) {
+        this.bean = bean;
+        this.type = type;
+        this.target = target;
+        this.invocationType = requireNonNull(invocationType, "invocationType is null");
+        this.operatorBean = null;
+        this.bindings = new BindingSetup[type.parameterCount()];
+    }
+    
     public OperationSetup(BeanSetup bean, OperationType type, ExtensionBeanConfiguration<?> operator, InvocationType invocationType, OperationTarget target) {
         this.bean = bean;
         this.type = type;
@@ -92,9 +103,9 @@ public final class OperationSetup {
 
     public static sealed abstract class OperationTarget implements OperationTargetMirror permits FieldOperationTarget, MethodOperationTarget {
 
-        final boolean isStatic;
+        public final boolean isStatic;
 
-        final MethodHandle methodHandle;
+        public final MethodHandle methodHandle;
 
         protected OperationTarget(MethodHandle methodHandle, boolean isStatic) {
             this.methodHandle = methodHandle;

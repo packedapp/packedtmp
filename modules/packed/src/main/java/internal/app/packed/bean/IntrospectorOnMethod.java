@@ -91,10 +91,16 @@ public final class IntrospectorOnMethod implements OnMethod {
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle methodHandle = newMethodHandle();
-        // Hvad hvis vi koere raw???? Tror det er det samme
         OperationSetup os = new OperationSetup(introspector.bean, operationType(), operator, invocationType, new MethodOperationTarget(methodHandle, method));
         introspector.bean.addOperation(os);
         return new PackedOperationHandle(os);
+    }
+
+    public OperationSetup newOperation(InvocationType invocationType) {
+        MethodHandle methodHandle = newMethodHandle();
+        OperationSetup os = new OperationSetup(introspector.bean, operationType(), invocationType, new MethodOperationTarget(methodHandle, method));
+        introspector.bean.addOperation(os);
+        return os;
     }
 
     /** {@inheritDoc} */
@@ -106,7 +112,7 @@ public final class IntrospectorOnMethod implements OnMethod {
         }
         return t;
     }
-    
+
     public static final class MethodOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodInvoke {
 
         private final Method method;

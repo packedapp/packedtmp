@@ -28,17 +28,18 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import internal.app.packed.bean.Introspector;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.service.ServiceConfiguration;
 import internal.app.packed.service.inject.BeanMemberDependencyNode;
 import internal.app.packed.service.inject.DependencyHolder;
 import internal.app.packed.service.inject.DependencyNode;
-import internal.app.packed.service.inject.InternalDependency;
 import internal.app.packed.service.runtime.AbstractServiceLocator;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -150,7 +151,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             @Override
             public void onFieldHook(OnFieldHook field) {
                 Key<?> key = field.fieldToKey();
-                boolean constant = field.field().getAnnotation(Provide.class).constant();
+                boolean constant = field.annotations().readRequired(Provide.class).constant();
 
                 IntrospectorOnField iof = (IntrospectorOnField) field;
 
@@ -166,22 +167,19 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             @Override
             public void onMethodHook(OnMethod method) {
                 Key<?> key = method.methodToKey();
-                boolean constant = method.method().getAnnotation(Provide.class).constant();
+                boolean constant = method.annotations().readRequired(Provide.class).constant();
 
                 IntrospectorOnMethod iom = (IntrospectorOnMethod) method;
 
-                List<InternalDependency> ids = InternalDependency.fromOperationType(method.operationType());
-                DependencyHolder fh = new DependencyHolder(ids, constant, key, Modifier.isStatic(iom.getModifiers()), iom.newMethodHandle());
+                OperationSetup operation = iom.newOperation(InvocationType.defaults());
+
+                DependencyHolder fh = new DependencyHolder(constant, key, operation);
 
                 add(iom.introspector, fh);
             }
-            
+
             private void add(Introspector is, DependencyHolder h) {
-
                 DependencyNode node = new BeanMemberDependencyNode(is.bean, h);
-
-                // Er ikke sikker paa vi har en runtime bean...
-                // method.newOperation(null);
 
                 is.bean.parent.injectionManager.addConsumer(node);
             }
