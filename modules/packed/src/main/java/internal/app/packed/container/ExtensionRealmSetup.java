@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.operation.oldbindings.ExtensionInjectionManager;
+import internal.app.packed.service.inject.ExtensionInjectionManager;
 
 /**
  * A single instance of this class exists per extension per application.

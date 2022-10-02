@@ -32,7 +32,7 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import internal.app.packed.operation.oldbindings.InternalDependency;
+import internal.app.packed.service.inject.InternalDependency;
 
 /**
  *

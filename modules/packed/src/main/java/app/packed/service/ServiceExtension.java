@@ -33,12 +33,12 @@ import internal.app.packed.bean.Introspector;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.oldbindings.BeanMemberDependencyNode;
-import internal.app.packed.operation.oldbindings.DependencyHolder;
-import internal.app.packed.operation.oldbindings.DependencyNode;
-import internal.app.packed.operation.oldbindings.InternalDependency;
 import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.service.ServiceConfiguration;
+import internal.app.packed.service.inject.BeanMemberDependencyNode;
+import internal.app.packed.service.inject.DependencyHolder;
+import internal.app.packed.service.inject.DependencyNode;
+import internal.app.packed.service.inject.InternalDependency;
 import internal.app.packed.service.runtime.AbstractServiceLocator;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -149,8 +149,6 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             /** {@inheritDoc} */
             @Override
             public void onFieldHook(OnFieldHook field) {
-                // todo check not extension
-
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 

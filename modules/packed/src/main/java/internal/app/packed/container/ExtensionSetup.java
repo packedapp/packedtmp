@@ -16,7 +16,7 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.operation.oldbindings.ExtensionInjectionManager;
+import internal.app.packed.service.inject.ExtensionInjectionManager;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
