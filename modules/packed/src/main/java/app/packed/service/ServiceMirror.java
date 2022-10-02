@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.service;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
+// vs ProvideOperationMirror? and ExportOperationMirror
+public interface ServiceMirror {
 
-    public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Tror ikke laengere vi bliver resolved som en compond.
-    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-    public boolean isFuncionalInterface() {
-        throw new UnsupportedOperationException();
-    }
-
+    Collection<ServiceBindingMirror> bindings();
 }

@@ -43,7 +43,7 @@ public final class OperationSetup {
     /** The bean that defines the operation. */
     public final BeanSetup bean;
 
-    /** Any binding for the operation. {@code null} represents not yet bound */
+    /** Any binding for the operation. {@code null} represents an unbound parameter. */
     public final BindingSetup[] bindings;
 
     /** The invocation type of the operation. */
@@ -69,8 +69,7 @@ public final class OperationSetup {
         this.type = type;
         this.target = target;
         this.invocationType = requireNonNull(invocationType, "invocationType is null");
-        requireNonNull(operator, "operator is null");
-        this.operatorBean = ExtensionBeanSetup.crack(operator);
+        this.operatorBean = ExtensionBeanSetup.crack(requireNonNull(operator, "operator is null"));
         this.bindings = new BindingSetup[type.parameterCount()];
     }
 

@@ -258,6 +258,7 @@ public abstract class Extension<E extends Extension<E>> {
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
+    /** {@return the root extension in the application.} */
     @SuppressWarnings("unchecked")
     protected final E root() {
         ExtensionSetup s = setup;

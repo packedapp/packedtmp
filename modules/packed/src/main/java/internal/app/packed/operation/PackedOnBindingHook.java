@@ -66,13 +66,13 @@ public final class PackedOnBindingHook implements OnBindingHook {
         // Check assignable to
         // Create a bound thing
         //
-        bind(new ConstantBindingSetup(operation, index, obj));
+        bind(new BindingSetup(operation, index, new ConstantBindingTarget(obj)));
     }
 
     private void bind(BindingSetup bs) {
         operation.bindings[index] = bs;
     }
-    
+
     private void checkNotBound() {
         if (operation.bindings[index] != null) {
             throw new IllegalStateException("A binding has already been created");

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.bindings;
 
 import app.packed.bean.BeanDefinitionException;
 
@@ -21,6 +21,9 @@ import app.packed.bean.BeanDefinitionException;
 // @Nullable primitive
 // Optional<Optional<Provider<UserService>>>
 // IllegalBindingException? InvalidBindingException, UncreateableBindingException
+
+// Tror vi dropper den her
+
 public class CouldNotCreateBindingException extends BeanDefinitionException {
 
     /** <code>serialVersionUID</code>. */

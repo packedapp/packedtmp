@@ -18,13 +18,10 @@ package internal.app.packed.bean.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Member;
 import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.operation.bindings.DependencyNode;
 import internal.app.packed.operation.bindings.DependencyProducer;
 import internal.app.packed.operation.bindings.InternalDependency;
 
@@ -35,9 +32,6 @@ abstract class DependencyHolder {
 
     /** Dependencies that needs to be resolved. */
     final List<InternalDependency> dependencies;
-//
-//    @Nullable
-//    public final Consumer<? super ComponentSetup> processor = null;
 
     final boolean provideAsConstant;
 
@@ -51,31 +45,12 @@ abstract class DependencyHolder {
         this.provideAskey = provideAsKey;
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = provideAsConstant;
-        // this.processor = builder.processor;
-    }
-
-    public void onWire(BeanSetup bean) {
-        // Register hooks, maybe move to component setup
-        DependencyNode node = new BeanMemberDependencyNode(bean, this, createProviders());
-
-        bean.parent.injectionManager.addConsumer(node);
-
-//        if (processor != null) {
-//            processor.accept(bean);
-//        }
     }
 
     public abstract DependencyProducer[] createProviders();
-
-    /**
-     * Returns the modifiers of the underlying member.
-     * 
-     * @return the modifiers of the underlying member
-     * 
-     * @see Member#getModifiers()
-     */
-    public abstract int getModifiers();
-
+    
+    public abstract boolean isStatic();
+    
     public abstract MethodHandle methodHandle();
 
 }

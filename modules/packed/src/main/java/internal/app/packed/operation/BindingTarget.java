@@ -15,23 +15,9 @@
  */
 package internal.app.packed.operation;
 
-import app.packed.base.Nullable;
-
 /**
  *
  */
-public class ConstantBindingSetup extends BindingSetup {
-
-    @Nullable
-    final Object constant;
-
-    /**
-     * @param operation
-     * @param index
-     */
-    public ConstantBindingSetup(OperationSetup operation, int index, @Nullable Object constant) {
-        super(operation, index);
-        this.constant = constant;
-    }
+public class BindingTarget {
 
 }

@@ -59,52 +59,6 @@ import internal.app.packed.operation.PackedOnBindingHook;
  */
 public abstract class BeanIntrospector {
     /**
-     * An annotation reader can be used to process annotations on bean elements.
-     * 
-     * @see AnnotatedElement
-     */
-    // If we can, we should move this to BeanProcessor.AnnotationReader
-    // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
-    // AnnotatedBeanElement?
-    public interface AnnotationReader {
-
-        /** {@return whether or not there are any annotations to read.} */
-        boolean hasAnnotations();
-
-        boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
-
-        // Det er taenk
-        Annotation[] readAnyOf(Class<?>... annotationTypes);
-
-        /**
-         * Returns a annotation of the specified type or throws {@link BeanDefinitionException} if the annotation is not present
-         * 
-         * @param <T>
-         *            the type of the annotation to query for and return if present
-         * @param annotationClass
-         *            the Class object corresponding to the annotation type
-         * @return the annotation for the specified annotation type if present
-         * 
-         * @throws BeanDefinitionException
-         *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
-         *             exactly 1 occurrences of it
-         * 
-         * @see AnnotatedElement#getAnnotation(Class)
-         */
-        //// foo bean was expected method to dddoooo to be annotated with
-        <T extends Annotation> T readRequired(Class<T> annotationClass);
-
-        // Q) Skal vi bruge den udefra beans???
-        // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
-        // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
-        // Paa hver bean som bruger den...
-        // Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
-
-        // I think the only we reason we call it BeanAnnotationReader is because
-        // if we called AnnotationReader is should really be located in a utility package
-    }
-
-    /**
      * The configuration of this processor. Is initially null but populated via
      * {@link #initialize(ExtensionModel, BeanSetup)}.
      */
@@ -218,11 +172,58 @@ public abstract class BeanIntrospector {
     }
 
     /**
+     * An annotation reader can be used to process annotations on bean elements.
+     * 
+     * @see AnnotatedElement
+     */
+    // If we can, we should move this to BeanProcessor.AnnotationReader
+    // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
+    // AnnotatedBeanElement?
+    public interface AnnotationReader {
+
+        /** {@return whether or not there are any annotations to read.} */
+        boolean hasAnnotations();
+
+        boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+
+        // Det er taenk
+        Annotation[] readAnyOf(Class<?>... annotationTypes);
+
+        /**
+         * Returns a annotation of the specified type or throws {@link BeanDefinitionException} if the annotation is not present
+         * 
+         * @param <T>
+         *            the type of the annotation to query for and return if present
+         * @param annotationClass
+         *            the Class object corresponding to the annotation type
+         * @return the annotation for the specified annotation type if present
+         * 
+         * @throws BeanDefinitionException
+         *             if the specified annotation is not present or the annotation is a repeatable annotation and there are not
+         *             exactly 1 occurrences of it
+         * 
+         * @see AnnotatedElement#getAnnotation(Class)
+         */
+        //// foo bean was expected method to dddoooo to be annotated with
+        <T extends Annotation> T readRequired(Class<T> annotationClass);
+
+        // Q) Skal vi bruge den udefra beans???
+        // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
+        // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
+        // Paa hver bean som bruger den...
+        // Vi exponere den jo ikke, saa kan jo ogsaa bare bruge den...
+
+        // I think the only we reason we call it BeanAnnotationReader is because
+        // if we called AnnotationReader is should really be located in a utility package
+    }
+
+    /**
      *
      */
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RUNTIME)
     @Documented
+    // Move to BeanExtensionPoint
     public @interface BindingHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
@@ -614,7 +615,8 @@ public abstract class BeanIntrospector {
          * @param operator
          *            the extension bean that will invoke the operation. The extension bean must be located in the same (or in a
          *            direct ancestor) container as the bean that declares the method.
-         * @return an operation customizer
+         * @param invocationType
+         * @return an operation handle
          * 
          * @see Lookup#unreflect(Method)
          * @see BeanMethodHook#allowInvoke()
@@ -647,5 +649,6 @@ public abstract class BeanIntrospector {
     }
 
     /** A small utility record to hold the both the extension model and the bean in one field. */
+    // Replace with Introspector???
     private record Setup(ExtensionModel extension, BeanSetup bean) {}
 }

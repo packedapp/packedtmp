@@ -36,12 +36,12 @@ public class FieldDependencyHolder extends DependencyHolder {
     private final int modifiers;
 
     /** A direct method handle to the field. */
-    public final VarHandle varHandle;
+    private final MethodHandle methodHandle;
     
     public FieldDependencyHolder(OnFieldHook field, VarHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(List.of(), provideAsConstant, provideAsKey);
         this.modifiers = requireNonNull(field.modifiers());
-        this.varHandle = requireNonNull(mh);
+        this.methodHandle = MethodHandleUtil.getFromField(modifiers, mh);
     }
 
     @Override
@@ -49,16 +49,14 @@ public class FieldDependencyHolder extends DependencyHolder {
         DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
         return providers;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getModifiers() {
-        return modifiers;
+    
+    public boolean isStatic() {
+        return Modifier.isStatic(modifiers);
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
-        return MethodHandleUtil.getFromField(modifiers, varHandle);
+        return methodHandle;
     }
 }

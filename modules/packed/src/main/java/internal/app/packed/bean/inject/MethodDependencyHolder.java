@@ -31,45 +31,30 @@ import internal.app.packed.operation.bindings.InternalDependency;
 public class MethodDependencyHolder extends DependencyHolder {
 
     /** The modifiers of the field. */
-    private final int modifiers;
+    private final boolean isStatic;
 
     /** A direct method handle to the field. */
-    public final MethodHandle varHandle;
-    
+    public final MethodHandle methodHandle;
+
     public MethodDependencyHolder(OnMethod method, MethodHandle mh, boolean provideAsConstant, Key<?> provideAsKey) {
         super(InternalDependency.fromOperationType(method.operationType()), provideAsConstant, provideAsKey);
-        this.modifiers = requireNonNull(method.getModifiers());
-        this.varHandle = requireNonNull(mh);
+        this.isStatic = Modifier.isStatic(method.getModifiers());
+        this.methodHandle = requireNonNull(mh);
     }
 
     @Override
     public DependencyProducer[] createProviders() {
-        DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
-
-        // System.out.println("RESOLVING " + directMethodHandle);
-//        for (int i = 0; i < dependencies.size(); i++) {
-//            InternalDependency d = dependencies.get(i);
-//            HookedMethodProvide dp = hook.keys.get(d.key());
-//            if (dp != null) {
-//                // System.out.println("MAtches for " + d.key());
-//                int index = i + (Modifier.isStatic(modifiers) ? 0 : 1);
-//                providers[index] = dp;
-//                // System.out.println("SEtting provider " + dp.dependencyAccessor());
-//            }
-//        }
-
+        DependencyProducer[] providers = new DependencyProducer[isStatic ? 0 : 1];
         return providers;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int getModifiers() {
-        return modifiers;
+    public boolean isStatic() {
+        return isStatic;
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
-        return varHandle;
+        return methodHandle;
     }
 }

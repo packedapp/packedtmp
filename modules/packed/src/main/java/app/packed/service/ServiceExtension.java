@@ -165,12 +165,12 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = method.methodToKey();
                 boolean constant = method.method().getAnnotation(Provide.class).constant();
 
-                // Vi slipper maaske ikke for at have saadan en bean faetter
-                // Det samme med entry point...
-//                method.newOperation(null);
+                IntrospectorOnMethod iom = (IntrospectorOnMethod) method;
 
-                BeanSetup bean = ((IntrospectorOnMethod) method).introspector.bean;
-                MethodDependencyHolder fh = new MethodDependencyHolder(method, ((IntrospectorOnMethod) method).newMethodHandle(), constant, key);
+                BeanSetup bean = iom.introspector.bean;
+                
+                MethodDependencyHolder fh = new MethodDependencyHolder(method, iom.newMethodHandle(), constant, key);
+
                 DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
 
                 // Er ikke sikker paa vi har en runtime bean...

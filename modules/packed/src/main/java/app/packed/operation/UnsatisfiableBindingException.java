@@ -17,9 +17,11 @@ package app.packed.operation;
 
 import app.packed.application.BuildException;
 
-/** An exception thrown at build-time when a required dependency could not be resolved. */
+/** An exception thrown at build-time when a valid binding could not be created for an operation. */
 // Valid but the 
 // Binding
+// Giver bare ikke rigtig mening navngivningsmaessigt...
+// Dependency yws, binding no.
 public class UnsatisfiableBindingException extends BuildException {
 
     /** <code>serialVersionUID</code>. */

@@ -17,8 +17,6 @@ package internal.app.packed.bean.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Modifier;
-
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
@@ -45,7 +43,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
         super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && bean.injectionManager.singletonHandle == null) {
+            if (!smm.isStatic() && bean.injectionManager.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
             ContainerInjectionManager sbm = bean.parent.injectionManager;
@@ -57,7 +55,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
         
         this.sourceMember = requireNonNull(smm);
 
-        if (!Modifier.isStatic(smm.getModifiers())) {
+        if (!smm.isStatic()) {
             dependencyProviders[0] = bean.injectionManager;
         }
     }

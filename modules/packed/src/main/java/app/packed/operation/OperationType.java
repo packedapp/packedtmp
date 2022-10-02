@@ -301,6 +301,7 @@ public final /* primitive */ class OperationType {
         System.out.println(mt);
     }
 
+    // I think we can move this internally
     public static OperationType ofFieldAccess(Field field, AccessMode accessMode) {
         requireNonNull(field, "field is null");
         requireNonNull(accessMode, "accessMode is null");

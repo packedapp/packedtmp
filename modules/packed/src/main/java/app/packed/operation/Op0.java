@@ -25,11 +25,11 @@ import java.util.function.Supplier;
  * Is typically used like this:
  *
  * <pre> {@code
- * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {}};</pre>
+ * Op<Long> f = new Op0<>(System::currentTimeMillis) {}};</pre>
  * <p>
- * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
- * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining
- * type information at runtime.
+ * In this example we create a new class inheriting from Op0 is order to capture information about the suppliers type
+ * variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining type
+ * information at runtime.
  * 
  * @param <R>
  *            the type of objects this factory constructs

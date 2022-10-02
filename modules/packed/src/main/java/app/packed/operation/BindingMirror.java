@@ -29,7 +29,7 @@ import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.BindingSetup;
 
 /**
- * A mirror of binding.
+ * A mirror representing the bound parameter of an operation.
  * 
  * @see OperationMirror#bindings()
  */
@@ -42,11 +42,7 @@ public class BindingMirror implements Mirror {
     @Nullable
     private BindingSetup binding;
 
-    /**
-     * Create a new binding mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
+    /** Create a new binding mirror. */
     public BindingMirror() {}
 
     /**
@@ -126,22 +122,15 @@ public class BindingMirror implements Mirror {
 //Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
 //Eller maaske goer det? Taenker ikke man kan vaere alle dele
 interface Sandbox {
-    Optional<DefaultMirror> fallback(); // Do we parse it even if we have been build-time resolved????
-    
+    BindingKind bindingKind();
+
     // Resolved
     // Unresolved + [Optional|Default]
     // RuntimeResolvable
     // Composite -> composite.all.isSatisfiable
 
+    Optional<DefaultMirror> fallback(); // Do we parse it even if we have been build-time resolved????
 
-    
-    BindingKind bindingKind();
-
-    // Unresolved->Empty or Composite->Empty
-    Optional<UserOrExtension> resolvedBy();
-
-    Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
-    
     /**
      * If this dependency is the result of another operation.
      * 
@@ -181,6 +170,11 @@ interface Sandbox {
     public Optional<OperationMirror> providingOperation();
 
     public ResolutionState resolutionState();
+
+    // Unresolved->Empty or Composite->Empty
+    Optional<UserOrExtension> resolvedBy();
+
+    Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
 
     // Tror det bliver ligesom OperationTarget
     abstract class OfAnnotation extends BindingMirror {

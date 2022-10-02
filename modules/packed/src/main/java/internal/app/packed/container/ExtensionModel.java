@@ -205,7 +205,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     public static ExtensionSetup initalizeExtension(Extension<?> instance) {
         Wrapper wrapper = CONSTRUCT.get();
         if (wrapper == null) {
-            throw new UnsupportedOperationException("An extension class cannot be created standalone");
+            throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
         }
         ExtensionSetup s = wrapper.setup;
         wrapper.setup = null;

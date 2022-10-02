@@ -40,7 +40,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      */
     CapturingOp(Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        op = PackageCapturingOpHelper.create(getClass(), function);
+        this.op = PackageCapturingOpHelper.create(getClass(), function);
     }
 
     /** {@inheritDoc} */

@@ -34,7 +34,7 @@ public interface InvocationType {
     // Tror vi styrer return type her.
     // Man boer smide custom fejl beskeder
 
-    /** {@return the method type of the invocation.} */
+    /** {@return the method type representing the invocation.} */
     MethodType methodType();
 
     InvocationType returnType(Class<?> type);

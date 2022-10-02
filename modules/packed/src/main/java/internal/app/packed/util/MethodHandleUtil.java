@@ -52,10 +52,6 @@ public class MethodHandleUtil {
         return Modifier.isVolatile(modifiers) ? vh.toMethodHandle(AccessMode.GET_VOLATILE) : vh.toMethodHandle(AccessMode.GET);
     }
 
-    public static MethodHandle bind(MethodHandle target, int position, Object... arguments) {
-        return MethodHandles.insertArguments(target, position, arguments);
-    }
-
     public static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {
         return target.asType(target.type().changeReturnType(newReturnType));
     }
