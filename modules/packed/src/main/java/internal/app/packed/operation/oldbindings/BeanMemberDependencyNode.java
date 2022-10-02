@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.inject;
+package internal.app.packed.operation.oldbindings;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,6 @@ import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
-import internal.app.packed.operation.bindings.DependencyNode;
-import internal.app.packed.operation.bindings.DependencyProducer;
 import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.service.build.BeanMemberServiceSetup;
 import internal.app.packed.service.build.ServiceSetup;
@@ -39,8 +37,8 @@ public final class BeanMemberDependencyNode extends DependencyNode {
     @Nullable
     protected final BeanMemberServiceSetup service;
 
-    public BeanMemberDependencyNode(BeanSetup bean, DependencyHolder smm, DependencyProducer[] dependencyProviders) {
-        super(bean, smm.dependencies, smm.methodHandle(), dependencyProviders);
+    public BeanMemberDependencyNode(BeanSetup bean, DependencyHolder smm) {
+        super(bean, smm.dependencies, smm.methodHandle(), smm.createProviders());
 
         if (smm.provideAskey != null) {
             if (!smm.isStatic() && bean.injectionManager.singletonHandle == null) {
@@ -56,7 +54,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
         this.sourceMember = requireNonNull(smm);
 
         if (!smm.isStatic()) {
-            dependencyProviders[0] = bean.injectionManager;
+            producers[0] = bean.injectionManager;
         }
     }
 

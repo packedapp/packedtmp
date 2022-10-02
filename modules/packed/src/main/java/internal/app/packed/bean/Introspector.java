@@ -272,7 +272,7 @@ public final class Introspector {
                 ExtensionEntry entry = computeExtensionEntry(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
-                IntrospectorOnField f = new IntrospectorOnField(bean, Introspector.this, entry.extension, field, e.isGettable || entry.hasFullAccess,
+                IntrospectorOnField f = new IntrospectorOnField(Introspector.this, entry.extension, field, e.isGettable || entry.hasFullAccess,
                         e.isSettable || entry.hasFullAccess, new Annotation[] { annotation });
 
                 // Call BeanIntrospection.onField
@@ -284,7 +284,7 @@ public final class Introspector {
                     ExtensionEntry entry = computeExtensionEntry(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    IntrospectorOnField f = new IntrospectorOnField(bean, Introspector.this, entry.extension, field, mf.allowGet || entry.hasFullAccess,
+                    IntrospectorOnField f = new IntrospectorOnField(Introspector.this, entry.extension, field, mf.allowGet || entry.hasFullAccess,
                             mf.allowSet || entry.hasFullAccess, annotations);
 
                     // Call BeanIntrospection.onField

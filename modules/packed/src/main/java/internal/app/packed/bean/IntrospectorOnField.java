@@ -49,21 +49,16 @@ public final class IntrospectorOnField implements OnFieldHook {
     /** The annotations on the field */
     final Annotation[] annotations;
 
-    /** The bean that declares the member */
-    public final BeanSetup bean;
-
     /** The bean member. */
     protected final Field field;
-
-    final OpenClass openClass;
 
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    IntrospectorOnField(BeanSetup bean, Introspector scanner, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet,
+    public final Introspector introspector;
+    IntrospectorOnField(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations) {
-        this.openClass = scanner.oc;
-        this.bean = bean;
+        this.introspector = introspector;
         this.operator = operator;
         this.field = field;
         this.allowGet = allowGet;
@@ -91,21 +86,21 @@ public final class IntrospectorOnField implements OnFieldHook {
     /** {@inheritDoc} */
     @Override
     public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
-        MethodHandle mh = openClass.unreflectGetter(field);
+        MethodHandle mh = introspector.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        OperationSetup os = new OperationSetup(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
+        OperationSetup os = new OperationSetup(introspector.bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
                 new FieldOperationTarget(mh, field, accessMode));
-        bean.addOperation(os);
+        introspector.bean.addOperation(os);
         return new PackedOperationHandle(os);
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
-        MethodHandle mh = openClass.unreflectVarHandle(field).toMethodHandle(accessMode);
-        OperationSetup os = new OperationSetup(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
+        MethodHandle mh = introspector.oc.unreflectVarHandle(field).toMethodHandle(accessMode);
+        OperationSetup os = new OperationSetup(introspector.bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
                 new FieldOperationTarget(mh, field, accessMode));
-        bean.addOperation(os);
+        introspector.bean.addOperation(os);
 
         return new PackedOperationHandle(os);
     }
@@ -113,17 +108,17 @@ public final class IntrospectorOnField implements OnFieldHook {
     /** {@inheritDoc} */
     @Override
     public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
-        MethodHandle mh = openClass.unreflectSetter(field);
+        MethodHandle mh = introspector.oc.unreflectSetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        OperationSetup os = new OperationSetup(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
+        OperationSetup os = new OperationSetup(introspector.bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType,
                 new FieldOperationTarget(mh, field, accessMode));
-        bean.addOperation(os);
+        introspector.bean.addOperation(os);
 
         return new PackedOperationHandle(os);
     }
 
     public VarHandle newVarHandle() {
-        return openClass.unreflectVarHandle(field);
+        return introspector.oc.unreflectVarHandle(field);
     }
 
     /** {@inheritDoc} */

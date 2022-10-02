@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.service.Provide;
-import internal.app.packed.operation.bindings.DependencyProducer;
+import internal.app.packed.operation.oldbindings.DependencyProducer;
 import internal.app.packed.service.InternalService;
 import internal.app.packed.service.runtime.RuntimeService;
 import internal.app.packed.service.runtime.ServiceInstantiationContext;

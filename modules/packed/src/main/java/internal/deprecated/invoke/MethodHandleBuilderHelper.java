@@ -35,7 +35,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.OpenClass;
-import internal.app.packed.operation.bindings.InternalDependency;
+import internal.app.packed.operation.oldbindings.InternalDependency;
 import internal.app.packed.service.InternalServiceUtil;
 import internal.app.packed.service.build.ServiceSetup;
 import internal.app.packed.service.runtime.ServiceRegistry;

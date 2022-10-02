@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -27,17 +29,18 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.Op;
-import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.Introspector;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
-import internal.app.packed.bean.inject.BeanMemberDependencyNode;
-import internal.app.packed.bean.inject.FieldDependencyHolder;
-import internal.app.packed.bean.inject.MethodDependencyHolder;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.operation.oldbindings.BeanMemberDependencyNode;
+import internal.app.packed.operation.oldbindings.DependencyHolder;
+import internal.app.packed.operation.oldbindings.DependencyNode;
+import internal.app.packed.operation.oldbindings.InternalDependency;
 import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.service.ServiceConfiguration;
 import internal.app.packed.service.runtime.AbstractServiceLocator;
+import internal.app.packed.util.MethodHandleUtil;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -151,12 +154,14 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.field().getAnnotation(Provide.class).constant();
 
-                BeanSetup bean = ((IntrospectorOnField) field).bean;
-                FieldDependencyHolder fh = new FieldDependencyHolder(field, ((IntrospectorOnField) field).newVarHandle(), constant, key);
-                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
-//                field.newSetOperation(null, InvocationType.defaults());
+                IntrospectorOnField iof = (IntrospectorOnField) field;
 
-                bean.parent.injectionManager.addConsumer(node);
+                int modifiers = field.modifiers();
+
+                DependencyHolder fh = new DependencyHolder(List.of(), constant, key, Modifier.isStatic(modifiers),
+                        MethodHandleUtil.getFromField(modifiers, iof.newVarHandle()));
+
+                add(iof.introspector, fh);
             }
 
             /** {@inheritDoc} */
@@ -167,16 +172,20 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
                 IntrospectorOnMethod iom = (IntrospectorOnMethod) method;
 
-                BeanSetup bean = iom.introspector.bean;
-                
-                MethodDependencyHolder fh = new MethodDependencyHolder(method, iom.newMethodHandle(), constant, key);
+                List<InternalDependency> ids = InternalDependency.fromOperationType(method.operationType());
+                DependencyHolder fh = new DependencyHolder(ids, constant, key, Modifier.isStatic(iom.getModifiers()), iom.newMethodHandle());
 
-                DependencyNode node = new BeanMemberDependencyNode(bean, fh, fh.createProviders());
+                add(iom.introspector, fh);
+            }
+            
+            private void add(Introspector is, DependencyHolder h) {
+
+                DependencyNode node = new BeanMemberDependencyNode(is.bean, h);
 
                 // Er ikke sikker paa vi har en runtime bean...
                 // method.newOperation(null);
 
-                bean.parent.injectionManager.addConsumer(node);
+                is.bean.parent.injectionManager.addConsumer(node);
             }
         };
     }

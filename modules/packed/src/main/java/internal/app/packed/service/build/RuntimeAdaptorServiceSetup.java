@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.service.ServiceExtension;
-import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.operation.oldbindings.DependencyNode;
 import internal.app.packed.service.runtime.DelegatingRuntimeService;
 import internal.app.packed.service.runtime.OldServiceLocator;
 import internal.app.packed.service.runtime.RuntimeService;

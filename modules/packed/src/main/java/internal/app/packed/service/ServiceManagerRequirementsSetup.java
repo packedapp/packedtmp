@@ -25,9 +25,9 @@ import app.packed.application.BuildException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.ServiceExtension;
-import internal.app.packed.operation.bindings.DependencyNode;
-import internal.app.packed.operation.bindings.DependencyProducer;
-import internal.app.packed.operation.bindings.InternalDependency;
+import internal.app.packed.operation.oldbindings.DependencyNode;
+import internal.app.packed.operation.oldbindings.DependencyProducer;
+import internal.app.packed.operation.oldbindings.InternalDependency;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.

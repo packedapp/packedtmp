@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.operation.oldbindings.DependencyNode;
 import internal.app.packed.service.runtime.RuntimeService;
 import internal.app.packed.service.runtime.ServiceInstantiationContext;
 

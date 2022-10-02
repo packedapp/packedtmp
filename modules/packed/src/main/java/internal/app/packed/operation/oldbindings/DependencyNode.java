@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.bindings;
+package internal.app.packed.operation.oldbindings;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,6 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.inject.BeanMemberDependencyNode;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;

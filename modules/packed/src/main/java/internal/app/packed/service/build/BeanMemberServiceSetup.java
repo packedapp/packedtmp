@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
-import internal.app.packed.operation.bindings.DependencyNode;
+import internal.app.packed.operation.oldbindings.DependencyNode;
 import internal.app.packed.service.ContainerInjectionManager;
 import internal.app.packed.service.runtime.PrototypeRuntimeService;
 import internal.app.packed.service.runtime.RuntimeService;

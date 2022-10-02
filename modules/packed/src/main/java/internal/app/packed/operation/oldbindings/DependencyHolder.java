@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean.inject;
+package internal.app.packed.operation.oldbindings;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,35 +22,43 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.operation.bindings.DependencyProducer;
-import internal.app.packed.operation.bindings.InternalDependency;
 
 /**
  *
  */
-abstract class DependencyHolder {
+public final class DependencyHolder {
 
     /** Dependencies that needs to be resolved. */
     final List<InternalDependency> dependencies;
 
+    final boolean isStatic;
+
+    final MethodHandle mh;
+
     final boolean provideAsConstant;
 
-    // Jeg tror man loeber alle parameterene igennem og ser om der
-    // er en sidecar provide der passer dem
-    // Saa man sidecar providen dertil.
     @Nullable
     public final Key<?> provideAskey;
 
-    DependencyHolder(List<InternalDependency> dependencies, boolean provideAsConstant, Key<?> provideAsKey) {
+    public DependencyHolder(List<InternalDependency> dependencies, boolean provideAsConstant, Key<?> provideAsKey, boolean isStatic, MethodHandle mh) {
         this.provideAskey = provideAsKey;
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = provideAsConstant;
+        this.isStatic = isStatic;
+        this.mh = mh;
+
     }
 
-    public abstract DependencyProducer[] createProviders();
-    
-    public abstract boolean isStatic();
-    
-    public abstract MethodHandle methodHandle();
+    public final DependencyProducer[] createProviders() {
+        DependencyProducer[] providers = new DependencyProducer[isStatic() ? 0 : 1];
+        return providers;
+    }
 
+    final boolean isStatic() {
+        return isStatic;
+    }
+
+    final MethodHandle methodHandle() {
+        return mh;
+    }
 }

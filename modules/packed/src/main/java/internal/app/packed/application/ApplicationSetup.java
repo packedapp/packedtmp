@@ -29,7 +29,7 @@ import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.container.UserRealmSetup;
 import internal.app.packed.lifetime.PackedManagedLifetime;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
-import internal.app.packed.operation.bindings.ApplicationInjectionManager;
+import internal.app.packed.operation.oldbindings.ApplicationInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
