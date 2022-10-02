@@ -26,7 +26,7 @@ import app.packed.operation.bindings.BindingKind;
 import app.packed.operation.bindings.DefaultMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.BindingSetup;
+import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror representing the bound parameter of an operation.

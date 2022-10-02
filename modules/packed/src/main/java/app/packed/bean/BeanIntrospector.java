@@ -51,7 +51,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.operation.PackedOnBindingHook;
+import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /**
  * @see Extension#newBeanIntrospector

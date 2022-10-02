@@ -201,9 +201,4 @@ interface SSandbox {
     // No instances, Instantiable, ConstantInstance
     // Scope-> BuildConstant, RuntimeConstant, Prototype...
 
-    default Class<?> sourceType() {
-        // returns Factory, Class or Object???
-        // Maaske en enum istedet
-        throw new UnsupportedOperationException();
-    }
 }

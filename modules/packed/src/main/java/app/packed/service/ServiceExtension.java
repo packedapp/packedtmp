@@ -17,7 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Modifier;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -29,7 +28,6 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
-import internal.app.packed.bean.Introspector;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
@@ -40,7 +38,6 @@ import internal.app.packed.service.inject.BeanMemberDependencyNode;
 import internal.app.packed.service.inject.DependencyHolder;
 import internal.app.packed.service.inject.DependencyNode;
 import internal.app.packed.service.runtime.AbstractServiceLocator;
-import internal.app.packed.util.MethodHandleUtil;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -88,10 +85,14 @@ import internal.app.packed.util.MethodHandleUtil;
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
-    private final InternalServiceExtension delegate = ExtensionSetup.crack(this).container.injectionManager;
+    private final ExtensionSetup setup = ExtensionSetup.crack(this);
+
+    private final InternalServiceExtension delegate;
 
     /** Create a new service extension. */
-    ServiceExtension() {}
+    ServiceExtension() {
+        delegate = setup.container.injectionManager;
+    }
 
     // Validates the outward facing contract
     public void checkContract(Consumer<? super ServiceContract> validator) {
@@ -152,40 +153,25 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
-                IntrospectorOnField iof = (IntrospectorOnField) field;
+                OperationSetup operation = ((IntrospectorOnField) field).newGetOperation(setup, InvocationType.defaults());
                 
-                int modifiers = field.modifiers();
-
-                DependencyHolder fh = new DependencyHolder(constant, key, Modifier.isStatic(modifiers),
-                        MethodHandleUtil.getFromField(modifiers, iof.newVarHandle()));
-
-                add(iof.introspector, fh);
+                DependencyHolder fh = new DependencyHolder(constant, key, operation);
+                DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
+                operation.bean.parent.injectionManager.addConsumer(node);
             }
-
-            private void add(Introspector os, DependencyHolder h) {
-                DependencyNode node = new BeanMemberDependencyNode(os.bean, h);
-
-                os.bean.parent.injectionManager.addConsumer(node);
-            }
+            
             /** {@inheritDoc} */
             @Override
             public void onMethodHook(OnMethod method) {
                 Key<?> key = method.methodToKey();
                 boolean constant = method.annotations().readRequired(Provide.class).constant();
 
-                IntrospectorOnMethod iom = (IntrospectorOnMethod) method;
-
-                OperationSetup operation = iom.newInternalOperation(InvocationType.defaults());
-
+                OperationSetup operation = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
+                
+                // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
-
-                add(operation, fh);
-            }
-
-            private void add(OperationSetup os, DependencyHolder h) {
-                DependencyNode node = new BeanMemberDependencyNode(os.bean, h);
-
-                os.bean.parent.injectionManager.addConsumer(node);
+                DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
+                operation.bean.parent.injectionManager.addConsumer(node);
             }
         };
     }

@@ -39,14 +39,6 @@ public final class DependencyHolder {
     @Nullable
     public final Key<?> provideAskey;
 
-    public DependencyHolder(boolean provideAsConstant, Key<?> provideAsKey, boolean isStatic, MethodHandle mh) {
-        this.provideAskey = provideAsKey;
-        this.dependencies = List.of();
-        this.provideAsConstant = provideAsConstant;
-        this.isStatic = isStatic;
-        this.mh = mh;
-    }
-
     public DependencyHolder(boolean provideAsConstant, Key<?> provideAsKey, OperationSetup os) {
         this.dependencies = InternalDependency.fromOperationType(os.type);
 

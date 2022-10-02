@@ -14,11 +14,13 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
+import app.packed.operation.InvocationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * An extension that controls entry points into an application.
@@ -37,6 +39,8 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     final ApplicationShare share;
 
     final ApplicationSetup application;
+
+    private final ExtensionSetup setup = ExtensionSetup.crack(this);
 
     /**
      * Create a new service extension.
@@ -74,10 +78,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
 
                 mc.isStatic = Modifier.isStatic(method.getModifiers());
                 mc.cs = ((IntrospectorOnMethod) method).introspector.bean;
-                mc.methodHandle = ((IntrospectorOnMethod) method).newMethodHandle();
 
-                
-
+                OperationSetup os = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
+                mc.methodHandle = os.target.methodHandle;
             }
 
         };

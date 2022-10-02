@@ -13,9 +13,13 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
+import app.packed.operation.InvocationType;
+import app.packed.operation.OperationType;
 import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -31,12 +35,12 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Nullable
     public final BeanClassModel beanModel;
 
-    /** The installer that was used to create the bean. */
-    public final PackedBeanHandleInstaller<?> installer;
-
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
     public final BeanInjectionManager injectionManager;
+
+    /** The installer that was used to create the bean. */
+    public final PackedBeanHandleInstaller<?> installer;
 
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
@@ -65,18 +69,25 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
             initializeNameWithPrefix(beanModel.simpleName());
         }
     }
-    
-    final void initializeNameWithPrefix0(String name) {
-        initializeNameWithPrefix(name);
-    }
+
     public void addOperation(OperationSetup operation) {
         operations.add(requireNonNull(operation));
+    }
+
+    public OperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
+        OperationSetup os = new OperationSetup(this, type, extension, invocationType, target);
+        operations.add(os);
+        return os;
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {
         return installer.beanClass;
+    }
+
+    final void initializeNameWithPrefix0(String name) {
+        initializeNameWithPrefix(name);
     }
 
     /** {@return a new mirror.} */

@@ -13,11 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package internal.app.packed.operation.binding;
+
+import app.packed.base.Nullable;
 
 /**
- *
+ * A binding to a constant.
  */
-public class BindingTarget {
+public final class ConstantBindingTarget extends BindingTarget {
+
+    /** The constant that was bound. */
+    @Nullable
+    public final Object constant;
+
+    /**
+     * @param operation
+     * @param index
+     */
+    public ConstantBindingTarget(@Nullable Object constant) {
+        this.constant = constant;
+    }
 
 }

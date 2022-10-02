@@ -34,8 +34,8 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.BindingSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror for a bean operation.
@@ -144,7 +144,7 @@ public class OperationMirror implements Mirror {
     public final Class<? extends Extension<?>> operator() {
         // It might be a different extension that actually invokes it. For example,
         // a lifetime operations might be invoked by ContainerExtension
-        return operation().operatorBean.extension.extensionType;
+        return operation().extension.extensionType;
     }
 
     /** {@return the target of the operation.} */

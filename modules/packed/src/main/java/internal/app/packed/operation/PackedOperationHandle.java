@@ -26,6 +26,7 @@ import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
+import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /** Implementation of {@link OperationHandle}. */
 public record PackedOperationHandle(OperationSetup os) implements OperationHandle {
@@ -43,9 +44,12 @@ public record PackedOperationHandle(OperationSetup os) implements OperationHandl
     /** {@inheritDoc} */
     @Override
     public MethodHandle buildInvoker() {
+        // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
+        
         if (os.isComputed) {
             throw new IllegalStateException("This method can only be called once");
         }
+        
         os.isComputed = true;
         // application.checkIsComputable
         throw new UnsupportedOperationException();

@@ -40,11 +40,16 @@ import internal.app.packed.util.LookupUtil;
 /** Abstract build-time setup of a component. */
 public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
+    /** A handle that can access BeanMirror#bean. */
+    private static final VarHandle BEAN_MIRROR_BEAN_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMirror.class, "bean",
+            BeanSetup.class);
+
+    /** A handle that can access ContainerMirror#container. */
+    private static final VarHandle CONTAINER_MIRROR_CONTAINER_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ContainerMirror.class,
+            "container", ContainerSetup.class);
+
     /** The application this component is a part of. */
     public final ApplicationSetup application;
-
-    /** The assembly from where the component is being installed. */
-    public final UserRealmSetup userRealm;
 
     /** The depth of the component in the application tree. */
     public final int depth;
@@ -70,6 +75,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
+
+    /** The assembly from where the component is being installed. */
+    public final UserRealmSetup userRealm;
 
     public final ArrayList<Runnable> wiringActions = new ArrayList<>(1);
 
@@ -118,10 +126,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
     }
 
-    public final boolean isCurrent() {
-        return realm.isCurrent(this);
-    }
-
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (parent != null) {
@@ -137,6 +141,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             }
         }
         this.name = n;
+    }
+
+    public final boolean isCurrent() {
+        return realm.isCurrent(this);
     }
 
     /**
@@ -224,14 +232,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         return name;
     }
 
-    /** A handle that can access BeanMirror#bean. */
-    private static final VarHandle BEAN_MIRROR_BEAN_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanMirror.class, "bean",
-            BeanSetup.class);
-
-    /** A handle that can access ContainerMirror#container. */
-    private static final VarHandle CONTAINER_MIRROR_CONTAINER_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ContainerMirror.class, "container",
-            ContainerSetup.class);
-    
     public static ComponentSetup crackMirror(ComponentMirror mirror) {
         if (mirror instanceof BeanMirror m) {
             return (BeanSetup) BEAN_MIRROR_BEAN_HANDLE.get(m);
@@ -239,16 +239,4 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
             return (ContainerSetup) CONTAINER_MIRROR_CONTAINER_HANDLE.get((ContainerMirror) mirror);
         }
     }
-
-//  
-//  public final ComponentSetup resolve() {
-//      LinkedHashMap<String, ComponentSetup> map = children;
-//      if (map != null) {
-//          ComponentSetup cs = map.get(path.toString());
-//          if (cs != null) {
-//              return cs.mirror();
-//          }
-//      }
-//      throw new UnsupportedOperationException();
-//  }
 }

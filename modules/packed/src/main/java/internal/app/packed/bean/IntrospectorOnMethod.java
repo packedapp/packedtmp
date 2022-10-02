@@ -15,6 +15,8 @@
  */
 package internal.app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
@@ -31,8 +33,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
-/** Internal implementation of BeanMethod */
-// Taenker den bliver en inner class ad PackedBeanIntrospector?
+/** Internal implementation of BeanMethod. Discard after use. */
 public final class IntrospectorOnMethod implements OnMethod {
 
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
@@ -81,25 +82,21 @@ public final class IntrospectorOnMethod implements OnMethod {
         return method;
     }
 
-    public OperationSetup newInternalOperation(InvocationType invocationType) {
-        MethodHandle methodHandle = newMethodHandle();
-        OperationSetup os = new OperationSetup(introspector.bean, operationType(), invocationType, new MethodOperationTarget(methodHandle, method));
-        introspector.bean.addOperation(os);
-        return os;
-    }
-
-    // Taenker vi goer det her naar vi laver en operation
-    public MethodHandle newMethodHandle() {
-        return introspector.oc.unreflect(method);
-    }
-
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
-        MethodHandle methodHandle = newMethodHandle();
-        OperationSetup os = new OperationSetup(introspector.bean, operationType(), operator, invocationType, new MethodOperationTarget(methodHandle, method));
-        introspector.bean.addOperation(os);
+        requireNonNull(operator, "operator is null");
+        // TODO, we must check this.operator er samme som operator eller en child of
+        // Maaske er det et speciel tilfaelde af man vil invoke fra en anden container...
+        // Tag den med i compute() istedet for???
+        OperationSetup os = newOperation(ExtensionBeanSetup.crack(operator).extension, invocationType);
         return new PackedOperationHandle(os);
+    }
+
+    public OperationSetup newOperation(ExtensionSetup extension, InvocationType invocationType) {
+        // TODO check that we are still introspecting? Or maybe on bean.addOperation
+        MethodHandle methodHandle = introspector.oc.unreflect(method);
+        return introspector.bean.addOperation(extension, operationType(), invocationType, new MethodOperationTarget(methodHandle, method));
     }
 
     /** {@inheritDoc} */

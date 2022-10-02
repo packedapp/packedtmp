@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package internal.app.packed.operation.binding;
 
 import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
@@ -26,6 +26,7 @@ import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.IntrospectorAnnotationReader;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
@@ -40,7 +41,7 @@ public final class PackedOnBindingHook implements OnBindingHook {
 
     Variable variable;
 
-    PackedOnBindingHook(OperationSetup operation, int index) {
+    public PackedOnBindingHook(OperationSetup operation, int index) {
         this.operation = operation;
         this.index = index;
         this.variable = variable();

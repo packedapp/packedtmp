@@ -21,13 +21,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.base.Nullable;
-import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.ExtensionBeanSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -44,6 +43,9 @@ public final class OperationSetup {
     /** Any binding for the operation. {@code null} represents an unbound parameter. */
     public final BindingSetup[] bindings;
 
+    /** The extension that operates the operation. MethodHandles will be generated relative to this. */
+    public final ExtensionSetup extension;
+
     /** The invocation type of the operation. */
     public final InvocationType invocationType;
 
@@ -53,31 +55,18 @@ public final class OperationSetup {
     /** Supplies a mirror for the operation */
     Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
 
-    /** The extension that operates the operation. */
-    @Nullable
-    public final ExtensionBeanSetup operatorBean;
-
     /** The target of the operation. */
     public final OperationTarget target;
 
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, InvocationType invocationType, OperationTarget target) {
+    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup extension, InvocationType invocationType, OperationTarget target) {
         this.bean = bean;
         this.type = type;
         this.target = target;
         this.invocationType = requireNonNull(invocationType, "invocationType is null");
-        this.operatorBean = null;
-        this.bindings = new BindingSetup[type.parameterCount()];
-    }
-
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionBeanConfiguration<?> operator, InvocationType invocationType, OperationTarget target) {
-        this.bean = bean;
-        this.type = type;
-        this.target = target;
-        this.invocationType = requireNonNull(invocationType, "invocationType is null");
-        this.operatorBean = ExtensionBeanSetup.crack(requireNonNull(operator, "operator is null"));
+        this.extension = extension;
         this.bindings = new BindingSetup[type.parameterCount()];
     }
 
