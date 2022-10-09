@@ -84,6 +84,9 @@ public final class ContainerSetup extends ComponentSetup {
     @Nullable
     public final WireletWrapper wirelets;
 
+    /** The assembly from where the component is being installed. */
+    public final AssemblySetup assembly;
+
     /**
      * Create a new container setup.
      * 
@@ -101,6 +104,8 @@ public final class ContainerSetup extends ComponentSetup {
     public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(application, realm, parent);
+
+        this.assembly = realm;
 
         if (parent == null) {
             this.depth = 0;
