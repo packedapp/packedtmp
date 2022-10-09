@@ -17,7 +17,6 @@ package app.packed.application;
 
 import java.util.Optional;
 
-import app.packed.application.sandbox.UnhandledApplicationException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
@@ -106,9 +105,7 @@ public final class App {
      * @param wirelets
      *            optional wirelets
      * @throws RuntimeException
-     *             if the application failed to build or panicked
-     * @throws UnhandledApplicationException
-     *             if the fails during runtime
+     *             if the application failed to build or run
      * @see #checkedRun(Assembly, Wirelet...)
      */
     public static void run(Assembly assembly, Wirelet... wirelets) {
@@ -133,18 +130,18 @@ public final class App {
 
     public static final class Launcher {
         
-        private final ApplicationLauncher<?> image;
+        private final ApplicationLauncher<?> original;
 
-        Launcher(ApplicationLauncher<?> image) {
-            this.image = image;
+        Launcher(ApplicationLauncher<?> original) {
+            this.original = original;
         }
 
         public void run() {
-            image.launch();
+            original.launch();
         }
 
         public void run(Wirelet...wirelets) {
-            image.launch(wirelets);
+            original.launch(wirelets);
         }
     }
 }

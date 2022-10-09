@@ -97,7 +97,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
      * <p>
-     * The {@link BuildTaskInfo application descriptor} will returns XXX at build time.
      * 
      * @param assembly
      *            the assembly to create an application mirror from

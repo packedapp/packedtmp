@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.lifetime;
 
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
@@ -27,7 +27,7 @@ import app.packed.container.ContainerMirror;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMirror, BeanMirror {
+public sealed interface LifetimeOriginMirror permits ContainerMirror, BeanMirror {
 
     /**
      * Returns the name of this component.
@@ -41,5 +41,4 @@ public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMir
 
     /** {@return the path of this component} */
     NamespacePath path();
-
 }

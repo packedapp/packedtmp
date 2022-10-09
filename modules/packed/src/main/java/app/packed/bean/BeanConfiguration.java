@@ -63,7 +63,6 @@ public class BeanConfiguration {
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
-     * @see BeanMirror#name()
      */
     public BeanConfiguration named(String name) {
         handle.bean().named(name);

@@ -169,7 +169,6 @@ public class ContainerConfiguration {
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
-     * @see ContainerMirror#name()
      * @see Wirelet#named(String)
      */
     public ContainerConfiguration named(String name) {

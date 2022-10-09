@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
-import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.lifetime.LifetimeOriginMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 
@@ -77,7 +77,7 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
     }
 
     /** {@inheritDoc} */
-    public abstract ComponentMirror mirror();
+    public abstract LifetimeOriginMirror mirror();
 
     /** {@inheritDoc} */
     public final void named(String newName) {

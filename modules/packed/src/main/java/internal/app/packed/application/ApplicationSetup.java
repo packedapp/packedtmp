@@ -21,8 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildTaskGoal;
-import app.packed.application.BuildTaskInfo;
+import app.packed.application.BuildGoal;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.OldLifetimeKind;
@@ -36,7 +35,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Internal configuration of an application. */
-public final class ApplicationSetup implements BuildTaskInfo {
+public final class ApplicationSetup {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
@@ -59,7 +58,7 @@ public final class ApplicationSetup implements BuildTaskInfo {
     @Nullable
     final PoolEntryHandle runtimeAccessor;
 
-    final BuildTaskGoal goal;
+    final BuildGoal goal;
 
     @Nullable
     PackedApplicationLauncher launcher;
@@ -70,7 +69,7 @@ public final class ApplicationSetup implements BuildTaskInfo {
      * @param driver
      *            the application's driver
      */
-    public ApplicationSetup(PackedApplicationDriver<?> driver, BuildTaskGoal goal, AssemblySetup realm, Wirelet[] wirelets) {
+    public ApplicationSetup(PackedApplicationDriver<?> driver, BuildGoal goal, AssemblySetup realm, Wirelet[] wirelets) {
         this.driver = driver;
         this.goal = requireNonNull(goal);
 
@@ -99,9 +98,7 @@ public final class ApplicationSetup implements BuildTaskInfo {
         return mirror;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BuildTaskGoal goal() {
+    public BuildGoal goal() {
         return goal;
     }
 

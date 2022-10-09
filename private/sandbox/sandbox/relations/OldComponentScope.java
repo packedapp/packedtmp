@@ -34,7 +34,7 @@ package sandbox.relations;
 // This class only considers components that are in the same namespace
 
 // Scope???
-public enum ComponentScope {
+public enum OldComponentScope {
 
     /** A scope that indicates any component in the same namespace. */
     NAMESPACE, // -> Family // Vi kan bare sammenligne application.root.constantPool == application.root.constantPool da de er arrays
@@ -74,7 +74,7 @@ final class Scope {
     public static final Scope APPLICATION = new Scope("Application");
 }
 
-enum ComponentScope2 {
+enum OldComponentScope2 {
 
     /**
      * A system where all components are part of the same image. An image may itself contain other images.

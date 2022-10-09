@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildTaskGoal;
+import app.packed.application.BuildGoal;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
@@ -118,7 +118,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.NEW_LAUNCHER, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_LAUNCHER, assembly, wirelets);
         as.build();
         return new SingleShotApplicationImage<>(this, as.application);
     }
@@ -126,7 +126,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH, assembly, wirelets);
         as.build();
         return as.application.launcher.launchImmediately(this);
     }
@@ -145,7 +145,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.NEW_MIRROR, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, assembly, wirelets);
         as.build();
         return as.application.mirror();
     }
@@ -171,7 +171,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.NEW_IMAGE, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, assembly, wirelets);
         as.build();
         return new ReusableApplicationImage<>(this, as.application);
     }
@@ -179,7 +179,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.VERIFY, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.VERIFY, assembly, wirelets);
         as.build();
     }
 

@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.application.ComponentMirrorTree;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
@@ -137,7 +136,7 @@ public class LifetimeMirror implements Mirror {
     /** {@return all components that are part of the lifetime.} */
     // A tree of containers and beans
     // Maaske er det i virkeligheden bare en stream af componenter depth first
-    public ComponentMirrorTree components() {
+    public LifetimeElementTreeMirror components() {
         throw new UnsupportedOperationException();
     }
 

@@ -18,7 +18,7 @@ package app.packed.operation.context;
 import java.util.Collection;
 import java.util.Optional;
 
-import app.packed.application.ComponentMirror;
+import app.packed.lifetime.LifetimeOriginMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.Mirror;
 
@@ -35,7 +35,7 @@ public interface OperationContextMirror extends Mirror {
     //fx multiple @Get on the same bean (or in the same container)
     Collection<OperationMirror> operations();
     
-    Optional<ComponentMirror> createsNew(); // if non-operation
+    Optional<LifetimeOriginMirror> createsNew(); // if non-operation
 
     Class<?> contextClass();
 }

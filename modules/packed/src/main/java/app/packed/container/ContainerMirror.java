@@ -10,11 +10,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ComponentMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.LifetimeOriginMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionMirrorHelper;
@@ -28,7 +28,7 @@ import internal.app.packed.util.CollectionUtil;
  * <p>
  * Instances of this class is typically via {@link ApplicationMirror}.
  */
-public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
+public non-sealed class ContainerMirror implements LifetimeOriginMirror , Mirror {
 
     /**
      * The internal configuration of the container we are mirroring. Is initially null but populated via
@@ -111,6 +111,10 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
             result.add(ExtensionMirrorHelper.newMirrorOfUnknownType(extension));
         }
         return Set.copyOf(result);
+    }
+
+    public boolean isRoot() {
+        return container().parent == null;
     }
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */

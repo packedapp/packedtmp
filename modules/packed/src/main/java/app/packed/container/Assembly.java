@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
-import app.packed.application.BuildTaskInfo;
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.util.LookupUtil;
@@ -70,11 +69,6 @@ public abstract class Assembly {
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable ContainerConfiguration configuration;
-
-    /** {@return a descriptor for the application being built.} */
-    protected final BuildTaskInfo applicationInfo() {
-        return configuration().container.application;
-    }
 
     /**
      * Invoked by the runtime as part of the build process. This method must be overridden by the application developer in

@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.application.BuildException;
+import app.packed.application.BuildGoal;
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
@@ -93,6 +94,11 @@ public abstract class Extension<E extends Extension<E>> {
         return use(BeanExtensionPoint.class);
     }
 
+    /** {@return the build goal.} */
+    protected final BuildGoal buildGoal() {
+        return setup.container.application.goal();
+    }
+
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * 
@@ -129,6 +135,13 @@ public abstract class Extension<E extends Extension<E>> {
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return setup.container.isExtensionUsed(extensionType);
+    }
+
+    /**
+     * @return
+     */
+    protected final boolean isRoot() {
+        return setup.parent == null;
     }
 
     /**
@@ -243,13 +256,6 @@ public abstract class Extension<E extends Extension<E>> {
      * @see #onApplicationClose()
      */
     protected void onNew() {}
-
-    /**
-     * @return
-     */
-    protected final boolean isRoot() {
-        return setup.parent == null;
-    }
 
     /** @return the parent of this extension if present. */
     @SuppressWarnings("unchecked")

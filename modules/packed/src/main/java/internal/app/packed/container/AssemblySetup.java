@@ -26,7 +26,7 @@ import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildTaskGoal;
+import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
@@ -80,7 +80,7 @@ public final class AssemblySetup extends RealmSetup {
      *            optional wirelets
      * @return the application
      */
-    public AssemblySetup(PackedApplicationDriver<?> applicationDriver, BuildTaskGoal goal, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblySetup(PackedApplicationDriver<?> applicationDriver, BuildGoal goal, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
         this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);

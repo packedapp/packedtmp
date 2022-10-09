@@ -1,6 +1,6 @@
-package app.packed.application;
+package app.packed.application.sandbox;
 
-import internal.app.packed.application.ApplicationSetup;
+import app.packed.application.BuildGoal;
 
 // Input DAW (Application)Driver (Root)Assembly Wirelets
 
@@ -21,10 +21,12 @@ import internal.app.packed.application.ApplicationSetup;
 // Forventes der et result (JobExtension)f
 // Hvad er navnet
 
-public sealed interface BuildTaskInfo permits ApplicationSetup {
+// Eller maaske fordel den ud paa Extension og ApplicationConfiguration
+// Indtil videre har vi jo kun goal
+public interface ApplicationBuildInfo {
 
     /** {@return the goal of the build task.} */
-    BuildTaskGoal goal();
+    BuildGoal goal();
 
     // string name() would be nice... but unfortunantely is mutable....)
 

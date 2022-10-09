@@ -21,7 +21,7 @@ import app.packed.container.Wirelet;
 /**
  * The goal of a build task.
  */
-public enum BuildTaskGoal {
+public enum BuildGoal {
 
     /**
      * The goal is to build an {@link ApplicationImage} that can be launched a single time.
@@ -57,4 +57,9 @@ public enum BuildTaskGoal {
      * @see ApplicationDriver#verify(Assembly, Wirelet...)
      */
     VERIFY;
+
+    public boolean isLaunchable() {
+        return this == LAUNCH || this == NEW_LAUNCHER || this == NEW_IMAGE;
+    }
+
 }

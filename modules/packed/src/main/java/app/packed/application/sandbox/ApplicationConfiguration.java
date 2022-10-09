@@ -15,29 +15,43 @@
  */
 package app.packed.application.sandbox;
 
+import app.packed.application.BuildGoal;
+import internal.app.packed.application.ApplicationSetup;
+
 /**
  *
  */
+//assembly.application().
+
+// Can we override this???
 public class ApplicationConfiguration {
-    
+
+    ApplicationSetup application;
+
+    public BuildGoal buildGoal() {
+        return application.goal();
+    }
+
+    public boolean isRoot() {
+        return true;
+    }
+
     // Den er faktisk lidt "farlig" hvis man beslutter at bruge den som en reusable application...
     // Fordi saa er man ikke root applikationen laengere...
     // Og saa vil man fejle...
     // Saa maaske signalere den bare shutdown "normally" og saa kan application hosten sige ok.
     // Jeg lukker ogsaa ned
+    // is Ignored if not launchable
     void installShutdownHook() {
-        
+        // Taenker man fejler hvis man ikke er root
     }
-    
+
     // assembly.realm
     // assembly.container
     // assemcly.application
-    
-    // Det eneste er 
-    
-    
+
+    // Det eneste er
+
     // Restart
     // Lifecycle
 }
-// Ideen er lidt at kunne kalde 
-// assembly.application().

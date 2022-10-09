@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.lifetime;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +43,7 @@ import app.packed.operation.OperationMirror;
 
 
 // Rename ComponentMirror -> LifetimeElementMirror?
-public interface ComponentMirrorTree  {
+public interface LifetimeElementTreeMirror  {
 
     /** {@return {@code true} if this set contains no mirrors.} */
     boolean isEmpty();
@@ -51,12 +51,11 @@ public interface ComponentMirrorTree  {
     /** {@return the number of components in this set.} */
     int size();
 
-    Stream<ComponentMirror> stream();
+    Stream<LifetimeOriginMirror> stream();
     
     /**
      * @return
      * 
-     * @see ComponentMirror#operations()
      */
     default List<OperationMirror> operations() {
         ArrayList<OperationMirror> operations = new ArrayList<>();
@@ -69,7 +68,7 @@ public interface ComponentMirrorTree  {
     }
 
     /** {@return the root of the tree.} */
-    ComponentMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
+    LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
 }
 //Her er taenkt paa en Path fra From to To
 //Minder maaske lidt for meget om ComponnetMirror.Relation

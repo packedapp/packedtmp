@@ -66,12 +66,11 @@ public class ApplicationMirror implements Mirror {
     public ContainerMirror container() {
         return application().container.mirror();
     }
-
-    /** {@return a descriptor of the application.} */
-    public BuildTaskInfo descriptor() {
-        return application();
+    
+    public BuildGoal buildGoal() {
+        return application().goal();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -116,7 +115,7 @@ public class ApplicationMirror implements Mirror {
      * @see Wirelet#named(String)
      */
     public String name() {
-        return container().name();
+        return application.container.name;
     }
 
     public void print() {
