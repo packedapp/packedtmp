@@ -89,6 +89,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
      * 
      * @return the type that was used to create this realm.
      */
+    // rename to lookupClass()???;
     public abstract Class<?> realmType();
 
     /**

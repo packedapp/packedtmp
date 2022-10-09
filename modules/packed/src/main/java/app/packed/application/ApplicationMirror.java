@@ -20,6 +20,10 @@ import internal.app.packed.container.Mirror;
  * <p>
  * An instance of this class is typically obtained by calling a application mirror factory method such as
  * {@link App#mirrorOf(Assembly, Wirelet...)}.
+ * 
+ * <p>
+ * Like most other mirrors this class is overridable via
+ * {@link ApplicationDriver.Builder#specializeMirror(java.util.function.Supplier)}
  */
 public class ApplicationMirror implements Mirror {
 

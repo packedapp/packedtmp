@@ -20,16 +20,16 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import internal.app.packed.container.Mirror;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.Mirror;
 
 /** A mirror of an {@link Assembly}. */
 public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.BuildtimeAssemblyMirror {
 
-    /** {@return the application this assembly is a part of.} */
+    /** {@return the application this assembly contributes to.} */
     ApplicationMirror application();
 
-    /** {@return the class that defines the assembly.} */
+    /** {@return the assembly class.} */
     Class<? extends Assembly> assemblyClass();
 
     /**
@@ -37,12 +37,13 @@ public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.Buil
      * 
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
-    Stream<AssemblyMirror> children();
+    Stream<AssemblyMirror> children(); // should be aligned with everyone else
 
-    /** {@return the root container defined by this assembly.} */
+    /** {@return the container that is defined by this assembly.} */
     ContainerMirror container();
 
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
+    // present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
     List<Class<? extends ContainerHook>> containerHooks();
 
     /** @return whether or not this assembly defines the root container in the application.} */
@@ -53,7 +54,6 @@ public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.Buil
      */
     Optional<AssemblyMirror> parent();
 }
-
 
 ///**
 //* {@return the module of the application. This is always the module of the Assembly or ComposerAction class that

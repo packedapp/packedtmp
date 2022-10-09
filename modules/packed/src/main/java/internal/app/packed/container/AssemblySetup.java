@@ -43,32 +43,24 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-// Maybe have
-
-// ApplicationAssemblySetup
-// NonRootedAssemblySetup
-// ComposerAssemblySetup
-
-// Lige nu sker der dog for meget i ActualAssemblySetup
-
 public final class AssemblySetup extends RealmSetup {
-
-    final AssemblyModel assemblyModel;
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             AssemblySetup.class, ContainerConfiguration.class);
 
+    /** The application that is being built. */
     public final ApplicationSetup application;
 
     /** The assembly used to create this installer. */
     public final Assembly assembly;
 
+    /** A model of the assembly. */
+    private final AssemblyModel assemblyModel;
+
     /** The root component of this realm. */
     private final ContainerSetup container;
 
-    // Naar vi har faaet styr paa container drivers osv.
-    // Flytter vi dem ned i UserRealm
     private final PackedContainerHandle driver;
 
     /**
@@ -97,6 +89,19 @@ public final class AssemblySetup extends RealmSetup {
         this.driver = new PackedContainerHandle(container);
     }
 
+    public AssemblySetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+        this.application = linkTo.application;
+        if (assembly instanceof ComposerAssembly) {
+            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
+        }
+        // if embed do xxx
+        // else create new container
+        this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
+        this.driver = driver;
+    }
+
     public void build() {
         ContainerConfiguration configuration = driver.toConfiguration(container);
 
@@ -109,19 +114,6 @@ public final class AssemblySetup extends RealmSetup {
 
         // Close the realm, if the application has been built successfully (no exception was thrown)
         close();
-    }
-
-    public AssemblySetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
-        this.assembly = requireNonNull(assembly, "assembly is null");
-        this.assemblyModel = AssemblyModel.of(assembly.getClass());
-        this.application = linkTo.application;
-        if (assembly instanceof ComposerAssembly) {
-            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
-        }
-        // if embed do xxx
-        // else create new container
-        this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
-        this.driver = driver;
     }
 
     final void close() {
@@ -170,17 +162,6 @@ public final class AssemblySetup extends RealmSetup {
         return container;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> realmType() {
-        if (assembly instanceof ComposerAssembly) {
-            // extract realm
-            return assembly.getClass();
-        } else {
-            return assembly.getClass();
-        }
-    }
-
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         return new BuildtimeAssemblyMirror(this);
@@ -196,8 +177,19 @@ public final class AssemblySetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public final UserOrExtension realm() {
+    public UserOrExtension realm() {
         return UserOrExtension.application();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> realmType() {
+        if (assembly instanceof ComposerAssembly) {
+            // TODO extract realm
+            return assembly.getClass();
+        } else {
+            return assembly.getClass();
+        }
     }
 
     /** Implementation of {@link AssemblyMirror}. */

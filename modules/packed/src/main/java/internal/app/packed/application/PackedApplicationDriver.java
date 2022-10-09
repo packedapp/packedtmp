@@ -112,10 +112,18 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
+    public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
+        as.build();
+        return new PackedApplicationImage<>(this, as.application);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
-        realm.build();
-        return ApplicationInitializationContext.launch(this, realm.application, null);
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
+        as.build();
+        return ApplicationInitializationContext.launch(this, as.application, null);
     }
 
     /** {@inheritDoc} */
@@ -127,17 +135,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.MIRROR, assembly, wirelets);
-        realm.build();
-        return realm.application.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
-        realm.build();
-        return new PackedApplicationImage<>(this, realm.application);
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.MIRROR, assembly, wirelets);
+        as.build();
+        return as.application.mirror();
     }
 
     /**
@@ -161,15 +161,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
-        realm.build();
-        return new PackedApplicationImage<>(this, realm.application);
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
+        as.build();
+        return new PackedApplicationImage<>(this, as.application);
     }
 
     /** {@inheritDoc} */
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.VERIFICATION, assembly, wirelets);
+        as.build();
     }
 
     /** {@inheritDoc} */
@@ -211,6 +212,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
 
+        @Nullable
+        PackedOp<A> factory;
+
         /**
          * All application drivers except {@link PackedApplicationDriver#PRIMORDIAL} has either an unmanaged or managed
          * lifetime.
@@ -221,9 +225,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private Wirelet wirelet;
 
-        @Nullable
-        PackedOp<A> factory;
-
         public Builder(Op<A> factory) {
             this.factory = factory == null ? null : PackedOp.crack(factory);
 
@@ -233,6 +234,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // Maybe we will make an actual application????
             // Paa den maade kan vi ogsaa lettere expose mirroret
 
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <S> ApplicationDriver<S> build(Class<S> artifactType, MethodHandle mh, Wirelet... wirelets) {
+            // mh = mh.asType(mh.type().changeReturnType(Object.class));
+            // TODO fix....
+            this.mhConstructor = mh;
+
+            return new PackedApplicationDriver<>(this);
         }
 
         /** {@inheritDoc} */
@@ -251,16 +262,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // builder.provideService(ServiceLocator.class, builder.addComputed(MH_SERVICES, 0));
 
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
-
-            return new PackedApplicationDriver<>(this);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <S> ApplicationDriver<S> build(Class<S> artifactType, MethodHandle mh, Wirelet... wirelets) {
-            // mh = mh.asType(mh.type().changeReturnType(Object.class));
-            // TODO fix....
-            this.mhConstructor = mh;
 
             return new PackedApplicationDriver<>(this);
         }
