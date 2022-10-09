@@ -23,7 +23,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.application.BuildTaskInfo;
 import app.packed.base.Nullable;
-import internal.app.packed.container.ActualAssemblySetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -69,8 +69,7 @@ public abstract class Assembly {
      * <p>
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
-    @Nullable
-    private ContainerConfiguration configuration;
+    @Nullable ContainerConfiguration configuration;
 
     /** {@return a descriptor for the application being built.} */
     protected final BuildTaskInfo applicationInfo() {
@@ -125,25 +124,25 @@ public abstract class Assembly {
      * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
      * used more than once.
      * 
-     * @param realm
+     * @param assembly
      *            the realm used to call container hooks
      * @param configuration
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(ActualAssemblySetup realm, ContainerConfiguration configuration) {
+    private void doBuild(AssemblySetup assembly, ContainerConfiguration configuration) {
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
-                realm.preBuild(configuration);
+                assembly.preBuild(configuration);
 
                 // Call the actual build() method
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
-                realm.postBuild(configuration);
+                assembly.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);

@@ -33,6 +33,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector.BindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
+import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
@@ -346,8 +347,14 @@ public interface ServiceLocator {
         return driver().launch(assembly, wirelets);
     }
 
-    static ServiceLocator of(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
-        return Composer.of(configurator, wirelets);
+    static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
+        class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
+
+            public ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
+                super(new Composer(), action);
+            }
+        }
+        return Composer.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets);
     }
 
     /**
@@ -369,7 +376,7 @@ public interface ServiceLocator {
         private boolean initialized;
 
         /** For internal use only. */
-        Composer() {}
+        private Composer() {}
 
         /**
          * Returns an instance of the injector extension.
@@ -521,9 +528,5 @@ public interface ServiceLocator {
             return container().use(ServiceExtension.class).providePrototype(factory);
         }
 
-        private static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
-            class ServiceLocatorAssembly extends ComposerAssembly {}
-            return compose(DRIVER, ServiceLocatorAssembly.class, new Composer(), action, wirelets);
-        }
     }
 }

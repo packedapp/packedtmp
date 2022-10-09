@@ -38,7 +38,7 @@ import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.container.ActualAssemblySetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.CompositeWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.operation.op.PackedOp;
@@ -113,7 +113,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        ActualAssemblySetup realm = new ActualAssemblySetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
+        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
         realm.build();
         return ApplicationInitializationContext.launch(this, realm.application, null);
     }
@@ -127,7 +127,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        ActualAssemblySetup realm = new ActualAssemblySetup(this, BuildTaskGoal.MIRROR, assembly, wirelets);
+        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.MIRROR, assembly, wirelets);
         realm.build();
         return realm.application.mirror();
     }
@@ -135,7 +135,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        ActualAssemblySetup realm = new ActualAssemblySetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
+        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
         realm.build();
         return new PackedApplicationImage<>(this, realm.application);
     }
@@ -161,7 +161,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        ActualAssemblySetup realm = new ActualAssemblySetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
+        AssemblySetup realm = new AssemblySetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
         realm.build();
         return new PackedApplicationImage<>(this, realm.application);
     }

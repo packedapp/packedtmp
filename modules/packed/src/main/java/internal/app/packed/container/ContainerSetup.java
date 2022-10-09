@@ -159,7 +159,7 @@ public final class ContainerSetup extends ComponentSetup {
             String n = null;
 
             // TODO Should only be used on the root container in the assembly
-            Class<? extends Assembly> source = realm.assemblyClass();
+            Class<? extends Assembly> source = realm.assembly.getClass();
             if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 8 && nnn.endsWith("Assembly")) {

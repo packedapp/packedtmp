@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import internal.app.packed.container.ActualAssemblySetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;
 
@@ -148,7 +148,7 @@ public class ContainerConfiguration {
         container.userRealm.wireCurrentComponent();
 
         // Create a new realm for the assembly
-        ActualAssemblySetup newRealm = new ActualAssemblySetup(d, container, assembly, wirelets);
+        AssemblySetup newRealm = new AssemblySetup(d, container, assembly, wirelets);
 
         // Close the new realm again after the assembly has been successfully linked
         newRealm.build();

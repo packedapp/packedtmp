@@ -15,6 +15,10 @@
  */
 package internal.app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +26,19 @@ import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BuildTaskGoal;
+import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import app.packed.container.UserOrExtension;
+import app.packed.container.Wirelet;
+import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.application.PackedApplicationDriver;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
@@ -40,11 +51,25 @@ import app.packed.container.UserOrExtension;
 
 // Lige nu sker der dog for meget i ActualAssemblySetup
 
-public abstract sealed class AssemblySetup extends RealmSetup permits ActualAssemblySetup, ComposerAssemblySetup {
-
-    final Class<? extends Assembly> assemblyClass;
+public final class AssemblySetup extends RealmSetup {
 
     final AssemblyModel assemblyModel;
+
+    /** A handle that can invoke {@link Assembly#doBuild()}. */
+    private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
+            AssemblySetup.class, ContainerConfiguration.class);
+
+    public final ApplicationSetup application;
+
+    /** The assembly used to create this installer. */
+    public final Assembly assembly;
+
+    /** The root component of this realm. */
+    private final ContainerSetup container;
+
+    // Naar vi har faaet styr paa container drivers osv.
+    // Flytter vi dem ned i UserRealm
+    private final PackedContainerHandle driver;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -52,14 +77,51 @@ public abstract sealed class AssemblySetup extends RealmSetup permits ActualAsse
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
-    protected AssemblySetup(Class<? extends Assembly> assemblyClass) {
-        this.assemblyClass = assemblyClass;
-        this.assemblyModel = AssemblyModel.of(assemblyClass);
+    /**
+     * Builds an application using the specified assembly and optional wirelets.
+     * 
+     * @param goal
+     *            the build target
+     * @param assembly
+     *            the assembly of the application
+     * @param wirelets
+     *            optional wirelets
+     * @return the application
+     */
+    public AssemblySetup(PackedApplicationDriver<?> applicationDriver, BuildTaskGoal goal, Assembly assembly, Wirelet[] wirelets) {
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+        this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
+
+        this.container = application.container;
+        this.driver = new PackedContainerHandle(container);
     }
 
-    /** {@inheritDoc} */
-    public final Class<? extends Assembly> assemblyClass() {
-        return assemblyClass;
+    public void build() {
+        ContainerConfiguration configuration = driver.toConfiguration(container);
+
+        // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
+        try {
+            MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, this, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        // Close the realm, if the application has been built successfully (no exception was thrown)
+        close();
+    }
+
+    public AssemblySetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+        this.application = linkTo.application;
+        if (assembly instanceof ComposerAssembly) {
+            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
+        }
+        // if embed do xxx
+        // else create new container
+        this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
+        this.driver = driver;
     }
 
     final void close() {
@@ -103,8 +165,21 @@ public abstract sealed class AssemblySetup extends RealmSetup permits ActualAsse
         }
     }
 
-    /** {@return the setup of the root container of the realm.} */
-    public abstract ContainerSetup container();
+    /** {@inheritDoc} */
+    public ContainerSetup container() {
+        return container;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> realmType() {
+        if (assembly instanceof ComposerAssembly) {
+            // extract realm
+            return assembly.getClass();
+        } else {
+            return assembly.getClass();
+        }
+    }
 
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
@@ -143,7 +218,7 @@ public abstract sealed class AssemblySetup extends RealmSetup permits ActualAsse
         /** {@inheritDoc} */
         @Override
         public Class<? extends Assembly> assemblyClass() {
-            return assembly.assemblyClass();
+            return assembly.assembly.getClass();
         }
 
         /** {@inheritDoc} */
