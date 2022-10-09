@@ -27,7 +27,6 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.operation.Op;
-import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.operation.op.PackedOp;
@@ -66,17 +65,21 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     /** A model of hooks on the bean class. Or null if no member scanning was performed. */
     @Nullable
     public final BeanClassModel beanModel;
-    
+
     public final boolean instantiate;
 
-    private PackedBeanHandleInstaller(ExtensionSetup operator, RealmSetup realm, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            boolean instantiate) {
+    @Nullable
+    public final ExtensionSetup extensionOwner;
+
+    private PackedBeanHandleInstaller(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass,
+            BeanSourceKind sourceKind, @Nullable Object source, boolean instantiate) {
         this.operator = requireNonNull(operator);
         this.realm = requireNonNull(realm);
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = requireNonNull(source);
         this.instantiate = instantiate;
+        this.extensionOwner = extensionOwner;
         this.beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);// realm.accessor().beanModelOf(driver.beanClass());
     }
 
@@ -106,13 +109,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         // Can we call it more than once??? Why not
         realm.wireCurrentComponent();
 
-        // Skal lave saa mange checks som muligt inde vi laver BeanSetup
-        BeanSetup bean;
-        if (realm instanceof ExtensionRealmSetup ers) {
-            this.bean = bean = new ExtensionBeanSetup(operator, this, realm);
-        } else {
-            this.bean = bean = new BeanSetup(this, realm);
-        }
+        this.bean = new BeanSetup(this, realm);
 
         // bean.initName
 
@@ -144,19 +141,19 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return this;
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofClass(ExtensionSetup operator, RealmSetup realm, Class<T> clazz, boolean instantiate) {
+    public static <T> PackedBeanHandleInstaller<T> ofClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<T> clazz, boolean instantiate) {
         requireNonNull(clazz, "clazz is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleInstaller<>(operator, realm, clazz, BeanSourceKind.CLASS, clazz, instantiate);
+        return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner, clazz, BeanSourceKind.CLASS, clazz, instantiate);
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofFactory(ExtensionSetup operator, RealmSetup realm, Op<T> op) {
+    public static <T> PackedBeanHandleInstaller<T> ofFactory(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Op<T> op) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         PackedOp<T> pop = PackedOp.crack(op);
-        return new PackedBeanHandleInstaller<>(operator, realm, pop.type().returnType(), BeanSourceKind.OP, pop, true);
+        return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner, pop.type().returnType(), BeanSourceKind.OP, pop, true);
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofInstance(ExtensionSetup operator, RealmSetup realm, T instance) {
+    public static <T> PackedBeanHandleInstaller<T> ofInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -170,11 +167,11 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleInstaller<>(operator, realm, instance.getClass(), BeanSourceKind.INSTANCE, instance, false);
+        return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner, instance.getClass(), BeanSourceKind.INSTANCE, instance, false);
     }
 
-    public static PackedBeanHandleInstaller<?> ofNone(ExtensionSetup operator, RealmSetup realm) {
-        return new PackedBeanHandleInstaller<>(operator, realm, void.class, BeanSourceKind.NONE, null, false);
+    public static PackedBeanHandleInstaller<?> ofNone(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner) {
+        return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner,  void.class, BeanSourceKind.NONE, null, false);
     }
 
     /** {@inheritDoc} */

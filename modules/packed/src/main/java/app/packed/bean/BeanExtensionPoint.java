@@ -8,7 +8,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
-import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
@@ -20,30 +20,34 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
         BeanExtension be = extension();
-        return PackedBeanHandleInstaller.ofInstance(be.extensionSetup, be.container.realm, instance);
+        return PackedBeanHandleInstaller.ofInstance(be.extensionSetup, be.container.realm, null, instance);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromInstance(UseSite extension, T instance) {
-        return PackedBeanHandleInstaller.ofInstance(extension().extensionSetup, realmOf(extension), instance);
+        ExtensionSetup es = usedBy(extension);
+        return PackedBeanHandleInstaller.ofInstance(extension().extensionSetup, es.extensionRealm, es, instance);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromOp(Op<T> op) {
         BeanExtension be = extension();
-        return PackedBeanHandleInstaller.ofFactory(be.extensionSetup, be.container.realm, op);
+        return PackedBeanHandleInstaller.ofFactory(be.extensionSetup, be.container.realm, null, op);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromOp(UseSite extension, Op<T> op) {
-        return PackedBeanHandleInstaller.ofFactory(extension().extensionSetup, realmOf(extension), op);
+        ExtensionSetup es = usedBy(extension);
+        return PackedBeanHandleInstaller.ofFactory(extension().extensionSetup, es.extensionRealm, es, op);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(extension().extensionSetup, realmOf(useSite()), implementation, true).kindSingleton()
+        ExtensionSetup es = usedBy(useSite());
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(extension().extensionSetup, es.extensionRealm, es, implementation, true).kindSingleton()
                 .install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Op<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(extension().extensionSetup, realmOf(useSite()), factory).kindSingleton().install();
+        ExtensionSetup es = usedBy(useSite());
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(extension().extensionSetup, es.extensionRealm, es, factory).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
@@ -53,7 +57,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(extension().extensionSetup, realmOf(useSite()), instance).kindSingleton().install();
+        ExtensionSetup es = usedBy(useSite());
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(extension().extensionSetup, es.extensionRealm, es, instance).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 
@@ -64,11 +69,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      */
     public BeanHandle.Installer<?> newHandle() {
         BeanExtension be = extension();
-        return PackedBeanHandleInstaller.ofNone(be.extensionSetup, be.container.realm);
+        return PackedBeanHandleInstaller.ofNone(be.extensionSetup, be.container.realm, null);
     }
 
     public BeanHandle.Installer<?> newHandle(UseSite extension) {
-        return PackedBeanHandleInstaller.ofNone(extension().extensionSetup, realmOf(extension));
+        ExtensionSetup es = usedBy(extension);
+        return PackedBeanHandleInstaller.ofNone(extension().extensionSetup, es.extensionRealm, es);
     }
 
     /**
@@ -82,15 +88,16 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      */
     public <T> BeanHandle.Installer<T> newHandleFromClass(Class<T> clazz, boolean instantiate) {
         BeanExtension be = extension();
-        return PackedBeanHandleInstaller.ofClass(be.extensionSetup, be.container.realm, clazz, instantiate);
+        return PackedBeanHandleInstaller.ofClass(be.extensionSetup, be.container.realm, null, clazz, instantiate);
     }
 
     public <T> BeanHandle.Installer<T> newHandleFromClass(UseSite extension, Class<T> clazz, boolean instantiate) {
-        return PackedBeanHandleInstaller.ofClass(extension().extensionSetup, realmOf(extension), clazz, instantiate);
+        ExtensionSetup es = usedBy(extension);
+        return PackedBeanHandleInstaller.ofClass(extension().extensionSetup, es.extensionRealm, es, clazz, instantiate);
     }
 
-    private ExtensionRealmSetup realmOf(UseSite useSite) {
-        return ((PackedExtensionPointContext) useSite).extensionRealm();
+    private ExtensionSetup usedBy(UseSite useSite) {
+        return ((PackedExtensionPointContext) useSite).usedBy();
     }
 
     /**

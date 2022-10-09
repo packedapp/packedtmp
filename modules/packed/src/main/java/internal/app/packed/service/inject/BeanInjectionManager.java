@@ -33,9 +33,6 @@ import internal.app.packed.operation.op.ReflectiveOp;
  */
 public final class BeanInjectionManager implements DependencyProducer {
 
-    /** The bean this injection manager belongs to. */
-    private final BeanSetup bean;
-
     /**
      * A dependency node representing a bean instance and its factory method. Or {@code null} for functional beans and other
      * {@code void} beans.
@@ -51,7 +48,6 @@ public final class BeanInjectionManager implements DependencyProducer {
     public final Accessor singletonAccessor;
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
-        this.bean = bean;
         if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             this.singletonAccessor = new Accessor.ConstantAccessor(driver.source);
         } else if (driver.beanKind() == BeanKind.SINGLETON) {

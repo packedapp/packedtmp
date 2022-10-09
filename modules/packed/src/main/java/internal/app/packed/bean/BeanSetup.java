@@ -4,13 +4,16 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
@@ -27,7 +30,7 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo permits ExtensionBeanSetup {
+public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
 
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
@@ -152,5 +155,14 @@ public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo p
             yield new PackedNamespacePath(paths);
         }
         };
+    }
+    
+    /** A handle that can access BeanConfiguration#beanHandle. */
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
+            PackedBeanHandle.class);
+
+    public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
+        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
+        return bh.bean();
     }
 }
