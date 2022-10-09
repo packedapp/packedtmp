@@ -50,6 +50,7 @@ import app.packed.lifetime.managed.ManagedLifetimeController;
 
 // ManagedState?? Hmm Vi har jo @Initialize for non-managed application
 // Lifetime state
+// ContainerState?
 public enum RunState {
 
     /**

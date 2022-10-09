@@ -14,7 +14,6 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.lifetime.LifetimeOriginMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
@@ -26,7 +25,7 @@ import internal.app.packed.util.StreamUtil;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
-public non-sealed class BeanMirror implements LifetimeOriginMirror, Mirror {
+public class BeanMirror implements Mirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via

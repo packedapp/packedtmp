@@ -14,7 +14,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.lifetime.LifetimeOriginMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionMirrorHelper;
@@ -28,7 +27,7 @@ import internal.app.packed.util.CollectionUtil;
  * <p>
  * Instances of this class is typically via {@link ApplicationMirror}.
  */
-public non-sealed class ContainerMirror implements LifetimeOriginMirror , Mirror {
+public class ContainerMirror implements Mirror {
 
     /**
      * The internal configuration of the container we are mirroring. Is initially null but populated via

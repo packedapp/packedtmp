@@ -38,7 +38,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, container, implementation).kindSingleton().install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, container, implementation, true).kindSingleton().install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 

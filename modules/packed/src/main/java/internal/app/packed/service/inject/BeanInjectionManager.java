@@ -70,7 +70,7 @@ public final class BeanInjectionManager implements DependencyProducer {
         }
 
         // Only create an instance node if we have instances
-        if (bean.installer.instanceless) {
+        if (!bean.installer.hasInstances) {
             this.instanceNode = null;
         } else if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             this.instanceNode = null;

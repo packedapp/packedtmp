@@ -9,6 +9,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
@@ -33,7 +34,7 @@ import internal.app.packed.lifetime.LifetimeSetup;
 
 // Har svaert ved at forstille mig man kan customize denne?
 // StatelessLifetimeMirror, UnmanagedLifetimeMirror, ManagedLifetimeMirror????
-public class LifetimeMirror implements Mirror {
+public abstract class LifetimeMirror implements Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -55,7 +56,7 @@ public class LifetimeMirror implements Mirror {
      * @throws IllegalStateException
      *             if {@link #initialize(ApplicationSetup)} has not been called.
      */
-    private LifetimeSetup lifetime() {
+    LifetimeSetup lifetime() {
         LifetimeSetup a = lifetime;
         if (a == null) {
             throw new IllegalStateException(
@@ -136,7 +137,7 @@ public class LifetimeMirror implements Mirror {
     /** {@return all components that are part of the lifetime.} */
     // A tree of containers and beans
     // Maaske er det i virkeligheden bare en stream af componenter depth first
-    public LifetimeElementTreeMirror components() {
+    public ContainerLifetimeMirror components() {
         throw new UnsupportedOperationException();
     }
 
@@ -171,7 +172,7 @@ public class LifetimeMirror implements Mirror {
     // Tror vi dropper den her. Og saa er application.container bare en container
     public LifetimeOriginKind originKind() {
         if (lifetime() instanceof ContainerLifetimeSetup c) {
-            return c.container.depth==0 ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
+            return c.container.depth == 0 ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
         }
         return LifetimeOriginKind.BEAN;
     }

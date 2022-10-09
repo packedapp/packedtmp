@@ -26,7 +26,7 @@ import internal.app.packed.util.ThrowableUtil;
 //Application.Lazy -> launcher
 //Application.Many -> image
 
-public class LifetimeSetup {
+public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanLifetimeSetup {
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), LifetimeMirror.class,
@@ -38,7 +38,7 @@ public class LifetimeSetup {
     @Nullable
     public final LifetimeSetup parent;
 
-    /** The application's constant pool. */
+    /** The lifetime constant pool. */
     public final LifetimePoolSetup pool = new LifetimePoolSetup();
 
     /**
@@ -53,7 +53,7 @@ public class LifetimeSetup {
 
     /** {@return a mirror that can be exposed to end-users.} */
     public LifetimeMirror mirror() {
-        LifetimeMirror mirror = new LifetimeMirror();
+        LifetimeMirror mirror = mirror0();
 
         // Initialize LifetimeMirror by calling LifetimeMirror#initialize(LifetimeSetup)
         try {
@@ -63,4 +63,6 @@ public class LifetimeSetup {
         }
         return mirror;
     }
+    
+    abstract LifetimeMirror mirror0();
 }

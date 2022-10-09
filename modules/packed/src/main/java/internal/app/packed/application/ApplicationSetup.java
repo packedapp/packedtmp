@@ -24,7 +24,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.OldLifetimeKind;
+import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;

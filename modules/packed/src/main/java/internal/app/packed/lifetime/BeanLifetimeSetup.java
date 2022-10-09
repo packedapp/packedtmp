@@ -13,31 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.context;
+package internal.app.packed.lifetime;
 
-import java.util.Collection;
-import java.util.Optional;
-
+import app.packed.lifetime.BeanLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
-import internal.app.packed.container.Mirror;
+import internal.app.packed.bean.BeanSetup;
 
 /**
  *
  */
-public interface OperationContextMirror extends Mirror {
+public final class BeanLifetimeSetup extends LifetimeSetup {
+
+    /** The single bean this lifetime contains. */
+    // We know from installer whether or not we are lazy
+    public final BeanSetup bean;
 
     /**
-     * The operation from which the context may be created
-     * 
-     * @return
+     * @param parent
      */
-    //fx multiple @Get on the same bean (or in the same container)
-    Collection<OperationMirror> operations();
-    
-    Optional<LifetimeMirror> createsNew(); // if non-operation
+    public BeanLifetimeSetup(ContainerLifetimeSetup parent, BeanSetup bean) {
+        super(parent);
+        this.bean = bean;
+    }
 
-    Class<?> contextClass();
+    /** {@inheritDoc} */
+    @Override
+    LifetimeMirror mirror0() {
+        return new BeanLifetimeMirror();
+    }
 }
-
-// Object scope(); // Operation|Bean|Container(Tree?)

@@ -42,8 +42,6 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     /** The container the bean will be installed into. */
     final ContainerSetup container;
 
-    public boolean instanceless;
-
     /** A custom bean introspector that may be set via {@link #introspectWith(BeanIntrospector)}. */
     @Nullable
     BeanIntrospector introspector;
@@ -74,15 +72,16 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     /** A model of hooks on the bean class. Or null if no member scanning was performed. */
     @Nullable
     public final BeanClassModel beanModel;
+    public final boolean hasInstances;
 
     private PackedBeanHandleInstaller(@Nullable UseSite operator, ContainerSetup container, Class<?> beanClass, BeanSourceKind sourceKind,
-            @Nullable Object source) {
+            @Nullable Object source, boolean hasInstances) {
         this.operator = (@Nullable PackedExtensionPointContext) operator;
         this.container = requireNonNull(container);
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = requireNonNull(source);
-        this.instanceless = source == null;
+        this.hasInstances = hasInstances;
         this.beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);// realm.accessor().beanModelOf(driver.beanClass());
     }
 
@@ -129,7 +128,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         } else {
             this.bean = bean = new ExtensionBeanSetup(extensionOwner.extension(), this, realm);
         }
-        
+
         // bean.initName
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
@@ -154,35 +153,22 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
     /** {@inheritDoc} */
     @Override
-    public Installer<T> instanceless() {
-        if (sourceKind == BeanSourceKind.NONE) {
-            throw new IllegalStateException("Beans that are specified without a source are already instanceless");
-        } else if (sourceKind != BeanSourceKind.CLASS) {
-            throw new IllegalStateException("Cannot call this method when a factory or instance source was specified when creating the installer");
-        }
-        checkNotBuild();
-        instanceless = true;
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Installer<T> nonUnique() {
         checkNotBuild();
         nonUnique = true;
         return this;
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofClass(@Nullable UseSite operator, ContainerSetup container, Class<T> clazz) {
+    public static <T> PackedBeanHandleInstaller<T> ofClass(@Nullable UseSite operator, ContainerSetup container, Class<T> clazz, boolean instantiate) {
         requireNonNull(clazz, "clazz is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return new PackedBeanHandleInstaller<>(operator, container, clazz, BeanSourceKind.CLASS, clazz);
+        return new PackedBeanHandleInstaller<>(operator, container, clazz, BeanSourceKind.CLASS, clazz, instantiate);
     }
 
     public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Op<T> op) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         PackedOp<T> pop = PackedOp.crack(op);
-        return new PackedBeanHandleInstaller<>(operator, container, pop.type().returnType(), BeanSourceKind.OP, pop);
+        return new PackedBeanHandleInstaller<>(operator, container, pop.type().returnType(), BeanSourceKind.OP, pop, true);
     }
 
     public static <T> PackedBeanHandleInstaller<T> ofInstance(@Nullable UseSite operator, ContainerSetup container, T instance) {
@@ -199,11 +185,11 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleInstaller<>(operator, container, instance.getClass(), BeanSourceKind.INSTANCE, instance);
+        return new PackedBeanHandleInstaller<>(operator, container, instance.getClass(), BeanSourceKind.INSTANCE, instance, true);
     }
 
     public static PackedBeanHandleInstaller<?> ofNone(@Nullable UseSite operator, ContainerSetup container) {
-        return new PackedBeanHandleInstaller<>(operator, container, void.class, BeanSourceKind.NONE, null);
+        return new PackedBeanHandleInstaller<>(operator, container, void.class, BeanSourceKind.NONE, null, false);
     }
 
     /** {@inheritDoc} */

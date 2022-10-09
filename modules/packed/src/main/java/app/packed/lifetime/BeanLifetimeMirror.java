@@ -16,9 +16,18 @@
 package app.packed.lifetime;
 
 import app.packed.bean.BeanMirror;
-import app.packed.container.ContainerMirror;
+import internal.app.packed.lifetime.BeanLifetimeSetup;
 
 /**
- * The origin of a lifetime.
+ *
  */
-public sealed interface LifetimeOriginMirror permits ContainerMirror, BeanMirror {}
+public class BeanLifetimeMirror extends LifetimeMirror {
+
+    public BeanMirror bean() {
+        return beanLifetime().bean.mirror();
+    }
+
+    private BeanLifetimeSetup beanLifetime() {
+        return (BeanLifetimeSetup) lifetime();
+    }
+}

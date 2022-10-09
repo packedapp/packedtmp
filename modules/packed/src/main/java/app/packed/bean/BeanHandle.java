@@ -152,7 +152,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Hvis vi aabner op for specialized bean mirrors
     // maybe just name it mirror?
-     void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
+    void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
 
     /**
      * An installer used to create {@link BeanHandle}. Is created using the various {@code beanInstaller} methods on
@@ -190,16 +190,17 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         BeanHandle<T> install();
 
-        /**
-         * There will never be any bean instances.
-         * <p>
-         * This method can only be used together with {@link BeanExtensionPoint#beanInstallerFromClass(Class)}.
-         * 
-         * @return this installer
-         * @throws IllegalStateException
-         *             if used without source kind {@code class}
-         */
-        Installer<T> instanceless();
+//        /**
+//         * There will never be any bean instances.
+//         * <p>
+//         * This method can only be used together with {@link BeanExtensionPoint#beanInstallerFromClass(Class)}.
+//         * 
+//         * @return this installer
+//         * @throws IllegalStateException
+//         *             if used without source kind {@code class}
+//         */
+//        // I think we have an boolean instantiate on beanInstallerFromClass
+//        Installer<T> instanceless();
 
         /**
          * Registers a bean introspector that will be used instead of the framework calling
@@ -216,6 +217,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         Installer<T> introspectWith(BeanIntrospector introspector);
 
         Installer<T> kindSingleton();
+
+        default Installer<T> kindLazy() {
+            throw new UnsupportedOperationException();
+        }
 
         Installer<T> kindUnmanaged();
 

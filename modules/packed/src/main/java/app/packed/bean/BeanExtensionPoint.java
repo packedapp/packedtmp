@@ -38,12 +38,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      *            the clazz
      * @return the new installer
      */
-    public <T> BeanHandle.Installer<T> beanInstallerFromClass(Class<T> clazz) {
-        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
+    public <T> BeanHandle.Installer<T> beanInstallerFromClass(Class<T> clazz, boolean instantiate) {
+        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz, instantiate);
     }
 
-    public <T> BeanHandle.Installer<T> beanInstallerFromClass(UseSite useSite, Class<T> clazz) {
-        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
+    public <T> BeanHandle.Installer<T> beanInstallerFromClass(UseSite useSite, Class<T> clazz, boolean instantiate) {
+        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz, instantiate);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
@@ -63,7 +63,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, extension().container, implementation).forExtension(useSite()).kindSingleton().install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, extension().container, implementation, true).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
 

@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.base.Nullable;
+import app.packed.lifetime.ContainerLifetimeMirror;
+import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
 
 /**
  * The lifetime of an application
  */
-public class ContainerLifetimeSetup extends LifetimeSetup {
+public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     /** Any child lifetimes. */
     private List<LifetimeSetup> children;
@@ -42,11 +44,17 @@ public class ContainerLifetimeSetup extends LifetimeSetup {
     }
 
     public LifetimeSetup addChild(ContainerSetup component) {
-        LifetimeSetup l = new LifetimeSetup(this);
+        LifetimeSetup l = new ContainerLifetimeSetup(component, this);
         if (children == null) {
             children = new ArrayList<>(1);
         }
         children.add(l);
         return l;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    LifetimeMirror mirror0() {
+        return new ContainerLifetimeMirror();
     }
 }

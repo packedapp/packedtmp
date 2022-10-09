@@ -206,7 +206,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // PackedBeanHandleBuilder.ofClass(null, BeanKind.UNMANAGED, container, implementation).build();
-        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation).kindUnmanaged().install();
+        BeanHandle<T> handle = bean().beanInstallerFromClass(implementation, true).kindUnmanaged().install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }

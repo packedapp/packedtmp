@@ -18,9 +18,10 @@ package app.packed.lifetime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
+import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 
 /**
  *
@@ -37,27 +38,23 @@ import app.packed.operation.OperationMirror;
 
 // Maaske er den bedre i .container?
 
+public class ContainerLifetimeMirror extends LifetimeMirror {
 
-// Bliver den brugt andre steder end fra Lifetime????
-// Hvis ikke skal vi vel bare embedde den...
+    public ContainerMirror container() {
+        return containerLifetime().container.mirror();
+    }
+    
+    private ContainerLifetimeSetup containerLifetime() {
+        return (ContainerLifetimeSetup) lifetime();
+    }
 
-
-// Rename ComponentMirror -> LifetimeElementMirror?
-public interface LifetimeElementTreeMirror  {
-
-    /** {@return {@code true} if this set contains no mirrors.} */
-    boolean isEmpty();
-
-    /** {@return the number of components in this set.} */
-    int size();
-
-    Stream<LifetimeOriginMirror> stream();
+//    Stream<LifetimeOriginMirror> stream();
     
     /**
      * @return
      * 
      */
-    default List<OperationMirror> operations() {
+    public List<OperationMirror> operations2() {
         ArrayList<OperationMirror> operations = new ArrayList<>();
 //        for (ComponentMirror cm : this) {
 //            if (cm instanceof BeanMirror m) {
@@ -68,7 +65,7 @@ public interface LifetimeElementTreeMirror  {
     }
 
     /** {@return the root of the tree.} */
-    LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
+   // LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
 }
 //Her er taenkt paa en Path fra From to To
 //Minder maaske lidt for meget om ComponnetMirror.Relation
