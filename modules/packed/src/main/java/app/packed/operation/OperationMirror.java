@@ -144,7 +144,7 @@ public class OperationMirror implements Mirror {
     public final Class<? extends Extension<?>> operator() {
         // It might be a different extension that actually invokes it. For example,
         // a lifetime operations might be invoked by ContainerExtension
-        return operation().extension.extensionType;
+        return operation().operator.extensionType;
     }
 
     /** {@return the target of the operation.} */

@@ -24,7 +24,6 @@ import java.util.function.Supplier;
 import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
-import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -170,16 +169,16 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     // Could have, introspectionDisable()/noIntrospection
     sealed interface Installer<T> permits PackedBeanHandleInstaller {
 
-        /**
-         * Marks the bean as owned by the extension representing by specified extension point context
-         * 
-         * @param context
-         *            an extension point context representing the extension that owns the bean
-         * @return this builder
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
-         */
-        Installer<T> forExtension(UseSite context);
+//        /**
+//         * Marks the bean as owned by the extension representing by specified extension point context
+//         * 
+//         * @param context
+//         *            an extension point context representing the extension that owns the bean
+//         * @return this builder
+//         * @throws IllegalStateException
+//         *             if build has previously been called on the builder
+//         */
+//        Installer<T> forExtension(UseSite context);
 
         /**
          * Adds a new bean to the container and returns a handle for it.

@@ -62,7 +62,7 @@ public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo p
     public BeanSetup(PackedBeanHandleInstaller<?> installer, RealmSetup owner) {
         super(owner);
         this.installer = installer;
-        this.container = installer.container;
+        this.container = installer.operator.container;
         this.lifetime = container.lifetime();
 
         if (installer.beanClass != void.class) { // Not sure exactly when we need it

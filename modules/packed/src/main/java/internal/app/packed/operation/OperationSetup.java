@@ -44,7 +44,7 @@ public final class OperationSetup {
     public final BindingSetup[] bindings;
 
     /** The extension that operates the operation. MethodHandles will be generated relative to this. */
-    public final ExtensionSetup extension;
+    public final ExtensionSetup operator;
 
     /** The invocation type of the operation. */
     public final InvocationType invocationType;
@@ -61,12 +61,12 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup extension, InvocationType invocationType, OperationTarget target) {
+    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationType invocationType, OperationTarget target) {
         this.bean = bean;
         this.type = type;
         this.target = target;
         this.invocationType = requireNonNull(invocationType, "invocationType is null");
-        this.extension = extension;
+        this.operator = operator;
         this.bindings = new BindingSetup[type.parameterCount()];
     }
 
