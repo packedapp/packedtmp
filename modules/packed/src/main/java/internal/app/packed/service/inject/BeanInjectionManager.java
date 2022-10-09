@@ -55,13 +55,10 @@ public final class BeanInjectionManager implements DependencyProducer {
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         this.bean = bean;
-        if (driver.beanKind() == BeanKind.SINGLETON) {
-            if (driver.sourceKind == BeanSourceKind.INSTANCE) {
-                // this.singletonHandle=new Accessor.ConstantAccessor(driver.source);
-                this.singletonHandle = bean.container.lifetime().pool.reserve(driver.beanClass);
-            } else {
-                this.singletonHandle = bean.container.lifetime().pool.reserve(driver.beanClass);
-            }
+        if (driver.sourceKind == BeanSourceKind.INSTANCE) {
+            this.singletonHandle = new Accessor.ConstantAccessor(driver.source);
+        } else if (driver.beanKind() == BeanKind.SINGLETON) {
+            this.singletonHandle = bean.container.lifetime().pool.reserve(driver.beanClass);
         } else {
             this.singletonHandle = null;
         }
@@ -78,11 +75,7 @@ public final class BeanInjectionManager implements DependencyProducer {
         }
 
         // Only create an instance node if we have instances
-        if (driver.sourceKind == BeanSourceKind.INSTANCE) {
-            this.instanceNode = null;
-            // Boer bare gemmes directe i MHs
-            bean.container.lifetime().pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
-        } else if (!bean.installer.instantiate) {
+        if (driver.sourceKind == BeanSourceKind.INSTANCE || !bean.installer.instantiate) {
             this.instanceNode = null;
         } else {
             PackedOp<?> op;
