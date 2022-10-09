@@ -17,12 +17,8 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.service.inject.ExtensionInjectionManager;
 
 /**
  * A single instance of this class exists per extension per application.
@@ -33,13 +29,11 @@ import internal.app.packed.service.inject.ExtensionInjectionManager;
  */
 public final class ExtensionRealmSetup extends RealmSetup {
 
-    /** A model of the extension/ */
+    /** A model of the extension. */
     final ExtensionModel extensionModel;
 
     /** The extension setup for the root container. */
     private final ExtensionSetup rootExtension;
-
-    private final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /**
      * Creates a new realm.
@@ -54,11 +48,6 @@ public final class ExtensionRealmSetup extends RealmSetup {
     ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.rootExtension = requireNonNull(root);
-    }
-
-    public ExtensionInjectionManager injectionManagerFor(BeanSetup bean) {
-        beans.add(bean);
-        return bean.container.extensions.get(realmType()).injectionManager;
     }
 
     /** Closes the extension for configuration */
