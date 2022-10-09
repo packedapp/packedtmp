@@ -33,7 +33,7 @@ import internal.app.packed.component.ComponentSetup;
 /**
  * Configuration of a realm.
  */
-public abstract sealed class RealmSetup permits ExtensionRealmSetup, UserRealmSetup {
+public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     @Nullable

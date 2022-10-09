@@ -93,7 +93,7 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, UserRealmSetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
+    public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(application, realm, parent);
         requireNonNull(wirelets, "wirelets is null");
@@ -159,7 +159,7 @@ public final class ContainerSetup extends ComponentSetup {
             String n = null;
 
             // TODO Should only be used on the root container in the assembly
-            Class<?> source = realm.realmType();
+            Class<? extends Assembly> source = realm.assemblyClass();
             if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 8 && nnn.endsWith("Assembly")) {

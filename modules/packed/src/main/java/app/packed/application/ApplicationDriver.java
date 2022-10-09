@@ -324,11 +324,11 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     public final class Composer extends AbstractComposer {
         /// Hmm interessant
         // fungere dog ikke super godt mht til den generiske parameter
-        static ApplicationDriver<Void> of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+        static ApplicationDriver<Void> of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
-        static <A> ApplicationDriver<A> of(Class<A> application, BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer> action, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
     }

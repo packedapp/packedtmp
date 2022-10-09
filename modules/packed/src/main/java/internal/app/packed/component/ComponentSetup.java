@@ -33,7 +33,7 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.RealmSetup;
-import internal.app.packed.container.UserRealmSetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.util.LookupUtil;
 
@@ -77,7 +77,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     public final RealmSetup realm;
 
     /** The assembly from where the component is being installed. */
-    public final UserRealmSetup userRealm;
+    public final AssemblySetup userRealm;
 
     public final ArrayList<Runnable> wiringActions = new ArrayList<>(1);
 
@@ -95,7 +95,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         this.application = requireNonNull(application);
         this.realm = requireNonNull(realm);
 
-        if (realm instanceof UserRealmSetup s) {
+        if (realm instanceof AssemblySetup s) {
             this.userRealm = s;
         } else /* ExtensionRealmSetup */ {
             this.userRealm = parent.userRealm;

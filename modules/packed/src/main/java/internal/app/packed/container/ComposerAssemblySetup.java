@@ -22,9 +22,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.BuildTaskGoal;
 import app.packed.container.AbstractComposer;
-import app.packed.container.AbstractComposer.BuildAction;
+import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
@@ -35,31 +34,25 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-public final class ComposerUserRealmSetup extends UserRealmSetup {
+public final class ComposerAssemblySetup extends AssemblySetup {
 
-    /** A handle that can invoke {@link AbstractComposer#doBuild(ContainerConfiguration, BuildAction)}. */
+    /** A handle that can invoke {@link AbstractComposer#doBuild(ContainerConfiguration, ComposerAction)}. */
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild",
-            void.class, ContainerConfiguration.class, BuildAction.class);
+            void.class, ContainerConfiguration.class, ComposerAction.class);
 
-    private final BuildAction<?> consumer;
+    private final ComposerAction<?> consumer;
 
     /** The application we are building. */
     public final ApplicationSetup application;
 
     private final AbstractComposer composer;
 
-    private final Class<? extends ComposerAssembly> assemblyClass;
-
-    public ComposerUserRealmSetup(PackedApplicationDriver<?> driver, Class<? extends ComposerAssembly> assemblyClass, AbstractComposer composer,
-            BuildAction<?> action, Wirelet[] wirelets) {
+    public ComposerAssemblySetup(PackedApplicationDriver<?> driver, Class<? extends ComposerAssembly> assemblyClass, AbstractComposer composer,
+            ComposerAction<?> action, Wirelet[] wirelets) {
+        super(assemblyClass);
         this.composer = requireNonNull(composer, "composer is null");
         this.consumer = requireNonNull(action, "action is null");
         this.application = new ApplicationSetup(driver, BuildTaskGoal.LAUNCH, this, wirelets);
-        // Maybe it needs to be a proper subclass?
-        this.assemblyClass = requireNonNull(assemblyClass, "assemblyClass is null");
-        if (!ComposerAssembly.class.isAssignableFrom(assemblyClass)) {
-            throw new ClassCastException(assemblyClass + " must be assignable to " + ComposerAssembly.class);
-        }
     }
 
     public void build() {
@@ -86,11 +79,5 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     @Override
     public Class<?> realmType() {
         return consumer.getClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected Class<? extends Assembly> assemblyClass() {
-        return assemblyClass;
     }
 }

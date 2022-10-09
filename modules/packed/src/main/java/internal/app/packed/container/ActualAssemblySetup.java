@@ -32,19 +32,16 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  * A component installer created from an {@link Assembly} instance.
  */
-public final class AssemblyUserRealmSetup extends UserRealmSetup {
+public final class ActualAssemblySetup extends AssemblySetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            AssemblyUserRealmSetup.class, ContainerConfiguration.class);
+            ActualAssemblySetup.class, ContainerConfiguration.class);
 
     public final ApplicationSetup application;
 
     /** The assembly used to create this installer. */
     final Assembly assembly;
-
-    /** Or model of the assembly. */
-    private final AssemblyModel assemblyModel;
 
     /** The root component of this realm. */
     private final ContainerSetup container;
@@ -64,19 +61,19 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
      *            optional wirelets
      * @return the application
      */
-    public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, BuildTaskGoal goal, Assembly assembly, Wirelet[] wirelets) {
+    public ActualAssemblySetup(PackedApplicationDriver<?> applicationDriver, BuildTaskGoal goal, Assembly assembly, Wirelet[] wirelets) {
+        super(requireNonNull(assembly, "assembly is null").getClass());
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
-        this.assemblyModel = AssemblyModel.of(assembly.getClass());
 
         this.container = application.container;
         this.driver = new PackedContainerHandle(container);
     }
 
-    public AssemblyUserRealmSetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public ActualAssemblySetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+        super(requireNonNull(assembly, "assembly is null").getClass());
         this.application = linkTo.application;
         this.assembly = requireNonNull(assembly, "assembly is null");
-        this.assemblyModel = AssemblyModel.of(assembly.getClass());
         // if embed do xxx
         // else create new container
         this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
@@ -103,23 +100,9 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
         return container;
     }
 
-    public void postBuild(ContainerConfiguration configuration) {
-        assemblyModel.postBuild(configuration);
-    }
-
-    public void preBuild(ContainerConfiguration configuration) {
-        assemblyModel.preBuild(configuration);
-    }
-
     /** {@inheritDoc} */
     @Override
     public Class<?> realmType() {
-        return assembly.getClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected Class<? extends Assembly> assemblyClass() {
         return assembly.getClass();
     }
 }

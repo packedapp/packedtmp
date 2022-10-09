@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import app.packed.container.UserOrExtension;
@@ -31,7 +32,19 @@ import app.packed.container.UserOrExtension;
 /**
  *
  */
-public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyUserRealmSetup, ComposerUserRealmSetup {
+// Maybe have
+
+// ApplicationAssemblySetup
+// NonRootedAssemblySetup
+// ComposerAssemblySetup
+
+// Lige nu sker der dog for meget i ActualAssemblySetup
+
+public abstract sealed class AssemblySetup extends RealmSetup permits ActualAssemblySetup, ComposerAssemblySetup {
+
+    final Class<? extends Assembly> assemblyClass;
+
+    final AssemblyModel assemblyModel;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -39,8 +52,16 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
-    protected abstract Class<? extends Assembly> assemblyClass();
-    
+    protected AssemblySetup(Class<? extends Assembly> assemblyClass) {
+        this.assemblyClass = assemblyClass;
+        this.assemblyModel = AssemblyModel.of(assemblyClass);
+    }
+
+    /** {@inheritDoc} */
+    public final Class<? extends Assembly> assemblyClass() {
+        return assemblyClass;
+    }
+
     final void close() {
         super.close();
 
@@ -90,6 +111,14 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
         return new BuildtimeAssemblyMirror(this);
     }
 
+    public void postBuild(ContainerConfiguration configuration) {
+        assemblyModel.postBuild(configuration);
+    }
+
+    public void preBuild(ContainerConfiguration configuration) {
+        assemblyModel.preBuild(configuration);
+    }
+
     /** {@inheritDoc} */
     @Override
     public final UserOrExtension realm() {
@@ -97,7 +126,7 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
     }
 
     /** Implementation of {@link AssemblyMirror}. */
-    public record BuildtimeAssemblyMirror(UserRealmSetup assembly) implements AssemblyMirror {
+    public record BuildtimeAssemblyMirror(AssemblySetup assembly) implements AssemblyMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -117,12 +146,6 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
             return assembly.assemblyClass();
         }
 
-//        /** {@inheritDoc} */
-//        @Override
-//        public Stream<ComponentMirror> findAllComponents() {
-//            return assembly.container().stream().filter(c -> c.userRealm == assembly).map(ComponentSetup::mirror);
-//        }
-
         /** {@inheritDoc} */
         @Override
         public Optional<AssemblyMirror> parent() {
@@ -141,7 +164,7 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
             return children(assembly, assembly.container(), new ArrayList<>()).stream();
         }
 
-        private ArrayList<AssemblyMirror> children(UserRealmSetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
+        private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
             if (assembly == cs.userRealm) {
                 for (ContainerSetup c : cs.containerChildren) {
                     children(assembly, c, list);

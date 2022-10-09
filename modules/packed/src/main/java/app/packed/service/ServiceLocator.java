@@ -32,7 +32,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector.BindingHook;
 import app.packed.container.AbstractComposer;
-import app.packed.container.AbstractComposer.BuildAction;
+import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
@@ -346,7 +346,7 @@ public interface ServiceLocator {
         return driver().launch(assembly, wirelets);
     }
 
-    static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+    static ServiceLocator of(ComposerAction<? super Composer> configurator, Wirelet... wirelets) {
         return Composer.of(configurator, wirelets);
     }
 
@@ -521,9 +521,9 @@ public interface ServiceLocator {
             return container().use(ServiceExtension.class).providePrototype(factory);
         }
 
-        private static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+        private static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
             class ServiceLocatorAssembly extends ComposerAssembly {}
-            return compose(DRIVER, ServiceLocatorAssembly.class, new Composer(), configurator, wirelets);
+            return compose(DRIVER, ServiceLocatorAssembly.class, new Composer(), action, wirelets);
         }
     }
 }

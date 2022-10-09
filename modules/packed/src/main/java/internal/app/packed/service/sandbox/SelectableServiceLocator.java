@@ -17,7 +17,7 @@ package internal.app.packed.service.sandbox;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.container.AbstractComposer.BuildAction;
+import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.service.build.ServiceComposer;
 import internal.app.packed.service.runtime.OldServiceLocator;
@@ -78,7 +78,7 @@ public interface SelectableServiceLocator extends ServiceLocator {
      *            the transmutation action
      * @return the new service locator
      */
-    OldServiceLocator spawn(BuildAction<ServiceComposer> action);
+    OldServiceLocator spawn(ComposerAction<ServiceComposer> action);
 
     /**
      * Creates a new service locator via a service composer.
@@ -88,7 +88,7 @@ public interface SelectableServiceLocator extends ServiceLocator {
      * @return a new service locator
      * @see #driver()
      */
-    static ServiceLocator of(BuildAction<? super ServiceComposer> action) {
+    static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
         throw new UnsupportedOperationException();
     }
 }

@@ -20,14 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.PackedApplicationDriver;
-import internal.app.packed.container.ComposerUserRealmSetup;
+import internal.app.packed.container.ComposerAssemblySetup;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -94,7 +93,7 @@ public abstract class AbstractComposer {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings({ "unused", "unchecked" })
-    private void doBuild(ContainerConfiguration configuration, @SuppressWarnings("rawtypes") BuildAction consumer) {
+    private void doBuild(ContainerConfiguration configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
@@ -136,14 +135,14 @@ public abstract class AbstractComposer {
     }
 
     /**
-     * Invoked by the runtime immediately after {@link BuildAction#build(AbstractComposer)}.
+     * Invoked by the runtime immediately after {@link ComposerAction#build(AbstractComposer)}.
      * <p>
-     * This method will not be called if {@link BuildAction#build(AbstractComposer)} throws an exception.
+     * This method will not be called if {@link ComposerAction#build(AbstractComposer)} throws an exception.
      */
     protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
 
     /**
-     * Invoked by the runtime immediately before it invokes {@link BuildAction#build(AbstractComposer)}. Used for any
+     * Invoked by the runtime immediately before it invokes {@link ComposerAction#build(AbstractComposer)}. Used for any
      * configuration that needs to be done before control is handed over to the composer action specified by the user.
      */
     protected void onNew() {} // navngivningen skal alines med AssemblyHook
@@ -152,25 +151,35 @@ public abstract class AbstractComposer {
      * Create a new application instance by using the specified consumer and configurator.
      * <p>
      * This method is is never called directly by end-users. But indirectly through methods such as
-     * {@link ServiceLocator#of(Consumer)}.
+     * {@link ServiceLocator#of(ComposerAction, Wirelet...)}.
      * 
+     * @param <A>
+     *            the application type
      * @param <C>
      *            the type of composer that is exposed to the end-user
+     * @param driver
+     *            the application driver
+     * @param assemblyClass
+     *            an assembly class
      * @param composer
      *            the composer
      * @param action
-     *            the build action that operates on a consumer
+     *            the build action that operates on a composer
      * @param wirelets
      *            optional wirelets
-     * @return a new application instance
-     * 
-     * @see AbstractComposer
+     * @return the launch result
      */
-    // Skal vi tage en Class<? extends ComposerAssembly> class?
-    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, Class<? extends ComposerAssembly> assemblyClass, C composer, BuildAction<? super C> action, Wirelet... wirelets) {
+    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, Class<? extends ComposerAssembly> assemblyClass, C composer,
+            ComposerAction<? super C> action, Wirelet... wirelets) {
         PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
+        requireNonNull(assemblyClass, "assemblyClass is null");
+        // Maybe it needs to be a proper subclass?
+        // And maybe it must be in the same module as the composer itself
+        if (!ComposerAssembly.class.isAssignableFrom(assemblyClass)) {
+            throw new ClassCastException(assemblyClass + " must be assignable to " + ComposerAssembly.class);
+        }
         // Create a new realm
-        ComposerUserRealmSetup realm = new ComposerUserRealmSetup(d, assemblyClass, composer, action, wirelets);
+        ComposerAssemblySetup realm = new ComposerAssemblySetup(d, assemblyClass, composer, action, wirelets);
 
         // Build the application
         realm.build();
@@ -183,8 +192,7 @@ public abstract class AbstractComposer {
     *
     */
     @FunctionalInterface
-    // CompositionAction?
-    public interface BuildAction<C extends AbstractComposer> {
+    public interface ComposerAction<C extends AbstractComposer> {
 
         /**
          * Builds an application using the given composer.
