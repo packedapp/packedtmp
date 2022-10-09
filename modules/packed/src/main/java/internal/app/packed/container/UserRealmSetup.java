@@ -112,12 +112,9 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
         }
 
         /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
         @Override
         public Class<? extends Assembly> assemblyClass() {
-            // Probably does not work for composer
-            // Needs to check isAssignable
-            return (Class<? extends Assembly>) assembly.realmType();
+            return assembly.assemblyClass();
         }
 
 //        /** {@inheritDoc} */

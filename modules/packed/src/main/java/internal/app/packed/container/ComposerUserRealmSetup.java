@@ -41,36 +41,29 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild",
             void.class, ContainerConfiguration.class, BuildAction.class);
 
-    /** A handle that can invoke {@link AbstractComposer#assemblyClass()}. */
-    private static final MethodHandle MH_COMPOSER_ASSEMBLY_CLASS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class,
-            "assemblyClass", Class.class);
-
     private final BuildAction<?> consumer;
 
     /** The application we are building. */
     public final ApplicationSetup application;
 
-    private Class<? extends ComposerAssembly> assemblyClass;
+    private final AbstractComposer composer;
 
-    public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, BuildAction<?> consumer, Wirelet[] wirelets) {
-        this.consumer = requireNonNull(consumer);
-        this.application = new ApplicationSetup(applicationDriver, BuildTaskGoal.LAUNCH, this, wirelets);
+    private final Class<? extends ComposerAssembly> assemblyClass;
+
+    public ComposerUserRealmSetup(PackedApplicationDriver<?> driver, Class<? extends ComposerAssembly> assemblyClass, AbstractComposer composer,
+            BuildAction<?> action, Wirelet[] wirelets) {
+        this.composer = requireNonNull(composer, "composer is null");
+        this.consumer = requireNonNull(action, "action is null");
+        this.application = new ApplicationSetup(driver, BuildTaskGoal.LAUNCH, this, wirelets);
+        // Maybe it needs to be a proper subclass?
+        this.assemblyClass = requireNonNull(assemblyClass, "assemblyClass is null");
+        if (!ComposerAssembly.class.isAssignableFrom(assemblyClass)) {
+            throw new ClassCastException(assemblyClass + " must be assignable to " + ComposerAssembly.class);
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    public <C extends AbstractComposer> void build(C composer) {
+    public void build() {
         ContainerConfiguration componentConfiguration = new PackedContainerHandle(null).toConfiguration(application.container);
-
-        Class<?> c;
-        try {
-            c = (Class<?>) MH_COMPOSER_ASSEMBLY_CLASS.invoke(composer);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        if (!ComposerAssembly.class.isAssignableFrom(c)) {
-            throw new ClassCastException(c + " is not assignable to " + ComposerAssembly.class);
-        }
-        this.assemblyClass = (Class<? extends ComposerAssembly>) c;
 
         // Invoke AbstractComposer#doBuild which in turn will invoke consumer.accept
         try {
@@ -98,10 +91,6 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     /** {@inheritDoc} */
     @Override
     protected Class<? extends Assembly> assemblyClass() {
-        Class<? extends Assembly> c = assemblyClass;
-        if (c == null) {
-            throw new IllegalStateException("An assembly class was not computed");
-        }
-        return c;
+        return assemblyClass;
     }
 }

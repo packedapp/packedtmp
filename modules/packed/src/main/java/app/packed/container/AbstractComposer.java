@@ -135,9 +135,6 @@ public abstract class AbstractComposer {
         container().container.userRealm.lookup(lookup);
     }
 
-    // Should we have
-    protected abstract Class<? extends ComposerAssembly> assemblyClass();
-
     /**
      * Invoked by the runtime immediately after {@link BuildAction#build(AbstractComposer)}.
      * <p>
@@ -169,16 +166,14 @@ public abstract class AbstractComposer {
      * 
      * @see AbstractComposer
      */
-    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, C composer, BuildAction<? super C> action, Wirelet... wirelets) {
+    // Skal vi tage en Class<? extends ComposerAssembly> class?
+    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, Class<? extends ComposerAssembly> assemblyClass, C composer, BuildAction<? super C> action, Wirelet... wirelets) {
         PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
-        requireNonNull(composer, "composer is null");
-        requireNonNull(action, "action is null");
-
         // Create a new realm
-        ComposerUserRealmSetup realm = new ComposerUserRealmSetup(d, action, wirelets);
+        ComposerUserRealmSetup realm = new ComposerUserRealmSetup(d, assemblyClass, composer, action, wirelets);
 
         // Build the application
-        realm.build(composer);
+        realm.build();
 
         // Return a launched application
         return ApplicationInitializationContext.launch(d, realm.application, /* no runtime wirelets */ null);
@@ -188,6 +183,7 @@ public abstract class AbstractComposer {
     *
     */
     @FunctionalInterface
+    // CompositionAction?
     public interface BuildAction<C extends AbstractComposer> {
 
         /**
@@ -199,6 +195,11 @@ public abstract class AbstractComposer {
         void build(C composer);
     }
 
+    /**
+     *
+     * @see AssemblyMirror#assemblyClass()
+     * @see AbstractComposer#assemblyClass()
+     */
     public static abstract class ComposerAssembly extends Assembly {
 
         /** {@inheritDoc} */

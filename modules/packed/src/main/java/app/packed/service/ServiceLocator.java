@@ -522,14 +522,8 @@ public interface ServiceLocator {
         }
 
         private static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
-            return compose(DRIVER, new Composer(), configurator, wirelets);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected Class<? extends ComposerAssembly> assemblyClass() {
             class ServiceLocatorAssembly extends ComposerAssembly {}
-            return ServiceLocatorAssembly.class;
+            return compose(DRIVER, ServiceLocatorAssembly.class, new Composer(), configurator, wirelets);
         }
     }
 }

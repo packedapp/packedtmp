@@ -331,13 +331,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         static <A> ApplicationDriver<A> of(Class<A> application, BuildAction<? super Composer> configurator, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
-
-        /** {@inheritDoc} */
-        @Override
-        protected Class<? extends ComposerAssembly> assemblyClass() {
-            class ServiceComposerAssembly extends ComposerAssembly {}
-            return ServiceComposerAssembly.class;
-        }
     }
 }
 
