@@ -17,7 +17,7 @@ package app.packed.base;
 
 import java.nio.file.Path;
 
-import internal.app.packed.component.PackedNamespacePath;
+import internal.app.packed.util.PackedNamespacePath;
 
 /**
  * A component path points to a single component in namespace (tree of named components) expressed as a string

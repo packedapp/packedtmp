@@ -28,7 +28,6 @@ import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
-import internal.app.packed.component.ComponentSetup;
 
 /**
  * Configuration of a realm.
@@ -41,7 +40,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
 
     /** The current active component in the realm. */
     @Nullable
-    private ComponentSetup currentComponent;
+    private BeanOrContainerSetup currentComponent;
 
     /** Whether or not this realm is configurable. */
     private boolean isClosed;
@@ -67,7 +66,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
         return isClosed;
     }
 
-    public boolean isCurrent(ComponentSetup component) {
+    public boolean isCurrent(BeanOrContainerSetup component) {
         return currentComponent == component;
     }
 
@@ -112,7 +111,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
      * @param newComponent
      *            the new component
      */
-    public void wireNew(ComponentSetup newComponent) {
+    public void wireNew(BeanOrContainerSetup newComponent) {
         assert (currentComponent == null);
         // next is not fully formed but called from the constructor of ComponentSetup
         currentComponent = requireNonNull(newComponent);

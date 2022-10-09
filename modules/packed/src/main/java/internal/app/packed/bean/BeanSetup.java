@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -15,8 +14,7 @@ import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
-import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.PackedNamespacePath;
+import internal.app.packed.container.BeanOrContainerSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
@@ -25,10 +23,11 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits ExtensionBeanSetup {
+public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo permits ExtensionBeanSetup {
 
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
@@ -45,7 +44,8 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     public final PackedBeanHandleInstaller<?> installer;
 
     /** The lifetime the component is a part of. */
-    final LifetimeSetup lifetime;
+    // Or maybe @Nullable BeanSetup; null -> container.eager
+    public final LifetimeSetup lifetime;
 
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
@@ -53,21 +53,22 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     /**
      * Create a new bean setup.
      * 
-     * @param builder
+     * @param installer
      *            the handle builder
      */
-    public BeanSetup(PackedBeanHandleInstaller<?> builder, RealmSetup owner) {
-        super(owner, builder.container);
-        this.container = builder.container;
-        this.installer = builder;
+    public BeanSetup(PackedBeanHandleInstaller<?> installer, RealmSetup owner) {
+        super(owner, installer.container);
+        this.installer = installer;
+        this.container = installer.container;
         this.lifetime = container.lifetime();
-        if (builder.beanClass != void.class) { // Not sure exactly when we need it
-            this.injectionManager = new BeanInjectionManager(this, builder);
+        
+        if (installer.beanClass != void.class) { // Not sure exactly when we need it
+            this.injectionManager = new BeanInjectionManager(this, installer);
         } else {
             this.injectionManager = null;
         }
 
-        initializeNameWithPrefix(builder.initialName());
+        container.initBeanName(this, installer.initialName());
     }
 
     public OperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
@@ -84,10 +85,6 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Override
     public Class<?> beanClass() {
         return installer.beanClass;
-    }
-
-    final void initializeNameWithPrefix0(String name) {
-        initializeNameWithPrefix(name);
     }
 
     public LifetimeSetup lifetime() {
@@ -131,11 +128,19 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
 
     /** {@return the path of this component} */
     public final NamespacePath path() {
-        return PackedNamespacePath.ofBean(this);
-    }
-
-    @Override
-    public Stream<ComponentSetup> stream() {
-        return Stream.of(this);
+        int depth = container.depth + 1;
+        return switch (depth) {
+        case 1 -> new PackedNamespacePath(name);
+        default -> {
+            String[] paths = new String[depth];
+            paths[depth] = name;
+            ContainerSetup acc = container;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.name;
+                acc = acc.parent;
+            }
+            yield new PackedNamespacePath(paths);
+        }
+        };
     }
 }

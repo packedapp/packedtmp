@@ -1,4 +1,4 @@
-package internal.app.packed.component;
+package internal.app.packed.application;
 
 /**
  * Represents a single namespace. An instance of this class maintained across different builds that are in

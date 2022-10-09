@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
-
-import app.packed.service.Qualifier;
+package sandbox.relations;
 
 /**
  *
@@ -89,49 +87,49 @@ enum ComponentScope2 {
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
     REQUEST;
 }
-
-@Qualifier
-@interface Scoped {
-    ComponentScope value() default ComponentScope.CONTAINER;
-}
-
-// interessant at
-// roden for X
-// Alle i samme X
-class XComp2 {
-
-    boolean isPartOf(ComponentScope boundaryType) {
-        return false;
-    }
-
-    boolean isPartOfSame(ComponentScope boundaryType, XComp2 as) {
-        return true;
-    }
-
-    /**
-     * @param m
-     * @return stuff
-     * @throws IllegalArgumentException
-     *             if the specified modifier is not supported. For example SOURCE
-     */
-    XComp2 rootOf(ComponentScope m) {
-        return this;
-    }
-
-    // Maaske konfigurere man en event bus til det...
-    public void ev(@Scoped(ComponentScope.CONTAINER) EventBus eb) {
-
-    }
-
-    interface EventBus {}
-
-    public static void main(XComp2 c) {
-        c.rootOf(ComponentScope.NAMESPACE);
-        c.isPartOfSame(ComponentScope.NAMESPACE, c);
-        c.isPartOf(ComponentScope.NAMESPACE);
-    }
-
-}
+//
+//@Qualifier
+//@interface Scoped {
+//    ComponentScope value() default ComponentScope.CONTAINER;
+//}
+//
+//// interessant at
+//// roden for X
+//// Alle i samme X
+//class XComp2 {
+//
+//    boolean isPartOf(ComponentScope boundaryType) {
+//        return false;
+//    }
+//
+//    boolean isPartOfSame(ComponentScope boundaryType, XComp2 as) {
+//        return true;
+//    }
+//
+//    /**
+//     * @param m
+//     * @return stuff
+//     * @throws IllegalArgumentException
+//     *             if the specified modifier is not supported. For example SOURCE
+//     */
+//    XComp2 rootOf(ComponentScope m) {
+//        return this;
+//    }
+//
+//    // Maaske konfigurere man en event bus til det...
+//    public void ev(@Scoped(ComponentScope.CONTAINER) EventBus eb) {
+//
+//    }
+//
+//    interface EventBus {}
+//
+//    public static void main(XComp2 c) {
+//        c.rootOf(ComponentScope.NAMESPACE);
+//        c.isPartOfSame(ComponentScope.NAMESPACE, c);
+//        c.isPartOf(ComponentScope.NAMESPACE);
+//    }
+//
+//}
 
 // Optional<> findRootOf
 // rootOf(ComponentModifier.BUILD)

@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -36,15 +35,15 @@ import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.component.ComponentSetup;
-import internal.app.packed.component.PackedNamespacePath;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends ComponentSetup {
+public final class ContainerSetup extends BeanOrContainerSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -58,7 +57,7 @@ public final class ContainerSetup extends ComponentSetup {
 
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
-    public final LinkedHashMap<String, ComponentSetup> children = new LinkedHashMap<>();
+    public final LinkedHashMap<String, BeanOrContainerSetup> children = new LinkedHashMap<>();
 
     /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */
     @Nullable
@@ -215,6 +214,36 @@ public final class ContainerSetup extends ComponentSetup {
         assert name != null;
     }
 
+    public void initBeanName(BeanSetup bean, String name) {
+        String n = name;
+        if (children.isEmpty()) {
+            children.put(name, this);
+        } else {
+            int counter = 1;
+            while (children.putIfAbsent(n, this) != null) {
+                n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
+                                      // million of the same component type
+            }
+        }
+    }
+
+    protected final void initializeNameWithPrefix(String name) {
+        String n = name;
+        if (parent() != null) {
+            LinkedHashMap<String, BeanOrContainerSetup> c = parent().children;
+            if (c.size() == 0) {
+                c.put(name, this);
+            } else {
+                int counter = 1;
+                while (c.putIfAbsent(n, this) != null) {
+                    n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
+                                          // million of the same component type
+                }
+            }
+        }
+        this.name = n;
+    }
+
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -254,17 +283,23 @@ public final class ContainerSetup extends ComponentSetup {
 
     /** {@return the path of this component} */
     public NamespacePath path() {
-        return PackedNamespacePath.ofContainer(this);
+        return switch (depth) {
+        case 0 -> NamespacePath.ROOT;
+        case 1 -> new PackedNamespacePath(name);
+        default -> {
+            String[] paths = new String[depth];
+            ContainerSetup acc = this;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.name;
+                acc = acc.parent;
+            }
+            yield new PackedNamespacePath(paths);
+        }
+        };
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Stream<ComponentSetup> stream() {
-        return Stream.concat(Stream.of(this), children.values().stream().flatMap(c -> c.stream()));
     }
 
     /**

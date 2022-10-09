@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.NamespacePath;
+import internal.app.packed.util.PackedNamespacePath;
 
 /**
  *

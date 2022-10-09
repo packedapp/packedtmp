@@ -15,18 +15,13 @@
  */
 package app.packed.application.sandbox;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationLauncher;
-import app.packed.application.ComponentMirror;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import internal.app.packed.component.ComponentScope;
-import internal.app.packed.container.InternalWirelet;
 
 /**
  * Wirelets that can only be specified when building an application.
@@ -82,36 +77,36 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a 'spying' wirelet that will perform the specified action every time a component has been wired.
-     * <p>
-     * If you only want to spy on specific types of components you can use {@link #spyOnWire(Class, Consumer)} instead.
-     * 
-     * @param action
-     *            the action to perform
-     * @return the wirelet
-     */
-    public static Wirelet spyOnWire(Consumer<? super ComponentMirror> action) {
-        return new InternalWirelet.OnWireActionWirelet(action, null);
-    }
-
-    public static <T extends ComponentMirror> Wirelet spyOnWire(Class<T> mirrorType, Consumer<? super T> action) {
-        requireNonNull(mirrorType, "mirrorType is null");
-        requireNonNull(action, "action is null");
-        return spyOnWire(m -> {
-            if (mirrorType.isInstance(m)) {
-                action.accept(mirrorType.cast(m));
-            }
-        });
-    }
+//    /**
+//     * Returns a 'spying' wirelet that will perform the specified action every time a component has been wired.
+//     * <p>
+//     * If you only want to spy on specific types of components you can use {@link #spyOnWire(Class, Consumer)} instead.
+//     * 
+//     * @param action
+//     *            the action to perform
+//     * @return the wirelet
+//     */
+//    public static Wirelet spyOnWire(Consumer<? super ComponentMirror> action) {
+//        return new InternalWirelet.OnWireActionWirelet(action, null);
+//    }
+//
+//    public static <T extends ComponentMirror> Wirelet spyOnWire(Class<T> mirrorType, Consumer<? super T> action) {
+//        requireNonNull(mirrorType, "mirrorType is null");
+//        requireNonNull(action, "action is null");
+//        return spyOnWire(m -> {
+//            if (mirrorType.isInstance(m)) {
+//                action.accept(mirrorType.cast(m));
+//            }
+//        });
+//    }
 
     // Ved ikke om scope er noedvendigt...
     // Det er jo udelukkende for test scenarier... Saa kan ikke rigtig
     // Hmmm, hvad med applikation hosts... Beholder vi den der???
-    static Wirelet spyOnWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
-        requireNonNull(scope, "scope is null");
-        return new InternalWirelet.OnWireActionWirelet(action, scope);
-    }
+//    static Wirelet spyOnWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
+//        requireNonNull(scope, "scope is null");
+//        return new InternalWirelet.OnWireActionWirelet(action, scope);
+//    }
 
     interface InstantiationContext {}
 }

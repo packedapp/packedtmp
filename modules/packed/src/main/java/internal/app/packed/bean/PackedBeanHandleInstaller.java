@@ -129,6 +129,8 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         } else {
             this.bean = bean = new ExtensionBeanSetup(extensionOwner.extension(), this, realm);
         }
+        
+        // bean.initName
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
         if (sourceKind != BeanSourceKind.NONE) {

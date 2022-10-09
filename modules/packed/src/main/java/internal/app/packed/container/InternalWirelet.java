@@ -15,18 +15,10 @@
  */
 package internal.app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.Consumer;
-
-import app.packed.application.ComponentMirror;
-import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
-import internal.app.packed.component.ComponentScope;
-import internal.app.packed.component.ComponentSetup;
 
 /**
  * A special wirelet for internal usage where the logic of the wirelet is embedded directly into the wirelet.
@@ -74,34 +66,34 @@ public abstract class InternalWirelet extends Wirelet {
         return getClass().getSimpleName();
     }
 
-    /** A wirelet that will perform a given action once the component has been fully wired. */
-    public static final class OnWireActionWirelet extends InternalWirelet {
-
-        /** The action to perform on each in-scope component after it has been fully wired. */
-        private final Consumer<? super ComponentMirror> action;
-
-        /** The scope of the wirelet */
-        @Nullable
-        private final ComponentScope scope;
-
-        public OnWireActionWirelet(Consumer<? super ComponentMirror> action, @Nullable ComponentScope scope) {
-            this.action = requireNonNull(action, "action is null");
-            this.scope = scope;
-        }
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected void onBuild(ContainerSetup component) {
-            // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
-            Consumer<? super ComponentMirror> existing = component.onWireAction;
-            if (existing == null) {
-                component.onWireAction = action;
-            } else {
-                component.onWireAction = existing.andThen((Consumer) action);
-            }
-        }
-    }
+//    /** A wirelet that will perform a given action once the component has been fully wired. */
+//    public static final class OnWireActionWirelet extends InternalWirelet {
+//
+//        /** The action to perform on each in-scope component after it has been fully wired. */
+//        private final Consumer<? super ComponentMirror> action;
+//
+//        /** The scope of the wirelet */
+//        @Nullable
+//        private final ComponentScope scope;
+//
+//        public OnWireActionWirelet(Consumer<? super ComponentMirror> action, @Nullable ComponentScope scope) {
+//            this.action = requireNonNull(action, "action is null");
+//            this.scope = scope;
+//        }
+//
+//        /** {@inheritDoc} */
+//        @SuppressWarnings({ "unchecked", "rawtypes" })
+//        @Override
+//        protected void onBuild(ContainerSetup component) {
+//            // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
+//            Consumer<? super ComponentMirror> existing = component.onWireAction;
+//            if (existing == null) {
+//                component.onWireAction = action;
+//            } else {
+//                component.onWireAction = existing.andThen((Consumer) action);
+//            }
+//        }
+//    }
 
     /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */
     public static final class OverrideNameWirelet extends InternalWirelet {
@@ -116,7 +108,7 @@ public abstract class InternalWirelet extends Wirelet {
          *            the name to override any existing container name with
          */
         public OverrideNameWirelet(String name) {
-            this.name = ComponentSetup.checkComponentName(name); // throws IAE
+            this.name = BeanOrContainerSetup.checkComponentName(name); // throws IAE
         }
 
         /** {@inheritDoc} */

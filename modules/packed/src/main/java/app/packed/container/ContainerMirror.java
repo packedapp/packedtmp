@@ -16,7 +16,6 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionMirrorHelper;
 import internal.app.packed.container.ExtensionSetup;
@@ -59,7 +58,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     public Collection<BeanMirror> beans() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (ComponentSetup s : container.children.values()) {
+        for (Object s : container.children.values()) {
             if (s instanceof BeanSetup b) {
                 beans.add(b.mirror());
             }
@@ -187,10 +186,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     @Override
     public NamespacePath path() {
         return container().path();
-    }
-
-    public final Stream<ComponentMirror> stream() {
-        return container().stream().map(c -> c.mirror());
     }
 
     /** {@inheritDoc} */

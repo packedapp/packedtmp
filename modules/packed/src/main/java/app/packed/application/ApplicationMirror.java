@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanMirror;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
@@ -13,6 +12,8 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;
 
 /**
@@ -119,14 +120,22 @@ public class ApplicationMirror implements Mirror {
     }
 
     public void print() {
-        container().stream().forEach(cc -> {
-            StringBuilder sb = new StringBuilder();
-            sb.append(cc.path()).append("");
-            if (cc instanceof BeanMirror bm) {
-                sb.append(" [").append(bm.beanClass().getName()).append("], owner = " + bm.owner());
+        print0(application.container);
+    }
+
+    private void print0(ContainerSetup cs) {
+        System.out.println(cs.path());
+        for (ContainerSetup child : cs.containerChildren) {
+            print0(child);
+        }
+        for (Object b : cs.children.values()) {
+            if (b instanceof BeanSetup bs) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(bs.path()).append("");
+                sb.append(" [").append(bs.beanClass().getName()).append("], owner = " + bs.owner());
+                System.out.println(sb.toString());
             }
-            System.out.println(sb.toString());
-        });
+        }
     }
 
     /** {@inheritDoc} */

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
+package internal.app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,8 +23,6 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ContainerSetup;
 
 /** The default implementation of {@link NamespacePath}. */
 public final class PackedNamespacePath implements NamespacePath {
@@ -40,7 +38,7 @@ public final class PackedNamespacePath implements NamespacePath {
     /** String representation, created lazily */
     private volatile String string; // we should need the volatile
 
-    PackedNamespacePath(String... elements) {
+    public PackedNamespacePath(String... elements) {
         this.elements = requireNonNull(elements);
     }
 
@@ -142,40 +140,6 @@ public final class PackedNamespacePath implements NamespacePath {
             s = string = sj.toString();
         }
         return s;
-    }
-
-    public static NamespacePath ofBean(BeanSetup cc) {
-        int depth = cc.container.depth + 1;
-        return switch (depth) {
-        case 0 -> new PackedNamespacePath(cc.name);
-        default -> {
-            String[] paths = new String[depth];
-            paths[depth] = cc.name;
-            ContainerSetup acc = cc.container;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
-                acc = acc.parent;
-            }
-            yield new PackedNamespacePath(paths);
-        }
-        };
-    }
-
-    public static NamespacePath ofContainer(ContainerSetup cc) {
-        int depth = cc.depth;
-        return switch (depth) {
-        case 0 -> ROOT;
-        case 1 -> new PackedNamespacePath(cc.name);
-        default -> {
-            String[] paths = new String[depth];
-            ContainerSetup acc = cc;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
-                acc = acc.parent;
-            }
-            yield new PackedNamespacePath(paths);
-        }
-        };
     }
 
     /** {@inheritDoc} */
