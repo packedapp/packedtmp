@@ -94,7 +94,7 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
 
     /** {@return the assembly where the bean is defined.} */
     public AssemblyMirror assembly() {
-        return bean().userRealm.mirror();
+        return bean().assembly.mirror();
     }
 
     /** {@return the bean's lifetime.} */

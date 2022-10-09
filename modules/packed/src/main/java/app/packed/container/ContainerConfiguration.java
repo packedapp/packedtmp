@@ -145,7 +145,7 @@ public class ContainerConfiguration {
         checkIsConfigurable();
 
         // Wire any current component
-        container.userRealm.wireCurrentComponent();
+        container.assembly.wireCurrentComponent();
 
         // Create a new realm for the assembly
         AssemblySetup newRealm = new AssemblySetup(d, container, assembly, wirelets);

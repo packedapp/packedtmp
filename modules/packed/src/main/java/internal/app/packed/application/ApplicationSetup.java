@@ -26,9 +26,9 @@ import app.packed.application.BuildTaskInfo;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.PackedManagedLifetime;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.service.inject.ApplicationInjectionManager;
@@ -60,6 +60,9 @@ public final class ApplicationSetup implements BuildTaskInfo {
     final PoolEntryHandle runtimeAccessor;
 
     final BuildTaskGoal goal;
+
+    @Nullable
+    ApplicationLauncher launcher;
 
     /**
      * Create a new application setup
@@ -100,5 +103,12 @@ public final class ApplicationSetup implements BuildTaskInfo {
     @Override
     public BuildTaskGoal goal() {
         return goal;
+    }
+
+    /**
+     * 
+     */
+    public void close() {
+        launcher = new ApplicationLauncher(this);
     }
 }

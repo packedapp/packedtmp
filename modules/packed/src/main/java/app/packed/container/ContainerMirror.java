@@ -52,7 +52,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
 
     /** {@return the assembly where the container is defined.} */
     public AssemblyMirror assembly() {
-        return container().userRealm.mirror();
+        return container().assembly.mirror();
     }
 
     /** {@return a {@link Collection} view of all the beans defined in the container.} */

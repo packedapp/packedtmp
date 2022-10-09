@@ -15,7 +15,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a Lifetime. */
-public final class LifetimeSetup {
+public class LifetimeSetup {
 
     /** A MethodHandle for invoking {@link LifetimeMirror#initialize(LifetimeSetup)}. */
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), LifetimeMirror.class,

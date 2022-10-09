@@ -23,30 +23,29 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 @SuppressWarnings("unused")
-public class ManagedLifetime {
+public class ContainerManagedLifetime {
 
     private final ReentrantLock lifetimeLock = new ReentrantLock();
-    
+
     private static final VarHandle STATE;
     static {
         try {
             MethodHandles.Lookup l = MethodHandles.lookup();
-            STATE = l.findVarHandle(ManagedLifetime.class, "state", int.class);
+            STATE = l.findVarHandle(ContainerManagedLifetime.class, "state", int.class);
         } catch (Exception e) {
             throw new InternalError(e);
         }
     }
-    
- // states: RUNNING -> SHUTDOWN -> TERMINATED
-    private static final int UNINITIALIZED    = 0;
-    private static final int INITIALIZING   = 1;
+
+    // states: RUNNING -> SHUTDOWN -> TERMINATED
+    private static final int UNINITIALIZED = 0;
+    private static final int INITIALIZING = 1;
     private static final int INITIALIZED = 2;
-    private static final int STARTING    = 3;
-    private static final int RUNNING    = 4;
-    private static final int SHUTDOWN   = 5;
+    private static final int STARTING = 3;
+    private static final int RUNNING = 4;
+    private static final int SHUTDOWN = 5;
     private static final int TERMINATED = 6;
-    
-    
+
     private volatile int state;
     private volatile Throwable errorneous;
 }

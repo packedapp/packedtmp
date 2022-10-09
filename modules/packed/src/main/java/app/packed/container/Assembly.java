@@ -176,6 +176,6 @@ public abstract class Assembly {
     // I'm not totally crazy about it though.
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        configuration().container.userRealm.lookup(lookup);
+        configuration().container.assembly.lookup(lookup);
     }
 }

@@ -17,7 +17,6 @@ package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanExtensionPoint;
@@ -26,7 +25,6 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerWrapperCompanion;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
@@ -54,24 +52,8 @@ import internal.app.packed.application.PackedApplicationDriver;
  *            the type of application interface this driver creates.
  * @see App#driver()
  */
-// Environment + Application Interface + Result
-
-// Refactoring
-//// En build(Wirelet... wirelets) metode
-//// Companion objects must be added in order of the recieving MethodHandle
-
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
-
-    /**
-     * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
-     * <p>
-     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
-     * unsupported extensions
-     * 
-     * @return a set of disabled extensions
-     */
-    Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -111,15 +93,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     A launch(Assembly assembly, Wirelet... wirelets); // newInstance
 
     /**
-     * Returns whether or not applications produced by this driver have an {@link ManagedLifetimeController}.
-     * <p>
-     * Applications that are not runnable will always be launched in the Initial state.
-     * 
-     * @return whether or not the applications produced by this driver are runnable
-     */
-    LifetimeKind lifetimeKind();
-
-    /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
      * <p>
      * The {@link BuildTaskInfo application descriptor} will returns XXX at build time.
@@ -137,6 +110,15 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets);
 
+    /**
+     * @param assembly
+     *            the assembly defining the application that should be verified
+     * @param wirelets
+     *            optional wirelets
+     * 
+     * @throws RuntimeException
+     *             if the application was not valid
+     */
     void verify(Assembly assembly, Wirelet... wirelets);
 
     /**
@@ -160,7 +142,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      *            the wirelets to add
      * @return the augmented application driver
      */
-    ApplicationDriver<A> with(Wirelet... wirelets); // not much of usecase anymore I think
+    ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
      * Returns a new {@code ApplicationDriver} builder that will build an application driver without a wrapper bean.
@@ -170,11 +152,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     static Builder<Void> builder() {
         return new PackedApplicationDriver.Builder<>(null);
     }
-//
-//    static <A> Builder<A> builder(Class<A> wrapperType, MethodHandle wrapperFactory) {
-//        // Maybe only have Factory...
-//        return new PackedApplicationDriver.Builder<>(null);
-//    }
 
     static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<A> wrapperType) {
         return builder(BeanExtensionPoint.factoryOf(wrapperType));
@@ -189,6 +166,11 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * {@link ApplicationDriver#builder()}.
      */
     /* sealed */ interface Builder<A> /* permits PackedApplicationDriver.Builder */ {
+     // Environment + Application Interface + Result
+
+     // Refactoring
+     //// En build(Wirelet... wirelets) metode
+     //// Companion objects must be added in order of the recieving MethodHandle
 
         // Maaske konfigure man dem direkte paa extension support klassen
         //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
@@ -323,13 +305,13 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     // Ville jo vaere fedt at genbruge den for ikke application-drivere.
     // Apps on Apps.
     public final class Composer extends AbstractComposer {
-        /// Hmm interessant
-        // fungere dog ikke super godt mht til den generiske parameter
-        static ApplicationDriver<Void> of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
+        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer> action, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
-        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer> action, Wirelet... wirelets) {
+        /// Hmm interessant
+        // fungere dog ikke super godt mht til den generiske parameter
+        static ApplicationDriver<Void> of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
     }

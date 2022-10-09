@@ -226,7 +226,7 @@ public abstract class Extension<E extends Extension<E>> {
     protected void onAssemblyClose() {
         ExtensionSetup s = setup;
         for (ExtensionSetup c = s.childFirst; c != null; c = c.childSiebling) {
-            if (c.container.userRealm == s.container.userRealm) {
+            if (c.container.assembly == s.container.assembly) {
                 c.instance().onAssemblyClose();
             }
         }

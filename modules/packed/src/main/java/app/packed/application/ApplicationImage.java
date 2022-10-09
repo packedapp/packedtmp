@@ -15,12 +15,16 @@
  */
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Function;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import internal.app.packed.application.PackedApplicationDriver.PackedApplicationImage;
+import internal.app.packed.application.PackedApplicationDriver.MappedApplicationImage;
+import internal.app.packed.application.PackedApplicationDriver.ReusableApplicationImage;
+import internal.app.packed.application.PackedApplicationDriver.SingleShotApplicationImage;
 
 /**
  * An application image is a pre-built application that can be launched at a later time.
@@ -54,7 +58,7 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
  * @see App#reusableImageOf(Assembly, Wirelet...)
  */
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationImage<A> permits PackedApplicationImage {
+public sealed interface ApplicationImage<A> permits SingleShotApplicationImage, ReusableApplicationImage, MappedApplicationImage {
 
     /**
      * Launches an instance of the application that this image represents.
@@ -120,7 +124,10 @@ public sealed interface ApplicationImage<A> permits PackedApplicationImage {
      *            the mapper
      * @return a new application image that maps the result of the launch
      */
-    <E> ApplicationImage<E> map(Function<A, E> mapper);
+    default <E> ApplicationImage<E> map(Function<? super A, ? extends E> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        return new MappedApplicationImage<>(this, mapper);
+    }
 }
 
 interface Zimgbox<A> {

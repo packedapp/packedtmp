@@ -77,7 +77,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     public final RealmSetup realm;
 
     /** The assembly from where the component is being installed. */
-    public final AssemblySetup userRealm;
+    public final AssemblySetup assembly;
 
     public final ArrayList<Runnable> wiringActions = new ArrayList<>(1);
 
@@ -96,9 +96,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         this.realm = requireNonNull(realm);
 
         if (realm instanceof AssemblySetup s) {
-            this.userRealm = s;
+            this.assembly = s;
         } else /* ExtensionRealmSetup */ {
-            this.userRealm = parent.userRealm;
+            this.assembly = parent.assembly;
         }
 
         this.parent = parent;

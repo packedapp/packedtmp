@@ -72,6 +72,7 @@ import app.packed.container.Wirelet;
 public final class ServiceContract {
 
     /** The driver used for creating mirrors daemon driver. */
+    // I think we need to expose ServiceCompanion... otherwise this should be empty
     public static final ApplicationDriver<Void> MIRROR_DRIVER = ApplicationDriver.builder().buildVoid();
 
     /** A contract with no requirements and no services provided. */

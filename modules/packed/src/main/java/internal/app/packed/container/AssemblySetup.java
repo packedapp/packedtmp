@@ -147,6 +147,9 @@ public final class AssemblySetup extends RealmSetup {
                 extension.close();
             }
 
+            // Create application launcher
+            application.close();
+            
         } else {
             // Similar to above, except we do not close extensions application-wide
             ExtensionSetup e = extensions.pollFirst();
@@ -218,8 +221,8 @@ public final class AssemblySetup extends RealmSetup {
         public Optional<AssemblyMirror> parent() {
             ContainerSetup org = assembly.container();
             for (ContainerSetup p = org.parent; p != null; p = p.parent) {
-                if (org.userRealm != p.userRealm) {
-                    return Optional.of(p.userRealm.mirror());
+                if (org.assembly != p.assembly) {
+                    return Optional.of(p.assembly.mirror());
                 }
             }
             return Optional.empty();
@@ -232,12 +235,12 @@ public final class AssemblySetup extends RealmSetup {
         }
 
         private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
-            if (assembly == cs.userRealm) {
+            if (assembly == cs.assembly) {
                 for (ContainerSetup c : cs.containerChildren) {
                     children(assembly, c, list);
                 }
             } else {
-                list.add(cs.userRealm.mirror());
+                list.add(cs.assembly.mirror());
             }
             return list;
         }

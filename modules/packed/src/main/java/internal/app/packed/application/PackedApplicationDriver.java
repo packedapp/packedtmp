@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -39,8 +40,6 @@ import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.CompositeWirelet;
-import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -104,8 +103,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.bannedExtensions = existing.bannedExtensions;
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
+     * <p>
+     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
+     * unsupported extensions
+     * 
+     * @return a set of disabled extensions
+     */
     public Set<Class<? extends Extension<?>>> bannedExtensions() {
         return bannedExtensions;
     }
@@ -115,7 +120,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
         as.build();
-        return new PackedApplicationImage<>(this, as.application);
+        return new SingleShotApplicationImage<>(this, as.application);
     }
 
     /** {@inheritDoc} */
@@ -123,11 +128,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public A launch(Assembly assembly, Wirelet... wirelets) {
         AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
         as.build();
-        return ApplicationInitializationContext.launch(this, as.application, null);
+        return as.application.launcher.launchImmediately(this);
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns whether or not applications produced by this driver have an {@link ManagedLifetimeController}.
+     * <p>
+     * Applications that are not runnable will always be launched in the Initial state.
+     * 
+     * @return whether or not the applications produced by this driver are runnable
+     */
     public LifetimeKind lifetimeKind() {
         return lifetimeKind;
     }
@@ -163,7 +173,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
         AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
         as.build();
-        return new PackedApplicationImage<>(this, as.application);
+        return new ReusableApplicationImage<>(this, as.application);
     }
 
     /** {@inheritDoc} */
@@ -303,28 +313,56 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    public final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
-            implements ApplicationImage<A> {
+    /**
+     * Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#reusableImageOf(Assembly, Wirelet...)}.
+     */
+    public static final class SingleShotApplicationImage<A> extends AtomicReference<ReusableApplicationImage<A>> implements ApplicationImage<A> {
+
+        private static final long serialVersionUID = 1L;
+
+        SingleShotApplicationImage(PackedApplicationDriver<A> driver, ApplicationSetup application) {
+            super(new ReusableApplicationImage<>(driver, application));
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public A launch(Wirelet... wirelets) {
+            ReusableApplicationImage<A> img = getAndSet(null);
+            if (img == null) {
+                throw new IllegalStateException("This image has already been used");
+            }
+            return img.launch(wirelets);
+        }
+    }
+
+    /**
+     * Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#reusableImageOf(Assembly, Wirelet...)}.
+     */
+    public /* primitive */ record ReusableApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
-            requireNonNull(wirelets, "wirelets is null");
+            return application.launcher.launchFromImage(driver, wirelets);
+        }
+    }
 
-            // If launching an image, the user might have specified additional runtime wirelets
-            WireletWrapper wrapper = null;
-            if (wirelets.length > 0) {
-                wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
-            }
+    /** A mapped wrapper of an {@link ApplicationImage}. */
+    public record MappedApplicationImage<A, F> (ApplicationImage<F> image, Function<? super F, ? extends A> mapper) implements ApplicationImage<A> {
 
-            return ApplicationInitializationContext.launch(driver, application, wrapper);
+        /** {@inheritDoc} */
+        @Override
+        public A launch(Wirelet... wirelets) {
+            F result = image.launch(wirelets);
+            return mapper.apply(result);
         }
 
         /** {@inheritDoc} */
         @Override
-        public <E> ApplicationImage<E> map(Function<A, E> mapper) {
-            throw new UnsupportedOperationException();
+        public <E> ApplicationImage<E> map(Function<? super A, ? extends E> mapper) {
+            requireNonNull(mapper, "mapper is null");
+            Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
+            return new MappedApplicationImage<>(image, andThen);
         }
     }
 }
