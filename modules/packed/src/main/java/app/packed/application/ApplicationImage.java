@@ -19,13 +19,15 @@ import java.util.function.Function;
 
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.managed.RunState;
-import internal.app.packed.application.PackedApplicationDriver.PackedApplicationLauncher;
+import app.packed.lifetime.RunState;
+import internal.app.packed.application.PackedApplicationDriver.PackedApplicationImage;
 
 /**
- * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
- * ahead of time, the actual time to instantiation the system can be severely decreased often down to a couple of
- * microseconds. In addition to this, images can be reusable, so you can create multiple systems from a single image.
+ * An application image is a pre-built application that can be launched at a later time.
+ * <p>
+ * By configuring an image ahead of time, the actual time to instantiation the system can be severely decreased often
+ * down to a couple of microseconds. In addition to this, images can be reusable, so you can create multiple systems
+ * from a single image.
  * <p>
  * Application images typically have two main use cases:
  * 
@@ -48,34 +50,29 @@ import internal.app.packed.application.PackedApplicationDriver.PackedApplication
  * An image can be used to create new instances of {@link app.packed.application.App} or other applications. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
- * @see App#build(Assembly, Wirelet...)
- * @see App#buildReusable(Assembly, Wirelet...)
+ * @see App#imageOf(Assembly, Wirelet...)
+ * @see App#reusableImageOf(Assembly, Wirelet...)
  */
-
-// Det er som default mange gange...
-//// Og saa har vi single shot!!!
-
-/// ApplicationImage<String> i; String numberOfFoos = i.launch();
-
-//// Jeg tror ikke man kan mirror et application image...
-//// Med mindre man bruger en speciel wirelet
-// I virkeligheden er det jo bare det samme som at launch en Bean...
-// Saa det er vel snare en tynd wrapper over en MH som tager en single parameter or type
-// Wirelet[] wirelets
-
-// Jeg er ikke vild med navnet launch
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher {
+public sealed interface ApplicationImage<A> permits PackedApplicationImage {
 
+    /**
+     * Launches an instance of the application that this image represents.
+     * 
+     * @throws ApplicationLaunchException
+     *             if the application failed to launch
+     * @throws IllegalStateException
+     *             if the image has already been used to launch an application and the image is not a reusable image
+     * @return the application interface if available
+     */
     default A checkedLaunch() throws ApplicationLaunchException {
         return checkedLaunch(new Wirelet[] {});
     }
-    
-    // Altsaa skal vi have en Bestemt Exception. Som har mere info??
-    // ApplicationLaunchException
-    A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException;
 
-    
+    default A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Launches an instance of the application that this image represents.
      * 
@@ -123,11 +120,17 @@ public sealed interface ApplicationLauncher<A> permits PackedApplicationLauncher
      *            the mapper
      * @return a new application image that maps the result of the launch
      */
-     <E> ApplicationLauncher<E> map(Function<A, E> mapper);
+    <E> ApplicationImage<E> map(Function<A, E> mapper);
 }
 
 interface Zimgbox<A> {
-    
+
+    default boolean isUseable() {
+        // An image returns true always
+
+        // Optional<A> tryLaunch(Wirelet... wirelets)???
+        return true;
+    }
 
     /**
      * Returns the launch mode of application(s) created by this image.
@@ -138,18 +141,11 @@ interface Zimgbox<A> {
     // ApplicationInfo instead???
     RunState launchMode(); // usageMode??
 
-    default boolean isUseable() {
-        // An image returns true always
-
-        // Optional<A> tryLaunch(Wirelet... wirelets)???
-        return true;
-    }
-
     // Hmmmmmmm IDK
     // Could do sneaky throws instead
     A throwingUse(Wirelet... wirelets) throws Throwable;
 
-    default ApplicationLauncher<A> with(Wirelet... wirelets) {
+    default ApplicationImage<A> with(Wirelet... wirelets) {
         // Egentlig er den kun her pga Launcher
         throw new UnsupportedOperationException();
     }
@@ -163,7 +159,7 @@ interface Zimgbox<A> {
      * @throws UnsupportedOperationException
      *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
      */
-    static ApplicationMirror extractMirror(ApplicationLauncher<?> image) {
+    static ApplicationMirror extractMirror(ApplicationImage<?> image) {
         throw new UnsupportedOperationException();
     }
 

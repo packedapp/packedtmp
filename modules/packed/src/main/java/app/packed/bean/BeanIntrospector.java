@@ -299,43 +299,28 @@ public abstract class BeanIntrospector {
         AnnotationReader annotations();
 
         /**
+         * Binds the specified value to the parameter.
          * <p>
          * Vi tager Nullable med saa vi bruge raw.
          * <p>
          * Tror vi smider et eller andet hvis vi er normal og man angiver null. Kan kun bruges for raw
          * 
-         * @param instance
-         *            the instance to provide to the variable
-         * 
+         * @param value
+         *            the value to bind
          * @throws ClassCastException
-         *             if the type of the instance does not match the type of the variable
+         *             if the type of the value does not match the underlying parameter
          * @throws IllegalStateException
-         *             if a provide method has already been called on this instance (I think it is fine to allow it to be
-         *             overriden by itself).
+         *             if a binding has already been created for the underlying parameter.
          */
-        void bind(@Nullable Object obj);
-
-        /**
-         * Variable is resolvable at runtime.
-         * <p>
-         * Cannot provide instance. Must provide an optional class or Null will represent a missing value. Maybe just optional
-         * class for now
-         * 
-         * @return
-         */
-        // Hmm, resolve at runtime ved jeg ikke hvor meget passer. extensionen ligger jo fast
-        // Saa maaske bindAtRuntime
-        OnBindingHook bindAtRuntime();
+        void bind(@Nullable Object value);
 
         /**
          * <p>
          * For raw er det automatisk en fejl
+         * 
+         * @throws Giver ikke mening for rawModel
          */
-        // provideUnresolved();
-        void bindMissing(); // Giver ikke mening for rawModel
-
-        // UOE if invokingExtension!= introspector.extension...
-        void bindToInvocationArgument(int index); // EH.bindToInvocationArgument(0)
+        void bindEmpty();
 
         /**
          * @param postFix
@@ -348,16 +333,35 @@ public abstract class BeanIntrospector {
             throw new BeanDefinitionException("OOPS " + postFix);
         }
 
-        // Har vi altid en?
-        // Det er saa here hvor BeanMethod.bindings() er lidt traels...
-        // Maaske smider den bare UOE? Ja det taenker jeg
+        /**
+         * @return
+         * 
+         * @throws UnsupportedOperationException
+         *             if called from {@link OperationHandle#bindings()}
+         */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
+        /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
 
         void provide(MethodHandle methodHandle);
 
         void provide(Op<?> fac);
+
+        /**
+         * @param index
+         *            the index of the argument
+         * 
+         * @throws IndexOutOfBoundsException
+         * @throws IllegalArgumentException
+         *             if the invocation argument is not of kind {@link InvocationType.ArgumentKind#ARGUMENT}
+         * @throws UnsupportedOperationException
+         *             if the {@link #invokingExtension()} is not identical to the binding extension
+         * @throws ClassCastException
+         * 
+         * @see InvocationType
+         */
+        void provideFromInvocationArgument(int index);
 
         /**
          * @return
@@ -368,6 +372,16 @@ public abstract class BeanIntrospector {
         default Key<?> readKey() {
             throw new UnsupportedOperationException();
         }
+
+        /**
+         * Variable is resolvable at runtime.
+         * <p>
+         * Cannot provide instance. Must provide an optional class or Null will represent a missing value. Maybe just optional
+         * class for now
+         * 
+         * @return
+         */
+        OnBindingHook runtimeBindable();
 
         OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier);
 

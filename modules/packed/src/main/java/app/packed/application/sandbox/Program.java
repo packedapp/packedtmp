@@ -19,12 +19,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.lifetime.RunState;
 import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.lifetime.managed.RunState;
 import app.packed.service.ServiceLocator;
 
 /**
@@ -112,8 +112,8 @@ public interface Program extends AutoCloseable {
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationLauncher#launch(Wirelet...)} will be
-     * {@link RunState#RUNNING}. unless GuestWirelet.delayStart
+     * The state of the applications returned by {@link ApplicationImage#launch(Wirelet...)} will be unless
+     * GuestWirelet.delayStart
      * 
      * @param assembly
      *            the assembly to use for creating the image
@@ -123,19 +123,18 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
-    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
     /**
-     * Build and start a new application using the specified assembly. The state of the returned application is
-     * {@link RunState#RUNNING}.
+     * Build and start a new application using the specified assembly. The state of the returned application is running
      * <p>
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use LifetimeWirelets#lazyStartE. Which will return an application in the
-     * {@link RunState#INITIALIZED} phase instead.
+     * process you can use LifetimeWirelets#lazyStartE. Which will return an application in the {@link RunState#INITIALIZED}
+     * phase instead.
      * 
      * @param assembly
      *            the assembly to use for creating the application
@@ -154,8 +153,7 @@ public interface Program extends AutoCloseable {
 record ProgramImplementation(String name, ServiceLocator services, ManagedLifetimeController runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().managedLifetime().build(MethodHandles.lookup(),
-            ProgramImplementation.class);
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().managedLifetime().build(MethodHandles.lookup(), ProgramImplementation.class);
 
     /** {@inheritDoc} */
     @Override

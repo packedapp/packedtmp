@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.base.Key;
-
 /**
  * An operation type represents the arguments and return variable for an operation.
  * 
@@ -147,11 +145,6 @@ public final /* primitive */ class OperationType {
     /** {@return the return variable.} */
     public Variable returnVariable() {
         return returnVar;
-    }
-
-    /** {@return the return variable.} */
-    public Key<?> returnVariableToKey() {
-        throw new UnsupportedOperationException();
     }
 
     /**

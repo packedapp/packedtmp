@@ -23,7 +23,6 @@ package app.packed.lifetime.sandbox;
 // Det er maaske
 
 public interface LifetimeStopInfo {
-
-    boolean compledNormally();
+    boolean completedNormally();
     boolean compledWithResult();
 }

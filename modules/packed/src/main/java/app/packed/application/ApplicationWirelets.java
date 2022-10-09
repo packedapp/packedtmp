@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import app.packed.container.Wirelet;
-import app.packed.lifetime.managed.RunState;
+import app.packed.lifetime.RunState;
 import app.packed.lifetime.managed.StopOption;
 
 /**

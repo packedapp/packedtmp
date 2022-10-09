@@ -16,7 +16,6 @@
 package app.packed.service;
 
 import app.packed.base.Key;
-import app.packed.base.Qualifier;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 

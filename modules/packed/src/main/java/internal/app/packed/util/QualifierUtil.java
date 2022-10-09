@@ -20,7 +20,7 @@ import static internal.app.packed.util.StringFormatter.format;
 import java.lang.annotation.Annotation;
 
 import app.packed.base.Nullable;
-import app.packed.base.Qualifier;
+import app.packed.service.Qualifier;
 
 /** Limited support for javax.inject classes. */
 public final class QualifierUtil {

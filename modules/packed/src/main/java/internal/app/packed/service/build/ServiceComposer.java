@@ -26,11 +26,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
-import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
 import app.packed.operation.Op;
+import app.packed.service.Qualifier;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.service.sandbox.Service;
 

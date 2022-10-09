@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import app.packed.lifetime.RunState;
 import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.lifetime.managed.ManagedState;
-import app.packed.lifetime.managed.RunState;
+import app.packed.lifetime.managed.LifetimeState;
 import app.packed.lifetime.managed.StopOption;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.ApplicationSetup;
@@ -100,7 +100,7 @@ public final class PackedManagedLifetime implements ManagedLifetimeController {
 
     /** {@inheritDoc} */
     @Override
-    public ManagedState info() {
+    public LifetimeState info() {
         return null;
     }
 

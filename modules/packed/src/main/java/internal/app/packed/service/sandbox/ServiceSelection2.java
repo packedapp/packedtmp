@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.bean.Provider;
+import app.packed.operation.Provider;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.service.runtime.OldServiceLocator;
 import internal.app.packed.service.runtime.ServiceSelection;

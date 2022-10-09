@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,22 +21,34 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationLauncher;
-import app.packed.application.ComponentMirror;
+import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 import internal.app.packed.component.ComponentScope;
 import internal.app.packed.container.InternalWirelet;
 
 /**
- * Wirelets that can be specified at when building an application. Attempts to use them with
- * {@link ApplicationLauncher#launch(Wirelet...)} will fail with {@link IllegalArgumentException}.
+ * Wirelets that can only be specified when building an application.
+ * <p>
+ * Attempts to use them when {@link ApplicationImage#launch(Wirelet...) launching} an image will fail with
+ * {@link IllegalArgumentException}.
  */
-// Jeg tror den doer og ryger over paa andre wirelets...
-// Saa vi udelukkende gruppere dem efter type...
-// IDK... Maaske beholder vi den alligevel...
+// Jeg tror den doer og ryger over paa andre wirelets... Saa vi udelukkende gruppere dem efter type... IDK... Maaske beholder vi den alligevel...
 public final class BuildWirelets {
 
     /** Not for you my friend. */
     private BuildWirelets() {}
+
+    public static Wirelet alwaysWrapInBuildException() {
+        // I don't think we can specify both this and onExceptionInBuild
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet onExceptionInBuild(Consumer<Exception> handler) {
+        // consumer must throw,
+        // handler.consumer()
+        // throw new BuildException("handler did not throw");
+        throw new UnsupportedOperationException();
+    }
 
     public static Wirelet disableRuntimeWirelets() {
         // En optimering der goer at vi ved der aldrig kommer nogle runtime wirelets

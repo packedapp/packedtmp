@@ -16,16 +16,19 @@
 package app.packed.application;
 
 /**
- * An exception that is thrown during the build phase of an application.
+ * A generic build exception that may be thrown when building an application.
  * <p>
- * This exception normally indicates a programmatic error and can usually only be recovered by updates to the underlying
- * code or configuration files.
+ * This exception typically indicates a programmatic error that can usually only be recovered by updates to the
+ * underlying code or configuration files.
  */
 // Taenker configurations fejl maaske smider ConfigException - Det kan jo baade vaere paa runtime og build time
 
-// ApplicationBuildException (Men saa lukker vi for at vi ikke kan deploye beans adhoc)...
-// Det er maaske fint. Syntes helt sikkert vi skal omnavngive den hvis vi kun bruger den til 
-// applications.
+// Vi wrapper ikke altid i BuildException. Giver ikke mening fx at fx wrappe NPE. Det goer Guice og det er 
+// aerlig talt mere besvaerligt at laese hvad der sker end bare et simpelt stacktrace
+
+// PackedException, PackedBuildException, PackedRuntimeException
+// Haha, hvad med ConfigException, den kan baade smides paa runtime og paa build time
+// IDK. Maaske drop den
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
@@ -57,3 +60,7 @@ public class BuildException extends RuntimeException {
         super(message, cause);
     }
 }
+//ApplicationBuildException (Men saa lukker vi for at vi ikke kan deploye beans adhoc)...
+//Det er maaske fint. Syntes helt sikkert vi skal omnavngive den hvis vi kun bruger den til 
+//applications.
+// Det er jo stadig en slags build af en application. Bare runtime extension

@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.base.Nullable;
+import app.packed.lifetime.RunState;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -97,7 +98,7 @@ public interface ManagedLifetimeController {
      * 
      * @return an immutable snapshot of the component's current status
      */
-    ManagedState info();
+    LifetimeState info();
 
     /**
      * Starts and awaits the component if it has not already been started.

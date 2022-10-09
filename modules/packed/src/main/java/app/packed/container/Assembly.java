@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
-import app.packed.application.ApplicationBuildInfo;
+import app.packed.application.BuildTaskInfo;
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblyUserRealmSetup;
 import internal.app.packed.util.LookupUtil;
@@ -73,8 +73,8 @@ public abstract class Assembly {
     private ContainerConfiguration configuration;
 
     /** {@return a descriptor for the application being built.} */
-    protected final ApplicationBuildInfo applicationInfo() {
-        return configuration().container.application.info;
+    protected final BuildTaskInfo applicationInfo() {
+        return configuration().container.application;
     }
 
     /**

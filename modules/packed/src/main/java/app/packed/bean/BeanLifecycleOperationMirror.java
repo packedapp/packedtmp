@@ -18,7 +18,7 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.lifetime.LifetimeOperationMirror;
-import app.packed.lifetime.managed.RunState;
+import app.packed.lifetime.RunState;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -31,7 +31,7 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
     public String stage() {
         // Maaske har vi en mere finindeling her end i runState()
         // Saa vi fx ogsaa kan sige <<instantiate>>
-        return "initilize";
+        return "<<instantiate>>";
     }
     
     public RunState runState() {

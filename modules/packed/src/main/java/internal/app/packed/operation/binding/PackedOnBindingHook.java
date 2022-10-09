@@ -82,17 +82,17 @@ public final class PackedOnBindingHook implements OnBindingHook {
 
     /** {@inheritDoc} */
     @Override
-    public OnBindingHook bindAtRuntime() {
+    public OnBindingHook runtimeBindable() {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void bindMissing() {}
+    public void bindEmpty() {}
 
     /** {@inheritDoc} */
     @Override
-    public void bindToInvocationArgument(int index) {}
+    public void provideFromInvocationArgument(int index) {}
 
     /** {@inheritDoc} */
     @Override

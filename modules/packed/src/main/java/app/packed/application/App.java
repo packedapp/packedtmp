@@ -15,10 +15,12 @@
  */
 package app.packed.application;
 
+import java.util.Optional;
+
 import app.packed.application.sandbox.UnhandledApplicationException;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.managed.RunState;
+import app.packed.lifetime.RunState;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -36,28 +38,6 @@ public final class App {
 
     /** Not today Satan, not today. */
     private App() {}
-
-    /**
-     * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
-     * <p>
-     * If you need to launch multiple instances of the same application use {@link #buildReusable(Assembly, Wirelet...)}. Or
-     * maybe use that Application wirelet... I don't really think it is that common
-     * 
-     * @param assembly
-     *            the application's assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return a launcher that can be used to launch a single instance of the application
-     */
-    // Builds an application but does run instead. Instead returning a launcher that can be used at a later point
-    // to run the application.
-    public static ApplicationLauncher<Void> build(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
-    }
-
-    public static ApplicationLauncher<Void> buildReusable(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
-    }
 
     /**
      * @param assembly
@@ -82,6 +62,24 @@ public final class App {
     }
 
     /**
+     * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
+     * <p>
+     * If you need to launch multiple instances of the same application use {@link #reusableImageOf(Assembly, Wirelet...)}.
+     * Or maybe use that Application wirelet... I don't really think it is that common
+     * 
+     * @param assembly
+     *            the application's assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return a launcher that can be used to launch a single instance of the application
+     */
+    // Builds an application but does run instead. Instead returning a launcher that can be used at a later point
+    // to run the application.
+    public static ApplicationImage<Void> imageOf(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
+    }
+
+    /**
      * Builds an application from the specified assembly and returns a mirror representing the application.
      * 
      * @param assembly
@@ -89,11 +87,16 @@ public final class App {
      * @param wirelets
      *            optional wirelets
      * @return a mirror representing the application
-     * @throws BuildException
+     * @throws RuntimeException
      *             if the application could not be build
      */
-    public static ApplicationMirror mirror(Assembly assembly, Wirelet... wirelets) {
+    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
         return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
+    }
+
+    public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
+        // printDetails=Container, Assemblies,////
+        mirrorOf(assembly, wirelets).print();
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
@@ -101,12 +104,11 @@ public final class App {
         // I think it is super usefull
         //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
         // ApplicationPrinter.Full, ApplicationPrinter.Normal
-        mirror(assembly, wirelets).print();
+        mirrorOf(assembly, wirelets).print();
     }
 
-    public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
-        // printDetails=Container, Assemblies,////
-        mirror(assembly, wirelets).print();
+    public static ApplicationImage<Void> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
     }
 
     /**
@@ -119,8 +121,8 @@ public final class App {
      *            the assembly representing the application
      * @param wirelets
      *            optional wirelets
-     * @throws BuildException
-     *             if the application failed to build
+     * @throws RuntimeException
+     *             if the application failed to build or panicked
      * @throws UnhandledApplicationException
      *             if the fails during runtime
      * @see #checkedRun(Assembly, Wirelet...)
@@ -138,10 +140,29 @@ public final class App {
     interface Customizer {
         ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
 
+        // exception application panic/build strategy
+
         Customizer restartable();
 
         void run(Assembly assembly, Wirelet... wirelets);
     }
+}
+
+// Tror godt vi kan vaere et naested interface...
+// man kalder altid .app
+// I don't think we catch BuildException here
+
+// Integration with CompletableFuture and other futures
+
+// ApplicationLauncher? launcherOf?
+
+// Den fungere ikke super godt med fx DaemonApp. Som jo mere er en slags Future
+interface SandboxAppResult<A> {
+    int exitCode(); // or is this cliApp???
+    Optional<Throwable> cause();
+    boolean isSuccess();
+    boolean isFailed();
+    A result();
 }
 
 class Usage {

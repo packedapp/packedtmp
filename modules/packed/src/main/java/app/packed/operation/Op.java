@@ -107,15 +107,14 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     Op<R> bind(@Nullable Object argument);
 
     /**
-     * Returns a new operation that will perform the specified action immediately after the invocation before returning
-     * result to the runtime.
+     * Returns a new operation that will perform the specified action with the result before returning it.
      * <p>
-     * If the op has void return type {@link MethodHandles#zero(Class)} will be used to find a fitting value to provide to
-     * the action.
+     * If this operation has void return type, {@link MethodHandles#zero(Class)} will be used to find a fitting value to
+     * provide to the action. (Should we fail instead???)
      * 
      * @param action
      *            the consume that will be run with the result of each invocation
-     * @return the new op
+     * @return the new operation
      */
     Op<R> peek(Consumer<? super R> action);
 
@@ -123,7 +122,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     OperationType type();
 
     /**
-     * Creates a new op that can invoke the specified constructor.
+     * Creates a new operation that will invoke the specified constructor.
      * 
      * @param constructor
      *            the constructor that will be called when operation is invoked
@@ -189,7 +188,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     public static Op<?> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
-    
+
     public static Op<?> ofMethodHandle(MethodHandle methodHandle, OperationType type) {
         throw new UnsupportedOperationException();
     }
@@ -251,8 +250,7 @@ interface ZandboxOp<R> {
 
         // FactoryMapper...
         // FactoryMapper.of(dddd).removeMethodsStartingWithX().toFactory();
-
-        return mapTo(TypeToken.of(type), mapper);
+        throw new UnsupportedOperationException();
     }
 
     /**

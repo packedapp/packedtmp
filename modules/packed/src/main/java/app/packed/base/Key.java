@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.base.TypeToken.CanonicalizedTypeToken;
+import app.packed.service.Qualifier;
+import app.packed.service.Tag;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.QualifierUtil;

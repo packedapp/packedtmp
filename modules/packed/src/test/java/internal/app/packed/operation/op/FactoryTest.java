@@ -25,8 +25,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.base.Qualifier;
 import app.packed.operation.Op;
+import app.packed.service.Qualifier;
 
 /** Test of {@link Op}. */
 public class FactoryTest {

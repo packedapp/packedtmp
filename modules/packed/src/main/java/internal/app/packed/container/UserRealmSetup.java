@@ -39,6 +39,8 @@ public abstract sealed class UserRealmSetup extends RealmSetup permits AssemblyU
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
+    protected abstract Class<? extends Assembly> assemblyClass();
+    
     final void close() {
         super.close();
 

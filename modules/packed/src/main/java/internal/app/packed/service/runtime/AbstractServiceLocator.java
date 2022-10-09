@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.bean.Provider;
+import app.packed.operation.Provider;
 import internal.app.packed.service.sandbox.Service;
 
 /**

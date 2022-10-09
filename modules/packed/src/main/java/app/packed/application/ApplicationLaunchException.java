@@ -20,6 +20,9 @@ package app.packed.application;
  */
 //ApplicationException?
 //ApplicationExecutionException
+
+// Add ApplicationException and ApplicationRuntimeException?
+
 public class ApplicationLaunchException extends Exception {
 
     private static final long serialVersionUID = 1L;

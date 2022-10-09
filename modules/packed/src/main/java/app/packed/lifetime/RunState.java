@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime.managed;
+package app.packed.lifetime;
+
+import app.packed.lifetime.managed.ManagedLifetimeController;
 
 /**
  * An enum containing all valid states of a {@link ManagedLifetimeController}.
@@ -47,6 +49,7 @@ package app.packed.lifetime.managed;
 //// BeanInstanceState
 
 // ManagedState?? Hmm Vi har jo @Initialize for non-managed application
+// Lifetime state
 public enum RunState {
 
     /**

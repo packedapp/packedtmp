@@ -15,7 +15,7 @@
  */
 package app.packed.application.sandbox;
 
-import app.packed.lifetime.managed.ManagedState;
+import app.packed.lifetime.managed.LifetimeState;
 
 /**
  *
@@ -26,5 +26,5 @@ public interface ApplicationContext {
     boolean isHosted();
     
     /** {@return the current state of the application.} */
-    ManagedState state(); // state().current()
+    LifetimeState state(); // state().current()
 }

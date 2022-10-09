@@ -20,6 +20,8 @@ package app.packed.lifetime;
  */
 // LifetimeManagement bare?
 // Maaske ender det bare med en boolean
+
+// Deprecated????
 public enum LifetimeKind {
     UNMANAGED, // has initialize
 

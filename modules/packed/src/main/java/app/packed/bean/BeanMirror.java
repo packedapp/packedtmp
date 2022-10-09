@@ -1,5 +1,7 @@
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -17,6 +19,7 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.StreamUtil;
 
 /**
  * A mirror of a bean.
@@ -84,20 +87,17 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
         return bean().realm.realm();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return the application where this bean is defined.} */
     public ApplicationMirror application() {
         return bean().application.mirror();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return the assembly where the bean is defined.} */
     public AssemblyMirror assembly() {
         return bean().userRealm.mirror();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return the bean's lifetime.} */
     public LifetimeMirror lifetime() {
         return bean().lifetime.mirror();
     }
@@ -158,10 +158,24 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
         return bean().operator();
     }
 
+    /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
         return bean().operations.stream().map(OperationSetup::mirror);
     }
 
+    /**
+     * Returns a collection of all of the operations declared by the bean of the specified type.
+     * 
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return StreamUtil.filterAssignable(operationType, operations());
+    }
+    
     /**
      * Returns the type (class) of the bean.
      * <p>

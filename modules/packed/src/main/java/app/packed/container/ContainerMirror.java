@@ -15,7 +15,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -24,7 +23,6 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.CollectionUtil;
-import internal.app.packed.util.StreamUtil;
 
 /**
  * A mirror of a single container.
@@ -47,14 +45,12 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
      */
     public ContainerMirror() {}
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return the application this container is a part of.} */
     public ApplicationMirror application() {
         return container().application.mirror();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return the assembly where the container is defined.} */
     public AssemblyMirror assembly() {
         return container().userRealm.mirror();
     }
@@ -78,6 +74,10 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     /* Sequenced */
     public Collection<ContainerMirror> children() {
         return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
+    }
+
+    public final Stream<ContainerMirror> descendents(boolean includeThis) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -166,8 +166,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
         return container().isExtensionUsed(extensionType);
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /** {@return the containers's lifetime.} */
     public LifetimeMirror lifetime() {
         return container().lifetime.mirror();
     }
@@ -176,12 +175,6 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
     @Override
     public String name() {
         return container().name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Stream<OperationMirror> operations() {
-        return StreamUtil.filterAssignable(BeanSetup.class, container().children.values().stream()).flatMap(b -> b.mirror().operations());
     }
 
     /** {@return the parent container of this container. Or empty if the root container.} */
@@ -225,3 +218,97 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
         return findExtension(extensionMirrorType).orElseThrow();
     }
 }
+//// Taken from ComponentMirror
+// Now that we have parents...
+// add Optional<Component> tryResolve(CharSequence path);
+// Syntes ikke vi skal have baade tryResolve or resolve...
+// ComponentMirror resolve(CharSequence path);
+
+///**
+// * Returns a stream consisting of this component and all of its descendants in any order.
+// *
+// * @param options
+// *            specifying the order and contents of the stream
+// * 
+// * @return a component stream consisting of this component and all of its descendants in any order
+// */
+//ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
+
+///**
+// * 
+// * 
+// * <p>
+// * This operation does not allocate any objects internally.
+// * 
+// * @implNote Implementations of this method should never generate object (which is a bit difficult
+// * @param action
+// *            oops
+// */
+//// We want to take some options I think. But not as a options
+//// Well it is more or less the same options....
+//// Tror vi laver options om til en klasse. Og saa har to metoder.
+//// Og dropper varargs..
+//default void traverse(Consumer<? super ComponentMirror> action) {
+//    stream(Option.maxDepth(1)).forEach(action);
+//}
+
+//// The returned component is always a system component
+//default Component viewAs(Object options) {
+//    // F.eks. tage et system. Og saa sige vi kun vil
+//    // se paa den aktuelle container
+//
+//    // Ideen er lidt at vi kan taege en component
+//    // Og f.eks. lave den om til en rod...
+//    // IDK. F.eks. hvis jeg har guests app.
+//    // Saa vil jeg gerne kunne sige til brugere...
+//    // Her er en clean Guest... Og du kan ikke se hvad
+//    // der sker internt...
+//    throw new UnsupportedOperationException();
+//}
+
+//default Optional<ComponentMirror> tryResolve(CharSequence path) {
+//    throw new UnsupportedOperationException();
+//}
+
+// Taenker den er immutable...
+
+// Problemet er at vi vil have en snapshot...
+// Tager vi snapshot af attributer??? Nej det goer vi altsaa ikke...
+// Rimlig meget overhead
+
+// Tror topol
+
+// Vi skal ikke have noget live...
+// Maaske af det derfor
+
+// Special cases
+
+// Not In same system
+// -> distance = -1, inSameContainer=false, isStronglyBound=false, isWeaklyBound=false
+
+// Same component
+// -> distance = 0, inSameContainer=true, isStrongBound=?, isWeaklyBound=false
+
+// Teanker vi flytter den et andet sted end attributer...
+
+// Altsaa den walk man kan lave via Iterable... ville det vaere rart at kunne beskrive relationsship
+// for den.. Altsaa cr[4] er foraeldre til cr[3] og saa
+
+// A component in a runtime system is not the same as in the build time system.
+
+// I would say the restartable image of one system is not in the same system as
+// the same restartable image when we have restarted.
+
+// https://en.wikipedia.org/wiki/Path_(graph_theory)
+// ComponentConnection
+
+// A ComponentRelation is directed
+// Can we have attributes??
+// if (rel.inSameContainer())
+
+// En relation er jo mere end topology... Syntes
+
+// walkFromSource(); Syntes maaske ikke den skal extende Iteralble...
+// Maaske fromSourceIterator
+// https://en.wikipedia.org/wiki/Tree_structure
+// description()? -> Same, parent, child, descendend, ancestor,

@@ -19,10 +19,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.lifetime.managed.RunState;
+import app.packed.lifetime.RunState;
 
 /**
- * A base configuration class for beans that creates instances of {@link BeanConfiguration#beanClass()} at runtime.
+ * A base configuration class for beans that are instantiable.
  * 
  * @param <T>
  *            the type of bean instances that will be created at runtime

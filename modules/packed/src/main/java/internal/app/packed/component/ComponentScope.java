@@ -15,7 +15,7 @@
  */
 package internal.app.packed.component;
 
-import app.packed.base.Qualifier;
+import app.packed.service.Qualifier;
 
 /**
  *

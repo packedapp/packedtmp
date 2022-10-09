@@ -26,13 +26,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
-import app.packed.base.Qualifier;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector.BindingHook;
-import app.packed.bean.Provider;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
 import app.packed.container.Assembly;
@@ -40,6 +38,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
+import app.packed.operation.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.util.LookupUtil;
@@ -159,8 +158,8 @@ public interface ServiceLocator {
     /**
      * Returns a service instance with the given key if available, otherwise an empty optional.
      * <p>
-     * If you know for certain that a service is provided for the specified key, {@link #use(Key)} usually gives more
-     * fluent code.
+     * If you know for certain that a service is provided for the specified key, {@link #use(Key)} usually gives more fluent
+     * code.
      *
      * @param <T>
      *            the type of service that this method returns
@@ -292,7 +291,7 @@ public interface ServiceLocator {
      * Returns an application driver that can be used to create standalone service locator instances.
      * 
      * @return an application driver
-     * @see #build(Assembly, Wirelet...)
+     * @see #imageOf(Assembly, Wirelet...)
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
@@ -321,12 +320,12 @@ public interface ServiceLocator {
      * @return the new image
      * @see #driver()
      */
-    static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
         return driver().imageOf(assembly, wirelets);
     }
 
-    static ApplicationLauncher<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().newReusableImage(assembly, wirelets);
+    static ApplicationImage<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
+        return driver().reusableImageOf(assembly, wirelets);
     }
 
     /** {@return a service locator that provides no services.} */
@@ -398,8 +397,8 @@ public interface ServiceLocator {
 
         /**
          * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-         * together with the injector. The runtime will use {@link Op#factoryOf(Class)} to find the constructor or method
-         * used for instantiation.
+         * together with the injector. The runtime will use {@link Op#factoryOf(Class)} to find the constructor or method used
+         * for instantiation.
          * <p>
          * The default key for the service will be the specified {@code implementation}. If the
          * {@code implementation.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will
@@ -524,6 +523,13 @@ public interface ServiceLocator {
 
         private static ServiceLocator of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
             return compose(DRIVER, new Composer(), configurator, wirelets);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected Class<? extends ComposerAssembly> assemblyClass() {
+            class ServiceLocatorAssembly extends ComposerAssembly {}
+            return ServiceLocatorAssembly.class;
         }
     }
 }

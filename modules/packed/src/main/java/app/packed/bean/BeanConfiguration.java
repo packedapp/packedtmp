@@ -6,7 +6,7 @@ import app.packed.base.NamespacePath;
 import internal.app.packed.bean.PackedBeanHandle;
 
 /**
- * The base configuration class for a bean.
+ * The base configuration class for beans.
  */
 public class BeanConfiguration {
 
@@ -23,15 +23,10 @@ public class BeanConfiguration {
         this.handle = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
     }
 
-    /**
-     * {@return the kind of bean that is being configured.}
-     * 
-     * @see BeanHandle#beanClass()
-     */
+    /** {@return the kind of bean that is being configured.} */
     public final Class<?> beanClass() {
         return handle.beanClass();
     }
-
 
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not.
@@ -50,7 +45,7 @@ public class BeanConfiguration {
         handle.bean().checkIsCurrent();
     }
 
-    /** {@return a handle for the configuration of the bean.} */
+    /** {@return the bean handle that was used to create this configuration.} */
     protected BeanHandle<?> handle() {
         return handle;
     }

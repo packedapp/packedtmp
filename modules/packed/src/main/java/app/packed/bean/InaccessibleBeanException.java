@@ -37,6 +37,8 @@ package app.packed.bean;
 
 // FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
 // saa factory er et daarligt navn/
+
+// InaccessibleMemberException
 public class InaccessibleBeanException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

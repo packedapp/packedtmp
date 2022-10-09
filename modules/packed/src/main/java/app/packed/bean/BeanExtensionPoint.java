@@ -2,19 +2,15 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
-import app.packed.base.TypeToken;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
-/**
- * An extension point class for {@link BeanExtension}.
- */
+/** An extension point class for {@link BeanExtension}. */
 public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     /** Creates a new bean extension point */
@@ -64,6 +60,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kindSingleton().install();
         return new ExtensionBeanConfiguration<>(handle);
     }
+
     // should not call anything on the returned bean
     public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
         throw new UnsupportedOperationException();
@@ -149,7 +146,7 @@ class Sandbox {
     // The problem is when we start calling methods such as .provide()
     // It doesn't really work to call such methods more than once.
     // Or at least the logic to ignore subsequent calls would be a bit annoying
-    
+
     // should not call anything on the returned bean
     public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
         throw new UnsupportedOperationException();
@@ -183,24 +180,23 @@ class Sandbox {
      *            the implementation type
      * @return a factory for the specified implementation type
      */
-    @SuppressWarnings("unchecked")
-    // Hmm vi har jo ikke parameterized beans???
-    // Ved ikke om vi skal droppe den...
-    public static <T> Op<T> defaultFactoryFor(TypeToken<T> implementation) {
-        // Can cache it with a Class[] array corresponding to type parameters...
-        requireNonNull(implementation, "implementation is null");
-        if (!implementation.isCanonicalized()) {
-            // We cache factories for all "new TypeToken<>(){}"
-            // return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
-            throw new UnsupportedOperationException();
-        }
-        Type t = implementation.type();
-        if (t instanceof Class<?> cl) {
-            return (Op<T>) BeanExtensionPoint.factoryOf(cl);
-        } else {
-            return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
-        }
-    }
+//    // Hmm vi har jo ikke parameterized beans???
+//    // Ved ikke om vi skal droppe den...
+//    public static <T> Op<T> defaultFactoryFor(TypeToken<T> implementation) {
+//        // Can cache it with a Class[] array corresponding to type parameters...
+//        requireNonNull(implementation, "implementation is null");
+//        if (!implementation.isCanonicalized()) {
+//            // We cache factories for all "new TypeToken<>(){}"
+//            // return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+//            throw new UnsupportedOperationException();
+//        }
+//        Type t = implementation.type();
+//        if (t instanceof Class<?> cl) {
+//            return (Op<T>) BeanExtensionPoint.factoryOf(cl);
+//        } else {
+//            return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
+//        }
+//    }
 }
 
 //

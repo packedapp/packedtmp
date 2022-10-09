@@ -23,10 +23,6 @@ import app.packed.bean.BeanIntrospector.OnBindingHook;
 /**
  *
  */
-// ExtensionBeanContext
-// Injection of unprocessed arguments
-// Bean Instance
-// Context ting
 public interface InvocationType {
 
     OptionalInt beanInstanceIndex();
@@ -37,17 +33,11 @@ public interface InvocationType {
     /** {@return the method type representing the invocation.} */
     MethodType methodType();
 
-    InvocationType returnType(Class<?> type);
-
-    default InvocationType returnTypeObject() {
-        return returnType(Object.class);
-    }
-
     /**
      * @param type
      * @return
      * 
-     * @see OnBindingHook#bindToInvocationArgument(int)
+     * @see OnBindingHook#provideFromInvocationArgument(int)
      */
     InvocationType withArg(Class<?> type);
 
@@ -55,6 +45,12 @@ public interface InvocationType {
 
     default InvocationType withBeanInstanceObject() {
         return withBeanInstance(Object.class);
+    }
+
+    InvocationType withReturnType(Class<?> type);
+
+    default InvocationType withReturnTypeObject() {
+        return withReturnType(Object.class);
     }
 
     // Takes EBC returns void
@@ -66,8 +62,17 @@ public interface InvocationType {
         throw new UnsupportedOperationException();
     }
 
-    enum IT {
-        ARGUMENT, BEAN_INSTANCE, CONTEXT, EXTENSION_BEAN_CONTEXT;
+    enum ArgumentKind {
+        ARGUMENT, 
+        
+        /** The invocation argument is a bean instance. */
+        BEAN_INSTANCE, 
+        
+        CONTEXT, 
+        
+        /** The invocation argument is an extension bean context. */
+        // Maaske noget andet end context, given dens mening
+        EXTENSION_BEAN_CONTEXT; // InvocationContext
     }
 }
 
@@ -87,7 +92,7 @@ class PackedInvocationType implements InvocationType {
 
     /** {@inheritDoc} */
     @Override
-    public InvocationType returnType(Class<?> type) {
+    public InvocationType withReturnType(Class<?> type) {
         return null;
     }
 

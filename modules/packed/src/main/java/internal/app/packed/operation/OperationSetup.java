@@ -34,8 +34,8 @@ import internal.app.packed.util.ThrowableUtil;
 public final class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_OPERATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class,
-            "initialize", void.class, OperationSetup.class);
+    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
+            void.class, OperationSetup.class);
 
     /** The bean that defines the operation. */
     public final BeanSetup bean;
@@ -80,7 +80,7 @@ public final class OperationSetup {
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
         try {
-            MH_OPERATION_MIRROR_INITIALIZE.invokeExact(mirror, this);
+            MH_MIRROR_INITIALIZE.invokeExact(mirror, this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

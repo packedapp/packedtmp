@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
+import app.packed.application.BuildTaskGoal;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -56,7 +56,7 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
     /**
      * Builds an application using the specified assembly and optional wirelets.
      * 
-     * @param buildTarget
+     * @param goal
      *            the build target
      * @param assembly
      *            the assembly of the application
@@ -64,9 +64,9 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
      *            optional wirelets
      * @return the application
      */
-    public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationBuildKind buildTarget, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblyUserRealmSetup(PackedApplicationDriver<?> applicationDriver, BuildTaskGoal goal, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
-        this.application = new ApplicationSetup(applicationDriver, buildTarget, this, wirelets);
+        this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
 
         this.container = application.container;
@@ -114,6 +114,12 @@ public final class AssemblyUserRealmSetup extends UserRealmSetup {
     /** {@inheritDoc} */
     @Override
     public Class<?> realmType() {
+        return assembly.getClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected Class<? extends Assembly> assemblyClass() {
         return assembly.getClass();
     }
 }

@@ -18,9 +18,6 @@ package internal.app.packed.util;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.invoke.VarHandle;
-import java.lang.invoke.VarHandle.AccessMode;
-import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import internal.app.packed.service.inject.InternalDependency;
@@ -47,10 +44,10 @@ public class MethodHandleUtil {
     public static final MethodHandle optionalOfNullableTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(OPTIONAL_OF_NULLABLE, MethodType.methodType(Optional.class, type));
     }
-    
-    public static MethodHandle getFromField(int modifiers, VarHandle vh) {
-        return Modifier.isVolatile(modifiers) ? vh.toMethodHandle(AccessMode.GET_VOLATILE) : vh.toMethodHandle(AccessMode.GET);
-    }
+//    
+//    public static MethodHandle getFromField(int modifiers, VarHandle vh) {
+//        return Modifier.isVolatile(modifiers) ? vh.toMethodHandle(AccessMode.GET_VOLATILE) : vh.toMethodHandle(AccessMode.GET);
+//    }
 
     public static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {
         return target.asType(target.type().changeReturnType(newReturnType));

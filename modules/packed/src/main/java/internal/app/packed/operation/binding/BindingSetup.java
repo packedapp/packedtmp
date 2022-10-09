@@ -39,7 +39,7 @@ public final class BindingSetup {
     public final int index;
 
     /** Supplies a mirror for the operation */
-    private Supplier<? extends BindingMirror> mirrorSupplier = () -> new BindingMirror();
+    private Supplier<? extends BindingMirror> mirrorSupplier = BindingMirror::new;
 
     /** The underlying operation. */
     public final OperationSetup operation;

@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.stubs.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.service.Qualifier;
+package app.packed.application.sandbox;
 
 /**
- * An annotation with a single string value, used for testing.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
-public @interface StringQualifier {
-    String value() default "";
+public class Restartable {
+    
 }

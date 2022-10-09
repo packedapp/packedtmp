@@ -15,17 +15,9 @@
  */
 package app.packed.application;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.stream.Stream;
-
 import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
-import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
-import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.OperationMirror;
-import internal.app.packed.util.StreamUtil;
 
 /**
  * A mirror of a component.
@@ -37,15 +29,6 @@ import internal.app.packed.util.StreamUtil;
  */
 public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMirror, BeanMirror {
 
-    /** {@return the application this component is a part of.} */
-    ApplicationMirror application();
-
-    /** {@return the assembly where the component is defined.} */
-    AssemblyMirror assembly();
-
-    /** {@return the component's lifetime.} */
-    LifetimeMirror lifetime();
-
     /**
      * Returns the name of this component.
      * <p>
@@ -56,121 +39,7 @@ public sealed interface ComponentMirror /*extends Mirror */ permits ContainerMir
      */
     String name();
 
-    /** {@return a stream of all of the operations declared by the bean.} */
-    Stream<OperationMirror> operations();
-
-    /**
-     * Returns a collection of all of the operations declared by the bean of the specified type.
-     * 
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    default <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return StreamUtil.filterAssignable(operationType, operations());
-    }
-
     /** {@return the path of this component} */
     NamespacePath path();
 
-    default void print() {
-        // Super useful...
-        throw new UnsupportedOperationException();
-    }
-
-    // Now that we have parents...
-    // add Optional<Component> tryResolve(CharSequence path);
-    // Syntes ikke vi skal have baade tryResolve or resolve...
-    // ComponentMirror resolve(CharSequence path);
-
-//    /**
-//     * Returns a stream consisting of this component and all of its descendants in any order.
-//     *
-//     * @param options
-//     *            specifying the order and contents of the stream
-//     * 
-//     * @return a component stream consisting of this component and all of its descendants in any order
-//     */
-//    ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
-
-//    /**
-//     * 
-//     * 
-//     * <p>
-//     * This operation does not allocate any objects internally.
-//     * 
-//     * @implNote Implementations of this method should never generate object (which is a bit difficult
-//     * @param action
-//     *            oops
-//     */
-//    // We want to take some options I think. But not as a options
-//    // Well it is more or less the same options....
-//    // Tror vi laver options om til en klasse. Og saa har to metoder.
-//    // Og dropper varargs..
-//    default void traverse(Consumer<? super ComponentMirror> action) {
-//        stream(Option.maxDepth(1)).forEach(action);
-//    }
-
-//    // The returned component is always a system component
-//    default Component viewAs(Object options) {
-//        // F.eks. tage et system. Og saa sige vi kun vil
-//        // se paa den aktuelle container
-//
-//        // Ideen er lidt at vi kan taege en component
-//        // Og f.eks. lave den om til en rod...
-//        // IDK. F.eks. hvis jeg har guests app.
-//        // Saa vil jeg gerne kunne sige til brugere...
-//        // Her er en clean Guest... Og du kan ikke se hvad
-//        // der sker internt...
-//        throw new UnsupportedOperationException();
-//    }
-
-//    default Optional<ComponentMirror> tryResolve(CharSequence path) {
-//        throw new UnsupportedOperationException();
-//    }
-
-    // Taenker den er immutable...
-
-    // Problemet er at vi vil have en snapshot...
-    // Tager vi snapshot af attributer??? Nej det goer vi altsaa ikke...
-    // Rimlig meget overhead
-
-    // Tror topol
-
-    // Vi skal ikke have noget live...
-    // Maaske af det derfor
-
-    // Special cases
-
-    // Not In same system
-    // -> distance = -1, inSameContainer=false, isStronglyBound=false, isWeaklyBound=false
-
-    // Same component
-    // -> distance = 0, inSameContainer=true, isStrongBound=?, isWeaklyBound=false
-
-    // Teanker vi flytter den et andet sted end attributer...
-
-    // Altsaa den walk man kan lave via Iterable... ville det vaere rart at kunne beskrive relationsship
-    // for den.. Altsaa cr[4] er foraeldre til cr[3] og saa
-
-    // A component in a runtime system is not the same as in the build time system.
-
-    // I would say the restartable image of one system is not in the same system as
-    // the same restartable image when we have restarted.
-
-    // https://en.wikipedia.org/wiki/Path_(graph_theory)
-    // ComponentConnection
-
-    // A ComponentRelation is directed
-    // Can we have attributes??
-    // if (rel.inSameContainer())
-
-    // En relation er jo mere end topology... Syntes
-
-    // walkFromSource(); Syntes maaske ikke den skal extende Iteralble...
-    // Maaske fromSourceIterator
-    // https://en.wikipedia.org/wiki/Tree_structure
-    // description()? -> Same, parent, child, descendend, ancestor,
 }

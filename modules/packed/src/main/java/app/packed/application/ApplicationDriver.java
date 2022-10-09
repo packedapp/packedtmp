@@ -74,6 +74,22 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     Set<Class<? extends Extension<?>>> bannedExtensions();
 
     /**
+     * Create a new application image by using the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly that should be used to build the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     * @throws RuntimeException
+     *             if the image could not be build
+     */
+    // Andre image optimizations
+    //// Don't cache beans info
+    /// Nu bliver jeg i tvivl igen... Fx med Tester
+    ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets);
+
+    /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
@@ -84,8 +100,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @param wirelets
      *            optional wirelets
      * @return the launched application instance
-     * @throws BuildException
-     *             if the application could not be build
+     * @throws RuntimeException
+     *             if the image could not be build
      * @throws LifecycleException
      *             if the application failed to initialize
      * @throws RuntimeException
@@ -106,33 +122,20 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
      * <p>
-     * The {@link ApplicationBuildInfo application descriptor} will returns XXX at build time.
+     * The {@link BuildTaskInfo application descriptor} will returns XXX at build time.
      * 
      * @param assembly
      *            the assembly to create an application mirror from
      * @param wirelets
      *            optional wirelets
      * @return an application mirror
+     * 
+     * @throws RuntimeException
+     *             if the mirror could not be build
      */
     ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
 
-    /**
-     * Create a new application image by using the specified assembly and optional wirelets.
-     * 
-     * @param assembly
-     *            the assembly that should be used to build the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     * @throws BuildException
-     *             if the image could not be build
-     */
-    // Andre image optimizations
-    //// Don't cache beans info
-    /// Nu bliver jeg i tvivl igen... Fx med Tester
-    ApplicationLauncher<A> imageOf(Assembly assembly, Wirelet... wirelets);
-
-    ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets);
+    ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets);
 
     void verify(Assembly assembly, Wirelet... wirelets);
 
@@ -173,21 +176,14 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 //        return new PackedApplicationDriver.Builder<>(null);
 //    }
 
-    static <A> Builder<A> builder(Op<A> wrapperFactory) {
-        return new PackedApplicationDriver.Builder<>(wrapperFactory);
-    }
-
     static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<A> wrapperType) {
         return builder(BeanExtensionPoint.factoryOf(wrapperType));
     }
 
-    final class Composer extends AbstractComposer {
-        /// Hmm interessant
-        static ApplicationDriver<?> of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
+    static <A> Builder<A> builder(Op<A> wrapperFactory) {
+        return new PackedApplicationDriver.Builder<>(wrapperFactory);
     }
-    
+
     /**
      * A builder for an application driver. An instance of this interface is acquired by calling
      * {@link ApplicationDriver#builder()}.
@@ -212,10 +208,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
-        default ApplicationDriver<A> build(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-        
         <S> ApplicationDriver<S> build(Class<S> wrapperType, MethodHandle wrapperFactory, Wirelet... wirelets);
 
         /**
@@ -237,6 +229,10 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @return a new driver
          */
         <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> wrapperType, Wirelet... wirelets);
+
+        default ApplicationDriver<A> build(Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
 
         ApplicationDriver<Void> buildVoid(Wirelet... wirelets);
 
@@ -265,16 +261,16 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
-        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
-            throw new UnsupportedOperationException();
-        }
-
         default Builder<A> restartable() {
             return this;
         }
 
         // Det er jo ogsaa en companion
         default Builder<A> resultType(Class<?> resultType) {
+            throw new UnsupportedOperationException();
+        }
+
+        default Builder<A> specializeMirror(Supplier<? extends ApplicationMirror> supplier) {
             throw new UnsupportedOperationException();
         }
 
@@ -321,6 +317,27 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 //            return this;
 //        }
 
+    }
+
+    // Ville jo vaere fedt at genbruge den for ikke application-drivere.
+    // Apps on Apps.
+    public final class Composer extends AbstractComposer {
+        /// Hmm interessant
+        // fungere dog ikke super godt mht til den generiske parameter
+        static ApplicationDriver<Void> of(BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+
+        static <A> ApplicationDriver<A> of(Class<A> application, BuildAction<? super Composer> configurator, Wirelet... wirelets) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected Class<? extends ComposerAssembly> assemblyClass() {
+            class ServiceComposerAssembly extends ComposerAssembly {}
+            return ServiceComposerAssembly.class;
+        }
     }
 }
 

@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.Qualifier;
+import app.packed.service.Qualifier;
 import testutil.stubs.Letters;
 
 /**

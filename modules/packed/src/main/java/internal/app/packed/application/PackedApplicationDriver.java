@@ -26,11 +26,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationLaunchException;
-import app.packed.application.ApplicationLauncher;
+import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BuildTaskGoal;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
@@ -114,8 +113,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
-        // Create a new assembly realm which
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.LAUNCH, assembly, wirelets);
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, BuildTaskGoal.LAUNCH, assembly, wirelets);
         realm.build();
         return ApplicationInitializationContext.launch(this, realm.application, null);
     }
@@ -129,17 +127,17 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.MIRROR, assembly, wirelets);
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, BuildTaskGoal.MIRROR, assembly, wirelets);
         realm.build();
         return realm.application.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.BUILD, assembly, wirelets);
+    public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
         realm.build();
-        return new PackedApplicationLauncher<>(this, realm.application);
+        return new PackedApplicationImage<>(this, realm.application);
     }
 
     /**
@@ -162,10 +160,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> newReusableImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, ApplicationBuildKind.BUILD_MULTIPLE, assembly, wirelets);
+    public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+        AssemblyUserRealmSetup realm = new AssemblyUserRealmSetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
         realm.build();
-        return new PackedApplicationLauncher<>(this, realm.application);
+        return new PackedApplicationImage<>(this, realm.application);
     }
 
     /** {@inheritDoc} */
@@ -304,9 +302,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    public final /* primitive */ record PackedApplicationLauncher<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
-            implements ApplicationLauncher<A> {
+    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
+    public final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
+            implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -324,13 +322,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <E> ApplicationLauncher<E> map(Function<A, E> mapper) {
+        public <E> ApplicationImage<E> map(Function<A, E> mapper) {
             throw new UnsupportedOperationException();
         }
     }

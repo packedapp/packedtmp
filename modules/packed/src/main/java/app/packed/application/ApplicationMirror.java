@@ -19,7 +19,7 @@ import internal.app.packed.container.Mirror;
  * A mirror of an application.
  * <p>
  * An instance of this class is typically obtained by calling a application mirror factory method such as
- * {@link App#mirror(Assembly, Wirelet...)}.
+ * {@link App#mirrorOf(Assembly, Wirelet...)}.
  */
 public class ApplicationMirror implements Mirror {
 
@@ -63,8 +63,8 @@ public class ApplicationMirror implements Mirror {
     }
 
     /** {@return a descriptor of the application.} */
-    public ApplicationBuildInfo descriptor() {
-        return application().info;
+    public BuildTaskInfo descriptor() {
+        return application();
     }
 
     /** {@inheritDoc} */

@@ -20,15 +20,16 @@ import app.packed.container.ContainerMirror;
 import app.packed.operation.BindingMirror;
 
 /**
- *
+ * A binding of a service.
  */
+// findAll(SBM.class).filterOn(key.equals(String.class)).toList();
 public class ServiceBindingMirror extends BindingMirror {
 
     public Key<?> key() {
         throw new UnsupportedOperationException();
     }
-    
+
     public ContainerMirror container() {
-        throw new UnsupportedOperationException();
+        return operation().bean().container(); // ???
     }
 }

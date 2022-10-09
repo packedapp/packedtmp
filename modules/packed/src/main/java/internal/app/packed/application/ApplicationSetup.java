@@ -15,12 +15,14 @@
  */
 package internal.app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationBuildInfo;
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BuildTaskGoal;
+import app.packed.application.BuildTaskInfo;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.LifetimeKind;
@@ -34,7 +36,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Internal configuration of an application. */
-public final class ApplicationSetup {
+public final class ApplicationSetup implements BuildTaskInfo {
 
     /** A MethodHandle for invoking {@link ApplicationMirror#initialize(ApplicationSetup)}. */
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
@@ -50,8 +52,6 @@ public final class ApplicationSetup {
     @Nullable
     public EntryPointSetup entryPoints;
 
-    public final ApplicationBuildInfo info;
-
     /** The tree this service manager is a part of. */
     public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
 
@@ -59,15 +59,17 @@ public final class ApplicationSetup {
     @Nullable
     final PoolEntryHandle runtimeAccessor;
 
+    final BuildTaskGoal goal;
+
     /**
      * Create a new application setup
      * 
      * @param driver
      *            the application's driver
      */
-    public ApplicationSetup(PackedApplicationDriver<?> driver, ApplicationBuildKind buildKind, UserRealmSetup realm, Wirelet[] wirelets) {
+    public ApplicationSetup(PackedApplicationDriver<?> driver, BuildTaskGoal goal, UserRealmSetup realm, Wirelet[] wirelets) {
         this.driver = driver;
-        this.info = new PackedApplicationInfo(buildKind);
+        this.goal = requireNonNull(goal);
 
         // Create the root container of the application
         this.container = new ContainerSetup(this, realm, new PackedContainerHandle(null), null, wirelets);
@@ -92,5 +94,11 @@ public final class ApplicationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BuildTaskGoal goal() {
+        return goal;
     }
 }

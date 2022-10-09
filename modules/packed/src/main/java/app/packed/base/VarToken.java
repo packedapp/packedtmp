@@ -19,6 +19,9 @@ package app.packed.base;
  *
  */
 // Like TypeToken but also captures annotations
+
+// Tror vi har Variable<T>
+
 public abstract class VarToken<T> /* implements Variable */ {
 
 }

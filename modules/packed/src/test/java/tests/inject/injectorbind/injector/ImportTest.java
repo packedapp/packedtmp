@@ -23,9 +23,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.base.Key;
-import app.packed.base.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.operation.Op1;
+import app.packed.service.Qualifier;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceWirelets;
 

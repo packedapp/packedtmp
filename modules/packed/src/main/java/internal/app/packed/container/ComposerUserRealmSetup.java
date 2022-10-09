@@ -20,9 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.ApplicationBuildInfo.ApplicationBuildKind;
+import app.packed.application.BuildTaskGoal;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.BuildAction;
+import app.packed.container.AbstractComposer.ComposerAssembly;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
@@ -39,19 +41,36 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     private static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class, "doBuild",
             void.class, ContainerConfiguration.class, BuildAction.class);
 
-    private final BuildAction<?> consumer;
+    /** A handle that can invoke {@link AbstractComposer#assemblyClass()}. */
+    private static final MethodHandle MH_COMPOSER_ASSEMBLY_CLASS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractComposer.class,
+            "assemblyClass", Class.class);
 
+    private final BuildAction<?> consumer;
 
     /** The application we are building. */
     public final ApplicationSetup application;
 
+    private Class<? extends ComposerAssembly> assemblyClass;
+
     public ComposerUserRealmSetup(PackedApplicationDriver<?> applicationDriver, BuildAction<?> consumer, Wirelet[] wirelets) {
         this.consumer = requireNonNull(consumer);
-        this.application = new ApplicationSetup(applicationDriver, ApplicationBuildKind.LAUNCH, this, wirelets);
+        this.application = new ApplicationSetup(applicationDriver, BuildTaskGoal.LAUNCH, this, wirelets);
     }
 
+    @SuppressWarnings("unchecked")
     public <C extends AbstractComposer> void build(C composer) {
         ContainerConfiguration componentConfiguration = new PackedContainerHandle(null).toConfiguration(application.container);
+
+        Class<?> c;
+        try {
+            c = (Class<?>) MH_COMPOSER_ASSEMBLY_CLASS.invoke(composer);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        if (!ComposerAssembly.class.isAssignableFrom(c)) {
+            throw new ClassCastException(c + " is not assignable to " + ComposerAssembly.class);
+        }
+        this.assemblyClass = (Class<? extends ComposerAssembly>) c;
 
         // Invoke AbstractComposer#doBuild which in turn will invoke consumer.accept
         try {
@@ -74,5 +93,15 @@ public final class ComposerUserRealmSetup extends UserRealmSetup {
     @Override
     public Class<?> realmType() {
         return consumer.getClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected Class<? extends Assembly> assemblyClass() {
+        Class<? extends Assembly> c = assemblyClass;
+        if (c == null) {
+            throw new IllegalStateException("An assembly class was not computed");
+        }
+        return c;
     }
 }

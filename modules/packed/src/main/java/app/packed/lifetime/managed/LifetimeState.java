@@ -17,6 +17,8 @@ package app.packed.lifetime.managed;
 
 import java.util.Optional;
 
+import app.packed.lifetime.RunState;
+
 /**
  * The state immutable snapshot of the state of a container.
  */
@@ -30,7 +32,7 @@ import java.util.Optional;
 // Ved ikke om den bare skal hedde RunStateSnapshot.
 // Ved ikke hvad metoderne skal hedde hvis man har begge dele paa et App interface.
 
-public interface ManagedState {
+public interface LifetimeState {
 
     /** {@return the actual state of the entity.} */
     RunState currentState();

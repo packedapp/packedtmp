@@ -135,6 +135,9 @@ public abstract class AbstractComposer {
         container().container.userRealm.lookup(lookup);
     }
 
+    // Should we have
+    protected abstract Class<? extends ComposerAssembly> assemblyClass();
+
     /**
      * Invoked by the runtime immediately after {@link BuildAction#build(AbstractComposer)}.
      * <p>
@@ -194,5 +197,14 @@ public abstract class AbstractComposer {
          *            the composer
          */
         void build(C composer);
+    }
+
+    public static abstract class ComposerAssembly extends Assembly {
+
+        /** {@inheritDoc} */
+        @Override
+        protected final void build() {
+            throw new Error("This method should never be called");
+        }
     }
 }
