@@ -168,7 +168,7 @@ public non-sealed class ContainerMirror implements ComponentMirror , Mirror {
 
     /** {@return the containers's lifetime.} */
     public LifetimeMirror lifetime() {
-        return container().lifetime.mirror();
+        return container().lifetime().mirror();
     }
 
     /** {@inheritDoc} */

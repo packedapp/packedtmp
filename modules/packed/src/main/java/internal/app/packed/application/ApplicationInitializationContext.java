@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.OldLifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
@@ -41,7 +41,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     public final ApplicationSetup application;
 
     /** The launch mode of the application. */
-    final LifetimeKind lifetimeKind;
+    final OldLifetimeKind lifetimeKind;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
@@ -127,10 +127,10 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
             }
         }
 
-        LifetimeConstantPool pool = context.pool = application.container.lifetime.pool.newPool(context);
+        LifetimeConstantPool pool = context.pool = application.container.lifetime().pool.newPool(context);
 
         // Run all initializers
-        for (MethodHandle mh : application.container.lifetime.initializers) {
+        for (MethodHandle mh : application.container.lifetime().initializers) {
             try {
                 mh.invoke(pool);
             } catch (Throwable e) {

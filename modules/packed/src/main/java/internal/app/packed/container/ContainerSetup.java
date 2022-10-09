@@ -38,12 +38,16 @@ import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.PackedNamespacePath;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends ComponentSetup {
+
+    /** The application this component is a part of. */
+    public final ApplicationSetup application;
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
@@ -87,6 +91,17 @@ public final class ContainerSetup extends ComponentSetup {
     /** The assembly from where the component is being installed. */
     public final AssemblySetup assembly;
 
+    public ContainerLifetimeSetup lifetime() {
+        return lifetime;
+    }
+
+    /** The lifetime the component is a part of. */
+    final ContainerLifetimeSetup lifetime;
+
+    /** The container this component belongs to, or null for a root container. */
+    @Nullable
+    public final ContainerSetup parent;
+
     /**
      * Create a new container setup.
      * 
@@ -103,14 +118,16 @@ public final class ContainerSetup extends ComponentSetup {
      */
     public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
-        super(application, realm, parent);
-
+        super(realm, parent);
+        this.parent = parent;
+        this.application = requireNonNull(application);
         this.assembly = realm;
-
         if (parent == null) {
             this.depth = 0;
+            this.lifetime = new ContainerLifetimeSetup((ContainerSetup) this, null);
         } else {
             this.depth = parent.depth + 1;
+            this.lifetime = parent.lifetime;
         }
 
         requireNonNull(wirelets, "wirelets is null");
@@ -237,7 +254,7 @@ public final class ContainerSetup extends ComponentSetup {
 
     /** {@return the path of this component} */
     public NamespacePath path() {
-        return PackedNamespacePath.of(this, depth);
+        return PackedNamespacePath.ofContainer(this);
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
@@ -324,5 +341,11 @@ public final class ContainerSetup extends ComponentSetup {
             extension = ExtensionSetup.newExtension(extensionParent, this, extensionClass);
         }
         return extension;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable ContainerSetup parent() {
+        return parent;
     }
 }

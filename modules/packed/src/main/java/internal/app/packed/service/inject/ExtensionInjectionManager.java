@@ -48,7 +48,7 @@ public final class ExtensionInjectionManager extends ContainerOrExtensionInjecti
     public void addBean(BeanSetup bean) {
         if (extensionBeans.putIfAbsent(Key.of(bean.beanClass()), bean) != null) {
             throw new InternalExtensionException(
-                    "A bean of type '" + format(bean.beanClass()) + "' has already been installed into the container '" + bean.parent.path() + "'");
+                    "A bean of type '" + format(bean.beanClass()) + "' has already been installed into the container '" + bean.container.path() + "'");
         }
     }
 

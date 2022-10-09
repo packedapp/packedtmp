@@ -15,9 +15,38 @@
  */
 package internal.app.packed.lifetime;
 
-/**
- *
- */
-public class ContainerLifetimeSetup {
+import java.util.ArrayList;
+import java.util.List;
 
+import app.packed.base.Nullable;
+import internal.app.packed.container.ContainerSetup;
+
+/**
+ * The lifetime of an application
+ */
+public class ContainerLifetimeSetup extends LifetimeSetup {
+
+    /** Any child lifetimes. */
+    private List<LifetimeSetup> children;
+
+    /** The root container of the lifetime. */
+    public final ContainerSetup container;
+
+    /**
+     * @param origin
+     * @param parent
+     */
+    public ContainerLifetimeSetup(ContainerSetup container, @Nullable ContainerLifetimeSetup parent) {
+        super(parent);
+        this.container = container;
+    }
+
+    public LifetimeSetup addChild(ContainerSetup component) {
+        LifetimeSetup l = new LifetimeSetup(this);
+        if (children == null) {
+            children = new ArrayList<>(1);
+        }
+        children.add(l);
+        return l;
+    }
 }

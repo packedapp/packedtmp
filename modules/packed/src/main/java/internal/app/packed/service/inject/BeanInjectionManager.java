@@ -55,7 +55,7 @@ public final class BeanInjectionManager implements DependencyProducer {
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         this.bean = bean;
-        this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime.pool.reserve(driver.beanClass) : null;
+        this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime().pool.reserve(driver.beanClass) : null;
 
         // Can only register a single extension bean of a particular type
 
@@ -66,7 +66,7 @@ public final class BeanInjectionManager implements DependencyProducer {
             }
             parent = eim;
         } else {
-            parent = bean.parent.injectionManager;
+            parent = bean.container.injectionManager;
         }
 
         // Only create an instance node if we have instances
@@ -74,7 +74,7 @@ public final class BeanInjectionManager implements DependencyProducer {
             this.instanceNode = null;
         } else if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             this.instanceNode = null;
-            bean.lifetime.pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
+            bean.lifetime().pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
         } else {
             PackedOp<?> op;
             if (driver.sourceKind == BeanSourceKind.CLASS) {
@@ -88,7 +88,7 @@ public final class BeanInjectionManager implements DependencyProducer {
             List<InternalDependency> dependencies = InternalDependency.fromOperationType(op.type());// null;//factory.dependencies();
             this.instanceNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
 
-            bean.parent.injectionManager.addConsumer(instanceNode);
+            bean.container.injectionManager.addConsumer(instanceNode);
         }
     }
 

@@ -121,14 +121,14 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         public void export() {
             export = InternalServiceUtil.checkKey(bean.beanClass(), handle.defaultKey());
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.container.useExtension(ServiceExtension.class);
         }
 
         public void onWired() {
             if (provide == null && export == null) {
                 return;
             }
-            InternalServiceExtension sms = bean.parent.injectionManager;
+            InternalServiceExtension sms = bean.container.injectionManager;
             BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean, provide);
             if (provide != null) {
                 sms.addService(setup);
@@ -140,17 +140,17 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         public void provide() {
             provide = InternalServiceUtil.checkKey(bean.beanClass(), handle.defaultKey());
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.container.useExtension(ServiceExtension.class);
         }
 
         public void provideAs(Class<?> key) {
             provide = InternalServiceUtil.checkKey(bean.beanClass(), key);
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.container.useExtension(ServiceExtension.class);
         }
 
         public void provideAs(Key<?> key) {
             provide = InternalServiceUtil.checkKey(bean.beanClass(), key);
-            bean.parent.useExtension(ServiceExtension.class);
+            bean.container.useExtension(ServiceExtension.class);
         }
 
         // Ser dum ud naar man laver completion

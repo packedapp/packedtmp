@@ -58,7 +58,7 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     public ExtensionInjectionManager injectionManagerFor(BeanSetup bean) {
         beans.add(bean);
-        return bean.parent.extensions.get(realmType()).injectionManager;
+        return bean.container.extensions.get(realmType()).injectionManager;
     }
 
     /** Closes the extension for configuration */

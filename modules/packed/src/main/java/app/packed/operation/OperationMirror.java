@@ -71,7 +71,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the application the operation belongs to.} */
     public ApplicationMirror application() {
-        return operation().bean.application.mirror();
+        return operation().bean.container.application.mirror();
     }
 
     /** {@return the bean the operation belongs to.} */
@@ -97,7 +97,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the container the operation belongs to.} */
     public ContainerMirror container() {
-        return operation().bean.parent.mirror();
+        return operation().bean.container.mirror();
     }
 
     /** {@inheritDoc} */

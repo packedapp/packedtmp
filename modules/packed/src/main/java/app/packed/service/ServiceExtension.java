@@ -157,7 +157,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
-                operation.bean.parent.injectionManager.addConsumer(node);
+                operation.bean.container.injectionManager.addConsumer(node);
             }
             
             /** {@inheritDoc} */
@@ -171,7 +171,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
-                operation.bean.parent.injectionManager.addConsumer(node);
+                operation.bean.container.injectionManager.addConsumer(node);
             }
         };
     }

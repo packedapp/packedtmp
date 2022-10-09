@@ -28,7 +28,8 @@ public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int
     /** {@inheritDoc} */
     @Override
     public boolean inSameContainer() {
-        return from.parent == to.parent;
+        throw new UnsupportedOperationException();
+//        return from.parent == to.parent;
     }
 
     /** {@inheritDoc} */

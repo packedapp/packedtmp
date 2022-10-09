@@ -25,7 +25,7 @@ import app.packed.application.BuildTaskGoal;
 import app.packed.application.BuildTaskInfo;
 import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.OldLifetimeKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;
@@ -79,7 +79,7 @@ public final class ApplicationSetup implements BuildTaskInfo {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.lifetimeKind() == LifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
+        this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime().pool.reserve(PackedManagedLifetime.class) : null;
     }
 
     /** {@return a mirror that can be exposed to end-users.} */

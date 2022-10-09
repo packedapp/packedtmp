@@ -29,7 +29,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
-import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.RealmSetup;
@@ -47,11 +46,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     private static final VarHandle CONTAINER_MIRROR_CONTAINER_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ContainerMirror.class,
             "container", ContainerSetup.class);
 
-    /** The application this component is a part of. */
-    public final ApplicationSetup application;
-
-    /** The lifetime the component is a part of. */
-    public final LifetimeSetup lifetime;
 
     /** The name of this component. */
     @Nullable
@@ -65,15 +59,14 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     @Nullable
     public Consumer<? super ComponentMirror> onWireAction;
 
-    /** The container this component belongs to, or null for a root container. */
-    @Nullable
-    public final ContainerSetup parent;
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
 
     public final ArrayList<Runnable> wiringActions = new ArrayList<>(1);
 
+    public abstract LifetimeSetup lifetime();
+    
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
      * 
@@ -84,16 +77,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
      * @param parent
      *            any parent component this component might have
      */
-    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, @Nullable ContainerSetup parent) {
-        this.application = requireNonNull(application);
+    protected ComponentSetup(RealmSetup realm, @Nullable ContainerSetup parent) {
         this.realm = requireNonNull(realm);
 
-        this.parent = parent;
-        if (parent == null) {
-            this.lifetime = new LifetimeSetup((ContainerSetup) this, null);
-        } else {
+        if (parent != null) {
             this.onWireAction = parent.onWireAction;
-            this.lifetime = parent.lifetime;
         }
         realm.wireNew(this);
     }
@@ -111,10 +99,13 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
     }
 
+    @Nullable
+    public abstract ContainerSetup parent();
+    
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
-        if (parent != null) {
-            LinkedHashMap<String, ComponentSetup> c = parent.children;
+        if (parent() != null) {
+            LinkedHashMap<String, ComponentSetup> c = parent().children;
             if (c.size() == 0) {
                 c.put(name, this);
             } else {
@@ -146,10 +137,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         requireNonNull(other, "other is null");
         return switch (scope) {
         // Need to check namespace as well fx for
-        case CONTAINER -> parent == other.parent; // does not work for root
-        case APPLICATION -> application == other.application;
+        case CONTAINER -> throw new UnsupportedOperationException(); // parent == other.parent; // does not work for root
+        case APPLICATION -> throw new UnsupportedOperationException(); // application == other.application;
         case COMPONENT -> this == other;
-        case NAMESPACE -> application /* .build.namespace */ == other.application /* .build.namespace */;
+        case NAMESPACE -> throw new UnsupportedOperationException(); // application /* .build.namespace */ == other.application /* .build.namespace */;
         };
     }
 
@@ -177,11 +168,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         }
 
         // Unless we are the root container. We need to insert this component in the parent container
-        if (parent != null) {
-            if (parent.children.putIfAbsent(newName, this) != null) {
+        if (parent() != null) {
+            if (parent().children.putIfAbsent(newName, this) != null) {
                 throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
             }
-            parent.children.remove(currentName);
+            parent().children.remove(currentName);
         }
         this.name = newName;
     }

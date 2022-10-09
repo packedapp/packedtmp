@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ContainerSetup;
 
 /** The default implementation of {@link NamespacePath}. */
 public final class PackedNamespacePath implements NamespacePath {
@@ -142,13 +144,31 @@ public final class PackedNamespacePath implements NamespacePath {
         return s;
     }
 
-    public static NamespacePath of(ComponentSetup cc, int depth) {
+    public static NamespacePath ofBean(BeanSetup cc) {
+        int depth = cc.container.depth + 1;
+        return switch (depth) {
+        case 0 -> new PackedNamespacePath(cc.name);
+        default -> {
+            String[] paths = new String[depth];
+            paths[depth] = cc.name;
+            ContainerSetup acc = cc.container;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.name;
+                acc = acc.parent;
+            }
+            yield new PackedNamespacePath(paths);
+        }
+        };
+    }
+
+    public static NamespacePath ofContainer(ContainerSetup cc) {
+        int depth = cc.depth;
         return switch (depth) {
         case 0 -> ROOT;
         case 1 -> new PackedNamespacePath(cc.name);
         default -> {
             String[] paths = new String[depth];
-            ComponentSetup acc = cc;
+            ContainerSetup acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.parent;

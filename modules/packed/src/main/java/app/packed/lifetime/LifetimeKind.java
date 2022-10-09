@@ -18,55 +18,6 @@ package app.packed.lifetime;
 /**
  *
  */
-// LifetimeManagement bare?
-// Maaske ender det bare med en boolean
-
-// Deprecated????
 public enum LifetimeKind {
-    UNMANAGED, // has initialize
-
-    MANAGED; // has start/stop
+    EAGER, LAZY, MANY;
 }
-
-
-// We had stateless once... because of functional beans
-// But now they are in the same lifetime as the container in which they are registered.
-// Because even though they are stateless they should be called outside of the containers
-// lifetime
-
-
-//
-//enum AlternativeNaming {
-//    STATIC,
-//
-//    UNMANAGED_INSTANCE,
-//
-//    MANAGED_INSTANCE
-//}
-//
-//// Functional+ Static does not have a lifetime. dvs Optional paa alle componenter
-//enum AlternativeNaming2 {
-//    NONE, 
-//
-//    UNMANAGED,
-//
-//    MANAGED;
-//}
-
-// An Unmanaged Lifetime must not have active threads running inside of it
-// post startup
-
-// An Unmanaged lifetime will never have Managed lifetime as children
-
-// Det her betyder at Injector har en Unmanaged Lifetime.
-// Og App har en Managed Lifetime
-
-// Unmanaged Lifetime typically relies on the garbage collection to clean up things.
-// Cleaner can be used. But 
-
-// Or Tracked vs Untracked
-
-// Unmanaged it is created, but then no longer tracked...
-
-// Applications that are Managed should generally be AutoCloseable
-// Or managed by an application host

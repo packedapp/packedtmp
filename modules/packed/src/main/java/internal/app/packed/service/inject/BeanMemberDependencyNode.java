@@ -44,7 +44,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
             if (!smm.isStatic() && bean.injectionManager.singletonHandle == null) {
                 throw new BuildException("Not okay)");
             }
-            InternalServiceExtension sbm = bean.parent.injectionManager;
+            InternalServiceExtension sbm = bean.container.injectionManager;
             ServiceSetup sa = this.service = new BeanMemberServiceSetup(sbm, bean, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addService(sa);
         } else {

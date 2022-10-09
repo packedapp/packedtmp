@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.bean.BeanMirror;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.OldLifetimeKind;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimeOperationMirror;
 import app.packed.operation.BindingMirror;
@@ -85,7 +85,7 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
     // Og den sidste er bare selectOperationsOfType(LifetimeOperationMirror.class);
     // Skal have nogle bedre navne end managed
 
-    public LifetimeKind managesLifetimeKind() {
+    public OldLifetimeKind managesLifetimeKind() {
         return managesLifetimes().iterator().next().lifetimeKind();
     }
 

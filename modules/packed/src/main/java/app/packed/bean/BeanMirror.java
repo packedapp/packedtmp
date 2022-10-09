@@ -89,17 +89,17 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
 
     /** {@return the application where this bean is defined.} */
     public ApplicationMirror application() {
-        return bean().application.mirror();
+        return bean().container.application.mirror();
     }
 
     /** {@return the assembly where the bean is defined.} */
     public AssemblyMirror assembly() {
-        return bean().parent.assembly.mirror();
+        return bean().container.assembly.mirror();
     }
 
     /** {@return the bean's lifetime.} */
     public LifetimeMirror lifetime() {
-        return bean().lifetime.mirror();
+        return bean().lifetime().mirror();
     }
 
     /** {@inheritDoc} */
@@ -190,7 +190,7 @@ public non-sealed class BeanMirror implements ComponentMirror, Mirror {
 
     /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
     public ContainerMirror container() {
-        return bean().parent.mirror();
+        return bean().container.mirror();
     }
 }
 

@@ -11,9 +11,9 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
@@ -147,7 +147,7 @@ public class LifetimeMirror implements Mirror {
     // -- If is a non-root application -> Holder is in parent application
     // -- If a a root application -> Holder is a single bean in an bootstrap application
 
-    public LifetimeKind lifetimeKind() {
+    public OldLifetimeKind lifetimeKind() {
         throw new UnsupportedOperationException();
     }
 
@@ -171,8 +171,8 @@ public class LifetimeMirror implements Mirror {
     /** {@return the type of lifetime.} */
     // Tror vi dropper den her. Og saa er application.container bare en container
     public LifetimeOriginKind originKind() {
-        if (lifetime().origin instanceof ContainerSetup c) {
-            return c.application.container == c ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
+        if (lifetime() instanceof ContainerLifetimeSetup c) {
+            return c.container.depth==0 ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
         }
         return LifetimeOriginKind.BEAN;
     }

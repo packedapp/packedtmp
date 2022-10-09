@@ -151,8 +151,8 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                 if (bean.realm instanceof ExtensionRealmSetup ers) {
                     Key<?> requiredKey = sd.key();
                     Key<?> thisKey = Key.of(bean.beanClass());
-                    ContainerSetup parent = bean.parent;
-                    ExtensionSetup es = parent.useExtensionSetup(ers.realmType(), null);
+                    ContainerSetup container = bean.container;
+                    ExtensionSetup es = container.useExtensionSetup(ers.realmType(), null);
                     BeanSetup bs = null;
                     if (thisKey.equals(requiredKey)) {
                         if (es.parent != null) {

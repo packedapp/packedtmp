@@ -75,7 +75,7 @@ public final class Introspector {
     private ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
-            ExtensionSetup extension = bean.parent.useExtensionSetup(extensionType, null);
+            ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
 
             BeanIntrospector introspector;
             if (beanHandleIntrospector != null && bean.operator() == extensionType) {

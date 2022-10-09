@@ -11,15 +11,16 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanSourceKind;
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
 import internal.app.packed.component.ComponentSetup;
 import internal.app.packed.component.PackedNamespacePath;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
+import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.service.inject.BeanInjectionManager;
@@ -33,9 +34,8 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
             void.class, BeanSetup.class);
 
-    /** A model of hooks on the bean class. Or null if no member scanning was performed. */
-    @Nullable
-    public final BeanClassModel beanModel;
+    /** The container this bean is registered in. */
+    public final ContainerSetup container;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
@@ -44,9 +44,12 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     /** The installer that was used to create the bean. */
     public final PackedBeanHandleInstaller<?> installer;
 
+    /** The lifetime the component is a part of. */
+    final LifetimeSetup lifetime;
+
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
-
+    
     /**
      * Create a new bean setup.
      * 
@@ -54,32 +57,27 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
      *            the handle builder
      */
     public BeanSetup(PackedBeanHandleInstaller<?> builder, RealmSetup owner) {
-        super(builder.container.application, owner, builder.container);
+        super(owner, builder.container);
+        this.container = builder.container;
         this.installer = builder;
-        this.beanModel = builder.sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(builder.beanClass);// realm.accessor().beanModelOf(driver.beanClass());
+        this.lifetime = container.lifetime();
         if (builder.beanClass != void.class) { // Not sure exactly when we need it
             this.injectionManager = new BeanInjectionManager(this, builder);
         } else {
             this.injectionManager = null;
         }
 
-        // Wire the hook model
-        if (beanModel != null) {
-            // hookModel.onWire(this);
-
-            // Set the name of the component if it have not already been set using a wirelet
-            initializeNameWithPrefix(beanModel.simpleName());
-        }
-    }
-
-    public void addOperation(OperationSetup operation) {
-        operations.add(requireNonNull(operation));
+        initializeNameWithPrefix(builder.initialName());
     }
 
     public OperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
         OperationSetup os = new OperationSetup(this, type, extension, invocationType, target);
         operations.add(os);
         return os;
+    }
+
+    public void addOperation(OperationSetup operation) {
+        operations.add(requireNonNull(operation));
     }
 
     /** {@inheritDoc} */
@@ -90,6 +88,10 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
 
     final void initializeNameWithPrefix0(String name) {
         initializeNameWithPrefix(name);
+    }
+
+    public LifetimeSetup lifetime() {
+        return lifetime;
     }
 
     /** {@return a new mirror.} */
@@ -115,15 +117,21 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
         return installer.operator == null ? BeanExtension.class : installer.operator.extension().extensionType;
     }
 
-    /** {@return the path of this component} */
-    public final NamespacePath path() {
-        return PackedNamespacePath.of(this, parent.depth + 1);
-    }
-
     /** {@inheritDoc} */
     @Override
     public UserOrExtension owner() {
         return realm.realm();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerSetup parent() {
+        return container;
+    }
+
+    /** {@return the path of this component} */
+    public final NamespacePath path() {
+        return PackedNamespacePath.ofBean(this);
     }
 
     @Override

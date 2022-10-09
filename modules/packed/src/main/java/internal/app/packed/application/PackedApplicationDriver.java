@@ -35,7 +35,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeKind;
+import app.packed.lifetime.OldLifetimeKind;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
@@ -54,7 +54,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     final Set<Class<? extends Extension<?>>> bannedExtensions;
 
-    private final LifetimeKind lifetimeKind;
+    private final OldLifetimeKind lifetimeKind;
 
     /** The method handle used for creating new application instances. */
     // We need more info for bootstrap mirrors
@@ -69,7 +69,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     private PackedApplicationDriver() {
         this.bannedExtensions = Set.of();
-        this.lifetimeKind = LifetimeKind.UNMANAGED; // The primordial application does not need to be closed
+        this.lifetimeKind = OldLifetimeKind.UNMANAGED; // The primordial application does not need to be closed
         // We need to create the exception as well
         this.mhConstructor = MethodHandles.throwException(void.class, Error.class);
         this.wirelet = null;
@@ -138,7 +138,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
-    public LifetimeKind lifetimeKind() {
+    public OldLifetimeKind lifetimeKind() {
         return lifetimeKind;
     }
 
@@ -229,7 +229,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
          * All application drivers except {@link PackedApplicationDriver#PRIMORDIAL} has either an unmanaged or managed
          * lifetime.
          */
-        private LifetimeKind lifetimeKind = LifetimeKind.UNMANAGED;
+        private OldLifetimeKind lifetimeKind = OldLifetimeKind.UNMANAGED;
 
         MethodHandle mhConstructor;
 
@@ -264,7 +264,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICE_LOCATOR, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
-            if (lifetimeKind == LifetimeKind.MANAGED) { // Conditional add ApplicationRuntime
+            if (lifetimeKind == OldLifetimeKind.MANAGED) { // Conditional add ApplicationRuntime
                 builder.provide(ManagedLifetimeController.class).invokeExact(MH_RUNTIME, 0);
             }
 
@@ -308,7 +308,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public Builder<A> managedLifetime() {
-            this.lifetimeKind = LifetimeKind.MANAGED;
+            this.lifetimeKind = OldLifetimeKind.MANAGED;
             return this;
         }
     }

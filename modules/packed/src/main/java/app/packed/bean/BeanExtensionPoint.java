@@ -25,6 +25,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return PackedBeanHandleInstaller.ofNone(useSite(), extension().container);
     }
 
+    public BeanHandle.Installer<?> beanInstaller(UseSite useSite) {
+        return PackedBeanHandleInstaller.ofNone(useSite(), extension().container);
+    }
+
     /**
      * Create a new installer from a class source.
      * 
@@ -38,11 +42,23 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
     }
 
+    public <T> BeanHandle.Installer<T> beanInstallerFromClass(UseSite useSite, Class<T> clazz) {
+        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz);
+    }
+
     public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
+        return PackedBeanHandleInstaller.ofInstance(useSite(), extension().container, instance);
+    }
+    
+    public <T> BeanHandle.Installer<T> beanInstallerFromInstance(UseSite useSite, T instance) {
         return PackedBeanHandleInstaller.ofInstance(useSite(), extension().container, instance);
     }
 
     public <T> BeanHandle.Installer<T> beanInstallerFromOp(Op<T> op) {
+        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, op);
+    }
+
+    public <T> BeanHandle.Installer<T> beanInstallerFromOp(UseSite useSite, Op<T> op) {
         return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, op);
     }
 

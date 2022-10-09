@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.inject.DependencyNode;
@@ -40,11 +40,11 @@ public final class BeanMemberServiceSetup extends ServiceSetup {
     @Nullable
     public final PoolEntryHandle accessor;
 
-    public BeanMemberServiceSetup(InternalServiceExtension im, ComponentSetup compConf, DependencyNode dependant, Key<?> key, boolean isConst) {
+    public BeanMemberServiceSetup(InternalServiceExtension im, BeanSetup beanSetup, DependencyNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.consumer = requireNonNull(dependant);
         // TODO fix Object
-        this.accessor = isConst ? compConf.lifetime.pool.reserve(Object.class) : null;
+        this.accessor = isConst ? beanSetup.lifetime().pool.reserve(Object.class) : null;
     }
 
     /** {@inheritDoc} */

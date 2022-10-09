@@ -71,6 +71,9 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     public final BeanSourceKind sourceKind;
 
     private BeanSetup bean;
+    /** A model of hooks on the bean class. Or null if no member scanning was performed. */
+    @Nullable
+    public final BeanClassModel beanModel;
 
     private PackedBeanHandleInstaller(@Nullable UseSite operator, ContainerSetup container, Class<?> beanClass, BeanSourceKind sourceKind,
             @Nullable Object source) {
@@ -80,6 +83,14 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         this.sourceKind = requireNonNull(sourceKind);
         this.source = requireNonNull(source);
         this.instanceless = source == null;
+        this.beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);// realm.accessor().beanModelOf(driver.beanClass());
+    }
+
+    public String initialName() {
+        if (beanModel != null) {
+            beanModel.simpleName();
+        }
+        return "Functional";
     }
 
     /** {@inheritDoc} */
