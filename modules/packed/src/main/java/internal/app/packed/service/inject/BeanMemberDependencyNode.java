@@ -41,7 +41,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
         super(bean, smm.dependencies, smm.methodHandle(), smm.createProviders());
 
         if (smm.provideAskey != null) {
-            if (!smm.isStatic() && bean.injectionManager.singletonHandle == null) {
+            if (!smm.isStatic() && bean.injectionManager.singletonAccessor == null) {
                 throw new BuildException("Not okay)");
             }
             InternalServiceExtension sbm = bean.container.injectionManager;
@@ -77,7 +77,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
     public void onAllDependenciesResolved(LifetimeObjectArenaSetup pool) {
         super.onAllDependenciesResolved(pool);
 
-        if (bean.injectionManager.singletonHandle != null) {
+        if (bean.injectionManager.singletonAccessor != null) {
             // Maybe shared with SourceAssembly
 
             if (sourceMember.provideAskey == null) {

@@ -37,7 +37,7 @@ public final class BeanInstanceDependencyNode extends DependencyNode implements 
 
     @Nullable
     protected Accessor poolAccessor() {
-        return bim.singletonHandle;
+        return bim.singletonAccessor;
     }
 
     /** {@inheritDoc} */

@@ -60,14 +60,14 @@ public final class BeanInstanceServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return bean.injectionManager.singletonHandle != null;
+        return bean.injectionManager.singletonAccessor != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), bean.injectionManager.singletonHandle.read(context.pool));
+            return RuntimeService.constant(key(), bean.injectionManager.singletonAccessor.read(context.pool));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

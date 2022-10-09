@@ -16,7 +16,6 @@
 package internal.app.packed.service.inject;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.base.Nullable;
@@ -25,7 +24,6 @@ import internal.app.packed.bean.BeanKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ExtensionRealmSetup;
-import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.pool.Accessor;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.ReflectiveOp;
@@ -49,18 +47,17 @@ public final class BeanInjectionManager implements DependencyProducer {
     final ContainerOrExtensionInjectionManager parent;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
-    // What if managed prototype bean????
     @Nullable
-    public final Accessor singletonHandle;
+    public final Accessor singletonAccessor;
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         this.bean = bean;
         if (driver.sourceKind == BeanSourceKind.INSTANCE) {
-            this.singletonHandle = new Accessor.ConstantAccessor(driver.source);
+            this.singletonAccessor = new Accessor.ConstantAccessor(driver.source);
         } else if (driver.beanKind() == BeanKind.SINGLETON) {
-            this.singletonHandle = bean.container.lifetime().pool.reserve(driver.beanClass);
+            this.singletonAccessor = bean.container.lifetime.pool.reserve(driver.beanClass);
         } else {
-            this.singletonHandle = null;
+            this.singletonAccessor = null;
         }
 
         // Can only register a single extension bean of a particular type
@@ -99,14 +96,8 @@ public final class BeanInjectionManager implements DependencyProducer {
     public MethodHandle dependencyAccessor() {
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
-
-        if (bean.installer.sourceKind == BeanSourceKind.INSTANCE) {
-            Object instance = bean.installer.source;
-            MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
-            // return MethodHandles.constant(instance.getClass(), instance);
-        } else if (singletonHandle != null) {
-            return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
+        if (singletonAccessor != null) {
+            return singletonAccessor.poolReader(); // MethodHandle(ConstantPool)T
         } else {
             return instanceNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
         }

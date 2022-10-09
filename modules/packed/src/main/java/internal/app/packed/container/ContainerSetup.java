@@ -83,7 +83,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     public boolean isNameInitializedFromWirelet;
 
     /** The lifetime the component is a part of. */
-    final ContainerLifetimeSetup lifetime;
+    public final ContainerLifetimeSetup lifetime;
 
     /** Supplies a mirror for the container. */
     public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;

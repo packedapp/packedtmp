@@ -49,10 +49,6 @@ public final class LifetimeObjectArenaSetup {
 
     LifetimeObjectArenaSetup() {}
 
-    public void addConstant(LifetimePoolWriteable s) {
-        entries.add(s);
-    }
-
     public void addOrdered(LifetimePoolWriteable c) {
         // new Exception().printStackTrace();
         // We just keep both these 2 method that does the same for now

@@ -59,7 +59,8 @@ public sealed interface Accessor {
         /** {@inheritDoc} */
         @Override
         public MethodHandle poolReader() {
-            throw new UnsupportedOperationException();
+            MethodHandle mh = MethodHandles.constant(constant.getClass(), constant);
+            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
         }
     }
 
