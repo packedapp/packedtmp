@@ -27,6 +27,7 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 
 /**
@@ -99,7 +100,9 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     // TODO add for PackedContainerHandleBuilder
     public void wireCurrentComponent() {
         if (currentComponent != null) {
-            currentComponent.onWired();
+            if (currentComponent instanceof BeanSetup bs) {
+                bs.onWired();
+            }
             currentComponent = null;
         }
     }

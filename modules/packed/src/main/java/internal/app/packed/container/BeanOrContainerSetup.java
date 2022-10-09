@@ -17,11 +17,7 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.lifetime.LifetimeOriginMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 
@@ -35,10 +31,6 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
     /** The realm used to install this component. */
     public final RealmSetup realm;
 
-    public final ArrayList<Runnable> wiringActions = new ArrayList<>(1);
-
-    public abstract LifetimeSetup lifetime();
-
     /**
      * Create a new component. This constructor is only invoked from subclasses of this class
      * 
@@ -46,13 +38,9 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
      *            the application the component is a part of
      * @param realm
      *            the realm this component is part of
-     * @param parent
-     *            any parent component this component might have
      */
-    protected BeanOrContainerSetup(RealmSetup realm, @Nullable ContainerSetup parent) {
+    protected BeanOrContainerSetup(RealmSetup realm) {
         this.realm = requireNonNull(realm);
-
-       
         realm.wireNew(this);
     }
 
@@ -69,15 +57,11 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
         }
     }
 
-    @Nullable
-    public abstract ContainerSetup parent();
-
     public final boolean isCurrent() {
         return realm.isCurrent(this);
     }
 
-    /** {@inheritDoc} */
-    public abstract LifetimeOriginMirror mirror();
+    public abstract LifetimeSetup lifetime();
 
     /** {@inheritDoc} */
     public final void named(String newName) {
@@ -109,14 +93,8 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
         this.name = newName;
     }
 
-    public final void onWired() {
-        for (Runnable action : wiringActions) {
-            action.run();
-        }
-    }
-
-    /** {@return the path of this component} */
-    public abstract NamespacePath path();
+    @Nullable
+    protected abstract ContainerSetup parent();
 
     /**
      * Checks the name of the component.

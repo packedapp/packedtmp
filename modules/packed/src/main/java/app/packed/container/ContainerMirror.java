@@ -174,8 +174,14 @@ public non-sealed class ContainerMirror implements LifetimeOriginMirror , Mirror
         return container().lifetime().mirror();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the name of this container.
+     * <p>
+     * If no name was explicitly set when the container was configured. Packed will automatically assign an unique name to
+     * it.
+     *
+     * @return the name of this container
+     */
     public String name() {
         return container().name;
     }
@@ -186,8 +192,6 @@ public non-sealed class ContainerMirror implements LifetimeOriginMirror , Mirror
         return p == null ? Optional.empty() : Optional.of(p.mirror());
     }
 
-    /** {@inheritDoc} */
-    @Override
     public NamespacePath path() {
         return container().path();
     }

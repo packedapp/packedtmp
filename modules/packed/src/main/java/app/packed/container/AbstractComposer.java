@@ -154,8 +154,8 @@ public abstract class AbstractComposer {
 
         protected ComposerAssembly(C composer, ComposerAction<? super C> action) {
             this.composer = requireNonNull(composer, "composer is null");
-            this.action = requireNonNull(action, "action is null");
             composer.assembly = this;
+            this.action = requireNonNull(action, "action is null");
         }
 
         /** {@inheritDoc} */

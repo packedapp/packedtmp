@@ -102,8 +102,14 @@ public non-sealed class BeanMirror implements LifetimeOriginMirror, Mirror {
         return bean().lifetime().mirror();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the name of this bean.
+     * <p>
+     * If no name was explicitly set when the bean was configured. Packed will automatically assign an unique name to
+     * it.
+     *
+     * @return the name of this bean
+     */
     public String name() {
         return bean().name;
     }

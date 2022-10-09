@@ -37,7 +37,15 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
     @Override
     public PackedBeanHandle<T> onWireRun(Runnable action) {
         requireNonNull(action, "action is null");
-        bean.wiringActions.add(action);
+        Runnable w = bean.onWiringAction;
+        if (w == null) {
+            bean.onWiringAction = action;
+        } else {
+            bean.onWiringAction = () -> {
+                w.run();
+                action.run();
+            };
+        }
         return this;
     }
 

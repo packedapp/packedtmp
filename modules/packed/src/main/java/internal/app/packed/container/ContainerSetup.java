@@ -45,15 +45,15 @@ import internal.app.packed.util.ThrowableUtil;
 /** The internal configuration of a container. */
 public final class ContainerSetup extends BeanOrContainerSetup {
 
-    /** The application this component is a part of. */
-    public final ApplicationSetup application;
-
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
             "initialize", void.class, ContainerSetup.class);
 
-    /** Supplies a mirror for the container. */
-    public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
+    /** The application this component is a part of. */
+    public final ApplicationSetup application;
+
+    /** The assembly from where the component is being installed. */
+    public final AssemblySetup assembly;
 
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
@@ -82,24 +82,20 @@ public final class ContainerSetup extends BeanOrContainerSetup {
      */
     public boolean isNameInitializedFromWirelet;
 
-    /** Wirelets that was specified when creating the component. */
-    // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
-    @Nullable
-    public final WireletWrapper wirelets;
-
-    /** The assembly from where the component is being installed. */
-    public final AssemblySetup assembly;
-
-    public ContainerLifetimeSetup lifetime() {
-        return lifetime;
-    }
-
     /** The lifetime the component is a part of. */
     final ContainerLifetimeSetup lifetime;
+
+    /** Supplies a mirror for the container. */
+    public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
 
     /** The container this component belongs to, or null for a root container. */
     @Nullable
     public final ContainerSetup parent;
+
+    /** Wirelets that was specified when creating the component. */
+    // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
+    @Nullable
+    public final WireletWrapper wirelets;
 
     /**
      * Create a new container setup.
@@ -117,7 +113,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
      */
     public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
-        super(realm, parent);
+        super(realm);
         this.parent = parent;
         this.application = requireNonNull(application);
         this.assembly = realm;
@@ -214,6 +210,11 @@ public final class ContainerSetup extends BeanOrContainerSetup {
         assert name != null;
     }
 
+    /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
+    public Set<Class<? extends Extension<?>>> extensionTypes() {
+        return Collections.unmodifiableSet(extensions.keySet());
+    }
+
     public void initBeanName(BeanSetup bean, String name) {
         String n = name;
         if (children.isEmpty()) {
@@ -244,11 +245,6 @@ public final class ContainerSetup extends BeanOrContainerSetup {
         this.name = n;
     }
 
-    /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
-    public Set<Class<? extends Extension<?>>> extensionTypes() {
-        return Collections.unmodifiableSet(extensions.keySet());
-    }
-
     /**
      * Returns whether or not the specified extension type is used.
      * 
@@ -263,8 +259,11 @@ public final class ContainerSetup extends BeanOrContainerSetup {
         return extensions.containsKey(extensionType);
     }
 
+    public ContainerLifetimeSetup lifetime() {
+        return lifetime;
+    }
+
     /** {@return a new mirror.} */
-    @Override
     public ContainerMirror mirror() {
         // Create a new ContainerMirror
         ContainerMirror mirror = mirrorSupplier.get();
@@ -279,6 +278,12 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable ContainerSetup parent() {
+        return parent;
     }
 
     /** {@return the path of this component} */
@@ -376,11 +381,5 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             extension = ExtensionSetup.newExtension(extensionParent, this, extensionClass);
         }
         return extension;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable ContainerSetup parent() {
-        return parent;
     }
 }

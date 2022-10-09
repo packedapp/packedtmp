@@ -62,13 +62,13 @@ public class ApplicationMirror implements Mirror {
         return container().assembly();
     }
 
+    public BuildGoal buildGoal() {
+        return application().goal();
+    }
+    
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return application().container.mirror();
-    }
-    
-    public BuildGoal buildGoal() {
-        return application().goal();
     }
     
     /** {@inheritDoc} */

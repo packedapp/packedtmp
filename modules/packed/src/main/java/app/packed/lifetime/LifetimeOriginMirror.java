@@ -15,30 +15,10 @@
  */
 package app.packed.lifetime;
 
-import app.packed.base.NamespacePath;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 
 /**
- * A mirror of a component.
- * <p>
- * Instances of this is interface is always either a {@link ContainerMirror} or {@link BeanMirror} instance.
- * <p>
- * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
- * derivatives. In packed everything is a component.
+ * The origin of a lifetime.
  */
-public sealed interface LifetimeOriginMirror permits ContainerMirror, BeanMirror {
-
-    /**
-     * Returns the name of this component.
-     * <p>
-     * If no name was explicitly set when the component was configured. Packed will automatically assign a name that is
-     * unique among other components with the same parent.
-     *
-     * @return the name of this component
-     */
-    String name();
-
-    /** {@return the path of this component} */
-    NamespacePath path();
-}
+public sealed interface LifetimeOriginMirror permits ContainerMirror, BeanMirror {}

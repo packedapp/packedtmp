@@ -24,19 +24,19 @@ import app.packed.container.Tee.MyHook;
 @ContainerHook(MyHook.class)
 public class Tee extends BaseAssembly {
 
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {}
+    
     public static void main(String[] args) {
         App.run(new Tee());
         
     }
-    
+
     public static class MyHook implements ContainerHook.Processor {
        public MyHook() {
             System.out.println("NEW gook");
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {}
 
 }

@@ -49,7 +49,10 @@ public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo p
 
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
-    
+
+    @Nullable
+    public Runnable onWiringAction;
+
     /**
      * Create a new bean setup.
      * 
@@ -57,11 +60,11 @@ public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo p
      *            the handle builder
      */
     public BeanSetup(PackedBeanHandleInstaller<?> installer, RealmSetup owner) {
-        super(owner, installer.container);
+        super(owner);
         this.installer = installer;
         this.container = installer.container;
         this.lifetime = container.lifetime();
-        
+
         if (installer.beanClass != void.class) { // Not sure exactly when we need it
             this.injectionManager = new BeanInjectionManager(this, installer);
         } else {
@@ -106,6 +109,13 @@ public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo p
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public final void onWired() {
+        Runnable w = onWiringAction;
+        if (w != null) {
+            w.run();
+        }
     }
 
     /** {@inheritDoc} */
