@@ -29,7 +29,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.bean.Inject;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.PackedOp.ConstantOp;
@@ -265,11 +264,11 @@ interface ZandboxOp<R> {
      * @return a new mapped factory
      */
     // How do we handle key??? Think we might need a version that also takes a key.
-    default <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
-        // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
-        // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
-        throw new UnsupportedOperationException();
-    }
+//    default <T> Op<T> mapTo(TypeToken<T> type, Function<? super R, ? extends T> mapper) {
+//        // MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.handle, mapper);
+//        // return new Factory<>(new FactorySupport<>(f, factory.dependencies));
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns a new factory that maps every object this factory create using the specified mapper.

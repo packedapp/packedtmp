@@ -55,6 +55,7 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 // Maybe this should die so we only have one version which also captures annotations
 // We always va
 
+// I don't think we will touch until we see where Valhalla goes
 public abstract class TypeToken<T> {
 
     /** A cache of factories used by. */

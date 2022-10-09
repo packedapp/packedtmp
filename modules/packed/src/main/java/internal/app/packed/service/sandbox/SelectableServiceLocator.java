@@ -16,7 +16,6 @@
 package internal.app.packed.service.sandbox;
 
 import app.packed.base.Key;
-import app.packed.base.TypeToken;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.service.build.ServiceComposer;
@@ -52,19 +51,17 @@ public interface SelectableServiceLocator extends ServiceLocator {
     // T????? den giver ikke rigtig mening syntes jeg...
     //// Eller er det key delen vi selector paa?
     //// Altsaa selectOnKeyType
-    default <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> typePart) {
-        return selectWithAnyQualifiers(TypeToken.of(typePart));
-    }
-
-    /**
-     * @param <T>
-     *            the service type
-     * @param typePart
-     *            the type part of the key
-     * @return
-     */
-    <T> ServiceSelection<T> selectWithAnyQualifiers(TypeToken<T> typePart);
-
+     <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> typePart);
+//
+//    /**
+//     * @param <T>
+//     *            the service type
+//     * @param typePart
+//     *            the type part of the key
+//     * @return
+//     */
+//    <T> ServiceSelection<T> selectWithAnyQualifiers(TypeToken<T> typePart);
+//
 
     /**
      * Spawns a new service locator by using a {@link ServiceComposer} to transmute this locator.
@@ -118,11 +115,6 @@ interface Zandbox {
      * @see Class#isAssignableFrom(Class)
      * @see Key#rawType()
      */
-    // Hmm kan vi sige noget om actual type som vi producere???
-    default <T> ServiceSelection<T> select(TypeToken<T> key) {
-        // May define additional qualifiers
-        throw new UnsupportedOperationException();
-    }
 
     // Vi har faktisk 3.
     // Key Delen = Foo.class; (Ignores qualifiers)

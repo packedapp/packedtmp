@@ -46,6 +46,9 @@ import internal.app.packed.util.PackedNamespacePath;
 // FooExtension.service:DFDFDF:List<String>
 // EntryPointExtension.entrypoint:FooApp:124
 
+// ApplicationPath? App:Container:Bean
+// ApplicationElementPath
+// Foo:dfsdfdsf/sdfsdf:BeanName
 public interface NamespacePath extends Comparable<NamespacePath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A path representing the root resource of a namespace. */

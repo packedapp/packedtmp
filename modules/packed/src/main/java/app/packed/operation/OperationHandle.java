@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.base.TypeToken;
 import app.packed.bean.BeanIntrospector.OnBindingHook;
 import app.packed.bean.BeanIntrospector.OnFieldHook;
 import app.packed.bean.BeanIntrospector.OnMethod;
@@ -109,11 +108,11 @@ interface ZandboxOperationHandle {
 // default Optional<AccessMode> accessMode() {
 //     return Optional.empty();
 // }
-    default <T> T computeInvoker(TypeToken<T> invokerType) {
-
-        /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
-        throw new UnsupportedOperationException();
-    }
+//    default <T> T computeInvoker(TypeToken<T> invokerType) {
+//
+//        /// computeInvoker(new TypeToken<Function<Boo, Sddd>);
+//        throw new UnsupportedOperationException();
+//    }
 
     default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
         // Vi kan fx sige String -> StringReturnWrapper
