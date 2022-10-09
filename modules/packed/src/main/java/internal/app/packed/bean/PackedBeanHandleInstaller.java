@@ -29,6 +29,7 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.Op;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.operation.op.PackedOp;
@@ -55,8 +56,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     boolean nonUnique;
 
     /** The operator of the bean, or {@code null} for {@link BeanExtension}. */
-    @Nullable
-    final PackedExtensionPointContext operator;
+    final ExtensionSetup operator;
 
     @Nullable
     PackedExtensionPointContext extensionOwner;
@@ -74,9 +74,9 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     public final BeanClassModel beanModel;
     public final boolean hasInstances;
 
-    private PackedBeanHandleInstaller(@Nullable UseSite operator, ContainerSetup container, Class<?> beanClass, BeanSourceKind sourceKind,
+    private PackedBeanHandleInstaller(ExtensionSetup operator, ContainerSetup container, Class<?> beanClass, BeanSourceKind sourceKind,
             @Nullable Object source, boolean hasInstances) {
-        this.operator = (@Nullable PackedExtensionPointContext) operator;
+        this.operator = requireNonNull(operator);
         this.container = requireNonNull(container);
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
@@ -159,19 +159,19 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return this;
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofClass(@Nullable UseSite operator, ContainerSetup container, Class<T> clazz, boolean instantiate) {
+    public static <T> PackedBeanHandleInstaller<T> ofClass(ExtensionSetup operator, ContainerSetup container, Class<T> clazz, boolean instantiate) {
         requireNonNull(clazz, "clazz is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanHandleInstaller<>(operator, container, clazz, BeanSourceKind.CLASS, clazz, instantiate);
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofFactory(@Nullable UseSite operator, ContainerSetup container, Op<T> op) {
+    public static <T> PackedBeanHandleInstaller<T> ofFactory(ExtensionSetup operator, ContainerSetup container, Op<T> op) {
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         PackedOp<T> pop = PackedOp.crack(op);
         return new PackedBeanHandleInstaller<>(operator, container, pop.type().returnType(), BeanSourceKind.OP, pop, true);
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofInstance(@Nullable UseSite operator, ContainerSetup container, T instance) {
+    public static <T> PackedBeanHandleInstaller<T> ofInstance(ExtensionSetup operator, ContainerSetup container, T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
@@ -188,7 +188,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return new PackedBeanHandleInstaller<>(operator, container, instance.getClass(), BeanSourceKind.INSTANCE, instance, true);
     }
 
-    public static PackedBeanHandleInstaller<?> ofNone(@Nullable UseSite operator, ContainerSetup container) {
+    public static PackedBeanHandleInstaller<?> ofNone(ExtensionSetup operator, ContainerSetup container) {
         return new PackedBeanHandleInstaller<>(operator, container, void.class, BeanSourceKind.NONE, null, false);
     }
 

@@ -17,10 +17,14 @@ import internal.app.packed.container.ExtensionSetup;
 public class BeanExtension extends Extension<BeanExtension> {
 
     /** The container we are installing beans into. */
-    final ContainerSetup container = ExtensionSetup.crack(this).container;
+    final ContainerSetup container;
+
+    final ExtensionSetup extensionSetup = ExtensionSetup.crack(this);
 
     /** Create a new bean extension. */
-    BeanExtension() {}
+    BeanExtension() {
+        container = extensionSetup.container;
+    }
 
     public void filter(BaseAssembly.Linker l) {
 
@@ -38,7 +42,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, container, implementation, true).kindSingleton().install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(extensionSetup, container, implementation, true).kindSingleton().install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -51,7 +55,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, container, factory).kindSingleton().install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(extensionSetup, container, factory).kindSingleton().install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -67,7 +71,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, container, instance).kindSingleton().install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(extensionSetup, container, instance).kindSingleton().install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 

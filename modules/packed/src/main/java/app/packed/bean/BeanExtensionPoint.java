@@ -8,6 +8,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.operation.Op;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
 /** An extension point class for {@link BeanExtension}. */
@@ -16,17 +17,55 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /** Creates a new bean extension point */
                                              /* package-private */ BeanExtensionPoint() {}
 
+    public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
+        return PackedBeanHandleInstaller.ofInstance(extension().extensionSetup, extension().container, instance);
+    }
+    
+    public <T> BeanHandle.Installer<T> beanInstallerFromInstance(UseSite useSite, T instance) {
+        return PackedBeanHandleInstaller.ofInstance(extension().extensionSetup, extension().container, instance);
+    }
+
+    public <T> BeanHandle.Installer<T> beanInstallerFromOp(Op<T> op) {
+        return PackedBeanHandleInstaller.ofFactory(extension().extensionSetup, extension().container, op);
+    }
+
+    public <T> BeanHandle.Installer<T> beanInstallerFromOp(UseSite useSite, Op<T> op) {
+        return PackedBeanHandleInstaller.ofFactory(extension().extensionSetup, extension().container, op);
+    }
+
+    public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(ExtensionSetup.crack(extension()), extension().container, implementation, true).forExtension(useSite()).kindSingleton()
+                .install();
+        return new ExtensionBeanConfiguration<>(handle);
+    }
+
+    public <T> ExtensionBeanConfiguration<T> install(Op<T> factory) {
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(ExtensionSetup.crack(extension()), extension().container, factory).forExtension(useSite())
+                .kindSingleton().install();
+        return new ExtensionBeanConfiguration<>(handle);
+    }
+
+    // should not call anything on the returned bean
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kindSingleton().install();
+        return new ExtensionBeanConfiguration<>(handle);
+    }
+
     /**
      * Create a new installer without a source.
      * 
      * @return the new installer
      */
-    public BeanHandle.Installer<?> beanInstaller() {
-        return PackedBeanHandleInstaller.ofNone(useSite(), extension().container);
+    public BeanHandle.Installer<?> newHandle() {
+        return PackedBeanHandleInstaller.ofNone(extension().extensionSetup, extension().container);
     }
 
-    public BeanHandle.Installer<?> beanInstaller(UseSite useSite) {
-        return PackedBeanHandleInstaller.ofNone(useSite(), extension().container);
+    public BeanHandle.Installer<?> newHandle(UseSite extension) {
+        return PackedBeanHandleInstaller.ofNone(extension().extensionSetup, extension().container);
     }
 
     /**
@@ -38,48 +77,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      *            the clazz
      * @return the new installer
      */
-    public <T> BeanHandle.Installer<T> beanInstallerFromClass(Class<T> clazz, boolean instantiate) {
-        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz, instantiate);
+    public <T> BeanHandle.Installer<T> newHandleFromClass(Class<T> clazz, boolean instantiate) {
+        return PackedBeanHandleInstaller.ofClass(extension().extensionSetup, extension().container, clazz, instantiate);
     }
 
-    public <T> BeanHandle.Installer<T> beanInstallerFromClass(UseSite useSite, Class<T> clazz, boolean instantiate) {
-        return PackedBeanHandleInstaller.ofClass(useSite(), extension().container, clazz, instantiate);
-    }
-
-    public <T> BeanHandle.Installer<T> beanInstallerFromInstance(T instance) {
-        return PackedBeanHandleInstaller.ofInstance(useSite(), extension().container, instance);
-    }
-    
-    public <T> BeanHandle.Installer<T> beanInstallerFromInstance(UseSite useSite, T instance) {
-        return PackedBeanHandleInstaller.ofInstance(useSite(), extension().container, instance);
-    }
-
-    public <T> BeanHandle.Installer<T> beanInstallerFromOp(Op<T> op) {
-        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, op);
-    }
-
-    public <T> BeanHandle.Installer<T> beanInstallerFromOp(UseSite useSite, Op<T> op) {
-        return PackedBeanHandleInstaller.ofFactory(useSite(), extension().container, op);
-    }
-
-    public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(null, extension().container, implementation, true).forExtension(useSite()).kindSingleton().install();
-        return new ExtensionBeanConfiguration<>(handle);
-    }
-
-    public <T> ExtensionBeanConfiguration<T> install(Op<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(null, extension().container, factory).forExtension(useSite()).kindSingleton().install();
-        return new ExtensionBeanConfiguration<>(handle);
-    }
-
-    public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(null, extension().container, instance).forExtension(useSite()).kindSingleton().install();
-        return new ExtensionBeanConfiguration<>(handle);
-    }
-
-    // should not call anything on the returned bean
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
-        throw new UnsupportedOperationException();
+    public <T> BeanHandle.Installer<T> newHandleFromClass(UseSite forExtension, Class<T> clazz, boolean instantiate) {
+        return PackedBeanHandleInstaller.ofClass(extension().extensionSetup, extension().container, clazz, instantiate);
     }
 
     /**
@@ -127,6 +130,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
 class Sandbox {
 
+    // should not call anything on the returned bean
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
+
     <T> ExtensionBeanConfiguration<T> installLazy(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
@@ -155,16 +163,11 @@ class Sandbox {
         throw new UnsupportedOperationException();
     }
 
-    <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
     // The problem is when we start calling methods such as .provide()
     // It doesn't really work to call such methods more than once.
     // Or at least the logic to ignore subsequent calls would be a bit annoying
 
-    // should not call anything on the returned bean
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
+    <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
         throw new UnsupportedOperationException();
     }
 

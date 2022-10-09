@@ -162,7 +162,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * If the configuration is not needed before introspection the functionality such be present on {@code BeanHandle}
      * instead.
      * 
-     * @see BeanExtensionPoint#beanInstaller()
+     * @see BeanExtensionPoint#newHandle()
      * @see BeanExtensionPoint#beanInstallerFromClass(Class)
      * @see BeanExtensionPoint#beanInstallerFromOp(Op)
      * @see BeanExtensionPoint#beanBuilderFromInstance(Object)

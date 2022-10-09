@@ -121,7 +121,7 @@ public sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo p
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> operator() {
-        return installer.operator == null ? BeanExtension.class : installer.operator.extension().extensionType;
+        return installer.operator == null ? BeanExtension.class : installer.operator.extensionType;
     }
 
     /** {@inheritDoc} */
