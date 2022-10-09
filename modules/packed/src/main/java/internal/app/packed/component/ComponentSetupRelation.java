@@ -82,43 +82,43 @@ public record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int
     }
 
     public static ContainerRelation of(ComponentSetup from, ComponentSetup to) {
-        int fd = from.depth;
-        int td = to.depth;
-        if (from.lifetime.pool == to.lifetime.pool) {
-            if (fd == td) {
-                return new ComponentSetupRelation(from, to, 0, from);
-            }
-
-            ComponentSetup f = from;
-            ComponentSetup t = to;
-            int distance = 0;
-
-            if (fd > td) {
-                while (fd > td) {
-                    f = f.parent;
-                    fd--;
-                    distance++;
-                }
-                if (f == to) {
-                    return new ComponentSetupRelation(from, to, distance, to);
-                }
-            } else {
-                while (td > fd) {
-                    t = t.parent;
-                    td--;
-                    distance++;
-                }
-                if (t == from) {
-                    return new ComponentSetupRelation(from, to, distance, from);
-                }
-            }
-            while (f != t) {
-                f = f.parent;
-                t = t.parent;
-                distance += 2;
-            }
-            return new ComponentSetupRelation(from, to, distance, f);
-        }
+     //   int fd = 0; //from.depth;
+     //   int td = 0; //to.depth;
+//        if (from.lifetime.pool == to.lifetime.pool) {
+//            if (fd == td) {
+//                return new ComponentSetupRelation(from, to, 0, from);
+//            }
+//
+//            ComponentSetup f = from;
+//            ComponentSetup t = to;
+//            int distance = 0;
+//
+//            if (fd > td) {
+//                while (fd > td) {
+//                    f = f.parent;
+//                    fd--;
+//                    distance++;
+//                }
+//                if (f == to) {
+//                    return new ComponentSetupRelation(from, to, distance, to);
+//                }
+//            } else {
+//                while (td > fd) {
+//                    t = t.parent;
+//                    td--;
+//                    distance++;
+//                }
+//                if (t == from) {
+//                    return new ComponentSetupRelation(from, to, distance, from);
+//                }
+//            }
+//            while (f != t) {
+//                f = f.parent;
+//                t = t.parent;
+//                distance += 2;
+//            }
+//            return new ComponentSetupRelation(from, to, distance, f);
+//        }
         throw new UnsupportedOperationException();
     }
 }

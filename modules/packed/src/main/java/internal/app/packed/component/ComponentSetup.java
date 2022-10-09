@@ -31,9 +31,9 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.RealmSetup;
-import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.util.LookupUtil;
 
@@ -50,9 +50,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
-
-    /** The depth of the component in the application tree. */
-    public final int depth;
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
@@ -103,10 +100,8 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
         this.parent = parent;
         if (parent == null) {
-            this.depth = 0;
             this.lifetime = new LifetimeSetup((ContainerSetup) this, null);
         } else {
-            this.depth = parent.depth + 1;
             this.onWireAction = parent.onWireAction;
             this.lifetime = parent.lifetime;
         }
@@ -211,9 +206,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     }
 
     /** {@return the path of this component} */
-    public final NamespacePath path() {
-        return PackedNamespacePath.of(this);
-    }
+    public abstract NamespacePath path();
 
     public abstract Stream<ComponentSetup> stream();
 

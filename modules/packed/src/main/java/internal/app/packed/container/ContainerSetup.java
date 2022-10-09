@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -36,6 +37,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.component.PackedNamespacePath;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -58,9 +60,12 @@ public final class ContainerSetup extends ComponentSetup {
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
+    /** The depth of the component in the application tree. */
+    public final int depth;
+
     /**
      * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns a
-     * deterministic view. 
+     * deterministic view.
      */
     // Or maybe extension types is always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
@@ -96,6 +101,13 @@ public final class ContainerSetup extends ComponentSetup {
     public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(application, realm, parent);
+
+        if (parent == null) {
+            this.depth = 0;
+        } else {
+            this.depth = parent.depth + 1;
+        }
+
         requireNonNull(wirelets, "wirelets is null");
 
         this.injectionManager = new InternalServiceExtension(this);
@@ -216,6 +228,11 @@ public final class ContainerSetup extends ComponentSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** {@return the path of this component} */
+    public NamespacePath path() {
+        return PackedNamespacePath.of(this, depth);
     }
 
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {

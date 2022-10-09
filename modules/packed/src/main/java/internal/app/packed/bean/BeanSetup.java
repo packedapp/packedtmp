@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanMirror;
@@ -16,6 +17,7 @@ import app.packed.container.UserOrExtension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
 import internal.app.packed.component.ComponentSetup;
+import internal.app.packed.component.PackedNamespacePath;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -111,6 +113,11 @@ public sealed class BeanSetup extends ComponentSetup implements BeanInfo permits
     @Override
     public Class<? extends Extension<?>> operator() {
         return installer.operator == null ? BeanExtension.class : installer.operator.extension().extensionType;
+    }
+
+    /** {@return the path of this component} */
+    public final NamespacePath path() {
+        return PackedNamespacePath.of(this, parent.depth + 1);
     }
 
     /** {@inheritDoc} */

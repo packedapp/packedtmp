@@ -142,8 +142,7 @@ public final class PackedNamespacePath implements NamespacePath {
         return s;
     }
 
-    static NamespacePath of(ComponentSetup cc) {
-        int depth = cc.depth;
+    public static NamespacePath of(ComponentSetup cc, int depth) {
         return switch (depth) {
         case 0 -> ROOT;
         case 1 -> new PackedNamespacePath(cc.name);
