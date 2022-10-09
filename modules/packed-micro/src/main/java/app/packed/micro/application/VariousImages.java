@@ -16,7 +16,6 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -24,11 +23,11 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final ApplicationImage<Void> EMPTY_IMAGE = App.reusableImageOf(of(0));
-    public static final ApplicationImage<Void> ONE_BEAN_IMAGE = App.reusableImageOf(of(1));
-    public static final ApplicationImage<Void> FIVE_BEAN_IMAGE = App.reusableImageOf(of(5));
-    public static final ApplicationImage<Void> FIFTY_BEAN_IMAGE = App.reusableImageOf(of(50));
-    public static final ApplicationImage<Void> FIVEHUNDRED_BEAN_IMAGE = App.reusableImageOf(of(500));
+    public static final App.Launcher EMPTY_IMAGE = App.newImage(of(0));
+    public static final App.Launcher ONE_BEAN_IMAGE = App.newImage(of(1));
+    public static final App.Launcher FIVE_BEAN_IMAGE = App.newImage(of(5));
+    public static final App.Launcher FIFTY_BEAN_IMAGE = App.newImage(of(50));
+    public static final App.Launcher FIVEHUNDRED_BEAN_IMAGE = App.newImage(of(500));
 
     public static BaseAssembly of(int beanCount) {
         return new BaseAssembly() {
@@ -43,6 +42,6 @@ public class VariousImages {
     }
     
     public static void main(String[] args) {
-        VariousImages.FIVEHUNDRED_BEAN_IMAGE.launch();
+        VariousImages.FIVEHUNDRED_BEAN_IMAGE.run();
     }
 }

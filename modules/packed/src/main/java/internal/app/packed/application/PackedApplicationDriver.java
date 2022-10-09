@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildTaskGoal;
 import app.packed.base.Nullable;
@@ -117,8 +117,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.IMAGE, assembly, wirelets);
+    public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.NEW_LAUNCHER, assembly, wirelets);
         as.build();
         return new SingleShotApplicationImage<>(this, as.application);
     }
@@ -144,8 +144,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.MIRROR, assembly, wirelets);
+    public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.NEW_MIRROR, assembly, wirelets);
         as.build();
         return as.application.mirror();
     }
@@ -170,8 +170,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.IMAGE_REUSABLE, assembly, wirelets);
+    public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.NEW_IMAGE, assembly, wirelets);
         as.build();
         return new ReusableApplicationImage<>(this, as.application);
     }
@@ -179,7 +179,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.VERIFICATION, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(this, BuildTaskGoal.VERIFY, assembly, wirelets);
         as.build();
     }
 
@@ -314,9 +314,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /**
-     * Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#reusableImageOf(Assembly, Wirelet...)}.
+     * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
      */
-    public static final class SingleShotApplicationImage<A> extends AtomicReference<ReusableApplicationImage<A>> implements ApplicationImage<A> {
+    public static final class SingleShotApplicationImage<A> extends AtomicReference<ReusableApplicationImage<A>> implements ApplicationLauncher<A> {
 
         private static final long serialVersionUID = 1L;
 
@@ -336,9 +336,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /**
-     * Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#reusableImageOf(Assembly, Wirelet...)}.
+     * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationImage<A> {
+    public /* primitive */ record ReusableApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -347,8 +347,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** A mapped wrapper of an {@link ApplicationImage}. */
-    public record MappedApplicationImage<A, F> (ApplicationImage<F> image, Function<? super F, ? extends A> mapper) implements ApplicationImage<A> {
+    /** A mapped wrapper of an {@link ApplicationLauncher}. */
+    public record MappedApplicationImage<A, F> (ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -359,7 +359,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <E> ApplicationImage<E> map(Function<? super A, ? extends E> mapper) {
+        public <E> ApplicationLauncher<E> map(Function<? super A, ? extends E> mapper) {
             requireNonNull(mapper, "mapper is null");
             Function<? super F, ? extends E> andThen = this.mapper.andThen(mapper);
             return new MappedApplicationImage<>(image, andThen);

@@ -60,35 +60,34 @@ public class AppConstructionMicro {
         App.run(VariousImages.of(50));
     }
 
-
     @Benchmark
     public void appRun500Beans() {
         App.run(VariousImages.of(500));
     }
 
-    
     @Benchmark
-    public Void appImage000Beans() {
-        return VariousImages.EMPTY_IMAGE.launch();
+    public void appImage000Beans() {
+        VariousImages.EMPTY_IMAGE.run();
     }
 
     @Benchmark
-    public Void appImage001Beans() {
-        return VariousImages.ONE_BEAN_IMAGE.launch();
+    public void appImage001Beans() {
+        VariousImages.ONE_BEAN_IMAGE.run();
     }
 
     @Benchmark
-    public Void appImage005Beans() {
-        return VariousImages.FIVE_BEAN_IMAGE.launch();
+    public void appImage005Beans() {
+        VariousImages.FIVE_BEAN_IMAGE.run();
     }
-    
+
     @Benchmark
-    public Void appImage050Beans() {
-        return VariousImages.FIFTY_BEAN_IMAGE.launch();
+    public void appImage050Beans() {
+        VariousImages.FIFTY_BEAN_IMAGE.run();
     }
+
     @Benchmark
-    public Void appImage500Beans() {
-        return VariousImages.FIVEHUNDRED_BEAN_IMAGE.launch();
+    public void appImage500Beans() {
+        VariousImages.FIVEHUNDRED_BEAN_IMAGE.run();
     }
 }
 

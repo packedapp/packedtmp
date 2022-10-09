@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationLauncher;
+import app.packed.application.ComponentMirror;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import internal.app.packed.component.ComponentScope;
@@ -29,7 +31,7 @@ import internal.app.packed.container.InternalWirelet;
 /**
  * Wirelets that can only be specified when building an application.
  * <p>
- * Attempts to use them when {@link ApplicationImage#launch(Wirelet...) launching} an image will fail with
+ * Attempts to use them when {@link ApplicationLauncher#launch(Wirelet...) launching} an image will fail with
  * {@link IllegalArgumentException}.
  */
 // Jeg tror den doer og ryger over paa andre wirelets... Saa vi udelukkende gruppere dem efter type... IDK... Maaske beholder vi den alligevel...

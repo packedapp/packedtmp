@@ -32,7 +32,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -48,38 +47,38 @@ import app.packed.container.Extension;
 public class ExtensionActivation {
 
     @Benchmark
-    public ApplicationImage<Void> empty() {
+    public App.Launcher empty() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
         };
-        return App.reusableImageOf(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> useExtension() {
+    public App.Launcher useExtension() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 use(MyExtension.class);
             }
         };
-        return App.reusableImageOf(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> install() {
+    public App.Launcher install() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance("foo");
             }
         };
-        return App.reusableImageOf(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> newExtensionUseInstall() {
+    public App.Launcher newExtensionUseInstall() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -87,18 +86,18 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return App.reusableImageOf(b);
+        return App.newImage(b);
     }
 
     @Benchmark
-    public ApplicationImage<Void> newExtensionAutoActivate() {
+    public App.Launcher newExtensionAutoActivate() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance(new MyStuff());
             }
         };
-        return App.reusableImageOf(b);
+        return App.newImage(b);
     }
 
     static class MyStuff {

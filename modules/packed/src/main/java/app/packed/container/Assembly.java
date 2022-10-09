@@ -136,13 +136,13 @@ public abstract class Assembly {
         if (existing == null) {
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
-                assembly.preBuild(configuration);
+                assembly.assemblyModel.preBuild(configuration);
 
                 // Call the actual build() method
                 build();
 
                 // Run AssemblyHook.onPostBuild if hooks are present
-                assembly.postBuild(configuration);
+                assembly.assemblyModel.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, ContainerConfiguration.USED);

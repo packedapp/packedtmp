@@ -29,7 +29,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
@@ -42,7 +41,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final ApplicationImage<Void> INSTALL31 = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher INSTALL31 = App.newImage(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -61,7 +60,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final ApplicationImage<Void> INSTALL253 = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher INSTALL253 = App.newImage(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -97,7 +96,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final ApplicationImage<Void> INSTALL253_NOS = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher INSTALL253_NOS = App.newImage(new BaseAssembly() {
         @Override
         public void build() {
             lookup(MethodHandles.lookup());
@@ -136,17 +135,20 @@ public class ImageBigMicro {
 
     @Benchmark
     public Void install31() {
-        return INSTALL31.launch();
+        INSTALL31.run();
+        return null;
     }
 
     @Benchmark
     public Void install253() {
-        return INSTALL253.launch();
+        INSTALL253.run();
+        return null;
     }
 
     @Benchmark
     public Void install253NOS() {
-        return INSTALL253_NOS.launch();
+        INSTALL253_NOS.run();
+        return null;
     }
 }
 // 30 August 2020

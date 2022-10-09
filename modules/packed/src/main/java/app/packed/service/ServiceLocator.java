@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
@@ -292,7 +292,7 @@ public interface ServiceLocator {
      * Returns an application driver that can be used to create standalone service locator instances.
      * 
      * @return an application driver
-     * @see #imageOf(Assembly, Wirelet...)
+     * @see #newLauncher(Assembly, Wirelet...)
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */
@@ -307,8 +307,8 @@ public interface ServiceLocator {
         throw new UnsupportedOperationException();
     }
 
-    static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().mirrorOf(assembly, wirelets);
+    static ApplicationLauncher<ServiceLocator> newImage(Assembly assembly, Wirelet... wirelets) {
+        return driver().newImage(assembly, wirelets);
     }
 
     /**
@@ -321,12 +321,12 @@ public interface ServiceLocator {
      * @return the new image
      * @see #driver()
      */
-    static ApplicationImage<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().imageOf(assembly, wirelets);
+    static ApplicationLauncher<ServiceLocator> newLauncher(Assembly assembly, Wirelet... wirelets) {
+        return driver().newLauncher(assembly, wirelets);
     }
 
-    static ApplicationImage<ServiceLocator> newReusableLauncher(Assembly assembly, Wirelet... wirelets) {
-        return driver().reusableImageOf(assembly, wirelets);
+    static ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
+        return driver().newMirror(assembly, wirelets);
     }
 
     /** {@return a service locator that provides no services.} */

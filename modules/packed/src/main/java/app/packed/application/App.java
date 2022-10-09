@@ -40,20 +40,6 @@ public final class App {
     private App() {}
 
     /**
-     * @param assembly
-     *            the assembly representing the application
-     * @param wirelets
-     *            optional wirelets
-     * @throws ApplicationLaunchException
-     *             if the application failed to execute
-     * @throws RuntimeException
-     *             if the build
-     */
-    public static void checkedRun(Assembly assembly, Wirelet... wirelets) throws ApplicationLaunchException {
-        DEFAULT_DRIVER.launch(assembly, wirelets);
-    }
-
-    /**
      * 
      * @return
      */
@@ -61,10 +47,14 @@ public final class App {
         throw new UnsupportedOperationException();
     }
 
+    public static App.Launcher newImage(Assembly assembly, Wirelet... wirelets) {
+        return new Launcher(DEFAULT_DRIVER.newImage(assembly, wirelets));
+    }
+
     /**
      * Builds an application and returns a launcher that can be used to launch a <b>single</b> instance of the application.
      * <p>
-     * If you need to launch multiple instances of the same application use {@link #reusableImageOf(Assembly, Wirelet...)}.
+     * If you need to launch multiple instances of the same application use {@link #newImage(Assembly, Wirelet...)}.
      * Or maybe use that Application wirelet... I don't really think it is that common
      * 
      * @param assembly
@@ -73,10 +63,8 @@ public final class App {
      *            optional wirelets
      * @return a launcher that can be used to launch a single instance of the application
      */
-    // Builds an application but does run instead. Instead returning a launcher that can be used at a later point
-    // to run the application.
-    public static ApplicationImage<Void> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
+    public static App.Launcher newLauncher(Assembly assembly, Wirelet... wirelets) {
+        return new Launcher(DEFAULT_DRIVER.newLauncher(assembly, wirelets));
     }
 
     /**
@@ -90,13 +78,13 @@ public final class App {
      * @throws RuntimeException
      *             if the application could not be build
      */
-    public static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.mirrorOf(assembly, wirelets);
+    public static ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
+        return DEFAULT_DRIVER.newMirror(assembly, wirelets);
     }
 
     public static void print(Assembly assembly, Object printDetails, Wirelet... wirelets) {
         // printDetails=Container, Assemblies,////
-        mirrorOf(assembly, wirelets).print();
+        newMirror(assembly, wirelets).print();
     }
 
     public static void print(Assembly assembly, Wirelet... wirelets) {
@@ -104,11 +92,7 @@ public final class App {
         // I think it is super usefull
         //// Maybe have something like enum PrintDetail (Minimal, Normal, Full)
         // ApplicationPrinter.Full, ApplicationPrinter.Normal
-        mirrorOf(assembly, wirelets).print();
-    }
-
-    public static ApplicationImage<Void> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        return DEFAULT_DRIVER.imageOf(assembly, wirelets);
+        newMirror(assembly, wirelets).print();
     }
 
     /**
@@ -138,13 +122,30 @@ public final class App {
 
     // class probably... no need for an interface. Noone is going to call in
     interface Customizer {
-        ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
+        ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
 
         // exception application panic/build strategy
 
         Customizer restartable();
 
         void run(Assembly assembly, Wirelet... wirelets);
+    }
+
+    public static final class Launcher {
+        
+        private final ApplicationLauncher<?> image;
+
+        Launcher(ApplicationLauncher<?> image) {
+            this.image = image;
+        }
+
+        public void run() {
+            image.launch();
+        }
+
+        public void run(Wirelet...wirelets) {
+            image.launch(wirelets);
+        }
     }
 }
 
@@ -158,10 +159,14 @@ public final class App {
 
 // Den fungere ikke super godt med fx DaemonApp. Som jo mere er en slags Future
 interface SandboxAppResult<A> {
-    int exitCode(); // or is this cliApp???
     Optional<Throwable> cause();
-    boolean isSuccess();
+
+    int exitCode(); // or is this cliApp???
+
     boolean isFailed();
+
+    boolean isSuccess();
+
     A result();
 }
 

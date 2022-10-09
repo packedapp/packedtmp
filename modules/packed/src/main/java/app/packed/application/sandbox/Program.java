@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
@@ -112,7 +112,7 @@ public interface Program extends AutoCloseable {
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationImage#launch(Wirelet...)} will be unless
+     * The state of the applications returned by {@link ApplicationLauncher#launch(Wirelet...)} will be unless
      * GuestWirelet.delayStart
      * 
      * @param assembly
@@ -123,8 +123,8 @@ public interface Program extends AutoCloseable {
      * @see ApplicationImageWirelets
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
-    static ApplicationImage<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().imageOf(assembly, wirelets);
+    static ApplicationLauncher<Program> imageOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().newLauncher(assembly, wirelets);
     }
 
     /**

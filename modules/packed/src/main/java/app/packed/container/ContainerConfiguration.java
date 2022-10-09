@@ -148,12 +148,12 @@ public class ContainerConfiguration {
         container.assembly.wireCurrentComponent();
 
         // Create a new realm for the assembly
-        AssemblySetup newRealm = new AssemblySetup(d, container, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(d, container, assembly, wirelets);
 
         // Close the new realm again after the assembly has been successfully linked
-        newRealm.build();
+        as.build();
 
-        return (ContainerMirror) newRealm.container().mirror();
+        return (ContainerMirror) as.container.mirror();
     }
 
     /**

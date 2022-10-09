@@ -56,12 +56,12 @@ public final class AssemblySetup extends RealmSetup {
     public final Assembly assembly;
 
     /** A model of the assembly. */
-    private final AssemblyModel assemblyModel;
+    public final AssemblyModel assemblyModel;
 
-    /** The root component of this realm. */
-    private final ContainerSetup container;
+    /** The container defined by this assembly. */
+    public final ContainerSetup container;
 
-    private final PackedContainerHandle driver;
+    private final PackedContainerHandle containerHandle;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -86,24 +86,22 @@ public final class AssemblySetup extends RealmSetup {
         this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
 
         this.container = application.container;
-        this.driver = new PackedContainerHandle(container);
+        this.containerHandle = new PackedContainerHandle(container);
     }
 
-    public AssemblySetup(PackedContainerHandle driver, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblySetup(PackedContainerHandle handle, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
         this.application = linkTo.application;
         if (assembly instanceof ComposerAssembly) {
             throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
         }
-        // if embed do xxx
-        // else create new container
-        this.container = new ContainerSetup(application, this, driver, linkTo, wirelets);
-        this.driver = driver;
+        this.container = new ContainerSetup(application, this, handle, linkTo, wirelets);
+        this.containerHandle = handle;
     }
 
     public void build() {
-        ContainerConfiguration configuration = driver.toConfiguration(container);
+        ContainerConfiguration configuration = containerHandle.toConfiguration(container);
 
         // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
         try {
@@ -116,7 +114,7 @@ public final class AssemblySetup extends RealmSetup {
         close();
     }
 
-    final void close() {
+    void close() {
         super.close();
 
         // call Extension.onUserClose on the root container in the assembly.
@@ -127,7 +125,7 @@ public final class AssemblySetup extends RealmSetup {
         // In which case an Iterator might throw ConcurrentModificationException
 
         // Test and see if we are closing the root container
-        ContainerSetup container = container();
+
         if (container.parent == null) {
             // Root container
             // We must also close all extensions application-wide.
@@ -147,9 +145,9 @@ public final class AssemblySetup extends RealmSetup {
                 extension.close();
             }
 
-            // Create application launcher
+            // The application has been built successfully
             application.close();
-            
+
         } else {
             // Similar to above, except we do not close extensions application-wide
             ExtensionSetup e = extensions.pollFirst();
@@ -160,22 +158,9 @@ public final class AssemblySetup extends RealmSetup {
         }
     }
 
-    /** {@inheritDoc} */
-    public ContainerSetup container() {
-        return container;
-    }
-
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         return new BuildtimeAssemblyMirror(this);
-    }
-
-    public void postBuild(ContainerConfiguration configuration) {
-        assemblyModel.postBuild(configuration);
-    }
-
-    public void preBuild(ContainerConfiguration configuration) {
-        assemblyModel.preBuild(configuration);
     }
 
     /** {@inheritDoc} */
@@ -207,7 +192,7 @@ public final class AssemblySetup extends RealmSetup {
         /** {@inheritDoc} */
         @Override
         public ContainerMirror container() {
-            return assembly.container().mirror();
+            return assembly.container.mirror();
         }
 
         /** {@inheritDoc} */
@@ -219,7 +204,7 @@ public final class AssemblySetup extends RealmSetup {
         /** {@inheritDoc} */
         @Override
         public Optional<AssemblyMirror> parent() {
-            ContainerSetup org = assembly.container();
+            ContainerSetup org = assembly.container;
             for (ContainerSetup p = org.parent; p != null; p = p.parent) {
                 if (org.assembly != p.assembly) {
                     return Optional.of(p.assembly.mirror());
@@ -231,7 +216,7 @@ public final class AssemblySetup extends RealmSetup {
         /** {@inheritDoc} */
         @Override
         public Stream<AssemblyMirror> children() {
-            return children(assembly, assembly.container(), new ArrayList<>()).stream();
+            return children(assembly, assembly.container, new ArrayList<>()).stream();
         }
 
         private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
@@ -248,13 +233,13 @@ public final class AssemblySetup extends RealmSetup {
         /** {@inheritDoc} */
         @Override
         public boolean isRoot() {
-            return assembly.container().parent == null;
+            return assembly.container.parent == null;
         }
 
         /** {@inheritDoc} */
         @Override
         public ApplicationMirror application() {
-            return assembly.container().application.mirror();
+            return assembly.application.mirror();
         }
     }
 }

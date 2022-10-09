@@ -17,6 +17,7 @@ package app.packed.application;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.container.Assembly;
@@ -54,28 +55,14 @@ import internal.app.packed.application.PackedApplicationDriver.SingleShotApplica
  * An image can be used to create new instances of {@link app.packed.application.App} or other applications. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
- * @see App#imageOf(Assembly, Wirelet...)
- * @see App#reusableImageOf(Assembly, Wirelet...)
+ * @see App#newLauncher(Assembly, Wirelet...)
+ * @see App#newImage(Assembly, Wirelet...)
  */
+// Hvorfor skal man egentlig ikke kunne extende den med sine egne ting
+
+// rename to launcher and then image is a special type of launcher that can be used repeatable
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationImage<A> permits SingleShotApplicationImage, ReusableApplicationImage, MappedApplicationImage {
-
-    /**
-     * Launches an instance of the application that this image represents.
-     * 
-     * @throws ApplicationLaunchException
-     *             if the application failed to launch
-     * @throws IllegalStateException
-     *             if the image has already been used to launch an application and the image is not a reusable image
-     * @return the application interface if available
-     */
-    default A checkedLaunch() throws ApplicationLaunchException {
-        return checkedLaunch(new Wirelet[] {});
-    }
-
-    default A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException {
-        throw new UnsupportedOperationException();
-    }
+public sealed interface ApplicationLauncher<A> permits SingleShotApplicationImage, ReusableApplicationImage, MappedApplicationImage {
 
     /**
      * Launches an instance of the application that this image represents.
@@ -124,7 +111,8 @@ public sealed interface ApplicationImage<A> permits SingleShotApplicationImage, 
      *            the mapper
      * @return a new application image that maps the result of the launch
      */
-    default <E> ApplicationImage<E> map(Function<? super A, ? extends E> mapper) {
+    // Maaske ikke usefull med custom launchers
+    default <E> ApplicationLauncher<E> map(Function<? super A, ? extends E> mapper) {
         requireNonNull(mapper, "mapper is null");
         return new MappedApplicationImage<>(this, mapper);
     }
@@ -132,6 +120,24 @@ public sealed interface ApplicationImage<A> permits SingleShotApplicationImage, 
 
 interface Zimgbox<A> {
 
+//  /**
+//  * Launches an instance of the application that this image represents.
+//  * 
+//  * @throws ApplicationLaunchException
+//  *             if the application failed to launch
+//  * @throws IllegalStateException
+//  *             if the image has already been used to launch an application and the image is not a reusable image
+//  * @return the application interface if available
+//  */
+// default A checkedLaunch() throws ApplicationLaunchException {
+//     return checkedLaunch(new Wirelet[] {});
+// }
+//
+// default A checkedLaunch(Wirelet... wirelets) throws ApplicationLaunchException {
+//     throw new UnsupportedOperationException();
+// }
+
+    
     default boolean isUseable() {
         // An image returns true always
 
@@ -139,6 +145,8 @@ interface Zimgbox<A> {
         return true;
     }
 
+    Optional<ApplicationMirror> mirror();
+    
     /**
      * Returns the launch mode of application(s) created by this image.
      * 
@@ -152,7 +160,7 @@ interface Zimgbox<A> {
     // Could do sneaky throws instead
     A throwingUse(Wirelet... wirelets) throws Throwable;
 
-    default ApplicationImage<A> with(Wirelet... wirelets) {
+    default ApplicationLauncher<A> with(Wirelet... wirelets) {
         // Egentlig er den kun her pga Launcher
         throw new UnsupportedOperationException();
     }
@@ -166,7 +174,8 @@ interface Zimgbox<A> {
      * @throws UnsupportedOperationException
      *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
      */
-    static ApplicationMirror extractMirror(ApplicationImage<?> image) {
+    // Eller bare Optional<Mirror>
+    static ApplicationMirror extractMirror(ApplicationLauncher<?> image) {
         throw new UnsupportedOperationException();
     }
 

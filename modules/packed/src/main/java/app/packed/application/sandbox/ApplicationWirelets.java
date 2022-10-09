@@ -1,4 +1,4 @@
-package app.packed.application;
+package app.packed.application.sandbox;
 
 import java.nio.channels.AcceptPendingException;
 import java.time.Duration;

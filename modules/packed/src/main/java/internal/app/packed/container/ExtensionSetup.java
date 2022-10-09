@@ -128,8 +128,8 @@ public final class ExtensionSetup {
 
         // Hvad hvis en extension linker en af deres egne assemblies.
         // If the extension is added in the root container of an assembly. We need to add it there
-        if (container.realm instanceof AssemblySetup r && r.container() == container) {
-            r.extensions.add(this);
+        if (container.realm instanceof AssemblySetup as && as.container == container) {
+            as.extensions.add(this);
         }
 
         // Invoke Extension#onNew() before returning the new extension to the end-user

@@ -56,22 +56,6 @@ import internal.app.packed.application.PackedApplicationDriver;
 public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     /**
-     * Create a new application image by using the specified assembly and optional wirelets.
-     * 
-     * @param assembly
-     *            the assembly that should be used to build the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     * @throws RuntimeException
-     *             if the image could not be build
-     */
-    // Andre image optimizations
-    //// Don't cache beans info
-    /// Nu bliver jeg i tvivl igen... Fx med Tester
-    ApplicationImage<A> imageOf(Assembly assembly, Wirelet... wirelets);
-
-    /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
@@ -92,6 +76,24 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     A launch(Assembly assembly, Wirelet... wirelets); // newInstance
 
+    ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets);
+
+    /**
+     * Create a new application image by using the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly that should be used to build the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     * @throws RuntimeException
+     *             if the image could not be build
+     */
+    // Andre image optimizations
+    //// Don't cache beans info
+    /// Nu bliver jeg i tvivl igen... Fx med Tester
+    ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets);
+
     /**
      * Creates a new application mirror from the specified assembly and optional wirelets.
      * <p>
@@ -106,9 +108,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @throws RuntimeException
      *             if the mirror could not be build
      */
-    ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets);
-
-    ApplicationImage<A> reusableImageOf(Assembly assembly, Wirelet... wirelets);
+    ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets);
 
     /**
      * @param assembly

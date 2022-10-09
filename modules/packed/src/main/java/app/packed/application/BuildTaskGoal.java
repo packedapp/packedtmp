@@ -28,14 +28,14 @@ public enum BuildTaskGoal {
      * 
      * @see ApplicationDriver#reusableImageOf(Assembly, Wirelet...)
      */
-    IMAGE,
+    NEW_LAUNCHER,
 
     /**
      * The goal is to build an {@link ApplicationImage} that can be launched multiple times.
      * 
      * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
-    IMAGE_REUSABLE,
+    NEW_IMAGE,
 
     /**
      * The goal is to build an application and then immediately launch it.
@@ -49,12 +49,12 @@ public enum BuildTaskGoal {
      *
      * @see ApplicationDriver#mirrorOf(Assembly, Wirelet...)
      */
-    MIRROR,
+    NEW_MIRROR,
 
     /**
      * The goal is to verify that the application is structural correct.
      * 
      * @see ApplicationDriver#verify(Assembly, Wirelet...)
      */
-    VERIFICATION;
+    VERIFY;
 }

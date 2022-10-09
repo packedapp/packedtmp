@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
@@ -234,17 +234,17 @@ public interface OldServiceLocator extends ServiceRegistry {
      * @return the new image
      * @see #driver()
      */
-    static ApplicationImage<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().imageOf(assembly, wirelets);
+    static ApplicationLauncher<OldServiceLocator> imageOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().newLauncher(assembly, wirelets);
     }
 
     // maaske har vi launcher og Image...
     static ApplicationMirror mirrorOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().mirrorOf(assembly, wirelets);
+        return driver().newMirror(assembly, wirelets);
     }
 
-    static ApplicationImage<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
-        return driver().reusableImageOf(assembly, wirelets);
+    static ApplicationLauncher<OldServiceLocator> reusableImageOf(Assembly assembly, Wirelet... wirelets) {
+        return driver().newImage(assembly, wirelets);
     }
 }
 

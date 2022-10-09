@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.sandbox;
 
 /**
  *
  */
-//ApplicationException?
-//ApplicationExecutionException
-
-// Add ApplicationException and ApplicationRuntimeException?
-
-public class ApplicationLaunchException extends Exception {
-
-    private static final long serialVersionUID = 1L;
-
+// Taenker det er noget CLI
+public interface ApplicationLaunchResult {
+    boolean isCompleted();
 }

@@ -28,7 +28,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -43,24 +42,24 @@ import app.packed.container.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final ApplicationImage<Void> EMPTY = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher EMPTY = App.newImage(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final ApplicationImage<Void> USE_EXTENSION = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher USE_EXTENSION = App.newImage(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final ApplicationImage<Void> INSTALL = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher INSTALL = App.newImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final ApplicationImage<Void> INSTALL_AUTO_ACTIVATE = App.reusableImageOf(new BaseAssembly() {
+    static final App.Launcher INSTALL_AUTO_ACTIVATE = App.newImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());
@@ -69,22 +68,26 @@ public class ImageMicro {
 
     @Benchmark
     public Void empty() {
-        return EMPTY.launch();
+        EMPTY.run();
+        return null;
     }
 
     @Benchmark
     public Void useExtension() {
-        return USE_EXTENSION.launch();
+        USE_EXTENSION.run();
+        return null;
     }
 
     @Benchmark
     public Void install() {
-        return INSTALL.launch();
+        INSTALL.run();
+        return null;
     }
 
     @Benchmark
     public Void newExtensionAutoActivate() {
-        return INSTALL_AUTO_ACTIVATE.launch();
+        INSTALL_AUTO_ACTIVATE.run();
+        return null;
     }
 
     static class MyStuff {

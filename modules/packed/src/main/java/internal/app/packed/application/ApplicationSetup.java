@@ -62,7 +62,7 @@ public final class ApplicationSetup implements BuildTaskInfo {
     final BuildTaskGoal goal;
 
     @Nullable
-    ApplicationLauncher launcher;
+    PackedApplicationLauncher launcher;
 
     /**
      * Create a new application setup
@@ -109,6 +109,6 @@ public final class ApplicationSetup implements BuildTaskInfo {
      * 
      */
     public void close() {
-        launcher = new ApplicationLauncher(this);
+        launcher = new PackedApplicationLauncher(this);
     }
 }
