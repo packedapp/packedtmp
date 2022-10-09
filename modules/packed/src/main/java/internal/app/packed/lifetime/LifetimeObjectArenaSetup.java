@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.pool;
+package internal.app.packed.lifetime;
 
 import java.util.ArrayList;
 
 import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
+import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 
 /**
  *
@@ -35,7 +37,7 @@ import internal.app.packed.application.ApplicationInitializationContext;
 //Saa maaske er pool og Lifetime to forskellige ting???
 //
 // Long term.. Could we rewrite all the indexes for images. In this way we could store all constants in another array that we would just reference
-public final class LifetimePoolSetup {
+public final class LifetimeObjectArenaSetup {
 
     /** All constants that should be stored in the constant pool. */
     private final ArrayList<LifetimePoolWriteable> entries = new ArrayList<>();
@@ -44,6 +46,8 @@ public final class LifetimePoolSetup {
 
     /** The size of the pool. */
     private int size;
+
+    LifetimeObjectArenaSetup() {}
 
     public void addConstant(LifetimePoolWriteable s) {
         entries.add(s);
@@ -55,15 +59,14 @@ public final class LifetimePoolSetup {
         entries.add(c);
     }
 
-    public LifetimeConstantPool newPool(ApplicationInitializationContext launchContext) {
-        LifetimeConstantPool pool = new LifetimeConstantPool(size);
+    public LifetimeObjectArena newRuntimePool(ApplicationInitializationContext launchContext) {
+        LifetimeObjectArena pool = LifetimeObjectArena.create(size);
 
         launchContext.writeToPool(pool);
 
         for (LifetimePoolWriteable e : entries) {
             e.writeToPool(pool);
         }
-        // pool.freeze();
 
         return pool;
     }
@@ -73,7 +76,7 @@ public final class LifetimePoolSetup {
      * 
      * @return the index to store the object in at runtime
      */
-    public PoolEntryHandle reserve(Class<?> type) {
-        return new PoolEntryHandle(type, size++);
+    public DynamicAccessor reserve(Class<?> type) {
+        return new DynamicAccessor(type, size++);
     }
 }

@@ -28,10 +28,10 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.lifetime.pool.LifetimeConstantPool;
-import internal.app.packed.lifetime.pool.LifetimePoolSetup;
+import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
+import internal.app.packed.lifetime.pool.Accessor;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
-import internal.app.packed.lifetime.pool.PoolEntryHandle;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.ServiceDelegate;
 import internal.app.packed.util.ThrowableUtil;
@@ -39,26 +39,6 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  *
  */
-//Kan modtage dependencies
-
-//BeanOperation (Hooks)
-
-//BeanFactory
-//AutoServiceFactory
-
-//Kan vaere dependencies
-
-//UserServiceProvide (BeanInstance)X
-//BeanOperation (Kan andre end services????)
-//AutoServiceFactory
-//Binding operation
-
-//////----- Fremtid
-
-//Sidecars (Sidebeans)
-
-////Kan dependences on
-////Det er jo ikke f.eks. et bean factory man kan depende paa. Men en bean
 public abstract sealed class DependencyNode implements LifetimePoolWriteable permits BeanInstanceDependencyNode, BeanMemberDependencyNode {
 
     /** The bean this dependency consumer is a part of. */
@@ -100,7 +80,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
      * 
      * @param pool
      */
-    public void onAllDependenciesResolved(LifetimePoolSetup pool) {
+    public void onAllDependenciesResolved(LifetimeObjectArenaSetup pool) {
         // If analysis we should not need to create method handles...
 
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
@@ -115,7 +95,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
 
     }
 
-    protected abstract PoolEntryHandle poolAccessor();
+    protected abstract Accessor poolAccessor();
 
     public void resolve(InternalServiceExtension sbm) {
         boolean buildMH = true;
@@ -203,7 +183,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         // We create the runtime method handle a little different, depending on the
         // number of dependencies/producers it has
         if (producers.length == 0) {
-            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimeConstantPool.class);
+            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimeObjectArena.class);
         } else if (producers.length == 1) {
             mh = MethodHandles.collectArguments(originalMethodHandle, 0, producers[0].dependencyAccessor());
         } else {
@@ -215,7 +195,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
             }
 
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimeConstantPool.class);
+            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimeObjectArena.class);
             mh = MethodHandles.permuteArguments(mh, mt, new int[producers.length]);
         }
 
@@ -231,7 +211,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
     }
 
     @Override
-    public void writeToPool(LifetimeConstantPool pool) {
+    public void writeToPool(LifetimeObjectArena pool) {
         MethodHandle mh = runtimeMethodHandle();
 
         Object instance;

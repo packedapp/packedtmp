@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
-import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.service.build.ServiceSetup;
 
 /** A special instantiation context that is created */
@@ -27,7 +27,7 @@ import internal.app.packed.service.build.ServiceSetup;
 // laver aendringer, hvis vi bare sender Region+IHM rundt
 public final class ServiceInstantiationContext {
 
-    public final LifetimeConstantPool pool;
+    public final LifetimeObjectArena pool;
 
     public final IdentityHashMap<ServiceSetup, RuntimeService> transformers = new IdentityHashMap<>();
 
@@ -35,7 +35,7 @@ public final class ServiceInstantiationContext {
         pool = null;
     }
 
-    public ServiceInstantiationContext(LifetimeConstantPool pool) {
+    public ServiceInstantiationContext(LifetimeObjectArena pool) {
         this.pool = requireNonNull(pool);
     }
 }

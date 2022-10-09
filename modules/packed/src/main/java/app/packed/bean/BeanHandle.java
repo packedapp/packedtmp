@@ -215,15 +215,25 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          */
         Installer<T> introspectWith(BeanIntrospector introspector);
 
-        Installer<T> kindSingleton();
+        
+        // Option.Singleton, Option.lifetimeLazy;
+        
+        // Instance -> Altid eager
 
-        default Installer<T> kindLazy() {
-            throw new UnsupportedOperationException();
-        }
+        // Eager - Singleton
+        // Eager - NonSingleton
+        // Lazy - Singleton
+        // Lazy - NonSingleton
+        // Many
+        Installer<T> kindSingleton();
 
         Installer<T> kindUnmanaged();
 
-        default Installer<T> lifetime(LifetimeFoo lifetime) {
+        default Installer<T> lifetime(LifetimeFoo initial, LifetimeFoo additional) {
+            throw new UnsupportedOperationException();
+        }
+
+        default Installer<T> lifetimeLazy() {
             throw new UnsupportedOperationException();
         }
 
@@ -271,7 +281,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
-    public class LifetimeFoo {
+    public interface LifetimeFoo {
+        LifetimeFoo ALL = null;
+        LifetimeFoo START = null;
+        LifetimeFoo STOP = null;
 
     }
 }

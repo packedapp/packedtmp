@@ -2,11 +2,9 @@ package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.lifetime.LifetimeMirror;
-import internal.app.packed.lifetime.pool.LifetimePoolSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -32,14 +30,9 @@ public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanL
     private static final MethodHandle MH_LIFETIME_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), LifetimeMirror.class,
             "initialize", void.class, LifetimeSetup.class);
 
-    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
-
     /** Any parent of this lifetime. The root lifetime always being identical to the application lifetime. */
     @Nullable
-    public final LifetimeSetup parent;
-
-    /** The lifetime constant pool. */
-    public final LifetimePoolSetup pool = new LifetimePoolSetup();
+    public final ContainerLifetimeSetup parent;
 
     /**
      * Creates a new lifetime.

@@ -1,7 +1,8 @@
 package internal.app.packed.lifetime.pool;
 
-// TODO vi burde jo gemme
+import internal.app.packed.lifetime.LifetimeObjectArena;
+
 @FunctionalInterface
 public interface LifetimePoolWriteable {
-    void writeToPool(LifetimeConstantPool pool);
+    void writeToPool(LifetimeObjectArena pool);
 }

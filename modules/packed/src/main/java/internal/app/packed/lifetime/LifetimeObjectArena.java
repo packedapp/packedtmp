@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.pool;
+package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,18 +24,25 @@ import internal.app.packed.util.LookupUtil;
  * All strongly connected components relate to the same pod.
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
-
-// ApplicationHeap???
-// LifetimeArena?
-public final /* primitive */ class LifetimeConstantPool {
+public final /* primitive */ class LifetimeObjectArena {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
+    public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
+    public static final LifetimeObjectArena EMPTY = new LifetimeObjectArena(0);
     private final Object[] objects;
 
-    LifetimeConstantPool(int size) {
+    private LifetimeObjectArena(int size) {
         objects = new Object[size];
+    }
+
+    public static LifetimeObjectArena create(int size) {
+        if (size == 0) {
+            return EMPTY;
+        } else {
+            return new LifetimeObjectArena(size);
+        }
+
     }
 
     public void print() {
@@ -47,14 +54,14 @@ public final /* primitive */ class LifetimeConstantPool {
         System.out.println("--");
     }
 
-    Object read(int index) {
+    public Object read(int index) {
 //        Object value = store[index];
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
         return objects[index];
     }
 
-    void storeObject(int index, Object instance) {
+    public void storeObject(int index, Object instance) {
         if (objects[index] != null) {
             throw new IllegalStateException();
         }

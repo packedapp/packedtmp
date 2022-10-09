@@ -66,16 +66,17 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     /** A model of hooks on the bean class. Or null if no member scanning was performed. */
     @Nullable
     public final BeanClassModel beanModel;
-    public final boolean hasInstances;
+    
+    public final boolean instantiate;
 
     private PackedBeanHandleInstaller(ExtensionSetup operator, RealmSetup realm, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            boolean hasInstances) {
+            boolean instantiate) {
         this.operator = requireNonNull(operator);
         this.realm = requireNonNull(realm);
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = requireNonNull(source);
-        this.hasInstances = hasInstances;
+        this.instantiate = instantiate;
         this.beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);// realm.accessor().beanModelOf(driver.beanClass());
     }
 
@@ -169,7 +170,7 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
 
         // TODO check kind
         // cannot be operation, managed or unmanaged, Functional
-        return new PackedBeanHandleInstaller<>(operator, realm, instance.getClass(), BeanSourceKind.INSTANCE, instance, true);
+        return new PackedBeanHandleInstaller<>(operator, realm, instance.getClass(), BeanSourceKind.INSTANCE, instance, false);
     }
 
     public static PackedBeanHandleInstaller<?> ofNone(ExtensionSetup operator, RealmSetup realm) {

@@ -26,9 +26,9 @@ import app.packed.lifetime.sandbox.OldLifetimeKind;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.lifetime.PackedManagedLifetime;
-import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
+import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -47,7 +47,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     public String name;
 
     /** The runtime component node we are building. */
-    private LifetimeConstantPool pool;
+    private LifetimeObjectArena pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
@@ -70,7 +70,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
         return name;
     }
 
-    public LifetimeConstantPool pool() {
+    public LifetimeObjectArena pool() {
         return pool;
     }
 
@@ -93,7 +93,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     }
     
     @Override
-    public void writeToPool(LifetimeConstantPool pool) {
+    public void writeToPool(LifetimeObjectArena pool) {
         if (runtime != null) {
             application.runtimeAccessor.store(pool, runtime);
         }
@@ -127,7 +127,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
             }
         }
 
-        LifetimeConstantPool pool = context.pool = application.container.lifetime().pool.newPool(context);
+        LifetimeObjectArena pool = context.pool = application.container.lifetime().pool.newRuntimePool(context);
 
         // Run all initializers
         for (MethodHandle mh : application.container.lifetime().initializers) {

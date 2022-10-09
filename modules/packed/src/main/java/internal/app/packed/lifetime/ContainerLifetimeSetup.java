@@ -15,6 +15,7 @@
  */
 package internal.app.packed.lifetime;
 
+import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,12 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     /** The root container of the lifetime. */
     public final ContainerSetup container;
+
+    /** The lifetime constant pool. */
+    public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
+
+    // Skal kopieres ind i internal lifetime launcher
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
      * @param origin

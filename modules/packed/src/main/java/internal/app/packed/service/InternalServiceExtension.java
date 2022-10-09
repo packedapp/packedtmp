@@ -31,7 +31,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
-import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.service.ServiceManagerRequirementsSetup.Requirement;
 import internal.app.packed.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import internal.app.packed.service.build.BeanInstanceServiceSetup;
@@ -118,7 +118,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         return e;
     }
 
-    public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimeConstantPool region) {
+    public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimeObjectArena region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         if (ios.hasExports()) {

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import internal.app.packed.lifetime.pool.LifetimeConstantPool;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.service.build.ServiceSetup;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -34,12 +34,12 @@ public final class PrototypeRuntimeService implements RuntimeService {
     private final MethodHandle mh; // (ConstantPool)Object
 
     /** The Constant pool used when creating new service instances. */
-    private final LifetimeConstantPool pool;
+    private final LifetimeObjectArena pool;
 
     /**
      * @param service
      */
-    public PrototypeRuntimeService(ServiceSetup service, LifetimeConstantPool region, MethodHandle mh) {
+    public PrototypeRuntimeService(ServiceSetup service, LifetimeObjectArena region, MethodHandle mh) {
         this.key = service.key();
         this.pool = requireNonNull(region);
         this.mh = requireNonNull(mh);

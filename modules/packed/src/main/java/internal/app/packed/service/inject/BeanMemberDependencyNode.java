@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.pool.LifetimePoolSetup;
-import internal.app.packed.lifetime.pool.PoolEntryHandle;
+import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
+import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.build.BeanMemberServiceSetup;
 import internal.app.packed.service.build.ServiceSetup;
@@ -59,7 +59,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
     }
 
     @Nullable
-    protected PoolEntryHandle poolAccessor() {
+    protected DynamicAccessor poolAccessor() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (service != null) {
@@ -74,7 +74,7 @@ public final class BeanMemberDependencyNode extends DependencyNode {
      * 
      * @param pool
      */
-    public void onAllDependenciesResolved(LifetimePoolSetup pool) {
+    public void onAllDependenciesResolved(LifetimeObjectArenaSetup pool) {
         super.onAllDependenciesResolved(pool);
 
         if (bean.injectionManager.singletonHandle != null) {

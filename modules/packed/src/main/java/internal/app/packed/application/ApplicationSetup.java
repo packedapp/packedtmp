@@ -28,8 +28,8 @@ import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.PackedContainerHandle;
-import internal.app.packed.lifetime.PackedManagedLifetime;
-import internal.app.packed.lifetime.pool.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
+import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.service.inject.ApplicationInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -56,7 +56,7 @@ public final class ApplicationSetup {
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
-    final PoolEntryHandle runtimeAccessor;
+    final DynamicAccessor runtimeAccessor;
 
     final BuildGoal goal;
 

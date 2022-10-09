@@ -20,7 +20,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.pool.PoolEntryHandle;
+import internal.app.packed.lifetime.pool.Accessor;
 
 /**
  *
@@ -36,7 +36,7 @@ public final class BeanInstanceDependencyNode extends DependencyNode implements 
     }
 
     @Nullable
-    protected PoolEntryHandle poolAccessor() {
+    protected Accessor poolAccessor() {
         return bim.singletonHandle;
     }
 

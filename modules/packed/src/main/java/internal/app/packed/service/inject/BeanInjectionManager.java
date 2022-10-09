@@ -25,8 +25,8 @@ import internal.app.packed.bean.BeanKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ExtensionRealmSetup;
-import internal.app.packed.lifetime.pool.LifetimeConstantPool;
-import internal.app.packed.lifetime.pool.PoolEntryHandle;
+import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.pool.Accessor;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.ReflectiveOp;
 
@@ -51,14 +51,22 @@ public final class BeanInjectionManager implements DependencyProducer {
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     // What if managed prototype bean????
     @Nullable
-    public final PoolEntryHandle singletonHandle;
+    public final Accessor singletonHandle;
 
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         this.bean = bean;
-        this.singletonHandle = driver.beanKind() == BeanKind.SINGLETON ? bean.lifetime().pool.reserve(driver.beanClass) : null;
+        if (driver.beanKind() == BeanKind.SINGLETON) {
+            if (driver.sourceKind == BeanSourceKind.INSTANCE) {
+                // this.singletonHandle=new Accessor.ConstantAccessor(driver.source);
+                this.singletonHandle = bean.container.lifetime().pool.reserve(driver.beanClass);
+            } else {
+                this.singletonHandle = bean.container.lifetime().pool.reserve(driver.beanClass);
+            }
+        } else {
+            this.singletonHandle = null;
+        }
 
         // Can only register a single extension bean of a particular type
-
         if (bean.realm instanceof ExtensionRealmSetup e) {
             ExtensionInjectionManager eim = e.injectionManagerFor(bean);
             if (driver.beanKind() == BeanKind.SINGLETON) {
@@ -70,11 +78,12 @@ public final class BeanInjectionManager implements DependencyProducer {
         }
 
         // Only create an instance node if we have instances
-        if (!bean.installer.hasInstances) {
+        if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             this.instanceNode = null;
-        } else if (driver.sourceKind == BeanSourceKind.INSTANCE) {
+            // Boer bare gemmes directe i MHs
+            bean.container.lifetime().pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
+        } else if (!bean.installer.instantiate) {
             this.instanceNode = null;
-            bean.lifetime().pool.addConstant(pool -> singletonHandle.store(pool, driver.source));
         } else {
             PackedOp<?> op;
             if (driver.sourceKind == BeanSourceKind.CLASS) {
@@ -101,7 +110,7 @@ public final class BeanInjectionManager implements DependencyProducer {
         if (bean.installer.sourceKind == BeanSourceKind.INSTANCE) {
             Object instance = bean.installer.source;
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-            return MethodHandles.dropArguments(mh, 0, LifetimeConstantPool.class);
+            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
             // return MethodHandles.constant(instance.getClass(), instance);
         } else if (singletonHandle != null) {
             return singletonHandle.poolReader(); // MethodHandle(ConstantPool)T
