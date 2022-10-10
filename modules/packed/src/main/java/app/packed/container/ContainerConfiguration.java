@@ -101,27 +101,6 @@ public class ContainerConfiguration {
         return container.isExtensionUsed(extensionType);
     }
 
-    /**
-     * Registers a callback that will be invoked whenever
-     * <p>
-     * If {@code Extension.class} is specified. The given action is invoked for every extension that is used.
-     * 
-     * @param <E>
-     *            the type of
-     * @param extensionType
-     * @param action
-     *            the action to invoke
-     */
-    // Skal vi have en version der tager en [Runnable alternative] hvis den ikke bliver installeret?
-    public final <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
-        // bruger assignable
-        // onFirstUse(Extension.class, ()-> Extension isUsed);
-        // Taenker jeg kunne vaere brugbart i rooten....
-        /// Fx for at sige (SRExtension.class, ()-> e.setPrivatelyOwned());
-        // Er maaske taenkt
-        throw new UnsupportedOperationException();
-    }
-
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         return link(new PackedContainerHandle(container), assembly, wirelets);
     }
@@ -138,8 +117,8 @@ public class ContainerConfiguration {
      * @return the component that was linked
      */
     //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
-    public ContainerMirror link(ContainerHandle driver, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(driver, "driver is null");
+    private ContainerMirror link(ContainerHandle handle, Assembly assembly, Wirelet... wirelets) {
+        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(handle, "driver is null");
 
         // Check that the container is still configurable
         checkIsConfigurable();
@@ -174,6 +153,31 @@ public class ContainerConfiguration {
     public ContainerConfiguration named(String name) {
         container.named(name);
         return this;
+    }
+
+    public ContainerConfiguration newContainer(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Registers a callback that will be invoked whenever
+     * <p>
+     * If {@code Extension.class} is specified. The given action is invoked for every extension that is used.
+     * 
+     * @param <E>
+     *            the type of
+     * @param extensionType
+     * @param action
+     *            the action to invoke
+     */
+    // Skal vi have en version der tager en [Runnable alternative] hvis den ikke bliver installeret?
+    public final <E extends Extension<E>> void onFirstUse(Class<E> extensionType, Consumer<? super E> action) {
+        // bruger assignable
+        // onFirstUse(Extension.class, ()-> Extension isUsed);
+        // Taenker jeg kunne vaere brugbart i rooten....
+        /// Fx for at sige (SRExtension.class, ()-> e.setPrivatelyOwned());
+        // Er maaske taenkt
+        throw new UnsupportedOperationException();
     }
 
     /**

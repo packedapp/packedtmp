@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.bean.InaccessibleBeanException;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.operation.OperationType;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
@@ -100,7 +100,7 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
 
             } catch (IllegalAccessException e) {
                 String name = executable instanceof Constructor ? "constructor" : "method";
-                throw new InaccessibleBeanException("No access to the " + name + " " + executable + " with the specified lookup object", e);
+                throw new InaccessibleBeanMemberException("No access to the " + name + " " + executable + " with the specified lookup object", e);
             }
 
             MethodHandle mh = methodHandle;
@@ -145,7 +145,7 @@ public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits Executab
                 }
                 handle = lookup.unreflectGetter(field);
             } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+                throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
             return handle;
         }

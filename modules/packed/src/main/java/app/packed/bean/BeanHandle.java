@@ -53,7 +53,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         return addOperation(operator, Op.ofMethodHandle(methodHandle));
     }
 
-    default OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op operation) {
+    default OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op<?> operation) {
         throw new UnsupportedOperationException();
     }
 

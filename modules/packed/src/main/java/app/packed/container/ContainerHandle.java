@@ -7,13 +7,9 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.operation.OperationHandle;
 import internal.app.packed.container.PackedContainerHandle;
 
-// Maaske er det mere en Builder paa ContainerConfiguration
-
-// Ligegyldigt hvad tror jeg ikke det skal bruges af end usere...
-// Fx saadan noget med Lifetime og MethodHandle spawn
-
-
-// stateless containers are not supported (obviously)
+/**
+ *
+ */
 public sealed interface ContainerHandle permits PackedContainerHandle {
 
     /**
@@ -25,38 +21,23 @@ public sealed interface ContainerHandle permits PackedContainerHandle {
      * @return a set of disabled extensions
      */
     public abstract Set<Class<? extends Extension<?>>> bannedExtensions();
-    
+
     default List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
-    
-    interface Installer {
 
-        Installer allowRuntimeWirelets();
-        
-        ContainerHandle install();
-        
+    interface Option {
+
+        static Option allowRuntimeWirelets() {
+            return null;
+        }
+
         // Only Managed-Operation does not require a wrapper
         default void wrapIn(InstanceBeanConfiguration<?> wrapperBeanConfiguration) {
             // Gaar udfra vi maa definere wrapper beanen alene...Eller som minimum supportere det
             // Hvis vi vil dele den...
-            
+
             // Det betyder ogsaa vi skal lave en wrapper bean alene
         }
     }
 }
-
-// Maaske man ikke kan lave den til en configuration hvis man bruger dissexxxx
-
-// MethodHandle instead????
-//// Jeg vil gerne lave en hel ny container for denne operation...
-//// a.la. in a trie. Don't care if it is 
-// container bean/functional bean/new bean/new container
-// Alt har samme signatur
-//public default ExtensionLauncher<Void> voidLauncher(Wirelet... wirelets) {
-//    throw new UnsupportedOperationException();
-//}
-//
-//public default ExtensionLauncher<AsyncApp> asyncApp(Wirelet... wirelets) {
-//    throw new UnsupportedOperationException();
-//}

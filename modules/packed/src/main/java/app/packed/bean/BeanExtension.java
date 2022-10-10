@@ -1,10 +1,11 @@
 package app.packed.bean;
 
+import app.packed.bean.BeanHandle.Option;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanProps;
+import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -26,7 +27,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         container = extensionSetup.container;
     }
 
-    public void filter(BaseAssembly.Linker l) {
+    void filter(BaseAssembly.Linker l) {
 
     }
 
@@ -42,7 +43,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = BeanProps.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
+        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -55,7 +56,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
-        BeanHandle<T> handle = BeanProps.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, factory);
+        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, factory);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -71,12 +72,28 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = BeanProps.installInstance(extensionSetup, container.realm, null, instance);
+        BeanHandle<T> handle = PackedBeanHandle.installInstance(extensionSetup, container.realm, null, instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
-    void installNested(Object classOrFactory) {
+    public BeanConfiguration installLazy(Class<?> implementation) {
+        BeanHandle<?> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
+        return new BeanConfiguration(handle);
+    }
 
+    public BeanConfiguration installLazy(Op<?> op) {
+        BeanHandle<?> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
+        return new BeanConfiguration(handle);
+    }
+
+    public BeanConfiguration installStatic(Class<?> implementation) {
+        BeanHandle<?> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
+        return new BeanConfiguration(handle);
+    }
+
+    public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
+        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, Option.nonUnique());
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /** {@inheritDoc} */

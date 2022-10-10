@@ -32,15 +32,13 @@ import internal.app.packed.container.ExtensionSetup;
 //// Hvis vi skal have et mirror bliver det svaert at sige det ikke skal installeres som default
 //// -- Og saa giver det jo ikke mening at ApplicationExtension ikke bliver installeret ogsaa
 
-
-
 public class ContainerExtension extends Extension<ContainerExtension> {
-    
+
     /** The container we are installing new containers into. */
     final ContainerSetup container;
 
     /** Create a new container extension. */
-    /* package-private */ ContainerExtension() {
+    ContainerExtension() {
         this.container = ExtensionSetup.crack(this).container;
     }
 

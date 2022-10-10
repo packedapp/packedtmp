@@ -19,18 +19,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bean.InaccessibleBeanException;
+import app.packed.bean.InaccessibleBeanMemberException;
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link InaccessibleBeanException}. */
+/** Tests {@link InaccessibleBeanMemberException}. */
 public class IllegalAccessRuntimeExceptionTest {
 
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new InaccessibleBeanException("foo")).hasNoCause();
-        assertThat(new InaccessibleBeanException("foo")).hasMessage("foo");
-        assertThat(new InaccessibleBeanException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new InaccessibleBeanException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new InaccessibleBeanMemberException("foo")).hasNoCause();
+        assertThat(new InaccessibleBeanMemberException("foo")).hasMessage("foo");
+        assertThat(new InaccessibleBeanMemberException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new InaccessibleBeanMemberException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

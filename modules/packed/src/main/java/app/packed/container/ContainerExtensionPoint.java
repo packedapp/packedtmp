@@ -23,9 +23,9 @@ import app.packed.bean.InstanceBeanConfiguration;
 public class ContainerExtensionPoint extends ExtensionPoint<ContainerExtension> {
 
     /** Creates a new container extension point. */
-    /* package-private */ ContainerExtensionPoint() {}
+    ContainerExtensionPoint() {}
     
-    public ContainerHandle.Installer containerInstaller() {
+    public ContainerHandle newManyContainer(ContainerHandle.Option options) {
         throw new UnsupportedOperationException();
     }
     

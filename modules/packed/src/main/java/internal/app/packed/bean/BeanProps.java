@@ -19,21 +19,18 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.Option;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import app.packed.operation.Op;
 import internal.app.packed.bean.BeanProps.InstallerOption.CustomIntrospector;
 import internal.app.packed.bean.BeanProps.InstallerOption.CustomPrefix;
 import internal.app.packed.bean.BeanProps.InstallerOption.NonUnique;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
-import internal.app.packed.operation.op.PackedOp;
 
 /** Implementation of BeanHandle.Builder. */
 public record BeanProps(
-        
+
         /** The kind of bean. */
         BeanKind kind,
 
@@ -63,80 +60,6 @@ public record BeanProps(
 
         boolean nonUnique) {
 
-    private static <T> BeanHandle<T> install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass,
-            BeanKind kind, BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.Option... options) {
-        boolean nonUnique = false;
-        BeanIntrospector customIntrospector = null;
-        String namePrefix = null;
-        BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
-        requireNonNull(options, "options is null");
-        for (Option o : options) {
-            requireNonNull(o, "option was null");
-            InstallerOption io = (InstallerOption) o;
-            io.validate(kind);
-            if (io instanceof InstallerOption.CustomIntrospector ci) {
-                customIntrospector = ci.introspector;
-            } else if (io instanceof InstallerOption.CustomPrefix cp) {
-                namePrefix = cp.prefix;
-            } else {
-                nonUnique = true;
-            }
-
-        }
-        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, customIntrospector, namePrefix,
-                nonUnique);
-        
-        realm.wireCurrentComponent();
-
-        BeanSetup bean = new BeanSetup(realm, bp);
-
-        // bean.initName
-
-        // Scan the bean class for annotations unless the bean class is void or scanning is disabled
-        if (sourceKind != BeanSourceKind.NONE) {
-            new Introspector(bean, bp.customIntrospector).introspect();
-        }
-
-        return new PackedBeanHandle<>(bean);
-    }
-
-    public static <T> BeanHandle<T> installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind,
-            Class<T> clazz, BeanHandle.Option... options) {
-        requireNonNull(clazz, "clazz is null");
-        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
-        return install(operator, realm, extensionOwner, clazz, kind, BeanSourceKind.CLASS, clazz, options);
-    }
-
-    public static BeanHandle<?> installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
-            BeanHandle.Option... options) {
-        return install(operator, realm, extensionOwner, void.class, BeanKind.FUNCTIONAL, BeanSourceKind.NONE, null, options);
-    }
-
-    public static <T> BeanHandle<T> installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, T instance,
-            BeanHandle.Option... options) {
-        requireNonNull(instance, "instance is null");
-        if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Class instance to this method, was " + instance);
-        } else if (Op.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot specify a Factory instance to this method, was " + instance);
-        }
-
-        // Optional is also not valid
-        // or Provider, Lazy, ect
-        // Ved heller ikke DependencyProvided beans
-
-        // TODO check kind
-        // cannot be operation, managed or unmanaged, Functional
-        return install(operator, realm, extensionOwner, instance.getClass(), BeanKind.CONTAINER, BeanSourceKind.INSTANCE, instance, options);
-    }
-
-    public static <T> BeanHandle<T> installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Op<T> op,
-            BeanHandle.Option... options) {
-        // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
-        PackedOp<T> pop = PackedOp.crack(op);
-        return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
-    }
-
     // Eclipse requires permits here.. Compiler bug
     public sealed interface InstallerOption extends BeanHandle.Option permits NonUnique, CustomIntrospector, CustomPrefix {
 
@@ -157,9 +80,7 @@ public record BeanProps(
 
         public record CustomIntrospector(BeanIntrospector introspector) implements InstallerOption {
 
-            public CustomIntrospector
-
-            {
+            public CustomIntrospector {
                 requireNonNull(introspector, "introspector is null");
             }
 

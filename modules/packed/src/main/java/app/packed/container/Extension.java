@@ -116,7 +116,7 @@ public abstract class Extension<E extends Extension<E>> {
         }
     }
 
-    protected final ContainerHandle.Installer containerBuilder(Wirelet... wirelets) {
+    protected final ContainerHandle containerBuilder(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

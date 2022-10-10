@@ -164,7 +164,6 @@ public abstract class BaseAssembly extends Assembly {
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the container that was linked
-     * @see ContainerExtension#link(Assembly, Wirelet...)
      */
     protected final ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);

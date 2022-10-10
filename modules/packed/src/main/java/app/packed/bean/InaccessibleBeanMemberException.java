@@ -40,8 +40,8 @@ import app.packed.application.BuildException;
 // FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
 // saa factory er et daarligt navn/
 
-// InaccessibleBeanMemberException
-public class InaccessibleBeanException extends BuildException {
+// beanClass, Extension that needed access
+public class InaccessibleBeanMemberException extends BuildException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -54,7 +54,7 @@ public class InaccessibleBeanException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleBeanException(String message) {
+    public InaccessibleBeanMemberException(String message) {
         super(message);
 
     }
@@ -69,7 +69,7 @@ public class InaccessibleBeanException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InaccessibleBeanException(String message, Throwable cause) {
+    public InaccessibleBeanMemberException(String message, Throwable cause) {
         super(message, cause);
     }
 }
