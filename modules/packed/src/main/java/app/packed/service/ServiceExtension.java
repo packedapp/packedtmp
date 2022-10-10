@@ -207,14 +207,12 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanHandle<T> handle = bean().newManytonBean(implementation, LifetimeConf.START_ONLY);
-        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
-        return sbc.provide();
+        return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
         BeanHandle<T> handle = bean().newManytonBean(op, LifetimeConf.START_ONLY);
-        ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
-        return sbc.provide();
+        return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     // requires bliver automatisk anchoret...

@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 
 /**
@@ -57,11 +58,19 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
 
     /** {@inheritDoc} */
     @Override
+    public BeanKind beanKind() {
+        return bean.props.kind();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void decorateInstance(Function<? super T, ? extends T> decorator) {}
 
     /** {@inheritDoc} */
     @Override
-    public void peekInstance(Consumer<? super T> consumer) {}
+    public void peekInstance(Consumer<? super T> consumer) {
+        // check sourceKind!=INSTANCE
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -83,4 +92,5 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
     public void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {
         throw new UnsupportedOperationException();
     }
+
 }

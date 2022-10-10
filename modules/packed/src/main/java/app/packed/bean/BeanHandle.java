@@ -27,9 +27,9 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.bean.BeanProps;
 import internal.app.packed.bean.BeanProps.InstallerOption;
+import internal.app.packed.bean.PackedBeanHandle;
 
 /**
  * A bean handle represents a private configuration installed bean.
@@ -39,23 +39,6 @@ import internal.app.packed.bean.BeanProps.InstallerOption;
  * 
  * 
  */
-//Vi har beans uden lifecycle men med instancer
-
-//Fx en validerings bean <--
-
-//LifetimeConfig
-////Unmanaged Bean instantiated and initialized by packed  (Init lifetime does not take bean instance)
-////Unmanaged Bean instantiated by the user and initialzied by packed (Init lifetime takes bean instance)
-
-////Stateless (with instance) validation bean only supports fx validation annotations?
-
-////
-//Unmanaged
-
-//Setup - Teardown
-
-// Hvis
-
 @SuppressWarnings("rawtypes")
 public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
@@ -82,6 +65,8 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      */
     Class<?> beanClass();
 
+    BeanKind beanKind();
+    
     /**
      * @param decorator
      */
@@ -148,6 +133,9 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * @param consumer
      */
     // giver den plus decorate mening?
+    
+    // Er det naar vi instantiere???
+    
     void peekInstance(Consumer<? super T> consumer);
 
     // Hvis vi aabner op for specialized bean mirrors
@@ -155,22 +143,17 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
 
 
+    // Tjah, skal vel ogsaa bruges for containere
+    public interface LifetimeConf {
+        LifetimeConf ALL = null;
+        LifetimeConf START_ONLY = null;
+        LifetimeConf STOP = null;
+
+    }
+
+    // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
+
     public sealed interface Option permits BeanProps.InstallerOption {
-        /**
-         * Allows for multiple beans of the same type in a single container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
-         * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
-         */
- 
-        static Option nonUnique() {
-            return InstallerOption.NON_UNIQUE;
-        }
-        
         /**
          * Registers a bean introspector that will be used instead of the framework calling
          * {@link Extension#newBeanIntrospector}.
@@ -203,21 +186,26 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
         static Option namePrefix(String prefix) {
             return new InstallerOption.CustomPrefix(prefix);
         }
+        
+        /**
+         * Allows for multiple beans of the same type in a single container.
+         * <p>
+         * By default, a container only allows a single bean of particular type if non-void.
+         * 
+         * @return this builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if {@code void} bean class
+         */
+ 
+        static Option nonUnique() {
+            return InstallerOption.NON_UNIQUE;
+        }
     }
     // Tjahhh man kan vel maaske have flere end 2???
     // Lad os sige pause(), suspend(), open, close;
     // Umiddelbart har f.x @OnUpgrade jo ikke noget med lifetime at goere.
     // Men tilgaengaeld noget med life cycle at goere
-
-    // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
-
-    // Tjah, skal vel ogsaa bruges for containere
-    public interface LifetimeConf {
-        LifetimeConf ALL = null;
-        LifetimeConf START_ONLY = null;
-        LifetimeConf STOP = null;
-
-    }
 }
 
 //INFO (type, kind)

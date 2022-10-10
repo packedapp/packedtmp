@@ -30,7 +30,6 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
      */
     public ExtensionBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
-        // Validate
     }
 
     public <V> void bindDelayed(Class<V> key, Supplier<V> supplier) {
