@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandle.LifetimeConf;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
@@ -154,12 +155,12 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
                 OperationSetup operation = ((IntrospectorOnField) field).newGetOperation(setup, InvocationType.defaults());
-                
+
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
                 operation.bean.container.injectionManager.addConsumer(node);
             }
-            
+
             /** {@inheritDoc} */
             @Override
             public void onMethodHook(OnMethod method) {
@@ -167,7 +168,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 boolean constant = method.annotations().readRequired(Provide.class).constant();
 
                 OperationSetup operation = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
-                
+
                 // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
@@ -205,13 +206,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().newManytonBean(implementation, true).kindUnmanaged().install();
+        BeanHandle<T> handle = bean().newManytonBean(implementation, LifetimeConf.START_ONLY);
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().newManytonBean(op).install();
+        BeanHandle<T> handle = bean().newManytonBean(op, LifetimeConf.START_ONLY);
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }

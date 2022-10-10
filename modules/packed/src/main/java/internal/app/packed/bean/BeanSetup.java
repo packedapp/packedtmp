@@ -6,6 +6,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -43,8 +44,8 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     @Nullable
     public final BeanInjectionManager injectionManager;
 
-    /** The installer that was used to create the bean. */
-    public final PackedBeanHandleInstaller<?> installer;
+    /** The Bean props. */
+    public final BeanProps props;
 
     /** The lifetime the component is a part of. */
     // Or maybe @Nullable BeanSetup; null -> container.eager
@@ -56,25 +57,33 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     @Nullable
     public Runnable onWiringAction;
 
+    /** Supplies a mirror for the operation */
+    Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
+
     /**
      * Create a new bean setup.
      * 
-     * @param installer
+     * @param props
      *            the handle builder
      */
-    public BeanSetup(PackedBeanHandleInstaller<?> installer, RealmSetup owner) {
+    public BeanSetup(RealmSetup owner, BeanProps props) {
         super(owner);
-        this.installer = installer;
-        this.container = installer.operator.container;
+        this.props = props;
+        this.container = props.operator().container;
         this.lifetime = container.lifetime();
 
-        if (installer.beanClass != void.class) { // Not sure exactly when we need it
-            this.injectionManager = new BeanInjectionManager(this, installer);
+        if (props.beanClass() != void.class) { // Not sure exactly when we need it
+            this.injectionManager = new BeanInjectionManager(this, props);
         } else {
             this.injectionManager = null;
         }
 
-        container.initBeanName(this, installer.initialName());
+        String initialName = "Functional";
+        if (props.beanModel() != null) {
+            initialName = props.beanModel().simpleName();
+        }
+
+        container.initBeanName(this, initialName);
     }
 
     public OperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
@@ -90,7 +99,7 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {
-        return installer.beanClass;
+        return props.beanClass();
     }
 
     public LifetimeSetup lifetime() {
@@ -100,9 +109,9 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
         // Create a new BeanMirror
-        BeanMirror mirror = installer.mirrorSupplier.get();
+        BeanMirror mirror = mirrorSupplier.get();
         if (mirror == null) {
-            throw new NullPointerException(installer.mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
+            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
         }
 
         // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
@@ -124,7 +133,7 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> operator() {
-        return installer.operator == null ? BeanExtension.class : installer.operator.extensionType;
+        return props.operator() == null ? BeanExtension.class : props.operator().extensionType;
     }
 
     /** {@inheritDoc} */
@@ -156,7 +165,7 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         }
         };
     }
-    
+
     /** A handle that can access BeanConfiguration#beanHandle. */
     private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
             PackedBeanHandle.class);

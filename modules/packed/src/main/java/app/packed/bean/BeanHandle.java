@@ -28,7 +28,8 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.bean.PackedBeanHandleInstaller;
+import internal.app.packed.bean.BeanProps;
+import internal.app.packed.bean.BeanProps.InstallerOption;
 
 /**
  * A bean handle represents a private configuration installed bean.
@@ -153,54 +154,23 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     // maybe just name it mirror?
     void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
 
-    /**
-     * An installer used to create {@link BeanHandle}. Is created using the various {@code beanInstaller} methods on
-     * {@link BeanExtensionPoint}.
-     * <p>
-     * The main purpose of this interface is to allow various configuration that is needed before the bean is introspected.
-     * If the configuration is not needed before introspection the functionality such be present on {@code BeanHandle}
-     * instead.
-     * 
-     * @see BeanExtensionPoint#newFunctionalBean()
-     * @see BeanExtensionPoint#beanInstallerFromClass(Class)
-     * @see BeanExtensionPoint#newHandleFromOp(Op)
-     * @see BeanExtensionPoint#beanBuilderFromInstance(Object)
-     */
-    // Could have, introspectionDisable()/noIntrospection
-    sealed interface Installer<T> permits PackedBeanHandleInstaller {
 
-//        /**
-//         * Marks the bean as owned by the extension representing by specified extension point context
-//         * 
-//         * @param context
-//         *            an extension point context representing the extension that owns the bean
-//         * @return this builder
-//         * @throws IllegalStateException
-//         *             if build has previously been called on the builder
-//         */
-//        Installer<T> forExtension(UseSite context);
-
+    public sealed interface Option permits BeanProps.InstallerOption {
         /**
-         * Adds a new bean to the container and returns a handle for it.
+         * Allows for multiple beans of the same type in a single container.
+         * <p>
+         * By default, a container only allows a single bean of particular type if non-void.
          * 
-         * @return the new handle
-         * @throws IllegalStateException
-         *             if install has previously been called
+         * @return this builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if {@code void} bean class
          */
-        BeanHandle<T> install();
-
-//        /**
-//         * There will never be any bean instances.
-//         * <p>
-//         * This method can only be used together with {@link BeanExtensionPoint#beanInstallerFromClass(Class)}.
-//         * 
-//         * @return this installer
-//         * @throws IllegalStateException
-//         *             if used without source kind {@code class}
-//         */
-//        // I think we have an boolean instantiate on beanInstallerFromClass
-//        Installer<T> instanceless();
-
+ 
+        static Option nonUnique() {
+            return InstallerOption.NON_UNIQUE;
+        }
+        
         /**
          * Registers a bean introspector that will be used instead of the framework calling
          * {@link Extension#newBeanIntrospector}.
@@ -213,30 +183,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * 
          * @see Extension#newBeanIntrospector
          */
-        Installer<T> introspectWith(BeanIntrospector introspector);
-
-        
-        // Option.Singleton, Option.lifetimeLazy;
-        
-        // Instance -> Altid eager
-
-        // Eager - Singleton
-        // Eager - NonSingleton
-        // Lazy - Singleton
-        // Lazy - NonSingleton
-        // Many
-        Installer<T> kindSingleton();
-
-        Installer<T> kindUnmanaged();
-
-        default Installer<T> lifetime(LifetimeFoo initial, LifetimeFoo additional) {
-            throw new UnsupportedOperationException();
+        static Option introspectWith(BeanIntrospector introspector) {
+            return new InstallerOption.CustomIntrospector(introspector);
         }
-
-        default Installer<T> lifetimeLazy() {
-            throw new UnsupportedOperationException();
-        }
-
+        
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
@@ -250,30 +200,10 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        default Installer<T> namePrefix(String prefix) {
-            // Bean'en bliver foerst lavet naar vi tilkobler en configuration
-
-            return this;
+        static Option namePrefix(String prefix) {
+            return new InstallerOption.CustomPrefix(prefix);
         }
-
-        /**
-         * Allows for multiple beans of the same type in a single container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
-         * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
-         */
-        Installer<T> nonUnique();
-        // instanceless-> can never set separate lifetime
-        // instance specified -> can never set...
-
-        // lifetimeUnmanaged();
-        // lifetimeManaged(boolean seperateOperations);
     }
-
     // Tjahhh man kan vel maaske have flere end 2???
     // Lad os sige pause(), suspend(), open, close;
     // Umiddelbart har f.x @OnUpgrade jo ikke noget med lifetime at goere.
@@ -281,10 +211,11 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
-    public interface LifetimeFoo {
-        LifetimeFoo ALL = null;
-        LifetimeFoo START = null;
-        LifetimeFoo STOP = null;
+    // Tjah, skal vel ogsaa bruges for containere
+    public interface LifetimeConf {
+        LifetimeConf ALL = null;
+        LifetimeConf START_ONLY = null;
+        LifetimeConf STOP = null;
 
     }
 }

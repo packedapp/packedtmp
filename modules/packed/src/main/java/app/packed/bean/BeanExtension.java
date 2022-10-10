@@ -4,7 +4,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.PackedBeanHandleInstaller;
+import internal.app.packed.bean.BeanProps;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -42,7 +42,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(extensionSetup, container.realm, null, implementation, true).kindSingleton().install();
+        BeanHandle<T> handle = BeanProps.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -55,7 +55,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofFactory(extensionSetup, container.realm, null, factory).kindSingleton().install();
+        BeanHandle<T> handle = BeanProps.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, factory);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -71,7 +71,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofInstance(extensionSetup, container.realm, null, instance).kindSingleton().install();
+        BeanHandle<T> handle = BeanProps.installInstance(extensionSetup, container.realm, null, instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 

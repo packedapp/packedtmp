@@ -56,7 +56,6 @@ import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /**
  * @see Extension#newBeanIntrospector
- * @see BeanHandle.Installer#introspectWith(BeanIntrospector)
  */
 public abstract class BeanIntrospector {
     /**

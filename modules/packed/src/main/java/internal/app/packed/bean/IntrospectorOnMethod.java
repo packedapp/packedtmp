@@ -89,7 +89,7 @@ public final class IntrospectorOnMethod implements OnMethod {
         // TODO, we must check this.operator er samme som operator eller en child of
         // Maaske er det et speciel tilfaelde af man vil invoke fra en anden container...
         // Tag den med i compute() istedet for???
-        OperationSetup os = newOperation(BeanSetup.crack(operator).installer.extensionOwner, invocationType);
+        OperationSetup os = newOperation(BeanSetup.crack(operator).props.extensionOwner(), invocationType);
         return new PackedOperationHandle(os);
     }
 

@@ -28,7 +28,7 @@ import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandleInstaller;
+import internal.app.packed.bean.BeanProps;
 
 /**
  * Configuration of a realm.
@@ -93,7 +93,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     public abstract Class<?> realmType();
 
     /**
-     * @see PackedBeanHandleInstaller#build()
+     * @see BeanProps#build()
      * @see ContainerConfiguration#link(ContainerHandle, Assembly, Wirelet...)
      * @see RealmSetup#close()
      */
