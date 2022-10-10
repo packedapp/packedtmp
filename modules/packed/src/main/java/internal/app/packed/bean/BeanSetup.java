@@ -6,20 +6,30 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
+import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandle.Option;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanSourceKind;
 import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.InvocationType;
+import app.packed.operation.Op;
 import app.packed.operation.OperationType;
+import app.packed.operation.Provider;
+import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
 import internal.app.packed.container.BeanOrContainerSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -27,6 +37,7 @@ import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.operation.OperationTarget;
+import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
@@ -122,7 +133,54 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         }
 
         // This will add it to the list of beans in the container
-        container.initBeanName(this, initialName);
+         container.initBeanName(this, initialName);
+    }
+
+    private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
+
+    static <T> BeanHandle<T> install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
+            BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.Option... options) {
+        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+            throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
+        }
+
+        // The various options, with default values.
+        boolean nonUnique = false;
+        BeanIntrospector customIntrospector = null;
+        String namePrefix = null;
+
+        // Process each option
+        requireNonNull(options, "options is null");
+        for (Option o : options) {
+            requireNonNull(o, "option was null");
+            if (o instanceof InstallerOption.CustomIntrospector ci) {
+                if (!kind.hasInstances()) {
+                    throw new IllegalArgumentException("Custom Introspector cannot be used with functional or static beans");
+                }
+                customIntrospector = ci.introspector();
+            } else if (o instanceof InstallerOption.CustomPrefix cp) {
+                namePrefix = cp.prefix();
+            } else {
+                if (!kind.hasInstances()) {
+                    throw new IllegalArgumentException("NonUnique cannot be used with functional or static beans");
+                }
+                nonUnique = true;
+            }
+        }
+
+        realm.wireCurrentComponent();
+
+        BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
+        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix, nonUnique);
+
+        BeanSetup bean = new BeanSetup(realm, bp);
+
+        // Scan the bean class for annotations unless the bean class is void or is from a java package
+        if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
+            new Introspector(bean, customIntrospector).introspect();
+        }
+
+        return new PackedBeanHandle<>(bean);
     }
 
     public void addOperation(BeanOperationSetup operation) {
@@ -185,6 +243,29 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     @Override
     public ContainerSetup parent() {
         return container;
+    }
+
+    public static <T> BeanHandle<T> installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind,
+            Class<T> clazz, BeanHandle.Option... options) {
+        requireNonNull(clazz, "clazz is null");
+        return install(operator, realm, extensionOwner, clazz, kind, BeanSourceKind.CLASS, clazz, options);
+    }
+
+    public static BeanHandle<?> installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
+            BeanHandle.Option... options) {
+        return install(operator, realm, extensionOwner, void.class, BeanKind.FUNCTIONAL, BeanSourceKind.NONE, null, options);
+    }
+
+    public static <T> BeanHandle<T> installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, T instance,
+            BeanHandle.Option... options) {
+        requireNonNull(instance, "instance is null");
+        return install(operator, realm, extensionOwner, instance.getClass(), BeanKind.CONTAINER, BeanSourceKind.INSTANCE, instance, options);
+    }
+
+    public static <T> BeanHandle<T> installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Op<T> op,
+            BeanHandle.Option... options) {
+        PackedOp<T> pop = PackedOp.crack(op);
+        return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
     }
 
     /** {@return the path of this component} */

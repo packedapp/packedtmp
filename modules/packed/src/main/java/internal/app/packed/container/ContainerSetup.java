@@ -220,14 +220,14 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     }
 
     public void initBeanName(BeanSetup bean, String name) {
-        String n = name;
-        if (children.isEmpty()) {
+        int size = children.size();
+        if (size == 0) {
             children.put(name, this);
         } else {
- //           int counter = 1;
-            int counter = children.size();
+            String n = name;
+            
             while (children.putIfAbsent(n, this) != null) {
-                n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
+                n = name + size++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
                                       // million of the same component type
             }
         }
@@ -236,7 +236,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (parent() != null) {
-            LinkedHashMap<String, BeanOrContainerSetup> c = parent().children;
+            HashMap<String, BeanOrContainerSetup> c = parent().children;
             if (c.size() == 0) {
                 c.put(name, this);
             } else {
@@ -383,7 +383,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             ExtensionSetup extensionParent = parent == null ? null : parent.useExtensionSetup(extensionClass, requestedByExtension);
 
             // Create the extension. (This will also add an entry to #extensions)
-            
+
             extension = new ExtensionSetup(extensionParent, this, extensionClass);
             extension.initialize();
         }

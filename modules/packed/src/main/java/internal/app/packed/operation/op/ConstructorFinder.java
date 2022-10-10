@@ -31,7 +31,7 @@ import internal.app.packed.util.StringFormatter;
  *
  */
 public final class ConstructorFinder {
-    
+
     /**
      * @param clazz
      *            the class to scan

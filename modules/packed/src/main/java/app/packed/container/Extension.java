@@ -81,7 +81,7 @@ import internal.app.packed.util.ThrowableUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    final ExtensionSetup setup;
+    private final ExtensionSetup setup;
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -467,17 +467,6 @@ public abstract class Extension<E extends Extension<E>> {
         String[] optionally() default {};
     }
 }
-//Static initializers
-////Dependencies
-////Attributes
-////Connections 
-////LibraryInfo
-
-//bootstrapConfig
-////dependsOn(Codegen)
-
-//////Problemet er den lazy extension thingy can enable andre extensions 
-//Configurable -> Parent -> 
 
 class Zarchive {
 

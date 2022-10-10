@@ -65,7 +65,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     };
 
     /** The direct dependencies of the extension. */
-    private final ExtensionModelDependencySet dependencies;
+    private final Set<Class<? extends Extension<?>>> dependencies;
 
     /** The {@link ExtensionDescriptor#orderingDepth() depth} of this extension. */
     private final int ordringDepth;
@@ -95,7 +95,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.realm = UserOrExtension.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
-        this.dependencies = ExtensionModelDependencySet.of(builder.dependencies);
+        this.dependencies = Set.copyOf(builder.dependencies);
 
         // Cache some frequently used strings.
         this.name = extensionClass.getSimpleName();

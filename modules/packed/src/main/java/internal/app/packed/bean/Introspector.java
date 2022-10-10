@@ -18,21 +18,16 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.BindingHook;
-import app.packed.bean.BeanIntrospector.FieldHook;
 import app.packed.bean.BeanIntrospector.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -49,6 +44,14 @@ public final class Introspector {
 
     /** We never process classes that are located in the {@code java.base} module. */
     public static final Module JAVA_BASE_MODULE = Object.class.getModule();
+
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
+            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanSetup.class);
+
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "newBeanIntrospector", BeanIntrospector.class);
 
     /** The bean that is being introspected. */
     public final BeanSetup bean;
@@ -75,15 +78,7 @@ public final class Introspector {
         this.oc = OpenClass.of(MethodHandles.lookup(), beanClass);
     }
 
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "newBeanIntrospector", BeanIntrospector.class);
-
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
-            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanSetup.class);
-
-    private ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
@@ -112,19 +107,15 @@ public final class Introspector {
         });
     }
 
-    /**
-     * @param reflectOnFields
-     *            whether or not to iterate over fields
-     * @param baseType
-     *            the base type
-     */
-    public final void introspect() {
-        // We start by processing annotations on the bean class
+    /** Introspects the bean. */
+    public void introspect() {
+        // Process all annotations on the class
         introspectClass();
 
-        // Then we process all bean fields
-        introspectFields(beanClass);
+        // Process all fields on the bean
+        IntrospectorOnField.introspectFields(this, beanClass);
 
+        // Process all methods on the bean
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
 
             MethodHelper(Method method) {
@@ -147,6 +138,7 @@ public final class Introspector {
                 return hash;
             }
         }
+
         HashSet<Package> packages = new HashSet<>();
         HashMap<MethodHelper, HashSet<Package>> types = new HashMap<>();
 
@@ -210,123 +202,6 @@ public final class Introspector {
 
     private void introspectClass() {}
 
-    /**
-     * Introspect a single field on a bean.
-     * 
-     * Look for hook annotations on a single field.
-     * 
-     * @param field
-     *            the field to introspect
-     * 
-     * @throws BeanDefinitionException
-     *             if there are multiple {@link BindingHook} on the field. Or if there are both {@link FieldHook} and
-     *             {@link BindingHook} annotations
-     * 
-     * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
-     *          allow it.
-     */
-    private void introspectField(Field field) {
-        // First, we get all annotations on the field
-        Annotation[] annotations = field.getAnnotations();
-
-        // Than, we iterate through the annotations and look for usage of FieldHook or ProvisionHook meta annotations
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation annotation = annotations[i];
-
-            // Look in the field annotation cache to see if the annotation is either a FieldHook or ProvisionHook annotation
-            FieldAnnotationCache e = FieldAnnotationCache.CACHE.get(annotation.annotationType());
-
-            // The annotation is neither a field or provision annotation
-            if (e == null) {
-                continue;
-            }
-
-            // A record + map that we use if have multi field hook annotations
-            record MultiField(Class<? extends Extension<?>> extensionClass, boolean allowGet, boolean allowSet, Annotation... annotations) {}
-            IdentityHashMap<Class<? extends Extension<?>>, MultiField> multiMatch = null;
-
-            // Look through remaining annotations.
-            for (int j = i; j < annotations.length; j++) {
-                Annotation annotation2 = annotations[j];
-
-                // Look in the field annotation cache to see if the annotation is either a FieldHook or ProvisionHook annotation
-                FieldAnnotationCache e2 = FieldAnnotationCache.CACHE.get(annotation2.annotationType());
-
-                // The annotation is neither a field or provision annotation
-                if (e2 == null) {
-                    continue;
-                }
-
-                if (e.isProvision || e2.isProvision) {
-                    throw new BeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
-                }
-
-                // Okay we have more than 1 valid annotation
-
-                // Check to see if we need to create the multi match map
-                if (multiMatch == null) {
-                    multiMatch = new IdentityHashMap<>();
-                    // Start by adding the first match
-                    multiMatch.put(e.extensionType, new MultiField(e.extensionType, e.isGettable, e.isSettable, annotation));
-                }
-
-                // Add this match
-                multiMatch.compute(e2.extensionType, (Class<? extends Extension<?>> key, MultiField value) -> {
-                    if (value == null) {
-                        return new MultiField(key, e2.isGettable, e2.isSettable, annotation2);
-                    } else {
-                        Annotation[] a = new Annotation[value.annotations.length + 1];
-                        for (int k = 0; k < value.annotations.length; k++) {
-                            a[k] = value.annotations[k];
-                        }
-                        a[a.length - 1] = annotation2;
-                        return new MultiField(key, e2.isGettable && value.allowGet, e2.isSettable && e2.isSettable, a);
-                    }
-                });
-            }
-
-            // All done. Let us see if we only had a single match, or we had multiple valid matches
-            if (multiMatch == null) {
-                // Get the matching extension, installing it if needed.
-                ExtensionEntry entry = computeExtensionEntry(e.extensionType, false);
-
-                // Create the wrapped field that is exposed to the extension
-                IntrospectorOnField f = new IntrospectorOnField(Introspector.this, entry.extension, field, e.isGettable || entry.hasFullAccess,
-                        e.isSettable || entry.hasFullAccess, new Annotation[] { annotation });
-
-                // Call BeanIntrospection.onField
-                entry.introspector.onFieldHook(f);
-            } else {
-                // TODO sort by extension order if we have more than one
-
-                for (MultiField mf : multiMatch.values()) {
-                    ExtensionEntry entry = computeExtensionEntry(mf.extensionClass, false);
-
-                    // Create the wrapped field that is exposed to the extension
-                    IntrospectorOnField f = new IntrospectorOnField(Introspector.this, entry.extension, field, mf.allowGet || entry.hasFullAccess,
-                            mf.allowSet || entry.hasFullAccess, annotations);
-
-                    // Call BeanIntrospection.onField
-                    entry.introspector.onFieldHook(f);
-                }
-            }
-        }
-    }
-
-    private void introspectFields(Class<?> clazz) {
-        // See if the class is in the java.base module in which we never process it.
-        if (clazz.getModule() != JAVA_BASE_MODULE) {
-            // Recursively call into superclass, before processing own fields
-            introspectFields(clazz.getSuperclass());
-
-            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
-
-            // Iterate over all declared fields
-            for (Field field : clazz.getDeclaredFields()) {
-                introspectField(field);
-            }
-        }
-    }
 
     /**
      * Look for hook annotations on a single method.
@@ -358,38 +233,7 @@ public final class Introspector {
         }
     }
 
-    private record ExtensionEntry(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
-
-    /**
-     * Cache the various annotations that are placed on field
-     */
-    private record FieldAnnotationCache(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable,
-            boolean isSettable, boolean isProvision) {
-
-        /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<FieldAnnotationCache> CACHE = new ClassValue<>() {
-
-            @Override
-            protected FieldAnnotationCache computeValue(Class<?> type) {
-                @SuppressWarnings("unchecked")
-                Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
-                FieldHook fieldHook = type.getAnnotation(FieldHook.class);
-                BindingHook provisionHook = type.getAnnotation(BindingHook.class);
-
-                if (provisionHook == fieldHook) { // check both null
-                    return null;
-                } else if (provisionHook == null) {
-                    checkExtensionClass(type, fieldHook.extension());
-                    return new FieldAnnotationCache(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
-                } else if (fieldHook == null) {
-                    checkExtensionClass(type, provisionHook.extension());
-                    return new FieldAnnotationCache(annotationType, provisionHook.extension(), false, true, true);
-                } else {
-                    throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
-                }
-            }
-        };
-    }
+    record ExtensionEntry(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
     private record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
 

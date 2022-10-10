@@ -3,9 +3,11 @@ package app.packed.bean;
 import app.packed.bean.BeanHandle.Option;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
+import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -43,20 +45,32 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
+        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
         return new ProvideableBeanConfiguration<>(handle);
+    }
+
+
+    @Override
+    protected BeanIntrospector newBeanIntrospector() {
+        return new BeanIntrospector() {
+
+            @Override
+            public void onMethodHook(OnMethod method) {
+                ((IntrospectorOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
+            }
+        };
     }
 
     /**
      * Installs a component that will use the specified {@link Op} to instantiate the component instance.
      * 
-     * @param factory
+     * @param op
      *            the factory to install
      * @return the configuration of the bean
      * @see CommonContainerAssembly#install(Op)
      */
-    public <T> ProvideableBeanConfiguration<T> install(Op<T> factory) {
-        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, factory);
+    public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -72,17 +86,17 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandle.installInstance(extensionSetup, container.realm, null, instance);
+        BeanHandle<T> handle = BeanSetup.installInstance(extensionSetup, container.realm, null, instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
+        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
+        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -99,7 +113,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
+        BeanHandle<?> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
         return new BeanConfiguration(handle);
     }
 
@@ -109,27 +123,27 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanHandle.Option#nonUnique()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, Option.nonUnique());
+        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, Option.nonUnique());
+        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = PackedBeanHandle.installInstance(extensionSetup, container.realm, null, instance, Option.nonUnique());
+        BeanHandle<T> handle = BeanSetup.installInstance(extensionSetup, container.realm, null, instance, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, Option.nonUnique());
+        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, Option.nonUnique());
+        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
 

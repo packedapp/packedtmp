@@ -15,6 +15,8 @@
  */
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.Consumer;
@@ -153,6 +155,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
     public sealed interface Option permits PackedBeanHandle.InstallerOption {
+        
         /**
          * Registers a bean introspector that will be used instead of the framework calling
          * {@link Extension#newBeanIntrospector}.
@@ -166,6 +169,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @see Extension#newBeanIntrospector
          */
         static Option introspectWith(BeanIntrospector introspector) {
+            requireNonNull(introspector, "introspector is null");
             return new InstallerOption.CustomIntrospector(introspector);
         }
         
@@ -197,37 +201,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          *             if {@code void} bean class
          */
         static Option nonUnique() {
-            return InstallerOption.NON_UNIQUE;
+            return new InstallerOption.NonUnique();
         }
     }
-    // Tjahhh man kan vel maaske have flere end 2???
-    // Lad os sige pause(), suspend(), open, close;
-    // Umiddelbart har f.x @OnUpgrade jo ikke noget med lifetime at goere.
-    // Men tilgaengaeld noget med life cycle at goere
 }
-
-//INFO (type, kind)
-
-//BeanCustomizer?? Syntes maaske handle er lidt mere runtime
-//BeanMaker??
-
-//Operations (add synthetic/functional)
-
-//Sidecars (add)
-
-//Lifecycle (Custom Factory, InvocationConfigurations)
-
-//Services (bind, bindContext)
-
-//callacbks, onBound, onBuild, ...
-
-//Vigtigt at note... Vi scanner klassen naar vi kalder build()
-//Saa hvis vi provider services/contexts saa skal det vaere paa
-//builderen ellers er de ikke klar til BeanField og friends
-//som jo bliver lavet naar man invoker build()
-
-//BeanExtensor?? OperationExtensor, ContainerExtensor, InterceptorExtensor
-//default OperationHandle addOperation(OperationDriver driver) {
-//  throw new UnsupportedOperationException();
-//}
-//

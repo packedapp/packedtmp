@@ -22,7 +22,10 @@ import app.packed.base.Key;
  */
 // Altsaa Vi har jo lidt brug for den i forbindelse med extension beans taenker jeg...
 // Der er ingen grund til at scanne dem flere gange...
-public final class BeanClassModel {
+
+// Vi kunne jo have noget a.la. en counter paa bean, hvis > 5
+// Saa cacher vi interessante ting (i en softreference)
+final class BeanClassModel {
 
     /** The class of the model. */
     public final Class<?> clazz;

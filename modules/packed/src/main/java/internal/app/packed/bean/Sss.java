@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.micro.application;
+package internal.app.packed.bean;
 
 import app.packed.application.App;
 import app.packed.bean.Inject;
@@ -22,14 +22,25 @@ import app.packed.container.BaseAssembly;
 /**
  *
  */
+@IntrospecHints(staticMethods = { @StaticMethod(target = Sss.class, name = "main", methodType = { void.class }),
+        @StaticMethod(target = Sss.class, name = "main", methodType = { void.class }) })
 public class Sss {
-    static final int C = 1;
+    static final int C = 100000;
 
     public static class MyClass {
         public void foo1() {}
 
         @Inject
         public void boo2() {}
+
+        @Inject
+        public void boo23() {}
+
+        @Inject
+        public void boo24() {}
+
+        @Inject
+        public void boo25() {}
 
         public void Goo() {}
     }
@@ -39,18 +50,37 @@ public class Sss {
 
             @Override
             public void build() {
-               // long start = System.nanoTime();
                 for (int i = 0; i < beanCount; i++) {
                     bean().multiInstallInstance(new MyClass());
                 }
-               // System.out.println((System.nanoTime() - start) / C);
             }
         };
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         long start = System.nanoTime();
+//        MethodHandle fs = MethodHandles.lookup().findStatic(Sss.class, "main", MethodType.methodType(void.class, String[].class));
+//        Method m = MethodHandles.reflectAs(Method.class, fs);
+//        System.out.println(m);
         App.run(of(C));
-        System.out.println(System.nanoTime() - start);
+        long stop = System.nanoTime() - start;
+        System.out.println(stop);
+        System.out.println(stop / C);
+    }
+}
+
+@interface IntrospecHints {
+    StaticMethod[] staticMethods() default {};
+}
+
+@interface StaticMethod {
+    Class<?> target();
+
+    String name();
+
+    Class<?>[] methodType();
+
+    @interface Many {
+        StaticMethod[] methods();
     }
 }
