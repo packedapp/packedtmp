@@ -17,7 +17,6 @@ package app.packed.container;
 
 import app.packed.base.Nullable;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionNavigator;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
@@ -45,7 +44,7 @@ final class ContainerMirrorHelper {
                         + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
             }
 
-            return ExtensionModel.of(extensionClass).type(); // Check that the extension is valid
+            return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
         }
     };
     

@@ -593,7 +593,8 @@ class Zarchive {
      * @see Class#forName(String, boolean, ClassLoader)
      */
     protected static Optional<Class<? extends Extension<?>>> $dependsOnIfAvailable(String extensionName) {
-        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
+//        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
+        return Optional.empty();
     }
 
     static void $libraryFor(Module module) {

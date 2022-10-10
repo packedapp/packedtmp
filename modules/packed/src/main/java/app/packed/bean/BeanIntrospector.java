@@ -38,6 +38,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.InvocationType;
@@ -50,7 +51,6 @@ import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
-import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /**
@@ -60,7 +60,7 @@ import internal.app.packed.operation.binding.PackedOnBindingHook;
 public abstract class BeanIntrospector {
     /**
      * The configuration of this processor. Is initially null but populated via
-     * {@link #initialize(ExtensionModel, BeanSetup)}.
+     * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
     private Setup setup;
@@ -96,7 +96,7 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(ExtensionModel extension, BeanSetup bean) {
+    final void initialize(ExtensionDescriptor extension, BeanSetup bean) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
@@ -664,5 +664,5 @@ public abstract class BeanIntrospector {
 
     /** A small utility record to hold the both the extension model and the bean in one field. */
     // Replace with Introspector???
-    private record Setup(ExtensionModel extension, BeanSetup bean) {}
+    private record Setup(ExtensionDescriptor extension, BeanSetup bean) {}
 }

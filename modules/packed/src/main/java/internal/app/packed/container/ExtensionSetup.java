@@ -9,6 +9,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
@@ -27,7 +28,7 @@ public final class ExtensionSetup {
 
     /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
     private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
-            void.class, ExtensionModel.class, BeanSetup.class);
+            void.class, ExtensionDescriptor.class, BeanSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -163,24 +164,23 @@ public final class ExtensionSetup {
         return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
     }
 
-    public BeanIntrospector newBeanIntrospector(ExtensionSetup extension, BeanSetup bean) {
-        BeanIntrospector bs;
+    public BeanIntrospector newBeanIntrospector(BeanSetup bean) {
+        BeanIntrospector introspector;
         try {
-            bs = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
-            MH_BEAN_SCANNER_INITIALIZE.invokeExact(bs, extension.model, bean);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        return bs;
-    }
-
-    public BeanIntrospector initializeBeanIntrospector(BeanIntrospector introspector, BeanSetup bean) {
-        try {
-            MH_BEAN_SCANNER_INITIALIZE.invokeExact(introspector, model, bean);
+            introspector = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
+            MH_BEAN_SCANNER_INITIALIZE.invokeExact(introspector, (ExtensionDescriptor) model, bean);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
         return introspector;
+    }
+
+    public void initializeBeanIntrospector(BeanIntrospector introspector, BeanSetup bean) {
+        try {
+            MH_BEAN_SCANNER_INITIALIZE.invokeExact(introspector, (ExtensionDescriptor) model, bean);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
     }
 
     /**

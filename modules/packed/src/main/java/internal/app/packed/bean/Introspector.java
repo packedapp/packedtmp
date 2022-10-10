@@ -84,7 +84,7 @@ public final class Introspector {
                 extension.initializeBeanIntrospector(introspector, bean);
             } else {
                 // Call Extension#newBeanIntrospector
-                introspector = extension.newBeanIntrospector(extension, bean);
+                introspector = extension.newBeanIntrospector(bean);
             }
 
             // Notify the bean introspector that is being used

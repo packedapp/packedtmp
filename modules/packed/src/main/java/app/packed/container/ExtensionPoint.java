@@ -3,7 +3,6 @@ package app.packed.container;
 import app.packed.base.Nullable;
 import app.packed.container.Extension.DependsOn;
 import app.packed.entrypoint.EntryPointExtensionPoint;
-import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -75,7 +74,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
                         + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
             }
 
-            return ExtensionModel.of(extensionClass).type(); // Will check that the extension is valid
+            return ExtensionDescriptor.of(extensionClass).type(); // Will check that the extension is valid
         }
     };
 
