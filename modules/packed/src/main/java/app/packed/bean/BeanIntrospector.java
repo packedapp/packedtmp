@@ -342,6 +342,16 @@ public abstract class BeanIntrospector {
          */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
+        // Kan only do this if is invoking extension!!
+        default OnBindingHook connectInvocationArgument(int index) {
+            // Kan jo faktisk ogsaa bruges med context?
+            return connectInvocationArgument(index, index);
+        }
+        
+        default OnBindingHook connectInvocationArgument(int index, int operationIndex) {
+            // Used from ops.
+            return this;
+        }
         /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
 

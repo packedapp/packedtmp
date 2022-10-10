@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -59,10 +58,6 @@ import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
  * 
  * @apiNote Op implementations does not generally implement {@link #hashCode()} or {@link #equals(Object)}.
  */
-
-// toMethodHandle??? Ja hvorfor ikke... hvis man har et Factory, kan man jo altid bare registrere det og bruge det...
-// Skal vi tage et Lookup object??? IDK
-
 @SuppressWarnings("rawtypes") // eclipse being difficult
 public sealed interface Op<R> permits PackedOp, CapturingOp {
 
@@ -107,13 +102,12 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
 
     /**
      * Returns a new operation that will perform the specified action with the result before returning it.
-     * <p>
-     * If this operation has void return type, {@link MethodHandles#zero(Class)} will be used to find a fitting value to
-     * provide to the action. (Should we fail instead???)
      * 
      * @param action
-     *            the consume that will be run with the result of each invocation
+     *            the consume action that will be run with the result on each invocation
      * @return the new operation
+     * @throws UnsupportedOperationException
+     *             if this operation has void return type
      */
     Op<R> peek(Consumer<? super R> action);
 

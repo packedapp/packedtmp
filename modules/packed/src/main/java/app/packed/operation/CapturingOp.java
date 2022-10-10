@@ -15,20 +15,21 @@
  */
 package app.packed.operation;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import internal.app.packed.operation.op.PackageCapturingOpHelper;
 import internal.app.packed.operation.op.PackedOp;
 
 /**
  * A abstract op that captures the type an annotated return type and annotated type apra
+ * 
+ * @see Op0
+ * @see Op1
+ * @see Op2
  */
 public abstract non-sealed class CapturingOp<R> implements Op<R> {
 
-    /** The op that we delegate everything to. */
+    /** The op that all calls are delegated to. */
     private final PackedOp<R> op;
 
     /**
@@ -39,8 +40,7 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
      *            the function instance
      */
     CapturingOp(Object function) {
-        requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        this.op = PackageCapturingOpHelper.create(getClass(), function);
+        this.op = PackedOp.capture(getClass(), function);
     }
 
     /** {@inheritDoc} */

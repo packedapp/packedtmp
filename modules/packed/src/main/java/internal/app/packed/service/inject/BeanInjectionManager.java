@@ -71,14 +71,16 @@ public final class BeanInjectionManager implements DependencyProducer {
 
         // Only create an instance node if we have instances
         if (driver.sourceKind() == BeanSourceKind.INSTANCE || !driver.kind().hasInstances()) {
+            // Kan have en provide
             this.instanceNode = null;
         } else {
             PackedOp<?> op;
             if (driver.sourceKind() == BeanSourceKind.CLASS) {
                 op = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) driver.source());
             } else {
-                op = (PackedOp<?>) driver.source();
+                op = (PackedOp<?>) driver.source(); // We always unpack source Op to PackedOp
             }
+            
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(op);
 

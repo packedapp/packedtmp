@@ -12,6 +12,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
@@ -49,7 +50,6 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     public final BeanInjectionManager injectionManager;
 
     /** The lifetime the component is a part of. */
-    // Or maybe @Nullable BeanSetup; null -> container.eager
     public final LifetimeSetup lifetime;
 
     /** Supplies a mirror for the operation */
@@ -61,7 +61,7 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     /** Operations declared by the bean. */
     public final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
 
-    /** The Bean props. */
+    /** Various properties of the bean. */
     public final BeanProps props;
 
     /**
@@ -76,10 +76,10 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         this.container = props.operator().container;
         this.lifetime = container.lifetime();
 
-        if (props.beanClass() != void.class) { // Not sure exactly when we need it
-            this.injectionManager = new BeanInjectionManager(this, props);
-        } else {
+        if (props.kind() == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
             this.injectionManager = null;
+        } else {
+            this.injectionManager = new BeanInjectionManager(this, props);
         }
 
         String initialName = "Functional";

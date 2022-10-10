@@ -49,6 +49,10 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         this.type = requireNonNull(type, "type is null");
     }
 
+    public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
+        return PackageCapturingOpHelper.create(clazz, function);
+    }
+
     /** {@inheritDoc} */
     public final Op<R> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
@@ -212,6 +216,9 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
         PeekableOp(PackedOp<R> delegate, Consumer<? super R> action) {
             super(delegate.type);
+            if (super.type.returnType() == void.class) {
+                throw new UnsupportedOperationException("This method cannot be used on Op's that have void return type, [ type = " + super.type + "]");
+            }
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
             this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
             this.delegate = delegate;

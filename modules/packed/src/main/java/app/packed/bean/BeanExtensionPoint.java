@@ -184,8 +184,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     // InjectSupport.defaultInjectable()
 
     // If @Initialize -> rename to findInitializer
-    // Flyt til BeanFactories
-    // InjectableFactoryOf
+    // Flyt til BeanFactories eller Op
+    
+    // Den er ihvertfald super usefull for endusers a.la.
+    // BeanExtensionPoint.factoryOf(MyBean.class).bind("asdsad")
     @SuppressWarnings("unchecked")
     public static <T> Op<T> factoryOf(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");

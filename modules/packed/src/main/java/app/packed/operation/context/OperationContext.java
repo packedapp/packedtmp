@@ -18,6 +18,6 @@ package app.packed.operation.context;
 /**
  *
  */
-public abstract class OperationContextFoobar {
-
-}
+// Er det altid kun en operation??? 
+// Kan man forstille sig det er statisk for en container
+public abstract class OperationContext {}

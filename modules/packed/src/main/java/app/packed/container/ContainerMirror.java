@@ -71,6 +71,7 @@ public class ContainerMirror implements Mirror {
     /** {@return an unmodifiable view of all of the children of this component.} */
     /* Sequenced */
     public Collection<ContainerMirror> children() {
+        // does not work because container().containerChildren may be null
         return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
     }
 

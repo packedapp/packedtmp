@@ -42,7 +42,7 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public class PackageCapturingOpHelper {
+class PackageCapturingOpHelper {
 
     /** A cache of extracted type variables from subclasses of this class. */
     static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
