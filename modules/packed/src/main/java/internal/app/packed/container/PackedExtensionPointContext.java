@@ -23,7 +23,6 @@ import app.packed.container.UserOrExtension;
  */
 public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
 
-
     /** {@inheritDoc} */
     @Override
     public UserOrExtension realm() {

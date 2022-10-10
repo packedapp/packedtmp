@@ -1,13 +1,14 @@
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.base.Nullable;
 import app.packed.container.Extension.DependsOn;
 import app.packed.entrypoint.EntryPointExtensionPoint;
+import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
+import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
  * Extension points are the main mechanism by which extensions use other extensions. Developers that are not creating
@@ -51,6 +52,32 @@ import internal.app.packed.container.PackedExtensionPointContext;
  *          need.
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
+
+    /** A ExtensionPoint class to Extension class mapping. */
+    final static ClassValue<Class<? extends Extension<?>>> EXTENSION_POINT_TO_EXTENSION_CLASS_MAPPER = new ClassValue<>() {
+
+        /** A type variable extractor. */
+        private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected Class<? extends Extension<?>> computeValue(Class<?> type) {
+            ClassUtil.checkProperSubclass(ExtensionPoint.class, type, InternalExtensionException::new);
+
+            // Extract the extension class from ExtensionPoint<E>
+            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_LITERAL_EP_EXTRACTOR.extractProperSubClassOf(type,
+                    Extension.class, InternalExtensionException::new);
+
+            // Check that the extension point is in the same module as the extension itself
+            if (extensionClass.getModule() != type.getModule()) {
+                throw new InternalExtensionException("The extension point " + type + " must be a part of the same module (" + extensionClass.getModule()
+                        + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
+            }
+
+            return ExtensionModel.of(extensionClass).type(); // Will check that the extension is valid
+        }
+    };
 
     /**
      * A context for this extension point. Is initialized via {@link #initialize(PackedExtensionPointContext)}..
@@ -110,11 +137,11 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      * @param context
      *            the context of this extension point
      */
-    final void initialize(PackedExtensionPointContext context) {
+    final void initialize(ExtensionSetup extension, ExtensionSetup usedBy) {
         if (this.context != null) {
             throw new IllegalStateException("This extension point has already been initialized.");
         }
-        this.context = requireNonNull(context);
+        this.context = new PackedExtensionPointContext(extension, usedBy);
     }
 
     protected final UseSite useSite() {

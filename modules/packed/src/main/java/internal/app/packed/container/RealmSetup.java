@@ -120,3 +120,14 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
         currentComponent = requireNonNull(newComponent);
     }
 }
+//public interface RealmConfiguration {
+//
+//    // The current component that is being wired
+//    // empty if the realm is no longer configurable
+//    Optional<NamespacePath> activeComponent(); // ComponentConfiguration??? Det er jo internt i realmen
+//
+//    boolean isConfigurable();
+//
+//    // Vil helst ikke have extensions til at bruge dem...
+//    void lookup(MethodHandles.Lookup lookup);
+//}

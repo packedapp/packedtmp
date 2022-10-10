@@ -23,12 +23,12 @@ import java.util.List;
 import app.packed.container.Extension;
 
 /** We might ditch this at some point */
-final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension<?>>> {
+final /* primitive */ class ExtensionModelDependencySet extends AbstractSet<Class<? extends Extension<?>>> {
 
     /** The extension types this set contains */
     final List<Class<? extends Extension<?>>> extensions;
 
-    private ExtensionDependencySet(List<Class<? extends Extension<?>>> extensions) {
+    private ExtensionModelDependencySet(List<Class<? extends Extension<?>>> extensions) {
         this.extensions = List.copyOf(extensions);
     }
 
@@ -51,7 +51,7 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj == this || obj instanceof ExtensionDependencySet oes && oes.extensions.equals(extensions);
+        return obj == this || obj instanceof ExtensionModelDependencySet oes && oes.extensions.equals(extensions);
     }
 
     /** {@inheritDoc} */
@@ -82,8 +82,8 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
      *             if trying to add BaseExtension
      */
     @SuppressWarnings("unchecked")
-    public static ExtensionDependencySet of(Collection<Class<? extends Extension<?>>> extensions) {
+    static ExtensionModelDependencySet of(Collection<Class<? extends Extension<?>>> extensions) {
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).toList();
-        return new ExtensionDependencySet((List<Class<? extends Extension<?>>>) l);
+        return new ExtensionModelDependencySet((List<Class<? extends Extension<?>>>) l);
     }
 }

@@ -16,7 +16,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionMirrorHelper;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.util.ClassUtil;
@@ -107,7 +106,7 @@ public class ContainerMirror implements Mirror {
     public Set<ExtensionMirror<?>> extensions() {
         HashSet<ExtensionMirror<?>> result = new HashSet<>();
         for (ExtensionSetup extension : container().extensions.values()) {
-            result.add(ExtensionMirrorHelper.newMirrorOfUnknownType(extension));
+            result.add(ContainerMirrorHelper.newMirrorOfUnknownType(extension));
         }
         return Set.copyOf(result);
     }
@@ -134,7 +133,7 @@ public class ContainerMirror implements Mirror {
     @SuppressWarnings("unchecked")
     public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> mirrorType) {
         ClassUtil.checkProperSubclass(ExtensionMirror.class, mirrorType, "mirrorType");
-        return (Optional<T>) Optional.ofNullable(ExtensionMirrorHelper.newMirrorOrNull(container(), mirrorType));
+        return (Optional<T>) Optional.ofNullable(ContainerMirrorHelper.newMirrorOrNull(container(), mirrorType));
     }
 
     /** {@inheritDoc} */

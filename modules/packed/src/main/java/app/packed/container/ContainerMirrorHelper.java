@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
+package app.packed.container;
 
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
-import app.packed.container.InternalExtensionException;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
+import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.container.ExtensionModel;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.PackedExtensionNavigator;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /** A helper class for creating new {@link ExtensionMirror} instances. */
-public final class ExtensionMirrorHelper {
+final class ContainerMirrorHelper {
 
     /** A ExtensionMirror class to Extension class mapping. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
@@ -52,27 +48,14 @@ public final class ExtensionMirrorHelper {
             return ExtensionModel.of(extensionClass).type(); // Check that the extension is valid
         }
     };
-
-    /** A handle for invoking the package-private method {@link ExtensionMirror#initialize(PackedExtensionNavigator)}. */
-    private static final MethodHandle MH_EXTENSION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionMirror.class,
-            "initialize", void.class, PackedExtensionNavigator.class);
-
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "newExtensionMirror", ExtensionMirror.class);
-
+    
     /** No help for you. */
-    private ExtensionMirrorHelper() {}
+    private ContainerMirrorHelper() {}
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static ExtensionMirror<?> newMirror(ExtensionSetup extension, Class<? extends ExtensionMirror<?>> expectedMirrorClass) {
-        ExtensionMirror<?> mirror = null;
-        try {
-            mirror = (ExtensionMirror<?>) MH_EXTENSION_NEW_EXTENSION_MIRROR.invokeExact(extension.instance());
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
+    static ExtensionMirror<?> newMirror(ExtensionSetup extension, Class<? extends ExtensionMirror<?>> expectedMirrorClass) {
+        ExtensionMirror<?> mirror = extension.instance().newExtensionMirror();
 
         // Cannot return a null mirror
         if (mirror == null) {
@@ -102,13 +85,7 @@ public final class ExtensionMirrorHelper {
             }
         }
 
-        // Initializes the mirror
-        try {
-            MH_EXTENSION_MIRROR_INITIALIZE.invokeExact(mirror, new PackedExtensionNavigator(extension, extension.extensionType));
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
+        mirror.initialize(new PackedExtensionNavigator(extension, extension.extensionType));
         return mirror;
     }
 
@@ -119,7 +96,7 @@ public final class ExtensionMirrorHelper {
      *            the extension
      * @return the new mirror
      */
-    public static ExtensionMirror<?> newMirrorOfUnknownType(ExtensionSetup extension) {
+    static ExtensionMirror<?> newMirrorOfUnknownType(ExtensionSetup extension) {
         return newMirror(extension, null);
     }
 
@@ -133,7 +110,7 @@ public final class ExtensionMirrorHelper {
      * @return a mirror of the specified type or null if no extension of the matching type was used in the container
      */
     @Nullable
-    public static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
+    static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
         // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
         Class<? extends Extension<?>> extensionClass = EXTENSION_TYPES.get(mirrorClass);
 

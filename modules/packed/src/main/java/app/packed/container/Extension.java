@@ -15,6 +15,9 @@
  */
 package app.packed.container;
 
+import static internal.app.packed.util.StringFormatter.format;
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -37,7 +40,6 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.container.ExtensionPointHelper;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionNavigator;
@@ -77,7 +79,7 @@ import internal.app.packed.util.ThrowableUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    private final ExtensionSetup setup;
+    final ExtensionSetup setup;
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -294,16 +296,14 @@ public abstract class Extension<E extends Extension<E>> {
     }
 
     /**
-     * Returns an extension point of the specified type
+     * Returns an extension point of the specified type.
      * <p>
      * Only extension points of extensions that have been explicitly registered as dependencies, for example, by using
      * {@link DependsOn} may be specified as arguments to this method.
-     * <p>
-     * This method cannot be called from the constructor of the extension.
      * 
      * @param <P>
      *            the type of extension point to return
-     * @param extensionPointType
+     * @param extensionPointClass
      *            the type of extension point to return
      * @return the extension point instance
      * @throws IllegalStateException
@@ -314,8 +314,41 @@ public abstract class Extension<E extends Extension<E>> {
      *             dependency of this extension
      */
     @SuppressWarnings("unchecked")
-    protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointType) {
-        return (P) ExtensionPointHelper.newExtensionPoint(setup, extensionPointType);
+    protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
+        requireNonNull(extensionPointClass, "extensionPointClass is null");
+
+        // Extract the extension class from ExtensionPoint<E> 
+        Class<? extends Extension<?>> useExtension = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_MAPPER.get(extensionPointClass);
+
+        // Check that the extension of requested extension point's is a direct dependency of the requesting extension
+        if (!setup.model.dependencies().contains(useExtension)) {
+            // Special message if you try to use your own extension point
+            if (useExtension == getClass()) {
+                throw new InternalExtensionException(useExtension.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
+            }
+            throw new InternalExtensionException(getClass().getSimpleName() + " must declare " + format(useExtension)
+                    + " as a dependency in order to use " + extensionPointClass);
+        }
+
+        ExtensionSetup extension = setup.container.useExtensionSetup(useExtension, setup);
+
+        // Create a new extension point
+        ExtensionPoint<?> newExtensionPoint = extension.instance().newExtensionPoint();
+
+        // Make sure it is a proper type of the requested extension point
+        if (!extensionPointClass.isInstance(newExtensionPoint)) {
+            if (newExtensionPoint == null) {
+                throw new NullPointerException(
+                        "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionPoint()");
+            }
+            throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
+                    + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());
+        }
+
+        // Initializes the extension point
+        newExtensionPoint.initialize(extension, setup);
+
+        return (P) newExtensionPoint;
     }
 
     // Vi kan sagtens lave den en normal metode fx pa ExtensionPoint...

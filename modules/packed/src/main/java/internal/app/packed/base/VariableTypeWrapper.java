@@ -60,7 +60,7 @@ public interface VariableTypeWrapper {
         /** {@inheritDoc} */
         @Override
         public TypeToken<?> typeToken() {
-            throw new UnsupportedOperationException();
+            return TypeToken.of(clazz);
         }
     }
 

@@ -81,7 +81,7 @@ public final class Introspector {
             if (beanHandleIntrospector != null && bean.operator() == extensionType) {
                 // A special introspector has been set, don't
                 introspector = beanHandleIntrospector;
-                extension.initializeBeanIntrospector(introspector, extension, bean);
+                extension.initializeBeanIntrospector(introspector, bean);
             } else {
                 // Call Extension#newBeanIntrospector
                 introspector = extension.newBeanIntrospector(extension, bean);
