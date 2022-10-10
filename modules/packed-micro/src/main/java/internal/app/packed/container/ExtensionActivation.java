@@ -107,7 +107,7 @@ public class ExtensionActivation {
     }
 
     public static class MyExtension extends Extension<MyExtension> {
-
+        MyExtension(){}
         // public void foo(SingletonConfiguration<?> cc, Foo s) {}
 
     }

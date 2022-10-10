@@ -20,6 +20,26 @@ package app.packed.bean;
  */
 public class MultipleBeanOfSameTypeDefinedException extends RuntimeException {
 
+    public MultipleBeanOfSameTypeDefinedException() {
+        super();
+    }
+
+    public MultipleBeanOfSameTypeDefinedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public MultipleBeanOfSameTypeDefinedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public MultipleBeanOfSameTypeDefinedException(String message) {
+        super(message);
+    }
+
+    public MultipleBeanOfSameTypeDefinedException(Throwable cause) {
+        super(cause);
+    }
+
     private static final long serialVersionUID = 1L;
 
 }

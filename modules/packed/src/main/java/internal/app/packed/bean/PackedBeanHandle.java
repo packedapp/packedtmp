@@ -123,9 +123,8 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
             }
 
         }
-        
-        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix,
-                nonUnique);
+
+        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix, nonUnique);
 
         realm.wireCurrentComponent();
 
@@ -134,7 +133,7 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
         // bean.initName
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
-        if (sourceKind != BeanSourceKind.NONE) {
+        if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
             new Introspector(bean, customIntrospector).introspect();
         }
 

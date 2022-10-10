@@ -43,6 +43,9 @@ public class Letters {
     public static class A {};
 
     /** A test stub. */
+    public static class AExt extends A {};
+    
+    /** A test stub. */
     public static class B {};
 
     /** A test stub. */

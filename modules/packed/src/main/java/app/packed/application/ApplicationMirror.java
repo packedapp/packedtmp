@@ -10,7 +10,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
@@ -62,15 +62,16 @@ public class ApplicationMirror implements Mirror {
         return container().assembly();
     }
 
+    /** {@return the build goal used when building the application.} */
     public BuildGoal buildGoal() {
         return application().goal();
     }
-    
+
     /** {@return a mirror of the root container in the application.} */
     public ContainerMirror container() {
         return application().container.mirror();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
@@ -101,8 +102,8 @@ public class ApplicationMirror implements Mirror {
         this.application = application;
     }
 
-    /** {@return the application's lifetime.} */
-    public LifetimeMirror lifetime() {
+    /** {@return the application's lifetime. Which is identical to the root container's.} */
+    public ContainerLifetimeMirror lifetime() {
         return container().lifetime();
     }
 
@@ -155,11 +156,11 @@ public class ApplicationMirror implements Mirror {
      * @see ContainerMirror#useExtension(Class)
      */
     // Maasker drop use, og bare have extension(ServiceExtensionMirror.class).
-    public <T extends ExtensionMirror<?>> T useExtension(Class<T> type) {
+    public <E extends ExtensionMirror<?>> E useExtension(Class<E> type) {
         return container().useExtension(type);
     }
 
-    public <T extends ExtensionMirror<?>> void useIfPresent(Class<T> type, Consumer<? super T> action) {
+    public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {
         throw new UnsupportedOperationException();
     }
 }

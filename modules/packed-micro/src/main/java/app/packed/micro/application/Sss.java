@@ -16,30 +16,29 @@
 package app.packed.micro.application;
 
 import app.packed.application.App;
-import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-public class VariousImages {
-
-    public static final App.Launcher EMPTY_IMAGE = App.newImage(of(0));
-    public static final App.Launcher ONE_BEAN_IMAGE = App.newImage(of(1));
-    public static final App.Launcher FIVE_BEAN_IMAGE = App.newImage(of(5));
-    public static final App.Launcher FIFTY_BEAN_IMAGE = App.newImage(of(50));
-    public static final App.Launcher FIVEHUNDRED_BEAN_IMAGE = App.newImage(of(500));
-
+public class Sss {
     public static BaseAssembly of(int beanCount) {
         return new BaseAssembly() {
 
             @Override
             public void build() {
-                BeanExtension b = bean();
+                long start = System.nanoTime();
                 for (int i = 0; i < beanCount; i++) {
-                   b.multiInstallInstance("foo");
+                  bean().multiInstallInstance("foo");
                 }
+                System.out.println(System.nanoTime() - start);
             }
         };
+    }
+
+    public static void main(String[] args) {
+        long start = System.nanoTime();
+        App.run(of(1000000));
+        System.out.println(System.nanoTime() - start);
     }
 }

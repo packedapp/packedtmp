@@ -48,5 +48,5 @@ public record BeanProps(
 
         @Nullable String namePrefix,
 
-        boolean nonUnique) {
+        boolean multiInstall) {
 }

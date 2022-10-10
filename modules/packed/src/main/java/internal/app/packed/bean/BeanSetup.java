@@ -14,6 +14,7 @@ import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
+import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.UserOrExtension;
@@ -87,6 +88,40 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
             initialName = props.beanModel().simpleName();
         }
 
+        class MuInst {
+            int counter;
+        }
+        Class<?> cl = props.beanClass();
+        if (props.beanClass() != void.class) {
+            if (props.multiInstall()) {
+                MuInst i = (MuInst) container.beanClassMap.compute(cl, (c, o) -> {
+                    if (o == null) {
+                        return new MuInst();
+                    } else if (o instanceof BeanSetup) {
+                        throw new MultipleBeanOfSameTypeDefinedException();
+                    } else {
+                        return o;
+                    }
+                });
+                if (i.counter > 0) {
+                    initialName = initialName + i.counter;
+                }
+                i.counter++;
+            } else {
+                container.beanClassMap.compute(cl, (c, o) -> {
+                    if (o == null) {
+                        return BeanSetup.this;
+                    } else if (o instanceof BeanSetup) {
+                        throw new MultipleBeanOfSameTypeDefinedException("A non-multi bean has already been defined for " + beanClass());
+                    } else {
+                        // We already have some multiple beans installed
+                        throw new MultipleBeanOfSameTypeDefinedException();
+                    }
+                });
+            }
+        }
+
+        // This will add it to the list of beans in the container
         container.initBeanName(this, initialName);
     }
 

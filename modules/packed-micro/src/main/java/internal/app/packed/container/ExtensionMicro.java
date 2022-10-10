@@ -60,7 +60,9 @@ public class ExtensionMicro {
         return ExtensionClassCache3.newInstance(MyExtension.class);
     }
 
-    public static class MyExtension extends Extension<MyExtension> {}
+    public static class MyExtension extends Extension<MyExtension> {
+        MyExtension(){}
+    }
 }
 // packed.internal.container.ExtensionMicro.newExtension                          N/A  avgt    5     2.945 ±  0.043  ns/op
 // packed.internal.container.ExtensionMicro.newExtensionCachedLambdaFactory       N/A  avgt    5     5.064 ±  0.044  ns/op

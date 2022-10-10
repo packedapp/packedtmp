@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.Key;
 import app.packed.service.ServiceLocator;
 import testutil.stubs.Letters.A;
+import testutil.stubs.Letters.AExt;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
@@ -39,7 +40,7 @@ public class InjectorWithTest {
         ServiceLocator i = ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
-            c.provide(A.class).provideAs(new Key<@Left A>() {});
+            c.provide(AExt.class).provideAs(new Key<@Left A>() {});
         });
 
         assertThat(i.use(A.class)).isInstanceOf(A.class);

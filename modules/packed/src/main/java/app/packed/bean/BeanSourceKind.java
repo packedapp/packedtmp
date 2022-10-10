@@ -22,15 +22,36 @@ import app.packed.operation.Op;
  */
 public enum BeanSourceKind {
 
-    /** No source was specified when creating the bean. */
+    /**
+     * No source was specified when creating the bean.
+     * 
+     * @see BeanKind#FUNCTIONAL
+     */
     NONE,
 
-    /** A bean instance was specified when creating the bean. */
+    /**
+     * A bean instance was specified when creating the bean.
+     * 
+     * @see BeanKind#CONTAINER
+     */
     INSTANCE,
 
-    /** An {@link Op} was specified when creating the bean. */
+    /**
+     * An {@link Op} was specified when creating the bean.
+     * 
+     * @see BeanKind#CONTAINER
+     * @see BeanKind#LAZY
+     * @see BeanKind#MANYTON
+     */
     OP,
 
-    /** A {@link Class} was specified when creating the bean. */
+    /**
+     * A {@link Class} was specified when creating the bean.
+     * 
+     * @see BeanKind#STATIC
+     * @see BeanKind#CONTAINER
+     * @see BeanKind#LAZY
+     * @see BeanKind#MANYTON
+     */
     CLASS;
 }

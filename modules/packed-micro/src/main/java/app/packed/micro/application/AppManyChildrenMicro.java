@@ -71,3 +71,14 @@ public class AppManyChildrenMicro {
         }
     }
 }
+
+// I think we have the naming issue again, but this time with containers.
+
+//AppManyChildrenMicro.manyChildren        0  avgt    5         65,989 ±         1,666  ns/op
+//AppManyChildrenMicro.manyChildren        1  avgt    5        184,667 ±         6,334  ns/op
+//AppManyChildrenMicro.manyChildren       10  avgt    5       1196,666 ±        27,391  ns/op
+//AppManyChildrenMicro.manyChildren      100  avgt    5      10951,434 ±        71,562  ns/op
+//AppManyChildrenMicro.manyChildren     1000  avgt    5      96571,737 ±      2972,824  ns/op
+//AppManyChildrenMicro.manyChildren    10000  avgt    5     990598,824 ±     37506,454  ns/op
+//AppManyChildrenMicro.manyChildren   100000  avgt    5   16812652,692 ±   1396797,559  ns/op
+//AppManyChildrenMicro.manyChildren  1000000  avgt    5  431405683,233 ± 284982335,052  ns/op

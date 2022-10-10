@@ -48,7 +48,7 @@ import internal.app.packed.util.ThrowableUtil;
 public final class Introspector {
 
     /** We never process classes that are located in the {@code java.base} module. */
-    private static final Module JAVA_BASE_MODULE = Object.class.getModule();
+    public static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** The bean that is being introspected. */
     public final BeanSetup bean;

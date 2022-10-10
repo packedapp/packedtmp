@@ -21,7 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -96,6 +98,8 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
+
+    public final Map<Class<?>, Object> beanClassMap = new HashMap<>();
 
     /**
      * Create a new container setup.
@@ -220,7 +224,8 @@ public final class ContainerSetup extends BeanOrContainerSetup {
         if (children.isEmpty()) {
             children.put(name, this);
         } else {
-            int counter = 1;
+ //           int counter = 1;
+            int counter = children.size();
             while (children.putIfAbsent(n, this) != null) {
                 n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
                                       // million of the same component type
