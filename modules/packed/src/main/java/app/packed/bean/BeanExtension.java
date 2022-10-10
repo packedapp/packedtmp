@@ -87,21 +87,27 @@ public class BeanExtension extends Extension<BeanExtension> {
     }
 
     /**
-     * Installs a new {@link BeanKind#STATIC static} bean with the specified implementation as the
-     * {@link BeanConfiguration#beanClass() bean class}.
+     * Installs a new {@link BeanKind#STATIC static} bean.
      * 
      * @param implementation
      *            the static bean class
      * @return a configuration for the bean
      * @throws MultipleBeanOfSameTypeDefinedException
      *             if there other beans of the same type that has already been installed
+     * 
+     * @see BeanKind#STATIC
+     * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
         BeanHandle<?> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
         return new BeanConfiguration(handle);
     }
 
-    // Vi skal have 5 af dem
+    /**
+     * @see BeanKind#CONTAINER
+     * @see BeanSourceKind#CLASS
+     * @see BeanHandle.Option#nonUnique()
+     */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
         BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
@@ -111,7 +117,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
-    
+
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
         BeanHandle<T> handle = PackedBeanHandle.installInstance(extensionSetup, container.realm, null, instance, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
@@ -126,7 +132,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
-    
+
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror newExtensionMirror() {

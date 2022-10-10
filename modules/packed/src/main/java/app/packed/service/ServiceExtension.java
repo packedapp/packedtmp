@@ -32,7 +32,7 @@ import app.packed.operation.Op;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.ServiceConfiguration;
 import internal.app.packed.service.inject.BeanMemberDependencyNode;
@@ -154,7 +154,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
-                OperationSetup operation = ((IntrospectorOnField) field).newGetOperation(setup, InvocationType.defaults());
+                BeanOperationSetup operation = ((IntrospectorOnField) field).newGetOperation(setup, InvocationType.defaults());
 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
@@ -167,7 +167,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = method.methodToKey();
                 boolean constant = method.annotations().readRequired(Provide.class).constant();
 
-                OperationSetup operation = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
+                BeanOperationSetup operation = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
 
                 // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);

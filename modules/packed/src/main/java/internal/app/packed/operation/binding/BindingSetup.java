@@ -22,37 +22,34 @@ import java.util.function.Supplier;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  * The internal configuration of a single binding for an operation.
  */
-public final class BindingSetup {
+public abstract sealed class BindingSetup permits ConstantBindingSetup, DynamicBindingSetup, ServiceBindingSetup {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
-    /** The index into {@link OperationSetup#bindings}. */
-    public final int index;
+    /** The index into {@link BeanOperationSetup#bindings}. */
+    public final int index; // forComposite??
 
     /** Supplies a mirror for the operation */
     private Supplier<? extends BindingMirror> mirrorSupplier = BindingMirror::new;
 
     /** The underlying operation. */
-    public final OperationSetup operation;
-
-    public final BindingTarget target;
+    public final BeanOperationSetup beanOperation;
 
     // Eller er det en extension bean??? Det er hvem der styrer vaerdien
     public ExtensionSetup managedBy;
-    
-    public BindingSetup(OperationSetup operation, int index, BindingTarget target) {
-        this.operation = operation;
+
+    public BindingSetup(BeanOperationSetup beanOperation, int index) {
+        this.beanOperation = beanOperation;
         this.index = index;
-        this.target = target; 
     }
 
     /** {@return a new mirror.} */

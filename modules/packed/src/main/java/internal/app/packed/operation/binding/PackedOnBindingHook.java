@@ -26,7 +26,7 @@ import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.IntrospectorAnnotationReader;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.BeanOperationSetup;
 
 /**
  *
@@ -35,14 +35,17 @@ import internal.app.packed.operation.OperationSetup;
 // Manuelt tilfoejet operationer. Men det er maaske kun funktioner???
 public final class PackedOnBindingHook implements OnBindingHook {
 
-    private final int index;
+    private final BeanOperationSetup beanOperation;
 
-    private final OperationSetup operation;
+    @Nullable
+    private BindingSetup binding;
+
+    private final int index;
 
     Variable variable;
 
-    public PackedOnBindingHook(OperationSetup operation, int index) {
-        this.operation = operation;
+    public PackedOnBindingHook(BeanOperationSetup operation, int index) {
+        this.beanOperation = operation;
         this.index = index;
         this.variable = variable();
     }
@@ -51,6 +54,10 @@ public final class PackedOnBindingHook implements OnBindingHook {
     @Override
     public AnnotationReader annotations() {
         return new IntrospectorAnnotationReader(variable().getAnnotations());
+    }
+
+    private void bind(BindingSetup bs) {
+        beanOperation.bindings[index] = binding = bs;
     }
 
     /** {@inheritDoc} */
@@ -67,37 +74,25 @@ public final class PackedOnBindingHook implements OnBindingHook {
         // Check assignable to
         // Create a bound thing
         //
-        bind(new BindingSetup(operation, index, new ConstantBindingTarget(obj)));
+        bind(new ConstantBindingSetup(beanOperation, index, obj));
     }
 
-    private void bind(BindingSetup bs) {
-        operation.bindings[index] = bs;
+    /** {@inheritDoc} */
+    @Override
+    public void bindEmpty() {
+        throw new UnsupportedOperationException();
     }
 
     private void checkNotBound() {
-        if (operation.bindings[index] != null) {
+        if (binding != null) {
             throw new IllegalStateException("A binding has already been created");
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public OnBindingHook runtimeBindable() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void bindEmpty() {}
-
-    /** {@inheritDoc} */
-    @Override
-    public void provideFromInvocationArgument(int index) {}
-
-    /** {@inheritDoc} */
-    @Override
     public Class<?> hookClass() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -108,22 +103,37 @@ public final class PackedOnBindingHook implements OnBindingHook {
 
     /** {@inheritDoc} */
     @Override
-    public void provide(MethodHandle methodHandle) {}
+    public void provide(MethodHandle methodHandle) {
+        provide(Op.ofMethodHandle(methodHandle));
+    }
 
     /** {@inheritDoc} */
     @Override
-    public void provide(Op<?> fac) {}
+    public void provide(Op<?> op) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void provideFromInvocationArgument(int index) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public OnBindingHook runtimeBindable() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override
     public OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier) {
-        return null;
+        checkNotBound();
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return operation.type.parameter(index);
+        return beanOperation.type.parameter(index);
     }
 
 }

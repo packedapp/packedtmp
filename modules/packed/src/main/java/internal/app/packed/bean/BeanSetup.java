@@ -23,7 +23,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
@@ -37,6 +37,10 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
             void.class, BeanSetup.class);
 
+    /** A handle that can access BeanConfiguration#beanHandle. */
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
+            PackedBeanHandle.class);
+
     /** The container this bean is registered in. */
     public final ContainerSetup container;
 
@@ -44,21 +48,21 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
     @Nullable
     public final BeanInjectionManager injectionManager;
 
-    /** The Bean props. */
-    public final BeanProps props;
-
     /** The lifetime the component is a part of. */
     // Or maybe @Nullable BeanSetup; null -> container.eager
     public final LifetimeSetup lifetime;
 
-    /** Operations declared by the bean. */
-    public final ArrayList<OperationSetup> operations = new ArrayList<>();
+    /** Supplies a mirror for the operation */
+    Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
 
     @Nullable
     public Runnable onWiringAction;
 
-    /** Supplies a mirror for the operation */
-    Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
+    /** Operations declared by the bean. */
+    public final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
+
+    /** The Bean props. */
+    public final BeanProps props;
 
     /**
      * Create a new bean setup.
@@ -86,14 +90,14 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         container.initBeanName(this, initialName);
     }
 
-    public OperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
-        OperationSetup os = new OperationSetup(this, type, extension, invocationType, target);
-        operations.add(os);
-        return os;
+    public void addOperation(BeanOperationSetup operation) {
+        operations.add(requireNonNull(operation));
     }
 
-    public void addOperation(OperationSetup operation) {
-        operations.add(requireNonNull(operation));
+    public BeanOperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
+        BeanOperationSetup os = new BeanOperationSetup(this, type, extension, invocationType, target);
+        operations.add(os);
+        return os;
     }
 
     /** {@inheritDoc} */
@@ -165,10 +169,6 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         }
         };
     }
-
-    /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
-            PackedBeanHandle.class);
 
     public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
         PackedBeanHandle<?> bh = (PackedBeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);

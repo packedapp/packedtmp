@@ -18,7 +18,7 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.util.StreamUtil;
 
 /**
@@ -176,7 +176,7 @@ public class BeanMirror implements Mirror {
 
     /** {@return a stream of all of the operations declared by the bean.} */
     public Stream<OperationMirror> operations() {
-        return bean().operations.stream().map(OperationSetup::mirror);
+        return bean().operations.stream().map(BeanOperationSetup::mirror);
     }
 
     /**

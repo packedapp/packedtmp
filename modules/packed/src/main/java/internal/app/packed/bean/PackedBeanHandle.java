@@ -29,7 +29,9 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.operation.Op;
-import internal.app.packed.bean.BeanProps.InstallerOption;
+import internal.app.packed.bean.PackedBeanHandle.InstallerOption.CustomIntrospector;
+import internal.app.packed.bean.PackedBeanHandle.InstallerOption.CustomPrefix;
+import internal.app.packed.bean.PackedBeanHandle.InstallerOption.NonUnique;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.operation.op.PackedOp;
@@ -121,7 +123,8 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
             }
 
         }
-        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, customIntrospector, namePrefix,
+        
+        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix,
                 nonUnique);
 
         realm.wireCurrentComponent();
@@ -132,7 +135,7 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
 
         // Scan the bean class for annotations unless the bean class is void or scanning is disabled
         if (sourceKind != BeanSourceKind.NONE) {
-            new Introspector(bean, bp.customIntrospector()).introspect();
+            new Introspector(bean, customIntrospector).introspect();
         }
 
         return new PackedBeanHandle<>(bean);
@@ -173,5 +176,43 @@ public /* primitive */ record PackedBeanHandle<T> (BeanSetup bean) implements Be
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys
         PackedOp<T> pop = PackedOp.crack(op);
         return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
+    }
+
+    // Eclipse requires permits here.. Compiler bug?
+    public sealed interface InstallerOption extends BeanHandle.Option permits NonUnique, CustomIntrospector, CustomPrefix {
+
+        static final InstallerOption NON_UNIQUE = new NonUnique();
+
+        default void validate(BeanKind kind) {}
+
+        public record NonUnique() implements InstallerOption {
+
+            /** {@inheritDoc} */
+            @Override
+            public void validate(BeanKind kind) {
+                if (!kind.hasInstances()) {
+                    throw new IllegalArgumentException("NonUnique cannot be used with functional beans");
+                }
+            }
+        }
+
+        public record CustomIntrospector(BeanIntrospector introspector) implements InstallerOption {
+
+            public CustomIntrospector {
+                requireNonNull(introspector, "introspector is null");
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void validate(BeanKind kind) {
+                if (!kind.hasInstances()) {
+                    throw new IllegalArgumentException("NonUnique cannot be used with functional beans");
+                }
+            }
+        }
+
+        public record CustomPrefix(String prefix) implements InstallerOption {
+
+        }
     }
 }

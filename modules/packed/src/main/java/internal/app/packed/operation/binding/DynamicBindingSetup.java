@@ -15,23 +15,18 @@
  */
 package internal.app.packed.operation.binding;
 
-import app.packed.base.Nullable;
+import internal.app.packed.operation.DynamicBindingOperationSetup;
 
 /**
- * A binding to a constant.
+ *
  */
-public final class ConstantBindingTarget extends BindingTarget {
-
-    /** The constant that was bound. */
-    @Nullable
-    public final Object constant;
+public final class DynamicBindingSetup extends BindingSetup {
 
     /**
-     * @param operation
+     * @param beanOperation
      * @param index
      */
-    public ConstantBindingTarget(@Nullable Object constant) {
-        this.constant = constant;
+    public DynamicBindingSetup(DynamicBindingOperationSetup dynamicOperation, int index) {
+        super(dynamicOperation.boss, index);
     }
-
 }

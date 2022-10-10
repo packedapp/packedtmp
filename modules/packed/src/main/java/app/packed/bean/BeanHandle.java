@@ -27,9 +27,8 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanProps;
-import internal.app.packed.bean.BeanProps.InstallerOption;
 import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
 
 /**
  * A bean handle represents a private configuration installed bean.
@@ -153,7 +152,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
-    public sealed interface Option permits BeanProps.InstallerOption {
+    public sealed interface Option permits PackedBeanHandle.InstallerOption {
         /**
          * Registers a bean introspector that will be used instead of the framework calling
          * {@link Extension#newBeanIntrospector}.

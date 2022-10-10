@@ -34,7 +34,7 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
@@ -60,7 +60,7 @@ public class OperationMirror implements Mirror {
      * {@link #initialize(ExtensionSetup)}.
      */
     @Nullable
-    private OperationSetup operation;
+    private BeanOperationSetup operation;
 
     /**
      * Create a new operation mirror.
@@ -118,7 +118,7 @@ public class OperationMirror implements Mirror {
      * @param owner
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(OperationSetup operation) {
+    final void initialize(BeanOperationSetup operation) {
         if (this.operation != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
@@ -129,10 +129,10 @@ public class OperationMirror implements Mirror {
      * {@return the internal configuration of operation.}
      * 
      * @throws IllegalStateException
-     *             if {@link #initialize(OperationSetup)} has not been called.
+     *             if {@link #initialize(BeanOperationSetup)} has not been called.
      */
-    private OperationSetup operation() {
-        OperationSetup o = operation;
+    private BeanOperationSetup operation() {
+        BeanOperationSetup o = operation;
         if (o == null) {
             throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");

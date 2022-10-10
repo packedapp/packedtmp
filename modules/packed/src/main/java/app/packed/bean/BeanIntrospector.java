@@ -293,6 +293,7 @@ public abstract class BeanIntrospector {
     // Saa kan vi strippe af paa BeanVariable
     // Saa bliver BeanVariable
 
+    // Can be on the bean. Or on a composite.
     public sealed interface OnBindingHook permits PackedOnBindingHook {
 
         // Hmm idk about the unwrapping and stuff here

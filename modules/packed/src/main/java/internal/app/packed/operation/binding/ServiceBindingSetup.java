@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package internal.app.packed.operation.binding;
 
-import java.util.List;
-
-import app.packed.operation.BindingMirror;
+import internal.app.packed.operation.BeanOperationSetup;
 
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
+public final class ServiceBindingSetup extends BindingSetup {
 
-    public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
+    /**
+     * @param beanOperation
+     * @param index
+     */
+    public ServiceBindingSetup(BeanOperationSetup beanOperation, int index) {
+        super(beanOperation, index);
     }
 
-    // Tror ikke laengere vi bliver resolved som en compond.
-    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-    public boolean isFuncionalInterface() {
-        throw new UnsupportedOperationException();
-    }
 }

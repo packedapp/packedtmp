@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package internal.app.packed.operation.binding;
 
-import java.util.List;
-
-import app.packed.operation.BindingMirror;
+import app.packed.base.Nullable;
+import internal.app.packed.operation.BeanOperationSetup;
 
 /**
- * A composite binding mirror
+ * A binding to a constant.
  */
-public class CompositeBindingMirror extends BindingMirror {
+public final class ConstantBindingSetup extends BindingSetup {
 
-    public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
+    public ConstantBindingSetup(BeanOperationSetup operation, int index, Object constant) {
+        super(operation, index);
+        this.constant = constant;
     }
 
-    // Tror ikke laengere vi bliver resolved som en compond.
-    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-    public boolean isFuncionalInterface() {
-        throw new UnsupportedOperationException();
-    }
+    /** The constant that was bound. */
+    @Nullable
+    public final Object constant;
 }

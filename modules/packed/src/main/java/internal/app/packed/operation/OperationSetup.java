@@ -15,75 +15,28 @@
  */
 package internal.app.packed.operation;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.util.function.Supplier;
-
-import app.packed.operation.InvocationType;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.util.LookupUtil;
-import internal.app.packed.util.ThrowableUtil;
 
-/** Build-time configuration of an operation. */
-public final class OperationSetup {
+/**
+ *
+ */
+public sealed abstract class OperationSetup permits BeanOperationSetup, DynamicBindingOperationSetup {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
-            void.class, OperationSetup.class);
+    /** An empty array of {@code BindingSetup}. */
+    private static final BindingSetup[] EMPTY = new BindingSetup[0];
 
     /** The bean that defines the operation. */
     public final BeanSetup bean;
-
+    
     /** Any binding for the operation. {@code null} represents an unbound parameter. */
     public final BindingSetup[] bindings;
 
-    /** The extension that operates the operation. MethodHandles will be generated relative to this. */
-    public final ExtensionSetup operator;
-
-    /** The invocation type of the operation. */
-    public final InvocationType invocationType;
-
-    /** Whether or not an invoker has been computed */
-    boolean isComputed;
-
-    /** Supplies a mirror for the operation */
-    Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
-
-    /** The target of the operation. */
-    public final OperationTarget target;
-
-    /** The type of the operation. */
-    public final OperationType type;
-
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationType invocationType, OperationTarget target) {
+    protected OperationSetup(BeanSetup bean, int count) {
         this.bean = bean;
-        this.type = type;
-        this.target = target;
-        this.invocationType = requireNonNull(invocationType, "invocationType is null");
-        this.operator = operator;
-        this.bindings = new BindingSetup[type.parameterCount()];
+        this.bindings = count == 0 ? EMPTY : new BindingSetup[count];
     }
-
-    /** {@return a new mirror.} */
-    public OperationMirror mirror() {
-        // Create a new OperationMirror
-        OperationMirror mirror = mirrorSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + OperationMirror.class.getSimpleName() + " instance");
-        }
-
-        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
-        try {
-            MH_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
-    }
+    
+    public abstract OperationMirror mirror();
 }

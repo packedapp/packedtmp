@@ -13,24 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package internal.app.packed.operation;
 
-import java.util.List;
-
-import app.packed.operation.BindingMirror;
+import app.packed.operation.OperationMirror;
 
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
+// Som jeg kan se kan vi ikke faa cirkler her...
+// Vi aldrig exposer et result som kan bruges af andre
+// Vi tillader kun args, contexts, services
 
-    public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
+public final class DynamicBindingOperationSetup extends OperationSetup {
+
+    public final BeanOperationSetup boss;
+
+    /**
+     * @param bean
+     * @param count
+     */
+    protected DynamicBindingOperationSetup(BeanOperationSetup boss, int count) {
+        super(boss.bean, count);
+        this.boss = boss;
     }
 
-    // Tror ikke laengere vi bliver resolved som en compond.
-    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-    public boolean isFuncionalInterface() {
+    /** {@inheritDoc} */
+    @Override
+    public OperationMirror mirror() {
         throw new UnsupportedOperationException();
     }
 }

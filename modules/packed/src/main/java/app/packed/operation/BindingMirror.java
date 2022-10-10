@@ -92,13 +92,13 @@ public class BindingMirror implements Mirror {
 
     /** {@return the operation that declares this binding.} */
     public OperationMirror operation() {
-        return binding().operation.mirror();
+        return binding().beanOperation.mirror();
     }
 
     /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
-        return b.operation.type.parameter(b.index);
+        return b.beanOperation.type.parameter(b.index);
     }
 }
 //; // What are we having injected... Giver det mening for functions????
