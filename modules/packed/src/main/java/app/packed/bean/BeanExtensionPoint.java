@@ -2,6 +2,7 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanHandle.LifetimeConf;
@@ -190,6 +191,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     // BeanExtensionPoint.factoryOf(MyBean.class).bind("asdsad")
     @SuppressWarnings("unchecked")
     public static <T> Op<T> factoryOf(Class<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> Op<T> factoryOf(Class<T> implementation, Lookup lookup) {
         requireNonNull(implementation, "implementation is null");
         return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
     }

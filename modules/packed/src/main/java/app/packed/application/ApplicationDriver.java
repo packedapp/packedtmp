@@ -153,7 +153,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     }
 
     static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<A> wrapperType) {
-        return builder(BeanExtensionPoint.factoryOf(wrapperType));
+        return builder(BeanExtensionPoint.factoryOf(wrapperType, caller));
     }
 
     static <A> Builder<A> builder(Op<A> wrapperFactory) {
@@ -303,14 +303,17 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     // Ville jo vaere fedt at genbruge den for ikke application-drivere.
     // Apps on Apps.
-    public final class Composer extends AbstractComposer {
-        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer> action, Wirelet... wirelets) {
+    
+    // Den fungere bare ikke geniferciret
+    public final class Composer<A> extends AbstractComposer {
+
+        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer<A>> action, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
         /// Hmm interessant
         // fungere dog ikke super godt mht til den generiske parameter
-        static ApplicationDriver<Void> of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
+        static ApplicationDriver<Void> of(ComposerAction<? super Composer<Void>> action, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
     }

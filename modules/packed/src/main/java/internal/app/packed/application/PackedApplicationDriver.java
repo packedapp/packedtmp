@@ -316,21 +316,23 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
      */
-    public static final class SingleShotApplicationImage<A> extends AtomicReference<ReusableApplicationImage<A>> implements ApplicationLauncher<A> {
+    public static final class SingleShotApplicationImage<A> implements ApplicationLauncher<A> {
 
-        private static final long serialVersionUID = 1L;
+        private final AtomicReference<ReusableApplicationImage<A>> ref;
 
         SingleShotApplicationImage(PackedApplicationDriver<A> driver, ApplicationSetup application) {
-            super(new ReusableApplicationImage<>(driver, application));
+            ref = new AtomicReference<>(new ReusableApplicationImage<>(driver, application));
         }
-        
+
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
-            ReusableApplicationImage<A> img = getAndSet(null);
+            ReusableApplicationImage<A> img = ref.getAndSet(null);
             if (img == null) {
                 throw new IllegalStateException("This image has already been used");
             }
+            // Not sure we can GC anything here
+            // Think we need to extract a launcher and call it
             return img.launch(wirelets);
         }
     }
@@ -338,7 +340,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /**
      * Implementation of {@link ApplicationLauncher} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}.
      */
-    public /* primitive */ record ReusableApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationLauncher<A> {
+    public /* primitive */ record ReusableApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
+            implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */
         @Override
