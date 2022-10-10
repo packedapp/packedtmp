@@ -197,7 +197,6 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @throws UnsupportedOperationException
          *             if {@code void} bean class
          */
- 
         static Option nonUnique() {
             return InstallerOption.NON_UNIQUE;
         }

@@ -193,88 +193,56 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 }
 
-class Sandbox {
+// The problem is when we start calling methods such as .provide()
+// It doesn't really work to call such methods more than once.
+// Or at least the logic to ignore subsequent calls would be a bit annoying
 
-    // should not call anything on the returned bean
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
-        throw new UnsupportedOperationException();
-    }
 
-    <T> ExtensionBeanConfiguration<T> installMany(Class<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    <T> ExtensionBeanConfiguration<T> installMany(Op<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    <T> ExtensionBeanConfiguration<T> installManyInstance(T instance) {
-        throw new UnsupportedOperationException();
-    }
-
-    <T> ExtensionBeanConfiguration<T> installManyLazy(Class<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    <T> ExtensionBeanConfiguration<T> installManyLazy(Op<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    // The problem is when we start calling methods such as .provide()
-    // It doesn't really work to call such methods more than once.
-    // Or at least the logic to ignore subsequent calls would be a bit annoying
-
-    <T> ExtensionBeanConfiguration<T> installStatic(Class<T> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    // I don't think we will use it
+// I don't think we will use it
 //
-//    /**
-//     * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
-//     * literals that are manually constructed.
-//     */
-//    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+///**
+// * A cache of factories used by {@link #of(TypeToken)}. This cache is only used by subclasses of TypeLiteral, never
+// * literals that are manually constructed.
+// */
+//private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
 //
-//        /** A type variable extractor. */
-//        private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
+//    /** A type variable extractor. */
+//    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 //
-//        /** {@inheritDoc} */
-//        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
-//            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-//            TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
-//            return new ExecutableFactory<>(tl, tl.rawType());
-//        }
-//    };
-
-    /**
-     * This method is equivalent to {@link #of(Class)} except taking a type literal.
-     *
-     * @param <T>
-     *            the implementation type
-     * @param implementation
-     *            the implementation type
-     * @return a factory for the specified implementation type
-     */
-//    // Hmm vi har jo ikke parameterized beans???
-//    // Ved ikke om vi skal droppe den...
-//    public static <T> Op<T> defaultFactoryFor(TypeToken<T> implementation) {
-//        // Can cache it with a Class[] array corresponding to type parameters...
-//        requireNonNull(implementation, "implementation is null");
-//        if (!implementation.isCanonicalized()) {
-//            // We cache factories for all "new TypeToken<>(){}"
-//            // return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
-//            throw new UnsupportedOperationException();
-//        }
-//        Type t = implementation.type();
-//        if (t instanceof Class<?> cl) {
-//            return (Op<T>) BeanExtensionPoint.factoryOf(cl);
-//        } else {
-//            return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
-//        }
+//    /** {@inheritDoc} */
+//    protected ExecutableFactory<?> computeValue(Class<?> implementation) {
+//        Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
+//        TypeToken<?> tl = BasePackageAccess.base().toTypeLiteral(t);
+//        return new ExecutableFactory<>(tl, tl.rawType());
 //    }
-}
+//};
 
+///**
+// * This method is equivalent to {@link #of(Class)} except taking a type literal.
+// *
+// * @param <T>
+// *            the implementation type
+// * @param implementation
+// *            the implementation type
+// * @return a factory for the specified implementation type
+// */
+//// Hmm vi har jo ikke parameterized beans???
+//// Ved ikke om vi skal droppe den...
+//public static <T> Op<T> defaultFactoryFor(TypeToken<T> implementation) {
+//    // Can cache it with a Class[] array corresponding to type parameters...
+//    requireNonNull(implementation, "implementation is null");
+//    if (!implementation.isCanonicalized()) {
+//        // We cache factories for all "new TypeToken<>(){}"
+//        // return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+//        throw new UnsupportedOperationException();
+//    }
+//    Type t = implementation.type();
+//    if (t instanceof Class<?> cl) {
+//        return (Op<T>) BeanExtensionPoint.factoryOf(cl);
+//    } else {
+//        return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation.rawType());
+//    }
+//}
 //
 //public <B extends BeanConfiguration> B fullAccess(B beanConfiguration) {
 //  // Tror vi require en annoteringen...

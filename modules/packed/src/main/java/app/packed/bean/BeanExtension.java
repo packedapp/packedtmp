@@ -76,26 +76,57 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new ProvideableBeanConfiguration<>(handle);
     }
 
-    public BeanConfiguration installLazy(Class<?> implementation) {
-        BeanHandle<?> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
-        return new BeanConfiguration(handle);
+    public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
+        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
-    public BeanConfiguration installLazy(Op<?> op) {
-        BeanHandle<?> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
-        return new BeanConfiguration(handle);
+    public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
+        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
+    /**
+     * Installs a new {@link BeanKind#STATIC static} bean with the specified implementation as the
+     * {@link BeanConfiguration#beanClass() bean class}.
+     * 
+     * @param implementation
+     *            the static bean class
+     * @return a configuration for the bean
+     * @throws MultipleBeanOfSameTypeDefinedException
+     *             if there other beans of the same type that has already been installed
+     */
     public BeanConfiguration installStatic(Class<?> implementation) {
         BeanHandle<?> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
         return new BeanConfiguration(handle);
     }
 
+    // Vi skal have 5 af dem
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
         BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, Option.nonUnique());
         return new ProvideableBeanConfiguration<>(handle);
     }
 
+    public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
+        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, Option.nonUnique());
+        return new ProvideableBeanConfiguration<>(handle);
+    }
+    
+    public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
+        BeanHandle<T> handle = PackedBeanHandle.installInstance(extensionSetup, container.realm, null, instance, Option.nonUnique());
+        return new ProvideableBeanConfiguration<>(handle);
+    }
+
+    public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
+        BeanHandle<T> handle = PackedBeanHandle.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, Option.nonUnique());
+        return new ProvideableBeanConfiguration<>(handle);
+    }
+
+    public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
+        BeanHandle<T> handle = PackedBeanHandle.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, Option.nonUnique());
+        return new ProvideableBeanConfiguration<>(handle);
+    }
+    
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror newExtensionMirror() {
