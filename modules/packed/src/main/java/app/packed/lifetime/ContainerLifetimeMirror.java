@@ -16,9 +16,13 @@
 package app.packed.lifetime;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
@@ -26,30 +30,38 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 /**
  *
  */
-// Do we ever return empty trees? Det tror jeg ikke.
+public final class ContainerLifetimeMirror extends LifetimeMirror {
 
-// Fx en Lifetime er jo altid et component tree...
-
-// TreeView
-
-//// TreeView<ComponentMirror>
-//// TreeView<ContainerMirror>
-//// TreeView<T extends Extension<?>>
-
-// Maaske er den bedre i .container?
-
-public class ContainerLifetimeMirror extends LifetimeMirror {
-
+    /** {@return the container} */
     public ContainerMirror container() {
         return containerLifetime().container.mirror();
     }
-    
+
     private ContainerLifetimeSetup containerLifetime() {
         return (ContainerLifetimeSetup) lifetime();
     }
 
-//    Stream<LifetimeOriginMirror> stream();
-    
+    public Map<ContainerMirror, Collection<BeanMirror>> elements() {
+        // alternative BiStream
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * If this is container or application lifetime and it has a container lifetime wrapper bean. Returns the bean,
+     * otherwise empty.
+     * <p>
+     * A wrapper and {@link #managedByBean()} is always two different beans.
+     * 
+     * @return
+     */
+    public Optional<BeanMirror> holderBean() { // Do we need a ContainerWrapperBeanMirror?
+        return Optional.empty();
+    }
+
+    public boolean isRoot() {
+        return lifetime().parent == null;
+    }
+
     /**
      * @return
      * 
@@ -65,8 +77,20 @@ public class ContainerLifetimeMirror extends LifetimeMirror {
     }
 
     /** {@return the root of the tree.} */
-   // LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
+    // LifetimeOriginMirror root(); // Optional<CM> if we have empty trees. Which we probably have with filtering
 }
+//Do we ever return empty trees? Det tror jeg ikke.
+
+//Fx en Lifetime er jo altid et component tree...
+
+//TreeView
+
+////TreeView<ComponentMirror>
+////TreeView<ContainerMirror>
+////TreeView<T extends Extension<?>>
+
+//Maaske er den bedre i .container?
+
 //Her er taenkt paa en Path fra From to To
 //Minder maaske lidt for meget om ComponnetMirror.Relation
 //interface ComponentMirrorPath extends Iterable<ComponentMirror> {

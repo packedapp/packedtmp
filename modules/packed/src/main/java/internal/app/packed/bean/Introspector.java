@@ -16,6 +16,7 @@
 package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,6 +39,8 @@ import app.packed.container.InternalExtensionException;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.util.ClassUtil;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
  * This class is responsible for finding fields, methods, parameters that have hook annotations.
@@ -72,6 +75,14 @@ public final class Introspector {
         this.oc = OpenClass.of(MethodHandles.lookup(), beanClass);
     }
 
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "newBeanIntrospector", BeanIntrospector.class);
+
+    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
+            BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanSetup.class);
+
     private ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
@@ -81,10 +92,18 @@ public final class Introspector {
             if (beanHandleIntrospector != null && bean.operator() == extensionType) {
                 // A special introspector has been set, don't
                 introspector = beanHandleIntrospector;
-                extension.initializeBeanIntrospector(introspector, bean);
+                try {
+                    MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
+                } catch (Throwable t) {
+                    throw ThrowableUtil.orUndeclared(t);
+                }
             } else {
-                // Call Extension#newBeanIntrospector
-                introspector = extension.newBeanIntrospector(bean);
+                try {
+                    introspector = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_INTROSPECTOR.invokeExact(extension.instance());
+                    MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
+                } catch (Throwable t) {
+                    throw ThrowableUtil.orUndeclared(t);
+                }
             }
 
             // Notify the bean introspector that is being used

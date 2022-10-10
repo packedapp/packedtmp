@@ -18,7 +18,6 @@ package app.packed.container;
 import app.packed.base.Nullable;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedExtensionNavigator;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /** A helper class for creating new {@link ExtensionMirror} instances. */
@@ -84,7 +83,7 @@ final class ContainerMirrorHelper {
             }
         }
 
-        mirror.initialize(new PackedExtensionNavigator(extension, extension.extensionType));
+        mirror.initialize(new ExtensionNavigatorImpl(extension, extension.extensionType));
         return mirror;
     }
 

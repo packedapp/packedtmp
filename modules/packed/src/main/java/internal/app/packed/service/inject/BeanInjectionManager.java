@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
-import internal.app.packed.bean.BeanKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandleInstaller;
 import internal.app.packed.container.ExtensionRealmSetup;
@@ -50,8 +50,10 @@ public final class BeanInjectionManager implements DependencyProducer {
     public BeanInjectionManager(BeanSetup bean, PackedBeanHandleInstaller<?> driver) {
         if (driver.sourceKind == BeanSourceKind.INSTANCE) {
             this.singletonAccessor = new Accessor.ConstantAccessor(driver.source);
-        } else if (driver.beanKind() == BeanKind.SINGLETON) {
+        } else if (driver.beanKind() == BeanKind.CONTAINER) {
             this.singletonAccessor = bean.container.lifetime.pool.reserve(driver.beanClass);
+        } else if (driver.beanKind() == BeanKind.LAZY) {
+            throw new UnsupportedOperationException();
         } else {
             this.singletonAccessor = null;
         }
@@ -59,7 +61,7 @@ public final class BeanInjectionManager implements DependencyProducer {
         // Can only register a single extension bean of a particular type
         if (bean.realm instanceof ExtensionRealmSetup e) {
             ExtensionInjectionManager eim = bean.installer.extensionOwner.injectionManager;
-            if (driver.beanKind() == BeanKind.SINGLETON) {
+            if (driver.beanKind() == BeanKind.CONTAINER) {
                 eim.addBean(bean);
             }
             parent = eim;

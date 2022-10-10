@@ -19,10 +19,17 @@ import app.packed.bean.BeanMirror;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 
 /**
- *
+ * A bean lifetime represents a bean whose lifetime is independent of its container's lifetime.
+ * <p>
+ * A bean lifetime always has a container lifetime as a parent
+ * 
+ * <p>
+ * Static and functional beans never have their own lifetime but will always their containers lifetime.
+ * As they are valid as long as the container exists.
  */
-public class BeanLifetimeMirror extends LifetimeMirror {
+public final class BeanLifetimeMirror extends LifetimeMirror {
 
+    /** {@return the bean.} */
     public BeanMirror bean() {
         return beanLifetime().bean.mirror();
     }

@@ -13,7 +13,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -168,7 +168,7 @@ public class ContainerMirror implements Mirror {
     }
 
     /** {@return the containers's lifetime.} */
-    public LifetimeMirror lifetime() {
+    public ContainerLifetimeMirror lifetime() {
         return container().lifetime().mirror();
     }
 

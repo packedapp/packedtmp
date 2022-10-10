@@ -378,7 +378,9 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             ExtensionSetup extensionParent = parent == null ? null : parent.useExtensionSetup(extensionClass, requestedByExtension);
 
             // Create the extension. (This will also add an entry to #extensions)
-            extension = ExtensionSetup.newExtension(extensionParent, this, extensionClass);
+            
+            extension = new ExtensionSetup(extensionParent, this, extensionClass);
+            extension.initialize();
         }
         return extension;
     }

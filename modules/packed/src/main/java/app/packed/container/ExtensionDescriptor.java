@@ -31,7 +31,7 @@ import internal.app.packed.container.ExtensionModel;
  * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
  * The information provided by this descriptor are static information about the extension itself.
  */
-public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> permits ExtensionModel {
+public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescriptor>permits ExtensionModel {
 
     /**
      * In order to xxxx is a total order between all loaded extension forms..
@@ -57,6 +57,10 @@ public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescript
 
     /** {@return an immutable unordered set containing every dependency the extension declares.} */
     Set<Class<? extends Extension<?>>> dependencies();
+
+    default boolean dependsOn(Class<? extends Extension<?>> extension) {
+        return dependencies().contains(extension);
+    }
 
     /**
      * Returns the full name of the extension.

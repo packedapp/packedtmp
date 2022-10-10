@@ -18,6 +18,12 @@ package app.packed.lifetime;
 /**
  *
  */
+
+// ROOT -> Er nok Family root
 public enum LifetimeKind {
-    EAGER, LAZY, MANY;
+    // Eager -> (root?)
+    
+    // Faktum
+    
+    ROOT, LAZY, MANY;
 }

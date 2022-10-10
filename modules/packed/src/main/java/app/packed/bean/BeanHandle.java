@@ -161,9 +161,9 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * If the configuration is not needed before introspection the functionality such be present on {@code BeanHandle}
      * instead.
      * 
-     * @see BeanExtensionPoint#newHandle()
+     * @see BeanExtensionPoint#newFunctionalBean()
      * @see BeanExtensionPoint#beanInstallerFromClass(Class)
-     * @see BeanExtensionPoint#beanInstallerFromOp(Op)
+     * @see BeanExtensionPoint#newHandleFromOp(Op)
      * @see BeanExtensionPoint#beanBuilderFromInstance(Object)
      */
     // Could have, introspectionDisable()/noIntrospection

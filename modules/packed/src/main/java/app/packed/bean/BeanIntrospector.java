@@ -51,6 +51,7 @@ import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectorOnField;
 import internal.app.packed.bean.IntrospectorOnMethod;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /**
@@ -96,11 +97,11 @@ public abstract class BeanIntrospector {
      * @throws IllegalStateException
      *             if called more than once
      */
-    final void initialize(ExtensionDescriptor extension, BeanSetup bean) {
+    final void initialize(ExtensionSetup operator, BeanSetup bean) {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
-        this.setup = new Setup(extension, bean);
+        this.setup = new Setup(operator.model, bean);
     }
 
     public void onBindingHook(OnBindingHook dependency) {}

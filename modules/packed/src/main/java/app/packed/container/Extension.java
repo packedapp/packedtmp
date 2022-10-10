@@ -42,7 +42,9 @@ import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionRealmSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.container.PackedExtensionNavigator;
+import internal.app.packed.container.PackedWireletSelection;
+import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StackWalkerUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -154,7 +156,7 @@ public abstract class Extension<E extends Extension<E>> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionNavigator<E> navigator() {
         ExtensionSetup s = setup;
-        return new PackedExtensionNavigator(s, s.extensionType);
+        return new ExtensionNavigatorImpl(s, s.extensionType);
     }
 
     /**
@@ -292,7 +294,24 @@ public abstract class Extension<E extends Extension<E>> {
      *             wirelet class is not a proper subclass of ContainerWirelet.
      */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        return setup.selectWirelets(wireletClass);
+        // Check that we are a proper subclass of ExtensionWirelet
+        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
+
+        // We only allow selection of wirelets in the same module as the extension itself
+        // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
+        if (getClass().getModule() != wireletClass.getModule()) {
+            throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
+                    + /* simple extension name */ setup.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
+        }
+
+        // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
+        // been consumed
+        WireletWrapper wirelets = setup.container.wirelets;
+        if (wirelets == null || wirelets.unconsumed() == 0) {
+            return WireletSelection.of();
+        }
+
+        return new PackedWireletSelection<>(wirelets, wireletClass);
     }
 
     /**
@@ -317,17 +336,17 @@ public abstract class Extension<E extends Extension<E>> {
     protected final <P extends ExtensionPoint<?>> P use(Class<P> extensionPointClass) {
         requireNonNull(extensionPointClass, "extensionPointClass is null");
 
-        // Extract the extension class from ExtensionPoint<E> 
+        // Extract the extension class from ExtensionPoint<E>
         Class<? extends Extension<?>> useExtension = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_MAPPER.get(extensionPointClass);
 
         // Check that the extension of requested extension point's is a direct dependency of the requesting extension
-        if (!setup.model.dependencies().contains(useExtension)) {
+        if (!setup.model.dependsOn(useExtension)) {
             // Special message if you try to use your own extension point
             if (useExtension == getClass()) {
                 throw new InternalExtensionException(useExtension.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
             }
-            throw new InternalExtensionException(getClass().getSimpleName() + " must declare " + format(useExtension)
-                    + " as a dependency in order to use " + extensionPointClass);
+            throw new InternalExtensionException(
+                    getClass().getSimpleName() + " must declare " + format(useExtension) + " as a dependency in order to use " + extensionPointClass);
         }
 
         ExtensionSetup extension = setup.container.useExtensionSetup(useExtension, setup);

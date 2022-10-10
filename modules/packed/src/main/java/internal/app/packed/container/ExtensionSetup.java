@@ -7,36 +7,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanIntrospector;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.service.inject.ExtensionInjectionManager;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Build-time configuration of an extension. */
 public final class ExtensionSetup {
-
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_EXTENSION_NEW_BEAN_SCANNER = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "newBeanIntrospector", BeanIntrospector.class);
-
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
-    private static final MethodHandle MH_BEAN_SCANNER_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanIntrospector.class, "initialize",
-            void.class, ExtensionDescriptor.class, BeanSetup.class);
-
-    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onApplicationClose", void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onAssemblyClose", void.class);
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
@@ -90,7 +68,7 @@ public final class ExtensionSetup {
      * @param extensionType
      *            the type of extension this setup class represents
      */
-    private ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
+    ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         this.parent = parent;
@@ -112,13 +90,7 @@ public final class ExtensionSetup {
         this.model = requireNonNull(extensionRealm.extensionModel);
     }
 
-    static ExtensionSetup newExtension(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionClass) {
-        ExtensionSetup es = new ExtensionSetup(parent, container, extensionClass);
-        es.initialize();
-        return es;
-    }
-
-    private void initialize() {
+    void initialize() {
         instance = model.newInstance(this);
 
         // Add the extension to the container's map of extensions
@@ -162,67 +134,5 @@ public final class ExtensionSetup {
      */
     public static ExtensionSetup crack(Extension<?> extension) {
         return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
-    }
-
-    public BeanIntrospector newBeanIntrospector(BeanSetup bean) {
-        BeanIntrospector introspector;
-        try {
-            introspector = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_SCANNER.invokeExact(instance);
-            MH_BEAN_SCANNER_INITIALIZE.invokeExact(introspector, (ExtensionDescriptor) model, bean);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        return introspector;
-    }
-
-    public void initializeBeanIntrospector(BeanIntrospector introspector, BeanSetup bean) {
-        try {
-            MH_BEAN_SCANNER_INITIALIZE.invokeExact(introspector, (ExtensionDescriptor) model, bean);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    /**
-     * Invokes {@link Extension#onApplicationClose()}.
-     * <p>
-     * The extension is completed once the realm the container is part of is closed.
-     */
-    void onApplicationClose() {
-        try {
-            MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    void onUserClose() {
-        try {
-            MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
-    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        // Check that we are a proper subclass of ExtensionWirelet
-        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass, "wireletClass");
-
-        // We only allow selection of wirelets in the same module as the extension itself
-        // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
-        Module m = extensionType.getModule();
-        if (m != wireletClass.getModule()) {
-            throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + m.getName() + ") as '"
-                    + /* simple extension name */ model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
-        }
-
-        // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
-        // been consumed
-        WireletWrapper wirelets = container.wirelets;
-        if (wirelets == null || wirelets.unconsumed() == 0) {
-            return WireletSelection.of();
-        }
-
-        return new PackedWireletSelection<>(wirelets, wireletClass);
     }
 }

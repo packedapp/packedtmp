@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.container.PackedExtensionNavigator;
 
 /**
  * Provides generic information about the usage of an extension.
@@ -53,10 +52,10 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /**
      * The extensions that are being mirrored. Is initially null but populated via
-     * {@link #initialize(PackedExtensionNavigator)}
+     * {@link #initialize(ExtensionNavigatorImpl)}
      */
     @Nullable
-    private PackedExtensionNavigator<E> navigator;
+    private ExtensionNavigatorImpl<E> navigator;
 
     /**
      * Create a new extension mirror.
@@ -156,7 +155,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(PackedExtensionNavigator<E> extensions) {
+    final void initialize(ExtensionNavigatorImpl<E> extensions) {
         if (this.navigator != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
@@ -170,7 +169,7 @@ public class ExtensionMirror<E extends Extension<E>> implements Mirror {
      *             if called from the constructor of the mirror
      */
     protected final ExtensionNavigator<E> navigator() {
-        PackedExtensionNavigator<E> n = navigator;
+        ExtensionNavigatorImpl<E> n = navigator;
         if (n == null) {
             throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");

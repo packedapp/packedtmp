@@ -33,6 +33,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
@@ -48,6 +49,10 @@ public final class AssemblySetup extends RealmSetup {
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             AssemblySetup.class, ContainerConfiguration.class);
+    
+    /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onAssemblyClose", void.class);
 
     /** The application that is being built. */
     public final ApplicationSetup application;
@@ -134,7 +139,7 @@ public final class AssemblySetup extends RealmSetup {
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
                 list.add(e.extensionRealm);
-                e.onUserClose();
+                onUserClose(e.instance());
                 e = extensions.pollFirst();
             }
 
@@ -152,15 +157,25 @@ public final class AssemblySetup extends RealmSetup {
             // Similar to above, except we do not close extensions application-wide
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
-                e.onUserClose();
+                onUserClose(e.instance());
                 e = extensions.pollFirst();
             }
         }
     }
+    
 
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         return new BuildtimeAssemblyMirror(this);
+    }
+
+
+    private void onUserClose(Extension<?> instance) {
+        try {
+            MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
     }
 
     /** {@inheritDoc} */

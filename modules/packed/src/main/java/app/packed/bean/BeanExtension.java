@@ -42,7 +42,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(extensionSetup, container.realm,null, implementation, true).kindSingleton().install();
+        BeanHandle<T> handle = PackedBeanHandleInstaller.ofClass(extensionSetup, container.realm, null, implementation, true).kindSingleton().install();
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -85,6 +85,7 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new BeanExtensionMirror();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected BeanExtensionPoint newExtensionPoint() {
         return new BeanExtensionPoint();

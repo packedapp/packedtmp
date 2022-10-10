@@ -205,13 +205,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().newHandleFromClass(implementation, true).kindUnmanaged().install();
+        BeanHandle<T> handle = bean().newManytonBean(implementation, true).kindUnmanaged().install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().beanInstallerFromOp(op).kindUnmanaged().install();
+        BeanHandle<T> handle = bean().newManytonBean(op).install();
         ProvideableBeanConfiguration<T> sbc = new ProvideableBeanConfiguration<T>(handle);
         return sbc.provide();
     }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,16 +22,15 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionDescriptor;
-import app.packed.container.ExtensionNavigator;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  *
- * @implNote It is important that this class implements equals/hashCode as this is used by equals/hashCode on ExtensionMirror.
+ * @implNote It is important that this class implements equals/hashCode as this is used by equals/hashCode on
+ *           ExtensionMirror.
  */
 // Should take current + root
-public record PackedExtensionNavigator<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionNavigator<T> {
+record ExtensionNavigatorImpl<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionNavigator<T> {
 
     /** {@inheritDoc} */
     @Override
@@ -56,7 +55,6 @@ public record PackedExtensionNavigator<T extends Extension<T>> (ExtensionSetup e
     public ExtensionDescriptor extensionDescriptor() {
         return extension.model;
     }
-    
 
     /** A pre-order iterator for a rooted extension tree. */
     static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {

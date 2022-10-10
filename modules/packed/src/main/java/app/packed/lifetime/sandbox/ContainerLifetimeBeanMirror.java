@@ -84,9 +84,6 @@ class ContainerLifetimeBeanMirror extends BeanMirror {
     // Og den sidste er bare selectOperationsOfType(LifetimeOperationMirror.class);
     // Skal have nogle bedre navne end managed
 
-    public OldLifetimeKind managesLifetimeKind() {
-        return managesLifetimes().iterator().next().lifetimeKind();
-    }
 
     /**
      * Returns a non-empty list of all the lifetime management operations this bean provide.

@@ -3,17 +3,14 @@ package app.packed.lifetime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
@@ -29,12 +26,7 @@ import internal.app.packed.lifetime.LifetimeSetup;
  * 
  */
 //https://thesaurus.plus/related/life_cycle/lifetime
-
-//Har vi ContainerLifetime/BeanLifetime???
-
-// Har svaert ved at forstille mig man kan customize denne?
-// StatelessLifetimeMirror, UnmanagedLifetimeMirror, ManagedLifetimeMirror????
-public abstract class LifetimeMirror implements Mirror {
+public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -48,22 +40,7 @@ public abstract class LifetimeMirror implements Mirror {
      * <p>
      * Subclasses should have a single package-protected constructor.
      */
-    public LifetimeMirror() {}
-
-    /**
-     * {@return the internal configuration of operation.}
-     * 
-     * @throws IllegalStateException
-     *             if {@link #initialize(ApplicationSetup)} has not been called.
-     */
-    LifetimeSetup lifetime() {
-        LifetimeSetup a = lifetime;
-        if (a == null) {
-            throw new IllegalStateException(
-                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
-        }
-        return a;
-    }
+    LifetimeMirror() {}
 
     /** {@inheritDoc} */
     @Override
@@ -91,6 +68,21 @@ public abstract class LifetimeMirror implements Mirror {
     }
 
     /**
+     * {@return the internal configuration of operation.}
+     * 
+     * @throws IllegalStateException
+     *             if {@link #initialize(ApplicationSetup)} has not been called.
+     */
+    LifetimeSetup lifetime() {
+        LifetimeSetup a = lifetime;
+        if (a == null) {
+            throw new IllegalStateException(
+                    "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
+        }
+        return a;
+    }
+
+    /**
      * If this lifetime is not stateless returns the bean that controls creation and destruction of the lifetime.
      * 
      * @return
@@ -98,23 +90,6 @@ public abstract class LifetimeMirror implements Mirror {
     public Optional<BeanMirror> managedByBean() {
         List<LifetimeOperationMirror> operations = operations();
         return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
-    }
-
-    /** {@return a stream of child lifetimes of this lifetime.} */
-    public Stream<LifetimeMirror> children() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * If this is container or application lifetime and it has a container lifetime wrapper bean. Returns the bean,
-     * otherwise empty.
-     * <p>
-     * A wrapper and {@link #managedByBean()} is always two different beans.
-     * 
-     * @return
-     */
-    public Optional<BeanMirror> wrapper() { // Do we need a ContainerWrapperBeanMirror?
-        return Optional.empty();
     }
 
     /**
@@ -134,22 +109,11 @@ public abstract class LifetimeMirror implements Mirror {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return all components that are part of the lifetime.} */
-    // A tree of containers and beans
-    // Maaske er det i virkeligheden bare en stream af componenter depth first
-    public ContainerLifetimeMirror components() {
-        throw new UnsupportedOperationException();
-    }
-
     // If has a holder
     // -- If is a bean -> Holder is in same container as the root of the lifetime
     // -- If is a non-root container -> Holder is in parent container
     // -- If is a non-root application -> Holder is in parent application
     // -- If a a root application -> Holder is a single bean in an bootstrap application
-
-    public OldLifetimeKind lifetimeKind() {
-        throw new UnsupportedOperationException();
-    }
 
     // Hvad med sync/async start/stop??? Det er externt bestemt
     /**
@@ -168,29 +132,10 @@ public abstract class LifetimeMirror implements Mirror {
     // Eller maaske ligger vi det bare paa launcheren
     // List<LifetimeManagementOperationMirror> managementOperations();
 
-    /** {@return the type of lifetime.} */
-    // Tror vi dropper den her. Og saa er application.container bare en container
-    public LifetimeOriginKind originKind() {
-        if (lifetime() instanceof ContainerLifetimeSetup c) {
-            return c.container.depth == 0 ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
-        }
-        return LifetimeOriginKind.BEAN;
-    }
-
     /** {@return any parent lifetime this lifetime might have.} */
-    public Optional<LifetimeMirror> parent() {
-        return lifetime().parent == null ? Optional.empty() : Optional.of(lifetime().parent.mirror());
+    public Optional<ContainerLifetimeMirror> parent() {
+        return Optional.ofNullable(lifetime().parent).map(e -> e.mirror());
     }
-
-    /**
-    *
-    */
-    // Er application bare det samme som en root container?
-    // Syntes maaske bare det er en masse is() metoder paa LifetimeMirror
-    // en mindre klasse
-    // isBeanOrigin(), isContainerOrigin, is ApplicationOrigin();
-
-    // Vi vil helst have at application.lifetime == application.container.lifetime...
 
     public enum LifetimeOriginKind {
 
@@ -228,6 +173,14 @@ public abstract class LifetimeMirror implements Mirror {
     // UNMANAGED (or Epheral)
 
 }
+///** {@return the type of lifetime.} */
+//// Tror vi dropper den her. Og saa er application.container bare en container
+//public LifetimeOriginKind originKind() {
+//  if (lifetime() instanceof ContainerLifetimeSetup c) {
+//      return c.container.depth == 0 ? LifetimeOriginKind.APPLICATION : LifetimeOriginKind.CONTAINER;
+//  }
+//  return LifetimeOriginKind.BEAN;
+//}
 
 //Kan man have Dependent beans... DVS beans
 

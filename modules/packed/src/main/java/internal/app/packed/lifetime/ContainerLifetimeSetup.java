@@ -59,6 +59,9 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         return l;
     }
 
+    public ContainerLifetimeMirror mirror() {
+        return (ContainerLifetimeMirror) super.mirror();
+    }
     /** {@inheritDoc} */
     @Override
     LifetimeMirror mirror0() {

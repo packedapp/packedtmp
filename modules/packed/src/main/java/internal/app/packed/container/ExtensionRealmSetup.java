@@ -17,8 +17,13 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
+import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A single instance of this class exists per extension per application.
@@ -28,6 +33,10 @@ import app.packed.container.UserOrExtension;
  * The actual tree is maintained in {@link ExtensionSetup}. This class just holds the root
  */
 public final class ExtensionRealmSetup extends RealmSetup {
+
+    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onApplicationClose", void.class);
 
     /** A model of the extension. */
     final ExtensionModel extensionModel;
@@ -53,7 +62,13 @@ public final class ExtensionRealmSetup extends RealmSetup {
     /** Closes the extension for configuration */
     void close() {
         // Let the extension do their final stuff
-        rootExtension.onApplicationClose();
+//        Invokes {@link Extension#onApplicationClose()}.
+        try {
+            MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(rootExtension.instance());
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+
         super.close();
     }
 

@@ -24,6 +24,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.Installer;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.operation.Op;
@@ -141,7 +142,8 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
         return this;
     }
 
-    public static <T> PackedBeanHandleInstaller<T> ofClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<T> clazz, boolean instantiate) {
+    public static <T> PackedBeanHandleInstaller<T> ofClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<T> clazz,
+            boolean instantiate) {
         requireNonNull(clazz, "clazz is null");
         // Hmm, vi boer vel checke et eller andet sted at Factory ikke producere en Class eller Factorys, eller void, eller xyz
         return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner, clazz, BeanSourceKind.CLASS, clazz, instantiate);
@@ -171,20 +173,20 @@ public final class PackedBeanHandleInstaller<T> implements BeanHandle.Installer<
     }
 
     public static PackedBeanHandleInstaller<?> ofNone(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner) {
-        return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner,  void.class, BeanSourceKind.NONE, null, false);
+        return new PackedBeanHandleInstaller<>(operator, realm, extensionOwner, void.class, BeanSourceKind.NONE, null, false);
     }
 
     /** {@inheritDoc} */
     @Override
     public Installer<T> kindUnmanaged() {
-        kind = BeanKind.UNMANAGED;
+        kind = BeanKind.MANYTON;
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public Installer<T> kindSingleton() {
-        kind = BeanKind.SINGLETON;
+        kind = BeanKind.CONTAINER;
         return this;
     }
 }

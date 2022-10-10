@@ -13,6 +13,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
+import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
@@ -97,6 +98,17 @@ public class BeanMirror implements Mirror {
     }
 
     /** {@return the bean's lifetime.} */
+    /**
+     * Returns the bean's lifetime.
+     * <p>
+     * This is either a {@link ContainerLifetimeMirror}
+     * if a single instance of the bean is created together with the container instance.
+     * Or if a functional or static bean.
+     * <p>
+     * A lazy bean or prototype bean will return 
+     * 
+     * @return the bean's lifetime
+     */
     public LifetimeMirror lifetime() {
         return bean().lifetime().mirror();
     }
@@ -104,8 +116,7 @@ public class BeanMirror implements Mirror {
     /**
      * Returns the name of this bean.
      * <p>
-     * If no name was explicitly set when the bean was configured. Packed will automatically assign an unique name to
-     * it.
+     * If no name was explicitly set when the bean was configured. Packed will automatically assign an unique name to it.
      *
      * @return the name of this bean
      */
@@ -180,7 +191,7 @@ public class BeanMirror implements Mirror {
         requireNonNull(operationType, "operationType is null");
         return StreamUtil.filterAssignable(operationType, operations());
     }
-    
+
     /**
      * Returns the type (class) of the bean.
      * <p>
