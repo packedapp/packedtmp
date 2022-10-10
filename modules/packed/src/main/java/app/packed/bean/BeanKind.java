@@ -21,6 +21,9 @@ public enum BeanKind {
 
     MANYTON;
     
+    // Maybe have Managed and Unmanaged anyways
+    // Managed as in maybe just partial managed
+    
     /** Once an instance of the bean has been initialized, Packed (or the extension) maintains no reference to it. */
     public boolean hasInstances() {
         return this != FUNCTIONAL && this != STATIC;
