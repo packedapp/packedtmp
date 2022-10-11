@@ -23,7 +23,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
 import internal.app.packed.service.ServiceManagerRequirementsSetup.Requirement;
-import internal.app.packed.service.build.ServiceSetup;
 import internal.app.packed.service.runtime.AbstractServiceLocator;
 import internal.app.packed.service.sandbox.Service;
 
@@ -79,12 +78,7 @@ public final class ContainerServiceBinder {
     public ServiceContract newServiceContract() {
         ServiceContract.Builder builder = ServiceContract.builder();
 
-        // Add exports
-        if (exports != null) {
-            for (ServiceSetup n : exports) {
-                builder.provide(n.key());
-            }
-        }
+        cim.container.serviceManager.exports.keySet().forEach(k -> builder.provide(k));
 
         // Add requirements (mandatory or optional)
         if (requirements != null && requirements.requirements != null) {
@@ -122,7 +116,6 @@ public final class ContainerServiceBinder {
         }
         return r;
     }
-    
 
     /** A service locator wrapping all exported services. */
     static final class ExportedServiceLocator extends AbstractServiceLocator {
