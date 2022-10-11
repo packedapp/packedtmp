@@ -110,7 +110,7 @@ public class BeanMirror implements Mirror {
      * @return the bean's lifetime
      */
     public LifetimeMirror lifetime() {
-        return bean().lifetime().mirror();
+        return bean().lifetime.mirror();
     }
 
     /**

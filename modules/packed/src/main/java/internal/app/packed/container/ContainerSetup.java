@@ -76,7 +76,7 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
      * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns a
      * deterministic view.
      */
-    // Or maybe extension types is always sorted??
+    // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /** The container's injection manager. */

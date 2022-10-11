@@ -14,7 +14,6 @@ import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.Option;
 import app.packed.bean.BeanIntrospector;
@@ -193,10 +192,6 @@ public final class BeanSetup implements BeanInfo {
         return realm.isCurrent(this);
     }
 
-    public LifetimeSetup lifetime() {
-        return lifetime;
-    }
-
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
         // Create a new BeanMirror
@@ -248,7 +243,7 @@ public final class BeanSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> operator() {
-        return props.operator() == null ? BeanExtension.class : props.operator().extensionType;
+        return props.operator().extensionType;
     }
 
     /** {@inheritDoc} */
