@@ -35,7 +35,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup;
-import internal.app.packed.operation.BeanOperationSetup.BeanFieldOperationSetup;
+import internal.app.packed.operation.BeanOperationSetup.BeanFieldAccessSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -70,7 +70,7 @@ public final class IntrospectorOnField implements OnFieldHook {
     }
 
     private BeanOperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
-        return introspector.bean.addOperation(new BeanFieldOperationSetup(introspector.bean, operator, invocationType, field, accessMode, mh));
+        return introspector.bean.addOperation(new BeanFieldAccessSetup(introspector.bean, operator, invocationType, field, accessMode, mh));
     }
 
     /** {@inheritDoc} */

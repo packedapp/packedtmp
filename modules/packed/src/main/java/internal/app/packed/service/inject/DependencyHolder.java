@@ -44,8 +44,8 @@ public final class DependencyHolder {
 
         this.provideAskey = provideAsKey;
         this.provideAsConstant = provideAsConstant;
-        this.isStatic = os.target.isStatic;
-        this.mh = os.target.methodHandle;
+        this.isStatic = os.isStatic();
+        this.mh = os.methodHandle();
     }
 
     public final DependencyProducer[] createProviders() {

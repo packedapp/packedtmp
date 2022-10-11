@@ -20,9 +20,12 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
- * Represents a single invokable operation.
+ * Represents a single operation.
  */
-public sealed abstract class OperationSetup permits BeanOperationSetup, DynamicBindingOperationSetup {
+
+// Hvad er en operation? En operation er noget der skal have en OperationMirror
+
+public sealed abstract class OperationSetup permits BeanOperationSetup, FusingOperationSetup, CompositeOperationSetup {
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] EMPTY = new BindingSetup[0];

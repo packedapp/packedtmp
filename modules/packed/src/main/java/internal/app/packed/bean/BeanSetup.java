@@ -180,7 +180,7 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         return new PackedBeanHandle<>(bean);
     }
 
-    public BeanOperationSetup addOperation(BeanOperationSetup operation) {
+    public <T extends BeanOperationSetup> T addOperation(T operation) {
         operations.add(requireNonNull(operation));
         return operation;
     }

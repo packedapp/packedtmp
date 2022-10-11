@@ -13,31 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package internal.app.packed.operation.newInject;
 
-import app.packed.operation.OperationMirror;
+import internal.app.packed.operation.BeanOperationSetup;
 
 /**
  *
  */
-public final class CompositeOperationSetup extends OperationSetup {
-
-    final BeanOperationSetup bos;
-
-    // Are composite can be embedded in another composite..
-    // Should we keep track of this?
-    /**
-     * @param bean
-     * @param count
-     */
-    protected CompositeOperationSetup(BeanOperationSetup bos, int count) {
-        super(bos.bean, count);
-        this.bos = bos;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OperationMirror mirror() {
-        return bos.mirror();
-    }
+public class ServiceProvidingOperation {
+    
+    // The operation that provides the service
+    // These are always non-leaf, and the only interesting nodes
+    // When look for circles in the dependency graph
+    
+    // Of course also the container
+    BeanOperationSetup provider;
 }

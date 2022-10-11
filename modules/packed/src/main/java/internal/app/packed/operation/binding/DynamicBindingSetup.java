@@ -15,7 +15,7 @@
  */
 package internal.app.packed.operation.binding;
 
-import internal.app.packed.operation.DynamicBindingOperationSetup;
+import internal.app.packed.operation.FusingOperationSetup;
 
 /**
  *
@@ -26,7 +26,7 @@ public final class DynamicBindingSetup extends BindingSetup {
      * @param beanOperation
      * @param index
      */
-    public DynamicBindingSetup(DynamicBindingOperationSetup dynamicOperation, int index) {
-        super(dynamicOperation.boss, index);
+    public DynamicBindingSetup(FusingOperationSetup dynamicOperation, int index) {
+        super(dynamicOperation.bos, index);
     }
 }

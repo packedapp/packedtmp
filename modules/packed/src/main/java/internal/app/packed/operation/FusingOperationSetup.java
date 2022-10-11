@@ -16,6 +16,7 @@
 package internal.app.packed.operation;
 
 import app.packed.operation.OperationMirror;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  *
@@ -23,18 +24,20 @@ import app.packed.operation.OperationMirror;
 // Som jeg kan se kan vi ikke faa cirkler her...
 // Vi aldrig exposer et result som kan bruges af andre
 // Vi tillader kun args, contexts, services
+public final class FusingOperationSetup extends OperationSetup {
 
-public final class DynamicBindingOperationSetup extends OperationSetup {
+    public final BeanOperationSetup bos;
 
-    public final BeanOperationSetup boss;
+    /** The extension that is fusing the operation. */
+    public ExtensionSetup fuser;
 
     /**
      * @param bean
      * @param count
      */
-    protected DynamicBindingOperationSetup(BeanOperationSetup boss, int count) {
-        super(boss.bean, count);
-        this.boss = boss;
+    protected FusingOperationSetup(BeanOperationSetup bos, int count) {
+        super(bos.bean, count);
+        this.bos = bos;
     }
 
     /** {@inheritDoc} */

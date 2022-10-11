@@ -28,9 +28,6 @@ import app.packed.operation.OperationTargetMirror.OfFunctionCall;
 import app.packed.operation.OperationTargetMirror.OfInstanceAccess;
 import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
 import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
-import internal.app.packed.operation.OperationTarget;
-import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
-import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 
 /**
  * The target of an operation.
@@ -46,7 +43,7 @@ import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 // OperationLocationmirror?
 // OperationKindMirror?
 // InvocationSiteMirror
-public sealed interface OperationTargetMirror permits OperationTarget, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfInstanceAccess, OfMethodInvoke, OfSyntheticInvoke {
+public sealed interface OperationTargetMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfInstanceAccess, OfMethodInvoke, OfSyntheticInvoke {
 
     // AnnotataionReader annotations()???
 
@@ -59,7 +56,7 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
     }
 
     /** Represents an operation that gets, sets or updates a field. */
-    public sealed interface OfFieldAccess extends OperationTargetMirror permits FieldOperationTarget {
+    public non-sealed interface OfFieldAccess extends OperationTargetMirror {
 
         AccessMode accessMode();
 
@@ -108,7 +105,7 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
     } // ofLifetimePool? Hmm
 
     /** Represents an operation that invokes a method. */
-    public sealed interface OfMethodInvoke extends OperationTargetMirror permits MethodOperationTarget {
+    public non-sealed interface OfMethodInvoke extends OperationTargetMirror  {
 
         /** {@return the invokable method.} */
         Method method();

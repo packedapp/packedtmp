@@ -149,7 +149,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the target of the operation.} */
     public OperationTargetMirror target() {
-        return operation().target;
+        throw new UnsupportedOperationException();
     }
 
     /** {@return the type of the operation.} */

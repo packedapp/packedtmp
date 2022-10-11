@@ -20,7 +20,7 @@ import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
 import internal.app.packed.bean.IntrospectorOnMethod;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.BeanOperationSetup.BeanMethodInvokeSetup;
 
 /**
  * An extension that controls entry points into an application.
@@ -79,8 +79,8 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 mc.isStatic = Modifier.isStatic(method.getModifiers());
                 mc.cs = ((IntrospectorOnMethod) method).introspector.bean;
 
-                BeanOperationSetup os = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
-                mc.methodHandle = os.target.methodHandle;
+                BeanMethodInvokeSetup os = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
+                mc.methodHandle = os.methodHandle;
             }
 
         };

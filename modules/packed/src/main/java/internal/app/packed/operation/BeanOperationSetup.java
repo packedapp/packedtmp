@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
 import app.packed.operation.InvocationType;
@@ -29,22 +30,17 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.BeanOperationSetup.BeanFieldOperationSetup;
-import internal.app.packed.operation.BeanOperationSetup.BeanMethodOperationSetup;
-import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
-import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
+import internal.app.packed.operation.BeanOperationSetup.BeanFieldAccessSetup;
+import internal.app.packed.operation.BeanOperationSetup.BeanMethodInvokeSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Represents an invokable operation on a bean. */
-public abstract sealed class BeanOperationSetup extends OperationSetup permits BeanFieldOperationSetup, BeanMethodOperationSetup {
+public abstract sealed class BeanOperationSetup extends OperationSetup permits BeanFieldAccessSetup, BeanMethodInvokeSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
             void.class, BeanOperationSetup.class);
-
-    /** The extension that operates the operation. MethodHandles will be generated relative to this. */
-    public final ExtensionSetup operator;
 
     /** The invocation type of the operation. */
     public final InvocationType invocationType;
@@ -55,16 +51,19 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
     /** Supplies a mirror for the operation */
     Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
 
-    /** The target of the operation. */
-    public final OperationTarget target;
+    /** The extension that operates the operation. MethodHandles will be generated relative to this. */
+    public final ExtensionSetup operator;
 
     /** The type of the operation. */
     public final OperationType type;
 
-    public BeanOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationType invocationType, OperationTarget target) {
+    public abstract MethodHandle methodHandle();
+    
+    public abstract boolean isStatic();
+    
+    public BeanOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationType invocationType) {
         super(bean, type.parameterCount());
         this.type = type;
-        this.target = target;
         this.invocationType = requireNonNull(invocationType, "invocationType is null");
         this.operator = operator;
     }
@@ -86,7 +85,55 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
         return mirror;
     }
 
-    public static final class BeanMethodOperationSetup extends BeanOperationSetup {
+    /** Represents a field access on a bean */
+    public static final class BeanFieldAccessSetup extends BeanOperationSetup {
+
+        /** The access mode. */
+        public final AccessMode accessMode;
+
+        /** The field that is accessed. */
+        public final Field field;
+
+        /** A direct method handle for the field and accessMode. */
+        public final MethodHandle methodHandle;
+
+        /**
+         * @param bean
+         *            the bean where the field is located
+         * @param operator
+         *            the extension where the operating bean that will access the field is located
+         * @param invocationType
+         *            the invocation type that the operating bean will use
+         * @param field
+         *            the field
+         * @param accessMode
+         *            the access mode
+         * @param methodHandle
+         *            a method handle for accessing the field
+         */
+        public BeanFieldAccessSetup(BeanSetup bean, ExtensionSetup operator, InvocationType invocationType, Field field, AccessMode accessMode,
+                MethodHandle methodHandle) {
+            super(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType);
+            this.field = field;
+            this.accessMode = accessMode;
+            this.methodHandle = methodHandle;
+        }
+        
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle methodHandle() {
+            return methodHandle;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isStatic() {
+            return Modifier.isStatic(field.getModifiers());
+        }
+    }
+
+    public static final class BeanMethodInvokeSetup extends BeanOperationSetup {
 
         public final Method method;
 
@@ -99,35 +146,23 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
          * @param invocationType
          * @param target
          */
-        public BeanMethodOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationType operationType, InvocationType invocationType, Method method,
+        public BeanMethodInvokeSetup(BeanSetup bean, ExtensionSetup operator, OperationType operationType, InvocationType invocationType, Method method,
                 MethodHandle methodHandle) {
-            super(bean, operationType, operator, invocationType, new MethodOperationTarget(methodHandle, method));
+            super(bean, operationType, operator, invocationType);
             this.method = method;
             this.methodHandle = methodHandle;
         }
-    }
 
-    public static final class BeanFieldOperationSetup extends BeanOperationSetup {
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle methodHandle() {
+            return methodHandle;
+        }
 
-        public final Field field;
-
-        public final AccessMode accessMode;
-
-        public final MethodHandle methodHandle;
-
-        /**
-         * @param bean
-         * @param type
-         * @param operator
-         * @param invocationType
-         * @param target
-         */
-        public BeanFieldOperationSetup(BeanSetup bean, ExtensionSetup operator, InvocationType invocationType, Field field, AccessMode accessMode,
-                MethodHandle methodHandle) {
-            super(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType, new FieldOperationTarget(methodHandle, field, accessMode));
-            this.field = field;
-            this.accessMode = accessMode;
-            this.methodHandle = methodHandle;
+        /** {@inheritDoc} */
+        @Override
+        public boolean isStatic() {
+            return Modifier.isStatic(method.getModifiers());
         }
     }
 }
