@@ -98,7 +98,7 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     public BeanKind beanKind() {
-        return bean.props.kind();
+        return bean.beanKind;
     }
 
     /** {@inheritDoc} */

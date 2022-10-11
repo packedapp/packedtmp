@@ -71,7 +71,7 @@ public final class Introspector {
     // Should be made lazily??? I think
     final OpenClass oc;
 
-    public Introspector(BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
+    public Introspector(BeanClassModel model, BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
         this.bean = bean;
         this.beanClass = bean.beanClass();
         this.beanHandleIntrospector = beanHandleIntrospector;

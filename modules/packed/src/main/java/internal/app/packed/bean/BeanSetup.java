@@ -56,8 +56,17 @@ public final class BeanSetup implements BeanInfo {
     /** A handle that can access BeanConfiguration#beanHandle. */
     private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle", BeanHandle.class);
 
+    /** The bean class, is typical void.class for functional beans. */
+    public final Class<?> beanClass;
+
+    /** The kind of bean. */
+    public final BeanKind beanKind;
+
     /** The container this bean is registered in. */
     public final ContainerSetup container;
+
+    @Nullable
+    public final ExtensionSetup extensionOwner;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
@@ -81,11 +90,18 @@ public final class BeanSetup implements BeanInfo {
     /** Operations declared by the bean. */
     public final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
 
-    /** Various properties of the bean. */
-    public final BeanProps props;
+    /** The operator of the bean. */
+    public final ExtensionSetup operator;
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
+
+    /** The source ({@code null}, {@link Class}, {@link PackedOp}, or an instance) */
+    @Nullable
+    public final Object source;
+
+    /** The type of source the installer is created from. */
+    public final BeanSourceKind sourceKind;
 
     /**
      * Create a new bean.
@@ -93,32 +109,33 @@ public final class BeanSetup implements BeanInfo {
      * @param props
      *            the handle builder
      */
-    public BeanSetup(RealmSetup owner, BeanProps props) {
+    public BeanSetup(RealmSetup owner, BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator,
+            @Nullable ExtensionSetup extensionOwner) {
         this.realm = requireNonNull(owner);
-        this.props = props;
-        this.container = props.operator().container;
+        this.beanKind = kind;
+        this.beanClass = beanClass;
+        this.sourceKind = sourceKind;
+        this.source = source;
+        this.operator = operator;
+        this.extensionOwner = extensionOwner;
+        this.container = operator.container;
         this.lifetime = container.lifetime;
 
-        if (props.kind() == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
+        if (kind == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
             this.injectionManager = null;
         } else {
-            this.injectionManager = new BeanInjectionManager(this, props);
+            this.injectionManager = new BeanInjectionManager(this);
         }
-    }
-
-    public <T extends BeanOperationSetup> T addOperation(T operation) {
-        operations.add(requireNonNull(operation));
-        return operation;
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {
-        return props.beanClass();
+        return beanClass;
     }
 
     public void checkIsCurrent() {
-        if (!isCurrent()) {
+        if (!realm.isCurrent(this)) {
             String errorMsg;
             // if (realm.container == this) {
             errorMsg = "This operation must be called as the first thing in Assembly#build()";
@@ -130,12 +147,9 @@ public final class BeanSetup implements BeanInfo {
         }
     }
 
-    public boolean isCurrent() {
-        return realm.isCurrent(this);
-    }
-
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
+        
         // Create a new BeanMirror
         BeanMirror mirror;
         if (mirrorSupplier == null) {
@@ -156,7 +170,6 @@ public final class BeanSetup implements BeanInfo {
         return mirror;
     }
 
-    /** {@inheritDoc} */
     public void named(String newName) {
         // We start by validating the new name of the component
         NameCheck.checkComponentName(newName);
@@ -185,7 +198,7 @@ public final class BeanSetup implements BeanInfo {
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> operator() {
-        return props.operator().extensionType;
+        return operator.extensionType;
     }
 
     /** {@inheritDoc} */
@@ -254,9 +267,8 @@ public final class BeanSetup implements BeanInfo {
         realm.wireCurrentComponent();
 
         BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
-        BeanProps props = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner);
 
-        BeanSetup bean = new BeanSetup(realm, props);
+        BeanSetup bean = new BeanSetup(realm, kind, beanClass, sourceKind, source, operator, extensionOwner);
 
         ContainerSetup container = bean.container;
 
@@ -268,7 +280,7 @@ public final class BeanSetup implements BeanInfo {
         }
         // TODO virker ikke med functional beans og naming
         String n = prefix;
-        
+
         if (beanClass != void.class) {
             if (multiInstall) {
                 class MuInst {
@@ -316,7 +328,7 @@ public final class BeanSetup implements BeanInfo {
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
-            new Introspector(bean, customIntrospector).introspect();
+            new Introspector(beanModel, bean, customIntrospector).introspect();
         }
 
         // resolve Services

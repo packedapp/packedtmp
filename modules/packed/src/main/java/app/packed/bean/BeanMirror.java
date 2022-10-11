@@ -201,7 +201,7 @@ public class BeanMirror implements Mirror {
      * @return the type (class) of the bean.
      */
     public Class<?> beanClass() {
-        return bean().props.beanClass();
+        return bean().beanClass;
     }
 
     /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */

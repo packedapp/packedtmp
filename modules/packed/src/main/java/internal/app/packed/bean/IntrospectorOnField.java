@@ -70,7 +70,9 @@ public final class IntrospectorOnField implements OnFieldHook {
     }
 
     private BeanOperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
-        return introspector.bean.addOperation(new BeanFieldAccessSetup(introspector.bean, operator, invocationType, field, accessMode, mh));
+        BeanOperationSetup bos = new BeanFieldAccessSetup(introspector.bean, operator, invocationType, field, accessMode, mh);
+        introspector.bean.operations.add(bos);
+        return bos;
     }
 
     /** {@inheritDoc} */
