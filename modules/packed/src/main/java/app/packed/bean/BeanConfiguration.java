@@ -28,6 +28,11 @@ public class BeanConfiguration {
         return handle.beanClass();
     }
 
+    /** {@return the kind of bean that is being configured.} */
+    public final BeanKind beanKind() {
+        return handle.beanKind();
+    }
+
     /**
      * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not.
      * 
@@ -63,6 +68,9 @@ public class BeanConfiguration {
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
+     * @throws RuntimeException
+     *             if there is another bean with the same name in the container. Or if the container has a child container
+     *             with the same name.
      */
     public BeanConfiguration named(String name) {
         handle.bean().named(name);

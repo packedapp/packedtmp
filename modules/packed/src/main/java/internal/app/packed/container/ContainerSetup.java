@@ -235,8 +235,8 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
 
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
-        if (parent() != null) {
-            HashMap<String, BeanOrContainerSetup> c = parent().children;
+        if (treeParent != null) {
+            HashMap<String, BeanOrContainerSetup> c = treeParent.children;
             if (c.size() == 0) {
                 c.put(name, this);
             } else {

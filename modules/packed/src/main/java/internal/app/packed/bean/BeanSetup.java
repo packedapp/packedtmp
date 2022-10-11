@@ -56,9 +56,6 @@ public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     /** The container this bean is registered in. */
     public final ContainerSetup container;
 
-    @Nullable
-    public BeanSetup nextBean;
-
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
     public final BeanInjectionManager injectionManager;
@@ -67,11 +64,13 @@ public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     public final LifetimeSetup lifetime;
 
     /** Supplies a mirror for the operation */
-    Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
+    Supplier<? extends BeanMirror> mirrorSupplier;
 
-    /** The name of this component. */
-    @Nullable
+    /** The name of this bean. */
     private String name;
+
+    @Nullable
+    public BeanSetup nextBean;
 
     @Nullable
     public Runnable onWiringAction;
@@ -176,9 +175,14 @@ public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
         // Create a new BeanMirror
-        BeanMirror mirror = mirrorSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
+        BeanMirror mirror;
+        if (mirrorSupplier == null) {
+            mirror = new BeanMirror();
+        } else {
+            mirror = mirrorSupplier.get();
+            if (mirror == null) {
+                throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
+            }
         }
 
         // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
