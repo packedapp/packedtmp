@@ -24,12 +24,12 @@ import internal.app.packed.lifetime.LifetimeSetup;
 /** Abstract build-time setup of a component. */
 public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSetup {
 
-    /** The name of this component. */
-    @Nullable
-    public String name;
+    public abstract String getName();
+
+    public abstract void setName(String name);
 
     public abstract RealmSetup realm();
-    
+
     public final void checkIsCurrent() {
         if (!isCurrent()) {
             String errorMsg;
@@ -57,7 +57,7 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
         // Check that this component is still active and the name can be set
         checkIsCurrent();
 
-        String currentName = this.name;
+        String currentName = getName();
 
         if (newName.equals(currentName)) {
             return;
@@ -76,7 +76,7 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
             }
             parent().children.remove(currentName);
         }
-        this.name = newName;
+        setName(newName);
     }
 
     @Nullable

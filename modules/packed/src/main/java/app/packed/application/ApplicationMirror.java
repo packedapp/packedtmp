@@ -116,7 +116,7 @@ public class ApplicationMirror implements Mirror {
      * @see Wirelet#named(String)
      */
     public String name() {
-        return application.container.name;
+        return application.container.getName();
     }
 
     public void print() {

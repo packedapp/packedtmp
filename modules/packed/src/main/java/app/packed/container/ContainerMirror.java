@@ -183,7 +183,7 @@ public class ContainerMirror implements Mirror {
      * @return the name of this container
      */
     public String name() {
-        return container().name;
+        return container().getName();
     }
 
     /** {@return the parent container of this container. Or empty if the root container.} */

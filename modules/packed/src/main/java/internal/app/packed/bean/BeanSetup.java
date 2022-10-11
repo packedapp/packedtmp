@@ -43,6 +43,18 @@ import internal.app.packed.util.ThrowableUtil;
 /** The build-time configuration of a bean. */
 public non-sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
 
+    /** The name of this component. */
+    @Nullable
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
             void.class, BeanSetup.class);
@@ -274,7 +286,7 @@ public non-sealed class BeanSetup extends BeanOrContainerSetup implements BeanIn
             paths[depth] = name;
             ContainerSetup acc = container;
             for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
+                paths[i] = acc.getName();
                 acc = acc.treeParent;
             }
             yield new PackedNamespacePath(paths);

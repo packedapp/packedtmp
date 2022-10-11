@@ -46,7 +46,17 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends BeanOrContainerSetup {
+    /** The name of this component. */
+    @Nullable
+    private String name;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
             "initialize", void.class, ContainerSetup.class);

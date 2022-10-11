@@ -115,7 +115,7 @@ public abstract class InternalWirelet extends Wirelet {
         @Override
         protected void onBuild(ContainerSetup c) {
             c.isNameInitializedFromWirelet = true;
-            c.name = name;
+            c.setName(name);
         }
 
         /** {@inheritDoc} */

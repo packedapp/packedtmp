@@ -60,7 +60,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     private ApplicationInitializationContext(ApplicationSetup application, WireletWrapper wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container.name);
+        this.name = requireNonNull(application.container.getName());
         this.lifetimeKind = requireNonNull(application.driver.lifetimeKind());
         this.runtime = application.runtimeAccessor == null ? null : new PackedManagedLifetime(this);
     }
