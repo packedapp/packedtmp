@@ -22,6 +22,8 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanHandle;
+import internal.app.packed.operation.BeanOperationSetup.BeanInstanceAccessSetup;
+import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.InternalServiceUtil;
 import internal.app.packed.service.build.BeanInstanceServiceSetup;
@@ -31,8 +33,12 @@ import internal.app.packed.service.build.BeanInstanceServiceSetup;
  */
 // ServiceableBeanConfiguration?
 public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
-    
+
     private final ServiceableBean sb;
+
+    final ServiceManager sm;
+
+    final BeanSetup bean;
 
     /**
      * @param handle
@@ -40,30 +46,35 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      */
     public ProvideableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
+        bean = ((PackedBeanHandle<?>) handle).bean();
+        sm = bean.container.serviceManager;
+
         this.sb = new ServiceableBean((PackedBeanHandle<?>) handle);
         handle.onWireRun(() -> sb.onWired());
     }
 
     public ProvideableBeanConfiguration<T> export() {
+        Key<?> key = handle().defaultKey();
+        sm.addExport(key, new BeanInstanceAccessSetup(bean));
         sb.export();
         return this;
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Class<? super T> key) {
+        sm.addExport(Key.of(key), new BeanInstanceAccessSetup(bean));
         sb.export();
         return this;
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
+        sm.addExport(key, new BeanInstanceAccessSetup(bean));
         sb.export();
         return this;
     }
 
-    // Provides a service
-    // install(fff).provideAs()...
-    // not
-    // provide(fff).provideAs()
     public ProvideableBeanConfiguration<T> provide() {
+        Key<?> key = handle().defaultKey();
+        sm.addProvision(key, new BeanInstanceAccessSetup(bean));
         sb.provide();
         return this;
     }
@@ -78,6 +89,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Key)
      */
     public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
+        sm.addProvision(Key.of(key), new BeanInstanceAccessSetup(bean));
         sb.provideAs(key);
         return this;
     }
@@ -92,6 +104,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
+        sm.addProvision(key, new BeanInstanceAccessSetup(bean));
         sb.provideAs(key);
         return this;
     }
@@ -108,7 +121,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         // describeProvisionAs
         return this;
     }
-    
+
     static final class ServiceableBean {
         final BeanSetup bean;
 
@@ -168,7 +181,6 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
 //Nu har vi en.. Saa skal vi have lagt de services ting ud i handle...
 //Maaske paanaer export()??? Hoere vel til export extension
-
 
 //
 //public <X extends Runnable & Callable<String>> X foo() {

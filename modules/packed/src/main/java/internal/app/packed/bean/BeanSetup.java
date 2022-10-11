@@ -41,7 +41,7 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
+public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
 
     private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
@@ -194,7 +194,7 @@ public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
         return mirror;
     }
 
-    public final void onWired() {
+    public void onWired() {
         Runnable w = onWiringAction;
         if (w != null) {
             w.run();
@@ -220,7 +220,7 @@ public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     }
 
     /** {@return the path of this component} */
-    public final NamespacePath path() {
+    public NamespacePath path() {
         int depth = container.depth + 1;
         return switch (depth) {
         case 1 -> new PackedNamespacePath(name);

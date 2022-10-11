@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package internal.app.packed.operation.newInject;
 
-import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.BeanOperationSetup;
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-// Hvis vi tager en Op (Hvad vi vil goer... Saa kan vi jo ogsaa vaere methods)
-public final class FusedBindingSetup extends BindingSetup {
+public class TestNew extends BaseAssembly {
 
-    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
-    public ExtensionSetup managedBy;
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        bean().multiInstallInstance("foo").provide();
+        bean().multiInstallInstance("foo").provide();
+    }
     
-    /**
-     * @param beanOperation
-     * @param index
-     */
-    public FusedBindingSetup(BeanOperationSetup dynamicOperation, int index) {
-        super(dynamicOperation, index);
+    public static void main(String[] args) {
+        App.run(new TestNew());
     }
 }

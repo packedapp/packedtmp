@@ -38,6 +38,7 @@ import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.InsertionOrderedTree;
 import internal.app.packed.util.LookupUtil;
@@ -106,6 +107,8 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     @Nullable
     public BeanSetup lastBean;
 
+    public final ServiceManager serviceManager;
+
     /**
      * Create a new container setup.
      * 
@@ -128,9 +131,11 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
         this.application = requireNonNull(application);
         this.assembly = realm;
         if (parent == null) {
+            this.serviceManager = new ServiceManager(null);
             this.depth = 0;
             this.lifetime = new ContainerLifetimeSetup((ContainerSetup) this, null);
         } else {
+            this.serviceManager = new ServiceManager(parent.serviceManager);
             this.depth = parent.depth + 1;
             this.lifetime = parent.lifetime;
         }

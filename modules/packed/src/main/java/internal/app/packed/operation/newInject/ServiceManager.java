@@ -22,11 +22,12 @@ import app.packed.base.Nullable;
 import app.packed.service.DublicateServiceExportException;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.util.InsertionOrderedTree;
 
 /**
  *
  */
-public class ServiceManager {
+public final class ServiceManager extends InsertionOrderedTree<ServiceManager> {
 
     final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
 
@@ -35,9 +36,16 @@ public class ServiceManager {
 
     final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
 
+    public ServiceManager(@Nullable ServiceManager parent) {
+        super(parent);
+    }
+
+    public void addExport(Key<?> key, BeanOperationSetup operation) {
+         add(new ExportedService(operation, key));
+    }
     public void add(ExportedService e) {
         ExportedService existing = exports.putIfAbsent(e.key, e);
-        if (existing == null) {
+        if (existing != null) {
             // A service with the key has already been exported
             throw new DublicateServiceExportException();
         }
@@ -68,7 +76,7 @@ public class ServiceManager {
             if (v == null) {
                 v = new Entry(k);
             } else if (v.provider != null) {
-                throw new RuntimeException();
+                throw new RuntimeException("A service has already been bound for key " + key);
             } // else we have some bindings but no provider
             v.provider = new ProvidedService(bos, v);
             return v;
@@ -79,14 +87,14 @@ public class ServiceManager {
         for (Entry e : entries.values()) {
             if (e.provider == null) {
                 // okay we do not provide it internally in the container
-                
+
                 throw new UnsatisfiableServiceDependencyException();
             }
         }
     }
 
     static class Entry {
-        
+
         @Nullable
         ServiceBindingSetup bindings;
 
