@@ -18,31 +18,9 @@ package internal.app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
 public abstract sealed interface BeanOrContainerSetup permits ContainerSetup, BeanSetup {
-
-    default void checkIsCurrent() {
-        if (!isCurrent()) {
-            String errorMsg;
-            // if (realm.container == this) {
-            errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            // } else {
-            // errorMsg = "This operation must be called immediately after the component has been wired";
-            // }
-            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
-            throw new IllegalStateException(errorMsg);
-        }
-    }
-
-    default boolean isCurrent() {
-        return realm().isCurrent(this);
-    }
-
-    public abstract LifetimeSetup lifetime();
-
-    public abstract RealmSetup realm();
 
     /**
      * Checks the name of the component.

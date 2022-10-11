@@ -27,8 +27,8 @@ import app.packed.container.ContainerHandle;
 import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.BeanProps;
+import internal.app.packed.bean.BeanSetup;
 
 /**
  * Configuration of a realm.
@@ -108,8 +108,8 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     }
 
     /**
-     * Called from the constructor of ComponentSetup whenever a new component is created. {@link #wireCurrentComponent()} must have
-     * previously been called unless the component is the first component in the realm.
+     * Called from the constructor of ComponentSetup whenever a new component is created. {@link #wireCurrentComponent()}
+     * must have previously been called unless the component is the first component in the realm.
      * 
      * @param newComponent
      *            the new component
@@ -118,6 +118,19 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
         assert (currentComponent == null);
         // next is not fully formed but called from the constructor of ComponentSetup
         currentComponent = requireNonNull(newComponent);
+    }
+
+    public void checkIsCurrent(Object o) {
+        if (o != currentComponent) {
+            String errorMsg;
+            // if (realm.container == this) {
+            errorMsg = "This operation must be called as the first thing in Assembly#build()";
+            // } else {
+            // errorMsg = "This operation must be called immediately after the component has been wired";
+            // }
+            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
+            throw new IllegalStateException(errorMsg);
+        }
     }
 }
 //public interface RealmConfiguration {

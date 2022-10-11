@@ -262,6 +262,23 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
         this.name = n;
     }
 
+    public void checkIsCurrent() {
+        if (!isCurrent()) {
+            String errorMsg;
+            // if (realm.container == this) {
+            errorMsg = "This operation must be called as the first thing in Assembly#build()";
+            // } else {
+            // errorMsg = "This operation must be called immediately after the component has been wired";
+            // }
+            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
+            throw new IllegalStateException(errorMsg);
+        }
+    }
+
+    public boolean isCurrent() {
+        return realm().isCurrent(this);
+    }
+    
     /**
      * Returns whether or not the specified extension type is used.
      * 
@@ -314,8 +331,6 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
         };
     }
 
-    /** {@inheritDoc} */
-    @Override
     public RealmSetup realm() {
         return realm;
     }
