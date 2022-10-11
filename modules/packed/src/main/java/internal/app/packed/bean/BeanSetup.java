@@ -66,8 +66,8 @@ public final class BeanSetup implements BeanInfo {
     /** Supplies a mirror for the operation */
     Supplier<? extends BeanMirror> mirrorSupplier;
 
-    /** The name of this bean. */
-    private String name;
+    /** The name of this bean. Should only be updated through {@link #named(String)} */
+    public String name;
 
     @Nullable
     public BeanSetup nextBean;
@@ -95,7 +95,7 @@ public final class BeanSetup implements BeanInfo {
         realm.wireNew(this);
         this.props = props;
         this.container = props.operator().container;
-        this.lifetime = container.lifetime();
+        this.lifetime = container.lifetime;
 
         if (props.kind() == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
             this.injectionManager = null;
@@ -142,7 +142,17 @@ public final class BeanSetup implements BeanInfo {
         }
 
         // This will add it to the list of beans in the container
-        container.initBeanName(this, initialName);
+        int size = container.children.size();
+        if (size == 0) {
+            container.children.put(name, this);
+        } else {
+            String n = name;
+
+            while (container.children.putIfAbsent(n, this) != null) {
+                n = name + size++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
+                                   // million of the same component type
+            }
+        }
 
         BeanSetup siebling = container.beanLast;
         if (siebling == null) {
@@ -153,6 +163,17 @@ public final class BeanSetup implements BeanInfo {
         container.beanLast = this;
 
         // resolve Services
+    }
+
+    public <T extends BeanOperationSetup> T addOperation(T operation) {
+        operations.add(requireNonNull(operation));
+        return operation;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> beanClass() {
+        return props.beanClass();
     }
 
     public void checkIsCurrent() {
@@ -169,45 +190,11 @@ public final class BeanSetup implements BeanInfo {
     }
 
     public boolean isCurrent() {
-        return realm().isCurrent(this);
-    }
-
-    public <T extends BeanOperationSetup> T addOperation(T operation) {
-        operations.add(requireNonNull(operation));
-        return operation;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> beanClass() {
-        return props.beanClass();
-    }
-
-    public String getName() {
-        return name;
+        return realm.isCurrent(this);
     }
 
     public LifetimeSetup lifetime() {
         return lifetime;
-    }
-
-    /** {@inheritDoc} */
-    public void named(String newName) {
-        // We start by validating the new name of the component
-        NameCheck.checkComponentName(newName);
-
-        // Check that this component is still active and the name can be set
-        checkIsCurrent();
-
-        // Unless we are the root container. We need to insert this component in the parent container
-        if (container.children.putIfAbsent(newName, this) != null) {
-            if (newName.equals(name)) { // tried to set same name, just ignore
-                return;
-            }
-            throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
-        }
-        container.children.remove(name);
-        this.name = newName;
     }
 
     /** {@return a new mirror.} */
@@ -230,6 +217,25 @@ public final class BeanSetup implements BeanInfo {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** {@inheritDoc} */
+    public void named(String newName) {
+        // We start by validating the new name of the component
+        NameCheck.checkComponentName(newName);
+
+        // Check that this component is still active and the name can be set
+        checkIsCurrent();
+
+        // Unless we are the root container. We need to insert this component in the parent container
+        if (container.children.putIfAbsent(newName, this) != null) {
+            if (newName.equals(name)) { // tried to set same name, just ignore
+                return;
+            }
+            throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
+        }
+        container.children.remove(name);
+        this.name = newName;
     }
 
     public void onWired() {
@@ -261,20 +267,12 @@ public final class BeanSetup implements BeanInfo {
             paths[depth] = name;
             ContainerSetup acc = container;
             for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.getName();
+                paths[i] = acc.name;
                 acc = acc.treeParent;
             }
             yield new PackedNamespacePath(paths);
         }
         };
-    }
-
-    public RealmSetup realm() {
-        return realm;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {

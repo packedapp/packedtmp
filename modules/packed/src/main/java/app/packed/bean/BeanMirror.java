@@ -121,7 +121,7 @@ public class BeanMirror implements Mirror {
      * @return the name of this bean
      */
     public String name() {
-        return bean().getName();
+        return bean().name;
     }
 
     public Collection<LifetimeMirror> managesLifetimes() {

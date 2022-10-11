@@ -78,7 +78,7 @@ public final class ApplicationSetup {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime().pool.reserve(PackedManagedLifetime.class) : null;
+        this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
     }
 
     /** {@return a mirror that can be exposed to end-users.} */

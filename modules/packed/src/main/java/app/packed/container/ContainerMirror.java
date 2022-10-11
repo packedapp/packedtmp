@@ -169,7 +169,7 @@ public class ContainerMirror implements Mirror {
 
     /** {@return the containers's lifetime.} */
     public ContainerLifetimeMirror lifetime() {
-        return container().lifetime().mirror();
+        return container().lifetime.mirror();
     }
 
     /**
@@ -181,7 +181,7 @@ public class ContainerMirror implements Mirror {
      * @return the name of this container
      */
     public String name() {
-        return container().getName();
+        return container().name;
     }
 
     /** {@return the parent container of this container. Or empty if the root container.} */

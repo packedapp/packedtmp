@@ -96,13 +96,15 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
 
     /** The name of this component. */
     @Nullable
-    private String name;
+    public String name;
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
 
     public final ServiceManager sm;
 
+    int childCount; // Also use this as the basis when naming containers, IDK
+    
     /** Wirelets that was specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
@@ -227,24 +229,6 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void initBeanName(BeanSetup bean, String name) {
-        int size = children.size();
-        if (size == 0) {
-            children.put(name, this);
-        } else {
-            String n = name;
-
-            while (children.putIfAbsent(n, this) != null) {
-                n = name + size++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
-                                   // million of the same component type
-            }
-        }
-    }
-
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (treeParent != null) {
@@ -276,7 +260,7 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
     }
 
     public boolean isCurrent() {
-        return realm().isCurrent(this);
+        return realm.isCurrent(this);
     }
     
     /**
@@ -291,10 +275,6 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.containsKey(extensionType);
-    }
-
-    public ContainerLifetimeSetup lifetime() {
-        return lifetime;
     }
 
     /** {@return a new mirror.} */
@@ -331,16 +311,8 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
         };
     }
 
-    public RealmSetup realm() {
-        return realm;
-    }
-
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -429,7 +401,7 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
         // Check that this component is still active and the name can be set
         checkIsCurrent();
 
-        String currentName = getName();
+        String currentName = name;
 
         if (newName.equals(currentName)) {
             return;
@@ -448,6 +420,6 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
             }
             treeParent.children.remove(currentName);
         }
-        setName(newName);
+        name = newName;
     }
 }

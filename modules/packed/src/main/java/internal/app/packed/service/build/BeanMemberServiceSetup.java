@@ -44,7 +44,7 @@ public final class BeanMemberServiceSetup extends ServiceSetup {
         super(key);
         this.consumer = requireNonNull(dependant);
         // TODO fix Object
-        this.accessor = isConst ? beanSetup.container.lifetime().pool.reserve(Object.class) : null;
+        this.accessor = isConst ? beanSetup.container.lifetime.pool.reserve(Object.class) : null;
     }
 
     /** {@inheritDoc} */
