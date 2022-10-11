@@ -126,7 +126,7 @@ public abstract class Assembly {
      */
     @SuppressWarnings("unused")
     private void doBuild(AssemblySetup assembly, ContainerSetup container) {
-        ContainerConfiguration configuration£ = new ContainerConfiguration(new ContainerHandle(container)); 
+        ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container)); 
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
