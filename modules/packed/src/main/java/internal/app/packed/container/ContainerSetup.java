@@ -46,7 +46,7 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> implements BeanOrContainerSetup {
+public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,

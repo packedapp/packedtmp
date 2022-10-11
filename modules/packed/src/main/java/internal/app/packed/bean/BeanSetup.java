@@ -28,7 +28,6 @@ import app.packed.container.UserOrExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
-import internal.app.packed.container.BeanOrContainerSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
@@ -42,7 +41,7 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
+public final class BeanSetup implements BeanInfo {
 
     private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
@@ -155,6 +154,7 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
 
         // resolve Services
     }
+
     public void checkIsCurrent() {
         if (!isCurrent()) {
             String errorMsg;
@@ -171,7 +171,7 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     public boolean isCurrent() {
         return realm().isCurrent(this);
     }
-    
+
     public <T extends BeanOperationSetup> T addOperation(T operation) {
         operations.add(requireNonNull(operation));
         return operation;
