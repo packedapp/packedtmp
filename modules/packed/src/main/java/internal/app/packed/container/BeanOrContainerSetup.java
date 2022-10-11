@@ -22,7 +22,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
-public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSetup {
+public abstract sealed interface BeanOrContainerSetup permits ContainerSetup, BeanSetup {
 
     public abstract String getName();
 
@@ -30,7 +30,7 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
 
     public abstract RealmSetup realm();
 
-    public final void checkIsCurrent() {
+    default void checkIsCurrent() {
         if (!isCurrent()) {
             String errorMsg;
             // if (realm.container == this) {
@@ -43,14 +43,14 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
         }
     }
 
-    public final boolean isCurrent() {
+    default boolean isCurrent() {
         return realm().isCurrent(this);
     }
 
     public abstract LifetimeSetup lifetime();
 
     /** {@inheritDoc} */
-    public final void named(String newName) {
+    default void named(String newName) {
         // We start by validating the new name of the component
         checkComponentName(newName);
 
@@ -80,7 +80,7 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
     }
 
     @Nullable
-    protected abstract ContainerSetup parent();
+    abstract ContainerSetup parent();
 
     /**
      * Checks the name of the component.

@@ -40,23 +40,14 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.service.InternalServiceExtension;
+import internal.app.packed.util.InsertionOrderedTree;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends BeanOrContainerSetup {
-    /** The name of this component. */
-    @Nullable
-    private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> implements BeanOrContainerSetup {
+    
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
             "initialize", void.class, ContainerSetup.class);
@@ -66,7 +57,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
 
     /** The assembly from where the component is being installed. */
     public final AssemblySetup assembly;
-
+    
     public final Map<Class<?>, Object> beanClassMap = new HashMap<>();
 
     /** Children of this node in insertion order. */
@@ -75,6 +66,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
 
     /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */
     @Nullable
+    @Deprecated
     public ArrayList<ContainerSetup> containerChildren;
 
     /** The depth of the component in the application tree. */
@@ -102,19 +94,18 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     /** Supplies a mirror for the container. */
     public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
 
-    /** The container this component belongs to, or null for a root container. */
+    /** The name of this component. */
     @Nullable
-    public final ContainerSetup treeParent;
+    private String name;
+
+    /** The realm used to install this component. */
+    public final RealmSetup realm;
 
     /** Wirelets that was specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
 
-
-    /** The realm used to install this component. */
-    public final RealmSetup realm;
-    
     /**
      * Create a new container setup.
      * 
@@ -131,9 +122,9 @@ public final class ContainerSetup extends BeanOrContainerSetup {
      */
     public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
+        super(parent);
         this.realm = requireNonNull(realm);
         realm.wireNew(this);
-        this.treeParent = parent;
         this.application = requireNonNull(application);
         this.assembly = realm;
         if (parent == null) {
@@ -229,9 +220,14 @@ public final class ContainerSetup extends BeanOrContainerSetup {
         assert name != null;
     }
 
+
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
+    }
+    
+    public String getName() {
+        return name;
     }
 
     public void initBeanName(BeanSetup bean, String name) {
@@ -323,8 +319,18 @@ public final class ContainerSetup extends BeanOrContainerSetup {
         };
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public RealmSetup realm() {
+        return realm;
+    }
+
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -403,11 +409,5 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             extension.initialize();
         }
         return extension;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public RealmSetup realm() {
-        return realm;
     }
 }

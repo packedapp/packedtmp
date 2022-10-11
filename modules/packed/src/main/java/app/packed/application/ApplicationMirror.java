@@ -125,8 +125,8 @@ public class ApplicationMirror implements Mirror {
 
     private void print0(ContainerSetup cs) {
         System.out.println(cs.path());
-        for (ContainerSetup child : cs.containerChildren) {
-            print0(child);
+        for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
+            print0(e);
         }
         for (Object b : cs.children.values()) {
             if (b instanceof BeanSetup bs) {

@@ -236,8 +236,8 @@ public final class AssemblySetup extends RealmSetup {
 
         private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
             if (assembly == cs.assembly) {
-                for (ContainerSetup c : cs.containerChildren) {
-                    children(assembly, c, list);
+                for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
+                    children(assembly, e, list);
                 }
             } else {
                 list.add(cs.assembly.mirror());

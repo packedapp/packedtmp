@@ -41,7 +41,7 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public non-sealed class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
+public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
 
     /** The name of this component. */
     @Nullable

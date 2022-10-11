@@ -19,7 +19,6 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.util.ClassUtil;
-import internal.app.packed.util.CollectionUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
@@ -72,7 +71,8 @@ public class ContainerMirror implements Mirror {
     /* Sequenced */
     public Collection<ContainerMirror> children() {
         // does not work because container().containerChildren may be null
-        return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
+        throw new UnsupportedOperationException();
+        // return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
     }
 
     public final Stream<ContainerMirror> descendents(boolean includeThis) {
@@ -220,7 +220,7 @@ public class ContainerMirror implements Mirror {
     public <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
     }
-    
+
     /** A ExtensionMirror class to Extension class mapping. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
 
@@ -244,7 +244,7 @@ public class ContainerMirror implements Mirror {
             return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
         }
     };
-    
+
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     static ExtensionMirror<?> newMirror(ExtensionSetup extension, Class<? extends ExtensionMirror<?>> expectedMirrorClass) {

@@ -83,11 +83,10 @@ public final class ApplicationInjectionManager {
             }
         }
 
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
-                dependencyCyclesFind(stack, dependencies, region, c);
-            }
+        for (var e = container.treeFirstChild; e != null; e = e.treeNextSiebling) {
+            dependencyCyclesFind(stack, dependencies, region, e);
         }
+        
 
         return null;
     }
