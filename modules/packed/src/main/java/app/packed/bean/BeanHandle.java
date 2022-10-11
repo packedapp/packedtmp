@@ -29,8 +29,8 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.PackedBeanHandle;
-import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.BeanSetup.InstallerOption;
 
 /**
  * A bean handle represents a private configuration installed bean.
@@ -40,71 +40,15 @@ import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
  * 
  * 
  */
-@SuppressWarnings("rawtypes")
-public sealed interface BeanHandle<T> permits PackedBeanHandle {
+public final /* primitive */ class BeanHandle<T> {
 
-    // We need a extension bean
-    default OperationHandle addFunctionalOperation(ExtensionBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
-            Object functionInstance) {
-        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
-        throw new UnsupportedOperationException();
-    }
-
-    default OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, MethodHandle methodHandle) {
-        return addOperation(operator, Op.ofMethodHandle(methodHandle));
-    }
-
-    default OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op<?> operation) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @return
-     * 
-     * @see BeanConfiguration#beanClass()
-     * @see BeanMirror#beanClass()
-     */
-    Class<?> beanClass();
-
-    BeanKind beanKind();
+    final BeanSetup bean;
     
-    /**
-     * @param decorator
-     */
-    // Usacase?? Typically T is not accessible to the extension
-    // Right now this method is only here for InstanceBeanConfiguration#decorate
-    // Maybe
-    void decorateInstance(Function<? super T, ? extends T> decorator);
+    BeanHandle(BeanSetup bean) {
+        this.bean = requireNonNull(bean);
+    }
 
-    /**
-     * @return
-     * 
-     * @throws UnsupportedOperationException
-     *             if called on a bean with void.class beanKind
-     */
-    Key<?> defaultKey();
-
-//    // Kan man tilfoeje en function til alle beans?
-//    // funktioner er jo stateless...
-//    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
-//    // Det skal den heller ikke.
-//    default <F> OperationCustomizer newFunctionalOperation(Class<F> tt, F function) {
-//        throw new UnsupportedOperationException();
-//    }
-//    
-//    // Problemet er her at det virker meget underligt lige pludselig at skulle tilfoeje lanes
-//    // Og hvordan HttpRequest, Response er 2 separate lanes... det er lidt sort magi
-//    // Skal vi bruge et hint???
-//    default OperationCustomizer newFunctionalOperation2(Object functionInstance, Class<?> functionType, Class<?>... typeVariables) {
-//        throw new UnsupportedOperationException();
-//    }
-//    default OperationCustomizer newFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
-//        throw new UnsupportedOperationException();
-//    }
-
-    boolean isConfigurable();
-
-    default boolean isCurrent() {
+    public boolean isCurrent() {
         return false;
     }
 
@@ -117,32 +61,75 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
      * 
      * @return
      */
-    default List<OperationHandle> lifetimeOperations() {
+    public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
 
-    /**
-     * Registers a wiring action to run when the bean becomes fully wired.
-     * 
-     * @param action
-     *            a {@code Runnable} to invoke when the bean is wired
-     */
-    // ->onWire
-    BeanHandle<T> onWireRun(Runnable action);
+    // We need a extension bean
+    public OperationHandle addFunctionalOperation(ExtensionBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
+            Object functionInstance) {
+        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
+        throw new UnsupportedOperationException();
+    }
 
-    /**
-     * @param consumer
-     */
-    // giver den plus decorate mening?
-    
-    // Er det naar vi instantiere???
-    
-    void peekInstance(Consumer<? super T> consumer);
+    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, MethodHandle methodHandle) {
+        return addOperation(operator, Op.ofMethodHandle(methodHandle));
+    }
 
-    // Hvis vi aabner op for specialized bean mirrors
-    // maybe just name it mirror?
-    void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
+    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op<?> operation) {
+        throw new UnsupportedOperationException();
+    }
 
+    /** {@inheritDoc} */
+    public BeanHandle<T> onWireRun(Runnable action) {
+        requireNonNull(action, "action is null");
+        Runnable w = bean.onWiringAction;
+        if (w == null) {
+            bean.onWiringAction = action;
+        } else {
+            bean.onWiringAction = () -> {
+                w.run();
+                action.run();
+            };
+        }
+        return this;
+    }
+
+    public Class<?> beanClass() {
+        return bean.beanClass();
+    }
+
+    public BeanKind beanKind() {
+        return bean.props.kind();
+    }
+
+    /** {@inheritDoc} */
+    public void decorateInstance(Function<? super T, ? extends T> decorator) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    public void peekInstance(Consumer<? super T> consumer) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    public Key<?> defaultKey() {
+        if (beanClass() == void.class) {
+            throw new UnsupportedOperationException("Keys are not support for void bean classes");
+        }
+        return Key.of(beanClass());
+    }
+
+    /** {@inheritDoc} */
+    public boolean isConfigurable() {
+        return !bean.realm.isClosed();
+    }
+
+    /** {@inheritDoc} */
+    public void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory) {
+        bean.mirrorSupplier = mirrorFactory;
+    }
 
     // Tjah, skal vel ogsaa bruges for containere
     public interface LifetimeConf {
@@ -154,7 +141,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
-    public sealed interface Option permits PackedBeanHandle.InstallerOption {
+    public sealed interface InstallOption permits BeanSetup.InstallerOption {
         
         /**
          * Registers a bean introspector that will be used instead of the framework calling
@@ -168,7 +155,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * 
          * @see Extension#newBeanIntrospector
          */
-        static Option introspectWith(BeanIntrospector introspector) {
+        static InstallOption introspectWith(BeanIntrospector introspector) {
             requireNonNull(introspector, "introspector is null");
             return new InstallerOption.CustomIntrospector(introspector);
         }
@@ -186,7 +173,7 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @throws IllegalStateException
          *             if build has previously been called on the builder
          */
-        static Option namePrefix(String prefix) {
+        static InstallOption namePrefix(String prefix) {
             return new InstallerOption.CustomPrefix(prefix);
         }
         
@@ -200,8 +187,71 @@ public sealed interface BeanHandle<T> permits PackedBeanHandle {
          * @throws UnsupportedOperationException
          *             if {@code void} bean class
          */
-        static Option nonUnique() {
+        static InstallOption nonUnique() {
             return new InstallerOption.NonUnique();
         }
     }
 }
+
+//
+//interface BeanHandle<T> {
+//        /**
+//     * @param decorator
+//     */
+//    // Usacase?? Typically T is not accessible to the extension
+//    // Right now this method is only here for InstanceBeanConfiguration#decorate
+//    // Maybe
+//    void decorateInstance(Function<? super T, ? extends T> decorator);
+//
+//    /**
+//     * @return
+//     * 
+//     * @throws UnsupportedOperationException
+//     *             if called on a bean with void.class beanKind
+//     */
+//    Key<?> defaultKey();
+//
+////    // Kan man tilfoeje en function til alle beans?
+////    // funktioner er jo stateless...
+////    // Er ikke sikker paa jeg syntes staten skal ligge hos operationen.
+////    // Det skal den heller ikke.
+////    default <F> OperationCustomizer newFunctionalOperation(Class<F> tt, F function) {
+////        throw new UnsupportedOperationException();
+////    }
+////    
+////    // Problemet er her at det virker meget underligt lige pludselig at skulle tilfoeje lanes
+////    // Og hvordan HttpRequest, Response er 2 separate lanes... det er lidt sort magi
+////    // Skal vi bruge et hint???
+////    default OperationCustomizer newFunctionalOperation2(Object functionInstance, Class<?> functionType, Class<?>... typeVariables) {
+////        throw new UnsupportedOperationException();
+////    }
+////    default OperationCustomizer newFunctionalOperation(TypeToken<?> tt, Object functionInstance) {
+////        throw new UnsupportedOperationException();
+////    }
+//
+//    boolean isConfigurable();
+//
+//    /**
+//     * Registers a wiring action to run when the bean becomes fully wired.
+//     * 
+//     * @param action
+//     *            a {@code Runnable} to invoke when the bean is wired
+//     */
+//    // ->onWire
+//    BeanHandle<T> onWireRun(Runnable action);
+//
+//    /**
+//     * @param consumer
+//     */
+//    // giver den plus decorate mening?
+//    
+//    // Er det naar vi instantiere???
+//    
+//    void peekInstance(Consumer<? super T> consumer);
+//
+//    // Hvis vi aabner op for specialized bean mirrors
+//    // maybe just name it mirror?
+//    void specializeMirror(Supplier<? extends BeanMirror> mirrorFactory);
+//
+//
+//}

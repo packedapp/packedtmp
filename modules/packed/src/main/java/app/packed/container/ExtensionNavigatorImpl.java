@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.Iterator;
 
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.util.InsertionOrderedTree;
+import internal.app.packed.util.AbstractTreeNode;
 
 /**
  *
@@ -31,7 +31,7 @@ record ExtensionNavigatorImpl<T extends Extension<T>> (ExtensionSetup extension,
     /** {@inheritDoc} */
     @Override
     public Iterator<T> iterator() {
-        return new InsertionOrderedTree.MappedPreOrderIterator<>(extension, e -> (T) extensionType.cast(e.instance()));
+        return new AbstractTreeNode.MappedPreOrderIterator<>(extension, e -> (T) extensionType.cast(e.instance()));
     }
 
     /** {@inheritDoc} */

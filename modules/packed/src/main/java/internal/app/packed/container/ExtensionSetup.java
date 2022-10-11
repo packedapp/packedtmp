@@ -10,12 +10,12 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.service.inject.ExtensionInjectionManager;
-import internal.app.packed.util.InsertionOrderedTree;
+import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Build-time configuration of an extension. */
-public final class ExtensionSetup extends InsertionOrderedTree<ExtensionSetup> {
+public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);

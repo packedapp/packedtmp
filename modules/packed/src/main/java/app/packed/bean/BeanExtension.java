@@ -1,6 +1,6 @@
 package app.packed.bean;
 
-import app.packed.bean.BeanHandle.Option;
+import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.operation.InvocationType;
@@ -45,8 +45,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
 
@@ -70,8 +70,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op);
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op);
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     /**
@@ -86,18 +86,18 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = BeanSetup.installInstance(extensionSetup, container.realm, null, instance);
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.realm, null, instance);
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     /**
@@ -113,38 +113,38 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
-        return new BeanConfiguration(handle);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
+        return new BeanConfiguration(new BeanHandle<>(bean));
     }
 
     /**
      * @see BeanKind#CONTAINER
      * @see BeanSourceKind#CLASS
-     * @see BeanHandle.Option#nonUnique()
+     * @see BeanHandle.InstallOption#nonUnique()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, Option.nonUnique());
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, InstallOption.nonUnique());
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, Option.nonUnique());
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, InstallOption.nonUnique());
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = BeanSetup.installInstance(extensionSetup, container.realm, null, instance, Option.nonUnique());
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.realm, null, instance, InstallOption.nonUnique());
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, Option.nonUnique());
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, InstallOption.nonUnique());
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, Option.nonUnique());
-        return new ProvideableBeanConfiguration<>(handle);
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, InstallOption.nonUnique());
+        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     /** {@inheritDoc} */

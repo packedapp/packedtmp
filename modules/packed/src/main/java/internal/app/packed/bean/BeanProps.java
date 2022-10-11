@@ -21,7 +21,6 @@ import app.packed.bean.BeanSourceKind;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 
-////Could have, introspectionDisable()/noIntrospection
 public record BeanProps(
 
         /** The kind of bean. */
@@ -46,6 +45,7 @@ public record BeanProps(
 
         @Nullable ExtensionSetup extensionOwner,
 
+        // Dem her har vi ikke behov for at gemme
         @Nullable String namePrefix,
 
         boolean multiInstall) {

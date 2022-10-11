@@ -40,13 +40,13 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
-import internal.app.packed.util.InsertionOrderedTree;
+import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> {
+public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,

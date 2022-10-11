@@ -3,7 +3,6 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
-import internal.app.packed.bean.PackedBeanHandle;
 
 /**
  * The base configuration class for beans.
@@ -11,7 +10,7 @@ import internal.app.packed.bean.PackedBeanHandle;
 public class BeanConfiguration {
 
     /** The bean handle. */
-    final PackedBeanHandle<?> handle;
+    final BeanHandle<?> handle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -20,7 +19,7 @@ public class BeanConfiguration {
      *            the bean handle
      */
     public BeanConfiguration(BeanHandle<?> handle) {
-        this.handle = requireNonNull((PackedBeanHandle<?>) handle, "handle is null");
+        this.handle = requireNonNull((BeanHandle<?>) handle, "handle is null");
     }
 
     /** {@return the kind of bean that is being configured.} */
@@ -47,7 +46,7 @@ public class BeanConfiguration {
 
     /** {@inheritDoc} */
     protected final void checkIsCurrent() {
-        handle.bean().checkIsCurrent();
+        handle.bean.checkIsCurrent();
     }
 
     /** {@return the bean handle that was used to create this configuration.} */
@@ -73,7 +72,7 @@ public class BeanConfiguration {
      *             with the same name.
      */
     public BeanConfiguration named(String name) {
-        handle.bean().named(name);
+        handle.bean.named(name);
         return this;
     }
 
@@ -90,13 +89,15 @@ public class BeanConfiguration {
      * 
      * @return the path of this configuration.
      */
+    // I'm not sure we want to expose midt build? IDK
+    // If only for user... Maybe is nice for debugging
     public final NamespacePath path() {
-        return handle.bean().path();
+        return handle.bean.path();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return handle.bean().toString();
+        return handle.bean.toString();
     }
 }

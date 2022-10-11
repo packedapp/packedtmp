@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 /**
  *
  */
-public abstract class InsertionOrderedTree<T extends InsertionOrderedTree<T>> {
+public abstract class AbstractTreeNode<T extends AbstractTreeNode<T>> {
 
     /** The (nullable) first child of the extension. */
     @Nullable
@@ -34,7 +34,7 @@ public abstract class InsertionOrderedTree<T extends InsertionOrderedTree<T>> {
 
     /** The (nullable) last child of the extension. */
     @Nullable
-    T treeLastChild; // not exposed currently, as I don't have use cases
+    T treeLastChild; // not exposed currently, as there are no use cases
 
     /** Any parent extension this extension may have. Only the root extension in an application does not have a parent. */
     @Nullable
@@ -45,7 +45,7 @@ public abstract class InsertionOrderedTree<T extends InsertionOrderedTree<T>> {
     public T treeNextSiebling;
 
     @SuppressWarnings("unchecked")
-    protected InsertionOrderedTree(@Nullable T treeParent) {
+    protected AbstractTreeNode(@Nullable T treeParent) {
         this.treeParent = treeParent;
         if (treeParent != null) {
             // Tree maintenance
@@ -59,7 +59,7 @@ public abstract class InsertionOrderedTree<T extends InsertionOrderedTree<T>> {
     }
 
     /** A pre-order iterator for a rooted extension tree. */
-    public static final class MappedPreOrderIterator<T extends InsertionOrderedTree<T>, R> implements Iterator<R> {
+    public static final class MappedPreOrderIterator<T extends AbstractTreeNode<T>, R> implements Iterator<R> {
 
         /** A mapper that is applied to each node. */
         private final Function<T, R> mapper;

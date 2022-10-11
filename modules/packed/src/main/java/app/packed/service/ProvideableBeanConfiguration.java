@@ -21,7 +21,6 @@ import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.PackedBeanHandle;
 import internal.app.packed.operation.BeanOperationSetup.BeanInstanceAccessSetup;
 import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
@@ -46,10 +45,10 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      */
     public ProvideableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
-        bean = ((PackedBeanHandle<?>) handle).bean();
+        bean = BeanSetup.crack((BeanHandle<?>) handle);
         sm = bean.container.sm;
 
-        this.sb = new ServiceableBean((PackedBeanHandle<?>) handle);
+        this.sb = new ServiceableBean((BeanHandle<?>) handle);
         handle.onWireRun(() -> sb.onWired());
     }
 
@@ -129,11 +128,11 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         Key<?> provide;
 
-        final PackedBeanHandle<?> handle;
+        final BeanHandle<?> handle;
 
-        ServiceableBean(PackedBeanHandle<?> handle) {
+        ServiceableBean(BeanHandle<?> handle) {
             this.handle = handle;
-            this.bean = handle.bean();
+            this.bean = BeanSetup.crack(handle);
         }
 
         public void export() {

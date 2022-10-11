@@ -23,12 +23,12 @@ import app.packed.service.DublicateServiceExportException;
 import app.packed.service.DublicateServiceProvideException;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.BeanOperationSetup;
-import internal.app.packed.util.InsertionOrderedTree;
+import internal.app.packed.util.AbstractTreeNode;
 
 /**
  *
  */
-public final class ServiceManager extends InsertionOrderedTree<ServiceManager> {
+public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
     final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
 

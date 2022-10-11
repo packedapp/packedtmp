@@ -15,7 +15,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.Option;
+import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -26,7 +26,9 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
-import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
+import internal.app.packed.bean.BeanSetup.InstallerOption.CustomIntrospector;
+import internal.app.packed.bean.BeanSetup.InstallerOption.CustomPrefix;
+import internal.app.packed.bean.BeanSetup.InstallerOption.NonUnique;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
@@ -50,7 +52,11 @@ public final class BeanSetup implements BeanInfo {
 
     /** A handle that can access BeanConfiguration#beanHandle. */
     private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
-            PackedBeanHandle.class);
+            BeanHandle.class);
+
+    /** A handle that can access BeanConfiguration#beanHandle. */
+    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean",
+            BeanSetup.class);
 
     /** The container this bean is registered in. */
     public final ContainerSetup container;
@@ -63,7 +69,7 @@ public final class BeanSetup implements BeanInfo {
     public final LifetimeSetup lifetime;
 
     /** Supplies a mirror for the operation */
-    Supplier<? extends BeanMirror> mirrorSupplier;
+    public Supplier<? extends BeanMirror> mirrorSupplier;
 
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     public String name;
@@ -271,24 +277,28 @@ public final class BeanSetup implements BeanInfo {
     }
 
     public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
-        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
-        return bh.bean();
+        BeanHandle<?> handle = (BeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
+        return crack(handle);
     }
 
-    static <T> BeanHandle<T> install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
-            BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.Option... options) {
+    public static BeanSetup crack(BeanHandle<?> handle) {
+        return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
+    }
+
+    static BeanSetup install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
+            BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
 
-        // The various options, with default values.
+        // No reason to maintain some of these in props
         boolean nonUnique = false;
         BeanIntrospector customIntrospector = null;
         String namePrefix = null;
 
         // Process each option
         requireNonNull(options, "options is null");
-        for (Option o : options) {
+        for (InstallOption o : options) {
             requireNonNull(o, "option was null");
             if (o instanceof InstallerOption.CustomIntrospector ci) {
                 if (!kind.hasInstances()) {
@@ -321,29 +331,39 @@ public final class BeanSetup implements BeanInfo {
             o.resolve();
         }
 
-        return new PackedBeanHandle<>(bean);
+        return bean;
     }
 
-    public static <T> BeanHandle<T> installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind,
-            Class<T> clazz, BeanHandle.Option... options) {
+    public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind,
+            Class<?> clazz, BeanHandle.InstallOption... options) {
         requireNonNull(clazz, "clazz is null");
         return install(operator, realm, extensionOwner, clazz, kind, BeanSourceKind.CLASS, clazz, options);
     }
 
-    public static BeanHandle<?> installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
-            BeanHandle.Option... options) {
+    public static BeanSetup installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
+            BeanHandle.InstallOption... options) {
         return install(operator, realm, extensionOwner, void.class, BeanKind.FUNCTIONAL, BeanSourceKind.NONE, null, options);
     }
 
-    public static <T> BeanHandle<T> installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, T instance,
-            BeanHandle.Option... options) {
+    public static BeanSetup installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Object instance,
+            BeanHandle.InstallOption... options) {
         requireNonNull(instance, "instance is null");
         return install(operator, realm, extensionOwner, instance.getClass(), BeanKind.CONTAINER, BeanSourceKind.INSTANCE, instance, options);
     }
 
-    public static <T> BeanHandle<T> installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Op<T> op,
-            BeanHandle.Option... options) {
-        PackedOp<T> pop = PackedOp.crack(op);
+    public static BeanSetup installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Op<?> op,
+            BeanHandle.InstallOption... options) {
+        PackedOp<?> pop = PackedOp.crack(op);
         return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
+    }
+    
+    // Silly Eclipse compiler requires permits here (bug)
+    public sealed interface InstallerOption extends BeanHandle.InstallOption permits NonUnique, CustomIntrospector, CustomPrefix {
+
+        public record NonUnique() implements InstallerOption {}
+
+        public record CustomIntrospector(BeanIntrospector introspector) implements InstallerOption {}
+
+        public record CustomPrefix(String prefix) implements InstallerOption {}
     }
 }
