@@ -13,26 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package internal.app.packed.operation.newInject;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup;
 
 /**
- * A binding to a constant.
+ *
  */
-public final class ConstantBindingSetup extends BindingSetup {
+public final class ExportedService {
 
-    public ConstantBindingSetup(BeanOperationSetup operation, int index, Object constant) {
-        super(operation, index);
-        this.constant = constant;
-    }
+    /** The operation that exports the service. */
+    public final BeanOperationSetup bos;
 
-    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
-    public ExtensionSetup managedBy;
-    
-    /** The constant that was bound. */
+    /** The key under which the service is exported */
+    public final Key<?> key;
+
+    /** A route to where the service is actually located. Null indicates directly from the operation */
     @Nullable
-    public final Object constant;
+    public final ServicePath path;
+
+    ExportedService(BeanOperationSetup bos, Key<?> key) {
+        this.bos = bos;
+        this.key = key;
+        this.path = null;
+    }
 }

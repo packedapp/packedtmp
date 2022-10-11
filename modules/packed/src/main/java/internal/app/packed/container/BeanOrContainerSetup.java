@@ -28,22 +28,8 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
     @Nullable
     public String name;
 
-    /** The realm used to install this component. */
-    public final RealmSetup realm;
-
-    /**
-     * Create a new component. This constructor is only invoked from subclasses of this class
-     * 
-     * @param application
-     *            the application the component is a part of
-     * @param realm
-     *            the realm this component is part of
-     */
-    protected BeanOrContainerSetup(RealmSetup realm) {
-        this.realm = requireNonNull(realm);
-        realm.wireNew(this);
-    }
-
+    public abstract RealmSetup realm();
+    
     public final void checkIsCurrent() {
         if (!isCurrent()) {
             String errorMsg;
@@ -58,7 +44,7 @@ public abstract sealed class BeanOrContainerSetup permits ContainerSetup, BeanSe
     }
 
     public final boolean isCurrent() {
-        return realm.isCurrent(this);
+        return realm().isCurrent(this);
     }
 
     public abstract LifetimeSetup lifetime();

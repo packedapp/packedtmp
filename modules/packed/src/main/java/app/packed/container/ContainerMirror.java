@@ -114,7 +114,7 @@ public class ContainerMirror implements Mirror {
     }
 
     public boolean isRoot() {
-        return container().parent == null;
+        return container().treeParent == null;
     }
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
@@ -188,7 +188,7 @@ public class ContainerMirror implements Mirror {
 
     /** {@return the parent container of this container. Or empty if the root container.} */
     public Optional<ContainerMirror> parent() {
-        ContainerSetup p = container().parent;
+        ContainerSetup p = container().treeParent;
         return p == null ? Optional.empty() : Optional.of(p.mirror());
     }
 

@@ -10,11 +10,12 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.service.inject.ExtensionInjectionManager;
+import internal.app.packed.util.InsertionOrderedTree;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Build-time configuration of an extension. */
-public final class ExtensionSetup {
+public final class ExtensionSetup extends InsertionOrderedTree<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
@@ -22,18 +23,6 @@ public final class ExtensionSetup {
     /** A handle for setting the private field Extension#setup. */
     private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
             ExtensionSetup.class);
-
-    /** The (nullable) first child of the extension. */
-    @Nullable
-    public ExtensionSetup childFirst;
-
-    /** The (nullable) last child of the extension. */
-    @Nullable
-    public ExtensionSetup childLast;
-
-    /** The (nullable) siebling of the extension. */
-    @Nullable
-    public ExtensionSetup childSiebling;
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -54,10 +43,6 @@ public final class ExtensionSetup {
     /** A static model of the extension. */
     public final ExtensionModel model;
 
-    /** Any parent extension this extension may have. Only the root extension in an application does not have a parent. */
-    @Nullable
-    public final ExtensionSetup parent;
-
     /**
      * Creates a new extension setup.
      * 
@@ -69,23 +54,15 @@ public final class ExtensionSetup {
      *            the type of extension this setup class represents
      */
     ExtensionSetup(@Nullable ExtensionSetup parent, ContainerSetup container, Class<? extends Extension<?>> extensionType) {
+        super(parent);
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
-        this.parent = parent;
         if (parent == null) {
             this.extensionRealm = new ExtensionRealmSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionRealm = parent.extensionRealm;
             this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
-
-            // Tree maintenance
-            if (parent.childFirst == null) {
-                parent.childFirst = this;
-            } else {
-                parent.childLast.childSiebling = this;
-            }
-            parent.childLast = this;
         }
         this.model = requireNonNull(extensionRealm.extensionModel);
     }

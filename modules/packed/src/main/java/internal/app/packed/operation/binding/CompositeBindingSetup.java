@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.newInject;
+package internal.app.packed.operation.binding;
 
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public class ServiceProvidingOperation {
-    
-    // The operation that provides the service
-    // These are always non-leaf, and the only interesting nodes
-    // When look for circles in the dependency graph
-    
-    // Of course also the container
-    BeanOperationSetup provider;
+public final class CompositeBindingSetup extends BindingSetup {
+
+    /**
+     * @param operation
+     * @param index
+     */
+    public CompositeBindingSetup(OperationSetup operation, int index) {
+        super(operation, index);
+    }
+
 }

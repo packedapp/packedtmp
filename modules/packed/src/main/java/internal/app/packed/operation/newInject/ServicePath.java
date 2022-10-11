@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
-
-import internal.app.packed.operation.FusingOperationSetup;
+package internal.app.packed.operation.newInject;
 
 /**
  *
  */
-public final class DynamicBindingSetup extends BindingSetup {
-
-    /**
-     * @param beanOperation
-     * @param index
-     */
-    public DynamicBindingSetup(FusingOperationSetup dynamicOperation, int index) {
-        super(dynamicOperation.bos, index);
-    }
+// The path of the service, from which container, key transitions ect
+// ServiceTransform.provide(op) <-- creates a synthetic ExportBean
+public class ServicePath {
+    public static ServicePath CONTAINER = null;
 }

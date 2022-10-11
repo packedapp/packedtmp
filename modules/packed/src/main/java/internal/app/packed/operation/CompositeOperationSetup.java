@@ -16,6 +16,7 @@
 package internal.app.packed.operation;
 
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationType;
 
 /**
  *
@@ -30,14 +31,16 @@ public final class CompositeOperationSetup extends OperationSetup {
      * @param bean
      * @param count
      */
-    protected CompositeOperationSetup(BeanOperationSetup bos, int count) {
-        super(bos.bean, count);
+    protected CompositeOperationSetup(BeanOperationSetup bos, OperationType type) {
+        super(bos.bean, type);
         this.bos = bos;
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationMirror mirror() {
+        // No I think we need a CompositeOperationMirror
+        // Maybe which has a parent (Then we make sure it is not reusable)
         return bos.mirror();
     }
 }

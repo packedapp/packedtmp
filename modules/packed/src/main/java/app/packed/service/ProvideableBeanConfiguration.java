@@ -44,7 +44,6 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         handle.onWireRun(() -> sb.onWired());
     }
 
-
     public ProvideableBeanConfiguration<T> export() {
         sb.export();
         return this;
@@ -59,8 +58,11 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         sb.export();
         return this;
     }
-    
-    
+
+    // Provides a service
+    // install(fff).provideAs()...
+    // not
+    // provide(fff).provideAs()
     public ProvideableBeanConfiguration<T> provide() {
         sb.provide();
         return this;
@@ -95,6 +97,8 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     // Ser dum ud naar man laver completion
+    // Return set???
+    // also for Export
     public Optional<Key<?>> providedAs() {
         return sb.providedAs();
     }

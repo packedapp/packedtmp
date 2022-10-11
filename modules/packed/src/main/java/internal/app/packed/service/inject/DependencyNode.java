@@ -135,8 +135,8 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
                     ExtensionSetup es = container.useExtensionSetup(ers.realmType(), null);
                     BeanSetup bs = null;
                     if (thisKey.equals(requiredKey)) {
-                        if (es.parent != null) {
-                            bs = es.parent.injectionManager.lookup(requiredKey);
+                        if (es.treeParent != null) {
+                            bs = es.treeParent.injectionManager.lookup(requiredKey);
                         }
                     } else {
                         bs = es.injectionManager.lookup(requiredKey);

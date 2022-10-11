@@ -15,8 +15,6 @@
  */
 package internal.app.packed.operation;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle.AccessMode;
@@ -31,12 +29,13 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup.BeanFieldAccessSetup;
+import internal.app.packed.operation.BeanOperationSetup.BeanInstanceAccessSetup;
 import internal.app.packed.operation.BeanOperationSetup.BeanMethodInvokeSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Represents an invokable operation on a bean. */
-public abstract sealed class BeanOperationSetup extends OperationSetup permits BeanFieldAccessSetup, BeanMethodInvokeSetup {
+/** Represents an operation on a bean. */
+public abstract sealed class BeanOperationSetup extends OperationSetup permits BeanFieldAccessSetup, BeanMethodInvokeSetup, BeanInstanceAccessSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
@@ -58,13 +57,13 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
     public final OperationType type;
 
     public abstract MethodHandle methodHandle();
-    
+
     public abstract boolean isStatic();
-    
+
     public BeanOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationType invocationType) {
-        super(bean, type.parameterCount());
+        super(bean, type);
         this.type = type;
-        this.invocationType = requireNonNull(invocationType, "invocationType is null");
+        this.invocationType = invocationType;
         this.operator = operator;
     }
 
@@ -83,6 +82,32 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public static final class BeanInstanceAccessSetup extends BeanOperationSetup {
+
+        /**
+         * @param bean
+         * @param type
+         * @param operator
+         * @param invocationType
+         */
+        public BeanInstanceAccessSetup(BeanSetup bean) {
+            super(bean, OperationType.of(bean.beanClass()), null, null);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle methodHandle() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isStatic() {
+            return false;
+        }
+
     }
 
     /** Represents a field access on a bean */
@@ -118,7 +143,6 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
             this.accessMode = accessMode;
             this.methodHandle = methodHandle;
         }
-        
 
         /** {@inheritDoc} */
         @Override

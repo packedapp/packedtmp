@@ -16,6 +16,7 @@
 package internal.app.packed.operation;
 
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationType;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -24,7 +25,9 @@ import internal.app.packed.container.ExtensionSetup;
 // Som jeg kan se kan vi ikke faa cirkler her...
 // Vi aldrig exposer et result som kan bruges af andre
 // Vi tillader kun args, contexts, services
-public final class FusingOperationSetup extends OperationSetup {
+
+// BindingHelperOperation
+public final class FusedOperationSetup extends OperationSetup {
 
     public final BeanOperationSetup bos;
 
@@ -35,14 +38,18 @@ public final class FusingOperationSetup extends OperationSetup {
      * @param bean
      * @param count
      */
-    protected FusingOperationSetup(BeanOperationSetup bos, int count) {
-        super(bos.bean, count);
+    protected FusedOperationSetup(BeanOperationSetup bos, OperationType type) {
+        super(bos.bean, type);
         this.bos = bos;
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationMirror mirror() {
+        // FusedOperationMirror <- a fused operation are simple
+        // helper operation that extensions uses to provide values
+        // to bindings
+        
         throw new UnsupportedOperationException();
     }
 }

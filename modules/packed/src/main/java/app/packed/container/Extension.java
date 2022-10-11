@@ -145,7 +145,7 @@ public abstract class Extension<E extends Extension<E>> {
      * @return
      */
     protected final boolean isRoot() {
-        return setup.parent == null;
+        return setup.treeParent == null;
     }
 
     /**
@@ -211,8 +211,8 @@ public abstract class Extension<E extends Extension<E>> {
      */
     // Hmm InternalExtensionException hvis det er brugerens skyld??
     protected void onApplicationClose() {
-        for (ExtensionSetup c = setup.childFirst; c != null; c = c.childSiebling) {
-            c.instance().onApplicationClose();
+        for (ExtensionSetup e = setup.treeFirstChild; e != null; e = e.treeNextSiebling) {
+            e.instance().onApplicationClose();
         }
     }
 
@@ -242,7 +242,7 @@ public abstract class Extension<E extends Extension<E>> {
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
         ExtensionSetup s = setup;
-        for (ExtensionSetup c = s.childFirst; c != null; c = c.childSiebling) {
+        for (ExtensionSetup c = s.treeFirstChild; c != null; c = c.treeNextSiebling) {
             if (c.container.assembly == s.container.assembly) {
                 c.instance().onAssemblyClose();
             }
@@ -264,7 +264,7 @@ public abstract class Extension<E extends Extension<E>> {
     /** @return the parent of this extension if present. */
     @SuppressWarnings("unchecked")
     protected final Optional<E> parent() {
-        ExtensionSetup parent = setup.parent;
+        ExtensionSetup parent = setup.treeParent;
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
@@ -272,8 +272,8 @@ public abstract class Extension<E extends Extension<E>> {
     @SuppressWarnings("unchecked")
     protected final E root() {
         ExtensionSetup s = setup;
-        while (s.parent != null) {
-            s = s.parent;
+        while (s.treeParent != null) {
+            s = s.treeParent;
         }
         return (E) s.instance();
     }

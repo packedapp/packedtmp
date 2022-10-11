@@ -16,6 +16,7 @@
 package internal.app.packed.operation;
 
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
@@ -25,21 +26,25 @@ import internal.app.packed.operation.binding.BindingSetup;
 
 // Hvad er en operation? En operation er noget der skal have en OperationMirror
 
-public sealed abstract class OperationSetup permits BeanOperationSetup, FusingOperationSetup, CompositeOperationSetup {
+public sealed abstract class OperationSetup permits BeanOperationSetup, FusedOperationSetup, CompositeOperationSetup {
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] EMPTY = new BindingSetup[0];
 
     /** The bean this operation concerns. */
     public final BeanSetup bean;
-    
+
     /** Bindings for this operation. {@code null} represents an unbound parameter, maybe yes. */
     public final BindingSetup[] bindings;
 
-    protected OperationSetup(BeanSetup bean, int count) {
+    /** The type of the operation. */
+    public final OperationType type;
+
+    protected OperationSetup(BeanSetup bean, OperationType type) {
         this.bean = bean;
-        this.bindings = count == 0 ? EMPTY : new BindingSetup[count];
+        this.type = type;
+        this.bindings = type.parameterCount() == 0 ? EMPTY : new BindingSetup[type.parameterCount()];
     }
-    
+
     public abstract OperationMirror mirror();
 }

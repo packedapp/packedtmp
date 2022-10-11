@@ -22,12 +22,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import app.packed.operation.OperationTargetMirror.OfAccessBeanInstance;
 import app.packed.operation.OperationTargetMirror.OfConstructorInvoke;
 import app.packed.operation.OperationTargetMirror.OfFieldAccess;
 import app.packed.operation.OperationTargetMirror.OfFunctionCall;
-import app.packed.operation.OperationTargetMirror.OfInstanceAccess;
 import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
 import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
+import internal.app.packed.operation.OperationTarget;
 
 /**
  * The target of an operation.
@@ -43,7 +44,7 @@ import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
 // OperationLocationmirror?
 // OperationKindMirror?
 // InvocationSiteMirror
-public sealed interface OperationTargetMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfInstanceAccess, OfMethodInvoke, OfSyntheticInvoke {
+public sealed interface OperationTargetMirror permits OperationTarget, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfAccessBeanInstance, OfMethodInvoke, OfSyntheticInvoke {
 
     // AnnotataionReader annotations()???
 
@@ -88,7 +89,10 @@ public sealed interface OperationTargetMirror permits OfConstructorInvoke, OfFie
      * Represents an operation that simply return an instance
      */
     // BeanSpace? ConstantSpace?
-    public non-sealed interface OfInstanceAccess extends OperationTargetMirror {
+    // was offInstanceAccess
+    
+    // Er det kun bean instance??
+    public non-sealed interface OfAccessBeanInstance extends OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
         Optional<OperationTargetMirror> origin();
@@ -105,7 +109,7 @@ public sealed interface OperationTargetMirror permits OfConstructorInvoke, OfFie
     } // ofLifetimePool? Hmm
 
     /** Represents an operation that invokes a method. */
-    public non-sealed interface OfMethodInvoke extends OperationTargetMirror  {
+    public non-sealed interface OfMethodInvoke extends OperationTargetMirror {
 
         /** {@return the invokable method.} */
         Method method();

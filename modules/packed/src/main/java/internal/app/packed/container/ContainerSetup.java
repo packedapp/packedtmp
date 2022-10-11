@@ -57,6 +57,8 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     /** The assembly from where the component is being installed. */
     public final AssemblySetup assembly;
 
+    public final Map<Class<?>, Object> beanClassMap = new HashMap<>();
+
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
     public final LinkedHashMap<String, BeanOrContainerSetup> children = new LinkedHashMap<>();
@@ -92,15 +94,17 @@ public final class ContainerSetup extends BeanOrContainerSetup {
 
     /** The container this component belongs to, or null for a root container. */
     @Nullable
-    public final ContainerSetup parent;
+    public final ContainerSetup treeParent;
 
     /** Wirelets that was specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
 
-    public final Map<Class<?>, Object> beanClassMap = new HashMap<>();
 
+    /** The realm used to install this component. */
+    public final RealmSetup realm;
+    
     /**
      * Create a new container setup.
      * 
@@ -117,8 +121,9 @@ public final class ContainerSetup extends BeanOrContainerSetup {
      */
     public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
-        super(realm);
-        this.parent = parent;
+        this.realm = requireNonNull(realm);
+        realm.wireNew(this);
+        this.treeParent = parent;
         this.application = requireNonNull(application);
         this.assembly = realm;
         if (parent == null) {
@@ -288,7 +293,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
     /** {@inheritDoc} */
     @Override
     public @Nullable ContainerSetup parent() {
-        return parent;
+        return treeParent;
     }
 
     /** {@return the path of this component} */
@@ -301,7 +306,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             ContainerSetup acc = this;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
-                acc = acc.parent;
+                acc = acc.treeParent;
             }
             yield new PackedNamespacePath(paths);
         }
@@ -380,7 +385,7 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             }
 
             // The extension must be recursively installed into the root container if not already installed in parent
-            ExtensionSetup extensionParent = parent == null ? null : parent.useExtensionSetup(extensionClass, requestedByExtension);
+            ExtensionSetup extensionParent = treeParent == null ? null : treeParent.useExtensionSetup(extensionClass, requestedByExtension);
 
             // Create the extension. (This will also add an entry to #extensions)
 
@@ -388,5 +393,11 @@ public final class ContainerSetup extends BeanOrContainerSetup {
             extension.initialize();
         }
         return extension;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public RealmSetup realm() {
+        return realm;
     }
 }

@@ -131,7 +131,7 @@ public final class AssemblySetup extends RealmSetup {
 
         // Test and see if we are closing the root container
 
-        if (container.parent == null) {
+        if (container.treeParent == null) {
             // Root container
             // We must also close all extensions application-wide.
             ArrayList<ExtensionRealmSetup> list = new ArrayList<>(extensions.size());
@@ -220,7 +220,7 @@ public final class AssemblySetup extends RealmSetup {
         @Override
         public Optional<AssemblyMirror> parent() {
             ContainerSetup org = assembly.container;
-            for (ContainerSetup p = org.parent; p != null; p = p.parent) {
+            for (ContainerSetup p = org.treeParent; p != null; p = p.treeParent) {
                 if (org.assembly != p.assembly) {
                     return Optional.of(p.assembly.mirror());
                 }
@@ -248,7 +248,7 @@ public final class AssemblySetup extends RealmSetup {
         /** {@inheritDoc} */
         @Override
         public boolean isRoot() {
-            return assembly.container.parent == null;
+            return assembly.container.treeParent == null;
         }
 
         /** {@inheritDoc} */

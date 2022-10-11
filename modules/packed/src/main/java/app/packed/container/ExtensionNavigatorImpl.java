@@ -15,14 +15,10 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
 
-import app.packed.base.Nullable;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.util.InsertionOrderedTree;
 
 /**
  *
@@ -35,7 +31,7 @@ record ExtensionNavigatorImpl<T extends Extension<T>> (ExtensionSetup extension,
     /** {@inheritDoc} */
     @Override
     public Iterator<T> iterator() {
-        return new PreOrderIterator<>(extension, e -> (T) extensionType.cast(e.instance()));
+        return new InsertionOrderedTree.MappedPreOrderIterator<>(extension, e -> (T) extensionType.cast(e.instance()));
     }
 
     /** {@inheritDoc} */
@@ -54,60 +50,5 @@ record ExtensionNavigatorImpl<T extends Extension<T>> (ExtensionSetup extension,
     @Override
     public ExtensionDescriptor extensionDescriptor() {
         return extension.model;
-    }
-
-    /** A pre-order iterator for a rooted extension tree. */
-    static final class PreOrderIterator<T extends Extension<?>> implements Iterator<T> {
-
-        /** A mapper that is applied to each node. */
-        private final Function<ExtensionSetup, T> mapper;
-
-        /** The next extension, null if there are no next. */
-        @Nullable
-        private ExtensionSetup next;
-
-        /** The root extension. */
-        private final ExtensionSetup root;
-
-        PreOrderIterator(ExtensionSetup root, Function<ExtensionSetup, T> mapper) {
-            this.root = this.next = root;
-            this.mapper = mapper;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean hasNext() {
-            return next != null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public T next() {
-            ExtensionSetup n = next;
-            if (n == null) {
-                throw new NoSuchElementException();
-            }
-
-            if (n.childFirst != null) {
-                next = n.childFirst;
-            } else {
-                next = next(n);
-            }
-
-            return mapper.apply(n);
-        }
-
-        private ExtensionSetup next(ExtensionSetup current) {
-            requireNonNull(current);
-            if (current.childSiebling != null) {
-                return current.childSiebling;
-            }
-            ExtensionSetup parent = current.parent;
-            if (parent == root || parent == null) {
-                return null;
-            } else {
-                return next(parent);
-            }
-        }
     }
 }

@@ -15,19 +15,23 @@
  */
 package internal.app.packed.operation.binding;
 
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.FusedOperationSetup;
 
 /**
  *
  */
-public final class ServiceBindingSetup extends BindingSetup {
+// Hvis vi tager en Op (Hvad vi vil goer... Saa kan vi jo ogsaa vaere methods)
+public final class FusedBindingSetup extends BindingSetup {
 
+    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
+    public ExtensionSetup managedBy;
+    
     /**
      * @param beanOperation
      * @param index
      */
-    public ServiceBindingSetup(BeanOperationSetup beanOperation, int index) {
-        super(beanOperation, index);
+    public FusedBindingSetup(FusedOperationSetup dynamicOperation, int index) {
+        super(dynamicOperation.bos, index);
     }
-
 }

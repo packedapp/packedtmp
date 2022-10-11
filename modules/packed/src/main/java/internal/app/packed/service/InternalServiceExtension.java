@@ -81,7 +81,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
     public InternalServiceExtension(ContainerSetup container) {
         this.container = container;
         // TODO Husk at checke om man har en extension realm inde
-        this.parent = container.parent == null ? null : container.parent.injectionManager;
+        this.parent = container.treeParent == null ? null : container.treeParent.injectionManager;
 
     }
 

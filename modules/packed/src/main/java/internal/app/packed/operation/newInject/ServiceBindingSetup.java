@@ -13,26 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package internal.app.packed.operation.newInject;
 
 import app.packed.base.Nullable;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.binding.BindingSetup;
 
 /**
- * A binding to a constant.
+ *
  */
-public final class ConstantBindingSetup extends BindingSetup {
+public final class ServiceBindingSetup extends BindingSetup {
 
-    public ConstantBindingSetup(BeanOperationSetup operation, int index, Object constant) {
-        super(operation, index);
-        this.constant = constant;
-    }
+    // Noget omkring required
+    final ServiceManager.Entry entry;
 
-    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
-    public ExtensionSetup managedBy;
-    
-    /** The constant that was bound. */
+    // A binding in the same container for the same key
     @Nullable
-    public final Object constant;
+    ServiceBindingSetup nextFriend;
+
+    final boolean required;
+
+    /**
+     * @param beanOperation
+     * @param index
+     */
+    ServiceBindingSetup(BeanOperationSetup operation, int index, ServiceManager.Entry entry, boolean required) {
+        super(operation, index);
+        this.entry = entry;
+        this.required = required;
+    }
 }

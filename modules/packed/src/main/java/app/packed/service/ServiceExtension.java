@@ -128,6 +128,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     // Saa maske smide ISE hvis der allerede er exporteret services. Det betyder naesten ogsaa
     // at @Export ikke er supporteret
     // ect have exportAll(boolean ignoreExplicitExports) (Otherwise fails)
+    
+    // All provided services are automatically exported
     public void exportAll() {
         // Tror vi aendre den til streng service solve...
         // Og saa tager vi bare alle services() og exportere
@@ -205,6 +207,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // ST.contract throws UOE
     }
 
+    // Think we need installPrototype (Which will fail if not provided or exported)
+    // providePrototype would then be installPrototype().provide() // not ideal
+    // Men taenker vi internt typisk arbejde op i mod implementering. Dog ikke altid
+    // providePerRequest <-- every time the service is requested
+    // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
         BeanHandle<T> handle = bean().newManytonBean(implementation, LifetimeConf.START_ONLY);
         return new ProvideableBeanConfiguration<T>(handle).provide();
@@ -508,9 +515,9 @@ class ServiceExtensionBadIdeas {
 //}
 class ZExtraFunc {
 
-    protected void addAlias(Class<?> existing, Class<?> newKey) {}
+    //protected void addAlias(Class<?> existing, Class<?> newKey) {}
 
-    protected void addAlias(Key<?> existing, Key<?> newKey) {}
+    //protected void addAlias(Key<?> existing, Key<?> newKey) {}
 
     // Maaske er det her mere injection then service
 
