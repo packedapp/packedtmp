@@ -52,7 +52,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
     public final ArrayList<DependencyNode> consumers = new ArrayList<>();
 
     /** */
-    private final ContainerSetup container;
+    public final ContainerSetup container;
 
     /** An error manager that is lazily initialized. */
     @Nullable

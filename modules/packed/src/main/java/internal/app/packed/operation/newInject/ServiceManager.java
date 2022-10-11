@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.DublicateServiceExportException;
+import app.packed.service.DublicateServiceProvideException;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.util.InsertionOrderedTree;
@@ -32,17 +33,14 @@ public final class ServiceManager extends InsertionOrderedTree<ServiceManager> {
     final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
 
     // All provided services are automatically exported
-    boolean exportAll;
+    public boolean exportAll;
 
-    final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
 
     public ServiceManager(@Nullable ServiceManager parent) {
         super(parent);
     }
 
-    public void addExport(Key<?> key, BeanOperationSetup operation) {
-         add(new ExportedService(operation, key));
-    }
     public void add(ExportedService e) {
         ExportedService existing = exports.putIfAbsent(e.key, e);
         if (existing != null) {
@@ -71,16 +69,24 @@ public final class ServiceManager extends InsertionOrderedTree<ServiceManager> {
         }).bindings;
     }
 
+    public void addExport(Key<?> key, BeanOperationSetup operation) {
+        add(new ExportedService(operation, key));
+    }
+
     public ProvidedService addProvision(Key<?> key, BeanOperationSetup bos) {
-        return entries.compute(key, (k, v) -> {
+        Entry e = entries.compute(key, (k, v) -> {
             if (v == null) {
                 v = new Entry(k);
             } else if (v.provider != null) {
-                throw new RuntimeException("A service has already been bound for key " + key);
+                throw new DublicateServiceProvideException("A service has already been bound for key " + key);
             } // else we have some bindings but no provider
             v.provider = new ProvidedService(bos, v);
             return v;
-        }).provider;
+        });
+        if (exportAll) {
+            addExport(key, bos);
+        }
+        return e.provider;
     }
 
     public void verify() {

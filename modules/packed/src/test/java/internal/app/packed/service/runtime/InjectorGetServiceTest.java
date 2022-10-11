@@ -33,7 +33,7 @@ public class InjectorGetServiceTest {
     public void isRuntimeServices() {
         ServiceLocator i = ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provide(A.class).export();
+            c.provide(A.class);
         });
 
         assertThat(i.findInstance(A.class).get()).isInstanceOf(A.class);

@@ -128,7 +128,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     // Saa maske smide ISE hvis der allerede er exporteret services. Det betyder naesten ogsaa
     // at @Export ikke er supporteret
     // ect have exportAll(boolean ignoreExplicitExports) (Otherwise fails)
-    
+
     // All provided services are automatically exported
     public void exportAll() {
         // Tror vi aendre den til streng service solve...
@@ -144,6 +144,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkIsConfigurable();
         delegate.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+
+        setup.container.serviceManager.exportAll = true;
     }
 
     @Override
@@ -156,7 +158,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
-                BeanOperationSetup operation = ((IntrospectorOnField) field).newInternalGetOperation(setup, InvocationType.defaults());
+                IntrospectorOnField iof = ((IntrospectorOnField) field);
+
+                BeanOperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
+
+                iof.introspector.bean.container.serviceManager.addProvision(key, operation);
 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
@@ -169,7 +175,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = method.methodToKey();
                 boolean constant = method.annotations().readRequired(Provide.class).constant();
 
-                BeanOperationSetup operation = ((IntrospectorOnMethod) method).newOperation(setup, InvocationType.defaults());
+                IntrospectorOnMethod iom = ((IntrospectorOnMethod) method);
+                
+                BeanOperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
+
+                iom.introspector.bean.container.serviceManager.addProvision(key, operation);
 
                 // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
@@ -515,9 +525,9 @@ class ServiceExtensionBadIdeas {
 //}
 class ZExtraFunc {
 
-    //protected void addAlias(Class<?> existing, Class<?> newKey) {}
+    // protected void addAlias(Class<?> existing, Class<?> newKey) {}
 
-    //protected void addAlias(Key<?> existing, Key<?> newKey) {}
+    // protected void addAlias(Key<?> existing, Key<?> newKey) {}
 
     // Maaske er det her mere injection then service
 

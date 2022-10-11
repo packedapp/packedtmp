@@ -40,7 +40,7 @@ public class InjectorWithTest {
         ServiceLocator i = ServiceLocator.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
-            c.provide(AExt.class).provideAs(new Key<@Left A>() {});
+            c.install(AExt.class).provideAs(new Key<@Left A>() {});
         });
 
         assertThat(i.use(A.class)).isInstanceOf(A.class);

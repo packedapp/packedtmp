@@ -454,6 +454,16 @@ public interface ServiceLocator {
             return container().use(BeanExtension.class).install(op).provide();
         }
 
+        public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
+            extension();
+            return container().use(BeanExtension.class).install(op);
+        }
+        public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
+            extension();
+            return container().use(BeanExtension.class).install(op);
+        }
+
+        
         /**
          * Binds all services from the specified injector.
          * <p>
