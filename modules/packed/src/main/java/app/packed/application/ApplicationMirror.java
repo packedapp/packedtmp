@@ -12,7 +12,6 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.Mirror;
 
@@ -128,13 +127,11 @@ public class ApplicationMirror implements Mirror {
         for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
             print0(e);
         }
-        for (Object b : cs.children.values()) {
-            if (b instanceof BeanSetup bs) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(bs.path()).append("");
-                sb.append(" [").append(bs.beanClass().getName()).append("], owner = " + bs.owner());
-                System.out.println(sb.toString());
-            }
+        for (var b = cs.firstBean; b != null; b = b.nextBean) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(b.path()).append("");
+            sb.append(" [").append(b.beanClass().getName()).append("], owner = " + b.owner());
+            System.out.println(sb.toString());
         }
     }
 

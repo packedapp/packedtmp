@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -47,7 +46,7 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> implements BeanOrContainerSetup {
-    
+
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
             "initialize", void.class, ContainerSetup.class);
@@ -57,20 +56,15 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
 
     /** The assembly from where the component is being installed. */
     public final AssemblySetup assembly;
-    
+
     public final Map<Class<?>, Object> beanClassMap = new HashMap<>();
 
     /** Children of this node in insertion order. */
     // Maybe have an extra List just with beans? IDK
     public final LinkedHashMap<String, BeanOrContainerSetup> children = new LinkedHashMap<>();
 
-    /** Children that are containers (subset of ContainerSetup.children), lazy initialized. */
-    @Nullable
-    @Deprecated
-    public ArrayList<ContainerSetup> containerChildren;
-
     /** The depth of the component in the application tree. */
-    public final int depth;
+    public final int depth; // maintain in InsertionTree?
 
     /**
      * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns a
@@ -105,6 +99,12 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
+
+    @Nullable
+    public BeanSetup firstBean;
+
+    @Nullable
+    public BeanSetup lastBean;
 
     /**
      * Create a new container setup.
@@ -182,16 +182,6 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
             }
         }
 
-        // Various container tree-node management
-        if (parent != null) {
-            // Add this container to the children of the parent
-            ArrayList<ContainerSetup> c = parent.containerChildren;
-            if (c == null) {
-                c = parent.containerChildren = new ArrayList<>(5);
-            }
-            c.add(this);
-        }
-
         // Set the name of the container if it was not set by a wirelet
         if (name == null) {
             // I think try and move some of this to ComponentNameWirelet
@@ -220,12 +210,11 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
         assert name != null;
     }
 
-
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
-    
+
     public String getName() {
         return name;
     }
@@ -236,10 +225,10 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
             children.put(name, this);
         } else {
             String n = name;
-            
+
             while (children.putIfAbsent(n, this) != null) {
                 n = name + size++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
-                                      // million of the same component type
+                                   // million of the same component type
             }
         }
     }
@@ -300,6 +289,14 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     @Override
     public @Nullable ContainerSetup parent() {
         return treeParent;
+    }
+
+    public int beanCount() {
+        int count = 0;
+        for (var b = firstBean; b != null; b = b.nextBean) {
+            count += 1;
+        }
+        return count;
     }
 
     /** {@return the path of this component} */

@@ -41,20 +41,10 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The build-time configuration of a bean. */
-public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
+public non-sealed class BeanSetup implements BeanOrContainerSetup , BeanInfo {
 
-    /** The name of this component. */
-    @Nullable
-    private String name;
+    private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
             void.class, BeanSetup.class);
@@ -66,9 +56,9 @@ public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
     /** The container this bean is registered in. */
     public final ContainerSetup container;
 
-    /** The realm used to install this component. */
-    public final RealmSetup realm;
-    
+    @Nullable
+    public BeanSetup nextBean;
+
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
     public final BeanInjectionManager injectionManager;
@@ -79,6 +69,10 @@ public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
     /** Supplies a mirror for the operation */
     Supplier<? extends BeanMirror> mirrorSupplier = () -> new BeanMirror();
 
+    /** The name of this component. */
+    @Nullable
+    private String name;
+
     @Nullable
     public Runnable onWiringAction;
 
@@ -87,6 +81,9 @@ public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
 
     /** Various properties of the bean. */
     public final BeanProps props;
+
+    /** The realm used to install this component. */
+    public final RealmSetup realm;
 
     /**
      * Create a new bean setup.
@@ -146,65 +143,30 @@ public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
         }
 
         // This will add it to the list of beans in the container
-         container.initBeanName(this, initialName);
-    }
+        container.initBeanName(this, initialName);
 
-    private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
-
-    static <T> BeanHandle<T> install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
-            BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.Option... options) {
-        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
+        BeanSetup siebling = container.lastBean;
+        if (siebling == null) {
+            container.firstBean = this;
+        } else {
+            siebling.nextBean = this;
         }
-
-        // The various options, with default values.
-        boolean nonUnique = false;
-        BeanIntrospector customIntrospector = null;
-        String namePrefix = null;
-
-        // Process each option
-        requireNonNull(options, "options is null");
-        for (Option o : options) {
-            requireNonNull(o, "option was null");
-            if (o instanceof InstallerOption.CustomIntrospector ci) {
-                if (!kind.hasInstances()) {
-                    throw new IllegalArgumentException("Custom Introspector cannot be used with functional or static beans");
-                }
-                customIntrospector = ci.introspector();
-            } else if (o instanceof InstallerOption.CustomPrefix cp) {
-                namePrefix = cp.prefix();
-            } else {
-                if (!kind.hasInstances()) {
-                    throw new IllegalArgumentException("NonUnique cannot be used with functional or static beans");
-                }
-                nonUnique = true;
-            }
-        }
-
-        realm.wireCurrentComponent();
-
-        BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
-        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix, nonUnique);
-
-        BeanSetup bean = new BeanSetup(realm, bp);
-
-        // Scan the bean class for annotations unless the bean class is void or is from a java package
-        if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
-            new Introspector(bean, customIntrospector).introspect();
-        }
-
-        return new PackedBeanHandle<>(bean);
+        container.lastBean = this;
     }
 
     public <T extends BeanOperationSetup> T addOperation(T operation) {
         operations.add(requireNonNull(operation));
         return operation;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {
         return props.beanClass();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public LifetimeSetup lifetime() {
@@ -253,6 +215,84 @@ public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
         return container;
     }
 
+    /** {@return the path of this component} */
+    public final NamespacePath path() {
+        int depth = container.depth + 1;
+        return switch (depth) {
+        case 1 -> new PackedNamespacePath(name);
+        default -> {
+            String[] paths = new String[depth];
+            paths[depth] = name;
+            ContainerSetup acc = container;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.getName();
+                acc = acc.treeParent;
+            }
+            yield new PackedNamespacePath(paths);
+        }
+        };
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public RealmSetup realm() {
+        return realm;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
+        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
+        return bh.bean();
+    }
+
+    static <T> BeanHandle<T> install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
+            BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.Option... options) {
+        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+            throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
+        }
+
+        // The various options, with default values.
+        boolean nonUnique = false;
+        BeanIntrospector customIntrospector = null;
+        String namePrefix = null;
+
+        // Process each option
+        requireNonNull(options, "options is null");
+        for (Option o : options) {
+            requireNonNull(o, "option was null");
+            if (o instanceof InstallerOption.CustomIntrospector ci) {
+                if (!kind.hasInstances()) {
+                    throw new IllegalArgumentException("Custom Introspector cannot be used with functional or static beans");
+                }
+                customIntrospector = ci.introspector();
+            } else if (o instanceof InstallerOption.CustomPrefix cp) {
+                namePrefix = cp.prefix();
+            } else {
+                if (!kind.hasInstances()) {
+                    throw new IllegalArgumentException("NonUnique cannot be used with functional or static beans");
+                }
+                nonUnique = true;
+            }
+        }
+
+        realm.wireCurrentComponent();
+
+        BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
+        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix, nonUnique);
+
+        BeanSetup bean = new BeanSetup(realm, bp);
+
+        // Scan the bean class for annotations unless the bean class is void or is from a java package
+        if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
+            new Introspector(bean, customIntrospector).introspect();
+        }
+
+        return new PackedBeanHandle<>(bean);
+    }
+
     public static <T> BeanHandle<T> installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind,
             Class<T> clazz, BeanHandle.Option... options) {
         requireNonNull(clazz, "clazz is null");
@@ -274,34 +314,5 @@ public non-sealed class BeanSetup  implements BeanOrContainerSetup, BeanInfo {
             BeanHandle.Option... options) {
         PackedOp<T> pop = PackedOp.crack(op);
         return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
-    }
-
-    /** {@return the path of this component} */
-    public final NamespacePath path() {
-        int depth = container.depth + 1;
-        return switch (depth) {
-        case 1 -> new PackedNamespacePath(name);
-        default -> {
-            String[] paths = new String[depth];
-            paths[depth] = name;
-            ContainerSetup acc = container;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.getName();
-                acc = acc.treeParent;
-            }
-            yield new PackedNamespacePath(paths);
-        }
-        };
-    }
-
-    public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
-        PackedBeanHandle<?> bh = (PackedBeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
-        return bh.bean();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public RealmSetup realm() {
-        return realm;
     }
 }

@@ -14,7 +14,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
@@ -56,10 +55,8 @@ public class ContainerMirror implements Mirror {
     public Collection<BeanMirror> beans() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (Object s : container.children.values()) {
-            if (s instanceof BeanSetup b) {
-                beans.add(b.mirror());
-            }
+        for (var b = container().firstBean; b != null; b = b.nextBean) {
+            beans.add(b.mirror());
         }
         return List.copyOf(beans);
         // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
