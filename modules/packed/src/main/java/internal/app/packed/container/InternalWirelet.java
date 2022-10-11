@@ -108,7 +108,7 @@ public abstract class InternalWirelet extends Wirelet {
          *            the name to override any existing container name with
          */
         public OverrideNameWirelet(String name) {
-            this.name = BeanOrContainerSetup.checkComponentName(name); // throws IAE
+            this.name = NameCheck.checkComponentName(name); // throws IAE
         }
 
         /** {@inheritDoc} */

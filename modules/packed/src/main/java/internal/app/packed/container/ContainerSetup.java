@@ -67,7 +67,7 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     public BeanSetup beanLast;
 
     /** Maintains unique names for beans and child containers. */
-    public final HashMap<String, BeanOrContainerSetup> children = new HashMap<>();
+    public final HashMap<String, Object> children = new HashMap<>();
 
     /** The depth of the component in the application tree. */
     public final int depth; // maintain in InsertionTree?
@@ -248,7 +248,7 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (treeParent != null) {
-            HashMap<String, BeanOrContainerSetup> c = treeParent.children;
+            HashMap<String, Object> c = treeParent.children;
             if (c.size() == 0) {
                 c.put(name, this);
             } else {
@@ -424,7 +424,7 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     /** {@inheritDoc} */
     public void named(String newName) {
         // We start by validating the new name of the component
-        BeanOrContainerSetup.checkComponentName(newName);
+        NameCheck.checkComponentName(newName);
 
         // Check that this component is still active and the name can be set
         checkIsCurrent();

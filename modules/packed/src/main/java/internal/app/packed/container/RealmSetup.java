@@ -41,7 +41,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
 
     /** The current active component in the realm. */
     @Nullable
-    private BeanOrContainerSetup currentComponent;
+    private Object currentComponent;
 
     /** Whether or not this realm is configurable. */
     private boolean isClosed;
@@ -67,7 +67,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
         return isClosed;
     }
 
-    public boolean isCurrent(BeanOrContainerSetup component) {
+    public boolean isCurrent(Object component) {
         return currentComponent == component;
     }
 
@@ -114,8 +114,9 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
      * @param newComponent
      *            the new component
      */
-    public void wireNew(BeanOrContainerSetup newComponent) {
+    public void wireNew(Object newComponent) {
         assert (currentComponent == null);
+        // assert instanceof BeanSetup or ContainerSetup
         // next is not fully formed but called from the constructor of ComponentSetup
         currentComponent = requireNonNull(newComponent);
     }

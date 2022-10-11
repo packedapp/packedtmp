@@ -15,27 +15,9 @@
  */
 package internal.app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import internal.app.packed.bean.BeanSetup;
-
 /** Abstract build-time setup of a component. */
-public abstract sealed interface BeanOrContainerSetup permits ContainerSetup, BeanSetup {
+public interface BeanOrContainerSetup {
 
-    /**
-     * Checks the name of the component.
-     * 
-     * @param name
-     *            the name to check
-     * @return the name if valid
-     */
-    public static String checkComponentName(String name) {
-        requireNonNull(name, "name is null");
-        if (name != null) {
-
-        }
-        return name;
-    }
 }
 
 //

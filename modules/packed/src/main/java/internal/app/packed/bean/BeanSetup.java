@@ -31,6 +31,7 @@ import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
 import internal.app.packed.container.BeanOrContainerSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.BeanOperationSetup;
@@ -193,7 +194,7 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     /** {@inheritDoc} */
     public void named(String newName) {
         // We start by validating the new name of the component
-        BeanOrContainerSetup.checkComponentName(newName);
+        NameCheck.checkComponentName(newName);
 
         // Check that this component is still active and the name can be set
         checkIsCurrent();
