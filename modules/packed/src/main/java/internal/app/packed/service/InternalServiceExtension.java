@@ -129,8 +129,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
 
         return new PackedServiceLocator(Map.copyOf(runtimeEntries));
     }
-    
-    
+
     public void prepareDependants() {
         // First we take all locally defined services
         for (ServiceSetup entry : localServices) {
@@ -148,19 +147,17 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         }
 
         // Process exports from any children
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
-                InternalServiceExtension child = c.injectionManager;
+        for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
+            InternalServiceExtension child = c.injectionManager;
 
-                WireletWrapper wirelets = c.wirelets;
-                if (wirelets != null) {
-                    PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
-                }
+            WireletWrapper wirelets = c.wirelets;
+            if (wirelets != null) {
+                PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
+            }
 
-                if (child != null && child.ios.hasExports()) {
-                    for (ServiceSetup a : child.ios.exports()) {
-                        resolvedServices.computeIfAbsent(a.key(), k -> new ServiceDelegate()).resolve(this, a);
-                    }
+            if (child != null && child.ios.hasExports()) {
+                for (ServiceSetup a : child.ios.exports()) {
+                    resolvedServices.computeIfAbsent(a.key(), k -> new ServiceDelegate()).resolve(this, a);
                 }
             }
         }
@@ -179,12 +176,10 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         // Add error messages if any nodes with the same key have been added multiple times
 
         // Process child requirements to children
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
-                InternalServiceExtension m = c.injectionManager;
-                if (m != null) {
-                    m.processWirelets(container);
-                }
+        for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
+            InternalServiceExtension m = c.injectionManager;
+            if (m != null) {
+                m.processWirelets(container);
             }
         }
     }
@@ -242,14 +237,12 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
     }
 
     public void resolve() {
-        if (container.containerChildren != null) {
-            for (ContainerSetup c : container.containerChildren) {
-                if (c.realm == container.realm) {
-                    c.injectionManager.resolve();
-                }
+        for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
+            if (c.realm == container.realm) {
+                c.injectionManager.resolve();
             }
         }
-        
+
         // Resolve local services
         prepareDependants();
 
