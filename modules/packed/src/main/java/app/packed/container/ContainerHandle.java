@@ -5,12 +5,18 @@ import java.util.Set;
 
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.operation.OperationHandle;
-import internal.app.packed.container.PackedContainerHandle;
+import internal.app.packed.container.ContainerSetup;
 
 /**
  *
  */
-public sealed interface ContainerHandle permits PackedContainerHandle {
+public final class ContainerHandle {
+
+    final ContainerSetup container;
+
+    ContainerHandle(ContainerSetup container) {
+        this.container = container;
+    }
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -20,13 +26,15 @@ public sealed interface ContainerHandle permits PackedContainerHandle {
      * 
      * @return a set of disabled extensions
      */
-    public abstract Set<Class<? extends Extension<?>>> bannedExtensions();
+    public Set<Class<? extends Extension<?>>> bannedExtensions() {
+        throw new UnsupportedOperationException();
+    }
 
-    default List<OperationHandle> lifetimeOperations() {
+    public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
 
-    interface Option {
+   public interface Option {
 
         static Option allowRuntimeWirelets() {
             return null;

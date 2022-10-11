@@ -30,7 +30,6 @@ import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
@@ -48,7 +47,7 @@ public final class AssemblySetup extends RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            AssemblySetup.class, ContainerConfiguration.class);
+            AssemblySetup.class, ContainerSetup.class);
     
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -65,8 +64,6 @@ public final class AssemblySetup extends RealmSetup {
 
     /** The container defined by this assembly. */
     public final ContainerSetup container;
-
-    private final PackedContainerHandle containerHandle;
 
     /**
      * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
@@ -91,10 +88,9 @@ public final class AssemblySetup extends RealmSetup {
         this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
 
         this.container = application.container;
-        this.containerHandle = new PackedContainerHandle(container);
     }
 
-    public AssemblySetup(PackedContainerHandle handle, ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+    public AssemblySetup(ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
         this.application = linkTo.application;
@@ -102,15 +98,12 @@ public final class AssemblySetup extends RealmSetup {
             throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
         }
         this.container = new ContainerSetup(application, this, linkTo, wirelets);
-        this.containerHandle = handle;
     }
 
     public void build() {
-        ContainerConfiguration configuration = containerHandle.toConfiguration(container);
-
         // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
         try {
-            MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, this, configuration);
+            MH_ASSEMBLY_DO_BUILD.invokeExact(assembly, this, container);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

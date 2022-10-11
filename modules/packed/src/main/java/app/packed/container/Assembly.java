@@ -23,6 +23,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -124,7 +125,8 @@ public abstract class Assembly {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings("unused")
-    private void doBuild(AssemblySetup assembly, ContainerConfiguration configuration) {
+    private void doBuild(AssemblySetup assembly, ContainerSetup container) {
+        ContainerConfiguration configuration£ = new ContainerConfiguration(new ContainerHandle(container)); 
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
@@ -170,6 +172,6 @@ public abstract class Assembly {
     // I'm not totally crazy about it though.
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
-        configuration().container.assembly.lookup(lookup);
+        configuration().handle.container.assembly.lookup(lookup);
     }
 }

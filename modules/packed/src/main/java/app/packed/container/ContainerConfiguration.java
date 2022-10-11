@@ -8,8 +8,6 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerHandle;
 
 /**
  * The configuration of a container.
@@ -24,11 +22,11 @@ public class ContainerConfiguration {
 
     /** The component we are configuring. Is only null for {@link #USED}. */
     @Nullable
-    final ContainerSetup container;
+    final ContainerHandle handle;
 
     /** Used by {@link #USED}. */
     private ContainerConfiguration() {
-        this.container = null;
+        this.handle = null;
     }
 
     /**
@@ -38,7 +36,7 @@ public class ContainerConfiguration {
      *            the container handle
      */
     public ContainerConfiguration(ContainerHandle handle) {
-        this.container = requireNonNull((PackedContainerHandle) handle, "handle is null").setup;
+        this.handle = requireNonNull(handle, "handle is null");
     }
 
     // On container or assembly???
@@ -58,14 +56,14 @@ public class ContainerConfiguration {
      *             if the container is no longer configurable
      */
     protected void checkIsConfigurable() {
-        if (container.realm.isClosed()) {
+        if (handle.container.realm.isClosed()) {
             throw new IllegalStateException("This container is no longer configurable");
         }
     }
 
     /** {@inheritDoc} */
     protected final void checkIsCurrent() {
-        container.checkIsCurrent();
+        handle.container.checkIsCurrent();
     }
 
     final void embed(Assembly assembly) {
@@ -84,7 +82,7 @@ public class ContainerConfiguration {
      * @see ContainerMirror#extensionsTypes()
      */
     public final Set<Class<? extends Extension<?>>> extensionTypes() {
-        return container.extensionTypes();
+        return handle.container.extensionTypes();
     }
 
     /**
@@ -98,11 +96,7 @@ public class ContainerConfiguration {
      *           cannot give a more detailed answer about who is using a particular extension
      */
     public final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return container.isExtensionUsed(extensionType);
-    }
-
-    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-        return link(new PackedContainerHandle(container), assembly, wirelets);
+        return handle.container.isExtensionUsed(extensionType);
     }
 
     /**
@@ -116,18 +110,16 @@ public class ContainerConfiguration {
      *            optional wirelets
      * @return the component that was linked
      */
-    //// Har svaert ved at se at brugere vil bruge deres egen ContainerDRiver...
-    private ContainerMirror link(ContainerHandle handle, Assembly assembly, Wirelet... wirelets) {
-        PackedContainerHandle d = (PackedContainerHandle) requireNonNull(handle, "driver is null");
+    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
 
         // Check that the container is still configurable
         checkIsConfigurable();
 
         // Wire any current component
-        container.assembly.wireCurrentComponent();
+        handle.container.assembly.wireCurrentComponent();
 
         // Create a new realm for the assembly
-        AssemblySetup as = new AssemblySetup(d, container, assembly, wirelets);
+        AssemblySetup as = new AssemblySetup(handle.container, assembly, wirelets);
 
         // Close the new realm again after the assembly has been successfully linked
         as.build();
@@ -151,7 +143,7 @@ public class ContainerConfiguration {
      * @see Wirelet#named(String)
      */
     public ContainerConfiguration named(String name) {
-        container.named(name);
+        handle.container.named(name);
         return this;
     }
 
@@ -194,18 +186,18 @@ public class ContainerConfiguration {
      * @return the path of this configuration.
      */
     public final NamespacePath path() {
-        return container.path();
+        return handle.container.path();
     }
 
     // never selects extension wirelets...
     public final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
-        return container.selectWirelets(wireletClass);
+        return handle.container.selectWirelets(wireletClass);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return container.toString();
+        return handle.toString();
     }
 
     /**
@@ -227,7 +219,7 @@ public class ContainerConfiguration {
      * @see BaseAssembly#use(Class)
      */
     public final <E extends Extension<?>> E use(Class<E> extensionClass) {
-        return container.useExtension(extensionClass);
+        return handle.container.useExtension(extensionClass);
     }
 }
 
