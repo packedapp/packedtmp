@@ -41,7 +41,7 @@ import internal.app.packed.operation.PackedOperationHandle;
 /**
  * Implementation of {@link OnFieldHook}.
  */
-public final class IntrospectorOnField implements OnFieldHook {
+public final class BeanFieldIntrospector implements OnFieldHook {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -60,7 +60,7 @@ public final class IntrospectorOnField implements OnFieldHook {
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    private IntrospectorOnField(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations) {
+    private BeanFieldIntrospector(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations) {
         this.introspector = introspector;
         this.operator = operator;
         this.field = field;
@@ -78,7 +78,7 @@ public final class IntrospectorOnField implements OnFieldHook {
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
-        return new IntrospectorAnnotationReader(annotations);
+        return new BeanAnnotationReader(annotations);
     }
 
     /** {@inheritDoc} */
@@ -224,7 +224,7 @@ public final class IntrospectorOnField implements OnFieldHook {
                 Introspector.ExtensionEntry entry = introspector.computeExtensionEntry(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
-                IntrospectorOnField f = new IntrospectorOnField(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
+                BeanFieldIntrospector f = new BeanFieldIntrospector(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
                         e.isSettable || entry.hasFullAccess(), new Annotation[] { annotation });
 
                 entry.introspector().onFieldHook(f); // Calls BeanIntrospection.onField
@@ -234,7 +234,7 @@ public final class IntrospectorOnField implements OnFieldHook {
                     Introspector.ExtensionEntry entry = introspector.computeExtensionEntry(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    IntrospectorOnField f = new IntrospectorOnField(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),
+                    BeanFieldIntrospector f = new BeanFieldIntrospector(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),
                             mf.allowSet || entry.hasFullAccess(), annotations);
 
                     entry.introspector().onFieldHook(f); // Calls BeanIntrospection.onField

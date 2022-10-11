@@ -25,7 +25,7 @@ import app.packed.base.Key;
 
 // Vi kunne jo have noget a.la. en counter paa bean, hvis > 5
 // Saa cacher vi interessante ting (i en softreference)
-final class BeanClassModel {
+final class BeanModel {
 
     /** The class of the model. */
     public final Class<?> clazz;
@@ -33,7 +33,7 @@ final class BeanClassModel {
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
 
-    BeanClassModel(Class<?> clazz) {
+    BeanModel(Class<?> clazz) {
         this.clazz = clazz;
     }
     

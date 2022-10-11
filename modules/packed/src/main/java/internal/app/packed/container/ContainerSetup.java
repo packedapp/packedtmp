@@ -124,9 +124,10 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, AssemblySetup realm, PackedContainerHandle handle, @Nullable ContainerSetup parent,
+    public ContainerSetup(ApplicationSetup application, AssemblySetup realm, @Nullable ContainerSetup parent,
             Wirelet[] wirelets) {
         super(parent);
+        
         this.realm = requireNonNull(realm);
         realm.wireNew(this);
         this.application = requireNonNull(application);
@@ -247,7 +248,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     public void checkIsCurrent() {
-        if (!isCurrent()) {
+        if (!realm.isCurrent(this)) {
             String errorMsg;
             // if (realm.container == this) {
             errorMsg = "This operation must be called as the first thing in Assembly#build()";
@@ -257,10 +258,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
             throw new IllegalStateException(errorMsg);
         }
-    }
-
-    public boolean isCurrent() {
-        return realm.isCurrent(this);
     }
     
     /**

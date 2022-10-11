@@ -25,7 +25,7 @@ import app.packed.container.Extension;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.IntrospectorAnnotationReader;
+import internal.app.packed.bean.BeanAnnotationReader;
 import internal.app.packed.operation.BeanOperationSetup;
 
 /**
@@ -53,7 +53,7 @@ public final class PackedOnBindingHook implements OnBindingHook {
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
-        return new IntrospectorAnnotationReader(variable().getAnnotations());
+        return new BeanAnnotationReader(variable().getAnnotations());
     }
 
     private void bind(BindingSetup bs) {

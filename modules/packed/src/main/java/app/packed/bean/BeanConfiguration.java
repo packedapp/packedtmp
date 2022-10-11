@@ -10,7 +10,7 @@ import app.packed.base.NamespacePath;
 public class BeanConfiguration {
 
     /** The bean handle. */
-    final BeanHandle<?> handle;
+    private final BeanHandle<?> handle;
 
     /**
      * Create a new bean configuration using the specified handle.
@@ -22,7 +22,7 @@ public class BeanConfiguration {
         this.handle = requireNonNull((BeanHandle<?>) handle, "handle is null");
     }
 
-    /** {@return the kind of bean that is being configured.} */
+    /** {@return the bean class.} */
     public final Class<?> beanClass() {
         return handle.beanClass();
     }

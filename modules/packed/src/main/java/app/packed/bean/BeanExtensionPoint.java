@@ -11,7 +11,7 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetup.InstallerOption;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
@@ -223,7 +223,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
-    public sealed interface InstallOption permits BeanSetup.InstallerOption {
+    public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
 
         /**
          * Registers a bean introspector that will be used instead of the framework calling
@@ -239,7 +239,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          */
         static InstallOption introspectWith(BeanIntrospector introspector) {
             requireNonNull(introspector, "introspector is null");
-            return new InstallerOption.CustomIntrospector(introspector);
+            return new BeanInstallOption.CustomIntrospector(introspector);
         }
 
         /**
@@ -256,7 +256,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          *             if build has previously been called on the builder
          */
         static InstallOption namePrefix(String prefix) {
-            return new InstallerOption.CustomPrefix(prefix);
+            return new BeanInstallOption.CustomPrefix(prefix);
         }
 
         /**
@@ -270,7 +270,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          *             if {@code void} bean class
          */
         static InstallOption multiInstall() {
-            return new InstallerOption.MultiInstall();
+            return new BeanInstallOption.MultiInstall();
         }
     }
 }

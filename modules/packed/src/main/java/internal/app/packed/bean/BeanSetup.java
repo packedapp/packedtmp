@@ -26,9 +26,9 @@ import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
-import internal.app.packed.bean.BeanSetup.InstallerOption.CustomIntrospector;
-import internal.app.packed.bean.BeanSetup.InstallerOption.CustomPrefix;
-import internal.app.packed.bean.BeanSetup.InstallerOption.MultiInstall;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomIntrospector;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomPrefix;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption.MultiInstall;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
@@ -41,7 +41,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
-/** The build-time configuration of a bean. */
+/** The internal configuration of a bean. */
 public final class BeanSetup implements BeanInfo {
 
     private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
@@ -149,7 +149,7 @@ public final class BeanSetup implements BeanInfo {
 
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
-        
+
         // Create a new BeanMirror
         BeanMirror mirror;
         if (mirrorSupplier == null) {
@@ -179,7 +179,7 @@ public final class BeanSetup implements BeanInfo {
 
         // Unless we are the root container. We need to insert this component in the parent container
         if (container.children.putIfAbsent(newName, this) != null) {
-            if (newName.equals(name)) { // tried to set same name, just ignore
+            if (newName.equals(name)) { // tried to set the current name
                 return;
             }
             throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
@@ -249,12 +249,12 @@ public final class BeanSetup implements BeanInfo {
         requireNonNull(options, "options is null");
         for (InstallOption o : options) {
             requireNonNull(o, "option was null");
-            if (o instanceof InstallerOption.CustomIntrospector ci) {
+            if (o instanceof BeanInstallOption.CustomIntrospector ci) {
                 if (!kind.hasInstances()) {
                     throw new IllegalArgumentException("Custom Introspector cannot be used with functional or static beans");
                 }
                 customIntrospector = ci.introspector();
-            } else if (o instanceof InstallerOption.CustomPrefix cp) {
+            } else if (o instanceof BeanInstallOption.CustomPrefix cp) {
                 prefix = cp.prefix();
             } else {
                 if (!kind.hasInstances()) {
@@ -266,7 +266,7 @@ public final class BeanSetup implements BeanInfo {
 
         realm.wireCurrentComponent();
 
-        BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
+        BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
 
         BeanSetup bean = new BeanSetup(realm, kind, beanClass, sourceKind, source, operator, extensionOwner);
 
@@ -372,13 +372,14 @@ public final class BeanSetup implements BeanInfo {
         return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
     }
 
+    /** The various install options. */
     // Silly Eclipse compiler requires permits here (bug)
-    public sealed interface InstallerOption extends BeanExtensionPoint.InstallOption permits MultiInstall, CustomIntrospector, CustomPrefix {
+    public sealed interface BeanInstallOption extends BeanExtensionPoint.InstallOption permits MultiInstall, CustomIntrospector, CustomPrefix {
 
-        public record MultiInstall() implements InstallerOption {}
+        public record MultiInstall() implements BeanInstallOption {}
 
-        public record CustomIntrospector(BeanIntrospector introspector) implements InstallerOption {}
+        public record CustomIntrospector(BeanIntrospector introspector) implements BeanInstallOption {}
 
-        public record CustomPrefix(String prefix) implements InstallerOption {}
+        public record CustomPrefix(String prefix) implements BeanInstallOption {}
     }
 }

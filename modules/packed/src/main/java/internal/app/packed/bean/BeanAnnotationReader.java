@@ -22,7 +22,7 @@ import app.packed.bean.BeanIntrospector.AnnotationReader;
 /**
  *
  */
-public record IntrospectorAnnotationReader(Annotation[] annotations) implements AnnotationReader {
+public record BeanAnnotationReader(Annotation[] annotations) implements AnnotationReader {
 
     /** {@inheritDoc} */
     @Override

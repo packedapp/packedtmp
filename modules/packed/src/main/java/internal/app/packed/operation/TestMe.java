@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.container;
+package internal.app.packed.operation;
 
 import app.packed.application.App;
 import app.packed.bean.BeanExtension;
@@ -29,8 +29,8 @@ public class TestMe extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        bean().install(Foo.class);
-        bean().install(Foo.class);
+        bean().multiInstall(Foo.class);
+        bean().multiInstall(Foo.class);
         use(MyExt.class).hashCode();
     }
 
@@ -39,14 +39,17 @@ public class TestMe extends BaseAssembly {
         App.print(new TestMe());
     }
 
-    public record Foo() {}                  
+    public record Foo() {}
 
     @DependsOn(extensions = BeanExtension.class)
-    static class MyExt extends Extension<MyExt> {
+    public static class MyExt extends Extension<MyExt> {
+        MyExt() {}
+
         @Override
         protected void onNew() {
+            // Hah virker ikke lige nu, fordi extensions ikke har separat boen container
             bean().install(Foo.class);
-            record X() {};
+            record X() {}
             bean().install(X.class);
         }
     }

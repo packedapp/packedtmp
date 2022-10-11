@@ -27,7 +27,6 @@ import app.packed.container.Wirelet;
 import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedContainerHandle;
 import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.service.inject.ApplicationInjectionManager;
@@ -74,7 +73,7 @@ public final class ApplicationSetup {
         this.goal = requireNonNull(goal);
 
         // Create the root container of the application
-        this.container = new ContainerSetup(this, realm, new PackedContainerHandle(null), null, wirelets);
+        this.container = new ContainerSetup(this, realm, null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool

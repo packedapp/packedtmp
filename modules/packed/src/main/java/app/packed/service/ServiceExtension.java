@@ -29,8 +29,8 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
-import internal.app.packed.bean.IntrospectorOnField;
-import internal.app.packed.bean.IntrospectorOnMethod;
+import internal.app.packed.bean.BeanFieldIntrospector;
+import internal.app.packed.bean.BeanMethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.service.InternalServiceExtension;
@@ -158,7 +158,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
-                IntrospectorOnField iof = ((IntrospectorOnField) field);
+                BeanFieldIntrospector iof = ((BeanFieldIntrospector) field);
 
                 BeanOperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
 
@@ -175,7 +175,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = method.methodToKey();
                 boolean constant = method.annotations().readRequired(Provide.class).constant();
 
-                IntrospectorOnMethod iom = ((IntrospectorOnMethod) method);
+                BeanMethodIntrospector iom = ((BeanMethodIntrospector) method);
                 
                 BeanOperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 

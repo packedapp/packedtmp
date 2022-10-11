@@ -49,8 +49,8 @@ import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.IntrospectorOnField;
-import internal.app.packed.bean.IntrospectorOnMethod;
+import internal.app.packed.bean.BeanFieldIntrospector;
+import internal.app.packed.bean.BeanMethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.binding.PackedOnBindingHook;
 
@@ -480,7 +480,7 @@ public abstract class BeanIntrospector {
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
-    public sealed interface OnFieldHook permits IntrospectorOnField {
+    public sealed interface OnFieldHook permits BeanFieldIntrospector {
 
         /** {@return an annotation reader for the field.} */
         AnnotationReader annotations();
@@ -577,7 +577,7 @@ public abstract class BeanIntrospector {
      * This class represents a {@link Method} on a bean.
      * 
      */
-    public sealed interface OnMethod permits IntrospectorOnMethod {
+    public sealed interface OnMethod permits BeanMethodIntrospector {
 
         /** {@return an annotation reader for the method.} */
         AnnotationReader annotations();

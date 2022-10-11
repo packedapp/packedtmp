@@ -71,7 +71,7 @@ public final class Introspector {
     // Should be made lazily??? I think
     final OpenClass oc;
 
-    public Introspector(BeanClassModel model, BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
+    public Introspector(BeanModel model, BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
         this.bean = bean;
         this.beanClass = bean.beanClass();
         this.beanHandleIntrospector = beanHandleIntrospector;
@@ -113,7 +113,7 @@ public final class Introspector {
         introspectClass();
 
         // Process all fields on the bean
-        IntrospectorOnField.introspectFields(this, beanClass);
+        BeanFieldIntrospector.introspectFields(this, beanClass);
 
         // Process all methods on the bean
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -218,7 +218,7 @@ public final class Introspector {
             if (fh != null) {
                 ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
 
-                IntrospectorOnMethod pbm = new IntrospectorOnMethod(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
+                BeanMethodIntrospector pbm = new BeanMethodIntrospector(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
 
                 ei.introspector.onMethodHook(pbm);
             }

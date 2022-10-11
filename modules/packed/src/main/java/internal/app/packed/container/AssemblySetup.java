@@ -101,7 +101,7 @@ public final class AssemblySetup extends RealmSetup {
         if (assembly instanceof ComposerAssembly) {
             throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
         }
-        this.container = new ContainerSetup(application, this, handle, linkTo, wirelets);
+        this.container = new ContainerSetup(application, this, linkTo, wirelets);
         this.containerHandle = handle;
     }
 

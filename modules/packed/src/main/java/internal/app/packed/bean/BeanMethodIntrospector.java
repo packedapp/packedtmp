@@ -34,7 +34,7 @@ import internal.app.packed.operation.BeanOperationSetup.BeanMethodInvokeSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class IntrospectorOnMethod implements OnMethod {
+public final class BeanMethodIntrospector implements OnMethod {
 
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
@@ -52,7 +52,7 @@ public final class IntrospectorOnMethod implements OnMethod {
     @Nullable
     private OperationType type;
 
-    IntrospectorOnMethod(Introspector introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
+    BeanMethodIntrospector(Introspector introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
         this.introspector = introspector;
         this.operator = operator;
         this.method = method;
@@ -62,7 +62,7 @@ public final class IntrospectorOnMethod implements OnMethod {
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
-        return new IntrospectorAnnotationReader(annotations);
+        return new BeanAnnotationReader(annotations);
     }
 
     /** {@return modifiers for the member.} */
