@@ -58,11 +58,16 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     /** The assembly from where the component is being installed. */
     public final AssemblySetup assembly;
 
-    public final Map<Class<?>, Object> beanClassMap = new HashMap<>();
+    public final Map<Class<?>, Object> beanClassMap = new HashMap<>(); // Must have unique beans unless multi
 
-    /** Children of this node in insertion order. */
-    // Maybe have an extra List just with beans? IDK
-    public final LinkedHashMap<String, BeanOrContainerSetup> children = new LinkedHashMap<>();
+    @Nullable
+    public BeanSetup beanFirst;
+
+    @Nullable
+    public BeanSetup beanLast;
+
+    /** Maintains unique names for beans and child containers. */
+    public final HashMap<String, BeanOrContainerSetup> children = new HashMap<>();
 
     /** The depth of the component in the application tree. */
     public final int depth; // maintain in InsertionTree?
@@ -96,18 +101,12 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
     /** The realm used to install this component. */
     public final RealmSetup realm;
 
+    public final ServiceManager sm;
+
     /** Wirelets that was specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
-
-    @Nullable
-    public BeanSetup firstBean;
-
-    @Nullable
-    public BeanSetup lastBean;
-
-    public final ServiceManager serviceManager;
 
     /**
      * Create a new container setup.
@@ -131,11 +130,11 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
         this.application = requireNonNull(application);
         this.assembly = realm;
         if (parent == null) {
-            this.serviceManager = new ServiceManager(null);
+            this.sm = new ServiceManager(null);
             this.depth = 0;
             this.lifetime = new ContainerLifetimeSetup((ContainerSetup) this, null);
         } else {
-            this.serviceManager = new ServiceManager(parent.serviceManager);
+            this.sm = new ServiceManager(parent.sm);
             this.depth = parent.depth + 1;
             this.lifetime = parent.lifetime;
         }
@@ -215,6 +214,14 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
         assert name != null;
     }
 
+    public int beanCount() {
+        int count = 0;
+        for (var b = beanFirst; b != null; b = b.nextBean) {
+            count += 1;
+        }
+        return count;
+    }
+
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -288,20 +295,6 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable ContainerSetup parent() {
-        return treeParent;
-    }
-
-    public int beanCount() {
-        int count = 0;
-        for (var b = firstBean; b != null; b = b.nextBean) {
-            count += 1;
-        }
-        return count;
     }
 
     /** {@return the path of this component} */
@@ -411,5 +404,35 @@ public final class ContainerSetup extends InsertionOrderedTree<ContainerSetup> i
             extension.initialize();
         }
         return extension;
+    }
+
+    /** {@inheritDoc} */
+    public void named(String newName) {
+        // We start by validating the new name of the component
+        BeanOrContainerSetup.checkComponentName(newName);
+
+        // Check that this component is still active and the name can be set
+        checkIsCurrent();
+
+        String currentName = getName();
+
+        if (newName.equals(currentName)) {
+            return;
+        }
+
+        // If the name of the component (container) has been set using a wirelet.
+        // Any attempt to override will be ignored
+        if (isNameInitializedFromWirelet) {
+            return;
+        }
+
+        // Unless we are the root container. We need to insert this component in the parent container
+        if (treeParent != null) {
+            if (treeParent.children.putIfAbsent(newName, this) != null) {
+                throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
+            }
+            treeParent.children.remove(currentName);
+        }
+        setName(newName);
     }
 }

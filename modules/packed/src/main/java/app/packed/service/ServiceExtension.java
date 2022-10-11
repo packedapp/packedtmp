@@ -145,7 +145,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
         checkIsConfigurable();
         delegate.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
 
-        setup.container.serviceManager.exportAll = true;
+        setup.container.sm.exportAll = true;
     }
 
     @Override
@@ -162,7 +162,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
                 BeanOperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
 
-                iof.introspector.bean.container.serviceManager.addProvision(key, operation);
+                iof.introspector.bean.container.sm.addProvision(key, operation);
 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
@@ -179,7 +179,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 
                 BeanOperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 
-                iom.introspector.bean.container.serviceManager.addProvision(key, operation);
+                iom.introspector.bean.container.sm.addProvision(key, operation);
 
                 // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);

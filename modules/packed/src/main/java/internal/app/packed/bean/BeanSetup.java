@@ -144,13 +144,15 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
         // This will add it to the list of beans in the container
         container.initBeanName(this, initialName);
 
-        BeanSetup siebling = container.lastBean;
+        BeanSetup siebling = container.beanLast;
         if (siebling == null) {
-            container.firstBean = this;
+            container.beanFirst = this;
         } else {
             siebling.nextBean = this;
         }
-        container.lastBean = this;
+        container.beanLast = this;
+
+        // resolve Services
     }
 
     public <T extends BeanOperationSetup> T addOperation(T operation) {
@@ -170,6 +172,25 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
 
     public LifetimeSetup lifetime() {
         return lifetime;
+    }
+
+    /** {@inheritDoc} */
+    public void named(String newName) {
+        // We start by validating the new name of the component
+        BeanOrContainerSetup.checkComponentName(newName);
+
+        // Check that this component is still active and the name can be set
+        checkIsCurrent();
+
+        // Unless we are the root container. We need to insert this component in the parent container
+        if (container.children.putIfAbsent(newName, this) != null) {
+            if (newName.equals(name)) { // tried to set same name, just ignore
+                return;
+            }
+            throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
+        }
+        container.children.remove(name);
+        this.name = newName;
     }
 
     /** {@return a new mirror.} */
@@ -211,12 +232,6 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
     @Override
     public UserOrExtension owner() {
         return realm.realm();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContainerSetup parent() {
-        return container;
     }
 
     /** {@return the path of this component} */
@@ -292,6 +307,10 @@ public final class BeanSetup implements BeanOrContainerSetup , BeanInfo {
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
             new Introspector(bean, customIntrospector).introspect();
+        }
+
+        for (BeanOperationSetup o : bean.operations) {
+            o.resolve();
         }
 
         return new PackedBeanHandle<>(bean);

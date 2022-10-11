@@ -78,7 +78,7 @@ public final class ContainerServiceBinder {
     public ServiceContract newServiceContract() {
         ServiceContract.Builder builder = ServiceContract.builder();
 
-        cim.container.serviceManager.exports.keySet().forEach(k -> builder.provide(k));
+        cim.container.sm.exports.keySet().forEach(k -> builder.provide(k));
 
         // Add requirements (mandatory or optional)
         if (requirements != null && requirements.requirements != null) {

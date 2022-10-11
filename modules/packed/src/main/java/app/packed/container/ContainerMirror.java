@@ -55,7 +55,7 @@ public class ContainerMirror implements Mirror {
     public Collection<BeanMirror> beans() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
-        for (var b = container().firstBean; b != null; b = b.nextBean) {
+        for (var b = container().beanFirst; b != null; b = b.nextBean) {
             beans.add(b.mirror());
         }
         return List.copyOf(beans);

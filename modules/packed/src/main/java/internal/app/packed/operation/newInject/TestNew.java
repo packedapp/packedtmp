@@ -17,6 +17,7 @@ package internal.app.packed.operation.newInject;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
+import app.packed.service.Provide;
 
 /**
  *
@@ -26,11 +27,23 @@ public class TestNew extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        bean().multiInstallInstance("foo").provide();
-        bean().multiInstallInstance("foo").provide();
+        provideInstance("foo");
+        provide(Fop.class);
     }
     
     public static void main(String[] args) {
         App.run(new TestNew());
+        System.out.println("Bye");
+    }
+    
+    public static class Fop {
+        public Fop(String s) {
+            
+        }
+        
+        @Provide
+        public int foo(String s) {
+            return 34;
+        }
     }
 }

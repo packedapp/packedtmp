@@ -15,10 +15,13 @@
  */
 package internal.app.packed.operation;
 
+import java.util.List;
+
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.binding.BindingSetup;
+import internal.app.packed.service.inject.InternalDependency;
 
 /**
  * Represents a single operation.
@@ -47,4 +50,15 @@ public sealed abstract class OperationSetup permits BeanOperationSetup, FusedOpe
     }
 
     public abstract OperationMirror mirror();
+
+    public void resolve() {
+        List<InternalDependency> id = InternalDependency.fromOperationType(type);
+        for (int i = 0; i < bindings.length; i++) {
+            if (bindings[i] == null) {
+                System.out.println("XXX");
+                InternalDependency ia = id.get(i);
+                bean.container.sm.addBinding(ia.key(), !ia.isOptional(), (BeanOperationSetup) this, i);
+            }
+        }
+    }
 }

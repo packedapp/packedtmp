@@ -198,9 +198,9 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
             transform(transformer);
         }
         // 
-        if (!resolvedExports.keySet().equals(sm.container.serviceManager.exports.keySet())) {
+        if (!resolvedExports.keySet().equals(sm.container.sm.exports.keySet())) {
             System.out.println("ResolvedExports " + resolvedExports.keySet());
-            System.out.println("NewExports " + sm.container.serviceManager.exports.keySet());
+            System.out.println("NewExports " + sm.container.sm.exports.keySet());
             
             throw new Error();
         }

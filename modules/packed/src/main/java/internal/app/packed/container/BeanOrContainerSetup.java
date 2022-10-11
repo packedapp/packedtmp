@@ -17,18 +17,11 @@ package internal.app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 
 /** Abstract build-time setup of a component. */
 public abstract sealed interface BeanOrContainerSetup permits ContainerSetup, BeanSetup {
-
-    public abstract String getName();
-
-    public abstract void setName(String name);
-
-    public abstract RealmSetup realm();
 
     default void checkIsCurrent() {
         if (!isCurrent()) {
@@ -49,38 +42,7 @@ public abstract sealed interface BeanOrContainerSetup permits ContainerSetup, Be
 
     public abstract LifetimeSetup lifetime();
 
-    /** {@inheritDoc} */
-    default void named(String newName) {
-        // We start by validating the new name of the component
-        checkComponentName(newName);
-
-        // Check that this component is still active and the name can be set
-        checkIsCurrent();
-
-        String currentName = getName();
-
-        if (newName.equals(currentName)) {
-            return;
-        }
-
-        // If the name of the component (container) has been set using a wirelet.
-        // Any attempt to override will be ignored
-        if (this instanceof ContainerSetup cs && cs.isNameInitializedFromWirelet) {
-            return;
-        }
-
-        // Unless we are the root container. We need to insert this component in the parent container
-        if (parent() != null) {
-            if (parent().children.putIfAbsent(newName, this) != null) {
-                throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
-            }
-            parent().children.remove(currentName);
-        }
-        setName(newName);
-    }
-
-    @Nullable
-    abstract ContainerSetup parent();
+    public abstract RealmSetup realm();
 
     /**
      * Checks the name of the component.

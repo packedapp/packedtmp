@@ -127,7 +127,7 @@ public class ApplicationMirror implements Mirror {
         for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
             print0(e);
         }
-        for (var b = cs.firstBean; b != null; b = b.nextBean) {
+        for (var b = cs.beanFirst; b != null; b = b.nextBean) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
             sb.append(" [").append(b.beanClass().getName()).append("], owner = " + b.owner());
