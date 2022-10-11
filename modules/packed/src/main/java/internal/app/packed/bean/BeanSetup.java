@@ -14,8 +14,9 @@ import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanExtensionPoint;
+import app.packed.bean.BeanExtensionPoint.InstallOption;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -51,12 +52,10 @@ public final class BeanSetup implements BeanInfo {
             void.class, BeanSetup.class);
 
     /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
-            BeanHandle.class);
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle", BeanHandle.class);
 
     /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean",
-            BeanSetup.class);
+    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
 
     /** The container this bean is registered in. */
     public final ContainerSetup container;
@@ -286,7 +285,7 @@ public final class BeanSetup implements BeanInfo {
     }
 
     static BeanSetup install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
-            BeanSourceKind sourceKind, @Nullable Object source, BeanHandle.InstallOption... options) {
+            BeanSourceKind sourceKind, @Nullable Object source, BeanExtensionPoint.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
@@ -334,31 +333,31 @@ public final class BeanSetup implements BeanInfo {
         return bean;
     }
 
-    public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind,
-            Class<?> clazz, BeanHandle.InstallOption... options) {
+    public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Class<?> clazz,
+            BeanExtensionPoint.InstallOption... options) {
         requireNonNull(clazz, "clazz is null");
         return install(operator, realm, extensionOwner, clazz, kind, BeanSourceKind.CLASS, clazz, options);
     }
 
     public static BeanSetup installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
-            BeanHandle.InstallOption... options) {
+            BeanExtensionPoint.InstallOption... options) {
         return install(operator, realm, extensionOwner, void.class, BeanKind.FUNCTIONAL, BeanSourceKind.NONE, null, options);
     }
 
     public static BeanSetup installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Object instance,
-            BeanHandle.InstallOption... options) {
+            BeanExtensionPoint.InstallOption... options) {
         requireNonNull(instance, "instance is null");
         return install(operator, realm, extensionOwner, instance.getClass(), BeanKind.CONTAINER, BeanSourceKind.INSTANCE, instance, options);
     }
 
     public static BeanSetup installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Op<?> op,
-            BeanHandle.InstallOption... options) {
+            BeanExtensionPoint.InstallOption... options) {
         PackedOp<?> pop = PackedOp.crack(op);
         return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
     }
-    
+
     // Silly Eclipse compiler requires permits here (bug)
-    public sealed interface InstallerOption extends BeanHandle.InstallOption permits NonUnique, CustomIntrospector, CustomPrefix {
+    public sealed interface InstallerOption extends BeanExtensionPoint.InstallOption permits NonUnique, CustomIntrospector, CustomPrefix {
 
         public record NonUnique() implements InstallerOption {}
 

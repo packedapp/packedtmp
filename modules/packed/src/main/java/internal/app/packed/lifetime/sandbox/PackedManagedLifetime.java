@@ -22,8 +22,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.managed.LifetimeState;
+import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.managed.StopOption;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.ApplicationSetup;

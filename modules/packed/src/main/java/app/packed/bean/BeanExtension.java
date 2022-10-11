@@ -1,6 +1,6 @@
 package app.packed.bean;
 
-import app.packed.bean.BeanHandle.InstallOption;
+import app.packed.bean.BeanExtensionPoint.InstallOption;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.operation.InvocationType;

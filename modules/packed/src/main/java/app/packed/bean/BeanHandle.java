@@ -24,13 +24,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetup.InstallerOption;
 
 /**
  * A bean handle represents a private configuration installed bean.
@@ -141,56 +139,6 @@ public final /* primitive */ class BeanHandle<T> {
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
-    public sealed interface InstallOption permits BeanSetup.InstallerOption {
-        
-        /**
-         * Registers a bean introspector that will be used instead of the framework calling
-         * {@link Extension#newBeanIntrospector}.
-         * 
-         * @param introspector
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if the bean has a void bean class
-         * 
-         * @see Extension#newBeanIntrospector
-         */
-        static InstallOption introspectWith(BeanIntrospector introspector) {
-            requireNonNull(introspector, "introspector is null");
-            return new InstallerOption.CustomIntrospector(introspector);
-        }
-        
-        /**
-         * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
-         * <p>
-         * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
-         * the specified prefix as the name of the bean. Otherwise, it will append a postfix to specified prefix in such a way
-         * that the name of the bean is unique.
-         * 
-         * @param prefix
-         *            the prefix used for naming the bean
-         * @return this builder
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
-         */
-        static InstallOption namePrefix(String prefix) {
-            return new InstallerOption.CustomPrefix(prefix);
-        }
-        
-        /**
-         * Allows for multiple beans of the same type in a single container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
-         * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
-         */
-        static InstallOption nonUnique() {
-            return new InstallerOption.NonUnique();
-        }
-    }
 }
 
 //
