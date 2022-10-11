@@ -58,6 +58,7 @@ import internal.app.packed.operation.binding.PackedOnBindingHook;
  * @see Extension#newBeanIntrospector
  */
 public abstract class BeanIntrospector {
+    
     /**
      * The configuration of this processor. Is initially null but populated via
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.

@@ -30,7 +30,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup;
-import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
+import internal.app.packed.operation.BeanOperationSetup.BeanMethodOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -96,7 +96,9 @@ public final class IntrospectorOnMethod implements OnMethod {
     public BeanOperationSetup newOperation(ExtensionSetup extension, InvocationType invocationType) {
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
         MethodHandle methodHandle = introspector.oc.unreflect(method);
-        return introspector.bean.addOperation(extension, operationType(), invocationType, new MethodOperationTarget(methodHandle, method));
+
+        return introspector.bean
+                .addOperation(new BeanMethodOperationSetup(introspector.bean, extension, operationType(), invocationType, method, methodHandle));
     }
 
     /** {@inheritDoc} */

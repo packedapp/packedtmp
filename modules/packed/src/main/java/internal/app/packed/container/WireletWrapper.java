@@ -19,7 +19,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 
 /** A holder of wirelets. */
-// Vi har faktisk ogsaa for den her paa runtime...
+// Vi har faktisk ogsaa brug for den her paa runtime...
 // Saa vi kan ikke kode den ind i ComponentSetup
 public final class WireletWrapper {
 

@@ -10,7 +10,7 @@ import app.packed.container.WireletSelection;
 
 // Lige nu bliver den brugt 3 steder fra.
 // WireletHandle.of <- mainly for test
-// ComponentSetup
+// ContainerSetup
 // RuntimeSetup
 
 /** Implementation of {@link WireletSelection}. */

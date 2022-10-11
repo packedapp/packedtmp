@@ -19,6 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle.AccessMode;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.function.Supplier;
 
 import app.packed.operation.InvocationType;
@@ -26,11 +29,15 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.BeanOperationSetup.BeanFieldOperationSetup;
+import internal.app.packed.operation.BeanOperationSetup.BeanMethodOperationSetup;
+import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
+import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Build-time configuration of an operation. */
-public final class BeanOperationSetup extends OperationSetup {
+/** Represents an invokable operation on a bean. */
+public abstract sealed class BeanOperationSetup extends OperationSetup permits BeanFieldOperationSetup, BeanMethodOperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
@@ -77,5 +84,50 @@ public final class BeanOperationSetup extends OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public static final class BeanMethodOperationSetup extends BeanOperationSetup {
+
+        public final Method method;
+
+        public final MethodHandle methodHandle;
+
+        /**
+         * @param bean
+         * @param type
+         * @param operator
+         * @param invocationType
+         * @param target
+         */
+        public BeanMethodOperationSetup(BeanSetup bean, ExtensionSetup operator, OperationType operationType, InvocationType invocationType, Method method,
+                MethodHandle methodHandle) {
+            super(bean, operationType, operator, invocationType, new MethodOperationTarget(methodHandle, method));
+            this.method = method;
+            this.methodHandle = methodHandle;
+        }
+    }
+
+    public static final class BeanFieldOperationSetup extends BeanOperationSetup {
+
+        public final Field field;
+
+        public final AccessMode accessMode;
+
+        public final MethodHandle methodHandle;
+
+        /**
+         * @param bean
+         * @param type
+         * @param operator
+         * @param invocationType
+         * @param target
+         */
+        public BeanFieldOperationSetup(BeanSetup bean, ExtensionSetup operator, InvocationType invocationType, Field field, AccessMode accessMode,
+                MethodHandle methodHandle) {
+            super(bean, OperationType.ofFieldAccess(field, accessMode), operator, invocationType, new FieldOperationTarget(methodHandle, field, accessMode));
+            this.field = field;
+            this.accessMode = accessMode;
+            this.methodHandle = methodHandle;
+        }
     }
 }

@@ -32,11 +32,10 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup;
-import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
+import internal.app.packed.operation.BeanOperationSetup.BeanFieldOperationSetup;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -71,8 +70,7 @@ public final class IntrospectorOnField implements OnFieldHook {
     }
 
     private BeanOperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
-        return introspector.bean.addOperation(operator, OperationType.ofFieldAccess(field, accessMode), invocationType,
-                new FieldOperationTarget(mh, field, accessMode));
+        return introspector.bean.addOperation(new BeanFieldOperationSetup(introspector.bean, operator, invocationType, field, accessMode, mh));
     }
 
     /** {@inheritDoc} */
@@ -100,7 +98,7 @@ public final class IntrospectorOnField implements OnFieldHook {
         return new PackedOperationHandle(add(mh, invocationType, accessMode));
     }
 
-    public BeanOperationSetup newGetOperation(ExtensionSetup operator, InvocationType invocationType) {
+    public BeanOperationSetup newInternalGetOperation(ExtensionSetup operator, InvocationType invocationType) {
         MethodHandle mh = introspector.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
         return add(mh, invocationType, accessMode);

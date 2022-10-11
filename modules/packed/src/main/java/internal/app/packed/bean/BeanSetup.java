@@ -25,9 +25,7 @@ import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.UserOrExtension;
-import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
-import app.packed.operation.OperationType;
 import app.packed.operation.Provider;
 import internal.app.packed.bean.PackedBeanHandle.InstallerOption;
 import internal.app.packed.container.BeanOrContainerSetup;
@@ -36,7 +34,6 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.BeanOperationSetup;
-import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
@@ -183,16 +180,11 @@ public final class BeanSetup extends BeanOrContainerSetup implements BeanInfo {
         return new PackedBeanHandle<>(bean);
     }
 
-    public void addOperation(BeanOperationSetup operation) {
+    public BeanOperationSetup addOperation(BeanOperationSetup operation) {
         operations.add(requireNonNull(operation));
+        return operation;
     }
-
-    public BeanOperationSetup addOperation(ExtensionSetup extension, OperationType type, InvocationType invocationType, OperationTarget target) {
-        BeanOperationSetup os = new BeanOperationSetup(this, type, extension, invocationType, target);
-        operations.add(os);
-        return os;
-    }
-
+    
     /** {@inheritDoc} */
     @Override
     public Class<?> beanClass() {

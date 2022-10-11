@@ -154,7 +154,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
-                BeanOperationSetup operation = ((IntrospectorOnField) field).newGetOperation(setup, InvocationType.defaults());
+                BeanOperationSetup operation = ((IntrospectorOnField) field).newInternalGetOperation(setup, InvocationType.defaults());
 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);

@@ -332,7 +332,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
             try {
                 Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
                 // unreflect the constructor and cast from (ExtensionClass) -> (Extension)
-                this.mhConstructor = MethodHandles.explicitCastArguments(l.unreflectConstructor(constructor), MethodType.methodType(Extension.class));
+                MethodHandle mh = l.unreflectConstructor(constructor);
+                this.mhConstructor = MethodHandles.explicitCastArguments(mh, MethodType.methodType(Extension.class));
             } catch (IllegalAccessException e) {
                 throw new InternalExtensionException(extensionClass + " must be open to app.packed", e);
             }
@@ -354,7 +355,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 requireNonNull(dependencyType);
                 if (extensionClass == dependencyType) {
                     throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
-                } else if (this.pendingLoadDependencies.contains(dependencyType)) {
+                } else if (pendingLoadDependencies.contains(dependencyType)) {
                     throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
                 }
                 pendingLoadDependencies.add(dependencyType);

@@ -20,17 +20,17 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
- *
+ * Represents a single invokable operation.
  */
 public sealed abstract class OperationSetup permits BeanOperationSetup, DynamicBindingOperationSetup {
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] EMPTY = new BindingSetup[0];
 
-    /** The bean that defines the operation. */
+    /** The bean this operation concerns. */
     public final BeanSetup bean;
     
-    /** Any binding for the operation. {@code null} represents an unbound parameter. */
+    /** Bindings for this operation. {@code null} represents an unbound parameter, maybe yes. */
     public final BindingSetup[] bindings;
 
     protected OperationSetup(BeanSetup bean, int count) {
