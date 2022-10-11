@@ -23,13 +23,12 @@ import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import internal.app.packed.bean.BeanSetup.InstallerOption.CustomIntrospector;
 import internal.app.packed.bean.BeanSetup.InstallerOption.CustomPrefix;
-import internal.app.packed.bean.BeanSetup.InstallerOption.NonUnique;
+import internal.app.packed.bean.BeanSetup.InstallerOption.MultiInstall;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
@@ -52,10 +51,10 @@ public final class BeanSetup implements BeanInfo {
             void.class, BeanSetup.class);
 
     /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle", BeanHandle.class);
+    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
 
     /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
+    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle", BeanHandle.class);
 
     /** The container this bean is registered in. */
     public final ContainerSetup container;
@@ -89,14 +88,13 @@ public final class BeanSetup implements BeanInfo {
     public final RealmSetup realm;
 
     /**
-     * Create a new bean setup.
+     * Create a new bean.
      * 
      * @param props
      *            the handle builder
      */
     public BeanSetup(RealmSetup owner, BeanProps props) {
         this.realm = requireNonNull(owner);
-        realm.wireNew(this);
         this.props = props;
         this.container = props.operator().container;
         this.lifetime = container.lifetime;
@@ -106,67 +104,6 @@ public final class BeanSetup implements BeanInfo {
         } else {
             this.injectionManager = new BeanInjectionManager(this, props);
         }
-
-        String initialName = "Functional";
-        if (props.beanModel() != null) {
-            initialName = props.beanModel().simpleName();
-        }
-
-        class MuInst {
-            int counter;
-        }
-        Class<?> cl = props.beanClass();
-        if (props.beanClass() != void.class) {
-            if (props.multiInstall()) {
-                MuInst i = (MuInst) container.beanClassMap.compute(cl, (c, o) -> {
-                    if (o == null) {
-                        return new MuInst();
-                    } else if (o instanceof BeanSetup) {
-                        throw new MultipleBeanOfSameTypeDefinedException();
-                    } else {
-                        return o;
-                    }
-                });
-                if (i.counter > 0) {
-                    initialName = initialName + i.counter;
-                }
-                i.counter++;
-            } else {
-                container.beanClassMap.compute(cl, (c, o) -> {
-                    if (o == null) {
-                        return BeanSetup.this;
-                    } else if (o instanceof BeanSetup) {
-                        throw new MultipleBeanOfSameTypeDefinedException("A non-multi bean has already been defined for " + beanClass());
-                    } else {
-                        // We already have some multiple beans installed
-                        throw new MultipleBeanOfSameTypeDefinedException();
-                    }
-                });
-            }
-        }
-
-        // This will add it to the list of beans in the container
-        int size = container.children.size();
-        if (size == 0) {
-            container.children.put(name, this);
-        } else {
-            String n = name;
-
-            while (container.children.putIfAbsent(n, this) != null) {
-                n = name + size++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
-                                   // million of the same component type
-            }
-        }
-
-        BeanSetup siebling = container.beanLast;
-        if (siebling == null) {
-            container.beanFirst = this;
-        } else {
-            siebling.nextBean = this;
-        }
-        container.beanLast = this;
-
-        // resolve Services
     }
 
     public <T extends BeanOperationSetup> T addOperation(T operation) {
@@ -275,8 +212,8 @@ public final class BeanSetup implements BeanInfo {
         };
     }
 
-    public static BeanSetup crack(ExtensionBeanConfiguration<?> configuration) {
-        BeanHandle<?> handle = (BeanHandle<?>) VH_HANDLE.get((BeanConfiguration) configuration);
+    public static BeanSetup crack(BeanConfiguration configuration) {
+        BeanHandle<?> handle = (BeanHandle<?>) VH_HANDLE.get(configuration);
         return crack(handle);
     }
 
@@ -291,9 +228,9 @@ public final class BeanSetup implements BeanInfo {
         }
 
         // No reason to maintain some of these in props
-        boolean nonUnique = false;
+        boolean multiInstall = false;
         BeanIntrospector customIntrospector = null;
-        String namePrefix = null;
+        String prefix = null;
 
         // Process each option
         requireNonNull(options, "options is null");
@@ -305,30 +242,97 @@ public final class BeanSetup implements BeanInfo {
                 }
                 customIntrospector = ci.introspector();
             } else if (o instanceof InstallerOption.CustomPrefix cp) {
-                namePrefix = cp.prefix();
+                prefix = cp.prefix();
             } else {
                 if (!kind.hasInstances()) {
                     throw new IllegalArgumentException("NonUnique cannot be used with functional or static beans");
                 }
-                nonUnique = true;
+                multiInstall = true;
             }
         }
 
         realm.wireCurrentComponent();
 
         BeanClassModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanClassModel(beanClass);
-        BeanProps bp = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner, namePrefix, nonUnique);
+        BeanProps props = new BeanProps(kind, beanClass, sourceKind, source, beanModel, operator, realm, extensionOwner);
 
-        BeanSetup bean = new BeanSetup(realm, bp);
+        BeanSetup bean = new BeanSetup(realm, props);
+
+        ContainerSetup container = bean.container;
+
+        if (prefix == null) {
+            prefix = "Functional";
+            if (beanModel != null) {
+                prefix = beanModel.simpleName();
+            }
+        }
+        // TODO virker ikke med functional beans og naming
+        String n = prefix;
+        
+        if (beanClass != void.class) {
+            if (multiInstall) {
+                class MuInst {
+                    int counter;
+                }
+                MuInst i = (MuInst) bean.container.beanClassMap.compute(beanClass, (c, o) -> {
+                    if (o == null) {
+                        return new MuInst();
+                    } else if (o instanceof BeanSetup) {
+                        throw new MultipleBeanOfSameTypeDefinedException();
+                    } else {
+                        ((MuInst) o).counter += 1;
+                        return o;
+                    }
+                });
+                int next = i.counter;
+                if (next > 0) {
+                    n = prefix + next;
+                }
+                while (container.children.putIfAbsent(n, bean) != null) {
+                    n = prefix + ++next;
+                    i.counter = next;
+                }
+            } else {
+                bean.container.beanClassMap.compute(beanClass, (c, o) -> {
+                    if (o == null) {
+                        return bean;
+                    } else if (o instanceof BeanSetup) {
+                        throw new MultipleBeanOfSameTypeDefinedException("A non-multi bean has already been defined for " + bean.beanClass());
+                    } else {
+                        // We already have some multiple beans installed
+                        throw new MultipleBeanOfSameTypeDefinedException();
+                    }
+                });
+                // Not multi install, so should be able to add it first time
+                int size = 0;
+                while (container.children.putIfAbsent(n, bean) != null) {
+                    n = prefix + ++size;
+                }
+            }
+        }
+        bean.name = n;
+
+        realm.wireNew(bean);
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
             new Introspector(bean, customIntrospector).introspect();
         }
 
+        // resolve Services
         for (BeanOperationSetup o : bean.operations) {
             o.resolve();
         }
+
+        // Maintain some tree logic
+        // Maybe we need to move this up
+        BeanSetup siebling = container.beanLast;
+        if (siebling == null) {
+            container.beanFirst = bean;
+        } else {
+            siebling.nextBean = bean;
+        }
+        container.beanLast = bean;
 
         return bean;
     }
@@ -357,9 +361,9 @@ public final class BeanSetup implements BeanInfo {
     }
 
     // Silly Eclipse compiler requires permits here (bug)
-    public sealed interface InstallerOption extends BeanExtensionPoint.InstallOption permits NonUnique, CustomIntrospector, CustomPrefix {
+    public sealed interface InstallerOption extends BeanExtensionPoint.InstallOption permits MultiInstall, CustomIntrospector, CustomPrefix {
 
-        public record NonUnique() implements InstallerOption {}
+        public record MultiInstall() implements InstallerOption {}
 
         public record CustomIntrospector(BeanIntrospector introspector) implements InstallerOption {}
 

@@ -58,6 +58,10 @@ public class Sss {
     }
 
     public static void main(String[] args) throws Exception {
+        
+        int i =34;
+        i++;
+        System.out.println(i);
         long start = System.nanoTime();
 //        MethodHandle fs = MethodHandles.lookup().findStatic(Sss.class, "main", MethodType.methodType(void.class, String[].class));
 //        Method m = MethodHandles.reflectAs(Method.class, fs);

@@ -43,10 +43,4 @@ public record BeanProps(
 
         RealmSetup realm,
 
-        @Nullable ExtensionSetup extensionOwner,
-
-        // Dem her har vi ikke behov for at gemme
-        @Nullable String namePrefix,
-
-        boolean multiInstall) {
-}
+        @Nullable ExtensionSetup extensionOwner) {}

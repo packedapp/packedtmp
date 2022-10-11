@@ -222,9 +222,9 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
-    
+
     public sealed interface InstallOption permits BeanSetup.InstallerOption {
-        
+
         /**
          * Registers a bean introspector that will be used instead of the framework calling
          * {@link Extension#newBeanIntrospector}.
@@ -241,7 +241,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
             requireNonNull(introspector, "introspector is null");
             return new InstallerOption.CustomIntrospector(introspector);
         }
-        
+
         /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
@@ -258,7 +258,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         static InstallOption namePrefix(String prefix) {
             return new InstallerOption.CustomPrefix(prefix);
         }
-        
+
         /**
          * Allows for multiple beans of the same type in a single container.
          * <p>
@@ -269,8 +269,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          * @throws UnsupportedOperationException
          *             if {@code void} bean class
          */
-        static InstallOption nonUnique() {
-            return new InstallerOption.NonUnique();
+        static InstallOption multiInstall() {
+            return new InstallerOption.MultiInstall();
         }
     }
 }

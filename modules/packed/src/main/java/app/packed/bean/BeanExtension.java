@@ -120,30 +120,30 @@ public class BeanExtension extends Extension<BeanExtension> {
     /**
      * @see BeanKind#CONTAINER
      * @see BeanSourceKind#CLASS
-     * @see BeanHandle.InstallOption#nonUnique()
+     * @see BeanHandle.InstallOption#multiInstall()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, InstallOption.nonUnique());
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, InstallOption.nonUnique());
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.realm, null, instance, InstallOption.nonUnique());
+        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.realm, null, instance, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, InstallOption.nonUnique());
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, InstallOption.nonUnique());
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
