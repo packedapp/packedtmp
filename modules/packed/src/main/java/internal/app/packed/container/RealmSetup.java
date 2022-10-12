@@ -99,7 +99,10 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     public void wireCurrentComponent() {
         if (currentComponent != null) {
             if (currentComponent instanceof BeanSetup bs) {
-                bs.onWired();
+                Runnable w = bs.onWiringAction;
+                if (w != null) {
+                    w.run();
+                }
             }
             currentComponent = null;
         }

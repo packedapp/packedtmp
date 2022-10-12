@@ -129,7 +129,7 @@ public final class OpenClass {
         }
     }
 
-    public MethodHandle unreflectGetter(Field field) {
+    MethodHandle unreflectGetter(Field field) {
         Lookup lookup = lookup(field);
 
         try {
@@ -139,7 +139,7 @@ public final class OpenClass {
         }
     }
 
-    public MethodHandle unreflectSetter(Field field) {
+    MethodHandle unreflectSetter(Field field) {
         Lookup lookup = lookup(field);
 
         try {
@@ -149,7 +149,7 @@ public final class OpenClass {
         }
     }
 
-    public VarHandle unreflectVarHandle(Field field) {
+    VarHandle unreflectVarHandle(Field field) {
         Lookup lookup = lookup(field);
 
         try {

@@ -118,7 +118,7 @@ public final class BeanSetup {
         this.realm = requireNonNull(realm);
         this.container = operator.container;
         this.extensionOwner = extensionOwner;
-        
+
         this.lifetime = container.lifetime;
 
         if (beanKind == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
@@ -169,42 +169,31 @@ public final class BeanSetup {
         NameCheck.checkComponentName(newName);
 
         // Check that this component is still active and the name can be set
+        // Do we actually care? Of course we can only set as long as the realm is open
+        // But other than that why not
         checkIsCurrent();
 
-        // Unless we are the root container. We need to insert this component in the parent container
         if (container.children.putIfAbsent(newName, this) != null) {
-            if (newName.equals(name)) { // tried to set the current name
+            if (newName.equals(name)) { // tried to set the current name which is okay i guess?
                 return;
             }
-            throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
+            throw new IllegalArgumentException("A bean or container with the specified name '" + newName + "' already exists");
         }
         container.children.remove(name);
         this.name = newName;
     }
 
-    public void onWired() {
-        Runnable w = onWiringAction;
-        if (w != null) {
-            w.run();
-        }
-    }
-
     /** {@return the path of this component} */
     public NamespacePath path() {
-        int depth = container.depth + 1;
-        return switch (depth) {
-        case 1 -> new PackedNamespacePath(name);
-        default -> {
-            String[] paths = new String[depth];
-            paths[depth] = name;
-            ContainerSetup acc = container;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
-                acc = acc.treeParent;
-            }
-            yield new PackedNamespacePath(paths);
+        int size = container.depth;
+        String[] paths = new String[size + 1];
+        paths[size + 1] = name;
+        ContainerSetup c = container;
+        for (int i = size; i >= 0; i--) {
+            paths[i] = c.name;
+            c = c.treeParent;
         }
-        };
+        return new PackedNamespacePath(paths);
     }
 
     public static BeanSetup crack(BeanConfiguration configuration) {
