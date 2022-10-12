@@ -17,7 +17,7 @@ package internal.app.packed.operation.newInject;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
@@ -25,7 +25,7 @@ import internal.app.packed.operation.BeanOperationSetup;
 public final class ExportedService {
 
     /** The operation that exports the service. */
-    public final BeanOperationSetup bos;
+    public final OperationSetup bos;
 
     /** The key under which the service is exported */
     public final Key<?> key;
@@ -34,7 +34,7 @@ public final class ExportedService {
     @Nullable
     public final ServicePath path;
 
-    ExportedService(BeanOperationSetup bos, Key<?> key) {
+    ExportedService(OperationSetup bos, Key<?> key) {
         this.bos = bos;
         this.key = key;
         this.path = null;

@@ -42,13 +42,13 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         this.isStatic = isStatic;
     }
 
-    public static final class BeanAccess extends OperationTarget implements OperationTargetMirror.OfAccessBeanInstance {
+    public static final class BeanInstanceAccess extends OperationTarget implements OperationTargetMirror.OfAccessBeanInstance {
 
         /**
          * @param methodHandle
          * @param isStatic
          */
-        protected BeanAccess(MethodHandle methodHandle, boolean isStatic) {
+        protected BeanInstanceAccess(MethodHandle methodHandle, boolean isStatic) {
             super(methodHandle, isStatic);
         }
 

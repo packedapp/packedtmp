@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.newInject;
+package internal.app.packed.operation.binding;
 
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public final class ProvidedService {
+public class NestedBindingSetup extends BindingSetup {
 
-    /** The operation that provides the service. */
-    public final OperationSetup bos;
-
-    /** The key under which this service is provided. */
-    public final ServiceManager.Entry entry;
-
-    ProvidedService(OperationSetup bos, ServiceManager.Entry entry) {
-        this.bos = bos;
-        this.entry = entry;
+    /**
+     * @param operation
+     * @param index
+     */
+    public NestedBindingSetup(OperationSetup operation, int index) {
+        super(operation, index);
     }
+
 }

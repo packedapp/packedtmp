@@ -31,7 +31,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
@@ -92,7 +92,7 @@ public final class BeanSetup {
     public Runnable onWiringAction;
 
     /** Operations declared by the bean. */
-    public final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
+    public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
@@ -119,7 +119,9 @@ public final class BeanSetup {
 
         // TODO clean up
         
-        // I think we want to have a single field for these
+        // I think we want to have a single field for these 2
+        // I think this was made like this, when I was unsure if we could
+        // have containers managed by extensions
         this.realm = requireNonNull(realm);
         this.extensionOwner = extensionOwner;
 
@@ -304,10 +306,6 @@ public final class BeanSetup {
             new Introspector(beanModel, bean, customIntrospector).introspect();
         }
 
-        // resolve Services
-        for (BeanOperationSetup o : bean.operations) {
-            o.resolve();
-        }
 
         // Maintain some tree logic
         // Maybe we need to move this up

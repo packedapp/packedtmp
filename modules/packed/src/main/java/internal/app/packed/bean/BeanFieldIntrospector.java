@@ -32,10 +32,12 @@ import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.BeanOperationSetup;
-import internal.app.packed.operation.BeanOperationSetup.BeanFieldAccessSetup;
+import internal.app.packed.operation.OperationInvoker;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -60,7 +62,8 @@ public final class BeanFieldIntrospector implements OnFieldHook {
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    private BeanFieldIntrospector(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations) {
+    private BeanFieldIntrospector(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet,
+            Annotation[] annotations) {
         this.introspector = introspector;
         this.operator = operator;
         this.field = field;
@@ -69,8 +72,11 @@ public final class BeanFieldIntrospector implements OnFieldHook {
         this.annotations = annotations;
     }
 
-    private BeanOperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
-        BeanOperationSetup bos = new BeanFieldAccessSetup(introspector.bean, operator, invocationType, field, accessMode, mh);
+    private OperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
+        FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
+        OperationType ot = OperationType.ofFieldAccess(field, accessMode);
+        OperationInvoker oi = new OperationInvoker(invocationType, operator); // operator??
+        OperationSetup bos = new OperationSetup(introspector.bean, ot, oi, fot);
         introspector.bean.operations.add(bos);
         return bos;
     }
@@ -100,7 +106,7 @@ public final class BeanFieldIntrospector implements OnFieldHook {
         return new PackedOperationHandle(add(mh, invocationType, accessMode));
     }
 
-    public BeanOperationSetup newInternalGetOperation(ExtensionSetup operator, InvocationType invocationType) {
+    public OperationSetup newInternalGetOperation(ExtensionSetup operator, InvocationType invocationType) {
         MethodHandle mh = introspector.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
         return add(mh, invocationType, accessMode);

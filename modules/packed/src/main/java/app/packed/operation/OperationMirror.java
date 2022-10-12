@@ -34,7 +34,7 @@ import app.packed.lifetime.LifetimeMirror;
 import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
@@ -60,7 +60,7 @@ public class OperationMirror implements Mirror {
      * {@link #initialize(ExtensionSetup)}.
      */
     @Nullable
-    private BeanOperationSetup operation;
+    private OperationSetup operation;
 
     /**
      * Create a new operation mirror.
@@ -118,7 +118,7 @@ public class OperationMirror implements Mirror {
      * @param owner
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(BeanOperationSetup operation) {
+    final void initialize(OperationSetup operation) {
         if (this.operation != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
@@ -129,10 +129,10 @@ public class OperationMirror implements Mirror {
      * {@return the internal configuration of operation.}
      * 
      * @throws IllegalStateException
-     *             if {@link #initialize(BeanOperationSetup)} has not been called.
+     *             if {@link #initialize(OperationSetup)} has not been called.
      */
-    private BeanOperationSetup operation() {
-        BeanOperationSetup o = operation;
+    private OperationSetup operation() {
+        OperationSetup o = operation;
         if (o == null) {
             throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
@@ -144,7 +144,7 @@ public class OperationMirror implements Mirror {
     public final Class<? extends Extension<?>> operator() {
         // It might be a different extension that actually invokes it. For example,
         // a lifetime operations might be invoked by ContainerExtension
-        return operation().operator.extensionType;
+        return operation().invoker.operator.extensionType;
     }
 
     /** {@return the target of the operation.} */

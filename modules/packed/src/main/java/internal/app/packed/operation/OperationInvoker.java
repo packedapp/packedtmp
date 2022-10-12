@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package internal.app.packed.operation;
 
 import app.packed.base.Nullable;
+import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
 
 /**
- * A constant binding.
+ *
  */
-public final class ConstantBindingSetup extends BindingSetup {
+// who and how the operation is invoked
+public class OperationInvoker {
 
-    /** The constant that was bound. */
-    @Nullable
-    public final Object constant;
+    /** The invocation type for this operation. */
+    @Nullable // for bean access? Maybe just an empty type
+    public final InvocationType invocationType;
 
-    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
-    public ExtensionSetup managedBy;
-    
-    public ConstantBindingSetup(OperationSetup operation, int index, Object constant) {
-        super(operation, index);
-        this.constant = constant;
+    /** The extension that operates the operation. MethodHandles will be generated relative to this. */
+    public final ExtensionSetup operator;
+
+    public OperationInvoker(InvocationType invocationType, ExtensionSetup operator) {
+        this.invocationType = invocationType;
+        this.operator = operator;
     }
 }

@@ -16,30 +16,33 @@
 package internal.app.packed.operation.newInject;
 
 import app.packed.base.Nullable;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
- *
+ * A binding to a service.
  */
 public final class ServiceBindingSetup extends BindingSetup {
 
-    // Noget omkring required
     final ServiceManager.Entry entry;
 
     // A binding in the same container for the same key
     @Nullable
     ServiceBindingSetup nextFriend;
 
-    final boolean required;
+    public final boolean required;
 
     /**
      * @param beanOperation
      * @param index
      */
-    ServiceBindingSetup(BeanOperationSetup operation, int index, ServiceManager.Entry entry, boolean required) {
+    ServiceBindingSetup(OperationSetup operation, int index, ServiceManager.Entry entry, boolean required) {
         super(operation, index);
         this.entry = entry;
         this.required = required;
+    }
+
+    public boolean isResolved() {
+        return entry.provider != null;
     }
 }

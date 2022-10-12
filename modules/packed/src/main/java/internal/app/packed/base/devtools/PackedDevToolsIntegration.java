@@ -16,7 +16,6 @@
 package internal.app.packed.base.devtools;
 
 import java.lang.reflect.Member;
-import java.util.ServiceLoader;
 
 /**
  * This class integrates with the
@@ -27,7 +26,8 @@ public abstract class PackedDevToolsIntegration {
     public static final PackedDevToolsIntegration INSTANCE;
 
     static {
-        INSTANCE = ServiceLoader.load(PackedDevToolsIntegration.class).findFirst().orElseGet(() -> new NoDevTools());
+        // ServiceLoader adds ~ 12 ms to startup time
+        INSTANCE = new NoDevTools();// ServiceLoader.load(PackedDevToolsIntegration.class).findFirst().orElseGet(() -> new NoDevTools());
     }
 
     public abstract void goo();

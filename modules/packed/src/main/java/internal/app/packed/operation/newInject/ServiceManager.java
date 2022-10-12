@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.service.DublicateServiceExportException;
 import app.packed.service.DublicateServiceProvideException;
 import app.packed.service.UnsatisfiableServiceDependencyException;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.AbstractTreeNode;
 
 /**
@@ -49,7 +49,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }
     }
 
-    public ServiceBindingSetup addBinding(Key<?> key, boolean isRequired, BeanOperationSetup operation, int index) {
+    public ServiceBindingSetup addBinding(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
         return entries.compute(key, (k, v) -> {
             if (v == null) {
                 v = new Entry(k);
@@ -69,11 +69,11 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }).bindings;
     }
 
-    public void addExport(Key<?> key, BeanOperationSetup operation) {
+    public void addExport(Key<?> key, OperationSetup operation) {
         add(new ExportedService(operation, key));
     }
 
-    public ProvidedService addProvision(Key<?> key, BeanOperationSetup bos) {
+    public ProvidedService addProvision(Key<?> key, OperationSetup bos) {
         Entry e = entries.compute(key, (k, v) -> {
             if (v == null) {
                 v = new Entry(k);
@@ -92,8 +92,9 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     public void verify() {
         for (Entry e : entries.values()) {
             if (e.provider == null) {
-                // okay we do not provide it internally in the container
-
+                for (var b = e.bindings; b != null; b = b.nextFriend) {
+                    System.out.println("Binding not resolved " + b);
+                }
                 throw new UnsatisfiableServiceDependencyException();
             }
         }

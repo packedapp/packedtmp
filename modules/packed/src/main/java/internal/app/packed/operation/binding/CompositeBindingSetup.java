@@ -18,9 +18,9 @@ package internal.app.packed.operation.binding;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- *
+ * A composite binding.
  */
-public final class CompositeBindingSetup extends BindingSetup {
+public final class CompositeBindingSetup extends NestedBindingSetup {
 
     /**
      * @param operation
@@ -29,5 +29,4 @@ public final class CompositeBindingSetup extends BindingSetup {
     public CompositeBindingSetup(OperationSetup operation, int index) {
         super(operation, index);
     }
-
 }

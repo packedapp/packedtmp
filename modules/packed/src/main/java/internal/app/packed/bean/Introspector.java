@@ -33,6 +33,7 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -193,6 +194,11 @@ public final class Introspector {
                 }
             }
         }
+        
+        // Introspection is done. Make sure all bindings are resolved, otherwise fail
+        for (OperationSetup o : bean.operations) {
+            o.resolve();
+        }        
 
         // Call into every BeanScanner and tell them its all over
         for (ExtensionEntry e : extensions.values()) {

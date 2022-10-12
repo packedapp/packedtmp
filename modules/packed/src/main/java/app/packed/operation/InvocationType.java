@@ -59,17 +59,17 @@ public interface InvocationType {
     }
 
     static InvocationType raw() {
-        throw new UnsupportedOperationException();
+        return new PackedInvocationType();
     }
 
     enum ArgumentKind {
-        ARGUMENT, 
-        
+        ARGUMENT,
+
         /** The invocation argument is a bean instance. */
-        BEAN_INSTANCE, 
-        
-        CONTEXT, 
-        
+        BEAN_INSTANCE,
+
+        CONTEXT,
+
         /** The invocation argument is an extension bean context. */
         // Maaske noget andet end context, given dens mening
         EXTENSION_BEAN_CONTEXT; // InvocationContext

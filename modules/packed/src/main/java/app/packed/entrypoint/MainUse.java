@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.newInject;
+package app.packed.entrypoint;
 
-import internal.app.packed.operation.OperationSetup;
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-public final class ProvidedService {
+public class MainUse extends BaseAssembly {
 
-    /** The operation that provides the service. */
-    public final OperationSetup bos;
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+         installInstance(new MyBean());
+    }
 
-    /** The key under which this service is provided. */
-    public final ServiceManager.Entry entry;
+    public static void main(String[] args) {
+        //long l = System.nanoTime();
+        App.run(new MainUse());
+        //System.out.println(System.nanoTime() - l);
+    }
 
-    ProvidedService(OperationSetup bos, ServiceManager.Entry entry) {
-        this.bos = bos;
-        this.entry = entry;
+    public static class MyBean {
+
+        @Main
+        public void hello() {}
     }
 }

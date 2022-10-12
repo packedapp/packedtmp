@@ -26,7 +26,7 @@ import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanAnnotationReader;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
@@ -35,7 +35,7 @@ import internal.app.packed.operation.BeanOperationSetup;
 // Manuelt tilfoejet operationer. Men det er maaske kun funktioner???
 public final class PackedOnBindingHook implements OnBindingHook {
 
-    private final BeanOperationSetup beanOperation;
+    private final OperationSetup beanOperation;
 
     @Nullable
     private BindingSetup binding;
@@ -44,7 +44,7 @@ public final class PackedOnBindingHook implements OnBindingHook {
 
     Variable variable;
 
-    public PackedOnBindingHook(BeanOperationSetup operation, int index) {
+    public PackedOnBindingHook(OperationSetup operation, int index) {
         this.beanOperation = operation;
         this.index = index;
         this.variable = variable();
@@ -135,5 +135,4 @@ public final class PackedOnBindingHook implements OnBindingHook {
     public Variable variable() {
         return beanOperation.type.parameter(index);
     }
-
 }

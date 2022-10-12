@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.newInject;
-
-import internal.app.packed.operation.OperationSetup;
+package app.packed.entrypoint;
 
 /**
  *
  */
-public final class ProvidedService {
+public class HelloWorld {
 
-    /** The operation that provides the service. */
-    public final OperationSetup bos;
-
-    /** The key under which this service is provided. */
-    public final ServiceManager.Entry entry;
-
-    ProvidedService(OperationSetup bos, ServiceManager.Entry entry) {
-        this.bos = bos;
-        this.entry = entry;
+    public static void main(String[] args) {
     }
 }

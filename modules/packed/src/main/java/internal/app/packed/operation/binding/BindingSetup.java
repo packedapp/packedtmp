@@ -21,22 +21,20 @@ import java.util.function.Supplier;
 
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.operation.BeanOperationSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.newInject.ServiceBindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  * The internal configuration of a single binding for an operation.
  */
-public abstract sealed class BindingSetup permits ConstantBindingSetup, FusedBindingSetup, ServiceBindingSetup, CompositeBindingSetup {
+public abstract class BindingSetup {
 
-    /** A MethodHandle for invoking {@link OperationMirror#initialize(BeanOperationSetup)}. */
+    /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
-    /** The index into {@link BeanOperationSetup#bindings}. */
+    /** The index into {@link OperationSetup#bindings}. */
     public final int index;
 
     /** Supplies a mirror for the operation */

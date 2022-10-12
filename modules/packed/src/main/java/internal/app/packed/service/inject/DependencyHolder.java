@@ -20,7 +20,7 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
@@ -39,13 +39,13 @@ public final class DependencyHolder {
     @Nullable
     public final Key<?> provideAskey;
 
-    public DependencyHolder(boolean provideAsConstant, Key<?> provideAsKey, BeanOperationSetup os) {
+    public DependencyHolder(boolean provideAsConstant, Key<?> provideAsKey, OperationSetup os) {
         this.dependencies = InternalDependency.fromOperationType(os.type);
 
         this.provideAskey = provideAsKey;
         this.provideAsConstant = provideAsConstant;
-        this.isStatic = os.isStatic();
-        this.mh = os.methodHandle();
+        this.isStatic = os.operationTarget.isStatic;
+        this.mh = os.operationTarget.methodHandle;
     }
 
     public final DependencyProducer[] createProviders() {

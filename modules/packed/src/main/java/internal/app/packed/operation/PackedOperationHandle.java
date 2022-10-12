@@ -29,7 +29,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /** Implementation of {@link OperationHandle}. */
-public record PackedOperationHandle(BeanOperationSetup os) implements OperationHandle {
+public record PackedOperationHandle(OperationSetup os) implements OperationHandle {
 
     /** {@inheritDoc} */
     @Override
@@ -58,7 +58,7 @@ public record PackedOperationHandle(BeanOperationSetup os) implements OperationH
     /** {@inheritDoc} */
     @Override
     public InvocationType invocationType() {
-        return os.invocationType;
+        return os.invoker.invocationType;
     }
 
     /** {@inheritDoc} */

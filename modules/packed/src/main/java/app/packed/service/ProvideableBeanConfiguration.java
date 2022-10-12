@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.operation.BeanOperationSetup.BeanInstanceAccessSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.InternalServiceUtil;
@@ -54,26 +54,26 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
     public ProvideableBeanConfiguration<T> export() {
         Key<?> key = handle().defaultKey();
-        sm.addExport(key, new BeanInstanceAccessSetup(bean));
+        sm.addExport(key, OperationSetup.beanAccess(bean));
         sb.export();
         return this;
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Class<? super T> key) {
-        sm.addExport(Key.of(key), new BeanInstanceAccessSetup(bean));
+        sm.addExport(Key.of(key), OperationSetup.beanAccess(bean));
         sb.export();
         return this;
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
-        sm.addExport(key, new BeanInstanceAccessSetup(bean));
+        sm.addExport(key, OperationSetup.beanAccess(bean));
         sb.export();
         return this;
     }
 
     public ProvideableBeanConfiguration<T> provide() {
         Key<?> key = handle().defaultKey();
-        sm.addProvision(key, new BeanInstanceAccessSetup(bean));
+        sm.addProvision(key, OperationSetup.beanAccess(bean));
         sb.provide();
         return this;
     }
@@ -88,7 +88,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Key)
      */
     public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
-        sm.addProvision(Key.of(key), new BeanInstanceAccessSetup(bean));
+        sm.addProvision(Key.of(key), OperationSetup.beanAccess(bean));
         sb.provideAs(key);
         return this;
     }
@@ -103,7 +103,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        sm.addProvision(key, new BeanInstanceAccessSetup(bean));
+        sm.addProvision(key, OperationSetup.beanAccess(bean));
         sb.provideAs(key);
         return this;
     }

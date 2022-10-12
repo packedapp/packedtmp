@@ -32,7 +32,7 @@ import app.packed.operation.Op;
 import internal.app.packed.bean.BeanFieldIntrospector;
 import internal.app.packed.bean.BeanMethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.BeanOperationSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.service.ServiceConfiguration;
 import internal.app.packed.service.inject.BeanMemberDependencyNode;
@@ -160,7 +160,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
                 BeanFieldIntrospector iof = ((BeanFieldIntrospector) field);
 
-                BeanOperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
+                OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
 
                 iof.introspector.bean.container.sm.addProvision(key, operation);
 
@@ -177,7 +177,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
                 BeanMethodIntrospector iom = ((BeanMethodIntrospector) method);
                 
-                BeanOperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
+                OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 
                 iom.introspector.bean.container.sm.addProvision(key, operation);
 
