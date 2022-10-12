@@ -238,7 +238,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
 
     public void resolve() {
         for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
-            if (c.realm == container.realm) {
+            if (c.assembly == container.assembly) {
                 c.injectionManager.resolve();
             }
         }

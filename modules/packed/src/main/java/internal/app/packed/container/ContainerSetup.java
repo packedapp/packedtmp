@@ -52,19 +52,23 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     private static final MethodHandle MH_CONTAINER_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerMirror.class,
             "initialize", void.class, ContainerSetup.class);
 
-    /** The application this component is a part of. */
+    /** The application this container is a part of. */
     public final ApplicationSetup application;
 
-    /** The assembly from where the component is being installed. */
+    /** The assembly that defined this container. */
     public final AssemblySetup assembly;
 
     public final Map<Class<?>, Object> beanClassMap = new HashMap<>(); // Must have unique beans unless multi
 
+    /** All beans installed in a container is maintained in a linked list, this field pointing to the first one. */
     @Nullable
     public BeanSetup beanFirst;
 
+    /** All beans installed in a container is maintained in a linked list, this field pointing to the last one. */
     @Nullable
     public BeanSetup beanLast;
+
+    int childContainerCount; // Also use this as the basis when naming containers, IDK
 
     /** Maintains unique names for beans and child containers. */
     public final HashMap<String, Object> children = new HashMap<>();
@@ -86,7 +90,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
      */
-    public boolean isNameInitializedFromWirelet;
+    boolean isNameInitializedFromWirelet;
 
     /** The lifetime the component is a part of. */
     public final ContainerLifetimeSetup lifetime;
@@ -94,18 +98,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** Supplies a mirror for the container. */
     public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
 
-    /** The name of this component. */
+    /** The name of the container. */
     @Nullable
     public String name;
 
-    /** The realm used to install this component. */
-    public final RealmSetup realm;
-
     public final ServiceManager sm;
 
-    int childCount; // Also use this as the basis when naming containers, IDK
-    
-    /** Wirelets that was specified when creating the component. */
+    /** Wirelets that were specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
     @Nullable
     public final WireletWrapper wirelets;
@@ -115,7 +114,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * 
      * @param application
      *            the application this container is a part of
-     * @param realm
+     * @param assembly
      *            the realm this container is a part of
      * @param handle
      *            the driver that is used to create this container
@@ -124,14 +123,12 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, AssemblySetup realm, @Nullable ContainerSetup parent,
-            Wirelet[] wirelets) {
+    public ContainerSetup(ApplicationSetup application, AssemblySetup assembly, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(parent);
-        
-        this.realm = requireNonNull(realm);
-        realm.wireNew(this);
+
+        assembly.wireNew(this);
         this.application = requireNonNull(application);
-        this.assembly = realm;
+        this.assembly = assembly;
         if (parent == null) {
             this.sm = new ServiceManager(null);
             this.depth = 0;
@@ -195,7 +192,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             String n = null;
 
             // TODO Should only be used on the root container in the assembly
-            Class<? extends Assembly> source = realm.assembly.getClass();
+            Class<? extends Assembly> source = assembly.assembly.getClass();
             if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
                 if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
@@ -225,6 +222,19 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return count;
     }
 
+    public void checkIsCurrent() {
+        if (!assembly.isCurrent(this)) {
+            String errorMsg;
+            // if (realm.container == this) {
+            errorMsg = "This operation must be called as the first thing in Assembly#build()";
+            // } else {
+            // errorMsg = "This operation must be called immediately after the component has been wired";
+            // }
+            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
+            throw new IllegalStateException(errorMsg);
+        }
+    }
+
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -247,19 +257,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         this.name = n;
     }
 
-    public void checkIsCurrent() {
-        if (!realm.isCurrent(this)) {
-            String errorMsg;
-            // if (realm.container == this) {
-            errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            // } else {
-            // errorMsg = "This operation must be called immediately after the component has been wired";
-            // }
-            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
-            throw new IllegalStateException(errorMsg);
-        }
-    }
-    
     /**
      * Returns whether or not the specified extension type is used.
      * 
@@ -289,6 +286,36 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** {@inheritDoc} */
+    public void named(String newName) {
+        // We start by validating the new name of the component
+        NameCheck.checkComponentName(newName);
+
+        // Check that this component is still active and the name can be set
+        checkIsCurrent();
+
+        String currentName = name;
+
+        if (newName.equals(currentName)) {
+            return;
+        }
+
+        // If the name of the component (container) has been set using a wirelet.
+        // Any attempt to override will be ignored
+        if (isNameInitializedFromWirelet) {
+            return;
+        }
+
+        // Unless we are the root container. We need to insert this component in the parent container
+        if (treeParent != null) {
+            if (treeParent.children.putIfAbsent(newName, this) != null) {
+                throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
+            }
+            treeParent.children.remove(currentName);
+        }
+        name = newName;
     }
 
     /** {@return the path of this component} */
@@ -358,7 +385,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         if (extension == null) {
             // Ny extensions skal installeres indefor Assembly::build
 
-            if (realm.isClosed()) {
+            if (assembly.isClosed()) {
                 throw new IllegalStateException("Cannot install new extensions as the container is no longer configurable");
             }
             // Checks that container is still configurable
@@ -388,35 +415,5 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             extension.initialize();
         }
         return extension;
-    }
-
-    /** {@inheritDoc} */
-    public void named(String newName) {
-        // We start by validating the new name of the component
-        NameCheck.checkComponentName(newName);
-
-        // Check that this component is still active and the name can be set
-        checkIsCurrent();
-
-        String currentName = name;
-
-        if (newName.equals(currentName)) {
-            return;
-        }
-
-        // If the name of the component (container) has been set using a wirelet.
-        // Any attempt to override will be ignored
-        if (isNameInitializedFromWirelet) {
-            return;
-        }
-
-        // Unless we are the root container. We need to insert this component in the parent container
-        if (treeParent != null) {
-            if (treeParent.children.putIfAbsent(newName, this) != null) {
-                throw new IllegalArgumentException("A component with the specified name '" + newName + "' already exists");
-            }
-            treeParent.children.remove(currentName);
-        }
-        name = newName;
     }
 }

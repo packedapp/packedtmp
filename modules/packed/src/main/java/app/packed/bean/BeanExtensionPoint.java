@@ -47,13 +47,13 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     public <T> BeanHandle<T> newContainerBean(Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.realm, null, BeanKind.CONTAINER, clazz);
+        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.CONTAINER, clazz);
         return new BeanHandle<>(bean);
     }
 
     public <T> BeanHandle<T> newContainerBean(Op<T> op, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.realm, null, BeanKind.CONTAINER, op);
+        BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.CONTAINER, op);
         return new BeanHandle<>(bean);
     }
 
@@ -71,7 +71,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     public <T> BeanHandle<T> newContainerBeanFromInstance(T instance, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installInstance(be.extensionSetup, be.container.realm, null, instance);
+        BeanSetup bean = BeanSetup.installInstance(be.extensionSetup, be.container.assembly, null, instance);
         return new BeanHandle<>(bean);
     }
 
@@ -88,7 +88,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      */
     public BeanHandle<?> newFunctionalBean(BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installFunctional(be.extensionSetup, be.container.realm, null);
+        BeanSetup bean = BeanSetup.installFunctional(be.extensionSetup, be.container.assembly, null);
         return new BeanHandle<>(bean);
     }
 
@@ -100,13 +100,13 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     public <T> BeanHandle<T> newLazyBean(Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.realm, null, BeanKind.LAZY, clazz);
+        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.LAZY, clazz);
         return new BeanHandle<>(bean);
     }
 
     public <T> BeanHandle<T> newLazyBean(Op<T> op, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.realm, null, BeanKind.LAZY, op);
+        BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.LAZY, op);
         return new BeanHandle<>(bean);
     }
 
@@ -133,13 +133,13 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      */
     public <T> BeanHandle<T> newManytonBean(Class<T> clazz, LifetimeConf lifetimes, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.realm, null, BeanKind.MANYTON, clazz);
+        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.MANYTON, clazz);
         return new BeanHandle<>(bean);
     }
 
     public <T> BeanHandle<T> newManytonBean(Op<T> op, LifetimeConf lifetimes, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.realm, null, BeanKind.MANYTON, op);
+        BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.MANYTON, op);
         return new BeanHandle<>(bean);
     }
 
@@ -157,7 +157,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     public <T> BeanHandle<T> newStaticBean(Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
         BeanExtension be = extension();
-        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.realm, null, BeanKind.STATIC, clazz);
+        BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.STATIC, clazz);
         return new BeanHandle<>(bean);
     }
 

@@ -6,8 +6,8 @@ import app.packed.container.Extension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.BeanMethodIntrospector;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -45,7 +45,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.CONTAINER, implementation);
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
@@ -70,7 +70,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op);
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.CONTAINER, op);
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
@@ -86,17 +86,17 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.realm, null, instance);
+        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.assembly, null, instance);
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.LAZY, implementation);
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op);
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.LAZY, op);
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
@@ -113,7 +113,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.STATIC, implementation);
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.STATIC, implementation);
         return new BeanConfiguration(new BeanHandle<>(bean));
     }
 
@@ -123,27 +123,27 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanHandle.InstallOption#multiInstall()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.CONTAINER, implementation, InstallOption.multiInstall());
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.CONTAINER, implementation, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.CONTAINER, op, InstallOption.multiInstall());
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.CONTAINER, op, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.realm, null, instance, InstallOption.multiInstall());
+        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.assembly, null, instance, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.realm, null, BeanKind.LAZY, implementation, InstallOption.multiInstall());
+        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.LAZY, implementation, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.realm, null, BeanKind.LAZY, op, InstallOption.multiInstall());
+        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.LAZY, op, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 

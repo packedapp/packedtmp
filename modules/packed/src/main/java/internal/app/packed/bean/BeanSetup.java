@@ -44,17 +44,19 @@ import internal.app.packed.util.ThrowableUtil;
 /** The internal configuration of a bean. */
 public final class BeanSetup implements BeanInfo {
 
+    /** Illegal bean classes. */
     private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
             void.class, BeanSetup.class);
 
-    /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
+    /** A handle that can access BeanConfiguration#handle. */
+    private static final VarHandle VH_BEAN_CONFIGURATION_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle",
+            BeanHandle.class);
 
-    /** A handle that can access BeanConfiguration#beanHandle. */
-    private static final VarHandle VH_HANDLE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanConfiguration.class, "handle", BeanHandle.class);
+    /** A handle that can access BeanHandle#bean. */
+    private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
 
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
@@ -62,9 +64,10 @@ public final class BeanSetup implements BeanInfo {
     /** The kind of bean. */
     public final BeanKind beanKind;
 
-    /** The container this bean is registered in. */
+    /** The container this bean is installed in. */
     public final ContainerSetup container;
 
+    /** Non-null if the bean is installed for an extension. */
     @Nullable
     public final ExtensionSetup extensionOwner;
 
@@ -81,6 +84,7 @@ public final class BeanSetup implements BeanInfo {
     /** The name of this bean. Should only be updated through {@link #named(String)} */
     public String name;
 
+    /** All beans in a container are maintained in a linked list. */
     @Nullable
     public BeanSetup nextBean;
 
@@ -90,7 +94,7 @@ public final class BeanSetup implements BeanInfo {
     /** Operations declared by the bean. */
     public final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
 
-    /** The operator of the bean. */
+    /** The lifetime? operator of the bean. */
     public final ExtensionSetup operator;
 
     /** The realm used to install this component. */
@@ -105,23 +109,22 @@ public final class BeanSetup implements BeanInfo {
 
     /**
      * Create a new bean.
-     * 
-     * @param props
-     *            the handle builder
      */
-    public BeanSetup(RealmSetup owner, BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator,
+    private BeanSetup(BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator, RealmSetup realm,
             @Nullable ExtensionSetup extensionOwner) {
-        this.realm = requireNonNull(owner);
-        this.beanKind = kind;
-        this.beanClass = beanClass;
-        this.sourceKind = sourceKind;
+        this.beanKind = requireNonNull(beanKind);
+        this.beanClass = requireNonNull(beanClass);
+        this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
-        this.operator = operator;
-        this.extensionOwner = extensionOwner;
+
+        this.operator = requireNonNull(operator);
+        this.realm = requireNonNull(realm);
         this.container = operator.container;
+        this.extensionOwner = extensionOwner;
+        
         this.lifetime = container.lifetime;
 
-        if (kind == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
+        if (beanKind == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
             this.injectionManager = null;
         } else {
             this.injectionManager = new BeanInjectionManager(this);
@@ -226,7 +229,7 @@ public final class BeanSetup implements BeanInfo {
     }
 
     public static BeanSetup crack(BeanConfiguration configuration) {
-        BeanHandle<?> handle = (BeanHandle<?>) VH_HANDLE.get(configuration);
+        BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_HANDLE.get(configuration);
         return crack(handle);
     }
 
@@ -234,11 +237,13 @@ public final class BeanSetup implements BeanInfo {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
-    static BeanSetup install(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Class<?> beanClass, BeanKind kind,
-            BeanSourceKind sourceKind, @Nullable Object source, BeanExtensionPoint.InstallOption... options) {
+    static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator, RealmSetup realm,
+            @Nullable ExtensionSetup extensionOwner, BeanExtensionPoint.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
+
+        BeanSetup bean = new BeanSetup(kind, beanClass, sourceKind, source, operator, realm, extensionOwner);
 
         // No reason to maintain some of these in props
         boolean multiInstall = false;
@@ -267,8 +272,6 @@ public final class BeanSetup implements BeanInfo {
         realm.wireCurrentComponent();
 
         BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
-
-        BeanSetup bean = new BeanSetup(realm, kind, beanClass, sourceKind, source, operator, extensionOwner);
 
         ContainerSetup container = bean.container;
 
@@ -349,27 +352,27 @@ public final class BeanSetup implements BeanInfo {
         return bean;
     }
 
-    public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Class<?> clazz,
+    public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Class<?> clazz,
             BeanExtensionPoint.InstallOption... options) {
         requireNonNull(clazz, "clazz is null");
-        return install(operator, realm, extensionOwner, clazz, kind, BeanSourceKind.CLASS, clazz, options);
+        return install(beanKind, clazz, BeanSourceKind.CLASS, clazz, operator, realm, extensionOwner, options);
     }
 
     public static BeanSetup installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
             BeanExtensionPoint.InstallOption... options) {
-        return install(operator, realm, extensionOwner, void.class, BeanKind.FUNCTIONAL, BeanSourceKind.NONE, null, options);
+        return install(BeanKind.FUNCTIONAL, void.class, BeanSourceKind.NONE, null, operator, realm, extensionOwner, options);
     }
 
     public static BeanSetup installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Object instance,
             BeanExtensionPoint.InstallOption... options) {
         requireNonNull(instance, "instance is null");
-        return install(operator, realm, extensionOwner, instance.getClass(), BeanKind.CONTAINER, BeanSourceKind.INSTANCE, instance, options);
+        return install(BeanKind.CONTAINER, instance.getClass(), BeanSourceKind.INSTANCE, instance, operator, realm, extensionOwner, options);
     }
 
-    public static BeanSetup installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind kind, Op<?> op,
+    public static BeanSetup installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Op<?> op,
             BeanExtensionPoint.InstallOption... options) {
         PackedOp<?> pop = PackedOp.crack(op);
-        return install(operator, realm, extensionOwner, pop.type().returnType(), kind, BeanSourceKind.OP, pop, options);
+        return install(beanKind, pop.type().returnType(), BeanSourceKind.OP, pop, operator, realm, extensionOwner, options);
     }
 
     /** The various install options. */

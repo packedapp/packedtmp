@@ -56,7 +56,7 @@ public class ContainerConfiguration {
      *             if the container is no longer configurable
      */
     protected void checkIsConfigurable() {
-        if (handle.container.realm.isClosed()) {
+        if (handle.container.assembly.isClosed()) {
             throw new IllegalStateException("This container is no longer configurable");
         }
     }

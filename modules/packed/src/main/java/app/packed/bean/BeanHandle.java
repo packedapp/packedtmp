@@ -41,9 +41,50 @@ import internal.app.packed.bean.BeanSetup;
 public final /* primitive */ class BeanHandle<T> {
 
     final BeanSetup bean;
-    
+
     BeanHandle(BeanSetup bean) {
         this.bean = requireNonNull(bean);
+    }
+
+    // We need a extension bean
+    public OperationHandle addFunctionalOperation(ExtensionBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
+            Object functionInstance) {
+        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
+        throw new UnsupportedOperationException();
+    }
+
+    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, MethodHandle methodHandle) {
+        return addOperation(operator, Op.ofMethodHandle(methodHandle));
+    }
+
+    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op<?> operation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Class<?> beanClass() {
+        return bean.beanClass();
+    }
+
+    public BeanKind beanKind() {
+        return bean.beanKind;
+    }
+
+    /** {@inheritDoc} */
+    public void decorateInstance(Function<? super T, ? extends T> decorator) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    public Key<?> defaultKey() {
+        if (beanClass() == void.class) {
+            throw new UnsupportedOperationException("Keys are not support for void bean classes");
+        }
+        return Key.of(beanClass());
+    }
+
+    /** {@inheritDoc} */
+    public boolean isConfigurable() {
+        return !bean.realm.isClosed();
     }
 
     public boolean isCurrent() {
@@ -63,19 +104,21 @@ public final /* primitive */ class BeanHandle<T> {
         return List.of();
     }
 
-    // We need a extension bean
-    public OperationHandle addFunctionalOperation(ExtensionBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
-            Object functionInstance) {
-        // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
-        throw new UnsupportedOperationException();
-    }
-
-    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, MethodHandle methodHandle) {
-        return addOperation(operator, Op.ofMethodHandle(methodHandle));
-    }
-
-    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op<?> operation) {
-        throw new UnsupportedOperationException();
+    /** {@return a new mirror.} */
+    // Interessant...
+    public BeanMirror mirror() {
+        // Create a new BeanMirror
+        BeanMirror mirror;
+        if (bean.mirrorSupplier == null) {
+            mirror = new BeanMirror();
+        } else {
+            mirror = bean.mirrorSupplier.get();
+            if (mirror == null) {
+                throw new NullPointerException(bean.mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
+            }
+        }
+        mirror.initialize(bean);
+        return mirror;
     }
 
     /** {@inheritDoc} */
@@ -93,35 +136,9 @@ public final /* primitive */ class BeanHandle<T> {
         return this;
     }
 
-    public Class<?> beanClass() {
-        return bean.beanClass();
-    }
-
-    public BeanKind beanKind() {
-        return bean.beanKind;
-    }
-
-    /** {@inheritDoc} */
-    public void decorateInstance(Function<? super T, ? extends T> decorator) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     public void peekInstance(Consumer<? super T> consumer) {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    public Key<?> defaultKey() {
-        if (beanClass() == void.class) {
-            throw new UnsupportedOperationException("Keys are not support for void bean classes");
-        }
-        return Key.of(beanClass());
-    }
-
-    /** {@inheritDoc} */
-    public boolean isConfigurable() {
-        return !bean.realm.isClosed();
     }
 
     /** {@inheritDoc} */

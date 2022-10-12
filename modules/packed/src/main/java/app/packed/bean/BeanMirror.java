@@ -42,6 +42,16 @@ public class BeanMirror implements Mirror {
      */
     public BeanMirror() {}
 
+    /** {@return the application where this bean is defined.} */
+    public ApplicationMirror application() {
+        return bean().container.application.mirror();
+    }
+
+    /** {@return the assembly where the bean is defined.} */
+    public AssemblyMirror assembly() {
+        return bean().container.assembly.mirror();
+    }
+
     /**
      * {@return the internal configuration of the bean we are mirroring.}
      * 
@@ -55,6 +65,23 @@ public class BeanMirror implements Mirror {
                     "Either this method has been called from the constructor of the mirror. Or the mirror has not yet been initialized by the runtime.");
         }
         return b;
+    }
+
+    /**
+     * Returns the type (class) of the bean.
+     * <p>
+     * Beans that do not have a proper class, for example, a functional bean. Will have {@code void.class} as their bean
+     * class.
+     * 
+     * @return the type (class) of the bean.
+     */
+    public Class<?> beanClass() {
+        return bean().beanClass;
+    }
+
+    /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
+    public ContainerMirror container() {
+        return bean().container.mirror();
     }
 
     /** {@inheritDoc} */
@@ -82,21 +109,6 @@ public class BeanMirror implements Mirror {
         this.bean = bean;
     }
 
-    /** {@return the owner of the component.} */
-    public UserOrExtension owner() {
-        return bean().realm.realm();
-    }
-
-    /** {@return the application where this bean is defined.} */
-    public ApplicationMirror application() {
-        return bean().container.application.mirror();
-    }
-
-    /** {@return the assembly where the bean is defined.} */
-    public AssemblyMirror assembly() {
-        return bean().container.assembly.mirror();
-    }
-
     /** {@return the bean's lifetime.} */
     /**
      * Returns the bean's lifetime.
@@ -113,6 +125,11 @@ public class BeanMirror implements Mirror {
         return bean().lifetime.mirror();
     }
 
+    public Collection<LifetimeMirror> managesLifetimes() {
+        // Find LifetimeOperations->Unique on Lifetime
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns the name of this bean.
      * <p>
@@ -124,13 +141,22 @@ public class BeanMirror implements Mirror {
         return bean().name;
     }
 
-    public Collection<LifetimeMirror> managesLifetimes() {
-        // Find LifetimeOperations->Unique on Lifetime
-        throw new UnsupportedOperationException();
+    /** {@return a stream of all of the operations declared by the bean.} */
+    public Stream<OperationMirror> operations() {
+        return bean().operations.stream().map(BeanOperationSetup::mirror);
     }
 
-    public NamespacePath path() {
-        return bean().path();
+    /**
+     * Returns a collection of all of the operations declared by the bean of the specified type.
+     * 
+     * @param <T>
+     * @param operationType
+     *            the type of operations to include
+     * @return a collection of all of the operations declared by the bean of the specified type.
+     */
+    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
+        requireNonNull(operationType, "operationType is null");
+        return StreamUtil.filterAssignable(operationType, operations());
     }
 
     /**
@@ -174,39 +200,13 @@ public class BeanMirror implements Mirror {
         return bean().operator();
     }
 
-    /** {@return a stream of all of the operations declared by the bean.} */
-    public Stream<OperationMirror> operations() {
-        return bean().operations.stream().map(BeanOperationSetup::mirror);
+    /** {@return the owner of the component.} */
+    public UserOrExtension owner() {
+        return bean().realm.realm();
     }
 
-    /**
-     * Returns a collection of all of the operations declared by the bean of the specified type.
-     * 
-     * @param <T>
-     * @param operationType
-     *            the type of operations to include
-     * @return a collection of all of the operations declared by the bean of the specified type.
-     */
-    public <T extends OperationMirror> Stream<T> operations(Class<T> operationType) {
-        requireNonNull(operationType, "operationType is null");
-        return StreamUtil.filterAssignable(operationType, operations());
-    }
-
-    /**
-     * Returns the type (class) of the bean.
-     * <p>
-     * Beans that do not have a proper class, for example, a functional bean. Will have {@code void.class} as their bean
-     * class.
-     * 
-     * @return the type (class) of the bean.
-     */
-    public Class<?> beanClass() {
-        return bean().beanClass;
-    }
-
-    /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
-    public ContainerMirror container() {
-        return bean().container.mirror();
+    public NamespacePath path() {
+        return bean().path();
     }
 }
 
