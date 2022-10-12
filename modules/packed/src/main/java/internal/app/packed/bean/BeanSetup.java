@@ -21,8 +21,6 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
-import app.packed.container.Extension;
-import app.packed.container.UserOrExtension;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomIntrospector;
@@ -41,7 +39,7 @@ import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a bean. */
-public final class BeanSetup implements BeanInfo {
+public final class BeanSetup {
 
     /** Illegal bean classes. */
     private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
@@ -130,12 +128,6 @@ public final class BeanSetup implements BeanInfo {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> beanClass() {
-        return beanClass;
-    }
-
     public void checkIsCurrent() {
         if (!realm.isCurrent(this)) {
             String errorMsg;
@@ -195,18 +187,6 @@ public final class BeanSetup implements BeanInfo {
         if (w != null) {
             w.run();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension<?>> operator() {
-        return operator.extensionType;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public UserOrExtension owner() {
-        return realm.realm();
     }
 
     /** {@return the path of this component} */
@@ -311,7 +291,7 @@ public final class BeanSetup implements BeanInfo {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
-                        throw new MultipleBeanOfSameTypeDefinedException("A non-multi bean has already been defined for " + bean.beanClass());
+                        throw new MultipleBeanOfSameTypeDefinedException("A non-multi bean has already been defined for " + bean.beanClass);
                     } else {
                         // We already have some multiple beans installed
                         throw new MultipleBeanOfSameTypeDefinedException();
@@ -329,7 +309,7 @@ public final class BeanSetup implements BeanInfo {
         realm.wireNew(bean);
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
-        if (sourceKind != BeanSourceKind.NONE && bean.beanClass().getModule() != Introspector.JAVA_BASE_MODULE) {
+        if (sourceKind != BeanSourceKind.NONE && bean.beanClass.getModule() != Introspector.JAVA_BASE_MODULE) {
             new Introspector(beanModel, bean, customIntrospector).introspect();
         }
 

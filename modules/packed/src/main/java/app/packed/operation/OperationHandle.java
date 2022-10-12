@@ -73,7 +73,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if method handle are not supported
      * @see ExtensionBeanConfiguration#bindDelayed(Class, Supplier)
      */
-    MethodHandle buildInvoker(); //was computeMethodHandle()?
+    MethodHandle buildInvoker(); // was computeMethodHandle()?
 
     /** {@return the invocation type of this operation.} */
     InvocationType invocationType();
@@ -96,6 +96,24 @@ public sealed interface OperationHandle permits PackedOperationHandle {
 
     /** {@return the type of this operation.} */
     OperationType type();
+
+    default OperationHandle spawnNewBean() {
+        // I'm not sure this is needed. 
+        // It is always only configured on the bean
+        
+        // Can't see we will ever need to combi it
+        
+        // A new bean will be created. I think we need to configure something when making the bean as well
+        // Maybe we need a bean option and call this method for every operation.
+        // I don't know can we have methods that can do both
+        return this;
+    }
+
+    public interface Option {
+        static Option spawnBean() {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
 
 interface ZandboxOperationHandle {

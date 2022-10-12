@@ -48,9 +48,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.BeanFieldIntrospector;
 import internal.app.packed.bean.BeanMethodIntrospector;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.binding.PackedOnBindingHook;
 
@@ -58,7 +58,7 @@ import internal.app.packed.operation.binding.PackedOnBindingHook;
  * @see Extension#newBeanIntrospector
  */
 public abstract class BeanIntrospector {
-    
+
     /**
      * The configuration of this processor. Is initially null but populated via
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
@@ -73,7 +73,7 @@ public abstract class BeanIntrospector {
     }
 
     public final Class<?> beanClass() {
-        return setup().bean.beanClass();
+        return setup().bean.beanClass;
     }
 
     /**
@@ -320,7 +320,8 @@ public abstract class BeanIntrospector {
          * <p>
          * For raw er det automatisk en fejl
          * 
-         * @throws Giver ikke mening for rawModel
+         * @throws Giver
+         *             ikke mening for rawModel
          */
         void bindEmpty();
 
@@ -348,11 +349,12 @@ public abstract class BeanIntrospector {
             // Kan jo faktisk ogsaa bruges med context?
             return connectInvocationArgument(index, index);
         }
-        
+
         default OnBindingHook connectInvocationArgument(int index, int operationIndex) {
             // Used from ops.
             return this;
         }
+
         /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
 
@@ -551,10 +553,10 @@ public abstract class BeanIntrospector {
          * 
          * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
          * 
-         * @apiNote there are currently no way to create more than 1 MethodHandle or VarHandle per operation. If this is needed
-         *          at some point. We could take a varargs of access modes and then allow repeat calls to methodHandleNow. No
-         *          matter what we must declare the invocation types when we create the operation, so we can check access before
-         *          creating the actual operation
+         * @apiNote there are currently no way to create more than 1 MethodHandle per operation (for example 1 for read and 1
+         *          for write). You must create an operation per access mode. If this is needed at some point. We could take a
+         *          varargs of access modes and then allow repeat calls to methodHandleNow. No matter what we must declare the
+         *          invocation types when we create the operation, so we can check access before creating the actual operation
          */
         OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, VarHandle.AccessMode accessMode, InvocationType invocationType);
 

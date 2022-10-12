@@ -72,7 +72,7 @@ public final /* primitive */ class BeanHandle<T> {
 
     /** {@return the bean class.} */
     public Class<?> beanClass() {
-        return bean.beanClass();
+        return bean.beanClass;
     }
 
     /** {@return the bean kind.} */
@@ -160,9 +160,31 @@ public final /* primitive */ class BeanHandle<T> {
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
     // Syntes de skal vaere paa Handle. Det fungere fint her paa beans.
-    // Men for Container, Operation er der ingen andre naturlige steder at smide dem hen.
+    // They are here to be in line with Container, Operation. Hvor XHAndle er det eneste sted de passer
     public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
-
+        
+        static InstallOption spawnNew() {
+            // A bean that is created per operation.
+            // Obvious manyton, but should we have own kind?
+            // I actually think so because, because for now it always requires manyton
+            
+            // Some questions, do we support @Schedule? Or anything like it?
+            // I don't think we need to set up the support for it by default. Only if used
+            // So overhead is not needed
+            
+            // But I think those annotations that make sense are always "callback" extensions
+            // From other threads
+            // Single threaded vs multi-threaded
+            // If we are single threaded it is obviously always only the request method
+            // If we are multi threaded we create own little "world"
+            // I think that is the difference, between the two
+            
+            // Maybe bean is always single threaded.
+            // And container is always multi threaded
+            
+            throw new UnsupportedOperationException();
+        }
+        
         static InstallOption synthetic() {
             throw new UnsupportedOperationException();
         }

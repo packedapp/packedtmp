@@ -50,7 +50,7 @@ public final class BeanInjectionManager implements DependencyProducer {
         if (bean.sourceKind == BeanSourceKind.INSTANCE) {
             this.singletonAccessor = new Accessor.ConstantAccessor(bean.source);
         } else if (bean.beanKind == BeanKind.CONTAINER) {
-            this.singletonAccessor = bean.container.lifetime.pool.reserve(bean.beanClass());
+            this.singletonAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
         } else if (bean.beanKind == BeanKind.LAZY) {
             throw new UnsupportedOperationException();
         } else {

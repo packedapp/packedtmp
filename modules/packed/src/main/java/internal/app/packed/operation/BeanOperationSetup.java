@@ -93,7 +93,7 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
          * @param invocationType
          */
         public BeanInstanceAccessSetup(BeanSetup bean) {
-            super(bean, OperationType.of(bean.beanClass()), null, null);
+            super(bean, OperationType.of(bean.beanClass), null, null);
         }
 
         /** {@inheritDoc} */

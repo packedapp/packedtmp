@@ -130,7 +130,7 @@ public class ApplicationMirror implements Mirror {
         for (var b = cs.beanFirst; b != null; b = b.nextBean) {
             StringBuilder sb = new StringBuilder();
             sb.append(b.path()).append("");
-            sb.append(" [").append(b.beanClass().getName()).append("], owner = " + b.owner());
+            sb.append(" [").append(b.beanClass.getName()).append("], owner = " + b.realm.realm());
             System.out.println(sb.toString());
         }
     }

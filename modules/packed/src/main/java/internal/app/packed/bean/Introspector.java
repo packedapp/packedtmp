@@ -73,7 +73,7 @@ public final class Introspector {
 
     public Introspector(BeanModel model, BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
         this.bean = bean;
-        this.beanClass = bean.beanClass();
+        this.beanClass = bean.beanClass;
         this.beanHandleIntrospector = beanHandleIntrospector;
         this.oc = OpenClass.of(MethodHandles.lookup(), beanClass);
     }
@@ -84,7 +84,7 @@ public final class Introspector {
             ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
 
             BeanIntrospector introspector;
-            if (beanHandleIntrospector != null && bean.operator() == extensionType) {
+            if (beanHandleIntrospector != null && bean.operator.extensionType == extensionType) {
                 // A special introspector has been set, don't
                 introspector = beanHandleIntrospector;
                 try {
