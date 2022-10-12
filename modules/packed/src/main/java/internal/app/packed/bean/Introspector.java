@@ -84,7 +84,7 @@ public final class Introspector {
             ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
 
             BeanIntrospector introspector;
-            if (beanHandleIntrospector != null && bean.operator.extensionType == extensionType) {
+            if (beanHandleIntrospector != null && bean.installedBy.extensionType == extensionType) {
                 // A special introspector has been set, don't
                 introspector = beanHandleIntrospector;
                 try {

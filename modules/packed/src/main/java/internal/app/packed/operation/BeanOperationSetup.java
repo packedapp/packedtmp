@@ -31,6 +31,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.BeanOperationSetup.BeanFieldAccessSetup;
 import internal.app.packed.operation.BeanOperationSetup.BeanInstanceAccessSetup;
 import internal.app.packed.operation.BeanOperationSetup.BeanMethodInvokeSetup;
+import internal.app.packed.operation.binding.FusedBindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -66,6 +67,13 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
         this.invocationType = invocationType;
         this.operator = operator;
     }
+    
+    public BeanOperationSetup(BeanOperationSetup parent, OperationType type, FusedBindingSetup binding) {
+        super(parent.bean, type);
+        this.type = type;
+        this.invocationType = parent.invocationType;
+        this.operator = parent.operator;
+    }
 
     /** {@return a new mirror.} */
     public OperationMirror mirror() {
@@ -89,7 +97,7 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
         /**
          * @param bean
          * @param type
-         * @param operator
+         * @param installedBy
          * @param invocationType
          */
         public BeanInstanceAccessSetup(BeanSetup bean) {
@@ -107,7 +115,6 @@ public abstract sealed class BeanOperationSetup extends OperationSetup permits B
         public boolean isStatic() {
             return false;
         }
-
     }
 
     /** Represents a field access on a bean */

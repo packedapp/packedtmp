@@ -47,15 +47,6 @@ public final class BeanInjectionManager implements DependencyProducer {
     public final Accessor singletonAccessor;
 
     public BeanInjectionManager(BeanSetup bean) {
-        if (bean.sourceKind == BeanSourceKind.INSTANCE) {
-            this.singletonAccessor = new Accessor.ConstantAccessor(bean.source);
-        } else if (bean.beanKind == BeanKind.CONTAINER) {
-            this.singletonAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
-        } else if (bean.beanKind == BeanKind.LAZY) {
-            throw new UnsupportedOperationException();
-        } else {
-            this.singletonAccessor = null;
-        }
 
         // Can only register a single extension bean of a particular type
         if (bean.realm instanceof ExtensionRealmSetup e) {
@@ -68,6 +59,17 @@ public final class BeanInjectionManager implements DependencyProducer {
             parent = bean.container.injectionManager;
         }
 
+        if (bean.sourceKind == BeanSourceKind.INSTANCE) {
+            this.singletonAccessor = new Accessor.ConstantAccessor(bean.source);
+        } else if (bean.beanKind == BeanKind.CONTAINER) {
+            this.singletonAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
+        } else if (bean.beanKind == BeanKind.LAZY) {
+            throw new UnsupportedOperationException();
+        } else {
+            this.singletonAccessor = null;
+        }
+
+        
         // Only create an instance node if we have instances
         if (bean.sourceKind == BeanSourceKind.INSTANCE || !bean.beanKind.hasInstances()) {
             // Kan have en provide

@@ -72,6 +72,9 @@ public final class BeanSetup {
     @Nullable
     public final BeanInjectionManager injectionManager;
 
+    /** The extension that installed the bean. */
+    public final ExtensionSetup installedBy;
+
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
@@ -90,9 +93,6 @@ public final class BeanSetup {
 
     /** Operations declared by the bean. */
     public final ArrayList<BeanOperationSetup> operations = new ArrayList<>();
-
-    /** The lifetime? operator of the bean. */
-    public final ExtensionSetup operator;
 
     /** The realm used to install this component. */
     public final RealmSetup realm;
@@ -114,18 +114,18 @@ public final class BeanSetup {
         this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
 
-        this.operator = requireNonNull(operator);
+        this.installedBy = requireNonNull(operator);
+        this.container = requireNonNull(operator.container);
+
+        // TODO clean up
+        
+        // I think we want to have a single field for these
         this.realm = requireNonNull(realm);
-        this.container = operator.container;
         this.extensionOwner = extensionOwner;
 
         this.lifetime = container.lifetime;
 
-        if (beanKind == BeanKind.FUNCTIONAL) { // Not sure exactly when we need it
-            this.injectionManager = null;
-        } else {
-            this.injectionManager = new BeanInjectionManager(this);
-        }
+        this.injectionManager = new BeanInjectionManager(this);
     }
 
     public void checkIsCurrent() {
@@ -171,6 +171,8 @@ public final class BeanSetup {
         // Check that this component is still active and the name can be set
         // Do we actually care? Of course we can only set as long as the realm is open
         // But other than that why not
+        // Issue should be the container which should probably work identical
+        // And I do think we should have it as the first thing
         checkIsCurrent();
 
         if (container.children.putIfAbsent(newName, this) != null) {
@@ -205,13 +207,13 @@ public final class BeanSetup {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
-    static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator, RealmSetup realm,
-            @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
+    static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup installedBy,
+            RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
 
-        BeanSetup bean = new BeanSetup(kind, beanClass, sourceKind, source, operator, realm, extensionOwner);
+        BeanSetup bean = new BeanSetup(kind, beanClass, sourceKind, source, installedBy, realm, extensionOwner);
 
         // No reason to maintain some of these in props
         boolean multiInstall = false;

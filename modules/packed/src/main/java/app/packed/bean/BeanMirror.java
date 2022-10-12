@@ -197,7 +197,7 @@ public class BeanMirror implements Mirror {
     // var Optional<Class<? extends Extension<?>>> registrant
     // Giver strengt tagt kun mening paa beans nu..
     public Class<? extends Extension<?>> operator() {
-        return bean().operator.extensionType;
+        return bean().installedBy.extensionType;
     }
 
     /** {@return the owner of the component.} */

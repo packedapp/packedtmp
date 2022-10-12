@@ -26,10 +26,8 @@ import internal.app.packed.service.inject.InternalDependency;
 /**
  * Represents a single operation.
  */
-
 // Hvad er en operation? En operation er noget der skal have en OperationMirror
-
-public sealed abstract class OperationSetup permits BeanOperationSetup, FusedOperationSetup, CompositeOperationSetup {
+public sealed abstract class OperationSetup permits BeanOperationSetup, CompositeOperationSetup {
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] EMPTY = new BindingSetup[0];
