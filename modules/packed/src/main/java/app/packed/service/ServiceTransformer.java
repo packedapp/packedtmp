@@ -66,6 +66,8 @@ import app.packed.operation.Op;
 //-- Via ServiceRegistry
 
 // Nested class paa ServiceWirelets if that is the only place it is going to be used
+
+// Naeste gang vi implementere den. Bygger vi den langsom...
 public interface ServiceTransformer {
  
    default ServiceContract contract() {
@@ -108,6 +110,20 @@ public interface ServiceTransformer {
     <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
     /**
+     * Returns a set view containing the keys for every service in this registry.
+     * <p>
+     * If this registry supports removals, the returned set will also support removal operations: {@link Set#clear()},
+     * {@link Set#remove(Object)}, {@link Set#removeAll(java.util.Collection)},
+     * {@link Set#removeIf(java.util.function.Predicate)} and {@link Set#retainAll(java.util.Collection)}. or via any set
+     * iterators. The returned map will never support insertion or update operations.
+     * <p>
+     * The returned map will retain any thread-safety guarantees provided by the registry itself.
+     * 
+     * @return a set view containing the keys for every service in this registry
+     */
+    Set<Key<?>> keys();
+    
+    /**
      * <p>
      * If the specified factory does not have declare any variables. The new services will have public (constant) scope.
      * 
@@ -133,7 +149,7 @@ public interface ServiceTransformer {
     default <T> void peek(Class<T> key, Consumer<? super T> consumer) {
         peek(Key.of(key), consumer);
     }
-    
+
     <T> void peek(Key<T> key, Consumer<? super T> consumer);
 
     // provide a constant via an instance
@@ -166,6 +182,8 @@ public interface ServiceTransformer {
      */
     <T> void provideInstance(Key<T> key, T instance);
 
+    // auto figure out if constant or prototype
+
     /**
      * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
      * service of the specific type as a requirement.
@@ -180,8 +198,6 @@ public interface ServiceTransformer {
         requireNonNull(instance, "instance is null");
         provideInstance((Class) instance.getClass(), instance);
     }
-
-    // auto figure out if constant or prototype
 
     /**
      * A version of
@@ -310,6 +326,21 @@ public interface ServiceTransformer {
     /** Removes all services. */
     void removeAll();
 
+//    /**
+//     * @param filter
+//     *            a predicate which returns {@code true} for services to be removed
+//     * @see Collection#removeIf(Predicate)
+//     */
+//    default void removeIf(Predicate<? super Service> filter) {
+//        requireNonNull(filter, "filter is null");
+//        for (Iterator<Service> iterator = iterator(); iterator.hasNext();) {
+//            Service s = iterator.next();
+//            if (filter.test(s)) {
+//                iterator.remove();
+//            }
+//        }
+//    }
+
     /**
      * Remove every key {@link Class} or {@link Key}
      * 
@@ -337,21 +368,6 @@ public interface ServiceTransformer {
         }
     }
 
-//    /**
-//     * @param filter
-//     *            a predicate which returns {@code true} for services to be removed
-//     * @see Collection#removeIf(Predicate)
-//     */
-//    default void removeIf(Predicate<? super Service> filter) {
-//        requireNonNull(filter, "filter is null");
-//        for (Iterator<Service> iterator = iterator(); iterator.hasNext();) {
-//            Service s = iterator.next();
-//            if (filter.test(s)) {
-//                iterator.remove();
-//            }
-//        }
-//    }
-
     /**
      * Similar to {@link #map(Op)} except that it will automatically remove all dependencies of the factory once the
      * mapping has finished.
@@ -364,25 +380,10 @@ public interface ServiceTransformer {
     default void retain(Class<?>... keys) {
         retain(Key.of(keys));
     }
-
+    
     default void retain(Key<?>... keys) {
         keys().retainAll(Set.of(keys));
     }
-    
-    /**
-     * Returns a set view containing the keys for every service in this registry.
-     * <p>
-     * If this registry supports removals, the returned set will also support removal operations: {@link Set#clear()},
-     * {@link Set#remove(Object)}, {@link Set#removeAll(java.util.Collection)},
-     * {@link Set#removeIf(java.util.function.Predicate)} and {@link Set#retainAll(java.util.Collection)}. or via any set
-     * iterators. The returned map will never support insertion or update operations.
-     * <p>
-     * The returned map will retain any thread-safety guarantees provided by the registry itself.
-     * 
-     * @return a set view containing the keys for every service in this registry
-     */
-    Set<Key<?>> keys();
-
 
     /**
      * @param keys

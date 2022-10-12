@@ -24,11 +24,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
+import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption;
 
 /**
  * A bean handle represents a private configuration installed bean.
@@ -40,8 +42,15 @@ import internal.app.packed.bean.BeanSetup;
  */
 public final /* primitive */ class BeanHandle<T> {
 
+    /** The bean that is being handled */
     final BeanSetup bean;
 
+    /**
+     * Creates a new BeanHandle.
+     * 
+     * @param bean
+     *            the bean that should be handled
+     */
     BeanHandle(BeanSetup bean) {
         this.bean = requireNonNull(bean);
     }
@@ -61,10 +70,12 @@ public final /* primitive */ class BeanHandle<T> {
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the bean class.} */
     public Class<?> beanClass() {
         return bean.beanClass();
     }
 
+    /** {@return the bean kind.} */
     public BeanKind beanKind() {
         return bean.beanKind;
     }
@@ -146,13 +157,65 @@ public final /* primitive */ class BeanHandle<T> {
         bean.mirrorSupplier = mirrorFactory;
     }
 
-    // Tjah, skal vel ogsaa bruges for containere
-    public interface LifetimeConf {
-        LifetimeConf ALL = null;
-        LifetimeConf START_ONLY = null;
-        LifetimeConf STOP = null;
+    // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 
+    // Syntes de skal vaere paa Handle. Det fungere fint her paa beans.
+    // Men for Container, Operation er der ingen andre naturlige steder at smide dem hen.
+    public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
+
+        static InstallOption synthetic() {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * Registers a bean introspector that will be used instead of the framework calling
+         * {@link Extension#newBeanIntrospector}.
+         * 
+         * @param introspector
+         * @return this builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if the bean has a void bean class
+         * 
+         * @see Extension#newBeanIntrospector
+         */
+        static InstallOption introspectWith(BeanIntrospector introspector) {
+            requireNonNull(introspector, "introspector is null");
+            return new BeanInstallOption.CustomIntrospector(introspector);
+        }
+
+        /**
+         * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
+         * <p>
+         * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
+         * the specified prefix as the name of the bean. Otherwise, it will append a postfix to specified prefix in such a way
+         * that the name of the bean is unique.
+         * 
+         * @param prefix
+         *            the prefix used for naming the bean
+         * @return this builder
+         * @throws IllegalStateException
+         *             if build has previously been called on the builder
+         */
+        static InstallOption namePrefix(String prefix) {
+            return new BeanInstallOption.CustomPrefix(prefix);
+        }
+
+        /**
+         * Allows for multiple beans of the same type in a single container.
+         * <p>
+         * By default, a container only allows a single bean of particular type if non-void.
+         * 
+         * @return this builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if {@code void} bean class
+         */
+        static InstallOption multiInstall() {
+            return new BeanInstallOption.MultiInstall();
+        }
     }
+
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 

@@ -1,6 +1,6 @@
 package app.packed.bean;
 
-import app.packed.bean.BeanExtensionPoint.InstallOption;
+import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.operation.InvocationType;
@@ -12,25 +12,22 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- * A bean extension is used for installing beans into a container.
+ * An extension that is used for installing new beans into a container.
  * <p>
- * All containers use this extension. As every container either defines at least 1 bean. Or has a container descendants
- * who does.
+ * All containers use this extension either directly or indirectly. As every container either defines at least 1 bean.
+ * Or has a container descendants who does.
  */
 public class BeanExtension extends Extension<BeanExtension> {
 
     /** The container we are installing beans into. */
     final ContainerSetup container;
 
+    /** The internal configuration of the extension. */
     final ExtensionSetup extensionSetup = ExtensionSetup.crack(this);
 
     /** Create a new bean extension. */
     BeanExtension() {
         container = extensionSetup.container;
-    }
-
-    void filter(BaseAssembly.Linker l) {
-
     }
 
     /**
@@ -47,18 +44,6 @@ public class BeanExtension extends Extension<BeanExtension> {
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
         BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.CONTAINER, implementation);
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
-    }
-
-
-    @Override
-    protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {
-
-            @Override
-            public void onMethodHook(OnMethod method) {
-                ((BeanMethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
-            }
-        };
     }
 
     /**
@@ -145,6 +130,25 @@ public class BeanExtension extends Extension<BeanExtension> {
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
         BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.LAZY, op, InstallOption.multiInstall());
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+    }
+
+    /**
+     * Creates a new BeanIntrospector for handling annotations managed by BeanExtension.
+     * 
+     * @see Inject
+     * @see OnInitialize
+     * @see OnStart
+     * @see OnStop
+     */
+    @Override
+    protected BeanIntrospector newBeanIntrospector() {
+        return new BeanIntrospector() {
+
+            @Override
+            public void onMethodHook(OnMethod method) {
+                ((BeanMethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+            }
+        };
     }
 
     /** {@inheritDoc} */

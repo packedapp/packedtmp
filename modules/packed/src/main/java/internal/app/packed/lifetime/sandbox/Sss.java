@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package internal.app.packed.lifetime.sandbox;
 
 import app.packed.application.App;
 import app.packed.bean.Inject;

@@ -5,13 +5,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
-import app.packed.bean.BeanHandle.LifetimeConf;
-import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
+import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
@@ -45,37 +43,37 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new ExtensionBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
-    public <T> BeanHandle<T> newContainerBean(Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newContainerBean(Class<T> clazz, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.CONTAINER, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newContainerBean(Op<T> op, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newContainerBean(Op<T> op, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.CONTAINER, op);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newContainerBean(UseSite extension, Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newContainerBean(UseSite extension, Class<T> clazz, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installClass(extension().extensionSetup, es.extensionRealm, es, BeanKind.CONTAINER, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newContainerBean(UseSite extension, Op<T> op, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newContainerBean(UseSite extension, Op<T> op, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installOp(extension().extensionSetup, es.extensionRealm, es, BeanKind.CONTAINER, op);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newContainerBeanFromInstance(T instance, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newContainerBeanFromInstance(T instance, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installInstance(be.extensionSetup, be.container.assembly, null, instance);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newContainerBeanFromInstance(UseSite extension, T instance, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newContainerBeanFromInstance(UseSite extension, T instance, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installInstance(extension().extensionSetup, es.extensionRealm, es, instance);
         return new BeanHandle<>(bean);
@@ -86,37 +84,37 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * 
      * @return the new installer
      */
-    public BeanHandle<?> newFunctionalBean(BeanExtensionPoint.InstallOption... options) {
+    public BeanHandle<?> newFunctionalBean(BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installFunctional(be.extensionSetup, be.container.assembly, null);
         return new BeanHandle<>(bean);
     }
 
-    public BeanHandle<?> newFunctionalBean(UseSite extension, BeanExtensionPoint.InstallOption... options) {
+    public BeanHandle<?> newFunctionalBean(UseSite extension, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installFunctional(extension().extensionSetup, es.extensionRealm, es);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newLazyBean(Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newLazyBean(Class<T> clazz, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.LAZY, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newLazyBean(Op<T> op, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newLazyBean(Op<T> op, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.LAZY, op);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newLazyBean(UseSite extension, Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newLazyBean(UseSite extension, Class<T> clazz, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installClass(extension().extensionSetup, es.extensionRealm, es, BeanKind.LAZY, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newLazyBean(UseSite extension, Op<T> op, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newLazyBean(UseSite extension, Op<T> op, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installOp(extension().extensionSetup, es.extensionRealm, es, BeanKind.LAZY, op);
         return new BeanHandle<>(bean);
@@ -131,37 +129,37 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      *            the clazz
      * @return the new installer
      */
-    public <T> BeanHandle<T> newManytonBean(Class<T> clazz, LifetimeConf lifetimes, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newManytonBean(Class<T> clazz, LifetimeConf lifetimes, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.MANYTON, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newManytonBean(Op<T> op, LifetimeConf lifetimes, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newManytonBean(Op<T> op, LifetimeConf lifetimes, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.MANYTON, op);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newManytonBean(UseSite extension, Class<T> clazz, LifetimeConf lifetimes, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newManytonBean(UseSite extension, Class<T> clazz, LifetimeConf lifetimes, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installClass(extension().extensionSetup, es.extensionRealm, es, BeanKind.MANYTON, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newManytonBean(UseSite extension, Op<T> op, LifetimeConf lifetimes, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newManytonBean(UseSite extension, Op<T> op, LifetimeConf lifetimes, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installOp(extension().extensionSetup, es.extensionRealm, es, BeanKind.MANYTON, op);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newStaticBean(Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newStaticBean(Class<T> clazz, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.STATIC, clazz);
         return new BeanHandle<>(bean);
     }
 
-    public <T> BeanHandle<T> newStaticBean(UseSite extension, Class<T> clazz, BeanExtensionPoint.InstallOption... options) {
+    public <T> BeanHandle<T> newStaticBean(UseSite extension, Class<T> clazz, BeanHandle.InstallOption... options) {
         ExtensionSetup es = usedBy(extension);
         BeanSetup bean = BeanSetup.installClass(extension().extensionSetup, es.extensionRealm, es, BeanKind.STATIC, clazz);
         return new BeanHandle<>(bean);
@@ -219,59 +217,6 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     public static <T> Op<T> factoryOf(Class<T> implementation, Lookup lookup) {
         requireNonNull(implementation, "implementation is null");
         return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
-    }
-
-    // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
-
-    public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
-
-        /**
-         * Registers a bean introspector that will be used instead of the framework calling
-         * {@link Extension#newBeanIntrospector}.
-         * 
-         * @param introspector
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if the bean has a void bean class
-         * 
-         * @see Extension#newBeanIntrospector
-         */
-        static InstallOption introspectWith(BeanIntrospector introspector) {
-            requireNonNull(introspector, "introspector is null");
-            return new BeanInstallOption.CustomIntrospector(introspector);
-        }
-
-        /**
-         * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
-         * <p>
-         * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
-         * the specified prefix as the name of the bean. Otherwise, it will append a postfix to specified prefix in such a way
-         * that the name of the bean is unique.
-         * 
-         * @param prefix
-         *            the prefix used for naming the bean
-         * @return this builder
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
-         */
-        static InstallOption namePrefix(String prefix) {
-            return new BeanInstallOption.CustomPrefix(prefix);
-        }
-
-        /**
-         * Allows for multiple beans of the same type in a single container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
-         * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
-         */
-        static InstallOption multiInstall() {
-            return new BeanInstallOption.MultiInstall();
-        }
     }
 }
 

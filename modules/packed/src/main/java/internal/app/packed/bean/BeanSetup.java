@@ -14,9 +14,8 @@ import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanExtensionPoint;
-import app.packed.bean.BeanExtensionPoint.InstallOption;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
@@ -238,7 +237,7 @@ public final class BeanSetup implements BeanInfo {
     }
 
     static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator, RealmSetup realm,
-            @Nullable ExtensionSetup extensionOwner, BeanExtensionPoint.InstallOption... options) {
+            @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
@@ -353,31 +352,31 @@ public final class BeanSetup implements BeanInfo {
     }
 
     public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Class<?> clazz,
-            BeanExtensionPoint.InstallOption... options) {
+            BeanHandle.InstallOption... options) {
         requireNonNull(clazz, "clazz is null");
         return install(beanKind, clazz, BeanSourceKind.CLASS, clazz, operator, realm, extensionOwner, options);
     }
 
     public static BeanSetup installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
-            BeanExtensionPoint.InstallOption... options) {
+            BeanHandle.InstallOption... options) {
         return install(BeanKind.FUNCTIONAL, void.class, BeanSourceKind.NONE, null, operator, realm, extensionOwner, options);
     }
 
     public static BeanSetup installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Object instance,
-            BeanExtensionPoint.InstallOption... options) {
+            BeanHandle.InstallOption... options) {
         requireNonNull(instance, "instance is null");
         return install(BeanKind.CONTAINER, instance.getClass(), BeanSourceKind.INSTANCE, instance, operator, realm, extensionOwner, options);
     }
 
     public static BeanSetup installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Op<?> op,
-            BeanExtensionPoint.InstallOption... options) {
+            BeanHandle.InstallOption... options) {
         PackedOp<?> pop = PackedOp.crack(op);
         return install(beanKind, pop.type().returnType(), BeanSourceKind.OP, pop, operator, realm, extensionOwner, options);
     }
 
     /** The various install options. */
     // Silly Eclipse compiler requires permits here (bug)
-    public sealed interface BeanInstallOption extends BeanExtensionPoint.InstallOption permits MultiInstall, CustomIntrospector, CustomPrefix {
+    public sealed interface BeanInstallOption extends BeanHandle.InstallOption permits MultiInstall, CustomIntrospector, CustomPrefix {
 
         public record MultiInstall() implements BeanInstallOption {}
 

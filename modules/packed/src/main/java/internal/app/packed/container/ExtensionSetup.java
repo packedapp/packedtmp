@@ -14,7 +14,7 @@ import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/** Build-time configuration of an extension. */
+/** Internal configuration of an extension. */
 public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
@@ -27,16 +27,16 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
     /** The container where the extension is used. */
     public final ContainerSetup container;
 
-    /** The extension realm this extension is part of. */
+    /** The extension realm this extension is a part of. */
     public final ExtensionRealmSetup extensionRealm;
 
-    /** The type of extension that is being configured. */
+    /** The type of extension. */
     public final Class<? extends Extension<?>> extensionType;
 
     /** The extension's injection manager. */
     public final ExtensionInjectionManager injectionManager;
 
-    /** The extension instance exposed to users, instantiated and set in {@link #initialize()}. */
+    /** The extension instance that is exposed to users, instantiated and set in {@link #initialize()}. */
     @Nullable
     private Extension<?> instance;
 

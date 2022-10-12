@@ -17,9 +17,13 @@ package app.packed.bean;
 
 import app.packed.application.BuildException;
 
-// An exception that is thrown when a operation could not be created because there was no access to the underlying.
-// Field, Constructor or Method
-/** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
+// If an extension tries something it does not have access to. It fails with IEE instead.
+// This is only if Packed does not have access
+
+/**
+ * An exception that is thrown when a operation could not be created because Packed had no access to the underlying.
+ * Field, Constructor or Method.
+ */
 // UncheckedIllegalAccessException...
 // RuntimeIllegalAccessException
 

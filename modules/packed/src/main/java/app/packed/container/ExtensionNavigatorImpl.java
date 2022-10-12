@@ -26,6 +26,7 @@ import internal.app.packed.util.AbstractTreeNode;
  *           ExtensionMirror.
  */
 // Should take current + root
+// Maybe make into a concrete class. instead of an interface
 record ExtensionNavigatorImpl<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionNavigator<T> {
 
     /** {@inheritDoc} */
