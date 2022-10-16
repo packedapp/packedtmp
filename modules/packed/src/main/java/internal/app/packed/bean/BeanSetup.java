@@ -21,7 +21,9 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
+import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
+import app.packed.operation.OperationType;
 import app.packed.operation.Provider;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomIntrospector;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomPrefix;
@@ -31,7 +33,9 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
+import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
@@ -130,6 +134,12 @@ public final class BeanSetup {
         this.injectionManager = new BeanInjectionManager(this);
     }
 
+    // Relative to x
+    public OperationSetup accessOperation() {
+        return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy),
+                new BeanInstanceAccess(null, false), null);
+    }
+    
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
 

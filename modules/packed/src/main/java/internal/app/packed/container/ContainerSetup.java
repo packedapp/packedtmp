@@ -102,6 +102,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     @Nullable
     public String name;
 
+    /** The container's service manager. */
     public final ServiceManager sm;
 
     /** Wirelets that were specified when creating the component. */

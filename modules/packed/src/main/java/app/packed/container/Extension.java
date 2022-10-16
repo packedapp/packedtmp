@@ -40,7 +40,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
@@ -112,7 +112,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable.
      */
     protected final void checkIsConfigurable() {
-        ExtensionRealmSetup realm = setup.extensionRealm;
+        ExtensionTreeSetup realm = setup.extensionRealm;
         if (realm.isClosed()) {
             throw new IllegalStateException(realm.realmType() + " is no longer configurable");
         }

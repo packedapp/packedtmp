@@ -48,7 +48,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param methodHandle
          * @param isStatic
          */
-        protected BeanInstanceAccess(MethodHandle methodHandle, boolean isStatic) {
+        public BeanInstanceAccess(MethodHandle methodHandle, boolean isStatic) {
             super(methodHandle, isStatic);
         }
 

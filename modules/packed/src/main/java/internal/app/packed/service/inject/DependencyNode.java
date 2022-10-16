@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
@@ -128,7 +128,7 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
 
         if (sbm != null) {
             if (e == null) {
-                if (bean.realm instanceof ExtensionRealmSetup ers) {
+                if (bean.realm instanceof ExtensionTreeSetup ers) {
                     Key<?> requiredKey = sd.key();
                     Key<?> thisKey = Key.of(bean.beanClass);
                     ContainerSetup container = bean.container;

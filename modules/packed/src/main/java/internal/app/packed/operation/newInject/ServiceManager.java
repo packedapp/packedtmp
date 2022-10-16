@@ -41,18 +41,10 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         super(parent);
     }
 
-    public void add(ExportedService e) {
-        ExportedService existing = exports.putIfAbsent(e.key, e);
-        if (existing != null) {
-            // A service with the key has already been exported
-            throw new DublicateServiceExportException();
-        }
-    }
-
-    public ServiceBindingSetup addBinding(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
+    public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
         return entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Entry(k);
+                v = new Entry();
             }
             if (isRequired) {
                 v.isRequired = true;
@@ -69,14 +61,22 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }).bindings;
     }
 
-    public void addExport(Key<?> key, OperationSetup operation) {
-        add(new ExportedService(operation, key));
+    public void serviceExport(ExportedService e) {
+        ExportedService existing = exports.putIfAbsent(e.key, e);
+        if (existing != null) {
+            // A service with the key has already been exported
+            throw new DublicateServiceExportException();
+        }
     }
 
-    public ProvidedService addProvision(Key<?> key, OperationSetup bos) {
+    public void serviceExport(Key<?> key, OperationSetup operation) {
+        serviceExport(new ExportedService(operation, key));
+    }
+
+    public ProvidedService serviceProvide(Key<?> key, OperationSetup bos) {
         Entry e = entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Entry(k);
+                v = new Entry();
             } else if (v.provider != null) {
                 throw new DublicateServiceProvideException("A service has already been bound for key " + key);
             } // else we have some bindings but no provider
@@ -84,7 +84,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
             return v;
         });
         if (exportAll) {
-            addExport(key, bos);
+            serviceExport(key, bos);
         }
         return e.provider;
     }
@@ -102,18 +102,14 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
     static class Entry {
 
+        /** All bindings (in a interned linked list) that points to this entry. */
         @Nullable
         ServiceBindingSetup bindings;
 
         boolean isRequired = true; // true for now
 
-        final Key<?> key;
-
+        /** The provider of the service */
         @Nullable
         ProvidedService provider;
-
-        Entry(Key<?> key) {
-            this.key = key;
-        }
     }
 }

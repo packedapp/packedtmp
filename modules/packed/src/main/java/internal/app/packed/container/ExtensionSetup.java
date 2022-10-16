@@ -28,7 +28,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
     public final ContainerSetup container;
 
     /** The extension realm this extension is a part of. */
-    public final ExtensionRealmSetup extensionRealm;
+    public final ExtensionTreeSetup extensionRealm;
 
     /** The type of extension. */
     public final Class<? extends Extension<?>> extensionType;
@@ -58,7 +58,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
-            this.extensionRealm = new ExtensionRealmSetup(this, extensionType);
+            this.extensionRealm = new ExtensionTreeSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionRealm = parent.extensionRealm;

@@ -23,13 +23,13 @@ import internal.app.packed.operation.OperationSetup;
 public final class ProvidedService {
 
     /** The operation that provides the service. */
-    public final OperationSetup bos;
+    public final OperationSetup operation;
 
     /** The key under which this service is provided. */
     public final ServiceManager.Entry entry;
 
-    ProvidedService(OperationSetup bos, ServiceManager.Entry entry) {
-        this.bos = bos;
+    ProvidedService(OperationSetup operation, ServiceManager.Entry entry) {
+        this.operation = operation;
         this.entry = entry;
     }
 }

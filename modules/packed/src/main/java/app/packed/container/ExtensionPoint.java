@@ -3,7 +3,7 @@ package app.packed.container;
 import app.packed.base.Nullable;
 import app.packed.container.Extension.DependsOn;
 import app.packed.entrypoint.EntryPointExtensionPoint;
-import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.util.ClassUtil;
@@ -103,7 +103,7 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
      *             if the extension that uses this extension point is no longer configurable.
      */
     protected final void checkIsConfigurable() {
-        ExtensionRealmSetup realm = context().usedBy().extensionRealm;
+        ExtensionTreeSetup realm = context().usedBy().extensionRealm;
         if (realm.isClosed()) {
             throw new IllegalStateException(realm.realmType() + " can no longer be configured");
         }

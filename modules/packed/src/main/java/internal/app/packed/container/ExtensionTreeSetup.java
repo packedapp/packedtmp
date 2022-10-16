@@ -32,7 +32,7 @@ import internal.app.packed.util.ThrowableUtil;
  * <p>
  * The actual tree is maintained in {@link ExtensionSetup}. This class just holds the root
  */
-public final class ExtensionRealmSetup extends RealmSetup {
+public final class ExtensionTreeSetup extends RealmSetup {
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -40,6 +40,9 @@ public final class ExtensionRealmSetup extends RealmSetup {
 
     /** A model of the extension. */
     final ExtensionModel extensionModel;
+
+    /** Whether or not this realm is configurable. */
+    private boolean isClosed;
 
     /** The extension setup for the root container. */
     private final ExtensionSetup rootExtension;
@@ -54,7 +57,7 @@ public final class ExtensionRealmSetup extends RealmSetup {
      * @param extensionType
      *            the type of extension
      */
-    ExtensionRealmSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
+    ExtensionTreeSetup(ExtensionSetup root, Class<? extends Extension<?>> extensionType) {
         this.extensionModel = ExtensionModel.of(extensionType);
         this.rootExtension = requireNonNull(root);
     }
@@ -69,9 +72,13 @@ public final class ExtensionRealmSetup extends RealmSetup {
             throw ThrowableUtil.orUndeclared(t);
         }
 
-        super.close();
+        isClosed = true;
     }
 
+    /** {@return whether or not the realm is closed.} */
+    public final boolean isClosed() {
+        return isClosed;
+    }
     /** {@inheritDoc} */
     @Override
     public UserOrExtension realm() {

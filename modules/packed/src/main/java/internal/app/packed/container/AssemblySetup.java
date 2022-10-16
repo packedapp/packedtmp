@@ -41,14 +41,14 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
- *
+ * The internal configuration of an assembly
  */
 public final class AssemblySetup extends RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             AssemblySetup.class, ContainerSetup.class);
-    
+
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onAssemblyClose", void.class);
@@ -66,10 +66,23 @@ public final class AssemblySetup extends RealmSetup {
     public final ContainerSetup container;
 
     /**
-     * All extensions that are used in the installer (if non embedded) An order set of extension according to the natural
+     * All extensions that are used in the same assembly (if non embedded) An order set of extension according to the natural
      * extension dependency order.
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
+
+    /** Whether or not this realm is configurable. */
+    private boolean isClosed;
+
+    public AssemblySetup(ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
+        this.assembly = requireNonNull(assembly, "assembly is null");
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+        this.application = linkTo.application;
+        if (assembly instanceof ComposerAssembly) {
+            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
+        }
+        this.container = new ContainerSetup(application, this, linkTo, wirelets);
+    }
 
     /**
      * Builds an application using the specified assembly and optional wirelets.
@@ -90,16 +103,6 @@ public final class AssemblySetup extends RealmSetup {
         this.container = application.container;
     }
 
-    public AssemblySetup(ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
-        this.assembly = requireNonNull(assembly, "assembly is null");
-        this.assemblyModel = AssemblyModel.of(assembly.getClass());
-        this.application = linkTo.application;
-        if (assembly instanceof ComposerAssembly) {
-            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
-        }
-        this.container = new ContainerSetup(application, this, linkTo, wirelets);
-    }
-
     public void build() {
         // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
         try {
@@ -108,12 +111,7 @@ public final class AssemblySetup extends RealmSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        // Close the realm, if the application has been built successfully (no exception was thrown)
-        close();
-    }
-
-    void close() {
-        super.close();
+        isClosed = true;
 
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
@@ -122,24 +120,23 @@ public final class AssemblySetup extends RealmSetup {
         // We use .pollFirst because extensions might add new extensions while being closed
         // In which case an Iterator might throw ConcurrentModificationException
 
-        // Test and see if we are closing the root container
-
+        // Test and see if we are closing the root container of the application
         if (container.treeParent == null) {
             // Root container
             // We must also close all extensions application-wide.
-            ArrayList<ExtensionRealmSetup> list = new ArrayList<>(extensions.size());
+            ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
 
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
                 list.add(e.extensionRealm);
-                onUserClose(e.instance());
+                onAssemblyClose(e.instance());
                 e = extensions.pollFirst();
             }
 
             container.application.injectionManager.finish(container.lifetime.pool, container);
 
             // Close all extensions application wide
-            for (ExtensionRealmSetup extension : list) {
+            for (ExtensionTreeSetup extension : list) {
                 extension.close();
             }
 
@@ -150,20 +147,22 @@ public final class AssemblySetup extends RealmSetup {
             // Similar to above, except we do not close extensions application-wide
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
-                onUserClose(e.instance());
+                onAssemblyClose(e.instance());
                 e = extensions.pollFirst();
             }
         }
     }
     
+    public boolean isClosed() {
+        return isClosed;
+    }
 
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
         return new BuildtimeAssemblyMirror(this);
     }
 
-
-    private void onUserClose(Extension<?> instance) {
+    private void onAssemblyClose(Extension<?> instance) {
         try {
             MH_EXTENSION_ON_ASSEMBLY_CLOSE.invokeExact(instance);
         } catch (Throwable t) {

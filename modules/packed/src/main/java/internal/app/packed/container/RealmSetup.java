@@ -28,14 +28,11 @@ import internal.app.packed.bean.BeanMemberAccessor;
 /**
  * Configuration of a realm.
  */
-public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySetup {
+public abstract sealed class RealmSetup permits ExtensionTreeSetup, AssemblySetup {
 
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     @Nullable
     private BeanMemberAccessor accessor;
-
-    /** Whether or not this realm is configurable. */
-    private boolean isClosed;
 
     // Maaske vi flytter vi den til ContainerRealmSetup
     // Hvis man har brug for Lookup i en extension... Saa maa man bruge Factory.of(Class).lookup());
@@ -48,14 +45,10 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
         return r;
     }
 
-    void close() {
-        isClosed = true;
-    }
-
-    /** {@return whether or not the realm is closed.} */
-    public final boolean isClosed() {
-        return isClosed;
-    }
+    /**
+     * @return
+     */
+    public abstract boolean isClosed();
 
     /**
      * @param lookup
@@ -70,6 +63,7 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
 
     public abstract UserOrExtension realm();
 
+
     /**
      * Returns the type that was used to create this realm.
      * 
@@ -79,14 +73,3 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     public abstract Class<?> realmType();
 
 }
-//public interface RealmConfiguration {
-//
-//    // The current component that is being wired
-//    // empty if the realm is no longer configurable
-//    Optional<NamespacePath> activeComponent(); // ComponentConfiguration??? Det er jo internt i realmen
-//
-//    boolean isConfigurable();
-//
-//    // Vil helst ikke have extensions til at bruge dem...
-//    void lookup(MethodHandles.Lookup lookup);
-//}

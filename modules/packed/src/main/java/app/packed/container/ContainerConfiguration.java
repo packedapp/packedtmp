@@ -39,17 +39,6 @@ public class ContainerConfiguration {
         this.handle = requireNonNull(handle, "handle is null");
     }
 
-    // On container or assembly???
-    // Not container I think...
-    // Assembly + Extension
-    // So on Realm, eller application maaske
-    // Maaske holder vi den bare paa det respektive configurations objekt.
-    // Consumer<Throwable>
-    // Tror kun vi har behov for den for extension ikke?
-    final void addCloseAction(Runnable action) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * 
      * @throws IllegalStateException
@@ -106,16 +95,13 @@ public class ContainerConfiguration {
      * @return the component that was linked
      */
     public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
-
-        // Check that the container is still configurable
+        // Check that the assembly is still configurable
         checkIsConfigurable();
 
-        // Wire any current component
-
-        // Create a new realm for the assembly
+        // Create a new assembly
         AssemblySetup as = new AssemblySetup(handle.container, assembly, wirelets);
 
-        // Close the new realm again after the assembly has been successfully linked
+        // Build the assembly
         as.build();
 
         return (ContainerMirror) as.container.mirror();

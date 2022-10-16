@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.container.ExtensionRealmSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.lifetime.pool.Accessor;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.ReflectiveOp;
@@ -49,7 +49,7 @@ public final class BeanInjectionManager implements DependencyProducer {
     public BeanInjectionManager(BeanSetup bean) {
 
         // Can only register a single extension bean of a particular type
-        if (bean.realm instanceof ExtensionRealmSetup e) {
+        if (bean.realm instanceof ExtensionTreeSetup e) {
             ExtensionInjectionManager eim = bean.extensionOwner.injectionManager;
             if (bean.beanKind == BeanKind.CONTAINER) {
                 eim.addBean(bean);

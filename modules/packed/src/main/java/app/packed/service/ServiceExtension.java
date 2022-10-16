@@ -162,7 +162,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
                 OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
 
-                iof.introspector.bean.container.sm.addProvision(key, operation);
+                iof.introspector.bean.container.sm.serviceProvide(key, operation);
 
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);
                 DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
@@ -179,7 +179,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 
                 OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 
-                iom.introspector.bean.container.sm.addProvision(key, operation);
+                iom.introspector.bean.container.sm.serviceProvide(key, operation);
 
                 // What is this crap?
                 DependencyHolder fh = new DependencyHolder(constant, key, operation);

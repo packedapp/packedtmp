@@ -22,13 +22,11 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.operation.InvocationType;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.Introspector;
 import internal.app.packed.bean.ParameterIntrospector;
-import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.util.LookupUtil;
@@ -102,11 +100,5 @@ public final class OperationSetup {
                 ParameterIntrospector.bind(introspector, this, i);
             }
         }
-    }
-
-    // Relative to x
-    public static OperationSetup beanAccess(BeanSetup bean) {
-        return new OperationSetup(bean, OperationType.of(bean.beanClass), new InvocationSite(InvocationType.raw(), bean.installedBy),
-                new BeanInstanceAccess(null, false), null);
     }
 }
