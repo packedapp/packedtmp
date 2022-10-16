@@ -19,12 +19,14 @@ import app.packed.base.Nullable;
 import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
 
-/**
- *
- */
-// who and how the operation is invoked
-public class OperationInvoker {
+/** The invocation site of an operation. */
+public final class InvocationSite {
+    // Add info about context I think
 
+    // Nested operations have the same invocation site
+    
+    // Do we compute something lazily?
+    
     /** The invocation type for this operation. */
     @Nullable // for bean access? Maybe just an empty type
     public final InvocationType invocationType;
@@ -32,7 +34,7 @@ public class OperationInvoker {
     /** The extension that operates the operation. MethodHandles will be generated relative to this. */
     public final ExtensionSetup operator;
 
-    public OperationInvoker(InvocationType invocationType, ExtensionSetup operator) {
+    public InvocationSite(InvocationType invocationType, ExtensionSetup operator) {
         this.invocationType = invocationType;
         this.operator = operator;
     }

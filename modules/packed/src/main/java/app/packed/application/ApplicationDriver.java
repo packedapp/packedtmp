@@ -53,6 +53,7 @@ import internal.app.packed.application.PackedApplicationDriver;
  * @see App#driver()
  */
 @SuppressWarnings("rawtypes")
+// A root application has a bootstrap application? or is the driver a bootstrap application
 public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     /**

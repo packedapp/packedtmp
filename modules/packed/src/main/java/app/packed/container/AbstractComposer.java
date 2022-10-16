@@ -77,60 +77,6 @@ public abstract class AbstractComposer {
         assembly.lookup(lookup);
     }
 
-//    /**
-//     * Invoked by the runtime immediately after {@link ComposerAction#build(AbstractComposer)}.
-//     * <p>
-//     * This method will not be called if {@link ComposerAction#build(AbstractComposer)} throws an exception.
-//     */
-//    protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
-//
-//    /**
-//     * Invoked by the runtime immediately before it invokes {@link ComposerAction#build(AbstractComposer)}. Used for any
-//     * configuration that needs to be done before control is handed over to the composer action specified by the user.
-//     */
-//    protected void onNew() {} // navngivningen skal alines med AssemblyHook
-//
-//    /**
-//     * Create a new application instance by using the specified consumer and configurator.
-//     * <p>
-//     * This method is is never called directly by end-users. But indirectly through methods such as
-//     * {@link ServiceLocator#of(ComposerAction, Wirelet...)}.
-//     * 
-//     * @param <A>
-//     *            the application type
-//     * @param <C>
-//     *            the type of composer that is exposed to the end-user
-//     * @param driver
-//     *            the application driver
-//     * @param assemblyClass
-//     *            an assembly class
-//     * @param composer
-//     *            the composer
-//     * @param action
-//     *            the build action that operates on a composer
-//     * @param wirelets
-//     *            optional wirelets
-//     * @return the launch result
-//     */
-//    protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, Class<? extends ComposerAssembly> assemblyClass, C composer,
-//            ComposerAction<? super C> action, Wirelet... wirelets) {
-//        PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
-//        requireNonNull(assemblyClass, "assemblyClass is null");
-//        // Maybe it needs to be a proper subclass?
-//        // And maybe it must be in the same module as the composer itself
-//        if (!ComposerAssembly.class.isAssignableFrom(assemblyClass)) {
-//            throw new ClassCastException(assemblyClass + " must be assignable to " + ComposerAssembly.class);
-//        }
-//        // Create a new realm
-//        ComposerAssemblySetup realm = new ComposerAssemblySetup(d, assemblyClass, composer, action, wirelets);
-//
-//        // Build the application
-//        realm.build();
-//
-//        // Return a launched application
-//        return ApplicationInitializationContext.launch(d, realm.application, /* no runtime wirelets */ null);
-//    }
-
     /**
     *
     */
@@ -152,6 +98,7 @@ public abstract class AbstractComposer {
         private final C composer;
         private final ComposerAction<? super C> action;
 
+        // Kunne tage en Supplier<C> og saa bruge en ExtentLocal
         protected ComposerAssembly(C composer, ComposerAction<? super C> action) {
             this.composer = requireNonNull(composer, "composer is null");
             composer.assembly = this;
@@ -166,3 +113,57 @@ public abstract class AbstractComposer {
         }
     }
 }
+
+///**
+//* Invoked by the runtime immediately after {@link ComposerAction#build(AbstractComposer)}.
+//* <p>
+//* This method will not be called if {@link ComposerAction#build(AbstractComposer)} throws an exception.
+//*/
+//protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
+//
+///**
+//* Invoked by the runtime immediately before it invokes {@link ComposerAction#build(AbstractComposer)}. Used for any
+//* configuration that needs to be done before control is handed over to the composer action specified by the user.
+//*/
+//protected void onNew() {} // navngivningen skal alines med AssemblyHook
+//
+///**
+//* Create a new application instance by using the specified consumer and configurator.
+//* <p>
+//* This method is is never called directly by end-users. But indirectly through methods such as
+//* {@link ServiceLocator#of(ComposerAction, Wirelet...)}.
+//* 
+//* @param <A>
+//*            the application type
+//* @param <C>
+//*            the type of composer that is exposed to the end-user
+//* @param driver
+//*            the application driver
+//* @param assemblyClass
+//*            an assembly class
+//* @param composer
+//*            the composer
+//* @param action
+//*            the build action that operates on a composer
+//* @param wirelets
+//*            optional wirelets
+//* @return the launch result
+//*/
+//protected static <A, C extends AbstractComposer> A compose(ApplicationDriver<A> driver, Class<? extends ComposerAssembly> assemblyClass, C composer,
+//      ComposerAction<? super C> action, Wirelet... wirelets) {
+//  PackedApplicationDriver<A> d = (PackedApplicationDriver<A>) requireNonNull(driver, "driver is null");
+//  requireNonNull(assemblyClass, "assemblyClass is null");
+//  // Maybe it needs to be a proper subclass?
+//  // And maybe it must be in the same module as the composer itself
+//  if (!ComposerAssembly.class.isAssignableFrom(assemblyClass)) {
+//      throw new ClassCastException(assemblyClass + " must be assignable to " + ComposerAssembly.class);
+//  }
+//  // Create a new realm
+//  ComposerAssemblySetup realm = new ComposerAssemblySetup(d, assemblyClass, composer, action, wirelets);
+//
+//  // Build the application
+//  realm.build();
+//
+//  // Return a launched application
+//  return ApplicationInitializationContext.launch(d, realm.application, /* no runtime wirelets */ null);
+//}

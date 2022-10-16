@@ -22,6 +22,8 @@ import app.packed.bean.BeanIntrospector.AnnotationReader;
 /**
  *
  */
+// If we don't have meta annotations. It really just is a wrapper.
+// That could probably be public than
 public record BeanAnnotationReader(Annotation[] annotations) implements AnnotationReader {
 
     /** {@inheritDoc} */

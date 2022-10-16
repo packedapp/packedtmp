@@ -144,7 +144,7 @@ public class OperationMirror implements Mirror {
     public final Class<? extends Extension<?>> operator() {
         // It might be a different extension that actually invokes it. For example,
         // a lifetime operations might be invoked by ContainerExtension
-        return operation().invoker.operator.extensionType;
+        return operation().invocationSite.operator.extensionType;
     }
 
     /** {@return the target of the operation.} */
@@ -165,6 +165,7 @@ class SandboxOp {
         throw new UnsupportedOperationException();
     }
 
+    // Synchronous/Asynchronous
     final boolean createsNewThread() {
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)
@@ -216,8 +217,11 @@ class SandboxOp {
     // Altsaa ved ikke om det bare er en boolean???? MakesNewBean?
     // Problemet er lidt hvordan selve registreringen skal vaere?
     // Man skal jo markere containeren og sige. Alle @Get beans i den her container starter en ny container.
+    // Det er vel ikke meget anderledes end all @Get beans i denne bean starter en ny container
     // Hvori foriøvrigt det kun er den ene bean der skal launches
-    final Optional<LifetimeMirror> launchesLifetime() {
+    //
+    
+    final Optional<LifetimeMirror> createsLifetime() {
         // Hvad med en constructor??
         //// Alt hvad der kalder en i user code kraever en operation
 

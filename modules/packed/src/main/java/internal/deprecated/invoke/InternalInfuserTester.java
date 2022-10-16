@@ -4,10 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
-import app.packed.bean.BeanIntrospector.BindingHook;
 import app.packed.container.Extension;
-import app.packed.service.Provide;
-import app.packed.service.ServiceExtension;
 import internal.app.packed.service.runtime.ServiceRegistry;
 import internal.app.packed.util.LookupUtil;
 
@@ -52,17 +49,6 @@ public class InternalInfuserTester {
 
         public Long l() {
             return 12L;
-        }
-    }
-
-    @BindingHook(extension = ServiceExtension.class)
-    interface XX {
-
-        // Det er super smart at man ikke skal lave en ny klasse...
-        // Men maaske lidt for smart
-        @Provide
-        private static XX provide() {
-            return new XX() {};
         }
     }
 }

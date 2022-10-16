@@ -15,7 +15,6 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import internal.app.packed.bean.OpenClass;
 import internal.app.packed.operation.op.ConstructorFinder;
 
 // MemberInjector

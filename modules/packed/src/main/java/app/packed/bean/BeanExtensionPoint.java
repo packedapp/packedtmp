@@ -33,6 +33,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     // should not call anything on the returned bean
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+        throw new UnsupportedOperationException();
+    }
+
     public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
         throw new UnsupportedOperationException();
     }

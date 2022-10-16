@@ -43,7 +43,6 @@ public abstract sealed class BeanMemberAccessor {
 
         @Override
         protected HookModel computeValue(Class<?> type) {
-            OpenClass.of(lookup(), type);
             return new HookModel();
         }
     };

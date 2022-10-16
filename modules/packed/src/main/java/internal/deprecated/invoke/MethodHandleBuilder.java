@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import app.packed.base.Key;
-import internal.app.packed.bean.OpenClass;
 
 /**
  *

@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.deprecated.invoke;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.bean.InaccessibleBeanMemberException;
@@ -51,24 +54,21 @@ final class OpenClass {
     /** The class that is wrapped. */
     private final Class<?> type;
 
-    OpenClass(MethodHandles.Lookup lookup, Class<?> clazz) {
+    private OpenClass(MethodHandles.Lookup lookup, Class<?> clazz) {
         this.lookup = requireNonNull(lookup);
         this.type = requireNonNull(clazz);
     }
 
     Lookup lookup(Member member) {
-        // If we already have made a private lookup object, lets just use it. Even if could do with Public lookup
+        if (!member.getDeclaringClass().isAssignableFrom(type)) {
+            throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + type);
+        }
+
+        // If we already have made a private lookup object, lets just use it. Even if we might need less access
         MethodHandles.Lookup p = privateLookup;
         if (p != null) {
             return p;
         }
-
-        // See if we need private access, otherwise just return ordinary lookup.
-
-        // Needs private lookup, unless class is public or protected and member is public
-        // We are comparing against the members declaring class..
-        // We could store boolean isPublicOrProcected in a field.
-        // But do not know how it would work with abstract super classes in other modules...
 
         // See if we need private access, otherwise just return ordinary lookup.
         if (!needsPrivateLookup(member)) {
@@ -99,14 +99,36 @@ final class OpenClass {
             throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }
     }
-    private static boolean needsPrivateLookup(Member m) {
-        // Needs private lookup, unless class is public or protected and member is public
-        // We are comparing against the members declaring class..
-        // We could store boolean isPublicOrProcected in a field.
-        // But do not know how it would work with abstract super classes in other modules...
-        int classModifiers = m.getDeclaringClass().getModifiers();
-        return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
+
+    /**
+     * Unreflects the specified method.
+     * 
+     * @param method
+     *            the method to unreflect
+     * @return a method handle for the unreflected method
+     * @throws InaccessibleBeanMemberException
+     *             if the method could not be unreflected
+     * @see Lookup#unreflect(Method)
+     */
+    public MethodHandle unreflect(Method method) {
+        Lookup lookup = lookup(method);
+        try {
+            return lookup.unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("stuff", e);
+        }
     }
+
+    public MethodHandle unreflectConstructor(Constructor<?> constructor) {
+        Lookup lookup = lookup(constructor);
+
+        try {
+            return lookup.unreflectConstructor(constructor);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
     MethodHandle unreflectGetter(Field field) {
         Lookup lookup = lookup(field);
 
@@ -116,4 +138,63 @@ final class OpenClass {
             throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
         }
     }
+
+    MethodHandle unreflectSetter(Field field) {
+        Lookup lookup = lookup(field);
+
+        try {
+            return lookup.unreflectSetter(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+    }
+
+    VarHandle unreflectVarHandle(Field field) {
+        Lookup lookup = lookup(field);
+
+        try {
+            return lookup.unreflectVarHandle(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a VarHandle", e);
+        }
+    }
+
+    private static boolean needsPrivateLookup(Member m) {
+        // Needs private lookup, unless class is public or protected and member is public
+        // We are comparing against the members declaring class..
+        // We could store boolean isPublicOrProcected in a field.
+        // But do not know how it would work with abstract super classes in other modules...
+        int classModifiers = m.getDeclaringClass().getModifiers();
+        return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
+    }
+
+    public static OpenClass of(MethodHandles.Lookup lookup, Class<?> clazz) {
+        return new OpenClass(lookup, clazz);
+    }
 }
+
+//IDeen er at man kan specificere den til OpenClass...
+// Check to see, if we need to use a private lookup
+
+// if (needsPrivateLookup(constructor)) {
+// // TODO check module access on lookup object, lol see next comment. No need to check
+//
+// try {
+// lookup = MethodHandles.privateLookupIn(onType, lookup);
+// } catch (IllegalAccessException e) {
+// // This should never happen, because we have checked all preconditions
+// // And we use our own lookup object which have Module access mode enabled.
+// // Maybe something with unnamed modules...
+// throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details",
+// e);
+// }
+// }
+//
+// // Finally, lets unreflect the constructor
+// MethodHandle methodHandle;
+// try {
+// methodHandle = lookup.unreflectConstructor(constructor);
+// } catch (IllegalAccessException e) {
+// throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details",
+// e);
+// }

@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.OnBindingHook;
-import app.packed.bean.BeanIntrospector.OnFieldHook;
+import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.container.ExtensionBeanConfiguration;
 import internal.app.packed.operation.PackedOperationHandle;
@@ -44,9 +44,9 @@ import internal.app.packed.operation.PackedOperationHandle;
  * <ul>
  * </ul>
  * 
- * @see OnFieldHook#newGetOperation(ExtensionBeanConfiguration)
- * @see OnFieldHook#newSetOperation(ExtensionBeanConfiguration)
- * @see OnFieldHook#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
+ * @see OnField#newGetOperation(ExtensionBeanConfiguration)
+ * @see OnField#newSetOperation(ExtensionBeanConfiguration)
+ * @see OnField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
  * @see OnMethod#newOperation(ExtensionBeanConfiguration)
  */
 public sealed interface OperationHandle permits PackedOperationHandle {
@@ -58,7 +58,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * 
      * @return a unmodifiable list of the dependencies of this operation
      */
-    List<OnBindingHook> bindings();
+    List<OnBinding> bindings();
 
     /**
      * 

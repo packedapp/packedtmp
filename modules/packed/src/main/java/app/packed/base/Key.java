@@ -23,7 +23,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -73,16 +72,14 @@ import internal.app.packed.util.TypeUtil;
  * (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created. This means
  * that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
  */
+// Kan desvaerre ikke vaere primitive wrapper. Da supportere extend
+// But should be good to go
 public abstract class Key<T> {
 
-    // Fail on type variables.
-    // Strip wildcards
-    // fail on void, optional*, Provider
-    // I think we need to test this
-    static final List<Class<?>> FORBIDDEN = List.of(Optional.class/* , ....., */);
-
+    // TODO I think want something similar to PackedOp. A small wrapper
+    
     /** A cache of keys used by {@link #of(Class)}. */
-    private static final ClassValue<Key<?>> CLASS_KEY_CACHE = new ClassValue<>() {
+    private static final ClassValue<Key<?>> CLASS_TO_KEY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
@@ -91,8 +88,14 @@ public abstract class Key<T> {
         }
     };
 
+    // Fail on type variables.
+    // Strip wildcards
+    // fail on void, optional*, Provider
+    // I think we need to test this
+    static final List<Class<?>> FORBIDDEN = List.of(Optional.class/* , ....., */);
+
     /** A cache of keys computed from type variables. */
-    private static final ClassValue<Key<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
+    private static final ClassValue<Key<?>> TYPE_VARIABLE_TO_KEY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -116,7 +119,7 @@ public abstract class Key<T> {
     /** Constructs a new key. Derives the type from this class's type parameter. */
     @SuppressWarnings("unchecked")
     protected Key() {
-        Key<T> cached = (Key<T>) TYPE_VARIABLE_CACHE.get(getClass());
+        Key<T> cached = (Key<T>) TYPE_VARIABLE_TO_KEY_CACHE.get(getClass());
         this.qualifiers = cached.qualifiers;
         this.typeToken = cached.typeToken;
         this.hash = cached.hash;
@@ -157,6 +160,18 @@ public abstract class Key<T> {
     @Override
     public final boolean equals(@Nullable Object obj) {
         return obj instanceof Key<?> key && Arrays.equals(qualifiers, key.qualifiers) && typeToken.equals(key.typeToken);
+    }
+
+    /**
+     * Returns whether or not this key is equivalent to a key with no qualifiers of the specified type. Is shorthand for
+     * {@code key.equals(Key.of(c))}.
+     * 
+     * @param c
+     *            the class
+     * @return true if a class key, otherwise false
+     */
+    public final boolean equalsTo(Class<?> c) {
+        return qualifiers == null && typeToken.type() == c;
     }
 
     /** {@inheritDoc} */
@@ -208,21 +223,17 @@ public abstract class Key<T> {
     }
 
     /** {@return whether or not this key has any qualifiers.} */
+    // isQualified + isQualifiedWith
     public final boolean hasQualifiers() {
         return qualifiers != null;
     }
 
-    /**
-     * Returns whether or not this key is equivalent to a key with no qualifiers of the specified type. Is shorthand for
-     * {@code key.equals(Key.of(c))}.
-     * 
-     * @param c
-     *            the class
-     * @return true if a class key, otherwise false
-     */
-    public final boolean equalsTo(Class<?> c) {
-        return qualifiers == null && typeToken.type() == c;
-    }
+    // Not sure we want to check this
+    // No, we def do not want to go there
+//    public boolean isAccessibleBy(Module module) {
+//        // All type List<Foo> Foo must also be accessible by the target
+//        throw new UnsupportedOperationException();
+//    }
 
     /** {@return an immutable set of any qualifiers that are part of this key.} */
     public final Set<Annotation> qualifiers() {
@@ -232,11 +243,6 @@ public abstract class Key<T> {
     /** {@return the raw type of the key} */
     public final Class<?> rawType() {
         return typeToken.rawType();
-    }
-
-    public boolean isAccessibleBy(Module module) {
-        // All type List<Foo> Foo must also be accessible by the target
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -305,33 +311,6 @@ public abstract class Key<T> {
         return new CanonicalizedKey<>(typeToken, an);
     }
 
-    /**
-     * Calling this method will replace any existing qualifier.
-     * 
-     * @param name
-     *            the qualifier name
-     * @return the new key
-     */
-    public final Key<T> withTag(String name) {
-        requireNonNull(name, "name is null");
-
-        @SuppressWarnings("all")
-        class TaggedAnno implements Tag {
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return Tag.class;
-            }
-
-            @Override
-            public String value() {
-                return name;
-            }
-
-        }
-        return with(new TaggedAnno());
-    }
-
     public final Key<T> without(Class<? extends Annotation> qualifierType) {
         throw new UnsupportedOperationException();
     }
@@ -380,6 +359,33 @@ public abstract class Key<T> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Calling this method will replace any existing qualifier.
+     * 
+     * @param name
+     *            the qualifier name
+     * @return the new key
+     */
+    public final Key<T> withTag(String name) {
+        requireNonNull(name, "name is null");
+
+        @SuppressWarnings("all")
+        class TaggedAnno implements Tag {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return Tag.class;
+            }
+
+            @Override
+            public String value() {
+                return name;
+            }
+
+        }
+        return with(new TaggedAnno());
+    }
+
 //    public final <S> Key<S> withType(Class<S> type) {
 //        return of(type).withQualifier(qualifier);
 //    }
@@ -402,6 +408,9 @@ public abstract class Key<T> {
      */
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     // RuntimeException -> should be ConversionException
+    
+    // TODO move to introspector, And then we can throw BeanDE
+    // Or at least have their own version
     public static Key<?> convertField(Field field) {
         TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
         Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
@@ -410,10 +419,6 @@ public abstract class Key<T> {
 
     public static <T extends Throwable> Key<?> convertField(Field field, Function<String, T> supplier) throws T {
         // Jeg har lyst til at fjerne dem...
-        throw new UnsupportedOperationException();
-    }
-
-    public static Key<?> convertParameter(Parameter parameter) {
         throw new UnsupportedOperationException();
     }
 
@@ -438,13 +443,6 @@ public abstract class Key<T> {
         Annotation[] annotation = QualifierUtil.findQualifier(method.getAnnotations());
         return convertTypeLiteralNullableAnnotation(method, tl, annotation);
     }
-
-//    public static Key<?> fromParameter(Parameter parameter) {
-//        requireNonNull(parameter, "parameter is null");
-//        TypeToken<?> tl = TypeToken.fromParameter(parameter).box();
-//        Annotation[] annotation = QualifierHelper.findQualifier(parameter.getAnnotations());
-//        return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
-//    }
 
     /**
      * Returns a key with no qualifier and the same type as this instance.
@@ -507,15 +505,6 @@ public abstract class Key<T> {
         return Key.convertTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
-    public static <T> Key<T> ofTypeToken(TypeToken<T> token) {
-        return new CanonicalizedKey<>(token.canonicalize(), (Annotation[]) null);
-    }
-
-    
-    public static Set<Key<?>> setOf(Class<?>... keys) {
-        return Set.of(of(keys));
-    }
-
     public static Key<?>[] of(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Key<?>[] result = new Key<?>[keys.length];
@@ -525,6 +514,7 @@ public abstract class Key<T> {
         return result;
     }
 
+    
     /**
      * Returns a class key with no qualifiers from the specified class.
      *
@@ -537,7 +527,7 @@ public abstract class Key<T> {
     @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> key) {
         requireNonNull(key, "key is null");
-        return (Key<T>) CLASS_KEY_CACHE.get(key);
+        return (Key<T>) CLASS_TO_KEY_CACHE.get(key);
     }
 
     /**
@@ -553,6 +543,10 @@ public abstract class Key<T> {
      */
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
         return of(type).with(qualifier);
+    }
+
+    public static <T> Key<T> ofTypeToken(TypeToken<T> token) {
+        return new CanonicalizedKey<>(token.canonicalize(), (Annotation[]) null);
     }
 
     /** See {@link CanonicalizedTypeToken}. */

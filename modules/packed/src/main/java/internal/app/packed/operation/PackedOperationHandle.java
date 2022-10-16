@@ -21,20 +21,20 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanIntrospector.OnBindingHook;
+import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
-import internal.app.packed.operation.binding.PackedOnBindingHook;
+import internal.app.packed.bean.PackedOnBindingHook;
 
 /** Implementation of {@link OperationHandle}. */
 public record PackedOperationHandle(OperationSetup os) implements OperationHandle {
 
     /** {@inheritDoc} */
     @Override
-    public List<OnBindingHook> bindings() {
-        OnBindingHook[] hooks = new OnBindingHook[os.type.parameterCount()];
+    public List<OnBinding> bindings() {
+        OnBinding[] hooks = new OnBinding[os.type.parameterCount()];
         for (int i = 0; i < hooks.length; i++) {
             hooks[i] = new PackedOnBindingHook(os, i);
         }
@@ -58,7 +58,7 @@ public record PackedOperationHandle(OperationSetup os) implements OperationHandl
     /** {@inheritDoc} */
     @Override
     public InvocationType invocationType() {
-        return os.invoker.invocationType;
+        return os.invocationSite.invocationType;
     }
 
     /** {@inheritDoc} */

@@ -49,6 +49,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         sm = bean.container.sm;
 
         this.sb = new ServiceableBean((BeanHandle<?>) handle);
+        //sb.onWired();
         handle.onWireRun(() -> sb.onWired());
     }
 

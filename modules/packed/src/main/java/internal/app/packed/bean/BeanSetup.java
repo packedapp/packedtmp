@@ -209,6 +209,11 @@ public final class BeanSetup {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
+    // Maaske lave vi kinds til et int flag. Hvis vi ogsaa skal tilfoeje only if absent
+    
+    // Eller maaske long term er det en record vi populere
+    // install(F..withSource().ifAbsent)
+    
     static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup installedBy,
             RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {

@@ -6,7 +6,7 @@ import app.packed.container.Extension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanMethodIntrospector;
+import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -145,8 +145,8 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new BeanIntrospector() {
 
             @Override
-            public void onMethodHook(OnMethod method) {
-                ((BeanMethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+            public void onMethod(OnMethod method) {
+                ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
             }
         };
     }

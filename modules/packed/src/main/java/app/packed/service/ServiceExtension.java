@@ -29,8 +29,8 @@ import app.packed.container.Extension.DependsOn;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
-import internal.app.packed.bean.BeanFieldIntrospector;
-import internal.app.packed.bean.BeanMethodIntrospector;
+import internal.app.packed.bean.FieldIntrospector;
+import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.InternalServiceExtension;
@@ -154,11 +154,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onFieldHook(OnFieldHook field) {
+            public void onField(OnField field) {
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
-                BeanFieldIntrospector iof = ((BeanFieldIntrospector) field);
+                FieldIntrospector iof = ((FieldIntrospector) field);
 
                 OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
 
@@ -171,11 +171,11 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
 
             /** {@inheritDoc} */
             @Override
-            public void onMethodHook(OnMethod method) {
+            public void onMethod(OnMethod method) {
                 Key<?> key = method.methodToKey();
                 boolean constant = method.annotations().readRequired(Provide.class).constant();
 
-                BeanMethodIntrospector iom = ((BeanMethodIntrospector) method);
+                MethodIntrospector iom = ((MethodIntrospector) method);
                 
                 OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 

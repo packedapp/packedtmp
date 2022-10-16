@@ -18,7 +18,7 @@ import app.packed.operation.InvocationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
-import internal.app.packed.bean.BeanMethodIntrospector;
+import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -69,7 +69,7 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
              * {@inheritDoc}
              */
             @Override
-            public void onMethodHook(OnMethod method) {
+            public void onMethod(OnMethod method) {
                 registerEntryPoint(null, true);
 
                 application.entryPoints = new EntryPointSetup();
@@ -77,10 +77,10 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 MainThreadOfControl mc = application.entryPoints.mainThread();
 
                 mc.isStatic = Modifier.isStatic(method.getModifiers());
-                mc.cs = ((BeanMethodIntrospector) method).introspector.bean;
+                mc.cs = ((MethodIntrospector) method).introspector.bean;
 
-                OperationSetup os = ((BeanMethodIntrospector) method).newOperation(setup, InvocationType.defaults());
-                mc.methodHandle = os.operationTarget.methodHandle;
+                OperationSetup os = ((MethodIntrospector) method).newOperation(setup, InvocationType.defaults());
+                mc.methodHandle = os.target.methodHandle;
             }
 
         };

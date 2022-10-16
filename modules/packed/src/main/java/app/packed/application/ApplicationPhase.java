@@ -13,30 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.application;
 
-import app.packed.application.App;
-import app.packed.container.Tee.MyHook;
-
-/**
- *
- */
-@ContainerHook(MyHook.class)
-public class Tee extends BaseAssembly {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {}
-    
-    public static void main(String[] args) {
-        App.run(new Tee());
-        
-    }
-
-    public static class MyHook implements ContainerHook.Processor {
-       public MyHook() {
-            System.out.println("NEW gook");
-        }
-    }
-
+/** The phase in the lifecycle of an application. */
+// Another name than 
+// Taenkt som naar man bygger ting og fx bruger IO.
+// Saa er det maaske fint an indikere hvornaar man goer hvad.
+public enum ApplicationPhase {
+    BUILD_TIME, RUNTIME;
 }

@@ -17,6 +17,8 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -26,7 +28,8 @@ import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.BindingHook;
 import app.packed.bean.BeanIntrospector.FieldHook;
-import app.packed.bean.BeanIntrospector.OnFieldHook;
+import app.packed.bean.BeanIntrospector.OnField;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
@@ -35,15 +38,15 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationInvoker;
+import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
- * Implementation of {@link OnFieldHook}.
+ * Implementation of {@link OnField}.
  */
-public final class BeanFieldIntrospector implements OnFieldHook {
+public final class FieldIntrospector implements OnField {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -62,8 +65,7 @@ public final class BeanFieldIntrospector implements OnFieldHook {
     /** The extension that will operate any operations. */
     public final ExtensionSetup operator;
 
-    private BeanFieldIntrospector(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet,
-            Annotation[] annotations) {
+    private FieldIntrospector(Introspector introspector, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations) {
         this.introspector = introspector;
         this.operator = operator;
         this.field = field;
@@ -75,8 +77,8 @@ public final class BeanFieldIntrospector implements OnFieldHook {
     private OperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
         FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
         OperationType ot = OperationType.ofFieldAccess(field, accessMode);
-        OperationInvoker oi = new OperationInvoker(invocationType, operator); // operator??
-        OperationSetup bos = new OperationSetup(introspector.bean, ot, oi, fot);
+        InvocationSite oi = new InvocationSite(invocationType, operator); // operator??
+        OperationSetup bos = new OperationSetup(introspector.bean, ot, oi, fot, null);
         introspector.bean.operations.add(bos);
         return bos;
     }
@@ -115,38 +117,40 @@ public final class BeanFieldIntrospector implements OnFieldHook {
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
-        MethodHandle mh = introspector.oc.unreflectVarHandle(field).toMethodHandle(accessMode);
+
+        Lookup lookup = introspector.oc.lookup(field);
+
+        VarHandle varHandle;
+        try {
+            varHandle = lookup.unreflectVarHandle(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a VarHandle", e);
+        }
+
+        MethodHandle mh = varHandle.toMethodHandle(accessMode);
         return new PackedOperationHandle(add(mh, invocationType, accessMode));
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
-        MethodHandle mh = introspector.oc.unreflectSetter(field);
+        Lookup lookup = introspector.oc.lookup(field);
+
+        MethodHandle methodHandle;
+        try {
+            methodHandle = lookup.unreflectSetter(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+        }
+
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        return new PackedOperationHandle(add(mh, invocationType, accessMode));
+        return new PackedOperationHandle(add(methodHandle, invocationType, accessMode));
     }
 
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
         return Variable.ofField(field);
-    }
-
-    static void introspectFields(Introspector introspector, Class<?> clazz) {
-        // We never process classes in the "java.base" module.
-        if (clazz.getModule() != Introspector.JAVA_BASE_MODULE) {
-
-            // Recursively call into superclass, before processing own fields
-            introspectFields(introspector, clazz.getSuperclass());
-
-            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
-
-            // Iterate over all declared fields
-            for (Field field : clazz.getDeclaredFields()) {
-                introspectFields0(introspector, field);
-            }
-        }
     }
 
     /**
@@ -164,7 +168,7 @@ public final class BeanFieldIntrospector implements OnFieldHook {
      * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
      *          allow it.
      */
-    private static void introspectFields0(Introspector introspector, Field field) {
+    private static void introspectField(Introspector introspector, Field field) {
         // Get all annotations on the field
         Annotation[] annotations = field.getAnnotations();
 
@@ -230,21 +234,37 @@ public final class BeanFieldIntrospector implements OnFieldHook {
                 Introspector.ExtensionEntry entry = introspector.computeExtensionEntry(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
-                BeanFieldIntrospector f = new BeanFieldIntrospector(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
+                FieldIntrospector f = new FieldIntrospector(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
                         e.isSettable || entry.hasFullAccess(), new Annotation[] { annotation });
 
-                entry.introspector().onFieldHook(f); // Calls BeanIntrospection.onField
+                entry.introspector().onField(f); // Calls BeanIntrospection.onField
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiField mf : multiMatch.values()) {
                     Introspector.ExtensionEntry entry = introspector.computeExtensionEntry(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    BeanFieldIntrospector f = new BeanFieldIntrospector(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),
+                    FieldIntrospector f = new FieldIntrospector(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),
                             mf.allowSet || entry.hasFullAccess(), annotations);
 
-                    entry.introspector().onFieldHook(f); // Calls BeanIntrospection.onField
+                    entry.introspector().onField(f); // Calls BeanIntrospection.onField
                 }
+            }
+        }
+    }
+
+    static void introspectFields(Introspector introspector, Class<?> clazz) {
+        // We never process classes in the "java.base" module.
+        if (clazz.getModule() != Introspector.JAVA_BASE_MODULE) {
+
+            // Recursively call into superclass, before processing own fields
+            introspectFields(introspector, clazz.getSuperclass());
+
+            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
+
+            // Iterate over all declared fields
+            for (Field field : clazz.getDeclaredFields()) {
+                introspectField(introspector, field);
             }
         }
     }

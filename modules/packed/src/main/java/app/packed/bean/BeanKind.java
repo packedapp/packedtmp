@@ -54,7 +54,10 @@ public enum BeanKind {
     // Maybe have Managed and Unmanaged anyways
     // Managed as in maybe just partial managed
 
-     
+    // Operational <- A bean that is spawned (an instance created) for the sole duration of an operation
+    // After which is will be destroyed
+    // If only configured on the bean itself I don't know how much sense it makes?
+    
     /** @return whether or not the bean will have 1 or more instance. */
     public boolean hasInstances() {
         return this != FUNCTIONAL && this != STATIC;

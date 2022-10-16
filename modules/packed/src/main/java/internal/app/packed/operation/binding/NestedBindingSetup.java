@@ -20,6 +20,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
+// Ved ikke om vi gider have det hiraki...
 public class NestedBindingSetup extends BindingSetup {
 
     /**
@@ -29,5 +30,4 @@ public class NestedBindingSetup extends BindingSetup {
     public NestedBindingSetup(OperationSetup operation, int index) {
         super(operation, index);
     }
-
 }

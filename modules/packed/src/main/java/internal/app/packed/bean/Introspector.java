@@ -54,29 +54,30 @@ public final class Introspector {
     private static final MethodHandle MH_EXTENSION_NEW_BEAN_INTROSPECTOR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "newBeanIntrospector", BeanIntrospector.class);
 
+    /** An internal lookup object. */
+    private static final MethodHandles.Lookup PACKED = MethodHandles.lookup();
+    
     /** The bean that is being introspected. */
     public final BeanSetup bean;
 
-    /** The class we are introspecting. */
-    private final Class<?> beanClass;
-
     /** Non-null if a introspector was set via {@link BeanHandle.Installer#introspectWith(BeanIntrospector)}. */
     @Nullable
-    private final BeanIntrospector beanHandleIntrospector;
+    private final BeanIntrospector beanIntrospector;
 
     // I think we need stable iteration order... AppendOnly identity map, stable iteration order
     // I think we sort in BeanFields...
+    // But then should we sort annotations as well?
     /** Every extension that is activated by a hook. */
     private final LinkedHashMap<Class<? extends Extension<?>>, ExtensionEntry> extensions = new LinkedHashMap<>();
 
     // Should be made lazily??? I think
+    // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
 
-    public Introspector(BeanModel model, BeanSetup bean, @Nullable BeanIntrospector beanHandleIntrospector) {
+    public Introspector(BeanModel model, BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
-        this.beanClass = bean.beanClass;
-        this.beanHandleIntrospector = beanHandleIntrospector;
-        this.oc = OpenClass.of(MethodHandles.lookup(), beanClass);
+        this.beanIntrospector = beanIntrospector;
+        this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
     ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
@@ -85,9 +86,9 @@ public final class Introspector {
             ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
 
             BeanIntrospector introspector;
-            if (beanHandleIntrospector != null && bean.installedBy.extensionType == extensionType) {
+            if (beanIntrospector != null && bean.installedBy.extensionType == extensionType) {
                 // A special introspector has been set, don't
-                introspector = beanHandleIntrospector;
+                introspector = beanIntrospector;
                 try {
                     MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
                 } catch (Throwable t) {
@@ -114,7 +115,8 @@ public final class Introspector {
         introspectClass();
 
         // Process all fields on the bean
-        BeanFieldIntrospector.introspectFields(this, beanClass);
+        Class<?> beanClass = bean.beanClass;
+        FieldIntrospector.introspectFields(this, beanClass);
 
         // Process all methods on the bean
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -194,11 +196,12 @@ public final class Introspector {
                 }
             }
         }
-        
-        // Introspection is done. Make sure all bindings are resolved, otherwise fail
+
+        // Introspection of members are done.
+        // Now run through all operation bindings that have not been resolved
         for (OperationSetup o : bean.operations) {
-            o.resolve();
-        }        
+            o.resolve(this);
+        }
 
         // Call into every BeanScanner and tell them its all over
         for (ExtensionEntry e : extensions.values()) {
@@ -207,7 +210,6 @@ public final class Introspector {
     }
 
     private void introspectClass() {}
-
 
     /**
      * Look for hook annotations on a single method.
@@ -224,9 +226,9 @@ public final class Introspector {
             if (fh != null) {
                 ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
 
-                BeanMethodIntrospector pbm = new BeanMethodIntrospector(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
+                MethodIntrospector pbm = new MethodIntrospector(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
 
-                ei.introspector.onMethodHook(pbm);
+                ei.introspector.onMethod(pbm);
             }
         }
     }

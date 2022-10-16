@@ -45,6 +45,10 @@ import app.packed.bean.BeanIntrospector.BindingHook;
 // Maaske er det en Container class istedet for
 
 //https://www.umanitoba.ca/faculties/arts/anthropology/tutor/glossary.html
+
+// Uhhh, her er der en vi ikke kan binde foer super sent...
+//     
+
 @BindingHook(extension = BeanExtension.class)
 public final /* value */ class LookupAncestor<T> {
 

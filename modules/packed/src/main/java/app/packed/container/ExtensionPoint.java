@@ -53,7 +53,7 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 public abstract class ExtensionPoint<E extends Extension<E>> {
 
     /** A ExtensionPoint class to Extension class mapping. */
-    final static ClassValue<Class<? extends Extension<?>>> EXTENSION_POINT_TO_EXTENSION_CLASS_MAPPER = new ClassValue<>() {
+    final static ClassValue<Class<? extends Extension<?>>> EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR = new ClassValue<>() {
 
         /** A type variable extractor. */
         private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionPoint.class);
@@ -124,11 +124,6 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         return (E) context().extension().instance();
     }
 
-    /** {@return the type of extension that are using the extension point.} */
-    protected final Class<? extends Extension<?>> usedBy() {
-        return context().usedBy().extensionType;
-    }
-
     /**
      * Invoked by {@link packed.internal.container.ExtensionMirrorModel#initialize(ExtensionMirror, ExtensionSetup)} to set
      * the context of this extension point.
@@ -141,6 +136,11 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
             throw new IllegalStateException("This extension point has already been initialized.");
         }
         this.context = new PackedExtensionPointContext(extension, usedBy);
+    }
+
+    /** {@return the type of extension that are using the extension point.} */
+    protected final Class<? extends Extension<?>> usedBy() {
+        return context().usedBy().extensionType;
     }
 
     protected final UseSite useSite() {

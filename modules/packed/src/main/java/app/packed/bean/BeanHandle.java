@@ -33,23 +33,21 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption;
 
 /**
- * A bean handle represents a private configuration installed bean.
+ * A bean handle represents the private configuration of a bean.
  * <p>
- * Instances of {@code BeanHandle} are normally never exposed directly to end-users. Instead they are returned wrapped
- * in {@link BeanConfiguration} or a subclass hereof.
- * 
- * 
+ * Instances of {@code BeanHandle} are never exposed directly to end-users. Instead they are returned wrapped in
+ * {@link BeanConfiguration} or a subclass hereof.
  */
 public final /* primitive */ class BeanHandle<T> {
 
-    /** The bean that is being handled */
+    /** The configuration of the bean we are wrapping. */
     final BeanSetup bean;
 
     /**
      * Creates a new BeanHandle.
      * 
      * @param bean
-     *            the bean that should be handled
+     *            the configuration of the bean we wrap
      */
     BeanHandle(BeanSetup bean) {
         this.bean = requireNonNull(bean);
@@ -162,32 +160,6 @@ public final /* primitive */ class BeanHandle<T> {
     // Syntes de skal vaere paa Handle. Det fungere fint her paa beans.
     // They are here to be in line with Container, Operation. Hvor XHAndle er det eneste sted de passer
     public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
-        
-        static InstallOption spawnNew() {
-            // A bean that is created per operation.
-            // Obvious manyton, but should we have own kind?
-            // I actually think so because, because for now it always requires manyton
-            
-            // Some questions, do we support @Schedule? Or anything like it?
-            // I don't think we need to set up the support for it by default. Only if used
-            // So overhead is not needed
-            
-            // But I think those annotations that make sense are always "callback" extensions
-            // From other threads
-            // Single threaded vs multi-threaded
-            // If we are single threaded it is obviously always only the request method
-            // If we are multi threaded we create own little "world"
-            // I think that is the difference, between the two
-            
-            // Maybe bean is always single threaded.
-            // And container is always multi threaded
-            
-            throw new UnsupportedOperationException();
-        }
-        
-        static InstallOption synthetic() {
-            throw new UnsupportedOperationException();
-        }
 
         /**
          * Registers a bean introspector that will be used instead of the framework calling
@@ -207,6 +179,20 @@ public final /* primitive */ class BeanHandle<T> {
         }
 
         /**
+         * Allows for multiple beans of the same type in a single container.
+         * <p>
+         * By default, a container only allows a single bean of particular type if non-void.
+         * 
+         * @return this builder
+         * 
+         * @throws UnsupportedOperationException
+         *             if {@code void} bean class
+         */
+        static InstallOption multiInstall() {
+            return new BeanInstallOption.MultiInstall();
+        }
+
+        /**
          * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
          * <p>
          * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
@@ -223,21 +209,32 @@ public final /* primitive */ class BeanHandle<T> {
             return new BeanInstallOption.CustomPrefix(prefix);
         }
 
-        /**
-         * Allows for multiple beans of the same type in a single container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
-         * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
-         */
-        static InstallOption multiInstall() {
-            return new BeanInstallOption.MultiInstall();
+        static InstallOption spawnNew() {
+            // A bean that is created per operation.
+            // Obvious manyton, but should we have own kind?
+            // I actually think so because, because for now it always requires manyton
+
+            // Some questions, do we support @Schedule? Or anything like it?
+            // I don't think we need to set up the support for it by default. Only if used
+            // So overhead is not needed
+
+            // But I think those annotations that make sense are always "callback" extensions
+            // From other threads
+            // Single threaded vs multi-threaded
+            // If we are single threaded it is obviously always only the request method
+            // If we are multi threaded we create own little "world"
+            // I think that is the difference, between the two
+
+            // Maybe bean is always single threaded.
+            // And container is always multi threaded
+
+            throw new UnsupportedOperationException();
+        }
+
+        static InstallOption synthetic() {
+            throw new UnsupportedOperationException();
         }
     }
-
 
     // Lad os sige vi koere suspend... saa skal vi ogsaa kunne koere resume?
 

@@ -78,6 +78,8 @@ import internal.app.packed.util.ThrowableUtil;
  * @param <E>
  *            The type of the extension subclass
  */
+// Platform extension, Base extension
+// Platform extension kunne baade vaere any packed extension. Og en platform extension
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
@@ -175,7 +177,6 @@ public abstract class Extension<E extends Extension<E>> {
      * This method should never return null.
      * 
      * @return a mirror for the extension
-     * @see ContainerMirror#extensions()
      */
     protected ExtensionMirror<E> newExtensionMirror() {
         return new ExtensionMirror<>();
@@ -337,35 +338,35 @@ public abstract class Extension<E extends Extension<E>> {
         requireNonNull(extensionPointClass, "extensionPointClass is null");
 
         // Extract the extension class from ExtensionPoint<E>
-        Class<? extends Extension<?>> useExtension = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_MAPPER.get(extensionPointClass);
+        Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR.get(extensionPointClass);
 
         // Check that the extension of requested extension point's is a direct dependency of the requesting extension
-        if (!setup.model.dependsOn(useExtension)) {
+        if (!setup.model.dependsOn(otherExtensionClass)) {
             // Special message if you try to use your own extension point
-            if (useExtension == getClass()) {
-                throw new InternalExtensionException(useExtension.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
+            if (otherExtensionClass == getClass()) {
+                throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
             }
             throw new InternalExtensionException(
-                    getClass().getSimpleName() + " must declare " + format(useExtension) + " as a dependency in order to use " + extensionPointClass);
+                    getClass().getSimpleName() + " must declare " + format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
         }
 
-        ExtensionSetup extension = setup.container.useExtensionSetup(useExtension, setup);
+        ExtensionSetup otherExtension = setup.container.useExtensionSetup(otherExtensionClass, setup);
 
         // Create a new extension point
-        ExtensionPoint<?> newExtensionPoint = extension.instance().newExtensionPoint();
+        ExtensionPoint<?> newExtensionPoint = otherExtension.instance().newExtensionPoint();
 
         // Make sure it is a proper type of the requested extension point
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
             if (newExtensionPoint == null) {
                 throw new NullPointerException(
-                        "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionPoint()");
+                        "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
             }
-            throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
+            throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
                     + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());
         }
 
         // Initializes the extension point
-        newExtensionPoint.initialize(extension, setup);
+        newExtensionPoint.initialize(otherExtension, setup);
 
         return (P) newExtensionPoint;
     }
@@ -567,23 +568,6 @@ class Zarchive {
 //  protected final ExtensionConfiguration configuration() {
 //      return setup;
 //  }
-
-//    /**
-//     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
-//     * network extension
-//     * <p>
-//     * If only certain cirkus stances use checkRunnableApplication()
-//     */
-//    protected static void $requiresRunnableApplication() {}
-//
-//    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
-//        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
-//        throw new UnsupportedOperationException();
-//    }
 
     /**
      * Registers an optional dependency of this extension. The extension

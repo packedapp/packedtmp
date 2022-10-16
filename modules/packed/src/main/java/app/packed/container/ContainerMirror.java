@@ -103,10 +103,10 @@ public class ContainerMirror implements Mirror {
     // Altsaa hvad vil bruge metoden til???
     // Kan ikke lige umiddelbart se nogle use cases
     // Maaske bare fjerne den
-    public Set<ExtensionMirror<?>> extensions() {
-        HashSet<ExtensionMirror<?>> result = new HashSet<>();
+    public Set<ExtensionDescriptor> extensions() {
+        HashSet<ExtensionDescriptor> result = new HashSet<>();
         for (ExtensionSetup extension : container().extensions.values()) {
-            result.add(newMirrorOfUnknownType(extension));
+            result.add(ExtensionDescriptor.of(extension.extensionType));
         }
         return Set.copyOf(result);
     }
@@ -281,17 +281,6 @@ public class ContainerMirror implements Mirror {
     }
 
     /**
-     * Create a new mirror for extension
-     * 
-     * @param extension
-     *            the extension
-     * @return the new mirror
-     */
-    static ExtensionMirror<?> newMirrorOfUnknownType(ExtensionSetup extension) {
-        return newMirror(extension, null);
-    }
-
-    /**
      * Creates a new mirror if an. Otherwise returns {@code null}
      * 
      * @param container
@@ -300,6 +289,7 @@ public class ContainerMirror implements Mirror {
      *            the type of mirror to return
      * @return a mirror of the specified type or null if no extension of the matching type was used in the container
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Nullable
     static ExtensionMirror<?> newMirrorOrNull(ContainerSetup container, Class<? extends ExtensionMirror<?>> mirrorClass) {
         // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
@@ -308,7 +298,42 @@ public class ContainerMirror implements Mirror {
         // See if the container uses the extension.
         ExtensionSetup extension = container.extensions.get(extensionClass);
 
-        return extension == null ? null : newMirror(extension, mirrorClass);
+        if (extension == null) {
+            return null;
+        }
+
+        ExtensionMirror<?> mirror = extension.instance().newExtensionMirror();
+
+        // Cannot return a null mirror
+        if (mirror == null) {
+            throw new InternalExtensionException(
+                    "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionMirror()");
+        }
+
+        // If we expect a mirror of a particular type, check it
+        if (mirrorClass != null) {
+            // Fail if the type of mirror returned by the extension does not match the specified mirror type
+            if (!mirrorClass.isInstance(mirror)) {
+                throw new InternalExtensionException(extension.extensionType.getSimpleName() + ".newExtensionMirror() was expected to return an instance of "
+                        + mirrorClass + ", but returned an instance of " + mirror.getClass());
+            }
+        } else if (mirror.getClass() != ExtensionMirror.class) {
+            // Extensions are are allowed to return ExtensionMirror from newExtensionMirror in which case we have no additional
+            // checks
+
+            // If expectedMirrorClass == null we don't know what type of mirror to expect. Other than it must be parameterized with
+            // the right extension
+
+            // Must return a mirror for the same extension
+            Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
+            if (mirrorExtensionType != extension.extensionType) {
+                throw new InternalExtensionException(
+                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+            }
+        }
+
+        mirror.initialize(new ExtensionNavigatorImpl(extension, extension.extensionType));
+        return mirror;
     }
 }
 //// Taken from ComponentMirror

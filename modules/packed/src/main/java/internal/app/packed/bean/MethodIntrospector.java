@@ -19,23 +19,25 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnMethod;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationInvoker;
+import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class BeanMethodIntrospector implements OnMethod {
+public final class MethodIntrospector implements OnMethod {
 
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
@@ -53,7 +55,7 @@ public final class BeanMethodIntrospector implements OnMethod {
     @Nullable
     private OperationType type;
 
-    BeanMethodIntrospector(Introspector introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
+    MethodIntrospector(Introspector introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
         this.introspector = introspector;
         this.operator = operator;
         this.method = method;
@@ -94,12 +96,22 @@ public final class BeanMethodIntrospector implements OnMethod {
         return new PackedOperationHandle(os);
     }
 
+    // We expose this directly do bean extension, entry point, service extension
+    // Extensions that do not necessarily have an extension bean installed to invoke the methods
     public OperationSetup newOperation(ExtensionSetup extension, InvocationType invocationType) {
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
-        MethodHandle methodHandle = introspector.oc.unreflect(method);
+
+        MethodHandle methodHandle;
+        Lookup lookup = introspector.oc.lookup(method);
+        try {
+            methodHandle = lookup.unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("stuff", e);
+        }
+
         MethodOperationTarget mot = new MethodOperationTarget(methodHandle, method);
-        OperationInvoker oi = new OperationInvoker(invocationType, extension);
-        OperationSetup bos = new OperationSetup(introspector.bean, operationType(), oi, mot);
+        InvocationSite oi = new InvocationSite(invocationType, extension);
+        OperationSetup bos = new OperationSetup(introspector.bean, operationType(), oi, mot, null);
         introspector.bean.operations.add(bos);
         return bos;
     }

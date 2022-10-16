@@ -51,7 +51,6 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 // https://helidon.io/docs/v2/apidocs/io.helidon.common/io/helidon/common/GenericType.html
 // I like the cast method
 
-
 // Maybe this should die so we only have one version which also captures annotations
 // We always va
 
@@ -121,7 +120,7 @@ public abstract class TypeToken<T> {
     @SuppressWarnings("unchecked")
     TypeToken(Type type) {
         // This was a test to make sure all types are canonicalized
-        //assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
+        // assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
         this.type = requireNonNull(type, "type is null");
         this.rawType = (Class<? super T>) TypeUtil.rawTypeOf(type);
     }
@@ -133,7 +132,7 @@ public abstract class TypeToken<T> {
      * @return the type token
      */
     // Not sure we want this public
-    public final CanonicalizedTypeToken<T> canonicalize() {
+    final CanonicalizedTypeToken<T> canonicalize() {
         if (getClass() == CanonicalizedTypeToken.class) {
             return (CanonicalizedTypeToken<T>) this;
         }

@@ -48,11 +48,11 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanFieldIntrospector;
-import internal.app.packed.bean.BeanMethodIntrospector;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.FieldIntrospector;
+import internal.app.packed.bean.MethodIntrospector;
+import internal.app.packed.bean.PackedOnBindingHook;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.binding.PackedOnBindingHook;
 
 /**
  * @see Extension#newBeanIntrospector
@@ -74,6 +74,11 @@ public abstract class BeanIntrospector {
 
     public final Class<?> beanClass() {
         return setup().bean.beanClass;
+    }
+
+    public final Class<? extends Extension<?>> beanInstalledBy() {
+        // Ideen er at vi kan checke at vi selv er registranten...
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -104,9 +109,19 @@ public abstract class BeanIntrospector {
         this.setup = new Setup(operator.model, bean);
     }
 
-    public void onBindingHook(OnBindingHook dependency) {}
+    /**
+     * @param binding
+     *            a binding 
+     *            
+     * @see BindingHook
+     */
+    public void onBinding(OnBinding binding) {
+        // could test if getClass is beanIntrospector, in which case they probably forgot to override extension.newIntrospector
+        // Otherwise they forgot to implement binding hook
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle parameter hook annotation(s) " + binding.hookClass());
+    }
 
-    public void onClassHook(OnClassHook clazz) {}
+    public void onClass(OnClass clazz) {}
 
     /**
      * A callback method that is called for fields that are annotated with a field hook annotation defined by the extension:
@@ -118,15 +133,15 @@ public abstract class BeanIntrospector {
      * annotations on the same field.
      * 
      * @param field
-     *            the bean field
-     * @see BeanExtensionPoint.FieldHook
+     *            a field
+     * @see FieldHook
      */
     // onFieldHook(Set<Class<? extends Annotation<>> hooks, BeanField));
-    public void onFieldHook(OnFieldHook field) {
+    public void onField(OnField field) {
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + field.hooks());
     }
 
-    public void onMethodHook(OnMethod method) {
+    public void onMethod(OnMethod method) {
         // Test if getClass()==BeanScanner forgot to implement
         // Not we want to return generic bean scanner from newBeanScanner
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + method.hooks());
@@ -144,19 +159,14 @@ public abstract class BeanIntrospector {
     public void onPostIntrospect() {}
 
     /**
-     * A callback method that is invoked before any calls to {@link #onClassHook(OnClassHook)},
-     * {@link #onFieldHook(OnFieldHook)}, {@link #onMethodHook(OnMethod)} or {@link #onBindingHook(OnBindingHook)}.
+     * A callback method that is invoked before any calls to {@link #onClass(OnClass)}, {@link #onField(OnField)},
+     * {@link #onMethod(OnMethod)} or {@link #onBinding(OnBinding)}.
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
      * @see #onPostIntrospect()
      */
     public void onPreIntrospect() {}
-
-    public final Class<? extends Extension<?>> registrant() {
-        // Ideen er at vi kan checke at vi selv er registranten...
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * {@return the internal configuration class.}
@@ -208,6 +218,12 @@ public abstract class BeanIntrospector {
         //// foo bean was expected method to dddoooo to be annotated with
         <T extends Annotation> T readRequired(Class<T> annotationClass);
 
+        default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
+            T t = readRequired(annotationClass);
+            consumer.accept(t);
+        }
+
+        
         // Q) Skal vi bruge den udefra beans???
         // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
         // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
@@ -295,7 +311,7 @@ public abstract class BeanIntrospector {
     // Saa bliver BeanVariable
 
     // Can be on the bean. Or on a composite.
-    public sealed interface OnBindingHook permits PackedOnBindingHook {
+    public sealed interface OnBinding permits PackedOnBindingHook {
 
         // Hmm idk about the unwrapping and stuff here
         AnnotationReader annotations();
@@ -314,6 +330,7 @@ public abstract class BeanIntrospector {
          * @throws IllegalStateException
          *             if a binding has already been created for the underlying parameter.
          */
+        // Syntes bindConstant..
         void bind(@Nullable Object value);
 
         /**
@@ -324,6 +341,33 @@ public abstract class BeanIntrospector {
          *             ikke mening for rawModel
          */
         void bindEmpty();
+
+        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ? PerApplicationInstance
+        
+        // Kan only do this if is invoking extension!!
+        
+        /**
+         * @param index
+         *            the index of the argument
+         * 
+         * @throws IndexOutOfBoundsException
+         * @throws IllegalArgumentException
+         *             if the invocation argument is not of kind {@link InvocationType.ArgumentKind#ARGUMENT}
+         * @throws UnsupportedOperationException
+         *             if the {@link #invokingExtension()} is not identical to the binding extension
+         * @throws ClassCastException
+         * 
+         * @see InvocationType
+         */
+        default OnBinding bindToInvocationArgument(int index) {
+            // Kan jo faktisk ogsaa bruges med context?
+            return bindToInvocationArgument(index, index);
+        }
+
+        default OnBinding bindToInvocationArgument(int index, int operationIndex) {
+            // Used from ops.
+            return this;
+        }
 
         /**
          * @param postFix
@@ -344,39 +388,13 @@ public abstract class BeanIntrospector {
          */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
-        // Kan only do this if is invoking extension!!
-        default OnBindingHook connectInvocationArgument(int index) {
-            // Kan jo faktisk ogsaa bruges med context?
-            return connectInvocationArgument(index, index);
-        }
-
-        default OnBindingHook connectInvocationArgument(int index, int operationIndex) {
-            // Used from ops.
-            return this;
-        }
-
         /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
 
         void provide(MethodHandle methodHandle);
 
-        void provide(Op<?> fac);
-
-        /**
-         * @param index
-         *            the index of the argument
-         * 
-         * @throws IndexOutOfBoundsException
-         * @throws IllegalArgumentException
-         *             if the invocation argument is not of kind {@link InvocationType.ArgumentKind#ARGUMENT}
-         * @throws UnsupportedOperationException
-         *             if the {@link #invokingExtension()} is not identical to the binding extension
-         * @throws ClassCastException
-         * 
-         * @see InvocationType
-         */
-        void provideFromInvocationArgument(int index);
-
+        void provide(Op<?> op);
+ 
         /**
          * @return
          * 
@@ -395,9 +413,9 @@ public abstract class BeanIntrospector {
          * 
          * @return
          */
-        OnBindingHook runtimeBindable();
+        OnBinding runtimeBindable();
 
-        OnBindingHook specializeMirror(Supplier<? extends BindingMirror> supplier);
+        OnBinding specializeMirror(Supplier<? extends BindingMirror> supplier);
 
         default TypeInfo type() {
             throw new UnsupportedOperationException();
@@ -407,7 +425,7 @@ public abstract class BeanIntrospector {
 
         interface TypeInfo {
 
-            void checkAssignable(Class<?> clazz, Class<?>... additionalClazzes);
+            void checkAssignableTo(Class<?> clazz, Class<?>... additionalClazzes);
 
             boolean isAssignable(Class<?> clazz, Class<?>... additionalClazzes);
 
@@ -424,9 +442,9 @@ public abstract class BeanIntrospector {
      */
 
     // Kig maaske i Maurizio Mirror thingy...
-    public interface OnClassHook {
+    public interface OnClass {
 
-        void forEachConstructor(Consumer<? super OnConstructorHook> m);
+        void forEachConstructor(Consumer<? super OnConstructor> m);
 
         void forEachMethod(Consumer<? super OnMethod> m);
 
@@ -453,7 +471,7 @@ public abstract class BeanIntrospector {
      */
     // Do we need a BeanExecutable??? Not sure we have a use case
     // Or maybe we just have BeanMethod (Problem with constructor() though)
-    public interface OnConstructorHook {
+    public interface OnConstructor {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
@@ -482,7 +500,7 @@ public abstract class BeanIntrospector {
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
-    public sealed interface OnFieldHook permits BeanFieldIntrospector {
+    public sealed interface OnField permits FieldIntrospector {
 
         /** {@return an annotation reader for the field.} */
         AnnotationReader annotations();
@@ -579,7 +597,7 @@ public abstract class BeanIntrospector {
      * This class represents a {@link Method} on a bean.
      * 
      */
-    public sealed interface OnMethod permits BeanMethodIntrospector {
+    public sealed interface OnMethod permits MethodIntrospector {
 
         /** {@return an annotation reader for the method.} */
         AnnotationReader annotations();

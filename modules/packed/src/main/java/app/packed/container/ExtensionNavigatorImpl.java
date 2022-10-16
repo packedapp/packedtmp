@@ -26,7 +26,9 @@ import internal.app.packed.util.AbstractTreeNode;
  *           ExtensionMirror.
  */
 // Should take current + root
-// Maybe make into a concrete class. instead of an interface
+// Maybe make into a concrete class. instead of an interface.
+// Har svaert ved at se vi har flere implementationer.
+// Med mindre vi har noget slice and dice
 record ExtensionNavigatorImpl<T extends Extension<T>> (ExtensionSetup extension, Class<T> extensionType) implements ExtensionNavigator<T> {
 
     /** {@inheritDoc} */
