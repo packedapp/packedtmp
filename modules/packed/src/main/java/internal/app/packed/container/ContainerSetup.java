@@ -126,7 +126,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public ContainerSetup(ApplicationSetup application, AssemblySetup assembly, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(parent);
 
-        assembly.wireNew(this);
         this.application = requireNonNull(application);
         this.assembly = assembly;
         if (parent == null) {
@@ -222,19 +221,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return count;
     }
 
-    public void checkIsCurrent() {
-        if (!assembly.isCurrent(this)) {
-            String errorMsg;
-            // if (realm.container == this) {
-            errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            // } else {
-            // errorMsg = "This operation must be called immediately after the component has been wired";
-            // }
-            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
-            throw new IllegalStateException(errorMsg);
-        }
-    }
-
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -294,7 +280,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         NameCheck.checkComponentName(newName);
 
         // Check that this component is still active and the name can be set
-        checkIsCurrent();
 
         String currentName = name;
 

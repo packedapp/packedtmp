@@ -61,11 +61,6 @@ public class ContainerConfiguration {
         }
     }
 
-    /** {@inheritDoc} */
-    protected final void checkIsCurrent() {
-        handle.container.checkIsCurrent();
-    }
-
     final void embed(Assembly assembly) {
         /// MHT til hooks. Saa tror jeg faktisk at man tager de bean hooks
         // der er paa den assembly der definere dem
@@ -116,7 +111,6 @@ public class ContainerConfiguration {
         checkIsConfigurable();
 
         // Wire any current component
-        handle.container.assembly.wireCurrentComponent();
 
         // Create a new realm for the assembly
         AssemblySetup as = new AssemblySetup(handle.container, assembly, wirelets);

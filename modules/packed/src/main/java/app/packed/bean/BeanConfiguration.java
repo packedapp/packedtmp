@@ -44,11 +44,6 @@ public class BeanConfiguration {
         }
     }
 
-    /** {@inheritDoc} */
-    protected final void checkIsCurrent() {
-        handle.bean.checkIsCurrent();
-    }
-
     /** {@return the bean handle that was used to create this configuration.} */
     protected BeanHandle<?> handle() {
         return handle;

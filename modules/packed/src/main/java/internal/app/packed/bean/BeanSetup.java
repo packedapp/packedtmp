@@ -130,19 +130,6 @@ public final class BeanSetup {
         this.injectionManager = new BeanInjectionManager(this);
     }
 
-    public void checkIsCurrent() {
-        if (!realm.isCurrent(this)) {
-            String errorMsg;
-            // if (realm.container == this) {
-            errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            // } else {
-            // errorMsg = "This operation must be called immediately after the component has been wired";
-            // }
-            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
-            throw new IllegalStateException(errorMsg);
-        }
-    }
-
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
 
@@ -175,7 +162,6 @@ public final class BeanSetup {
         // But other than that why not
         // Issue should be the container which should probably work identical
         // And I do think we should have it as the first thing
-        checkIsCurrent();
 
         if (container.children.putIfAbsent(newName, this) != null) {
             if (newName.equals(name)) { // tried to set the current name which is okay i guess?
@@ -246,7 +232,6 @@ public final class BeanSetup {
             }
         }
 
-        realm.wireCurrentComponent();
 
         BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
 
@@ -304,7 +289,6 @@ public final class BeanSetup {
         }
         bean.name = n;
 
-        realm.wireNew(bean);
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass.getModule() != Introspector.JAVA_BASE_MODULE) {

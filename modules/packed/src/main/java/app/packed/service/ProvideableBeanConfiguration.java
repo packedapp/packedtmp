@@ -15,6 +15,8 @@
  */
 package app.packed.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 
 import app.packed.base.Key;
@@ -49,8 +51,6 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         sm = bean.container.sm;
 
         this.sb = new ServiceableBean((BeanHandle<?>) handle);
-        //sb.onWired();
-        handle.onWireRun(() -> sb.onWired());
     }
 
     public ProvideableBeanConfiguration<T> export() {
@@ -112,9 +112,9 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     // Ser dum ud naar man laver completion
     // Return set???
     // also for Export
-    public Optional<Key<?>> providedAs() {
-        return sb.providedAs();
-    }
+//    public Optional<Key<?>> providedAs() {
+//        return sb.providedAs();
+//    }
 
     ProvideableBeanConfiguration<T> describeAs(String description) {
         // describeExportAs
@@ -137,14 +137,20 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         }
 
         public void export() {
-            export = InternalServiceUtil.checkKey(bean.beanClass, handle.defaultKey());
-            bean.container.useExtension(ServiceExtension.class);
+            requireNonNull(setup);
+            sms.ios.exportsOrCreate().export(setup);
+            // export = InternalServiceUtil.checkKey(bean.beanClass, handle.defaultKey());
+            // bean.container.useExtension(ServiceExtension.class);
         }
+
+        InternalServiceExtension sms;
+        BeanInstanceServiceSetup setup;
 
         public void onWired() {
             if (provide == null && export == null) {
                 return;
             }
+
             InternalServiceExtension sms = bean.container.injectionManager;
             BeanInstanceServiceSetup setup = new BeanInstanceServiceSetup(bean, provide);
             if (provide != null) {
@@ -157,17 +163,29 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
         public void provide() {
             provide = InternalServiceUtil.checkKey(bean.beanClass, handle.defaultKey());
+
+            sms = bean.container.injectionManager;
+            setup = new BeanInstanceServiceSetup(bean, provide);
+            sms.addService(setup);
+
             bean.container.useExtension(ServiceExtension.class);
+            provide = null;
         }
 
         public void provideAs(Class<?> key) {
             provide = InternalServiceUtil.checkKey(bean.beanClass, key);
-            bean.container.useExtension(ServiceExtension.class);
+            sms = bean.container.injectionManager;
+            setup = new BeanInstanceServiceSetup(bean, provide);
+            sms.addService(setup);
+            provide = null;
         }
 
         public void provideAs(Key<?> key) {
             provide = InternalServiceUtil.checkKey(bean.beanClass, key);
-            bean.container.useExtension(ServiceExtension.class);
+            sms = bean.container.injectionManager;
+            setup = new BeanInstanceServiceSetup(bean, provide);
+            sms.addService(setup);
+            provide = null;
         }
 
         // Ser dum ud naar man laver completion

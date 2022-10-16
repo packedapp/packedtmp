@@ -22,12 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerHandle;
 import app.packed.container.UserOrExtension;
-import app.packed.container.Wirelet;
 import internal.app.packed.bean.BeanMemberAccessor;
-import internal.app.packed.bean.BeanSetup;
 
 /**
  * Configuration of a realm.
@@ -37,10 +33,6 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     /** The current module accessor, updated via {@link #lookup(Lookup)} */
     @Nullable
     private BeanMemberAccessor accessor;
-
-    /** The current active component in the realm. */
-    @Nullable
-    private Object currentComponent;
 
     /** Whether or not this realm is configurable. */
     private boolean isClosed;
@@ -57,17 +49,12 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     }
 
     void close() {
-        wireCurrentComponent();
         isClosed = true;
     }
 
     /** {@return whether or not the realm is closed.} */
     public final boolean isClosed() {
         return isClosed;
-    }
-
-    public boolean isCurrent(Object component) {
-        return currentComponent == component;
     }
 
     /**
@@ -91,49 +78,6 @@ public abstract sealed class RealmSetup permits ExtensionRealmSetup, AssemblySet
     // rename to lookupClass()???;
     public abstract Class<?> realmType();
 
-    /**
-     * @see ContainerConfiguration#link(ContainerHandle, Assembly, Wirelet...)
-     * @see RealmSetup#close()
-     */
-    // TODO add for PackedContainerHandleBuilder
-    public void wireCurrentComponent() {
-        if (currentComponent != null) {
-            if (currentComponent instanceof BeanSetup bs) {
-                Runnable w = bs.onWiringAction;
-                if (w != null) {
-                    w.run();
-                }
-            }
-            currentComponent = null;
-        }
-    }
-
-    /**
-     * Called from the constructor of ComponentSetup whenever a new component is created. {@link #wireCurrentComponent()}
-     * must have previously been called unless the component is the first component in the realm.
-     * 
-     * @param newComponent
-     *            the new component
-     */
-    public void wireNew(Object newComponent) {
-        assert (currentComponent == null);
-        // assert instanceof BeanSetup or ContainerSetup
-        // next is not fully formed but called from the constructor of ComponentSetup
-        currentComponent = requireNonNull(newComponent);
-    }
-
-    public void checkIsCurrent(Object o) {
-        if (o != currentComponent) {
-            String errorMsg;
-            // if (realm.container == this) {
-            errorMsg = "This operation must be called as the first thing in Assembly#build()";
-            // } else {
-            // errorMsg = "This operation must be called immediately after the component has been wired";
-            // }
-            // is it just named(), in that case we should say it explicityly instead of just saying "this operation"
-            throw new IllegalStateException(errorMsg);
-        }
-    }
 }
 //public interface RealmConfiguration {
 //
