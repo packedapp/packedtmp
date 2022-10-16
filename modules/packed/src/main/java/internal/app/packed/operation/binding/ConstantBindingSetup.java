@@ -20,7 +20,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * A constant binding.
+ * A binding to a constant.
  */
 public final class ConstantBindingSetup extends BindingSetup {
 
@@ -29,7 +29,7 @@ public final class ConstantBindingSetup extends BindingSetup {
     public final Object constant;
 
     // Eller er det en extension bean??? Det er hvem der styrer vaerdien
-    public ExtensionSetup managedBy;
+    public ExtensionSetup boundBy;
     
     public ConstantBindingSetup(OperationSetup operation, int index, Object constant) {
         super(operation, index);

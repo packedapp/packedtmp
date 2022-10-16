@@ -105,7 +105,7 @@ public final class FieldIntrospector implements OnField {
     public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle mh = introspector.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return new PackedOperationHandle(add(mh, invocationType, accessMode));
+        return new PackedOperationHandle(this.operator, add(mh, invocationType, accessMode));
     }
 
     public OperationSetup newInternalGetOperation(ExtensionSetup operator, InvocationType invocationType) {
@@ -128,7 +128,7 @@ public final class FieldIntrospector implements OnField {
         }
 
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
-        return new PackedOperationHandle(add(mh, invocationType, accessMode));
+        return new PackedOperationHandle(this.operator, add(mh, invocationType, accessMode));
     }
 
     /** {@inheritDoc} */
@@ -144,7 +144,7 @@ public final class FieldIntrospector implements OnField {
         }
 
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        return new PackedOperationHandle(add(methodHandle, invocationType, accessMode));
+        return new PackedOperationHandle(this.operator, add(methodHandle, invocationType, accessMode));
     }
 
     /** {@inheritDoc} */
@@ -231,7 +231,7 @@ public final class FieldIntrospector implements OnField {
             // All done. Let us see if we only had a single match or multiple matches
             if (multiMatch == null) {
                 // Get the matching extension, installing it if needed.
-                Introspector.ExtensionEntry entry = introspector.computeExtensionEntry(e.extensionType, false);
+                Introspector.Delegate entry = introspector.computeExtensionEntry(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
                 FieldIntrospector f = new FieldIntrospector(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
@@ -241,7 +241,7 @@ public final class FieldIntrospector implements OnField {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiField mf : multiMatch.values()) {
-                    Introspector.ExtensionEntry entry = introspector.computeExtensionEntry(mf.extensionClass, false);
+                    Introspector.Delegate entry = introspector.computeExtensionEntry(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
                     FieldIntrospector f = new FieldIntrospector(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),

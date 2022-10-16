@@ -44,10 +44,11 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
+import internal.app.packed.bean.BeanAnnotationReader;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.BindingIntrospector;
 import internal.app.packed.bean.FieldIntrospector;
 import internal.app.packed.bean.MethodIntrospector;
-import internal.app.packed.bean.PackedOnBindingHook;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -56,18 +57,19 @@ import internal.app.packed.container.ExtensionSetup;
 public abstract class BeanIntrospector {
 
     /**
-     * The configuration of this processor. Is initially null but populated via
+     * The configuration of this introspector. Is initially null but populated via
      * {@link #initialize(ExtensionDescriptor, BeanSetup)}.
      */
     @Nullable
     private Setup setup;
 
-    /** {@return an annotation reader for for the bean.} */
+    /** {@return an annotation reader for the bean class.} */
     public final AnnotationReader beanAnnotations() {
         // AnnotationReader.of(beanClass());
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the class that is being introspected.} */
     public final Class<?> beanClass() {
         return setup().bean.beanClass;
     }
@@ -107,8 +109,8 @@ public abstract class BeanIntrospector {
 
     /**
      * @param binding
-     *            a binding 
-     *            
+     *            a binding
+     * 
      * @see BindingHook
      */
     public void onBinding(OnBinding binding) {
@@ -186,10 +188,15 @@ public abstract class BeanIntrospector {
     // If we can, we should move this to BeanProcessor.AnnotationReader
     // Maybe BeanAnnotationReader? Don't think we will use it elsewhere?
     // AnnotatedBeanElement?
-    public interface AnnotationReader {
+    public sealed interface AnnotationReader permits BeanAnnotationReader {
 
         /** {@return whether or not there are any annotations to read.} */
         boolean hasAnnotations();
+
+        default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
+            T t = readRequired(annotationClass);
+            consumer.accept(t);
+        }
 
         boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
 
@@ -214,12 +221,6 @@ public abstract class BeanIntrospector {
         //// foo bean was expected method to dddoooo to be annotated with
         <T extends Annotation> T readRequired(Class<T> annotationClass);
 
-        default <T extends Annotation> void ifPresent(Class<T> annotationClass, Consumer<T> consumer) {
-            T t = readRequired(annotationClass);
-            consumer.accept(t);
-        }
-
-        
         // Q) Skal vi bruge den udefra beans???
         // A) Nej vil ikke mene vi beskaeftiger os med andre ting hvor vi laeser det.
         // Altsaa hvad med @Composite??? Det er jo ikke en bean, det bliver noedt til at vaere fake metoder...
@@ -242,7 +243,7 @@ public abstract class BeanIntrospector {
     // Saa bliver BeanVariable
 
     // Can be on the bean. Or on a composite.
-    public sealed interface OnBinding permits PackedOnBindingHook {
+    public sealed interface OnBinding permits BindingIntrospector {
 
         // Hmm idk about the unwrapping and stuff here
         AnnotationReader annotations();
@@ -273,10 +274,11 @@ public abstract class BeanIntrospector {
          */
         void bindEmpty();
 
-        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ? PerApplicationInstance
-        
+        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
+        // PerApplicationInstance
+
         // Kan only do this if is invoking extension!!
-        
+
         /**
          * @param index
          *            the index of the argument
@@ -325,7 +327,7 @@ public abstract class BeanIntrospector {
         void provide(MethodHandle methodHandle);
 
         void provide(Op<?> op);
- 
+
         /**
          * @return
          * 

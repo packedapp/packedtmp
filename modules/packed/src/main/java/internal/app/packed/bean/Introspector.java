@@ -15,9 +15,14 @@
  */
 package internal.app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -29,6 +34,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
@@ -36,6 +42,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -68,7 +75,7 @@ public final class Introspector {
     // I think we sort in BeanFields...
     // But then should we sort annotations as well?
     /** Every extension that is activated by a hook. */
-    private final LinkedHashMap<Class<? extends Extension<?>>, ExtensionEntry> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension<?>>, Delegate> extensions = new LinkedHashMap<>();
 
     // Should be made lazily??? I think
     // I think we embed once we gotten rid of use cases outside of this introspector
@@ -80,7 +87,7 @@ public final class Introspector {
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
-    ExtensionEntry computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    Delegate computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
@@ -105,7 +112,7 @@ public final class Introspector {
 
             // Notify the bean introspector that is being used
             introspector.onPreIntrospect();
-            return new ExtensionEntry(extension, introspector, fullAccess);
+            return new Delegate(extension, introspector, fullAccess);
         });
     }
 
@@ -204,11 +211,11 @@ public final class Introspector {
         }
 
         // Call into every BeanScanner and tell them its all over
-        for (ExtensionEntry e : extensions.values()) {
+        for (Delegate e : extensions.values()) {
             e.introspector.onPostIntrospect();
         }
     }
-
+    
     private void introspectClass() {}
 
     /**
@@ -224,7 +231,7 @@ public final class Introspector {
             Class<? extends Annotation> a1Type = a1.annotationType();
             MethodAnnotationCache fh = MethodAnnotationCache.CACHE.get(a1Type);
             if (fh != null) {
-                ExtensionEntry ei = computeExtensionEntry(fh.extensionType, false);
+                Delegate ei = computeExtensionEntry(fh.extensionType, false);
 
                 MethodIntrospector pbm = new MethodIntrospector(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
 
@@ -241,7 +248,7 @@ public final class Introspector {
         }
     }
 
-    record ExtensionEntry(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
+    public record Delegate(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
     private record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
 
@@ -258,5 +265,96 @@ public final class Introspector {
                 return new MethodAnnotationCache(h.extension(), h.allowInvoke());
             }
         };
+    }
+    
+    /**
+     * An open class is a thin wrapper for a single class and a {@link Lookup} object.
+     * <p>
+     * This class is not safe for use with multiple threads.
+     */
+    //TODO should we know whether or the lookup is Packed one or a user supplied??
+    // lookup.getClass().getModule==OpenClass.getModule...? nah virker ikke paa classpath
+   final class OpenClass {
+
+        /** The app.packed.base module. */
+        private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
+
+        /** A lookup object that can be used to access {@link #type}. */
+        private final MethodHandles.Lookup lookup;
+
+        /** A lookup that can be used on non-public members. */
+        private MethodHandles.Lookup privateLookup;
+
+        /** Whether or not the private lookup has been initialized. */
+        private boolean privateLookupInitialized;
+
+        /** The class that is wrapped. */
+        private final Class<?> type;
+
+        OpenClass(MethodHandles.Lookup lookup, Class<?> clazz) {
+            this.lookup = requireNonNull(lookup);
+            this.type = requireNonNull(clazz);
+        }
+
+        Lookup lookup(Member member) {
+            // If we already have made a private lookup object, lets just use it. Even if could do with Public lookup
+            MethodHandles.Lookup p = privateLookup;
+            if (p != null) {
+                return p;
+            }
+
+            // See if we need private access, otherwise just return ordinary lookup.
+
+            // Needs private lookup, unless class is public or protected and member is public
+            // We are comparing against the members declaring class..
+            // We could store boolean isPublicOrProcected in a field.
+            // But do not know how it would work with abstract super classes in other modules...
+
+            // See if we need private access, otherwise just return ordinary lookup.
+            if (!needsPrivateLookup(member)) {
+                return lookup;
+            }
+
+            if (!privateLookupInitialized) {
+                String pckName = type.getPackageName();
+                if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
+                    String otherModule = type.getModule().getName();
+                    String m = APP_PACKED_BASE_MODULE.getName();
+                    throw new InaccessibleBeanMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule
+                            + "' must be open to '" + m + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m
+                            + ";' to the module-info.java file of " + otherModule);
+                }
+                // Should we use lookup.getdeclaringClass???
+                if (!APP_PACKED_BASE_MODULE.canRead(type.getModule())) {
+                    APP_PACKED_BASE_MODULE.addReads(type.getModule());
+                }
+                privateLookupInitialized = true;
+            }
+
+            // Create and cache a private lookup.
+            try {
+                // Fjernede lookup... Skal vitterligt have samlet det i en klasse
+                return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
+            } catch (IllegalAccessException e) {
+                throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
+            }
+        }
+        private static boolean needsPrivateLookup(Member m) {
+            // Needs private lookup, unless class is public or protected and member is public
+            // We are comparing against the members declaring class..
+            // We could store boolean isPublicOrProcected in a field.
+            // But do not know how it would work with abstract super classes in other modules...
+            int classModifiers = m.getDeclaringClass().getModifiers();
+            return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
+        }
+        MethodHandle unreflectGetter(Field field) {
+            Lookup lookup = lookup(field);
+
+            try {
+                return lookup.unreflectGetter(field);
+            } catch (IllegalAccessException e) {
+                throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            }
+        }
     }
 }

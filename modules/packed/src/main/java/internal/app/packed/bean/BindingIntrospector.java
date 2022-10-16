@@ -27,6 +27,7 @@ import app.packed.container.Extension;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
 import app.packed.operation.Variable;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ConstantBindingSetup;
@@ -34,15 +35,16 @@ import internal.app.packed.operation.binding.ConstantBindingSetup;
 /**
  *
  */
-// extends BindingHandle??? Jeg taenker lidt hvordan vi kan tilfoeje
-// Manuelt tilfoejet operationer. Men det er maaske kun funktioner???
-public final class PackedOnBindingHook implements OnBinding {
+public final class BindingIntrospector implements OnBinding {
 
     @Nullable
     private BindingSetup binding;
 
+    final ExtensionSetup bindingExtension;
+
     Class<?> hookClass;
 
+    /** The index of the binding. */
     private final int index;
 
     private final OperationSetup operation;
@@ -51,17 +53,19 @@ public final class PackedOnBindingHook implements OnBinding {
 
     Variable variable;
 
-    public PackedOnBindingHook(Class<?> hookClass, Variable var, OperationSetup operation, int index) {
+    public BindingIntrospector(OperationSetup operation, int index, ExtensionSetup bindingExtension) {
         this.operation = operation;
         this.index = index;
-        this.variable = var;
-        this.hookClass = hookClass;
+        this.bindingExtension = bindingExtension;
+        this.variable = operation.type.parameter(index);
     }
 
-    public PackedOnBindingHook(OperationSetup operation, int index) {
+    public BindingIntrospector(OperationSetup operation, int index, ExtensionSetup bindingExtension, Class<?> bindingHookClass, Variable var) {
         this.operation = operation;
         this.index = index;
-        this.variable = variable();
+        this.bindingExtension = bindingExtension;
+        this.variable = var;
+        this.hookClass = bindingHookClass;
     }
 
     /** {@inheritDoc} */

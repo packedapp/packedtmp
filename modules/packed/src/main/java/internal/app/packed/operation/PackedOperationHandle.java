@@ -26,17 +26,18 @@ import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.PackedOnBindingHook;
+import internal.app.packed.bean.BindingIntrospector;
+import internal.app.packed.container.ExtensionSetup;
 
 /** Implementation of {@link OperationHandle}. */
-public record PackedOperationHandle(OperationSetup os) implements OperationHandle {
+public record PackedOperationHandle(ExtensionSetup extension, OperationSetup os) implements OperationHandle {
 
     /** {@inheritDoc} */
     @Override
     public List<OnBinding> bindings() {
         OnBinding[] hooks = new OnBinding[os.type.parameterCount()];
         for (int i = 0; i < hooks.length; i++) {
-            hooks[i] = new PackedOnBindingHook(os, i);
+            hooks[i] = new BindingIntrospector(os, i, extension);
         }
         return List.of(hooks);
     }

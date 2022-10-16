@@ -93,7 +93,7 @@ public final class MethodIntrospector implements OnMethod {
         // Maaske er det et speciel tilfaelde af man vil invoke fra en anden container...
         // Tag den med i compute() istedet for???
         OperationSetup os = newOperation(BeanSetup.crack(operator).extensionOwner, invocationType);
-        return new PackedOperationHandle(os);
+        return new PackedOperationHandle(this.operator, os);
     }
 
     // We expose this directly do bean extension, entry point, service extension

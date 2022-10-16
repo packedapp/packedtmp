@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.Extension;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.Introspector.ExtensionEntry;
+import internal.app.packed.bean.Introspector.Delegate;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.inject.InternalDependency;
 
@@ -36,30 +36,30 @@ public class ParameterIntrospector {
         // Create a new CompositeBinding
         // Create the new OperationSetup();
         // bindIt
-        
+
         // Else look for prime annotations
         introspectForHookAnnotations(introspector, var, os, index);
 
         // Else look if binding
         // Maybe not look in cache for java thingies?
-        if (os.bindings[index]!=null) {
+        if (os.bindings[index] != null) {
             return;
         }
 
         ParameterAnnotationCache fh = ParameterAnnotationCache.CACHE.get(var.getType());
         if (fh != null) {
             System.out.println("Got something");
-            ExtensionEntry ei = introspector.computeExtensionEntry(fh.extensionType, false);
-            PackedOnBindingHook h = new PackedOnBindingHook(var.getType(), var, os, index);
+            Delegate ei = introspector.computeExtensionEntry(fh.extensionType, false);
+            BindingIntrospector h = new BindingIntrospector(os, index, ei.extension(), var.getType(), var);
             ei.introspector().onBinding(h);
         }
-        if (os.bindings[index]!=null) {
+        if (os.bindings[index] != null) {
             return;
         }
-        
+
         // finally resolve as service
         InternalDependency ia = InternalDependency.fromOperationType(os.type).get(index);
-        os.bindings[index]= introspector.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), os, index);
+        os.bindings[index] = introspector.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), os, index);
     }
 
     /**
@@ -75,15 +75,10 @@ public class ParameterIntrospector {
             Class<? extends Annotation> a1Type = a1.annotationType();
             ParameterAnnotationCache fh = ParameterAnnotationCache.CACHE.get(a1Type);
             if (fh != null) {
-                System.out.println("Got something");
-                ExtensionEntry ei = introspector.computeExtensionEntry(fh.extensionType, false);
+                Delegate ei = introspector.computeExtensionEntry(fh.extensionType, false);
 
-                PackedOnBindingHook h = new PackedOnBindingHook(a1Type, var, os, index);
-//
+                BindingIntrospector h = new BindingIntrospector(os, index, ei.extension(), a1Type, var);
                 ei.introspector().onBinding(h);
-//                MethodIntrospector pbm = new MethodIntrospector(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
-//
-//                ei.introspector.onMethodHook(pbm);
             }
         }
     }
@@ -104,5 +99,5 @@ public class ParameterIntrospector {
             }
         };
     }
-    
+
 }

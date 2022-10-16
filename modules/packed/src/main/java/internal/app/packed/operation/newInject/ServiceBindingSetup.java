@@ -24,12 +24,14 @@ import internal.app.packed.operation.binding.BindingSetup;
  */
 public final class ServiceBindingSetup extends BindingSetup {
 
+    /** An entry corresponding to the key. */
     final ServiceManager.Entry entry;
 
     // A binding in the same container for the same key
     @Nullable
     ServiceBindingSetup nextFriend;
 
+    /** Whether or not the binding is required. */
     public final boolean required;
 
     /**
@@ -42,6 +44,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         this.required = required;
     }
 
+    /** {@return whether or not the service could be resolved.} */
     public boolean isResolved() {
         return entry.provider != null;
     }
