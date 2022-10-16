@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.App;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.BindingHook;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.service.Provide;

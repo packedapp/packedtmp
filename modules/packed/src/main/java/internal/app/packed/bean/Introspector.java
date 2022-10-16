@@ -26,9 +26,9 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
-import app.packed.bean.BeanIntrospector.MethodHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;

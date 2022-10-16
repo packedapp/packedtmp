@@ -15,13 +15,7 @@
  */
 package app.packed.bean;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -36,6 +30,8 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionDescriptor;
@@ -232,71 +228,6 @@ public abstract class BeanIntrospector {
 
         // I think the only we reason we call it BeanAnnotationReader is because
         // if we called AnnotationReader is should really be located in a utility package
-    }
-
-    /**
-     *
-     */
-    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    // Move to BeanExtensionPoint
-    public @interface BindingHook {
-
-        /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
-        Class<? extends Extension<?>> extension();
-    }
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface ClassHook {
-
-        /** Whether or not the sidecar is allow to get the contents of a field. */
-        boolean allowAllAccess() default false;
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-    }
-
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface FieldHook {
-
-        /** Whether or not the owning extension is allow to get the contents of the field. */
-        boolean allowGet() default false;
-
-        /** Whether or not the owning extension is allow to set the contents of the field. */
-        boolean allowSet() default false;
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
-    }
-
-    /**
-     *
-     */
-    @Target(ElementType.ANNOTATION_TYPE)
-    @Retention(RUNTIME)
-    @Documented
-    public @interface MethodHook {
-
-        /**
-         * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
-         * <p>
-         * Methods such as {@link BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)} and... will fail with
-         * {@link UnsupportedOperationException} unless the value of this attribute is {@code true}.
-         * 
-         * @return whether or not the implementation is allowed to invoke the target method
-         * 
-         * @see BeanIntrospector.OnMethod#operationBuilder(ExtensionBeanConfiguration)
-         */
-        // maybe just invokable = true, idk og saa Field.gettable and settable
-        boolean allowInvoke() default false; // allowIntercept...
-
-        /** The extension the hook is a part of. */
-        Class<? extends Extension<?>> extension();
     }
 
     /**

@@ -6,8 +6,8 @@ import app.packed.container.Extension;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 

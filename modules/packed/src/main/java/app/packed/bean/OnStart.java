@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanIntrospector.MethodHook;
+import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.lifetime.RunState;
 
 /**

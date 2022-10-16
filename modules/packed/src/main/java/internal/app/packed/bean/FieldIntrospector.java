@@ -25,9 +25,9 @@ import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
 
 import app.packed.bean.BeanDefinitionException;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
-import app.packed.bean.BeanIntrospector.BindingHook;
-import app.packed.bean.BeanIntrospector.FieldHook;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;

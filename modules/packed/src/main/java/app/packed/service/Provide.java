@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bean.BeanIntrospector.FieldHook;
-import app.packed.bean.BeanIntrospector.MethodHook;
+import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bean.BeanExtensionPoint.MethodHook;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

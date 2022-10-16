@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanIntrospector.BindingHook;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 
 /**
  *

@@ -17,7 +17,7 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanIntrospector.BindingHook;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.Extension;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.Introspector.ExtensionEntry;

@@ -30,7 +30,7 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
-import app.packed.bean.BeanIntrospector.BindingHook;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
