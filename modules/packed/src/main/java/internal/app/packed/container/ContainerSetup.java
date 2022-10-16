@@ -41,6 +41,7 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.AbstractTreeNode;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
@@ -96,7 +97,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final ContainerLifetimeSetup lifetime;
 
     /** Supplies a mirror for the container. */
-    public final Supplier<? extends ContainerMirror> mirrorSupplier = ContainerMirror::new;
+    public Supplier<? extends ContainerMirror> specializedMirror;
 
     /** The name of the container. */
     @Nullable
@@ -260,11 +261,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /** {@return a new mirror.} */
     public ContainerMirror mirror() {
-        // Create a new ContainerMirror
-        ContainerMirror mirror = mirrorSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + ContainerMirror.class.getSimpleName() + " instance");
-        }
+        ContainerMirror mirror = ClassUtil.mirrorHelper(ContainerMirror.class, ContainerMirror::new, specializedMirror);
 
         // Initialize ContainerMirror by calling ContainerMirror#initialize(ContainerSetup)
         try {

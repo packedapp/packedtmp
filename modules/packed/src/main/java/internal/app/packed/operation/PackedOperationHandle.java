@@ -37,7 +37,7 @@ public record PackedOperationHandle(ExtensionSetup extension, OperationSetup os)
     public List<OnBinding> bindings() {
         OnBinding[] hooks = new OnBinding[os.type.parameterCount()];
         for (int i = 0; i < hooks.length; i++) {
-            hooks[i] = new BindingIntrospector(os, i, extension);
+            hooks[i] = new BindingIntrospector(os, i, extension, null, os.type.parameter(i));
         }
         return List.of(hooks);
     }

@@ -8,6 +8,9 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.Function;
+import java.util.function.Supplier;
+
+import internal.app.packed.container.Mirror;
 
 /** Various utility methods for working {@link Class classes}. */
 public class ClassUtil {
@@ -129,5 +132,18 @@ public class ClassUtil {
             }
         }
         return type;
+    }
+    
+    public static <T extends Mirror> T mirrorHelper(Class<T> t, Supplier<T> supplier, Supplier<? extends T> specializedSupplier) {
+        // Create a new BeanMirror
+        if (specializedSupplier == null) {
+            return supplier.get();
+        }
+        T mirror = specializedSupplier.get();
+        if (mirror == null) {
+            throw new NullPointerException(specializedSupplier + " returned a null instead of an " + t.getSimpleName() + " instance");
+        }
+        // check class cast
+        return mirror;
     }
 }

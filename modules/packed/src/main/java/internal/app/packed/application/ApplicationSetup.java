@@ -30,6 +30,7 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.service.inject.ApplicationInjectionManager;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -82,11 +83,7 @@ public final class ApplicationSetup {
 
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
-        // Create a new mirror
-        ApplicationMirror mirror = driver.mirrorSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(driver.mirrorSupplier + " returned null, instead of an " + ApplicationMirror.class.getSimpleName() + " instance");
-        }
+        ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, driver.mirrorSupplier);
 
         // Initialize ApplicationMirror by calling ApplicationMirror#initialize(ApplicationSetup)
         try {

@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -38,7 +39,7 @@ public abstract class BindingSetup {
     public final int index;
 
     /** Supplies a mirror for the operation */
-    public Supplier<? extends BindingMirror> mirrorSupplier = BindingMirror::new;
+    public Supplier<? extends BindingMirror> mirrorSupplier;
 
     /** The underlying operation. */
     public final OperationSetup operation;
@@ -50,12 +51,8 @@ public abstract class BindingSetup {
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        // Create a new OperationMirror
-        BindingMirror mirror = mirrorSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + BindingMirror.class.getSimpleName() + " instance");
-        }
-
+        BindingMirror mirror = ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, mirrorSupplier);
+        
         // Initialize BindingMirror by calling BindingMirror#initialize(BindingSetup)
         try {
             MH_BINDING_MIRROR_INITIALIZE.invokeExact(mirror, this);

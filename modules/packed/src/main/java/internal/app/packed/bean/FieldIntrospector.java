@@ -27,6 +27,7 @@ import java.util.IdentityHashMap;
 import app.packed.bean.BeanDefinitionException;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.InaccessibleBeanMemberException;
@@ -43,9 +44,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 import internal.app.packed.operation.PackedOperationHandle;
 
-/**
- * Implementation of {@link OnField}.
- */
+/** Implementation of {@link BeanIntrospector.OnField}. */
 public final class FieldIntrospector implements OnField {
 
     /** Whether or not the field can be read. */

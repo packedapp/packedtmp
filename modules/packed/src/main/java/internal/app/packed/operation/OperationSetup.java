@@ -26,9 +26,9 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.Introspector;
-import internal.app.packed.bean.ParameterIntrospector;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -55,7 +55,7 @@ public final class OperationSetup {
     boolean isComputed;
 
     /** Supplies a mirror for the operation */
-    Supplier<? extends OperationMirror> mirrorSupplier = OperationMirror::new;
+    Supplier<? extends OperationMirror> mirrorSupplier;
 
     @Nullable 
     public final NestedBindingSetup parentBinding;
@@ -78,11 +78,7 @@ public final class OperationSetup {
 
     /** {@return a new mirror.} */
     public OperationMirror mirror() {
-        // Create a new OperationMirror
-        OperationMirror mirror = mirrorSupplier.get();
-        if (mirror == null) {
-            throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + OperationMirror.class.getSimpleName() + " instance");
-        }
+        OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
         try {

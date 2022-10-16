@@ -87,7 +87,7 @@ public final class Introspector {
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
-    Delegate computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    public Delegate computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);

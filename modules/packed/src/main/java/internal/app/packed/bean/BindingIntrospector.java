@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.container.Extension;
@@ -32,9 +33,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ConstantBindingSetup;
 
-/**
- *
- */
+/** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class BindingIntrospector implements OnBinding {
 
     @Nullable
@@ -42,7 +41,8 @@ public final class BindingIntrospector implements OnBinding {
 
     final ExtensionSetup bindingExtension;
 
-    Class<?> hookClass;
+    @Nullable
+    final Class<?> hookClass;
 
     /** The index of the binding. */
     private final int index;
@@ -53,14 +53,7 @@ public final class BindingIntrospector implements OnBinding {
 
     Variable variable;
 
-    public BindingIntrospector(OperationSetup operation, int index, ExtensionSetup bindingExtension) {
-        this.operation = operation;
-        this.index = index;
-        this.bindingExtension = bindingExtension;
-        this.variable = operation.type.parameter(index);
-    }
-
-    public BindingIntrospector(OperationSetup operation, int index, ExtensionSetup bindingExtension, Class<?> bindingHookClass, Variable var) {
+    public BindingIntrospector(OperationSetup operation, int index, ExtensionSetup bindingExtension, @Nullable Class<?> bindingHookClass, Variable var) {
         this.operation = operation;
         this.index = index;
         this.bindingExtension = bindingExtension;

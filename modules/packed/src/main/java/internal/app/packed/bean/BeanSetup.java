@@ -38,6 +38,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.service.inject.BeanInjectionManager;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.PackedNamespacePath;
 import internal.app.packed.util.ThrowableUtil;
@@ -122,7 +123,7 @@ public final class BeanSetup {
         this.container = requireNonNull(operator.container);
 
         // TODO clean up
-        
+
         // I think we want to have a single field for these 2
         // I think this was made like this, when I was unsure if we could
         // have containers managed by extensions
@@ -136,23 +137,13 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup accessOperation() {
-        return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy),
-                new BeanInstanceAccess(null, false), null);
+        return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(null, false),
+                null);
     }
-    
+
     /** {@return a new mirror.} */
     public BeanMirror mirror() {
-
-        // Create a new BeanMirror
-        BeanMirror mirror;
-        if (mirrorSupplier == null) {
-            mirror = new BeanMirror();
-        } else {
-            mirror = mirrorSupplier.get();
-            if (mirror == null) {
-                throw new NullPointerException(mirrorSupplier + " returned a null instead of an " + BeanMirror.class.getSimpleName() + " instance");
-            }
-        }
+        BeanMirror mirror = ClassUtil.mirrorHelper(BeanMirror.class, BeanMirror::new, mirrorSupplier);
 
         // Initialize BeanMirror by calling BeanMirror#initialize(BeanSetup)
         try {
@@ -206,10 +197,10 @@ public final class BeanSetup {
     }
 
     // Maaske lave vi kinds til et int flag. Hvis vi ogsaa skal tilfoeje only if absent
-    
+
     // Eller maaske long term er det en record vi populere
     // install(F..withSource().ifAbsent)
-    
+
     static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup installedBy,
             RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
@@ -241,7 +232,6 @@ public final class BeanSetup {
                 multiInstall = true;
             }
         }
-
 
         BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
 
@@ -299,12 +289,10 @@ public final class BeanSetup {
         }
         bean.name = n;
 
-
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass.getModule() != Introspector.JAVA_BASE_MODULE) {
             new Introspector(beanModel, bean, customIntrospector).introspect();
         }
-
 
         // Maintain some tree logic
         // Maybe we need to move this up
