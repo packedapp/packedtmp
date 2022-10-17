@@ -16,6 +16,7 @@
 package internal.app.packed.operation.newInject;
 
 import app.packed.base.Nullable;
+import app.packed.operation.BindingMirror;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
@@ -25,9 +26,9 @@ import internal.app.packed.operation.binding.BindingSetup;
 public final class ServiceBindingSetup extends BindingSetup {
 
     /** An entry corresponding to the key. */
-    final ServiceManager.Entry entry;
+    public final ServiceManager.Entry entry;
 
-    // A binding in the same container for the same key
+    /** A binding in the same container for the same key */
     @Nullable
     ServiceBindingSetup nextFriend;
 
@@ -47,5 +48,11 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@return whether or not the service could be resolved.} */
     public boolean isResolved() {
         return entry.provider != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMirror mirror0() {
+        return null;
     }
 }

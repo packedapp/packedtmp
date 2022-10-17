@@ -15,9 +15,11 @@
  */
 package app.packed.service;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.base.Key;
-import app.packed.container.ContainerMirror;
 import app.packed.operation.BindingMirror;
+import internal.app.packed.operation.newInject.ServiceBindingSetup;
 
 /**
  * A binding of a service.
@@ -25,11 +27,34 @@ import app.packed.operation.BindingMirror;
 // findAll(SBM.class).filterOn(key.equals(String.class)).toList();
 public class ServiceBindingMirror extends BindingMirror {
 
-    public Key<?> key() {
-        throw new UnsupportedOperationException();
+    /** The service binding */
+    private final ServiceBindingSetup binding;
+
+    ServiceBindingMirror(ServiceBindingSetup binding) {
+        this.binding = requireNonNull(binding);
     }
 
-    public ContainerMirror container() {
-        return operation().bean().container(); // ???
+    /** {@return a mirror of the service extension.} */
+    /// Hvad goer vi med extension beans?? De har jo saadan set en anden realm.
+    public ServiceExtensionMirror extension() {
+        return operation().container().useExtension(ServiceExtensionMirror.class);
+    }
+
+    /** {@return whether or not the service is required.} */
+    public boolean isRequired() {
+        return binding.required;
+    }
+
+    public boolean isResolved() {
+        return binding.isResolved();
+    }
+
+    public boolean isSatisfiable() {
+        return !isRequired() || isResolved();
+    }
+
+    /** {@return the binding key.} */
+    public Key<?> key() {
+        return binding.entry.key;
     }
 }

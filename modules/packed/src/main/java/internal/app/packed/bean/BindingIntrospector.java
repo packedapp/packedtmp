@@ -30,26 +30,29 @@ import app.packed.operation.Op;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ConstantBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class BindingIntrospector implements OnBinding {
 
-    @Nullable
-    private BindingSetup binding;
-
-    final ExtensionSetup bindingExtension;
-
-    @Nullable
-    final Class<?> hookClass;
+    /** The extension that will manage the binding. */
+    private final ExtensionSetup bindingExtension;
 
     /** The index of the binding. */
     private final int index;
 
+    /** A specialized mirror for the binding. */
+    @Nullable
+    private Supplier<? extends BindingMirror> mirrorSupplier;
+    
+    /** The operation that will have a parameter bound. */
     private final OperationSetup operation;
 
-    Supplier<? extends BindingMirror> supplier;
+
+    ///////////////
+
+    @Nullable
+    final Class<?> bindingHookClass;
 
     Variable variable;
 
@@ -58,7 +61,7 @@ public final class BindingIntrospector implements OnBinding {
         this.index = index;
         this.bindingExtension = bindingExtension;
         this.variable = var;
-        this.hookClass = bindingHookClass;
+        this.bindingHookClass = bindingHookClass;
     }
 
     /** {@inheritDoc} */
@@ -67,18 +70,13 @@ public final class BindingIntrospector implements OnBinding {
         return new BeanAnnotationReader(variable().getAnnotations());
     }
 
-    private void bind(BindingSetup bs) {
-        bs.mirrorSupplier = supplier;
-        operation.bindings[index] = binding = bs;
-    }
-
     /** {@inheritDoc} */
     @Override
     public void bind(@Nullable Object obj) {
-        checkNotBound();
+        checkIsBindable();
         if (obj == null) {
             if (variable.getType().isPrimitive()) {
-                throw new IllegalArgumentException(variable + " is a primitive type and cannot bind to null");
+                throw new IllegalArgumentException(variable + " is a primitive type and cannot be bound to null");
             }
         } else {
 
@@ -95,22 +93,26 @@ public final class BindingIntrospector implements OnBinding {
         throw new UnsupportedOperationException();
     }
 
-    private void checkNotBound() {
-        if (binding != null) {
+    private void checkIsBindable() {
+        if (operation.bindings[index] != null) {
             throw new IllegalStateException("A binding has already been created");
+        }
+        // Eller er det introspectoren???
+        if (bindingExtension.extensionRealm.isClosed()) {
+            throw new IllegalStateException("Cannot create a binding after " + bindingExtension.extensionType + " has been closed");
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> hookClass() {
-        return hookClass;
+        return bindingHookClass;
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> invokingExtension() {
-        return null;
+        return operation.invocationSite.operator.extensionType;
     }
 
     /** {@inheritDoc} */
@@ -134,14 +136,14 @@ public final class BindingIntrospector implements OnBinding {
     /** {@inheritDoc} */
     @Override
     public OnBinding specializeMirror(Supplier<? extends BindingMirror> supplier) {
-        checkNotBound();
-        this.supplier = requireNonNull(supplier);
+        checkIsBindable();
+        this.mirrorSupplier = requireNonNull(supplier);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public Variable variable() {
-        return operation.type.parameter(index);
+        return variable;
     }
 }

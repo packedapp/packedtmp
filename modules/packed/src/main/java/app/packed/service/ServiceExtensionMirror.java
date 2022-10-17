@@ -52,7 +52,7 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     }
 
     /** { @return a map view of all the services that are provided internally in the container.} */
-    public Map<Key<?>, ProvideOperationMirror> provisions() {
+    public Map<Key<?>, ServiceProvisionMirror> provisions() {
         for (var e : services.resolvedServices.entrySet()) {
             System.out.println(e.getKey() + " : " + e.getValue().getSingle().dependencyConsumer());
         }

@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation.newInject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
@@ -44,7 +46,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
         return entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Entry();
+                v = new Entry(k);
             }
             if (isRequired) {
                 v.isRequired = true;
@@ -76,7 +78,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     public ProvidedService serviceProvide(Key<?> key, OperationSetup bos) {
         Entry e = entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Entry();
+                v = new Entry(k);
             } else if (v.provider != null) {
                 throw new DublicateServiceProvideException("A service has already been bound for key " + key);
             } // else we have some bindings but no provider
@@ -100,7 +102,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }
     }
 
-    static class Entry {
+    public static class Entry {
 
         /** All bindings (in a interned linked list) that points to this entry. */
         @Nullable
@@ -108,8 +110,14 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
         boolean isRequired = true; // true for now
 
+        public final Key<?> key;
+
         /** The provider of the service */
         @Nullable
-        ProvidedService provider;
+        public ProvidedService provider;
+
+        Entry(Key<?> key) {
+            this.key = requireNonNull(key);
+        }
     }
 }

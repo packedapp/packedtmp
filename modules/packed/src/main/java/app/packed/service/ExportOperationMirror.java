@@ -33,7 +33,7 @@ public abstract class ExportOperationMirror extends OperationMirror {
 
     // Hvad goer vi omvendt??? Returnere en liste??
     // Kun allower en? IDK
-    public abstract Optional<ProvideOperationMirror> service(); // Kan ikke fange alle dog
+    public abstract Optional<ServiceProvisionMirror> service(); // Kan ikke fange alle dog
 
     // find usage of the exported service
     

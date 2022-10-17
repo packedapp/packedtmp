@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation.binding;
 
+import app.packed.operation.BindingMirror;
+import app.packed.operation.bindings.CompositeBindingMirror;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -28,5 +30,12 @@ public final class CompositeBindingSetup extends NestedBindingSetup {
      */
     public CompositeBindingSetup(OperationSetup operation, int index) {
         super(operation, index);
+    }
+    
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMirror mirror0() {
+        return new CompositeBindingMirror();
     }
 }

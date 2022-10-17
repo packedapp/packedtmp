@@ -15,8 +15,12 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.util.function.Supplier;
+
+import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.ClassUtil;
 
 /**
  *
@@ -30,6 +34,9 @@ public final class FusedBindingSetup extends NestedBindingSetup {
 
     public final OperationSetup operation;
 
+    /** Supplies a mirror for the operation */
+    public Supplier<? extends BindingMirror> specializedMirror;
+
     /**
      * @param beanOperation
      * @param index
@@ -37,5 +44,12 @@ public final class FusedBindingSetup extends NestedBindingSetup {
     public FusedBindingSetup(OperationSetup original, int index) {
         super(original, index);
         operation = null;
+    }
+    
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMirror mirror0() {
+        return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
     }
 }

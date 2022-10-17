@@ -17,17 +17,15 @@ package internal.app.packed.operation.binding;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Supplier;
 
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
- * The internal configuration of a single binding for an operation.
+ * The internal configuration of a single binding.
  */
 public abstract class BindingSetup {
 
@@ -38,9 +36,6 @@ public abstract class BindingSetup {
     /** The index into {@link OperationSetup#bindings}. */
     public final int index;
 
-    /** Supplies a mirror for the operation */
-    public Supplier<? extends BindingMirror> mirrorSupplier;
-
     /** The underlying operation. */
     public final OperationSetup operation;
 
@@ -49,9 +44,11 @@ public abstract class BindingSetup {
         this.index = index;
     }
 
+    public abstract BindingMirror mirror0();
+    
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        BindingMirror mirror = ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, mirrorSupplier);
+        BindingMirror mirror = mirror0();
         
         // Initialize BindingMirror by calling BindingMirror#initialize(BindingSetup)
         try {

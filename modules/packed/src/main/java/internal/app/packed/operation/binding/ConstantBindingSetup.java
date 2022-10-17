@@ -15,9 +15,13 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.util.function.Supplier;
+
 import app.packed.base.Nullable;
+import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.ClassUtil;
 
 /**
  * A binding to a constant.
@@ -30,9 +34,18 @@ public final class ConstantBindingSetup extends BindingSetup {
 
     // Eller er det en extension bean??? Det er hvem der styrer vaerdien
     public ExtensionSetup boundBy;
-    
+
+    /** Supplies a mirror for the operation */
+    public Supplier<? extends BindingMirror> specializedMirror;
+
     public ConstantBindingSetup(OperationSetup operation, int index, Object constant) {
         super(operation, index);
         this.constant = constant;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMirror mirror0() {
+        return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
     }
 }

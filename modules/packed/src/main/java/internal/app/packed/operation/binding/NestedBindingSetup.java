@@ -21,7 +21,7 @@ import internal.app.packed.operation.OperationSetup;
  *
  */
 // Ved ikke om vi gider have det hiraki...
-public class NestedBindingSetup extends BindingSetup {
+public abstract sealed class NestedBindingSetup extends BindingSetup permits CompositeBindingSetup, FusedBindingSetup {
 
     /**
      * @param operation
