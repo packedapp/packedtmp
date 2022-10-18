@@ -91,7 +91,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @param implementation
      *            the static bean class
      * @return a configuration for the bean
-     * @throws MultipleBeanOfSameTypeDefinedException
+     * @throws DublicateBeanClassException
      *             if there other beans of the same type that has already been installed
      * 
      * @see BeanKind#STATIC

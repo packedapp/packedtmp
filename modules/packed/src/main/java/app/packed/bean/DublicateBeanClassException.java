@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.newInject;
+package app.packed.bean;
 
-import internal.app.packed.operation.OperationSetup;
+import app.packed.application.BuildException;
 
 /**
- *
+ * An exception that is thrown when multiple beans with the same non-void bean class has been installed in a container.
  */
-public final class ProvidedService {
+public class DublicateBeanClassException extends BuildException {
 
-    /** The operation that provides the service. */
-    public final OperationSetup operation;
+    private static final long serialVersionUID = 1L;
 
-    /** The key under which this service is provided. */
-    public final ServiceEntry entry;
+    public DublicateBeanClassException(String message) {
+        super(message);
+    }
 
-    ProvidedService(OperationSetup operation, ServiceEntry entry) {
-        this.operation = operation;
-        this.entry = entry;
+    public DublicateBeanClassException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

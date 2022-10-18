@@ -51,17 +51,17 @@ public final class ApplicationSetup {
     @Nullable
     public EntryPointSetup entryPoints;
 
+    public final BuildGoal goal;
+
     /** The tree this service manager is a part of. */
     public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
+
+    @Nullable
+    PackedApplicationLauncher launcher;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
     final DynamicAccessor runtimeAccessor;
-
-    public final BuildGoal goal;
-
-    @Nullable
-    PackedApplicationLauncher launcher;
 
     /**
      * Create a new application setup
@@ -81,6 +81,17 @@ public final class ApplicationSetup {
         this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
     }
 
+    /**
+     * 
+     */
+    public void close() {
+        if (goal.isLaunchable()) {
+            container.codegen();
+        }
+        
+        launcher = new PackedApplicationLauncher(this);
+    }
+
     /** {@return a mirror that can be exposed to end-users.} */
     public ApplicationMirror mirror() {
         ApplicationMirror mirror = ClassUtil.mirrorHelper(ApplicationMirror.class, ApplicationMirror::new, driver.mirrorSupplier);
@@ -92,16 +103,5 @@ public final class ApplicationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
-    }
-
-    /**
-     * 
-     */
-    public void close() {
-        if (goal.isLaunchable()) {
-            container.codegen();
-        }
-        
-        launcher = new PackedApplicationLauncher(this);
     }
 }

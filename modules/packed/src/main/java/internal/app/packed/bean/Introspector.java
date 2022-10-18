@@ -206,6 +206,7 @@ public final class Introspector {
 
         // Introspection of members are done.
         // Now run through all operation bindings that have not been resolved
+        
         for (OperationSetup o : bean.operations) {
             o.resolve(this);
         }

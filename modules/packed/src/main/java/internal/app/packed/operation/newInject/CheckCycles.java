@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package internal.app.packed.operation.newInject;
 
-import app.packed.application.BuildException;
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-// Skal vi baade have en internt i containeren og en udenfor
-public class CyclicServiceDependencyException extends BuildException {
+public class CheckCycles extends BaseAssembly {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @param message
-     */
-    public CyclicServiceDependencyException(String message) {
-        super(message);
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        provide(A.class);
+        provide(B.class);
     }
 
+    public static void main(String[] args) {
+        App.run(new CheckCycles());
+    }
+
+    public record A(B b) {}
+    
+    public record B(A b) {}
 }

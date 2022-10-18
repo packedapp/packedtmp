@@ -79,7 +79,7 @@ public final class InternalInfuser {
             this.parameterTypes = List.of(parameterTypes);
         }
 
-        private void add(ServiceEntry builder, Entry entry) {
+        private void add(SomeEntry builder, Entry entry) {
             services.put(builder.key, entry);
         }
 
@@ -88,32 +88,32 @@ public final class InternalInfuser {
             return infuser.singleConstructor(clazz, returnType, errorMaker);
         }
 
-        public ServiceEntry provide(Class<?> key) {
+        public SomeEntry provide(Class<?> key) {
             return provide(Key.of(key));
         }
 
-        public ServiceEntry provide(Key<?> key) {
-            return new ServiceEntry(this, key, false);
+        public SomeEntry provide(Key<?> key) {
+            return new SomeEntry(this, key, false);
         }
 
         // Altsaa vi goer det jo lidt pga classpath'en
-        public ServiceEntry provideHidden(Class<?> key) {
+        public SomeEntry provideHidden(Class<?> key) {
             return provideHidden(Key.of(key));
         }
 
-        public ServiceEntry provideHidden(Key<?> key) {
-            return new ServiceEntry(this, key, true);
+        public SomeEntry provideHidden(Key<?> key) {
+            return new SomeEntry(this, key, true);
         }
         
         /** A builder for key based entry in the infuser. */
-        public static class ServiceEntry {
+        public static class SomeEntry {
             private final Builder builder;
             private final boolean hidden;
             private final Key<?> key;
 
             private boolean nullOptional;
             
-            ServiceEntry(Builder builder, Key<?> key, boolean hide) {
+            SomeEntry(Builder builder, Key<?> key, boolean hide) {
                 this.builder = builder;
                 this.key = requireNonNull(key, "key is null");
                 this.hidden = hide;
@@ -137,7 +137,7 @@ public final class InternalInfuser {
                 return Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
             }
 
-            public ServiceEntry description(String description) {
+            public SomeEntry description(String description) {
                 // Ideen er vi propper lidt descriptions paa igen, IDK
                 // Ikke i foerst omgang taenker jeg
                 return this;
@@ -154,13 +154,13 @@ public final class InternalInfuser {
                 builder.add(this, new Entry(this, methodHandle, index));
             }
 
-            public ServiceEntry optionallyViaNullable() {
+            public SomeEntry optionallyViaNullable() {
                 // Is optionally nullable, Can only be tested at runtime
                 nullOptional = true;
                 return this;
             }
             
-            public ServiceEntry optionallyViaNullable(MethodHandle tester, int... dependencies) {
+            public SomeEntry optionallyViaNullable(MethodHandle tester, int... dependencies) {
                 // Is optionally nullable..
                 // Can only be tested at runtime
                 
@@ -173,7 +173,7 @@ public final class InternalInfuser {
 
 
     record Entry(@Nullable MethodHandle transformer, boolean isNullOptional, boolean isHidden, int... indexes) {
-        Entry(Builder.ServiceEntry b, @Nullable MethodHandle transformer, int... indexes) {
+        Entry(Builder.SomeEntry b, @Nullable MethodHandle transformer, int... indexes) {
             this(transformer, b.nullOptional,  b.hidden,  indexes);
         }
     }

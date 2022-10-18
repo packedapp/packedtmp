@@ -15,8 +15,6 @@
  */
 package internal.app.packed.operation.newInject;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
@@ -35,7 +33,7 @@ import internal.app.packed.util.StringFormatter;
  */
 public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
-    final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
+    final LinkedHashMap<Key<?>, ServiceEntry> entries = new LinkedHashMap<>();
 
     // All provided services are automatically exported
     public boolean exportAll;
@@ -49,7 +47,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
         return entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Entry(k);
+                v = new ServiceEntry(k);
             }
             if (isRequired) {
                 v.isRequired = true;
@@ -79,9 +77,9 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     }
 
     public ProvidedService serviceProvide(Key<?> key, OperationSetup bos) {
-        Entry e = entries.compute(key, (k, v) -> {
+        ServiceEntry e = entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Entry(k);
+                v = new ServiceEntry(k);
             } else if (v.provider != null) {
                 ProvidedService ps = v.provider;
                 if (ps.operation.target instanceof BeanInstanceAccess) {
@@ -96,6 +94,9 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
             v.provider = new ProvidedService(bos, v);
             return v;
         });
+        
+        bos.bean.providingOperations.add(e.provider);
+        
         if (exportAll) {
             serviceExport(key, bos);
         }
@@ -103,32 +104,13 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     }
 
     public void verify() {
-        for (Entry e : entries.values()) {
+        for (ServiceEntry e : entries.values()) {
             if (e.provider == null) {
                 for (var b = e.bindings; b != null; b = b.nextFriend) {
                     System.out.println("Binding not resolved " + b);
                 }
                 throw new UnsatisfiableServiceDependencyException();
             }
-        }
-    }
-
-    public static class Entry {
-
-        /** All bindings (in a interned linked list) that points to this entry. */
-        @Nullable
-        ServiceBindingSetup bindings;
-
-        boolean isRequired = true; // true for now
-
-        public final Key<?> key;
-
-        /** The provider of the service */
-        @Nullable
-        public ProvidedService provider;
-
-        Entry(Key<?> key) {
-            this.key = requireNonNull(key);
         }
     }
 }

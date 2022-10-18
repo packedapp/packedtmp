@@ -26,7 +26,7 @@ import internal.app.packed.operation.binding.BindingSetup;
 public final class ServiceBindingSetup extends BindingSetup {
 
     /** An entry corresponding to the key. */
-    public final ServiceManager.Entry entry;
+    public final ServiceEntry entry;
 
     /** A binding in the same container for the same key */
     @Nullable
@@ -39,7 +39,7 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param beanOperation
      * @param index
      */
-    ServiceBindingSetup(OperationSetup operation, int index, ServiceManager.Entry entry, boolean required) {
+    ServiceBindingSetup(OperationSetup operation, int index, ServiceEntry entry, boolean required) {
         super(operation, index);
         this.entry = entry;
         this.required = required;

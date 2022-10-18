@@ -15,21 +15,30 @@
  */
 package internal.app.packed.operation.newInject;
 
-import internal.app.packed.operation.OperationSetup;
+import static java.util.Objects.requireNonNull;
 
-/**
- *
- */
-public final class ProvidedService {
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 
-    /** The operation that provides the service. */
-    public final OperationSetup operation;
+public final class ServiceEntry {
 
-    /** The key under which this service is provided. */
-    public final ServiceEntry entry;
+    /** All bindings (in a interned linked list) that points to this entry. */
+    @Nullable
+    ServiceBindingSetup bindings;
 
-    ProvidedService(OperationSetup operation, ServiceEntry entry) {
-        this.operation = operation;
-        this.entry = entry;
+    boolean isRequired = true; // true for now
+
+    /** The key of the entry. */
+    public final Key<?> key;
+
+    /** Used for checking for dependency cycles. */
+    boolean needsPostProcessing = true;
+
+    /** The provider of the service */
+    @Nullable
+    public ProvidedService provider;
+
+    ServiceEntry(Key<?> key) {
+        this.key = requireNonNull(key);
     }
 }

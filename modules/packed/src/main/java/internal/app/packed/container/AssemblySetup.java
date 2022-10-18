@@ -37,6 +37,7 @@ import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
+import internal.app.packed.operation.newInject.ServiceCircularDependencyChecker;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -144,6 +145,8 @@ public final class AssemblySetup extends RealmSetup {
                 onAssemblyClose(e.instance());
                 e = extensions.pollFirst();
             }
+
+            ServiceCircularDependencyChecker.dependencyCyclesFind(container);
 
             container.application.injectionManager.finish(container.lifetime.pool, container);
 

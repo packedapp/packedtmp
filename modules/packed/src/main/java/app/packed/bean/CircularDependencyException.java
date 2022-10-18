@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.newInject;
+package app.packed.bean;
 
-import internal.app.packed.operation.OperationSetup;
+import app.packed.application.BuildException;
 
 /**
- *
+ * Indicates a dependency cycle between multiple beans.
  */
-public final class ProvidedService {
+// Maybe add service
+public class CircularDependencyException extends BuildException {
 
-    /** The operation that provides the service. */
-    public final OperationSetup operation;
+    private static final long serialVersionUID = 1L;
 
-    /** The key under which this service is provided. */
-    public final ServiceEntry entry;
-
-    ProvidedService(OperationSetup operation, ServiceEntry entry) {
-        this.operation = operation;
-        this.entry = entry;
+    /**
+     * @param message
+     */
+    public CircularDependencyException(String message) {
+        super(message);
     }
 }

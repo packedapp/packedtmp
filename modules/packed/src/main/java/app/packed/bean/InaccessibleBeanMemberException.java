@@ -21,8 +21,10 @@ import app.packed.application.BuildException;
 // This is only if Packed does not have access
 
 /**
- * An exception that is thrown when a operation could not be created because Packed had no access to the underlying.
- * Field, Constructor or Method.
+ * An exception that is thrown when a operation could not be created because the framework had no access to the
+ * underlying field, constructor or method.
+ * <p>
+ * This can be resolved by providing the right access to Packed
  */
 // UncheckedIllegalAccessException...
 // RuntimeIllegalAccessException

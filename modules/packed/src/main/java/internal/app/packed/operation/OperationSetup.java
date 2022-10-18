@@ -91,8 +91,11 @@ public final class OperationSetup {
 
     // We need it for calling into nested
     public void resolve(Introspector introspector) {
+
         for (int i = 0; i < bindings.length; i++) {
             if (bindings[i] == null) {
+
+
                 ParameterIntrospector.bind(introspector, this, i);
             }
         }

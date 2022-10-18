@@ -6,6 +6,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -14,13 +15,14 @@ import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.MultipleBeanOfSameTypeDefinedException;
+import app.packed.bean.DublicateBeanClassException;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
@@ -39,7 +41,9 @@ import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.operation.newInject.ProvidedService;
 import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.op.ReflectiveOp;
 import internal.app.packed.service.inject.BeanInjectionManager;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -112,6 +116,10 @@ public final class BeanSetup {
     /** The type of source the installer is created from. */
     public final BeanSourceKind sourceKind;
 
+    public final List<ProvidedService> providingOperations = new ArrayList<>();
+
+    public boolean providingOperationsVisited;
+
     /**
      * Create a new bean.
      */
@@ -144,6 +152,7 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup accessOperation() {
+        // Hmm, er det med i listen af operationer???? IDK
         return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(null, false),
                 null);
     }
@@ -276,7 +285,7 @@ public final class BeanSetup {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
-                        throw new MultipleBeanOfSameTypeDefinedException();
+                        throw new DublicateBeanClassException("Oops");
                     } else {
                         ((MuInst) o).counter += 1;
                         return o;
@@ -295,10 +304,10 @@ public final class BeanSetup {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
-                        throw new MultipleBeanOfSameTypeDefinedException("A non-multi bean has already been defined for " + bean.beanClass);
+                        throw new DublicateBeanClassException("A non-multi bean has already been defined for " + bean.beanClass);
                     } else {
                         // We already have some multiple beans installed
-                        throw new MultipleBeanOfSameTypeDefinedException();
+                        throw new DublicateBeanClassException("Oops");
                     }
                 });
                 // Not multi install, so should be able to add it first time
@@ -309,6 +318,24 @@ public final class BeanSetup {
             }
         }
         bean.name = n;
+
+        if (kind.hasInstances() && sourceKind != BeanSourceKind.INSTANCE) {
+            PackedOp<?> op;
+            if (bean.sourceKind == BeanSourceKind.CLASS) {
+                op = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
+            } else {
+                op = (PackedOp<?>) bean.source; // We always unpack source Op to PackedOp
+            }
+
+            // Extract a MethodHandlefrom the factory
+            MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(op);
+
+            OperationType type = op.type();
+            // Create an instantiating operation
+            ExtensionSetup es = container.useExtensionSetup(BeanExtension.class, null);
+            OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), es), new BeanInstanceAccess(mh, true), null);
+            bean.operations.add(os);
+        }
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass.getModule() != Introspector.JAVA_BASE_MODULE) {

@@ -57,7 +57,7 @@ public class ParameterIntrospector {
         if (os.bindings[index] != null) {
             return;
         }
-
+        
         // finally resolve as service
         InternalDependency ia = InternalDependency.fromOperationType(os.type).get(index);
         os.bindings[index] = introspector.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), os, index);
