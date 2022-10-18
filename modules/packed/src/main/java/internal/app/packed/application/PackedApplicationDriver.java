@@ -126,9 +126,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
+        // Build the application
         AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH, assembly, wirelets);
         as.build();
-        return as.application.launcher.launchImmediately(this);
+        
+        // Launch the application
+        PackedApplicationLauncher launcher = as.application.launcher;
+        return launcher.launchImmediately(this);
     }
 
     /**

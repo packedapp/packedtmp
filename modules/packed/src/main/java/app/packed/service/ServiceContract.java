@@ -280,9 +280,6 @@ public final class ServiceContract {
      * <p>
      * In addition to creating new contracts, this class also supports creating new contracts by transforming an existing
      * contracts using the xxx constructor.
-     * <p>
-     * <strong>Note that this builder is not synchronized.</strong> If multiple threads access a builder concurrently, and
-     * at least one of the threads modifies the builder structurally, it <i>must</i> be synchronized externally.
      */
     public static final class Builder {
 

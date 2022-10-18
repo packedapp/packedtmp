@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.container.AbstractComposer;
+import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerWrapperCompanion;
 import app.packed.container.Extension;
@@ -153,8 +154,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         return new PackedApplicationDriver.Builder<>(null);
     }
 
-    static <A> Builder<A> builder(MethodHandles.Lookup caller, Class<A> wrapperType) {
-        return builder(BeanExtensionPoint.factoryOf(wrapperType, caller));
+    static <A> Builder<A> builder(Class<A> wrapperType) {
+        return builder(BeanExtensionPoint.factoryOf(wrapperType));
     }
 
     static <A> Builder<A> builder(Op<A> wrapperFactory) {
@@ -300,6 +301,10 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 //            return this;
 //        }
 
+    }
+    
+    static <A> ApplicationDriver<A> of(Class<A> type, ComposerAction<Composer<A>> action) {
+        throw new UnsupportedOperationException();
     }
 
     // Ville jo vaere fedt at genbruge den for ikke application-drivere.

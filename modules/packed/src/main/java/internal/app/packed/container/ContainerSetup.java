@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -38,6 +37,7 @@ import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.newInject.ServiceManager;
 import internal.app.packed.service.InternalServiceExtension;
 import internal.app.packed.util.AbstractTreeNode;
@@ -59,7 +59,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** The assembly that defined this container. */
     public final AssemblySetup assembly;
 
-    public final Map<Class<?>, Object> beanClassMap = new HashMap<>(); // Must have unique beans unless multi
+    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>(); // Must have unique beans unless multi
 
     /** All beans installed in a container is maintained in a linked list, this field pointing to the first one. */
     @Nullable
@@ -93,18 +93,17 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      */
     boolean isNameInitializedFromWirelet;
 
-    /** The lifetime the component is a part of. */
+    /** The lifetime the container is a part of. */
     public final ContainerLifetimeSetup lifetime;
 
-    /** Supplies a mirror for the container. */
-    public Supplier<? extends ContainerMirror> specializedMirror;
-
     /** The name of the container. */
-    @Nullable
     public String name;
 
     /** The container's service manager. */
     public final ServiceManager sm;
+
+    /** Supplies a mirror for the container. */
+    public Supplier<? extends ContainerMirror> specializedMirror;
 
     /** Wirelets that were specified when creating the component. */
     // As an alternative non-final, and then nulled out whenever the last wirelet is consumed
@@ -117,13 +116,11 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param application
      *            the application this container is a part of
      * @param assembly
-     *            the realm this container is a part of
-     * @param handle
-     *            the driver that is used to create this container
+     *            the assembly the container is defined in
      * @param parent
-     *            any parent container
+     *            any parent container 
      * @param wirelets
-     *            optional wirelets specified when creating or wiring the container
+     *            optional wirelets
      */
     public ContainerSetup(ApplicationSetup application, AssemblySetup assembly, @Nullable ContainerSetup parent, Wirelet[] wirelets) {
         super(parent);
@@ -221,6 +218,17 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             count += 1;
         }
         return count;
+    }
+
+    public void codegen() {
+        for (ContainerSetup e = treeFirstChild; e != null; e = e.treeNextSiebling) {
+            e.codegen();
+        }
+        for (BeanSetup b = beanFirst; b != null; b = b.nextBean) {
+            for (OperationSetup o : b.operations) {
+                o.codegen();
+            }
+        }
     }
 
     /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */

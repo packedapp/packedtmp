@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.component;
+package tck.injectorconfigurator.of.atprovides;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.invoke.MethodHandles;
+
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.BuildException;
-import testutil.stubs.Throwables.Exception1;
+import app.packed.service.ServiceLocator;
+import testutil.stubs.Letters.A;
 
-/** Tests {@link BuildException}. */
-public class BuildExceptionTest {
+/**
+ * Tests various things that do not have their own test class.
+ */
+public class InjectorGetServiceTest {
 
-    /** Tests the various constructors. */
     @Test
-    public void test() {
-        assertThat(new BuildException("foo")).hasNoCause();
-        assertThat(new BuildException("foo")).hasMessage("foo");
-        assertThat(new BuildException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new BuildException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+    public void isRuntimeServices() {
+        ServiceLocator i = ServiceLocator.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.provide(A.class);
+        });
+
+        assertThat(i.findInstance(A.class).get()).isInstanceOf(A.class);
     }
 }

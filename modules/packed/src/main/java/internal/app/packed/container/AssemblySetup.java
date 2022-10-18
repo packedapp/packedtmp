@@ -66,34 +66,45 @@ public final class AssemblySetup extends RealmSetup {
     public final ContainerSetup container;
 
     /**
-     * All extensions that are used in the same assembly (if non embedded) An order set of extension according to the natural
-     * extension dependency order.
+     * All extensions that are used in the same assembly (if non embedded) An order set of extension according to the
+     * natural extension dependency order.
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
     /** Whether or not this realm is configurable. */
     private boolean isClosed;
 
+    /**
+     * This constructor is used when linking an assembly.
+     * 
+     * @param linkTo
+     *            the container that is being linked to
+     * @param assembly
+     *            the assembly of the container to link
+     * @param wirelets
+     *            optional wirelets
+     */
     public AssemblySetup(ContainerSetup linkTo, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.assemblyModel = AssemblyModel.of(assembly.getClass());
         this.application = linkTo.application;
         if (assembly instanceof ComposerAssembly) {
-            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class);
+            throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class + " when linking");
         }
         this.container = new ContainerSetup(application, this, linkTo, wirelets);
     }
 
     /**
-     * Builds an application using the specified assembly and optional wirelets.
+     * This constructor is used for the root assembly of an application.
      * 
+     * @param driver
+     *            the application driver
      * @param goal
      *            the build target
      * @param assembly
      *            the assembly of the application
      * @param wirelets
      *            optional wirelets
-     * @return the application
      */
     public AssemblySetup(PackedApplicationDriver<?> applicationDriver, BuildGoal goal, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
@@ -113,6 +124,7 @@ public final class AssemblySetup extends RealmSetup {
 
         isClosed = true;
 
+        boolean isRoot = container.treeParent == null;
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
         // ancestor extensions in the same realm.
@@ -121,7 +133,7 @@ public final class AssemblySetup extends RealmSetup {
         // In which case an Iterator might throw ConcurrentModificationException
 
         // Test and see if we are closing the root container of the application
-        if (container.treeParent == null) {
+        if (isRoot) {
             // Root container
             // We must also close all extensions application-wide.
             ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
@@ -151,8 +163,9 @@ public final class AssemblySetup extends RealmSetup {
                 e = extensions.pollFirst();
             }
         }
+
     }
-    
+
     public boolean isClosed() {
         return isClosed;
     }
@@ -193,7 +206,7 @@ public final class AssemblySetup extends RealmSetup {
         /** {@inheritDoc} */
         @Override
         public List<Class<? extends ContainerHook>> containerHooks() {
-            throw new UnsupportedOperationException();
+            return List.of(); // TODO implement
         }
 
         /** {@inheritDoc} */

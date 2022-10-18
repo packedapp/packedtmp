@@ -33,7 +33,7 @@ public class ExtensionBeanConfiguration<T> extends InstanceBeanConfiguration<T> 
     }
 
     public <V> void bindDelayed(Class<V> key, Supplier<V> supplier) {
-
+        bindDelayed(Key.of(key), supplier);
     }
 
     public <V> ExtensionBeanConfiguration<T> bindDelayed(Key<V> key, Supplier<V> supplier) {

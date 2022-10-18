@@ -1,0 +1,26 @@
+app.packed
+internal.app.packed
+
+Unit tests only.. No building
+
+
+--- Usage of extension
+extensions.service 
+
+
+
+build <--- Stuff that is specific to build
+
+
+----- stuff that builds not specific to extensions
+application
+
+Nah smed det i app.packed.application
+
+
+
+app
+  App
+  ApplicationDriver
+  Launcher
+  Mirrors

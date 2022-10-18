@@ -21,7 +21,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.operation.Op;
-import testutil.assertj.inject.FactoryAssert;
 
 /**
  *

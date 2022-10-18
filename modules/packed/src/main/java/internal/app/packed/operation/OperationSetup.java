@@ -97,4 +97,11 @@ public final class OperationSetup {
             }
         }
     }
+
+    /**
+     * 
+     */
+    public void codegen() {
+        
+    }
 }

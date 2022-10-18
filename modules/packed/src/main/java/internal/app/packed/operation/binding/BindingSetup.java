@@ -44,7 +44,7 @@ public abstract class BindingSetup {
         this.index = index;
     }
 
-    public abstract BindingMirror mirror0();
+    protected abstract BindingMirror mirror0();
     
     /** {@return a new mirror.} */
     public BindingMirror mirror() {

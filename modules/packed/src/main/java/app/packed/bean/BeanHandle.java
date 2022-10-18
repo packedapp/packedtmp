@@ -91,7 +91,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @see ProvideableBeanConfiguration#provide()
      * @see ProvideableBeanConfiguration#export()
      * @throws UnsupportedOperationException
-     *             if called on a functional bean {@code (beanClass == void.class)} 
+     *             if called on a functional bean {@code (beanClass == void.class)}
      */
     public Key<?> defaultKey() {
         if (beanClass() == void.class) {
@@ -99,7 +99,12 @@ public final /* primitive */ class BeanHandle<T> {
         }
         return Key.of(beanClass());
     }
-    
+
+    /**
+     * Returns whether or not the bean is still configurable.
+     * 
+     * @return {@code true} if the bean is still configurable
+     */
     public boolean isConfigurable() {
         return !bean.realm.isClosed();
     }
@@ -121,40 +126,46 @@ public final /* primitive */ class BeanHandle<T> {
         throw new UnsupportedOperationException();
     }
 
-    public void specializeMirror(Supplier<? extends BeanMirror> mirrorSupplier) {
-        requireNonNull(mirrorSupplier, "mirrorSupplier is null");
-        bean.mirrorSupplier = mirrorSupplier;
+    /**
+     * Sets a supplier that creates a special bean mirror instead of the generic {@code BeanMirror} when requested.
+     * 
+     * @param supplier
+     *            the supplier used to create the bean mirror
+     * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
+     *          must be returned
+     */
+    public void specializeMirror(Supplier<? extends BeanMirror> supplier) {
+        requireNonNull(supplier, "supplier is null");
+        bean.mirrorSupplier = supplier;
     }
 
     /** Various install options that can be provided when creating a {@link BeanHandle}. */
     public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
 
         /**
-         * Registers a bean introspector that will be used instead of the framework calling
-         * {@link Extension#newBeanIntrospector}.
+         * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
+         * Normally, the runtime would call {@link Extension#newBeanIntrospector} to obtain an introspector for the registering
+         * extension.
          * 
          * @param introspector
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if the bean has a void bean class
-         * 
+         *            the introspector to use
+         * @return the option
          * @see Extension#newBeanIntrospector
          */
         static InstallOption introspectWith(BeanIntrospector introspector) {
             requireNonNull(introspector, "introspector is null");
-            return new BeanInstallOption.CustomIntrospector(introspector);
+            return new BeanInstallOption.IntrospectWith(introspector);
         }
 
         /**
-         * Allows for multiple beans of the same type in a single container.
+         * An option that allows for multiple beans of the same type in a single container.
          * <p>
          * By default, a container only allows a single bean of particular type if non-void.
+         * <p>
+         * Beans of kind {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC} does not support this option.
+         * {@link IllegalArgumentException} is thrown if this option is specified for such beans.
          * 
-         * @return this builder
-         * 
-         * @throws UnsupportedOperationException
-         *             if {@code void} bean class
+         * @return the option
          */
         static InstallOption multiInstall() {
             return new BeanInstallOption.MultiInstall();
@@ -204,8 +215,7 @@ public final /* primitive */ class BeanHandle<T> {
         }
     }
 }
-interface SandboxBH<T> {
 
- 
+interface SandboxBH<T> {
 
 }

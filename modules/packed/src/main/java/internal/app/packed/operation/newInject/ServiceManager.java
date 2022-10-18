@@ -25,7 +25,10 @@ import app.packed.service.DublicateServiceExportException;
 import app.packed.service.DublicateServiceProvideException;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.util.AbstractTreeNode;
+import internal.app.packed.util.StringFormatter;
 
 /**
  *
@@ -80,6 +83,14 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
             if (v == null) {
                 v = new Entry(k);
             } else if (v.provider != null) {
+                ProvidedService ps = v.provider;
+                if (ps.operation.target instanceof BeanInstanceAccess) {
+                    throw new DublicateServiceProvideException(
+                            "Another bean of type " + ps.operation.bean.beanClass + " is already providing a service for Key<" + key + ">");
+                } else if (ps.operation.target instanceof MethodOperationTarget m){
+                    String ss = StringFormatter.formatShortWithParameters(m.method());
+                    throw new DublicateServiceProvideException("A method " + ss + " is already providing a service for Key<" + key + ">");
+                }
                 throw new DublicateServiceProvideException("A service has already been bound for key " + key);
             } // else we have some bindings but no provider
             v.provider = new ProvidedService(bos, v);

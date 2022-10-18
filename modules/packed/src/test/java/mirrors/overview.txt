@@ -1,0 +1,15 @@
+Tests basic non-extension mirrors.
+
+Utility classes for testing mirrors by extensions?
+
+
+// Giver det mening at teste med verify istedet for mirror????
+// Eller launch?
+
+tck.mirrors
+tck.launch
+tck.image
+tck.launcher
+
+IDK
+

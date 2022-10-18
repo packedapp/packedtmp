@@ -1,4 +1,4 @@
-package app.packed.hook.injectablevariable;
+package internal.app.packed.bean.bindinghook;
 
 public final class TLVerifier {
 

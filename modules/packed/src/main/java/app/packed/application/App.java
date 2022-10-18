@@ -113,8 +113,7 @@ public final class App {
     }
 
     public static void verify(Assembly assembly, Wirelet... wirelets) {
-        // Det er jo bare Mirror uden at returnere det...
-        DEFAULT_DRIVER.launch(assembly, wirelets);
+        DEFAULT_DRIVER.verify(assembly, wirelets);
     }
 
     // class probably... no need for an interface. Noone is going to call in

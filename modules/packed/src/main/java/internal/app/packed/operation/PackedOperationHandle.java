@@ -15,10 +15,10 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
@@ -31,16 +31,6 @@ import internal.app.packed.container.ExtensionSetup;
 
 /** Implementation of {@link OperationHandle}. */
 public record PackedOperationHandle(ExtensionSetup extension, OperationSetup os) implements OperationHandle {
-
-    /** {@inheritDoc} */
-    @Override
-    public List<OnBinding> bindings() {
-        OnBinding[] hooks = new OnBinding[os.type.parameterCount()];
-        for (int i = 0; i < hooks.length; i++) {
-            hooks[i] = new BindingIntrospector(os, i, extension, null, os.type.parameter(i));
-        }
-        return List.of(hooks);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -75,5 +65,12 @@ public record PackedOperationHandle(ExtensionSetup extension, OperationSetup os)
     @Override
     public OperationType type() {
         return os.type;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public OnBinding parameter(int index) {
+        checkIndex(index, os.type.parameterCount());
+        return new BindingIntrospector(os, index, extension, null, os.type.parameter(index));
     }
 }

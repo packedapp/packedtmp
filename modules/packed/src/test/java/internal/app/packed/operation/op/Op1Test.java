@@ -22,15 +22,20 @@ import org.junit.jupiter.api.Test;
 import app.packed.operation.Op1;
 
 /** Tests {@link Op1}. */
-public class Factory1Test {
+public class Op1Test {
 
     /**
      * Tests that we can capture information about a simple factory producing {@link Integer} instances.
      */
     @Test
-    public void IntegerFactory0() {
+    public void toInteger() {
 
         Op1<String, Integer> f = new Op1<String, Integer>(Integer::valueOf) {};
+        
+        // Make an abstract op test?
+        // Maybe just asssert.
+        // assertKeyEquals(key, Class);
+        
         checkThat(f).is(Integer.class);
         // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
         // String.class)

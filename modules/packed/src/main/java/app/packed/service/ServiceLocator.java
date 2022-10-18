@@ -458,6 +458,12 @@ public interface ServiceLocator {
             extension();
             return container().use(BeanExtension.class).install(op);
         }
+        
+        public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
+            extension();
+            return container().use(BeanExtension.class).installInstance(instance);
+        }
+        
         public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
             extension();
             return container().use(BeanExtension.class).install(op);

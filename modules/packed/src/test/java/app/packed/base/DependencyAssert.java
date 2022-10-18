@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.assertj.inject;
+package app.packed.base;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.base.Key;
 import internal.app.packed.service.inject.InternalDependency;
 
 /**
  *
  */
-public class KeyAssert extends AbstractAssert<KeyAssert, InternalDependency> {
+class DependencyAssert extends AbstractAssert<DependencyAssert, InternalDependency> {
 
-    public KeyAssert keyIs(Class<?> type) {
+    public DependencyAssert keyIs(Class<?> type) {
         return keyIs(Key.of(type));
     }
 
-    public KeyAssert keyIs(Key<?> type) {
+    public DependencyAssert keyIs(Key<?> type) {
         isNotNull();
         Key<?> key = actual.key();
         if (!key.equals(type)) {
@@ -38,7 +37,7 @@ public class KeyAssert extends AbstractAssert<KeyAssert, InternalDependency> {
         return this;
     }
 
-    public KeyAssert isOptionalInt() {
+    public DependencyAssert isOptionalInt() {
         isNotNull();
         if (!actual.isOptional()) {
             failWithMessage("\nExpecting Dependency to be optional");
@@ -47,7 +46,7 @@ public class KeyAssert extends AbstractAssert<KeyAssert, InternalDependency> {
         return this;
     }
 
-    public KeyAssert isOptional(Class<?> optionalType) {
+    public DependencyAssert isOptional(Class<?> optionalType) {
         isNotNull();
         if (!actual.isOptional()) {
             failWithMessage("\nExpecting Dependency to be optional");
@@ -59,7 +58,7 @@ public class KeyAssert extends AbstractAssert<KeyAssert, InternalDependency> {
         return this;
     }
 
-    public KeyAssert isMandatory() {
+    public DependencyAssert isMandatory() {
         isNotNull();
         if (actual.isOptional()) {
             failWithMessage("\nExpecting Dependency to be non-optional");
@@ -72,12 +71,11 @@ public class KeyAssert extends AbstractAssert<KeyAssert, InternalDependency> {
         return this;
     }
 
-    public KeyAssert(InternalDependency actual) {
-        super(actual, KeyAssert.class);
+    public DependencyAssert(InternalDependency actual) {
+        super(actual, DependencyAssert.class);
     }
 
-    public static KeyAssert assertThat(InternalDependency actual) {
-        return new KeyAssert(actual);
+    public static DependencyAssert assertThat(InternalDependency actual) {
+        return new DependencyAssert(actual);
     }
-
 }

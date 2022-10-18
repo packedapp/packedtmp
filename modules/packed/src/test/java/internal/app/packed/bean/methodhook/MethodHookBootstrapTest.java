@@ -1,4 +1,4 @@
-package app.packed.hook.method;
+package internal.app.packed.bean.methodhook;
 
 import org.junit.jupiter.api.Test;
 

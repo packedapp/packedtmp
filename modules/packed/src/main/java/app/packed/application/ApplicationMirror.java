@@ -63,7 +63,7 @@ public class ApplicationMirror implements Mirror {
 
     /** {@return the build goal used when building the application.} */
     public BuildGoal buildGoal() {
-        return application().goal();
+        return application().goal;
     }
 
     /** {@return a mirror of the root container in the application.} */

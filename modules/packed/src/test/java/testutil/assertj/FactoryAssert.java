@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package testutil.assertj.inject;
+package testutil.assertj;
 
 import org.assertj.core.api.AbstractAssert;
 

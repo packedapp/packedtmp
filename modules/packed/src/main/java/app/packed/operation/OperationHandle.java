@@ -16,7 +16,6 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -49,17 +48,9 @@ import internal.app.packed.operation.PackedOperationHandle;
  * @see OnField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
  * @see OnMethod#newOperation(ExtensionBeanConfiguration)
  */
+// Must be used within #onX I would think????
 public sealed interface OperationHandle permits PackedOperationHandle {
-
-    /**
-     * Returns a unmodifiable list of the dependencies of this operation.
-     * <p>
-     * These dependencies can be used to customize injection for this particular operation.
-     * 
-     * @return a unmodifiable list of the dependencies of this operation
-     */
-    List<OnBinding> bindings();
-
+ 
     /**
      * 
      * <p>
@@ -74,9 +65,23 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * @see ExtensionBeanConfiguration#bindDelayed(Class, Supplier)
      */
     MethodHandle buildInvoker(); // was computeMethodHandle()?
-
+    
     /** {@return the invocation type of this operation.} */
     InvocationType invocationType();
+
+    OnBinding parameter(int index);
+
+    default OperationHandle spawnNewBean() {
+        // I'm not sure this is needed. 
+        // It is always only configured on the bean
+        
+        // Can't see we will ever need to combi it
+        
+        // A new bean will be created. I think we need to configure something when making the bean as well
+        // Maybe we need a bean option and call this method for every operation.
+        // I don't know can we have methods that can do both
+        return this;
+    }
 
     /**
      * Adds a supplier that creates the mirror that will be returned when a mirror for the operation is requested.
@@ -96,18 +101,6 @@ public sealed interface OperationHandle permits PackedOperationHandle {
 
     /** {@return the type of this operation.} */
     OperationType type();
-
-    default OperationHandle spawnNewBean() {
-        // I'm not sure this is needed. 
-        // It is always only configured on the bean
-        
-        // Can't see we will ever need to combi it
-        
-        // A new bean will be created. I think we need to configure something when making the bean as well
-        // Maybe we need a bean option and call this method for every operation.
-        // I don't know can we have methods that can do both
-        return this;
-    }
 
     public interface Option {
         static Option spawnBean() {

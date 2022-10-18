@@ -1,4 +1,4 @@
-package app.packed.hook.injectablevariable;
+package internal.app.packed.bean.bindinghook;
 
 import org.junit.jupiter.api.Test;
 

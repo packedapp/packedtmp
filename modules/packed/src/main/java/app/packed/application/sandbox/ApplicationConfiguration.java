@@ -29,11 +29,7 @@ public class ApplicationConfiguration {
     ApplicationSetup application;
 
     public BuildGoal buildGoal() {
-        return application.goal();
-    }
-
-    public boolean isRoot() {
-        return true;
+        return application.goal;
     }
 
     // Den er faktisk lidt "farlig" hvis man beslutter at bruge den som en reusable application...
@@ -44,6 +40,10 @@ public class ApplicationConfiguration {
     // is Ignored if not launchable
     void installShutdownHook() {
         // Taenker man fejler hvis man ikke er root
+    }
+
+    public boolean isRoot() {
+        return true;
     }
 
     // assembly.realm

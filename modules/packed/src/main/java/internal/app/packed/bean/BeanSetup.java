@@ -25,13 +25,16 @@ import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Provider;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomIntrospector;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomPrefix;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption.IntrospectWith;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption.MultiInstall;
+import internal.app.packed.bean.BeanSetup.BeanInstallOption.Synthetic;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
+import internal.app.packed.lifetime.BeanLifetimeSetup;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
@@ -122,15 +125,19 @@ public final class BeanSetup {
         this.installedBy = requireNonNull(operator);
         this.container = requireNonNull(operator.container);
 
-        // TODO clean up
-
         // I think we want to have a single field for these 2
         // I think this was made like this, when I was unsure if we could
         // have containers managed by extensions
         this.realm = requireNonNull(realm);
         this.extensionOwner = extensionOwner;
 
-        this.lifetime = container.lifetime;
+        ContainerLifetimeSetup cls = container.lifetime;
+        if (beanKind == BeanKind.CONTAINER) {
+            this.lifetime = cls;
+            cls.beans.add(this);
+        } else {
+            this.lifetime = new BeanLifetimeSetup(cls, this);
+        }
 
         this.injectionManager = new BeanInjectionManager(this);
     }
@@ -187,11 +194,25 @@ public final class BeanSetup {
         return new PackedNamespacePath(paths);
     }
 
+    /**
+     * Extracts a bean setup from a bean configuration.
+     * 
+     * @param configuration
+     *            the configuration to extract from
+     * @return the bean setup
+     */
     public static BeanSetup crack(BeanConfiguration configuration) {
         BeanHandle<?> handle = (BeanHandle<?>) VH_BEAN_CONFIGURATION_HANDLE.get(configuration);
         return crack(handle);
     }
 
+    /**
+     * Extracts a bean setup from a bean handle.
+     * 
+     * @param handle
+     *            the handle to extract from
+     * @return the bean setup
+     */
     public static BeanSetup crack(BeanHandle<?> handle) {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
@@ -218,7 +239,7 @@ public final class BeanSetup {
         requireNonNull(options, "options is null");
         for (InstallOption o : options) {
             requireNonNull(o, "option was null");
-            if (o instanceof BeanInstallOption.CustomIntrospector ci) {
+            if (o instanceof BeanInstallOption.IntrospectWith ci) {
                 if (!kind.hasInstances()) {
                     throw new IllegalArgumentException("Custom Introspector cannot be used with functional or static beans");
                 }
@@ -330,13 +351,25 @@ public final class BeanSetup {
         return install(beanKind, pop.type().returnType(), BeanSourceKind.OP, pop, operator, realm, extensionOwner, options);
     }
 
-    /** The various install options. */
+    /** The various bean install options. */
     // Silly Eclipse compiler requires permits here (bug)
-    public sealed interface BeanInstallOption extends BeanHandle.InstallOption permits MultiInstall, CustomIntrospector, CustomPrefix {
+    public sealed interface BeanInstallOption extends BeanHandle.InstallOption permits MultiInstall, IntrospectWith, CustomPrefix, Synthetic {
 
-        public record MultiInstall() implements BeanInstallOption {}
+        /**
+         * Allows for a custom introspector.
+         * 
+         * @see InstallOption#introspectWith(BeanIntrospector)
+         */
+        public record IntrospectWith(BeanIntrospector introspector) implements BeanInstallOption {}
 
-        public record CustomIntrospector(BeanIntrospector introspector) implements BeanInstallOption {}
+        /**
+         * Allows for multi install of a bean.
+         * 
+         * @see InstallOption#multiInstall()
+         */
+        public final class MultiInstall implements BeanInstallOption {}
+
+        public final class Synthetic implements BeanInstallOption {} // maybe this is only for packed, in which case a flag I think
 
         public record CustomPrefix(String prefix) implements BeanInstallOption {}
     }

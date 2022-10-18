@@ -22,6 +22,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 
 /**
@@ -40,6 +41,9 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
 
     // Skal kopieres ind i internal lifetime launcher
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+
+    // All eagerly instantiated beans in order
+    public final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /**
      * @param origin
@@ -62,6 +66,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     public ContainerLifetimeMirror mirror() {
         return (ContainerLifetimeMirror) super.mirror();
     }
+
     /** {@inheritDoc} */
     @Override
     LifetimeMirror mirror0() {

@@ -40,8 +40,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionModel;
-import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.ClassUtil;
@@ -102,7 +102,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /** {@return the build goal.} */
     protected final BuildGoal buildGoal() {
-        return setup.container.application.goal();
+        return setup.container.application.goal;
     }
 
     /**
@@ -179,7 +179,8 @@ public abstract class Extension<E extends Extension<E>> {
      * @return a mirror for the extension
      */
     protected ExtensionMirror<E> newExtensionMirror() {
-        return new ExtensionMirror<>();
+        // This method should never be called
+        throw new InternalExtensionException("The extension does not support custom mirrors");
     }
 
     /**

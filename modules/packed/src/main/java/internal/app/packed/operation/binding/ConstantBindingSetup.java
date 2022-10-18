@@ -36,16 +36,17 @@ public final class ConstantBindingSetup extends BindingSetup {
     public ExtensionSetup boundBy;
 
     /** Supplies a mirror for the operation */
-    public Supplier<? extends BindingMirror> specializedMirror;
+    private final Supplier<? extends BindingMirror> specializedMirror;
 
-    public ConstantBindingSetup(OperationSetup operation, int index, Object constant) {
+    public ConstantBindingSetup(OperationSetup operation, int index, Object constant, Supplier<? extends BindingMirror> specializedMirror) {
         super(operation, index);
         this.constant = constant;
+        this.specializedMirror = specializedMirror;
     }
 
     /** {@inheritDoc} */
     @Override
-    public BindingMirror mirror0() {
+    protected BindingMirror mirror0() {
         return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
     }
 }

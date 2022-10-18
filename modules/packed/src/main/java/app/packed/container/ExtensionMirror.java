@@ -34,13 +34,13 @@ import internal.app.packed.container.Mirror;
  * </ul>
  * 
  * @param <E>
- *            The type of extension this mirror is a part of.
+ *            The type of extension the subclassed mirror belongs to.
  * 
  * @see ApplicationMirror#useExtension(Class)
  * @see ContainerMirror#useExtension(Class)
  * @see Extension#newExtensionMirror()
  */
-public class ExtensionMirror<E extends Extension<E>> implements Mirror {
+public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror {
 
     /*
      * When naming methods in this class try to avoid using trivial names such as {@code name}, {@code type}, {@code stream}

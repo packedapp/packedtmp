@@ -58,7 +58,7 @@ public final class ApplicationSetup {
     @Nullable
     final DynamicAccessor runtimeAccessor;
 
-    final BuildGoal goal;
+    public final BuildGoal goal;
 
     @Nullable
     PackedApplicationLauncher launcher;
@@ -94,14 +94,14 @@ public final class ApplicationSetup {
         return mirror;
     }
 
-    public BuildGoal goal() {
-        return goal;
-    }
-
     /**
      * 
      */
     public void close() {
+        if (goal.isLaunchable()) {
+            container.codegen();
+        }
+        
         launcher = new PackedApplicationLauncher(this);
     }
 }
