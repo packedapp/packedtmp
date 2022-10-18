@@ -20,6 +20,9 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 
+/**
+ * An entry in a service manager.
+ */
 public final class ServiceEntry {
 
     /** All bindings (in a interned linked list) that points to this entry. */
@@ -34,7 +37,7 @@ public final class ServiceEntry {
     /** Used for checking for dependency cycles. */
     boolean needsPostProcessing = true;
 
-    /** The provider of the service */
+    /** The single provider of the service. */
     @Nullable
     public ProvidedService provider;
 

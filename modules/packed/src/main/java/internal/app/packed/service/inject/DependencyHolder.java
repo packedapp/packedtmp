@@ -44,7 +44,7 @@ public final class DependencyHolder {
 
         this.provideAskey = provideAsKey;
         this.provideAsConstant = provideAsConstant;
-        this.isStatic = os.target.isStatic;
+        this.isStatic = os.target.requiresBeanInstance;
         this.mh = os.target.methodHandle;
     }
 

@@ -22,42 +22,49 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
+import app.packed.bean.BeanMirror;
+import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
+import internal.app.packed.bean.BeanSetup;
 
-// TopLevel
-// Composite
-// FusedWithExtension
-
-// ServiceTransformer.provide(Op) -> Generates a synthetic functional bean ($ServiceExports)
-// It just have provides methods
-
+/**
+ * The target of an operation.
+ */
 public sealed abstract class OperationTarget implements OperationTargetMirror {
-
-    public final boolean isStatic;
 
     public final MethodHandle methodHandle;
 
-    protected OperationTarget(MethodHandle methodHandle, boolean isStatic) {
+    public final boolean requiresBeanInstance;
+
+    protected OperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance) {
         this.methodHandle = methodHandle;
-        this.isStatic = isStatic;
+        this.requiresBeanInstance = requiresBeanInstance;
     }
 
     public static final class BeanInstanceAccess extends OperationTarget implements OperationTargetMirror.OfAccessBeanInstance {
+
+        private final BeanSetup bean;
 
         /**
          * @param methodHandle
          * @param isStatic
          */
-        public BeanInstanceAccess(MethodHandle methodHandle, boolean isStatic) {
-            super(methodHandle, isStatic);
+        public BeanInstanceAccess(BeanSetup bean, MethodHandle methodHandle) {
+            super(methodHandle, false);
+            this.bean = bean;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Optional<OperationTargetMirror> origin() {
-            return Optional.empty();
+        public Optional<OperationMirror> origin() {
+            return bean().factory();
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public BeanMirror bean() {
+            return bean.mirror();
+        }
     }
 
     public static final class FieldOperationTarget extends OperationTarget implements OperationTargetMirror.OfFieldAccess {
@@ -68,7 +75,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
 
         /**
          * @param methodHandle
-         * @param isStatic
+         * @param requiresBeanInstance
          */
         public FieldOperationTarget(MethodHandle methodHandle, Field field, AccessMode accessMode) {
             super(methodHandle, Modifier.isStatic(field.getModifiers()));
@@ -107,7 +114,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
 
         /**
          * @param methodHandle
-         * @param isStatic
+         * @param requiresBeanInstance
          */
         public MethodOperationTarget(MethodHandle methodHandle, Method method) {
             super(methodHandle, Modifier.isStatic(method.getModifiers()));

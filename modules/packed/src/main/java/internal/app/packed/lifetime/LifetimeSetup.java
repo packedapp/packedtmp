@@ -40,7 +40,7 @@ public abstract sealed class LifetimeSetup permits ContainerLifetimeSetup, BeanL
      * @param rootContainer
      *            the application's root container
      */
-    public LifetimeSetup(@Nullable ContainerLifetimeSetup parent) {
+    LifetimeSetup(@Nullable ContainerLifetimeSetup parent) {
         this.parent = parent;
     }
 

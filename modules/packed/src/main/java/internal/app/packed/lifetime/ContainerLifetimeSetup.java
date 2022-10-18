@@ -22,7 +22,9 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.lifetime.RunState;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.LifetimeOp;
 import internal.app.packed.container.ContainerSetup;
 
 /**
@@ -30,20 +32,20 @@ import internal.app.packed.container.ContainerSetup;
  */
 public final class ContainerLifetimeSetup extends LifetimeSetup {
 
+    // All eagerly instantiated beans in order
+    public final ArrayList<BeanSetup> beans = new ArrayList<>();
+
     /** Any child lifetimes. */
     private List<LifetimeSetup> children;
 
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    /** The lifetime constant pool. */
-    public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
-
     // Skal kopieres ind i internal lifetime launcher
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
-    // All eagerly instantiated beans in order
-    public final ArrayList<BeanSetup> beans = new ArrayList<>();
+    /** The lifetime constant pool. */
+    public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
 
     /**
      * @param origin
@@ -61,6 +63,36 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         }
         children.add(l);
         return l;
+    }
+    
+    ArrayList<LifetimeOp> initialize = new ArrayList<>();
+    ArrayList<LifetimeOp> start = new ArrayList<>();
+    ArrayList<LifetimeOp> stop = new ArrayList<>();
+
+    ArrayList<MethodHandle> initializeMh = new ArrayList<>();
+    ArrayList<MethodHandle> startMh = new ArrayList<>();
+    ArrayList<MethodHandle> stopMh = new ArrayList<>();
+
+    // Should be fully resolved now
+    public void processLifetimeOps() {
+        for (BeanSetup bs : beans) {
+            for (LifetimeOp lop : bs.lifetimeOperations) {
+                if (lop.state() == RunState.INITIALIZING) {
+                    initialize.add(lop);
+                    initializeMh.add(lop.os().buildInvoker());
+                } else if (lop.state() == RunState.STARTING) {
+                    start.add(lop);
+                    startMh.add(lop.os().buildInvoker());
+                } else if (lop.state() == RunState.STOPPING) {
+                    stop.add(lop);
+                    stopMh.add(lop.os().buildInvoker());
+                } else {
+                    throw new Error();
+                }
+            }
+            
+        }
+        
     }
 
     public ContainerLifetimeMirror mirror() {

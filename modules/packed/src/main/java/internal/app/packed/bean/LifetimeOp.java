@@ -13,21 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.service;
+package internal.app.packed.bean;
+
+import app.packed.lifetime.RunState;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-/// Ideen er lidt
+public record LifetimeOp(RunState state, OperationSetup os) {
 
-// Also traces missing services
-
-
-public interface DependencyTraceMirror<T> {
-
-    boolean isSatisfiable();
-    
-    /// Alskins show og ballade
-    
-    T get();
 }

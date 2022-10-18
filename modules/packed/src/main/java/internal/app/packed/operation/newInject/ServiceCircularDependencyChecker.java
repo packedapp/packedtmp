@@ -97,21 +97,10 @@ public final class ServiceCircularDependencyChecker {
                         stack.pollLast();
                         dependencies.pollLast();
                     }
-                    StringBuilder sb = new StringBuilder("Circular dependencies between " + stack.size() + " services: ");
-                    if (stack.size() == 2) {
-                        sb.append(stack.pollLast().key.toStringSimple());
-                        sb.append(" <-> ");
-                        sb.append(stack.pollLast().key.toStringSimple());
-                    } else {
-                        ServiceEntry e = stack.pollLast();
-                        do {
-                            sb.append(e.key);
-                            if (!dependencies.isEmpty()) {
-                                sb.append(" -> ");
-                            }
-                        } while ((e = dependencies.pollLast()) != null);
-                    }
-                    throw new CircularDependencyException(sb.toString());
+
+                    // Create a proper error me
+                    String errorMsg = createErrorMessage(dependencies);
+                    throw new CircularDependencyException(errorMsg);
                 }
                 detectCycle(next, stack, dependencies);
                 dependencies.pop();
@@ -122,4 +111,38 @@ public final class ServiceCircularDependencyChecker {
         stack.pop();
     }
 
+    private static String createErrorMessage(ArrayDeque<ServiceEntry> dependencies) {
+        int size = dependencies.size();
+        StringBuilder sb = new StringBuilder("Circular dependencies between " + size + " services: ");
+        if (size == 2) {
+            sb.append(dependencies.pollLast().key.toStringSimple());
+            sb.append(" <-> ");
+            sb.append(dependencies.pollLast().key.toStringSimple());
+        } else {
+            ServiceEntry e = dependencies.pollLast();
+            do {
+                sb.append(e.key);
+                if (!dependencies.isEmpty()) {
+                    sb.append(" -> ");
+                }
+            } while ((e = dependencies.pollLast()) != null);
+        }
+        return sb.toString();
+    }
 }
+
+// From cake
+
+//StringBuilder sb = new StringBuilder("Cyclic dependency: ");
+//InjectionGraphDependency s = dependencies.pollLast();
+//InternalInjectionSite edge = s.site;
+//sb.append(formatClass(edge.getActualType()));
+//do {
+//    edge = s.site;
+//    sb.append(" -");
+//    if (edge.getAnnotation() != null) { // show which annotation caused the link dependency
+//        sb.append("[via @" + edge.getAnnotation().annotationType().getSimpleName() + "]");
+//    }
+//    sb.append("> ").append(formatClass(edge.getType()));
+//} while ((s = dependencies.pollLast()) != null);
+//return sb.toString();

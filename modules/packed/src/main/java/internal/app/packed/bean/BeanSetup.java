@@ -116,6 +116,8 @@ public final class BeanSetup {
     /** The type of source the installer is created from. */
     public final BeanSourceKind sourceKind;
 
+    public final List<LifetimeOp> lifetimeOperations = new ArrayList<>();
+
     public final List<ProvidedService> providingOperations = new ArrayList<>();
 
     public boolean providingOperationsVisited;
@@ -153,7 +155,7 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup accessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
-        return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(null, false),
+        return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(this, null),
                 null);
     }
 
@@ -333,7 +335,7 @@ public final class BeanSetup {
             OperationType type = op.type();
             // Create an instantiating operation
             ExtensionSetup es = container.useExtensionSetup(BeanExtension.class, null);
-            OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), es), new BeanInstanceAccess(mh, true), null);
+            OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), es), new BeanInstanceAccess(bean, mh), null);
             bean.operations.add(os);
         }
 

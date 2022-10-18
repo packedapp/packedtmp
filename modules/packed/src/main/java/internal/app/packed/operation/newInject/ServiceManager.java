@@ -81,22 +81,25 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
             if (v == null) {
                 v = new ServiceEntry(k);
             } else if (v.provider != null) {
+                // There is another operation that provides a service with the same key
+                // Typically either a provided bean instance, or a member with @Provide
                 ProvidedService ps = v.provider;
                 if (ps.operation.target instanceof BeanInstanceAccess) {
                     throw new DublicateServiceProvideException(
                             "Another bean of type " + ps.operation.bean.beanClass + " is already providing a service for Key<" + key + ">");
-                } else if (ps.operation.target instanceof MethodOperationTarget m){
+                } else if (ps.operation.target instanceof MethodOperationTarget m) {
                     String ss = StringFormatter.formatShortWithParameters(m.method());
                     throw new DublicateServiceProvideException("A method " + ss + " is already providing a service for Key<" + key + ">");
                 }
                 throw new DublicateServiceProvideException("A service has already been bound for key " + key);
-            } // else we have some bindings but no provider
+            } // else we have some bindings in the entries, but no one providing the service yet
             v.provider = new ProvidedService(bos, v);
             return v;
         });
-        
+
+        // add the service provider to the bean
         bos.bean.providingOperations.add(e.provider);
-        
+
         if (exportAll) {
             serviceExport(key, bos);
         }

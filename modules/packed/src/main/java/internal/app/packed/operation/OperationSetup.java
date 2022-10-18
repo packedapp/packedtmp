@@ -101,6 +101,20 @@ public final class OperationSetup {
         }
     }
 
+    
+    public MethodHandle buildInvoker() {
+        // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
+        
+        if (isComputed) {
+            throw new IllegalStateException("This method can only be called once");
+        }
+        
+        isComputed = true;
+        // application.checkIsComputable
+        throw new UnsupportedOperationException();
+    }
+
+    
     /**
      * 
      */

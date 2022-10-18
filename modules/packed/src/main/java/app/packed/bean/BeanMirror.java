@@ -109,15 +109,26 @@ public class BeanMirror implements Mirror {
         this.bean = bean;
     }
 
-    /** {@return the bean's lifetime.} */
+    /**
+     * If Packed creates instances of this bean. The operation that creates them
+     * 
+     * @return operation that creates instances of the bean. Or empty if instances are never created
+     */
+    public Optional<OperationMirror> factory() {
+        BeanSetup bean = bean();
+        if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {
+            return Optional.of(bean.operations.get(0).mirror());
+        }
+        return Optional.empty();
+    }
+
     /**
      * Returns the bean's lifetime.
      * <p>
-     * This is either a {@link ContainerLifetimeMirror}
-     * if a single instance of the bean is created together with the container instance.
-     * Or if a functional or static bean.
+     * This is either a {@link ContainerLifetimeMirror} if a single instance of the bean is created together with the
+     * container instance. Or if a functional or static bean.
      * <p>
-     * A lazy bean or prototype bean will return 
+     * A lazy bean or prototype bean will return
      * 
      * @return the bean's lifetime
      */

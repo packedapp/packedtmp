@@ -3,13 +3,16 @@ package app.packed.bean;
 import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
+import app.packed.lifetime.RunState;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.LifetimeOp;
 import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * An extension that is used for installing new beans into a container.
@@ -146,7 +149,35 @@ public class BeanExtension extends Extension<BeanExtension> {
 
             @Override
             public void onMethod(OnMethod method) {
-                ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                AnnotationReader ar = method.annotations();
+                
+                if (ar.isAnnotationPresent(OnInitialize.class)) {
+                    @SuppressWarnings("unused")
+                    OnInitialize oi = ar.readRequired(OnInitialize.class);
+                    OperationSetup os = ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    os.bean.lifetimeOperations.add(new LifetimeOp(RunState.INITIALIZING, os));
+                    os.bean.operations.add(os);
+                }
+
+                if (ar.isAnnotationPresent(OnStart.class)) {
+                    @SuppressWarnings("unused")
+                    OnStart oi = ar.readRequired(OnStart.class);
+                    OperationSetup os = ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STARTING, os));
+                    os.bean.operations.add(os);
+                }
+
+                if (ar.isAnnotationPresent(OnStop.class)) {
+                    @SuppressWarnings("unused")
+                    OnStop oi = ar.readRequired(OnStop.class);
+                    OperationSetup os = ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STOPPING, os));
+                    os.bean.operations.add(os);
+                }
+
+                if (ar.isAnnotationPresent(Inject.class)) {
+                    ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                }
             }
         };
     }

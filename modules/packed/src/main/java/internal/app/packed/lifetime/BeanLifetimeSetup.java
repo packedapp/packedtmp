@@ -15,25 +15,26 @@
  */
 package internal.app.packed.lifetime;
 
+import static java.util.Objects.requireNonNull;
+
+import app.packed.bean.BeanKind;
 import app.packed.lifetime.BeanLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.bean.BeanSetup;
 
-/**
- *
- */
+/** The lifetime of a bean that is instantiated independently of the container in which it lives. */
 public final class BeanLifetimeSetup extends LifetimeSetup {
 
     /** The single bean this lifetime contains. */
-    // We know from installer whether or not we are lazy
     public final BeanSetup bean;
 
-    /**
-     * @param parent
-     */
-    public BeanLifetimeSetup(ContainerLifetimeSetup parent, BeanSetup bean) {
-        super(parent);
-        this.bean = bean;
+    public BeanLifetimeSetup(ContainerLifetimeSetup container, BeanSetup bean) {
+        super(container);
+        this.bean = requireNonNull(bean);
+    }
+
+    public boolean isLazy() {
+        return bean.beanKind == BeanKind.LAZY;
     }
 
     /** {@inheritDoc} */

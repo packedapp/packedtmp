@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import app.packed.bean.BeanMirror;
 import app.packed.operation.OperationTargetMirror.OfAccessBeanInstance;
 import app.packed.operation.OperationTargetMirror.OfConstructorInvoke;
 import app.packed.operation.OperationTargetMirror.OfFieldAccess;
@@ -86,16 +87,16 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
     }
 
     /**
-     * Represents an operation that simply return an instance
+     * Represents an operation that simply return a bean instance.
+     * <p>
+     * This is typically used for beans whose instance is provided or exported as a service.
      */
-    // BeanSpace? ConstantSpace?
-    // was offInstanceAccess
-    
-    // Er det kun bean instance??
     public non-sealed interface OfAccessBeanInstance extends OperationTargetMirror {
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
-        Optional<OperationTargetMirror> origin();
+        Optional<OperationMirror> origin();
+
+        BeanMirror bean();
 
         // Accessing an instance that have previously been computed
         // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance

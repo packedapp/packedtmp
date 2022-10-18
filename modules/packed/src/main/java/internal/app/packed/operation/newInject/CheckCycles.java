@@ -28,6 +28,7 @@ public class CheckCycles extends BaseAssembly {
     protected void build() {
         provide(A.class);
         provide(B.class);
+        provide(C.class);
     }
 
     public static void main(String[] args) {
@@ -36,5 +37,7 @@ public class CheckCycles extends BaseAssembly {
 
     public record A(B b) {}
     
-    public record B(A b) {}
+    public record B(C b) {}
+    
+    public record C(A b) {}
 }
