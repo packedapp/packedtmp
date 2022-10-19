@@ -146,7 +146,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         oldSetup = new BeanInstanceServiceSetup(bean, k);
         oldSms.addService(oldSetup);
 
-        bean.container.useExtension(ServiceExtension.class);
+        bean.container.useExtensionSetup(ServiceExtension.class, null);
         
         return this;
     }

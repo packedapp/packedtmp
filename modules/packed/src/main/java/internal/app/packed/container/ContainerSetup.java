@@ -38,7 +38,6 @@ import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.oldservice.InternalServiceExtension;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.ClassUtil;
@@ -56,31 +55,27 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     /** The application this container is a part of. */
     public final ApplicationSetup application;
 
-    /** The assembly that defined this container. */
+    /** The assembly from where this container was defined. */
     public final AssemblySetup assembly;
 
-    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>(); // Must have unique beans unless multi
+    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
+    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
 
-    /** All beans installed in a container is maintained in a linked list, this field pointing to the first one. */
+    /** All beans installed in a container is maintained in a linked list, this field pointing to the first bean. */
     @Nullable
     public BeanSetup beanFirst;
 
-    /** All beans installed in a container is maintained in a linked list, this field pointing to the last one. */
+    /** All beans installed in a container is maintained in a linked list, this field pointing to the last bean. */
     @Nullable
     public BeanSetup beanLast;
 
-    int childContainerCount; // Also use this as the basis when naming containers, IDK
-
-    /** Maintains unique names for beans and child containers. */
+    /** Maintain unique names for beans and child containers. */
     public final HashMap<String, Object> children = new HashMap<>();
 
     /** The depth of the component in the application tree. */
     public final int depth; // maintain in InsertionTree?
 
-    /**
-     * All extensions used by this container. We keep them in a LinkedHashMap so that {@link #extensionTypes()} returns a
-     * deterministic view.
-     */
+    /** Extensions used by this container. We keep them in a LinkedHashMap so that we can return a deterministic view. */
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
@@ -118,7 +113,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      * @param assembly
      *            the assembly the container is defined in
      * @param parent
-     *            any parent container 
+     *            any parent container
      * @param wirelets
      *            optional wirelets
      */
@@ -220,18 +215,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return count;
     }
 
-    public void codegen() {
-        for (ContainerSetup e = treeFirstChild; e != null; e = e.treeNextSiebling) {
-            e.codegen();
-        }
-        for (BeanSetup b = beanFirst; b != null; b = b.nextBean) {
-            for (OperationSetup o : b.operations) {
-                o.codegen();
-            }
-        }
-    }
-
-    /** {@return a unmodifiable view of all extension types that are in use in no particular order.} */
+    /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
@@ -254,17 +238,17 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     /**
-     * Returns whether or not the specified extension type is used.
+     * Returns whether or not the specified extension class is used.
      * 
-     * @param extensionType
+     * @param extensionClass
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
      * @see ContainerConfiguration#isExtensionUsed(Class)
      * @see ContainerMirror#isExtensionUsed(Class)
      */
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return extensions.containsKey(extensionType);
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
+        requireNonNull(extensionClass, "extensionClass is null");
+        return extensions.containsKey(extensionClass);
     }
 
     /** {@return a new mirror.} */
@@ -331,28 +315,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     }
 
     /**
-     * Returns an extension of the specified type.
-     * <p>
-     * If this is the first time an extension of the specified type has been requested. This method will create a new
-     * instance of the extension. This instance will then be returned for all subsequent requests for the same extension
-     * type.
-     * 
-     * @param <E>
-     *            the type of extension to return
-     * @param extensionClass
-     *            the Class object corresponding to the extension type
-     * @return an extension of the specified type
-     * @throws IllegalStateException
-     *             if this container is no longer configurable and the specified type of extension has not been used
-     *             previously
-     */
-    @SuppressWarnings("unchecked")
-    public <E extends Extension<?>> E useExtension(Class<E> extensionClass) {
-        ExtensionSetup extension = useExtensionSetup(extensionClass, /* requested by the user, not another extension */ null);
-        return (E) extension.instance();
-    }
-
-    /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * 
      * @param extensionClass
@@ -377,7 +339,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             // Ny extensions skal installeres indefor Assembly::build
 
             if (assembly.isClosed()) {
-                throw new IllegalStateException("Cannot install new extensions as the container is no longer configurable");
+                throw new IllegalStateException("New extensions cannot be installed outside of Assembly::build");
             }
             // Checks that container is still configurable
             if (requestedByExtension == null) {
@@ -408,3 +370,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extension;
     }
 }
+//
+//public void codegen() {
+//  for (ContainerSetup e = treeFirstChild; e != null; e = e.treeNextSiebling) {
+//      e.codegen();
+//  }
+//  for (BeanSetup b = beanFirst; b != null; b = b.nextBean) {
+//      for (OperationSetup o : b.operations) {
+//          o.codegen();
+//      }
+//  }
+//}

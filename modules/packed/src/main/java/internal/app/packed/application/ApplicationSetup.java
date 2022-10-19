@@ -88,9 +88,9 @@ public final class ApplicationSetup {
      * 
      */
     public void close() {
-        if (goal.isLaunchable()) {
-            container.codegen();
-        }
+//        if (goal.isLaunchable()) {
+//            container.codegen();
+//        }
 
         // For each lifetime create lifetime operations
         //// And install them in the lifetime

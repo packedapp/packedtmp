@@ -41,9 +41,7 @@ import internal.app.packed.service.CircularServiceDependencyChecker;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/**
- * The internal configuration of an assembly
- */
+/** The internal configuration of an assembly. */
 public final class AssemblySetup extends RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. */
@@ -54,25 +52,24 @@ public final class AssemblySetup extends RealmSetup {
     private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onAssemblyClose", void.class);
 
-    /** The application that is being built. */
+    /** The application that the assembly is used to built. */
     public final ApplicationSetup application;
 
-    /** The assembly used to create this installer. */
+    /** The assembly instance. */
     public final Assembly assembly;
 
     /** A model of the assembly. */
     public final AssemblyModel assemblyModel;
 
-    /** The container defined by this assembly. */
+    /** The container that the assembly defines. */
     public final ContainerSetup container;
 
     /**
-     * All extensions that are used in the same assembly (if non embedded) An order set of extension according to the
-     * natural extension dependency order.
+     * All extensions that are used in the assembly (if non embedded) ordered accordingly to the natural extension order.
      */
     final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
 
-    /** Whether or not this realm is configurable. */
+    /** Whether or not assembly is open for configuration. */
     private boolean isClosed;
 
     /**
@@ -134,6 +131,12 @@ public final class AssemblySetup extends RealmSetup {
         // In which case an Iterator might throw ConcurrentModificationException
 
         // Test and see if we are closing the root container of the application
+        
+        // Problemet er jo vi kan tilfoeje nye extensions mens vi lukker ned
+        
+        // ExtensionSetup[] exts = container.extensions.values().toArray(new ExtensionSetup[container.extensions.size()]);
+        // Arrays.sort(exts);
+        
         if (isRoot) {
             // Root container
             // We must also close all extensions application-wide.

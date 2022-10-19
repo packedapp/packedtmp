@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblySetup;
+import internal.app.packed.container.ExtensionSetup;
 
 /**
  * The configuration of a container.
@@ -198,36 +199,9 @@ public class ContainerConfiguration {
      * @see #extensionsTypes()
      * @see BaseAssembly#use(Class)
      */
+    @SuppressWarnings("unchecked")
     public final <E extends Extension<?>> E use(Class<E> extensionClass) {
-        return handle.container.useExtension(extensionClass);
+        ExtensionSetup extension = handle.container.useExtensionSetup(extensionClass, null);
+        return (E) extension.instance();
     }
 }
-
-//// Virker underlig den ikke er paa component
-///** {@return a descriptor for the application the container is a part of.} */
-//// Why not just an application mirror??? Why not on Component?
-//// I think it is better on (user) realm
-//public ApplicationDescriptor application() {
-//    return container.application.descriptor;
-//}
-
-// Altsaa vi har den kun paa assembly, men maaske
-/**
- * The lookup object passed to this method is never made available through the public API. It is only used internally.
- * Unless your private
- * 
- * @param lookup
- *            the lookup object
- */
-// Used by beans/functions??? We actually need it functions as well, Or hmmm....... tror ikke vi vil
-// Maaske skal den bare paa bean extension????
-// !!! Maaske er det en del af assemblien
-// Men saa kan man ikke bruge ContainerConfiguration???
-// Ellers syntes jeg bare det skal vaere paa ComponentConfiguration...
-
-// Alle ComponentConfiguration har en lookup function... Hmm
-// Passer ikke saa godt med Beans vi vil gerne have lookup funktionen inden vi installere boennen
-//void lookup(Lookup lookup) {
-//    requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-//    container().realm.lookup(lookup);
-//}

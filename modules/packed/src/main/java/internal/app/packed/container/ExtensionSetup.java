@@ -15,7 +15,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Internal configuration of an extension. */
-public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
+public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> implements Comparable<ExtensionSetup> {
 
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
@@ -111,5 +111,11 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> {
      */
     public static ExtensionSetup crack(Extension<?> extension) {
         return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(ExtensionSetup o) {
+        return model.compareTo(o.model);
     }
 }
