@@ -15,39 +15,16 @@
  */
 package app.packed.bean;
 
-import app.packed.application.BuildException;
-
-// If an extension tries something it does not have access to. It fails with IEE instead.
-// This is only if Packed does not have access
-
 /**
- * An exception that is thrown when a operation could not be created because the framework had no access to the
- * underlying field, constructor or method.
+ * An exception throw when installing a bean.
+ * at is thrown when a operation could not be created because the framework had no access to the
+ * underlying field, constructor or method. 
  * <p>
  * This can be resolved by providing the right access to Packed
+ * <p>
+ * If an extension tries to install a bean with inaccessible members. InternalExtensionException
  */
-// UncheckedIllegalAccessException...
-// RuntimeIllegalAccessException
-
-// AccessRestrictedException <- General one, could sound really securish, maybe have a name
-// which makes it clear it is relevant to reflection/method handlers
-// NotOpenedException
-// UndeclaredAccessException
-// Was UncheckedIllegalAccessException
-
-// InaccessibleRealmException or
-// InaccessibleModuleException
-
-// Maybe it is a build exception??? Skal jo helst klare det under build..
-
-// InaccessibleOperationException???
-// InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
-
-// FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
-// saa factory er et daarligt navn/
-
-// beanClass, Extension that needed access
-public class InaccessibleBeanMemberException extends BuildException {
+public class InaccessibleBeanMemberException extends BeanInstallationException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -79,3 +56,30 @@ public class InaccessibleBeanMemberException extends BuildException {
         super(message, cause);
     }
 }
+
+
+//If an extension tries something it does not have access to. It fails with IEE instead.
+//This is only if Packed does not have access
+
+
+//UncheckedIllegalAccessException...
+//RuntimeIllegalAccessException
+
+//AccessRestrictedException <- General one, could sound really securish, maybe have a name
+//which makes it clear it is relevant to reflection/method handlers
+//NotOpenedException
+//UndeclaredAccessException
+//Was UncheckedIllegalAccessException
+
+//InaccessibleRealmException or
+//InaccessibleModuleException
+
+//Maybe it is a build exception??? Skal jo helst klare det under build..
+
+//InaccessibleOperationException???
+//InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
+
+//FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
+//saa factory er et daarligt navn/
+
+//beanClass, Extension that needed access

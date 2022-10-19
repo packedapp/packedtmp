@@ -21,5 +21,4 @@ package app.packed.service;
 public class UnsatisfiableServiceDependencyException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
-
 }

@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.operation.OperationType;
+import internal.app.packed.operation.op.PackedOp.TerminalOp;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 
@@ -36,7 +37,7 @@ import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveOp<T> extends PackedOp<T>permits ExecutableOp, FieldOp {
+public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits ExecutableOp, FieldOp {
 
     ReflectiveOp(OperationType type) {
         super(type);

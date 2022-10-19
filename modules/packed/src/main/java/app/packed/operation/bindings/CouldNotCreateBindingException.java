@@ -15,7 +15,7 @@
  */
 package app.packed.operation.bindings;
 
-import app.packed.bean.BeanDefinitionException;
+import app.packed.bean.BeanInstallationException;
 
 /** An exception thrown at build-time when a binding could not an ill-formed dependency was encountered. */
 // @Nullable primitive
@@ -24,7 +24,7 @@ import app.packed.bean.BeanDefinitionException;
 
 // Tror vi dropper den her
 
-public class CouldNotCreateBindingException extends BeanDefinitionException {
+public class CouldNotCreateBindingException extends BeanInstallationException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

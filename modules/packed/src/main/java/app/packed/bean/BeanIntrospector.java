@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.base.InvalidKeyException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
@@ -331,8 +332,8 @@ public abstract class BeanIntrospector {
         /**
          * @return
          * 
-         * @throws BeanDefinitionException
-         *             if the variable was a proper key
+         * @throws InvalidKeyException
+         *             if a valid key could not be read
          */
         default Key<?> readKey() {
             throw new UnsupportedOperationException();

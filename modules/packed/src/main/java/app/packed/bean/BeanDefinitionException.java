@@ -1,13 +1,11 @@
 package app.packed.bean;
 
-import app.packed.application.BuildException;
-
 // BeanDeclarationException???
 
 /**
  * An exception that is thrown if
  */
-public class BeanDefinitionException extends BuildException {
+public class BeanDefinitionException extends BeanInstallationException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;

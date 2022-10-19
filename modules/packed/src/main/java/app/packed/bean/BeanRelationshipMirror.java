@@ -21,16 +21,6 @@ import app.packed.operation.bindings.DependenciesMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
 
-/**
- *
- */
-
-// Describes dependencies between to beans
-
-// operations er direct dependencies
-
-// Find en graph mellem to beans
-
 /** A mirror that describes a relationship between two different beans. */
 // Do we support relationship to itself? I would think it was always an error?
 public final class BeanRelationshipMirror implements Mirror {
@@ -88,6 +78,10 @@ public final class BeanRelationshipMirror implements Mirror {
     /** {@return whether or not the beans are in the same lifetime.} */
     public boolean isInSameLifetime() {
         return from.lifetime == to.lifetime;
+    }
+
+    public boolean isInSameRealm() {
+        return from.realm.realm().equals(to.realm.realm());
     }
 
     /** {@return the reverse relationship.} */

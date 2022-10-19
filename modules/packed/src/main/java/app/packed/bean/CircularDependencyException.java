@@ -20,7 +20,11 @@ import app.packed.application.BuildException;
 /**
  * Indicates a dependency cycle between multiple beans.
  */
-// Maybe add service
+// extends AssemblyCloseException
+
+// thrown when installing
+// thrown within assembly (fx DublicateProvision)
+// thrown when closing the assembly (this exception)
 public class CircularDependencyException extends BuildException {
 
     private static final long serialVersionUID = 1L;

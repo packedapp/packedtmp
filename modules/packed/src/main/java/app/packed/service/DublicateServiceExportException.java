@@ -15,11 +15,20 @@
  */
 package app.packed.service;
 
+import app.packed.application.BuildException;
+
 /**
  *
  */
-public class DublicateServiceExportException extends RuntimeException {
+public class DublicateServiceExportException extends BuildException {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public DublicateServiceExportException(String message) {
+        super(message);
+    }
 
 }

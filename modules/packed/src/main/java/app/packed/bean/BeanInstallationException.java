@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.bean;
 
 import app.packed.application.BuildException;
 
 /**
- *
+ * An exception that is thrown if a bean could not be installed.
  */
-// hmm. Fungere jo ikke noedvendig via install
-
-// install(F.class) <- successed
-// conf.provide() <-- fails, but installation was sucessfull
-public class DublicateServiceProvideException extends BuildException {
+public class BeanInstallationException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @param message
+     */
+    public BeanInstallationException(String message) {
+        super(message);
+    }
 
-    public DublicateServiceProvideException(String message, Throwable cause) {
+    public BeanInstallationException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DublicateServiceProvideException(String message) {
-        super(message);
-    }
 }

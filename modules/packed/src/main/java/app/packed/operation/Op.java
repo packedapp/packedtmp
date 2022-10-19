@@ -224,6 +224,8 @@ interface ZandboxOp<R> {
         throw new UnsupportedOperationException();
     }
 
+    // Hmm, I think we are now a synthetic operation?
+    // I don't know how else to map it
     default <T> Op<T> mapResult(Class<T> type, Function<? super R, ? extends T> mapper) {
 
         // Ideen er at kunne lave en transformation for alt...

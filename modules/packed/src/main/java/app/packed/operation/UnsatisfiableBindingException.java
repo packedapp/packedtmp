@@ -22,6 +22,9 @@ import app.packed.application.BuildException;
 // Binding
 // Giver bare ikke rigtig mening navngivningsmaessigt...
 // Dependency yws, binding no.
+
+
+// IDeen er er lidt at lave en generiks vi kan ikke lave den binding fordi xxx.
 public class UnsatisfiableBindingException extends BuildException {
 
     /** <code>serialVersionUID</code>. */

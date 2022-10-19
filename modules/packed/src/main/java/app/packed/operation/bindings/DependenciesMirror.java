@@ -34,6 +34,11 @@ import internal.app.packed.container.Mirror;
 // Fx hvad depender en Binding paa
 
 // DirectDependencies only
+
+// Ved ikke om den giver mening...
+// Eller om vi kun skal have services?
+// I 9/10 tilfaelde er jeg ligeglade med dependencies ppa
+// extension beans...
 public interface DependenciesMirror extends Mirror {
 
     Collection<BeanMirror> beans();

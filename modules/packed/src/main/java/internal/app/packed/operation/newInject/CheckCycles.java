@@ -25,6 +25,7 @@ import app.packed.container.Extension;
 import app.packed.service.Export;
 import app.packed.service.ExportOperationMirror;
 import app.packed.service.Provide;
+import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceExtensionMirror;
 import app.packed.service.ServiceProvisionMirror;
 
@@ -36,6 +37,9 @@ public class CheckCycles extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
+        bean().multiInstall(A.class).provide();
+        ProvideableBeanConfiguration<A> aaa = bean().multiInstall(A.class);
+        aaa.provide();
         provide(A.class);
         provide(B.class);
     }

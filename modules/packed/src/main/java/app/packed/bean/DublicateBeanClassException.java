@@ -15,12 +15,11 @@
  */
 package app.packed.bean;
 
-import app.packed.application.BuildException;
-
 /**
- * An exception that is thrown when multiple beans with the same non-void bean class has been installed in a container.
+ * An exception that is thrown when installing a bean, because another bean with the same non-void bean class is already
+ * installed in the container.
  */
-public class DublicateBeanClassException extends BuildException {
+public class DublicateBeanClassException extends BeanInstallationException {
 
     private static final long serialVersionUID = 1L;
 

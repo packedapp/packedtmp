@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
-
-import app.packed.application.BuildException;
+package app.packed.operation.bindings;
 
 /**
  *
  */
-public class ServiceMissingException extends BuildException {
+enum BindingResolutionPhase {
+    // operation binding but instantly resolved at build time (@Now)
+    INSTANTLY,
 
-    private static final long serialVersionUID = 1L;
+    // operation binding but delayed resolved at build time (services)
+    DELAYED,
 
-    /**
-     * @param message
-     */
-    public ServiceMissingException(String message) {
-        super(message);
-    }
-
+    // operation binding but instantly resolved at run time (transaction, @Param)
+    RUNTIME;
 }
+// Forskellen er lidt at delayed ikke smide BeanInstallationException
