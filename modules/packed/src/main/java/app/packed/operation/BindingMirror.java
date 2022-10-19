@@ -24,6 +24,7 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.UserOrExtension;
 import app.packed.operation.bindings.BindingKind;
 import app.packed.operation.bindings.DefaultMirror;
+import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.binding.BindingSetup;
@@ -63,6 +64,16 @@ public class BindingMirror implements Mirror {
     /** {@return the index of this binding into OperationMirror#bindings().} */
     public int bindingIndex() { // alternative parameterIndex
         return binding().index;
+    }
+
+    /** {@return the user or extension that created the binding.} */
+    public UserOrExtension boundBy() {
+        return binding().boundBy();
+    }
+
+    /** {@return the dependencies this binding introduces.} */
+    public DependenciesMirror dependencies() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

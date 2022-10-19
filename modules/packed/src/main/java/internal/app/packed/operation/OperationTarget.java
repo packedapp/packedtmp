@@ -34,6 +34,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
 
     public final MethodHandle methodHandle;
 
+    /** Whether or not the first argument to the method handle is the bean instance. */
     public final boolean requiresBeanInstance;
 
     protected OperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance) {
@@ -56,14 +57,14 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<OperationMirror> origin() {
-            return bean().factory();
+        public BeanMirror bean() {
+            return bean.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
-        public BeanMirror bean() {
-            return bean.mirror();
+        public Optional<OperationMirror> origin() {
+            return bean().factory();
         }
     }
 
@@ -78,7 +79,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param requiresBeanInstance
          */
         public FieldOperationTarget(MethodHandle methodHandle, Field field, AccessMode accessMode) {
-            super(methodHandle, Modifier.isStatic(field.getModifiers()));
+            super(methodHandle, !Modifier.isStatic(field.getModifiers()));
             this.field = field;
             this.accessMode = accessMode;
         }
@@ -117,7 +118,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param requiresBeanInstance
          */
         public MethodOperationTarget(MethodHandle methodHandle, Method method) {
-            super(methodHandle, Modifier.isStatic(method.getModifiers()));
+            super(methodHandle, !Modifier.isStatic(method.getModifiers()));
             this.method = method;
         }
 

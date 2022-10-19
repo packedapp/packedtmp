@@ -15,8 +15,18 @@
  */
 package internal.app.packed.operation.newInject;
 
+import java.util.Collection;
+
 import app.packed.application.App;
+import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
+import app.packed.service.Export;
+import app.packed.service.ExportOperationMirror;
+import app.packed.service.Provide;
+import app.packed.service.ServiceExtensionMirror;
+import app.packed.service.ServiceProvisionMirror;
 
 /**
  *
@@ -28,16 +38,50 @@ public class CheckCycles extends BaseAssembly {
     protected void build() {
         provide(A.class);
         provide(B.class);
-        provide(C.class);
     }
 
     public static void main(String[] args) {
-        App.run(new CheckCycles());
+
+        ApplicationMirror am = App.newMirror(new CheckCycles());
+        for (var b : am.container().beans()) {
+            System.out.println(b.beanClass().getSimpleName() + " " + b.factory().get().target());
+        }
+
+        Collection<ServiceProvisionMirror> c = am.useExtension(ServiceExtensionMirror.class).provisions().values();
+
+        Collection<ExportOperationMirror> ex = am.useExtension(ServiceExtensionMirror.class).exports().values();
+
+        BeanMirror b = am.container().beans().iterator().next();
+
+        System.out.println(b.path() + " " + b.dependencies().extensions());
+
+        c.forEach(e -> System.out.println(e.bean().path() + " provided by " + e.key()));
+
+        ex.forEach(e -> System.out.println(e.bean().path() + " exported by " + e.key()));
     }
 
-    public record A(B b) {}
-    
-    public record B(C b) {}
-    
-    public record C(A b) {}
+    public record D() {}
+
+    public record C() {}
+
+    public record A(B b, BeanMirror bean) {}
+
+    public record B() {
+
+        @Provide
+        String dppro() {
+            return null;
+        }
+
+        @Provide
+        @Export
+        C ppro() {
+            return null;
+        }
+
+    }
+
+    public static class MyExt extends Extension<MyExt> {
+
+    }
 }

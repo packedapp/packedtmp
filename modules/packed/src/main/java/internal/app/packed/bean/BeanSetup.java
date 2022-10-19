@@ -196,9 +196,9 @@ public final class BeanSetup {
     public NamespacePath path() {
         int size = container.depth;
         String[] paths = new String[size + 1];
-        paths[size + 1] = name;
+        paths[size] = name;
         ContainerSetup c = container;
-        for (int i = size; i >= 0; i--) {
+        for (int i = size - 1; i >= 0; i--) {
             paths[i] = c.name;
             c = c.treeParent;
         }
@@ -321,7 +321,15 @@ public final class BeanSetup {
         }
         bean.name = n;
 
-        if (kind.hasInstances() && sourceKind != BeanSourceKind.INSTANCE) {
+        boolean packedInstantiates = kind.hasInstances() && sourceKind != BeanSourceKind.INSTANCE;
+
+        if (packedInstantiates) {
+            
+            
+            // Vi skal have noget generelt support for POPs
+            // Bruger dem ogsaa i OnBindings
+            
+            
             PackedOp<?> op;
             if (bean.sourceKind == BeanSourceKind.CLASS) {
                 op = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
@@ -335,6 +343,10 @@ public final class BeanSetup {
             OperationType type = op.type();
             // Create an instantiating operation
             ExtensionSetup es = container.useExtensionSetup(BeanExtension.class, null);
+            
+            // Passer jo ikke... 
+            
+            // pop skal lave en operationSetup????
             OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), es), new BeanInstanceAccess(bean, mh), null);
             bean.operations.add(os);
         }

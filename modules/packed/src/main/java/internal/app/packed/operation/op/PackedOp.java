@@ -31,6 +31,10 @@ import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.operation.InvocationSite;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.ConstantBindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -47,10 +51,6 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
     PackedOp(OperationType type) {
         this.type = requireNonNull(type, "type is null");
-    }
-
-    public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
-        return PackageCapturingOpHelper.create(clazz, function);
     }
 
     /** {@inheritDoc} */
@@ -91,6 +91,10 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         return bind(0, argument);
     }
 
+    public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
         return new PeekableOp<>(this, action);
@@ -102,6 +106,10 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     @Override
     public final OperationType type() {
         return type;
+    }
+
+    public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
+        return PackageCapturingOpHelper.create(clazz, function);
     }
 
     @SuppressWarnings("unchecked")
@@ -132,6 +140,12 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
 
         /** {@inheritDoc} */
         @Override
+        public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
+            return delegate.createOp(bean, this.type(), invoker);
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public MethodHandle toMethodHandle(Lookup lookup) {
             return delegate.toMethodHandle(lookup);
         }
@@ -154,6 +168,16 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
             this.index = index;
             this.delegate = delegate;
             this.arguments = arguments;
+        }
+
+        @Override
+        public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
+            OperationSetup os = delegate.createOp(bean, type, invoker);
+            // Doesn't really work...
+            for (int i = index; i < arguments.length; i++) {
+                os.bindings[i] = new ConstantBindingSetup(os, null, index, arguments[i], null);
+            }
+            return os;
         }
 
         /** {@inheritDoc} */
@@ -222,6 +246,12 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
             this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
             this.delegate = delegate;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
+            return delegate.createOp(bean, type, invoker);
         }
 
         /** {@inheritDoc} */

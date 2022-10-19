@@ -17,6 +17,7 @@ package internal.app.packed.operation.binding;
 
 import java.util.function.Supplier;
 
+import app.packed.container.UserOrExtension;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -51,5 +52,12 @@ public final class FusedBindingSetup extends NestedBindingSetup {
     @Override
     public BindingMirror mirror0() {
         return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public UserOrExtension boundBy() {
+        return UserOrExtension.extension(managedBy.extensionType);
     }
 }

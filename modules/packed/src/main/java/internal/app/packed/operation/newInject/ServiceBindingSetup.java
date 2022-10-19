@@ -16,7 +16,9 @@
 package internal.app.packed.operation.newInject;
 
 import app.packed.base.Nullable;
+import app.packed.container.UserOrExtension;
 import app.packed.operation.BindingMirror;
+import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
@@ -45,6 +47,12 @@ public final class ServiceBindingSetup extends BindingSetup {
         this.required = required;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public UserOrExtension boundBy() {
+        return UserOrExtension.extension(ServiceExtension.class);
+    }
+
     /** {@return whether or not the service could be resolved.} */
     public boolean isResolved() {
         return entry.provider != null;
@@ -53,6 +61,6 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public BindingMirror mirror0() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

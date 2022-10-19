@@ -3,19 +3,25 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
+import app.packed.container.MirrorExtension;
 import app.packed.container.UserOrExtension;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.bindings.DependenciesMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
@@ -26,6 +32,7 @@ import internal.app.packed.util.StreamUtil;
  * <p>
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
+@BindingHook(extension = MirrorExtension.class)
 public class BeanMirror implements Mirror {
 
     /**
@@ -84,10 +91,28 @@ public class BeanMirror implements Mirror {
         return bean().container.mirror();
     }
 
+    /** {@return the dependencies this bean introduces.} */
+    public DependenciesMirror dependencies() {
+        return new BeanDependenciesMirror(bean());
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof BeanMirror m && bean() == m.bean();
+    }
+
+    /**
+     * If Packed creates instances of this bean. The operation that creates them
+     * 
+     * @return operation that creates instances of the bean. Or empty if instances are never created
+     */
+    public Optional<OperationMirror> factory() {
+        BeanSetup bean = bean();
+        if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {
+            return Optional.of(bean.operations.get(0).mirror());
+        }
+        return Optional.empty();
     }
 
     /** {@inheritDoc} */
@@ -107,19 +132,6 @@ public class BeanMirror implements Mirror {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
         this.bean = bean;
-    }
-
-    /**
-     * If Packed creates instances of this bean. The operation that creates them
-     * 
-     * @return operation that creates instances of the bean. Or empty if instances are never created
-     */
-    public Optional<OperationMirror> factory() {
-        BeanSetup bean = bean();
-        if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {
-            return Optional.of(bean.operations.get(0).mirror());
-        }
-        return Optional.empty();
     }
 
     /**
@@ -218,6 +230,67 @@ public class BeanMirror implements Mirror {
 
     public NamespacePath path() {
         return bean().path();
+    }
+
+    public BeanRelationshipMirror relationshipTo(BeanMirror to) {
+        requireNonNull(to, "to is null");
+        return new BeanRelationshipMirror(bean(), to.bean());
+    }
+
+    private record BeanDependenciesMirror(BeanSetup bean) implements DependenciesMirror {
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<BeanMirror> beans() {
+            HashSet<BeanSetup> set = new HashSet<>();
+            for (OperationSetup os : bean.operations) {
+                os.forEachBinding(b -> {
+                    throw new UnsupportedOperationException();
+                });
+            }
+            return set.stream().map(s -> s.mirror()).collect(Collectors.toSet());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<ContainerMirror> containers() {
+            // What if something is provided by an extension bean in the root container
+            // doesn't make to say we depend on such a container
+
+            // maybe we have extensionBeans() as a seperate method???
+            // and beans are beans in the same realm...
+            return beans().stream().map(b -> b.container()).distinct().toList();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<Class<? extends Extension<?>>> extensions() {
+            HashSet<Class<? extends Extension<?>>> set = new HashSet<>();
+            for (OperationSetup os : bean.operations) {
+                os.forEachBinding(b -> {
+                    if (b.boundBy().isExtension()) {
+                        if (b.boundBy() != bean.realm.realm()) {
+                            set.add((b.boundBy().extension()));
+                        }
+                    }
+                });
+            }
+            return Set.copyOf(set);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<OperationMirror> operations() {
+            // All operation that creates bean dependencies????
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isEmpty() {
+            // what about just dependencies on extensions???
+            return false;
+        }
     }
 }
 

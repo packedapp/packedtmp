@@ -31,7 +31,7 @@ public class ServiceProvisionMirror extends OperationMirror {
 
     final ProvidedService ps;
 
-    ServiceProvisionMirror(ProvidedService ps) {
+    public ServiceProvisionMirror(@SuppressWarnings("exports") ProvidedService ps) {
         this.ps = requireNonNull(ps);
     }
 

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
@@ -55,9 +56,9 @@ public final class OperationSetup {
     boolean isComputed;
 
     /** Supplies a mirror for the operation */
-    Supplier<? extends OperationMirror> mirrorSupplier;
+    public Supplier<? extends OperationMirror> mirrorSupplier;
 
-    @Nullable 
+    @Nullable
     public final NestedBindingSetup parentBinding;
 
     /** The underlying target of the operation. */
@@ -89,36 +90,42 @@ public final class OperationSetup {
         return mirror;
     }
 
+    public void forEachBinding(Consumer<? super BindingSetup> binding) {
+        for (BindingSetup bs : bindings) {
+            if (bs instanceof NestedBindingSetup ns) {
+                ns.operation.forEachBinding(binding);
+            }
+            binding.accept(bs);
+        }
+    }
+    
     // We need it for calling into nested
     public void resolve(Introspector introspector) {
 
         for (int i = 0; i < bindings.length; i++) {
             if (bindings[i] == null) {
 
-
                 ParameterIntrospector.bind(introspector, this, i);
             }
         }
     }
 
-    
     public MethodHandle buildInvoker() {
         // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
-        
+
         if (isComputed) {
             throw new IllegalStateException("This method can only be called once");
         }
-        
+
         isComputed = true;
         // application.checkIsComputable
         throw new UnsupportedOperationException();
     }
 
-    
     /**
      * 
      */
     public void codegen() {
-        
+
     }
 }

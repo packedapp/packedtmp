@@ -15,35 +15,56 @@
  */
 package app.packed.container;
 
+import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanMirror;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.BindingIntrospector;
+
+
 /**
- * This extension is used to provide mirrors at runtime.
- * 
+ * This extension is used to provide mirror functionality at runtime.
+ * <p>
+ * It can be used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror} or {@link BeanMirror}.
+ * <p>
  * This extension is mainly here as a kind of a marker extension. Indicating that somewhere in the application someone
  * has decided to reference a mirror. In which case the whole mirror shebang is available at runtime.
  * <p>
  * Maybe at some point we will support a compact mirror mode where each extension can keep a minimal set of information
  * that is needed at runtime.
  */
-// ApplicationMirror
-// ContainerMirror
-// BeanMirror
 public class MirrorExtension extends Extension<MirrorExtension> {
 
-    /**
-     * Create a new mirror extension.
-     * 
-     * @param configuration
-     *            an extension configuration object.
-     */
+    /** Create a new mirror extension. */
     MirrorExtension() {}
+
+    /**
+     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, and {@link BeanMirror}.
+     * 
+     * {@inheritDoc}
+     */
+    @Override
+    protected BeanIntrospector newBeanIntrospector() {
+        return new BeanIntrospector() {
+
+            @Override
+            public void onBinding(OnBinding binding) {
+                BeanSetup bean = ((BindingIntrospector) binding).operation.bean;
+                if (binding.hookClass() == ApplicationMirror.class) {
+                    binding.bind(bean.container.application.mirror());
+                } else if (binding.hookClass() == ContainerMirror.class) {
+                    binding.bind(bean.container.mirror());
+                } else if (binding.hookClass() == BeanMirror.class) {
+                    binding.bind(bean.mirror());
+                } else {
+                    super.onBinding(binding);
+                }
+
+                // Could bind the operation... but if we have multiple operations. This is non-trivial
+            }
+        };
+    }
 }
-
-//DebugExtension???? Clearly indicates that it is not normal usage
-// However, I don't see the need two extensions.
-// Do we need the DevTools extension???
-
-//FooExtension <- only if installed though
-//// Nah.. vi supportere ikke nedarvnings injection
 
 //https://docs.scala-lang.org/overviews/reflection/environment-universes-mirrors.html
 //reflect = build time, introspect = runtime.. IDK

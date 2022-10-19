@@ -18,6 +18,7 @@ package app.packed.operation;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,6 +32,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
+import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.service.ExportOperationMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
@@ -53,6 +55,8 @@ import internal.app.packed.operation.binding.BindingSetup;
 //Class -> members
 //Scanning class -> Hooks
 //Bean -> Operation
+
+// Does an operation always introduce a dependency between two beans???
 public class OperationMirror implements Mirror {
 
     /**
@@ -74,7 +78,7 @@ public class OperationMirror implements Mirror {
         return operation().bean.container.application.mirror();
     }
 
-    /** {@return the bean the operation belongs to.} */
+    /** {@return the bean the operation applies to.} */
     public BeanMirror bean() {
         return operation().bean.mirror();
     }
@@ -100,12 +104,17 @@ public class OperationMirror implements Mirror {
         return operation().bean.container.mirror();
     }
 
+    /** {@return the dependencies this operation introduces.} */
+    public DependenciesMirror dependencies() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof OperationMirror m && operation() == m.operation();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
@@ -125,6 +134,14 @@ public class OperationMirror implements Mirror {
         this.operation = operation;
     }
 
+    /** {@return the extension that created the operation.} */
+    public final Class<? extends Extension<?>> operatedBy() {
+        // It might be a different extension that actually invokes it. For example,
+        // a lifetime operations might be invoked by ContainerExtension
+        // Nahh doesn't work. Must always be BeanExtension
+        return operation().invocationSite.operator.extensionType;
+    }
+
     /**
      * {@return the internal configuration of operation.}
      * 
@@ -140,16 +157,9 @@ public class OperationMirror implements Mirror {
         return o;
     }
 
-    /** {@return the extension that is responsible for invoking the operation.} */
-    public final Class<? extends Extension<?>> operator() {
-        // It might be a different extension that actually invokes it. For example,
-        // a lifetime operations might be invoked by ContainerExtension
-        return operation().invocationSite.operator.extensionType;
-    }
-
     /** {@return the target of the operation.} */
     public OperationTargetMirror target() {
-        throw new UnsupportedOperationException();
+        return operation().target;
     }
 
     /** {@return the type of the operation.} */
@@ -164,13 +174,55 @@ class SandboxOp {
     final Set<Key<?>> availableServices() {
         throw new UnsupportedOperationException();
     }
+    
+    /**
+     * Returns whether or new component lifetime is created every time the operation is invoked. The lifetime will last jast
+     * for the lifetime of the operation.
+     * 
+     * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
+     */
+    // Creates a new Lifetime just for the duration of the operation!
+    // What about start/stop (not present)
+    // spawnsLifetime
+
+    // Altsaa ved ikke om det bare er en boolean???? MakesNewBean?
+    // Problemet er lidt hvordan selve registreringen skal vaere?
+    // Man skal jo markere containeren og sige. Alle @Get beans i den her container starter en ny container.
+    // Det er vel ikke meget anderledes end all @Get beans i denne bean starter en ny container
+    // Hvori foriøvrigt det kun er den ene bean der skal launches
+    //
+    
+    final Optional<LifetimeMirror> createsLifetime() {
+        // Hvad med en constructor??
+        //// Alt hvad der kalder en i user code kraever en operation
+
+        // Operation
+        // Factory
+        // Operation+Factory
+
+        // Jeg tror maaske Factory ikke er operations...
+        // Men saa er de irriterende i forbindelse med injection....
+
+        throw new UnsupportedOperationException();
+    }
 
     // Synchronous/Asynchronous
     final boolean createsNewThread() {
+        // Does the operation spawn a new thread????
+        // Er vel kun hvis vi fx kommer fra en daemon?
+        
+        
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)
         // Hoere det til i noget meta data per extension???
         return false;
+    }
+
+    public Collection<BeanMirror> dependsOn() {
+        // Introduces dependencies on xx beans
+        // Det er saa her hvor jeg syntes vi skal koere gennem composite
+        // Hvis vi wrapper noget i en composite skal vi stadig lave en ny
+        return List.of();
     }
 
     /** {@return how errors are handle when calling the operation.} */
@@ -201,37 +253,6 @@ class SandboxOp {
     // I don't know if we want this? It is very internal...
     final MethodType invocationType() {
         // OperationTypeMirror? Nope things are erased
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns whether or new component lifetime is created every time the operation is invoked. The lifetime will last jast
-     * for the lifetime of the operation.
-     * 
-     * {@return true if the operation creates a new bean instance every time it is invoked, otherwise false.}
-     */
-    // Creates a new Lifetime just for the duration of the operation!
-    // What about start/stop (not present)
-    // spawnsLifetime
-
-    // Altsaa ved ikke om det bare er en boolean???? MakesNewBean?
-    // Problemet er lidt hvordan selve registreringen skal vaere?
-    // Man skal jo markere containeren og sige. Alle @Get beans i den her container starter en ny container.
-    // Det er vel ikke meget anderledes end all @Get beans i denne bean starter en ny container
-    // Hvori foriøvrigt det kun er den ene bean der skal launches
-    //
-    
-    final Optional<LifetimeMirror> createsLifetime() {
-        // Hvad med en constructor??
-        //// Alt hvad der kalder en i user code kraever en operation
-
-        // Operation
-        // Factory
-        // Operation+Factory
-
-        // Jeg tror maaske Factory ikke er operations...
-        // Men saa er de irriterende i forbindelse med injection....
-
         throw new UnsupportedOperationException();
     }
 

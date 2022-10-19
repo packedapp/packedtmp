@@ -46,7 +46,7 @@ public final class BindingIntrospector implements OnBinding {
     private Supplier<? extends BindingMirror> mirrorSupplier;
 
     /** The operation that will have a parameter bound. */
-    private final OperationSetup operation;
+    public final OperationSetup operation;
 
     ///////////////
 
@@ -83,7 +83,7 @@ public final class BindingIntrospector implements OnBinding {
         // Check assignable to
         // Create a bound thing
         //
-        operation.bindings[index] = new ConstantBindingSetup(operation, index, obj, mirrorSupplier);
+        operation.bindings[index] = new ConstantBindingSetup(operation, bindingExtension, index, obj, mirrorSupplier);
     }
 
     /** {@inheritDoc} */

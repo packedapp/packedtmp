@@ -15,10 +15,9 @@
  */
 package app.packed.service;
 
-import java.util.Optional;
-
 import app.packed.base.Key;
 import app.packed.operation.OperationMirror;
+import internal.app.packed.operation.newInject.ExportedService;
 
 /**
  *
@@ -26,17 +25,23 @@ import app.packed.operation.OperationMirror;
 
 // Skal vi kun have en klasse?
 // Skal vi have en faelles klasse? Hvad vil man soege efter
-public abstract class ExportOperationMirror extends OperationMirror {
+public class ExportOperationMirror extends OperationMirror {
+
+    final ExportedService es;
+
+    public ExportOperationMirror(@SuppressWarnings("exports") ExportedService es) {
+        this.es = es;
+    }
 
     /** {@return the key that the service is exported with.} */
-    public abstract Key<?> key();
+    public Key<?> key() {
+        return es.key;
+    }
 
-    // Hvad goer vi omvendt??? Returnere en liste??
-    // Kun allower en? IDK
-    public abstract Optional<ServiceProvisionMirror> service(); // Kan ikke fange alle dog
-
-    // find usage of the exported service
-    
-    
+//    // Hvad goer vi omvendt??? Returnere en liste??
+//    // Kun allower en? IDK
+//    public abstract Optional<ServiceProvisionMirror> service(); // Kan ikke fange alle dog
+//
+//    // find usage of the exported service
 
 }

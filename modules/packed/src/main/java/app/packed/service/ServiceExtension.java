@@ -173,18 +173,31 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             @Override
             public void onMethod(OnMethod method) {
                 Key<?> key = method.methodToKey();
-                boolean constant = method.annotations().readRequired(Provide.class).constant();
+                boolean isProviding = method.annotations().isAnnotationPresent(Provide.class);
+                boolean isExporting = method.annotations().isAnnotationPresent(Export.class);
+                if (isProviding) {
+                    boolean constant = method.annotations().readRequired(Provide.class).constant();
 
-                MethodIntrospector iom = ((MethodIntrospector) method);
+                    MethodIntrospector iom = ((MethodIntrospector) method);
+
+                    OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
+
+                    iom.introspector.bean.container.sm.serviceProvide(key, operation);
+
+                    // What is this crap?
+                    DependencyHolder fh = new DependencyHolder(constant, key, operation);
+                    DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
+                    operation.bean.container.injectionManager.addConsumer(node);
+                }
                 
-                OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
+                if (isExporting) {
+                    MethodIntrospector iom = ((MethodIntrospector) method);
 
-                iom.introspector.bean.container.sm.serviceProvide(key, operation);
+                    OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 
-                // What is this crap?
-                DependencyHolder fh = new DependencyHolder(constant, key, operation);
-                DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
-                operation.bean.container.injectionManager.addConsumer(node);
+                    iom.introspector.bean.container.sm.serviceExport(key, operation);
+                    
+                }
             }
         };
     }

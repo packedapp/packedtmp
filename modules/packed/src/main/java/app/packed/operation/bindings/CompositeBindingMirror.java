@@ -22,6 +22,10 @@ import app.packed.operation.BindingMirror;
 /**
  * A composite binding mirror
  */
+// Er det bare en generiks operation??? Eller skal vi ogsaa have
+// CompositeOperationMirror()?????
+
+// The operation itself is always synthetic
 public class CompositeBindingMirror extends BindingMirror {
 
     public List<BindingMirror> bindings() {

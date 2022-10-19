@@ -21,6 +21,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.service.DublicateServiceExportException;
 import app.packed.service.DublicateServiceProvideException;
+import app.packed.service.ExportOperationMirror;
+import app.packed.service.ServiceProvisionMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
@@ -33,7 +35,7 @@ import internal.app.packed.util.StringFormatter;
  */
 public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
-    final LinkedHashMap<Key<?>, ServiceEntry> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceEntry> entries = new LinkedHashMap<>();
 
     // All provided services are automatically exported
     public boolean exportAll;
@@ -70,6 +72,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
             // A service with the key has already been exported
             throw new DublicateServiceExportException();
         }
+        e.bos.mirrorSupplier = () -> new ExportOperationMirror(e);
     }
 
     public void serviceExport(Key<?> key, OperationSetup operation) {
@@ -96,6 +99,8 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
             v.provider = new ProvidedService(bos, v);
             return v;
         });
+
+        bos.mirrorSupplier = () -> new ServiceProvisionMirror(e.provider);
 
         // add the service provider to the bean
         bos.bean.providingOperations.add(e.provider);

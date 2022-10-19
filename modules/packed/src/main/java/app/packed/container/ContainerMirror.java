@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
@@ -25,6 +26,7 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
  * <p>
  * Instances of this class is typically via {@link ApplicationMirror}.
  */
+@BindingHook(extension = MirrorExtension.class)
 public class ContainerMirror implements Mirror {
 
     /**

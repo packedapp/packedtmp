@@ -2,10 +2,14 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
+import internal.app.packed.operation.newInject.ExportedService;
+import internal.app.packed.operation.newInject.ServiceEntry;
 import internal.app.packed.service.InternalServiceExtension;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
@@ -48,14 +52,21 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** { @return a map view of all the services that are exported from the container.} */
     public Map<Key<?>, ExportOperationMirror> exports() {
-        throw new UnsupportedOperationException();
+        LinkedHashMap<Key<?>, ExportOperationMirror> result = new LinkedHashMap<>();
+        for (ExportedService e : services.container.sm.exports.values()) {
+            ExportOperationMirror mirror = (ExportOperationMirror) e.bos.mirror();
+            result.put(e.key, mirror);
+        }
+        return Collections.unmodifiableMap(result);
     }
 
     /** { @return a map view of all the services that are provided internally in the container.} */
     public Map<Key<?>, ServiceProvisionMirror> provisions() {
-        for (var e : services.resolvedServices.entrySet()) {
-            System.out.println(e.getKey() + " : " + e.getValue().getSingle().dependencyConsumer());
+        LinkedHashMap<Key<?>, ServiceProvisionMirror> result = new LinkedHashMap<>();
+        for (ServiceEntry e : services.container.sm.entries.values()) {
+            ServiceProvisionMirror mirror = (ServiceProvisionMirror) e.provider.operation.mirror();
+            result.put(e.key, mirror);
         }
-        throw new UnsupportedOperationException();
+        return Collections.unmodifiableMap(result);
     }
 }

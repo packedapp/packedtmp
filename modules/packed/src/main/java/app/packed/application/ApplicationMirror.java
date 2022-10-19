@@ -4,11 +4,13 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.container.MirrorExtension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.application.ApplicationSetup;
@@ -25,6 +27,7 @@ import internal.app.packed.container.Mirror;
  * Like most other mirrors this class is overridable via
  * {@link ApplicationDriver.Builder#specializeMirror(java.util.function.Supplier)}
  */
+@BindingHook(extension = MirrorExtension.class)
 public class ApplicationMirror implements Mirror {
 
     /**

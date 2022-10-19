@@ -18,6 +18,7 @@ package internal.app.packed.operation.binding;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.container.UserOrExtension;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -33,13 +34,16 @@ public final class ConstantBindingSetup extends BindingSetup {
     public final Object constant;
 
     // Eller er det en extension bean??? Det er hvem der styrer vaerdien
+    @Nullable
     public ExtensionSetup boundBy;
 
     /** Supplies a mirror for the operation */
     private final Supplier<? extends BindingMirror> specializedMirror;
 
-    public ConstantBindingSetup(OperationSetup operation, int index, Object constant, Supplier<? extends BindingMirror> specializedMirror) {
+    public ConstantBindingSetup(OperationSetup operation, ExtensionSetup boundBy, int index, Object constant,
+            Supplier<? extends BindingMirror> specializedMirror) {
         super(operation, index);
+        this.boundBy = boundBy;
         this.constant = constant;
         this.specializedMirror = specializedMirror;
     }
@@ -48,5 +52,11 @@ public final class ConstantBindingSetup extends BindingSetup {
     @Override
     protected BindingMirror mirror0() {
         return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public UserOrExtension boundBy() {
+        return boundBy == null ? UserOrExtension.application() : UserOrExtension.extension(boundBy.extensionType);
     }
 }
