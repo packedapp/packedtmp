@@ -23,6 +23,7 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.DublicateBeanClassException;
+import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
@@ -34,6 +35,7 @@ import internal.app.packed.bean.BeanSetup.BeanInstallOption.Synthetic;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
+import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
@@ -78,7 +80,7 @@ public final class BeanSetup {
 
     /** Non-null if the bean is installed for an extension. */
     @Nullable
-    public final ExtensionSetup extensionOwner;
+    public final ExtensionSetup ownedByExtension;
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
@@ -125,21 +127,21 @@ public final class BeanSetup {
     /**
      * Create a new bean.
      */
-    private BeanSetup(BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup operator, RealmSetup realm,
+    private BeanSetup(ExtensionSetup installedBy, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, RealmSetup realm,
             @Nullable ExtensionSetup extensionOwner) {
+        this.installedBy = requireNonNull(installedBy);
+        this.container = requireNonNull(installedBy.container);
         this.beanKind = requireNonNull(beanKind);
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
 
-        this.installedBy = requireNonNull(operator);
-        this.container = requireNonNull(operator.container);
 
         // I think we want to have a single field for these 2
         // I think this was made like this, when I was unsure if we could
         // have containers managed by extensions
         this.realm = requireNonNull(realm);
-        this.extensionOwner = extensionOwner;
+        this.ownedByExtension = extensionOwner;
 
         ContainerLifetimeSetup cls = container.lifetime;
         if (beanKind == BeanKind.CONTAINER) {
@@ -233,13 +235,21 @@ public final class BeanSetup {
     // Eller maaske long term er det en record vi populere
     // install(F..withSource().ifAbsent)
 
+    public static BeanSetup install(ExtensionSetup installedBy, BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
+            @Nullable UseSite extensionUseSite, BeanHandle.InstallOption... options) {
+        PackedExtensionPointContext c = ((PackedExtensionPointContext) extensionUseSite);
+        RealmSetup r = extensionUseSite == null ? installedBy.container.assembly : c.extension().extensionRealm;
+        return install(kind, beanClass, sourceKind, source, installedBy, r, extensionUseSite == null ? null : c.extension(), options);
+    }
+
+    // Maybe move to bean extension???
     static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup installedBy,
             RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
 
-        BeanSetup bean = new BeanSetup(kind, beanClass, sourceKind, source, installedBy, realm, extensionOwner);
+        BeanSetup bean = new BeanSetup(installedBy, kind, beanClass, sourceKind, source, realm, extensionOwner);
 
         // No reason to maintain some of these in props
         boolean multiInstall = false;
@@ -324,12 +334,10 @@ public final class BeanSetup {
         boolean packedInstantiates = kind.hasInstances() && sourceKind != BeanSourceKind.INSTANCE;
 
         if (packedInstantiates) {
-            
-            
+
             // Vi skal have noget generelt support for POPs
             // Bruger dem ogsaa i OnBindings
-            
-            
+
             PackedOp<?> op;
             if (bean.sourceKind == BeanSourceKind.CLASS) {
                 op = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
@@ -343,9 +351,9 @@ public final class BeanSetup {
             OperationType type = op.type();
             // Create an instantiating operation
             ExtensionSetup es = container.useExtensionSetup(BeanExtension.class, null);
-            
-            // Passer jo ikke... 
-            
+
+            // Passer jo ikke...
+
             // pop skal lave en operationSetup????
             OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), es), new BeanInstanceAccess(bean, mh), null);
             bean.operations.add(os);
@@ -369,8 +377,8 @@ public final class BeanSetup {
         return bean;
     }
 
-    public static BeanSetup installClass(ExtensionSetup installedBy, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Class<?> clazz,
-            BeanHandle.InstallOption... options) {
+    public static BeanSetup installClass(ExtensionSetup installedBy, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind,
+            Class<?> clazz, BeanHandle.InstallOption... options) {
         requireNonNull(clazz, "clazz is null");
         return install(beanKind, clazz, BeanSourceKind.CLASS, clazz, installedBy, realm, extensionOwner, options);
     }
