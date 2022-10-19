@@ -26,9 +26,9 @@ public final class ProvidedService {
     public final OperationSetup operation;
 
     /** The key under which this service is provided. */
-    public final ServiceEntry entry;
+    public final ServiceManagerEntry entry;
 
-    ProvidedService(OperationSetup operation, ServiceEntry entry) {
+    ProvidedService(OperationSetup operation, ServiceManagerEntry entry) {
         this.operation = operation;
         this.entry = entry;
     }

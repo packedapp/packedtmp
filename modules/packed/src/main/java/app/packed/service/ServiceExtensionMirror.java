@@ -10,7 +10,7 @@ import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
 import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.service.ExportedService;
-import internal.app.packed.service.ServiceEntry;
+import internal.app.packed.service.ServiceManagerEntry;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
@@ -63,7 +63,7 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     /** { @return a map view of all the services that are provided internally in the container.} */
     public Map<Key<?>, ServiceProvisionMirror> provisions() {
         LinkedHashMap<Key<?>, ServiceProvisionMirror> result = new LinkedHashMap<>();
-        for (ServiceEntry e : services.container.sm.entries.values()) {
+        for (ServiceManagerEntry e : services.container.sm.entries.values()) {
             ServiceProvisionMirror mirror = (ServiceProvisionMirror) e.provider.operation.mirror();
             result.put(e.key, mirror);
         }

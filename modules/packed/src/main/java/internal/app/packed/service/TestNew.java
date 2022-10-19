@@ -66,7 +66,7 @@ public class TestNew extends BaseAssembly {
                 public void onBinding(OnBinding h) {
                     XX rr = h.annotations().readRequired(XX.class);
                     System.out.println(rr);
-                    h.bind("foo");
+                    h.bind(123);
                     System.out.println("Got h " + h.hookClass());
                 }
             };

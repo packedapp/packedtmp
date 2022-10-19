@@ -1,5 +1,7 @@
 package app.packed.bean;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -45,7 +47,12 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        
+        // Install the bean
         BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.CONTAINER, implementation);
+
+        // return a bean configuration
         return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
@@ -150,7 +157,7 @@ public class BeanExtension extends Extension<BeanExtension> {
             @Override
             public void onMethod(OnMethod method) {
                 AnnotationReader ar = method.annotations();
-                
+
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);

@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 /**
  * An entry in a service manager.
  */
-public final class ServiceEntry {
+public final class ServiceManagerEntry {
 
     /** All bindings (in a interned linked list) that points to this entry. */
     @Nullable
@@ -41,7 +41,7 @@ public final class ServiceEntry {
     @Nullable
     public ProvidedService provider;
 
-    ServiceEntry(Key<?> key) {
+    ServiceManagerEntry(Key<?> key) {
         this.key = requireNonNull(key);
     }
 }

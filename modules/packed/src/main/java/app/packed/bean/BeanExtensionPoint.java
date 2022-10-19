@@ -111,7 +111,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         BeanSetup bean = BeanSetup.installClass(be.extensionSetup, be.container.assembly, null, BeanKind.LAZY, clazz);
         return new BeanHandle<>(bean);
     }
-
+    // BeanExtension install on behalf of user
+    // BeanExtension install on befalf of extension
+    // OtherExtension install from assembly
+    // OtherExtension install on behalf of extension
     public <T> BeanHandle<T> newLazyBean(Op<T> op, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installOp(be.extensionSetup, be.container.assembly, null, BeanKind.LAZY, op);

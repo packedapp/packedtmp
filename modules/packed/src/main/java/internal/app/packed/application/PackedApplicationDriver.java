@@ -117,19 +117,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_LAUNCHER, assembly, wirelets);
-        as.build();
-        return new SingleShotApplicationImage<>(this, as.application);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public A launch(Assembly assembly, Wirelet... wirelets) {
         // Build the application
         AssemblySetup as = new AssemblySetup(this, BuildGoal.LAUNCH, assembly, wirelets);
         as.build();
-        
+
         // Launch the application
         PackedApplicationLauncher launcher = as.application.launcher;
         return launcher.launchImmediately(this);
@@ -148,10 +140,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, assembly, wirelets);
+    public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
+        // Build the application
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, assembly, wirelets);
         as.build();
-        return as.application.mirror();
+        
+        // Create a reusable launcher
+        return new ReusableApplicationImage<>(this, as.application);
     }
 
     /**
@@ -174,15 +169,30 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationLauncher<A> newImage(Assembly assembly, Wirelet... wirelets) {
-        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, assembly, wirelets);
+    public ApplicationLauncher<A> newLauncher(Assembly assembly, Wirelet... wirelets) {
+        // Build the application
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_LAUNCHER, assembly, wirelets);
         as.build();
-        return new ReusableApplicationImage<>(this, as.application);
+
+        // Create single shop image
+        return new SingleShotApplicationImage<>(this, as.application);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationMirror newMirror(Assembly assembly, Wirelet... wirelets) {
+        // Build the application
+        AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, assembly, wirelets);
+        as.build();
+        
+        // Create a mirror for the application
+        return as.application.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
     public void verify(Assembly assembly, Wirelet... wirelets) {
+        // Build (and verify) the application
         AssemblySetup as = new AssemblySetup(this, BuildGoal.VERIFY, assembly, wirelets);
         as.build();
     }
@@ -194,14 +204,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
         return new PackedApplicationDriver<>(this, w);
     }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public ApplicationDriver<A> with(Wirelet wirelet) {
-//        requireNonNull(wirelet, "wirelet is null");
-//        Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
-//        return new PackedApplicationDriver<>(this, w);
-//    }
 
     @SuppressWarnings("unchecked")
     public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension<?>>... extensionTypes) {

@@ -157,6 +157,13 @@ public final /* primitive */ class BeanHandle<T> {
             return new BeanInstallOption.IntrospectWith(introspector);
         }
 
+        // Installs if a no extension is already installed of the specific kind
+        // Maybe just move it internally
+        static InstallOption installIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
+            requireNonNull(onInstall, "introspector is null");
+            throw new UnsupportedOperationException();
+        }
+
         /**
          * An option that allows for multiple beans of the same type in a single container.
          * <p>

@@ -35,7 +35,7 @@ import internal.app.packed.util.StringFormatter;
  */
 public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
-    public final LinkedHashMap<Key<?>, ServiceEntry> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceManagerEntry> entries = new LinkedHashMap<>();
 
     // All provided services are automatically exported
     public boolean exportAll;
@@ -49,7 +49,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
         return entries.compute(key, (k, v) -> {
             if (v == null) {
-                v = new ServiceEntry(k);
+                v = new ServiceManagerEntry(k);
             }
             if (isRequired) {
                 v.isRequired = true;
@@ -80,7 +80,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     }
 
     public ProvidedService serviceProvide(Key<?> key, OperationSetup bos) {
-        ServiceEntry entry = entries.computeIfAbsent(key, ServiceEntry::new);
+        ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
         ProvidedService currentProvider = entry.provider;
 
@@ -112,7 +112,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     }
 
     public void verify() {
-        for (ServiceEntry e : entries.values()) {
+        for (ServiceManagerEntry e : entries.values()) {
             if (e.provider == null) {
                 for (var b = e.bindings; b != null; b = b.nextFriend) {
                     System.out.println("Binding not resolved " + b);

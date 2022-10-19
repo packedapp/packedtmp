@@ -213,7 +213,8 @@ public abstract class BaseAssembly extends Assembly {
      * @return a configuration object for the service bean
      */
     protected final <T> ProvideableBeanConfiguration<T> provide(Class<T> implementation) {
-        return install(implementation).provide();
+        ProvideableBeanConfiguration<T> configuration = bean().install(implementation);
+        return configuration.provide();
     }
 
     /**
@@ -228,7 +229,8 @@ public abstract class BaseAssembly extends Assembly {
      * @return the configuration of the component that was installed
      */
     protected final <T> ProvideableBeanConfiguration<T> provide(Op<T> factory) {
-        return install(factory).provide();
+        ProvideableBeanConfiguration<T> configuration = bean().install(factory);
+        return configuration.provide();
     }
 
     protected final void provideAll(ServiceLocator locator) {

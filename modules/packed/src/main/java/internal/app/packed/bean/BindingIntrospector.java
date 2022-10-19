@@ -78,6 +78,12 @@ public final class BindingIntrospector implements OnBinding {
                 throw new IllegalArgumentException(variable + " is a primitive type and cannot be bound to null");
             }
         } else {
+            if (!variable.getType().isAssignableFrom(obj.getClass())) {
+                // Maybe throw an InternalExtensionException?
+                // As it is the responsibility of the extension
+                // to throw a more fitting exception
+                throw new ClassCastException("? of type " + variable.getType() + " cannot be bound to object of type " + obj.getClass());
+            }
 
         }
         // Check assignable to

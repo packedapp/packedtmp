@@ -369,10 +369,10 @@ public final class BeanSetup {
         return bean;
     }
 
-    public static BeanSetup installClass(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Class<?> clazz,
+    public static BeanSetup installClass(ExtensionSetup installedBy, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Class<?> clazz,
             BeanHandle.InstallOption... options) {
         requireNonNull(clazz, "clazz is null");
-        return install(beanKind, clazz, BeanSourceKind.CLASS, clazz, operator, realm, extensionOwner, options);
+        return install(beanKind, clazz, BeanSourceKind.CLASS, clazz, installedBy, realm, extensionOwner, options);
     }
 
     public static BeanSetup installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
