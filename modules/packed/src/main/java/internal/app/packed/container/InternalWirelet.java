@@ -18,7 +18,6 @@ package internal.app.packed.container;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.application.PackedApplicationDriver;
 
 /**
  * A special wirelet for internal usage where the logic of the wirelet is embedded directly into the wirelet.
@@ -42,10 +41,10 @@ public abstract class InternalWirelet extends Wirelet {
         return application;
     }
 
-    protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
-        // Ide'en er at vi kan lave en ny application driver.. Hvor vi apply'er settings..
-        return driver;
-    }
+//    protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
+//        // Ide'en er at vi kan lave en ny application driver.. Hvor vi apply'er settings..
+//        return driver;
+//    }
 
     /**
      * Invoked by the runtime when the component is initially wired at build-time.

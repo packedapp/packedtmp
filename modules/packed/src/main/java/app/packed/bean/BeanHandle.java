@@ -25,7 +25,6 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -55,17 +54,17 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     // We need a extension bean
-    public OperationHandle addFunctionalOperation(ExtensionBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
+    public OperationHandle addFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
             Object functionInstance) {
         // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
         throw new UnsupportedOperationException();
     }
 
-    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, MethodHandle methodHandle) {
+    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, MethodHandle methodHandle) {
         return addOperation(operator, Op.ofMethodHandle(methodHandle));
     }
 
-    public OperationHandle addOperation(ExtensionBeanConfiguration<?> operator, Op<?> operation) {
+    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
         throw new UnsupportedOperationException();
     }
 
@@ -93,11 +92,12 @@ public final /* primitive */ class BeanHandle<T> {
      * @throws UnsupportedOperationException
      *             if called on a functional bean {@code (beanClass == void.class)}
      */
-    public Key<?> defaultKey() {
+    @SuppressWarnings("unchecked")
+    public Key<T> defaultKey() {
         if (beanClass() == void.class) {
             throw new UnsupportedOperationException("Keys are not support for void bean classes");
         }
-        return Key.of(beanClass());
+        return (Key<T>) Key.of(beanClass());
     }
 
     /**

@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -87,7 +87,7 @@ public final class MethodIntrospector implements OnMethod {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
+    public OperationHandle newOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType) {
         requireNonNull(operator, "operator is null");
         // TODO, we must check this.operator er samme som operator eller en child of
         // Maaske er det et speciel tilfaelde af man vil invoke fra en anden container...

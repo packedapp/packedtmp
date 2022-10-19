@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Supplier;
+
 import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
@@ -34,7 +36,9 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     /** The internal configuration iof the bean. */
     final BeanSetup bean;
 
-    private final OldHelper sb;
+    BeanInstanceServiceSetup oldSetup;
+
+    InternalServiceExtension oldSms;
 
     /**
      * @param handle
@@ -43,10 +47,9 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     public ProvideableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
         bean = BeanSetup.crack((BeanHandle<?>) handle);
-        this.sb = new OldHelper();
     }
 
-    public Key<?> defaultKey() {
+    public Key<T> defaultKey() {
         return handle().defaultKey();
     }
 
@@ -57,30 +60,61 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     public ProvideableBeanConfiguration<T> export() {
-        bean.container.sm.serviceExport(defaultKey(), bean.accessOperation());
-        sb.export();
-        return this;
+        return exportAs(defaultKey());
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Class<? super T> key) {
-        bean.container.sm.serviceExport(Key.of(key), bean.accessOperation());
-        sb.export();
-        return this;
+        return exportAs(Key.of(key));
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
         bean.container.sm.serviceExport(key, bean.accessOperation());
-        sb.export();
+        
+        requireNonNull(oldSetup);
+        oldSms.ios.exportsOrCreate().export(oldSetup);
+        
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> ProvideableBeanConfiguration<T> initializeWith(Class<K> key, K instance) {
+        super.initializeWith(key, instance);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> ProvideableBeanConfiguration<T> initializeWith(Key<K> key, K instance) {
+        super.initializeWith(key, instance);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> ProvideableBeanConfiguration<T> initializeWithDelayed(Class<K> key, Supplier<K> supplier) {
+        super.initializeWithDelayed(key, supplier);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <K> ProvideableBeanConfiguration<T> initializeWithDelayed(Key<K> key, Supplier<K> supplier) {
+        super.initializeWithDelayed(key, supplier);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ProvideableBeanConfiguration<T> named(String name) {
+        super.named(name);
         return this;
     }
 
     public ProvideableBeanConfiguration<T> provide() {
-        Key<?> key = handle().defaultKey();
-        bean.container.sm.serviceProvide(key, bean.accessOperation());
-        sb.provide();
-        return this;
+        return provideAs(handle().defaultKey());
     }
-
+    
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -91,9 +125,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Key)
      */
     public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
-        bean.container.sm.serviceProvide(Key.of(key), bean.accessOperation());
-        sb.provideAs(key);
-        return this;
+        return provideAs(Key.of(key));
     }
 
     /**
@@ -106,55 +138,16 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        bean.container.sm.serviceProvide(key, bean.accessOperation());
-        sb.provideAs(key);
+        Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
+        bean.container.sm.serviceProvide(k, bean.accessOperation());
+        
+        // Old code
+        oldSms = bean.container.injectionManager;
+        oldSetup = new BeanInstanceServiceSetup(bean, k);
+        oldSms.addService(oldSetup);
+
+        bean.container.useExtension(ServiceExtension.class);
+        
         return this;
     }
-
-    final class OldHelper {
-        BeanInstanceServiceSetup setup;
-
-        InternalServiceExtension sms;
-
-        public void export() {
-            requireNonNull(setup);
-            sms.ios.exportsOrCreate().export(setup);
-            // export = InternalServiceUtil.checkKey(bean.beanClass, handle.defaultKey());
-            // bean.container.useExtension(ServiceExtension.class);
-        }
-
-        public void provide() {
-            Key<?> provide = InternalServiceUtil.checkKey(bean.beanClass, defaultKey());
-
-            sms = bean.container.injectionManager;
-            setup = new BeanInstanceServiceSetup(bean, provide);
-            sms.addService(setup);
-
-            bean.container.useExtension(ServiceExtension.class);
-        }
-
-        public void provideAs(Class<?> key) {
-            Key<?> provide = InternalServiceUtil.checkKey(bean.beanClass, key);
-            sms = bean.container.injectionManager;
-            setup = new BeanInstanceServiceSetup(bean, provide);
-            sms.addService(setup);
-        }
-
-        public void provideAs(Key<?> key) {
-            Key<?> provide = InternalServiceUtil.checkKey(bean.beanClass, key);
-            sms = bean.container.injectionManager;
-            setup = new BeanInstanceServiceSetup(bean, provide);
-            sms.addService(setup);
-        }
-    }
 }
-//Tror ikke den kan noget PBC ikke kan.
-//Men vi kan kraeve den som parameter nogle steder.
-
-//Nu har vi en.. Saa skal vi have lagt de services ting ud i handle...
-//Maaske paanaer export()??? Hoere vel til export extension
-
-//
-//public <X extends Runnable & Callable<String>> X foo() {
-//  return null;
-//}

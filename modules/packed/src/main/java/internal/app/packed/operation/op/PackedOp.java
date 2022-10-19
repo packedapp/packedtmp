@@ -40,9 +40,7 @@ import internal.app.packed.operation.op.PackedOp.TerminalOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
-/**
- * Internal implementation of Op.
- */
+/** The internal implementation of Op. */
 @SuppressWarnings("rawtypes")
 public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, DelegatingOp {
 
@@ -54,6 +52,10 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
 
     PackedOp(OperationType type) {
         this.type = requireNonNull(type, "type is null");
+    }
+
+    public OperationSetup createFactoryOperation(BeanSetup bean) {
+        return null;
     }
 
     /** {@inheritDoc} */

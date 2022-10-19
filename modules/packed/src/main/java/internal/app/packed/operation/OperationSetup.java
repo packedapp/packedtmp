@@ -36,14 +36,14 @@ import internal.app.packed.util.ThrowableUtil;
 /** Represents an operation on a bean. */
 public final class OperationSetup {
 
-    /** An empty array of {@code BindingSetup}. */
-    private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
-
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
             void.class, OperationSetup.class);
 
-    /** The bean this operation concerns. */
+    /** An empty array of {@code BindingSetup}. */
+    private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
+
+    /** The bean this operation belongs to. */
     public final BeanSetup bean;
 
     /** Bindings for this operation. */
@@ -58,54 +58,23 @@ public final class OperationSetup {
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
 
+    /** Any nested binding this operation is a part of. */
     @Nullable
-    public final NestedBindingSetup parentBinding;
+    public final NestedBindingSetup nestedBinding;
 
-    /** The underlying target of the operation. */
+    /** The target of the operation. */
     public final OperationTarget target;
 
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, InvocationSite invoker, OperationTarget operationTarget, @Nullable NestedBindingSetup nested) {
+    public OperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite, OperationTarget operationTarget, @Nullable NestedBindingSetup nestedBinding) {
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
-        this.invocationSite = requireNonNull(invoker);
+        this.invocationSite = requireNonNull(invocationSite);
         this.target = requireNonNull(operationTarget);
-        this.parentBinding = nested;
-
+        this.nestedBinding = nestedBinding;
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
-    }
-
-    /** {@return a new mirror.} */
-    public OperationMirror mirror() {
-        OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
-
-        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
-        try {
-            MH_MIRROR_INITIALIZE.invokeExact(mirror, this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        return mirror;
-    }
-
-    public void forEachBinding(Consumer<? super BindingSetup> binding) {
-        for (BindingSetup bs : bindings) {
-            if (bs instanceof NestedBindingSetup ns) {
-                ns.operation.forEachBinding(binding);
-            }
-            binding.accept(bs);
-        }
-    }
-    
-    // We need it for calling into nested
-    public void resolve(Introspector introspector) {
-        for (int i = 0; i < bindings.length; i++) {
-            if (bindings[i] == null) {
-                ParameterIntrospector.bind(introspector, this, i);
-            }
-        }
     }
 
     public MethodHandle buildInvoker() {
@@ -125,5 +94,37 @@ public final class OperationSetup {
      */
     public void codegen() {
 
+    }
+    
+    // readOnly. Will not work if for example, resolving a binding
+    public void forEachBinding(Consumer<? super BindingSetup> binding) {
+        for (BindingSetup bs : bindings) {
+            if (bs instanceof NestedBindingSetup nested) {
+                nested.operation.forEachBinding(binding);
+            }
+            binding.accept(bs);
+        }
+    }
+
+    /** {@return a new mirror.} */
+    public OperationMirror mirror() {
+        OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
+
+        // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
+        try {
+            MH_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
+    }
+
+    // We need it for calling into nested
+    public void resolve(Introspector introspector) {
+        for (int i = 0; i < bindings.length; i++) {
+            if (bindings[i] == null) {
+                ParameterIntrospector.bind(introspector, this, i);
+            }
+        }
     }
 }

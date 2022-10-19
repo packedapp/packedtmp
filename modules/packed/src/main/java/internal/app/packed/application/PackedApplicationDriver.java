@@ -205,11 +205,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return new PackedApplicationDriver<>(this, w);
     }
 
-    @SuppressWarnings("unchecked")
-    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension<?>>... extensionTypes) {
-        // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
-        throw new UnsupportedOperationException();
-    }
+//    @SuppressWarnings("unchecked")
+//    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension<?>>... extensionTypes) {
+//        // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
+//        throw new UnsupportedOperationException();
+//    }
 
     /** Single implementation of {@link ApplicationDriver.Builder}. */
     public static final class Builder<A> implements ApplicationDriver.Builder<A> {

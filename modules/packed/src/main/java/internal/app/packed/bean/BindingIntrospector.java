@@ -121,7 +121,7 @@ public final class BindingIntrospector implements OnBinding {
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> invokingExtension() {
-        return operation.invocationSite.operator.extensionType;
+        return operation.invocationSite.invokingExtension.extensionType;
     }
 
     /** {@inheritDoc} */

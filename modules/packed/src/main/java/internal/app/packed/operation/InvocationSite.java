@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.base.Nullable;
 import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
@@ -32,10 +34,10 @@ public final class InvocationSite {
     public final InvocationType invocationType;
 
     /** The extension that operates the operation. MethodHandles will be generated relative to this. */
-    public final ExtensionSetup operator;
+    public final ExtensionSetup invokingExtension;
 
-    public InvocationSite(InvocationType invocationType, ExtensionSetup operator) {
-        this.invocationType = invocationType;
-        this.operator = operator;
+    public InvocationSite(InvocationType invocationType, ExtensionSetup invokingExtension) {
+        this.invocationType = requireNonNull(invocationType);
+        this.invokingExtension = requireNonNull(invokingExtension);
     }
 }

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
@@ -63,6 +64,8 @@ public final class ApplicationSetup {
     @Nullable
     final DynamicAccessor runtimeAccessor;
 
+    final ArrayList<Runnable> codegenActions = new ArrayList<>();
+
     /**
      * Create a new application setup
      * 
@@ -88,7 +91,23 @@ public final class ApplicationSetup {
         if (goal.isLaunchable()) {
             container.codegen();
         }
+
+        // For each lifetime create lifetime operations
+        //// And install them in the lifetime
+
+        // Services?
+        // get() -> MH.invokeExact(ExtensionContext);
+        // ServiceManager
         
+        // ServiceLocator Key -> MethodHandle
+        
+
+        // Packed relies on lazily created codegeneration
+
+        // If this fails it is always a bug in either Packed or one of its extensions.
+        // It is never a user error.
+        codegenActions.forEach(r -> r.run());
+
         launcher = new PackedApplicationLauncher(this);
     }
 

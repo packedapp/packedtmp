@@ -79,17 +79,17 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         serviceExport(new ExportedService(operation, key));
     }
 
-    public ProvidedService serviceProvide(Key<?> key, OperationSetup bos) {
+    public ProvidedService serviceProvide(Key<?> key, OperationSetup operation) {
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
-        ProvidedService currentProvider = entry.provider;
+        ProvidedService provider = entry.provider;
 
         // We must fail if there is already a provider of the service
-        if (currentProvider != null) {
-            if (currentProvider.operation.target instanceof BeanInstanceAccess) {
-                throw new DublicateServiceProvideException("Another bean of type " + currentProvider.operation.bean.beanClass
+        if (provider != null) {
+            if (provider.operation.target instanceof BeanInstanceAccess) {
+                throw new DublicateServiceProvideException("Another bean of type " + provider.operation.bean.beanClass
                         + " is already providing a service for Key<" + key.toStringSimple() + ">");
-            } else if (currentProvider.operation.target instanceof MethodOperationTarget m) {
+            } else if (provider.operation.target instanceof MethodOperationTarget m) {
                 String ss = StringFormatter.formatShortWithParameters(m.method());
                 throw new DublicateServiceProvideException("A method " + ss + " is already providing a service for Key<" + key + ">");
             }
@@ -97,18 +97,18 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }
 
         // Create a new provider
-        entry.provider = currentProvider = new ProvidedService(bos, entry);
+        entry.provider = provider = new ProvidedService(operation, entry);
 
-        bos.mirrorSupplier = () -> new ServiceProvisionMirror(entry.provider);
+        operation.mirrorSupplier = () -> new ServiceProvisionMirror(entry.provider);
 
         // add the service provider to the bean
-        bos.bean.providingOperations.add(currentProvider);
+        operation.bean.providingOperations.add(provider);
 
         if (exportAll) {
-            serviceExport(key, bos);
+            serviceExport(key, operation);
         }
         
-        return currentProvider;
+        return provider;
     }
 
     public void verify() {

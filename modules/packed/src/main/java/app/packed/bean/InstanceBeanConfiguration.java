@@ -17,6 +17,7 @@ package app.packed.bean;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.lifetime.RunState;
@@ -39,17 +40,32 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         super(handle);
     }
 
-    // Understoetter vi altid DependencyInjection???
-    // bindServiceInstance????
-    <K> InstanceBeanConfiguration<T> bindInstance(Class<K> key, K instance) {
-        return bindInstance(Key.of(key), instance);
+    // How do we handle null?
+    
+    public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, K instance) {
+        return initializeWith(Key.of(key), instance);
     }
 
-    // Taenker den overrider
-    <K> InstanceBeanConfiguration<T> bindInstance(Key<K> key, K instance) {
+    public <K> InstanceBeanConfiguration<T> initializeWith(Key<K> key, K instance) {
         throw new UnsupportedOperationException();
     }
 
+    public <K> InstanceBeanConfiguration<T> initializeWithDelayed(Class<K> key, Supplier<K> supplier) {
+        return initializeWithDelayed(Key.of(key), supplier);
+    }
+
+    public <K> InstanceBeanConfiguration<T> initializeWithDelayed(Key<K> key, Supplier<K> supplier) {
+        // delayedInitiatedWith
+        // Taenker vi har et filled array som er available when initiating the lifetime
+
+        // Her skal vi ogsaa taenke ind at det skal vaere en application singleton vi injecter ind i.
+        // Altsaa vi vil helst ikke initiere en Session extension bean med MHs hver gang
+
+        return this;
+    }
+
+    
+    
     /**
      * <p>
      * The decorator must return a non-null bean instance that is assignable to {@link #beanClass()}. Failure do to so will
@@ -83,6 +99,8 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     }
 
     // Peek when???? Maybe wrap a factory for now
+    //// Do we want to peek on instances???? I don't think so
+    // peekAfterCreate
     InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
         // peek at constr
         handle().peekInstance(consumer);

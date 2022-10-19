@@ -139,7 +139,7 @@ public class OperationMirror implements Mirror {
         // It might be a different extension that actually invokes it. For example,
         // a lifetime operations might be invoked by ContainerExtension
         // Nahh doesn't work. Must always be BeanExtension
-        return operation().invocationSite.operator.extensionType;
+        return operation().invocationSite.invokingExtension.extensionType;
     }
 
     /**

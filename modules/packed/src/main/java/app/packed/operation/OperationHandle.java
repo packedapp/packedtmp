@@ -16,13 +16,14 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
-import app.packed.container.ExtensionBeanConfiguration;
+import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.operation.PackedOperationHandle;
 
 /**
@@ -43,14 +44,18 @@ import internal.app.packed.operation.PackedOperationHandle;
  * <ul>
  * </ul>
  * 
- * @see OnField#newGetOperation(ExtensionBeanConfiguration)
- * @see OnField#newSetOperation(ExtensionBeanConfiguration)
- * @see OnField#newOperation(ExtensionBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
- * @see OnMethod#newOperation(ExtensionBeanConfiguration)
+ * @see OnField#newGetOperation(InstanceBeanConfiguration)
+ * @see OnField#newSetOperation(InstanceBeanConfiguration)
+ * @see OnField#newOperation(InstanceBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
+ * @see OnMethod#newOperation(InstanceBeanConfiguration)
  */
 // Must be used within #onX I would think????
 public sealed interface OperationHandle permits PackedOperationHandle {
  
+    default void onBuild(Consumer<MethodHandle> action) {
+        
+    }
+    
     /**
      * 
      * <p>
@@ -62,7 +67,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if called more than once. Or if called before the handle can be computed
      * @throws UnsupportedOperationException
      *             if method handle are not supported
-     * @see ExtensionBeanConfiguration#bindDelayed(Class, Supplier)
+     * @see ExtensionBeanConfiguration#initializeWithDelayed(Class, Supplier)
      */
     MethodHandle buildInvoker(); // was computeMethodHandle()?
     

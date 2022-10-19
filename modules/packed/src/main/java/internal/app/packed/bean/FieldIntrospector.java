@@ -31,8 +31,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
@@ -101,7 +101,7 @@ public final class FieldIntrospector implements OnField {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
+    public OperationHandle newGetOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType) {
         MethodHandle mh = introspector.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
         return new PackedOperationHandle(this.operator, add(mh, invocationType, accessMode));
@@ -115,7 +115,7 @@ public final class FieldIntrospector implements OnField {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(ExtensionBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
+    public OperationHandle newOperation(InstanceBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
 
         Lookup lookup = introspector.oc.lookup(field);
 
@@ -132,7 +132,7 @@ public final class FieldIntrospector implements OnField {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newSetOperation(ExtensionBeanConfiguration<?> operator, InvocationType invocationType) {
+    public OperationHandle newSetOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType) {
         Lookup lookup = introspector.oc.lookup(field);
 
         MethodHandle methodHandle;

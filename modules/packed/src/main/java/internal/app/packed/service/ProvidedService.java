@@ -15,11 +15,14 @@
  */
 package internal.app.packed.service;
 
+import java.lang.invoke.MethodHandle;
+
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
+// IDK
 public final class ProvidedService {
 
     /** The operation that provides the service. */
@@ -28,6 +31,8 @@ public final class ProvidedService {
     /** The key under which this service is provided. */
     public final ServiceManagerEntry entry;
 
+    public MethodHandle provider;
+    
     ProvidedService(OperationSetup operation, ServiceManagerEntry entry) {
         this.operation = operation;
         this.entry = entry;

@@ -8,10 +8,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
@@ -26,31 +26,51 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /** Creates a new bean extension point */
     BeanExtensionPoint() {}
 
-    public <T> ExtensionBeanConfiguration<T> install(Class<T> implementation) {
-        ExtensionSetup es = usedBy(useSite());
-        BeanSetup bean = BeanSetup.installClass(extension().extensionSetup, es.extensionRealm, es, BeanKind.CONTAINER, implementation);
-        return new ExtensionBeanConfiguration<>(new BeanHandle<>(bean));
+    // On BeanExtensionPoint????
+    // Or maybe on the handle itself
+
+    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, BeanHandle<P> beanToInitialize, BiConsumer<? super B, ? super P> consumer) {
+
     }
 
-    public <T> ExtensionBeanConfiguration<T> install(Op<T> factory) {
+    // Same container I think
+    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, InstanceBeanConfiguration<P> beanToInitialize, BiConsumer<? super B, ? super P> consumer) {
+        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
+        // Ja det syntes jeg...
+        // Skal de vaere samme container??
+
+        // Packed will call consumer(T, P) once provideBean has been initialized
+        // Skal vi checke provideBean depends on consumerBean
+        // framework will call
+        // consumer(T, P) at initialization time
+
+    }
+
+    public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
+        ExtensionSetup es = usedBy(useSite());
+        BeanSetup bean = BeanSetup.installClass(extension().extensionSetup, es.extensionRealm, es, BeanKind.CONTAINER, implementation);
+        return new InstanceBeanConfiguration<>(new BeanHandle<>(bean));
+    }
+
+    public <T> InstanceBeanConfiguration<T> install(Op<T> factory) {
         ExtensionSetup es = usedBy(useSite());
         BeanSetup bean = BeanSetup.installOp(extension().extensionSetup, es.extensionRealm, es, BeanKind.CONTAINER, factory);
-        return new ExtensionBeanConfiguration<>(new BeanHandle<>(bean));
+        return new InstanceBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     // should not call anything on the returned bean
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }
 
-    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super ExtensionBeanConfiguration<T>> action) {
+    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         throw new UnsupportedOperationException();
     }
 
-    public <T> ExtensionBeanConfiguration<T> installInstance(T instance) {
+    public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
         ExtensionSetup es = usedBy(useSite());
         BeanSetup bean = BeanSetup.installInstance(extension().extensionSetup, es.extensionRealm, es, instance);
-        return new ExtensionBeanConfiguration<>(new BeanHandle<>(bean));
+        return new InstanceBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
     public <T> BeanHandle<T> newContainerBean(Class<T> clazz, BeanHandle.InstallOption... options) {
