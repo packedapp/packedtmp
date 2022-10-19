@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.Qualifier;
-import internal.app.packed.service.inject.InternalDependency;
+import internal.app.packed.oldservice.inject.InternalDependency;
 
 /**
  *

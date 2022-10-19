@@ -9,7 +9,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import internal.app.packed.service.inject.ExtensionInjectionManager;
+import internal.app.packed.oldservice.inject.ExtensionInjectionManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;

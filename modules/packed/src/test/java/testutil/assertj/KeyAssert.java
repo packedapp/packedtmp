@@ -18,7 +18,7 @@ package testutil.assertj;
 import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
-import internal.app.packed.service.inject.InternalDependency;
+import internal.app.packed.oldservice.inject.InternalDependency;
 
 /**
  *

@@ -41,7 +41,7 @@ import app.packed.container.Wirelet;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.service.PackedServiceLocator;
+import internal.app.packed.oldservice.PackedServiceLocator;
 import internal.app.packed.util.LookupUtil;
 
 /**

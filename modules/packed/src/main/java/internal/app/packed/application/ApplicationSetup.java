@@ -29,7 +29,7 @@ import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.service.inject.ApplicationInjectionManager;
+import internal.app.packed.oldservice.inject.ApplicationInjectionManager;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;

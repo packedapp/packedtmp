@@ -29,7 +29,7 @@ import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.service.InternalServiceExtension;
+import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

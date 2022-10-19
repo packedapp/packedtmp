@@ -5,7 +5,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
 import app.packed.container.Extension;
-import internal.app.packed.service.runtime.ServiceRegistry;
+import internal.app.packed.oldservice.runtime.ServiceRegistry;
 import internal.app.packed.util.LookupUtil;
 
 public class InternalInfuserTester {

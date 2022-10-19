@@ -23,7 +23,7 @@ import app.packed.operation.Variable;
 import internal.app.packed.bean.BindingIntrospector;
 import internal.app.packed.bean.Introspector;
 import internal.app.packed.bean.Introspector.Delegate;
-import internal.app.packed.service.inject.InternalDependency;
+import internal.app.packed.oldservice.inject.InternalDependency;
 
 /**
  *

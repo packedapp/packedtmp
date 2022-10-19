@@ -32,13 +32,13 @@ import app.packed.operation.Op;
 import internal.app.packed.bean.FieldIntrospector;
 import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.oldservice.InternalServiceExtension;
+import internal.app.packed.oldservice.ServiceConfiguration;
+import internal.app.packed.oldservice.inject.BeanMemberDependencyNode;
+import internal.app.packed.oldservice.inject.DependencyHolder;
+import internal.app.packed.oldservice.inject.DependencyNode;
+import internal.app.packed.oldservice.runtime.AbstractServiceLocator;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.service.InternalServiceExtension;
-import internal.app.packed.service.ServiceConfiguration;
-import internal.app.packed.service.inject.BeanMemberDependencyNode;
-import internal.app.packed.service.inject.DependencyHolder;
-import internal.app.packed.service.inject.DependencyNode;
-import internal.app.packed.service.runtime.AbstractServiceLocator;
 
 /**
  * An extension that deals with the service functionality of a container.

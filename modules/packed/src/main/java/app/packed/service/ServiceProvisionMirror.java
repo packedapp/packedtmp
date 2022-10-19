@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.operation.newInject.ProvidedService;
+import internal.app.packed.service.ProvidedService;
 
 /**
  *

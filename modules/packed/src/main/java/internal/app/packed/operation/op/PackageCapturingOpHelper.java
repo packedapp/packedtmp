@@ -34,8 +34,8 @@ import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
+import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
-import internal.app.packed.service.inject.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 

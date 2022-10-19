@@ -37,7 +37,7 @@ import app.packed.container.UserOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
-import internal.app.packed.operation.newInject.ServiceCircularDependencyChecker;
+import internal.app.packed.service.ServiceCircularDependencyChecker;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 

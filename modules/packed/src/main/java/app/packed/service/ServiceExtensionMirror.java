@@ -8,9 +8,9 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
-import internal.app.packed.operation.newInject.ExportedService;
-import internal.app.packed.operation.newInject.ServiceEntry;
-import internal.app.packed.service.InternalServiceExtension;
+import internal.app.packed.oldservice.InternalServiceExtension;
+import internal.app.packed.service.ExportedService;
+import internal.app.packed.service.ServiceEntry;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {

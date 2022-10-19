@@ -17,7 +17,7 @@ package app.packed.base;
 
 import org.assertj.core.api.AbstractAssert;
 
-import internal.app.packed.service.inject.InternalDependency;
+import internal.app.packed.oldservice.inject.InternalDependency;
 
 /**
  *

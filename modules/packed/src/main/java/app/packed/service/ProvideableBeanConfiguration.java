@@ -21,9 +21,9 @@ import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.service.InternalServiceExtension;
-import internal.app.packed.service.InternalServiceUtil;
-import internal.app.packed.service.build.BeanInstanceServiceSetup;
+import internal.app.packed.oldservice.InternalServiceExtension;
+import internal.app.packed.oldservice.InternalServiceUtil;
+import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 
 /**
  * A configuration of a container bean.
