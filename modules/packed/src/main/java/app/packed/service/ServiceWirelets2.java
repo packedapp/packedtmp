@@ -34,6 +34,8 @@ public class ServiceWirelets2 {
     
     // Hmm gider vi gemme de assemblys paa runtime?
     // Maaske hellere noget incremental???
+    
+    // Smid dem paa Qualifier?
     @Qualifier
     @interface LinkedAssemblyQualifier {
         Class<? extends Assembly> value();
