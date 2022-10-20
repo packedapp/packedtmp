@@ -16,38 +16,20 @@
 package internal.app.packed.operation.op;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static testutil.assertj.Assertions.checkThat;
-import static testutil.assertj.Assertions.npe;
 
 import java.lang.annotation.Retention;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
-import app.packed.base.Key;
 import app.packed.operation.Op;
 import app.packed.service.Qualifier;
 
 /** Test of {@link Op}. */
+@Disabled
 public class FactoryTest {
 
-    @Test
-    public void ofInstance() {
-        Op<String> f = Op.ofInstance("foo");
-        checkThat(f).is(new Key<String>() {});
-        // checkThat(f).hasBound(String.class, String.class);
-
-    }
-
-    public static class ForInstance {
-
-        @Test
-        public void testNpe() {
-            npe(Op::ofInstance, "instance");
-
-            // assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
-        }
-    }
+    
 
     // /** Tests {@link Factory#forInstance(Object)}. */
     // @Test

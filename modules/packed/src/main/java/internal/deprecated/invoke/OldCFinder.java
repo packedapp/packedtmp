@@ -30,7 +30,7 @@ import internal.app.packed.util.StringFormatter;
 /**
  *
  */
-final class ConstructorFinder {
+final class OldCFinder {
 
     /**
      * @param clazz

@@ -31,16 +31,12 @@ import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.op.PackedOp.DelegatingOp;
-import internal.app.packed.operation.op.PackedOp.TerminalOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /** The internal implementation of Op. */
 @SuppressWarnings("rawtypes")
-public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, DelegatingOp {
+public abstract non-sealed class PackedOp<R> implements Op<R> {
 
     /** A var handle that can update the {@link #container()} field in this class. */
     private static final VarHandle VH_CAPTURING_OP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "op", PackedOp.class);
@@ -50,10 +46,14 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
 
     PackedOp(OperationType type) {
         this.type = requireNonNull(type, "type is null");
+        this.mh = null;
     }
 
-    public OperationSetup createFactoryOperation(BeanSetup bean) {
-        return null;
+    final MethodHandle mh;
+
+    PackedOp(OperationType type, MethodHandle mh) {
+        this.type = requireNonNull(type, "type is null");
+        this.mh = mh;
     }
 
     /** {@inheritDoc} */
@@ -96,18 +96,16 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
 
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
+        requireNonNull(action, "action is null");
+        if (type.returnType() == void.class) {
+            throw new UnsupportedOperationException("This method cannot be used on Op's that have void return type, [ type = " + type + "]");
+        }
+
         return new PeekableOp<>(this, action);
     }
 
-    public final TerminalOp terminalOp() {
-        if (this instanceof DelegatingOp<?> d) {
-            return d.terminalOp();
-        }
-        return (TerminalOp<?>) this;
-    }
-
-    public  MethodHandle toMethodHandle(Lookup lookup) {
-        throw new UnsupportedOperationException();
+    public MethodHandle toMethodHandle(Lookup lookup) {
+        return requireNonNull(mh);
     }
 
     /** {@inheritDoc} */
@@ -132,28 +130,19 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         }
     }
 
-    /** Adapts an existing op with a new operation type */
-    static final class AdaptedOp<R> extends DelegatingOp<R> {
-
-        /**
-         * @param type
-         */
-        AdaptedOp(OperationType type, PackedOp<R> delegate) {
-            super(type, delegate);
-        }
-    }
-
     /** A binding op. */
-    static final class BoundOp<R> extends DelegatingOp<R> {
+    static final class BoundOp<R> extends PackedOp<R> {
 
         /** The arguments to insert. */
         private final Object[] arguments;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final int index;
+        final PackedOp<R> delegate;
 
         BoundOp(OperationType type, PackedOp<R> delegate, int index, Object[] arguments) {
-            super(type, delegate);
+            super(type);
+            this.delegate = delegate;
             this.index = index;
             this.arguments = arguments;
         }
@@ -166,65 +155,18 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         }
     }
 
-    /** An op that has no parameters and returns the same value every time, used by {@link Op#ofInstance(Object)}. */
-    public static final class ConstantOp<R> extends TerminalOp<R> {
-
-        /** A precomputed constant method handle. */
-        private final MethodHandle methodHandle;
-
-        public ConstantOp(R instance) {
-            super(OperationType.of(instance.getClass()));
-            this.methodHandle = MethodHandles.constant(instance.getClass(), instance);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle toMethodHandle(Lookup ignore) {
-            return methodHandle;
-        }
-    }
-
-    static abstract non-sealed class DelegatingOp<R> extends PackedOp<R> {
-
-        final PackedOp<?> delegate;
-
-        /**
-         * @param type
-         */
-        DelegatingOp(OperationType type, PackedOp<?> delegate) {
-            super(type);
-            this.delegate = delegate;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle toMethodHandle(Lookup lookup) {
-            return delegate.toMethodHandle(lookup);
-        }
-    }
-
-    // Should just create eagerly create a MH and use Op.ofMethodHandle
-    static final class PackedCapturingOp<R> extends TerminalOp<R> {
-
-        public final MethodHandle methodHandle;
+    static final class PackedCapturingOp<R> extends PackedOp<R> {
 
         /**
          * @param typeLiteralOrKey
          */
         PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
-            super(type);
-            this.methodHandle = methodHandle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle toMethodHandle(Lookup lookup) {
-            return methodHandle;
+            super(type, methodHandle);
         }
     }
 
     /** An implementation of the {@link Op#peek(Consumer)}} method. */
-    static final class PeekableOp<R> extends DelegatingOp<R> {
+    static final class PeekableOp<R> extends PackedOp<R> {
 
         /** A method handle for {@link Function#apply(Object)}. */
         private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
@@ -232,11 +174,11 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         /** The method handle that was unreflected. */
         private final MethodHandle consumer;
 
+        private final PackedOp<?> delegate;
+
         PeekableOp(PackedOp<R> delegate, Consumer<? super R> action) {
-            super(delegate.type, delegate);
-            if (super.type.returnType() == void.class) {
-                throw new UnsupportedOperationException("This method cannot be used on Op's that have void return type, [ type = " + super.type + "]");
-            }
+            super(delegate.type);
+            this.delegate = delegate;
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
             this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
         }
@@ -253,16 +195,6 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         private static Object accept(Consumer consumer, Object object) {
             consumer.accept(object);
             return object;
-        }
-    }
-
-    static abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
-
-        /**
-         * @param type
-         */
-        TerminalOp(OperationType type) {
-            super(type);
         }
     }
 }

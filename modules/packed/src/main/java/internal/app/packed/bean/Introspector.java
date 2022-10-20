@@ -63,7 +63,7 @@ public final class Introspector {
 
     /** An internal lookup object. */
     private static final MethodHandles.Lookup PACKED = MethodHandles.lookup();
-    
+
     /** The bean that is being introspected. */
     public final BeanSetup bean;
 
@@ -206,7 +206,7 @@ public final class Introspector {
 
         // Introspection of members are done.
         // Now run through all operation bindings that have not been resolved
-        
+
         for (OperationSetup o : bean.operations) {
             o.resolve(this);
         }
@@ -216,7 +216,7 @@ public final class Introspector {
             e.introspector.onIntrospectionStart();
         }
     }
-    
+
     private void introspectClass() {}
 
     /**
@@ -267,15 +267,15 @@ public final class Introspector {
             }
         };
     }
-    
+
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.
      * <p>
      * This class is not safe for use with multiple threads.
      */
-    //TODO should we know whether or the lookup is Packed one or a user supplied??
+    // TODO should we know whether or the lookup is Packed one or a user supplied??
     // lookup.getClass().getModule==OpenClass.getModule...? nah virker ikke paa classpath
-   final class OpenClass {
+    final class OpenClass {
 
         /** The app.packed.base module. */
         private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
@@ -340,6 +340,7 @@ public final class Introspector {
                 throw new InaccessibleBeanMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
             }
         }
+
         private static boolean needsPrivateLookup(Member m) {
             // Needs private lookup, unless class is public or protected and member is public
             // We are comparing against the members declaring class..
@@ -348,6 +349,7 @@ public final class Introspector {
             int classModifiers = m.getDeclaringClass().getModifiers();
             return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
         }
+
         MethodHandle unreflectGetter(Field field) {
             Lookup lookup = lookup(field);
 

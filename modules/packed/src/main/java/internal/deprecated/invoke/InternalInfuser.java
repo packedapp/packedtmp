@@ -51,7 +51,7 @@ public final class InternalInfuser {
 
     private MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
         // First lets find a constructor
-        Constructor<?> constructor = ConstructorFinder.getConstructor(type, false, errorMaker);
+        Constructor<?> constructor = OldCFinder.getConstructor(type, false, errorMaker);
 
         OpenClass oc = OpenClass.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);

@@ -51,7 +51,7 @@ public abstract sealed class BeanMemberAccessor {
         return beanModels.get(beanClass);
     }
 
-    private Lookup lookup() {
+    Lookup lookup() {
         if (this instanceof ModuleLookupAccessor lookupAccessor) {
             return lookupAccessor.lookup;
         } else {
@@ -136,7 +136,7 @@ public abstract sealed class BeanMemberAccessor {
             this.type = requireNonNull(realmType);
         }
 
-        private MethodHandles.Lookup lookup() {
+        MethodHandles.Lookup lookup() {
             // Making a lookup for the realm.
             MethodHandles.Lookup l = cachedLookup;
             if (l == null) {

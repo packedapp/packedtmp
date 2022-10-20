@@ -15,7 +15,6 @@ import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.bean.BeanIntrospector;
@@ -44,8 +43,9 @@ import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.operation.OperationTarget.ConstructorOperationTarget;
+import internal.app.packed.operation.op.ExecutableOp;
 import internal.app.packed.operation.op.PackedOp;
-import internal.app.packed.operation.op.ReflectiveOp;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -84,7 +84,7 @@ public final class BeanSetup {
 
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
-    public final BeanInjectionManager injectionManager;
+    public BeanInjectionManager injectionManager;
 
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
@@ -133,7 +133,6 @@ public final class BeanSetup {
         this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
 
-
         // I think we want to have a single field for these 2
         // I think this was made like this, when I was unsure if we could
         // have containers managed by extensions
@@ -148,7 +147,6 @@ public final class BeanSetup {
             this.lifetime = new BeanLifetimeSetup(cls, this);
         }
 
-        this.injectionManager = new BeanInjectionManager(this);
     }
 
     // Relative to x
@@ -328,41 +326,34 @@ public final class BeanSetup {
         }
         bean.name = n;
 
-        boolean packedInstantiates = kind.hasInstances() && sourceKind != BeanSourceKind.INSTANCE;
+        if (bean.sourceKind == BeanSourceKind.CLASS && kind.hasInstances()) {
+            ExecutableOp<?> eo = ExecutableOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
+            MethodHandle mh = eo.toMethodHandle(bean.realm.beanAccessor().lookup());
 
-        if (packedInstantiates) {
+            OperationType type = eo.operationType;
 
-            // Vi skal have noget generelt support for POPs
-            // Bruger dem ogsaa i OnBindings
-
-            PackedOp<?> op;
-            if (bean.sourceKind == BeanSourceKind.CLASS) {
-                op = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
-            } else {
-                op = (PackedOp<?>) bean.source; // We always unpack source Op to PackedOp
-            }
+            OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), installedBy),
+                    new ConstructorOperationTarget(mh, eo.executable), null);
+            bean.operations.add(os);
+        } else if (sourceKind == BeanSourceKind.OP) {
+            PackedOp<?> op = (PackedOp<?>) bean.source; // We always unpack source Op to PackedOp
 
             // Extract a MethodHandlefrom the factory
             MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(op);
 
-            OperationType type = op.type();
-            // Create an instantiating operation
-            ExtensionSetup es = container.useExtensionSetup(BeanExtension.class, null);
-
-            // Passer jo ikke...
-
-            // pop skal lave en operationSetup????
-            OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), es), new BeanInstanceAccess(bean, mh), null);
+            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(bean, mh), null);
             bean.operations.add(os);
         }
+        
+        bean.injectionManager = new BeanInjectionManager(bean);
+
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE && bean.beanClass.getModule() != Introspector.JAVA_BASE_MODULE) {
             new Introspector(beanModel, bean, customIntrospector).introspect();
         }
 
-        // Maintain some tree logic
-        // Maybe we need to move this up
+        // Bean installed successfully, add bean to the container
         BeanSetup siebling = container.beanLast;
         if (siebling == null) {
             container.beanFirst = bean;

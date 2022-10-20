@@ -24,8 +24,7 @@ import app.packed.bean.BeanSourceKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.lifetime.pool.Accessor;
-import internal.app.packed.operation.op.PackedOp;
-import internal.app.packed.operation.op.ReflectiveOp;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * An injection manager for a bean.
@@ -69,24 +68,16 @@ public final class BeanInjectionManager implements DependencyProducer {
             this.singletonAccessor = null;
         }
 
-        
         // Only create an instance node if we have instances
         if (bean.sourceKind == BeanSourceKind.INSTANCE || !bean.beanKind.hasInstances()) {
             // Kan have en provide
             this.instanceNode = null;
         } else {
-            PackedOp<?> op;
-            if (bean.sourceKind == BeanSourceKind.CLASS) {
-                op = ReflectiveOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
-            } else {
-                op = (PackedOp<?>) bean.source; // We always unpack source Op to PackedOp
-            }
-            
-            // Extract a MethodHandlefrom the factory
-            MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(op);
+          
+            OperationSetup os = bean.operations.get(0);
 
-            List<InternalDependency> dependencies = InternalDependency.fromOperationType(op.type());// null;//factory.dependencies();
-            this.instanceNode = new BeanInstanceDependencyNode(bean, this, dependencies, mh);
+            List<InternalDependency> dependencies = InternalDependency.fromOperationType(os.type);// null;//factory.dependencies();
+            this.instanceNode = new BeanInstanceDependencyNode(bean, this, dependencies, os.target.methodHandle);
 
             bean.container.injectionManager.addConsumer(instanceNode);
         }

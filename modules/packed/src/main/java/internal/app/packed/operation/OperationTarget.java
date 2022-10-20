@@ -17,6 +17,7 @@ package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle.AccessMode;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -109,6 +110,29 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         }
     }
 
+    public static final class ConstructorOperationTarget extends OperationTarget implements OperationTargetMirror.OfConstructorInvoke {
+
+        private final Constructor<?> constructor;
+
+        /**
+         * @param methodHandle
+         * @param requiresBeanInstance
+         */
+        public ConstructorOperationTarget(MethodHandle methodHandle, Constructor<?> constructor) {
+            super(methodHandle, false);
+            this.constructor = constructor;
+        }
+
+        /** {@return the invokable method.} */
+        public Constructor<?> constructor() {
+            return constructor;
+        }
+
+        public String toString() {
+            return constructor.toString();
+        }
+    }
+    
     public static final class MethodOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodInvoke {
 
         private final Method method;

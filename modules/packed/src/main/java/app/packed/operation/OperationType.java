@@ -219,6 +219,7 @@ public final /* primitive */ class OperationType {
      *            the executable to return a op type for.
      */
     public static OperationType ofExecutable(Executable executable) {
+        // Is wether or not we need the bean a boolean property?
         requireNonNull(executable, "executable is null");
         Variable returnVariable = executable instanceof Method m ? Variable.ofMethodReturnType(m) : Variable.ofConstructor((Constructor<?>) executable);
         Parameter[] parameters = executable.getParameters();

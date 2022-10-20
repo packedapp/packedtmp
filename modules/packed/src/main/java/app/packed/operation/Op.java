@@ -33,7 +33,6 @@ import app.packed.base.Nullable;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.Inject;
 import internal.app.packed.operation.op.PackedOp;
-import internal.app.packed.operation.op.PackedOp.ConstantOp;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -126,30 +125,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
     public static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a operation that returns the specified instance every time the operation is invoked.
-     * 
-     * @param <T>
-     *            the type of value returned by the operation
-     * @param instance
-     *            the instance to return on every invocation
-     * @return the new operation
-     */
-//    * Produces a method handle of the requested return type which returns the given
-//    * constant value every time it is invoked.
-    // Hedder MethodHandle.constant
-    public static <T> Op<T> ofInstance(T instance) {
-//        * <p>
-//        * If the specified instance makes use of field or method injection the returned factory should not be used more than
-//        * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
-//        * factory.
-        requireNonNull(instance, "instance is null");
-        // Really no need for a ConstantOp..
-        // should just be able to cll ofMethodHAndle(OperationType.of(instance.getClass), Mh);
-        // toString() is nice though... Maybe keep it
-        return new ConstantOp<T>(instance);
     }
 
     /**
