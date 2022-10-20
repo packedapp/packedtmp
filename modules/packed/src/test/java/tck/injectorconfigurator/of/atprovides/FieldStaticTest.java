@@ -45,11 +45,10 @@ public class FieldStaticTest {
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
-        MixedFieldsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.factoryOf(MixedFieldsNoInstantiation.class)));
     }
 
     /** A helper class that can be instantiated. */
-public  static class MixedFieldsInstantiable {
+    public static class MixedFieldsInstantiable {
         //
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;

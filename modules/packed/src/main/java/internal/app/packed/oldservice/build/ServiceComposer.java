@@ -119,7 +119,7 @@ public abstract /* sealed */ class ServiceComposer extends AbstractComposer /* p
     // will decorate a service injected as itself
 
     public void map(Class<?> implementation) {
-        map(BeanExtensionPoint.factoryOf(implementation));
+       throw new UnsupportedOperationException();
     }
 
     /**

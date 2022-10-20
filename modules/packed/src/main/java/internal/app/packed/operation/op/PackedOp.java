@@ -32,9 +32,7 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.ConstantBindingSetup;
 import internal.app.packed.operation.op.PackedOp.DelegatingOp;
 import internal.app.packed.operation.op.PackedOp.TerminalOp;
 import internal.app.packed.util.LookupUtil;
@@ -96,10 +94,6 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         return bind(0, argument);
     }
 
-    public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
         return new PeekableOp<>(this, action);
@@ -112,7 +106,9 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         return (TerminalOp<?>) this;
     }
 
-    public abstract MethodHandle toMethodHandle(Lookup lookup);
+    public  MethodHandle toMethodHandle(Lookup lookup) {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -145,12 +141,6 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
         AdaptedOp(OperationType type, PackedOp<R> delegate) {
             super(type, delegate);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
-            return delegate.createOp(bean, this.type(), invoker);
-        }
     }
 
     /** A binding op. */
@@ -166,16 +156,6 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
             super(type, delegate);
             this.index = index;
             this.arguments = arguments;
-        }
-
-        @Override
-        public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
-            OperationSetup os = delegate.createOp(bean, type, invoker);
-            // Doesn't really work...
-            for (int i = index; i < arguments.length; i++) {
-                os.bindings[i] = new ConstantBindingSetup(os, null, index, arguments[i], null);
-            }
-            return os;
         }
 
         /** {@inheritDoc} */
@@ -259,12 +239,6 @@ public abstract sealed class PackedOp<R> implements Op<R>permits TerminalOp, Del
             }
             MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
             this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public OperationSetup createOp(BeanSetup bean, OperationType type, InvocationSite invoker) {
-            return delegate.createOp(bean, type, invoker);
         }
 
         /** {@inheritDoc} */

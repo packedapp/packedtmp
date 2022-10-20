@@ -22,12 +22,15 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.Inject;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.PackedOp.ConstantOp;
@@ -121,12 +124,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      *            the constructor that will be called when operation is invoked
      * @return the new operation
      */
-    public static <T> Op<T> ofConstructor(Constructor<T> constructor) {
-        requireNonNull(constructor, "constructor is null");
-        return new ExecutableOp<>(constructor);
-    }
-
-    public static <T> Op<T> ofConstructor(Constructor<T> constructor, Lookup lookup) {
+    public static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
         return new ExecutableOp<>(constructor);
     }
@@ -168,21 +166,30 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      *            the type of value returned by the method
      * @return a factory that wraps the specified method
      */
-    public static Op<?> ofMethod(Method method) {
+    public static Op<?> ofMethod(Lookup lookup, Method method) {
         requireNonNull(method, "method is null");
+        
         throw new UnsupportedOperationException();
     }
 
-    public static Op<?> ofMethod(Method method, Lookup lookup) {
-        requireNonNull(method, "method is null");
+    static Op<?> ofField(Lookup lookup, Field field) {
+        requireNonNull(field, "field is null");
+        MethodHandle handle;
+        try {
+            if (Modifier.isPrivate(field.getModifiers())) {
+                // vs MethodHandles.private???
+                lookup = lookup.in(field.getDeclaringClass());
+            }
+            handle = lookup.unreflectGetter(field);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+        }
+        System.out.println(handle);
         throw new UnsupportedOperationException();
     }
 
+    
     public static Op<?> ofMethodHandle(MethodHandle methodHandle) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Op<?> ofMethodHandle(MethodHandle methodHandle, OperationType type) {
         throw new UnsupportedOperationException();
     }
 }

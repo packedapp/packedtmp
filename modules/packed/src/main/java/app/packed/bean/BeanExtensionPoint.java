@@ -7,7 +7,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -245,13 +244,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     // Den er ihvertfald super usefull for endusers a.la.
     // BeanExtensionPoint.factoryOf(MyBean.class).bind("asdsad")
     @SuppressWarnings("unchecked")
+    @Deprecated
     public static <T> Op<T> factoryOf(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> Op<T> factoryOf(Class<T> implementation, Lookup lookup) {
         requireNonNull(implementation, "implementation is null");
         return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
     }

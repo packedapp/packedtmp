@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bean.BeanExtensionPoint;
+import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
@@ -35,7 +35,7 @@ public class MethodStaticTest {
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
-        MixedMethodsInstantiable.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedMethodsInstantiable.class)));
+        MixedMethodsInstantiable.test(c -> c.provide(new Op0<>(MixedMethodsInstantiable::new) {}));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on static methods. */
@@ -51,11 +51,10 @@ public class MethodStaticTest {
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(BeanExtensionPoint.factoryOf(MixedMethodsNoInstantiation.class)));
     }
 
     /** A helper class that can be instantiated. */
-    public   static class MixedMethodsInstantiable {
+    public static class MixedMethodsInstantiable {
 
         // private static Long L;
 
@@ -63,7 +62,7 @@ public class MethodStaticTest {
 
         private static Short S;
 
-        public     MixedMethodsInstantiable() {
+        public MixedMethodsInstantiable() {
             // assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
@@ -113,7 +112,7 @@ public class MethodStaticTest {
      * A helper class that should never be instantiated. Because we can read the value of the fields without an instance of
      * BindStaticNoInstantiation.
      */
-    public   static class MixedMethodsNoInstantiation {
+    public static class MixedMethodsNoInstantiation {
 
         // private static Long L;
 

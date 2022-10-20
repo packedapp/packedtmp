@@ -28,7 +28,6 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.operation.OperationType;
 import internal.app.packed.operation.op.PackedOp.TerminalOp;
 import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
-import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 
 /**
  * A factory that needs a {@link Lookup} object.
@@ -37,7 +36,7 @@ import internal.app.packed.operation.op.ReflectiveOp.FieldOp;
 // ReflectiveFactory
 // LookupFactory (Fungere nok bedre hvis vi faar mirrors engang)
 @SuppressWarnings("rawtypes")
-public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits ExecutableOp, FieldOp {
+public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits ExecutableOp {
 
     ReflectiveOp(OperationType type) {
         super(type);
@@ -118,46 +117,14 @@ public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits Execut
     }
 
     /** An invoker that can read and write fields. */
-    // Don't know if we want this?
-    // ofFieldGet()
-    public static final class FieldOp<T> extends ReflectiveOp<T> {
+    public static final class FieldOp<T> extends TerminalOp<T> {
 
         /** The field we invoke. */
-        private final Field field;
+        final Field field;
 
         public FieldOp(OperationType type, Field field) {
             super(type);
             this.field = field;
         }
-
-        /**
-         * Compiles the code to a single method handle.
-         * 
-         * @return the compiled method handle
-         */
-
-        @Override
-        public MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle handle;
-            try {
-                if (Modifier.isPrivate(field.getModifiers())) {
-                    // vs MethodHandles.private???
-                    lookup = lookup.in(field.getDeclaringClass());
-                }
-                handle = lookup.unreflectGetter(field);
-            } catch (IllegalAccessException e) {
-                throw new InaccessibleBeanMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
-            }
-            return handle;
-        }
     }
 }
-//
-//public Factory<T> lookup() {
-//  // Problemet er her at vi jo faktisk i mange tilfaelde vil laase hele beanen op????
-//  // Taenker vi har metoderne paa BeanFactory
-//
-//  // Vi vil helst ikke have at vi overskrive metoder... Men det bliver vi jo noedt til at kunne
-//  // hvis vi har subklasser
-//  return this;
-//}

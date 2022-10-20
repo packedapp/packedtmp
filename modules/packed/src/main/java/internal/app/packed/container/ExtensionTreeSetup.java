@@ -19,18 +19,17 @@ import app.packed.container.Extension;
 import app.packed.container.UserOrExtension;
 
 /**
- * A single instance of this class exists per extension per application.
+ * A single instance of this class exists per extension per application. And is used to have a single point. Where we
+ * can close the extension.
  * <p>
  * Since all extensions that are used throughout an application is always installed in the root container.
- * <p>
- * The actual tree is maintained in {@link ExtensionSetup}. This class just holds the root
  */
 public final class ExtensionTreeSetup extends RealmSetup {
 
     /** A model of the extension. */
     final ExtensionModel extensionModel;
 
-    /** Whether or not this realm is configurable. */
+    /** Whether or not this type of extension is still configurable. */
     boolean isClosed;
 
     /**
