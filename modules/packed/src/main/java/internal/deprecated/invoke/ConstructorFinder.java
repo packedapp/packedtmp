@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package internal.deprecated.invoke;
 
 import static internal.app.packed.util.StringFormatter.format;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
 import app.packed.bean.Inject;
+import internal.app.packed.base.devtools.PackedDevToolsIntegration;
+import internal.app.packed.util.StringFormatter;
 
 /**
  *
@@ -63,10 +67,18 @@ final class ConstructorFinder {
 
         // Get all declared constructors
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+        PackedDevToolsIntegration.INSTANCE.reflectMembers(clazz, constructors);
 
         // If we only have 1 constructor, return it.
         if (constructors.length == 1) {
             return constructors[0];
+        } else if (!allowInjectAnnotation) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(clazz).append(" must declare exactly 1 constructor, [constructors = ");
+            StringJoiner sj = new StringJoiner(", ");
+            List.of(constructors).forEach(c -> sj.add(StringFormatter.formatShortParameters(c)));
+            sb.append(sj).append("]");
+            throw errorMaker.apply(sb.toString());
         }
 
         // See if we have a single constructor annotated with @Inject

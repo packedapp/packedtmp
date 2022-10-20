@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -47,7 +46,7 @@ public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits Execut
 
         /** {@inheritDoc} */
         protected ExecutableOp<?> computeValue(Class<?> implementation) {
-            Executable executable = ConstructorFinder.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
+            Constructor<?> executable = ConstructorFinder.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
             return new ExecutableOp<>(executable);
         }
     };
@@ -69,29 +68,10 @@ public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits Execut
             MethodHandle methodHandle;
             try {
                 if (!Modifier.isPublic(executable.getModifiers())) {
-
-//                    Class<?> c = executable.getDeclaringClass();
-
-                    // For some reason the lookup objects that comes here might not have full privilege access
                     lookup = MethodHandles.lookup();
-
-//                    System.out.println(lookup.hasFullPrivilegeAccess());
-//
-//                    Module m1 = BeanExtension.class.getModule();
-//                    Module m2 = executable.getDeclaringClass().getModule();
-//
-//                    System.out.println("Is Open " + m2.isOpen(c.getPackageName(), m1));
-//
-////                    lookup = lookup.in(executable.getDeclaringClass());
-//
-//  //                  lookup.accessClass(executable.getDeclaringClass());
-//
-//                    System.out.println(lookup);
-//    
                     lookup = MethodHandles.privateLookupIn(executable.getDeclaringClass(), lookup);
-                    //
-                    // System.out.println(lookup);
                 }
+                
                 if (executable instanceof Constructor<?> c) {
                     methodHandle = lookup.unreflectConstructor(c);
                 } else {
@@ -113,18 +93,6 @@ public abstract sealed class ReflectiveOp<T> extends TerminalOp<T>permits Execut
         @Override
         public String toString() {
             return executable.toString();
-        }
-    }
-
-    /** An invoker that can read and write fields. */
-    public static final class FieldOp<T> extends TerminalOp<T> {
-
-        /** The field we invoke. */
-        final Field field;
-
-        public FieldOp(OperationType type, Field field) {
-            super(type);
-            this.field = field;
         }
     }
 }

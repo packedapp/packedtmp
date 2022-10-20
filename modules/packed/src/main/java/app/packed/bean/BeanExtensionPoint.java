@@ -1,7 +1,5 @@
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,7 +15,6 @@ import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
 /** An extension point class for {@link BeanExtension}. */
 public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
@@ -243,12 +240,6 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     // Den er ihvertfald super usefull for endusers a.la.
     // BeanExtensionPoint.factoryOf(MyBean.class).bind("asdsad")
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    public static <T> Op<T> factoryOf(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return (Op<T>) ExecutableOp.DEFAULT_FACTORY.get(implementation);
-    }
 
     /**
      *

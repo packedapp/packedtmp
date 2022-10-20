@@ -34,7 +34,6 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.Inject;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.operation.op.PackedOp.ConstantOp;
-import internal.app.packed.operation.op.ReflectiveOp.ExecutableOp;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -126,7 +125,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      */
     public static <T> Op<T> ofConstructor(Lookup lookup, Constructor<T> constructor) {
         requireNonNull(constructor, "constructor is null");
-        return new ExecutableOp<>(constructor);
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -168,7 +167,7 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
      */
     public static Op<?> ofMethod(Lookup lookup, Method method) {
         requireNonNull(method, "method is null");
-        
+
         throw new UnsupportedOperationException();
     }
 
@@ -188,7 +187,6 @@ public sealed interface Op<R> permits PackedOp, CapturingOp {
         throw new UnsupportedOperationException();
     }
 
-    
     public static Op<?> ofMethodHandle(MethodHandle methodHandle) {
         throw new UnsupportedOperationException();
     }
