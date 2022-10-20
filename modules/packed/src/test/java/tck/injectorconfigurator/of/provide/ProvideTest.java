@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanExtensionPoint;
+import app.packed.operation.Op0;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceLocator;
 import testutil.stubs.Letters.A;
@@ -45,12 +45,12 @@ public class ProvideTest {
         ServiceLocator inj = ServiceLocator.of(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ProvideableBeanConfiguration<A> a = conf.provide(A.class);
-            ProvideableBeanConfiguration<B> b = conf.provide(BeanExtensionPoint.factoryOf(B.class));
+            ProvideableBeanConfiguration<B> b = conf.provide(new Op0<>(B::new) {});
             ProvideableBeanConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             BeanConfiguration h = conf.providePrototype(H.class);
-            BeanConfiguration i = conf.providePrototype(BeanExtensionPoint.factoryOf(I.class));
+            BeanConfiguration i = conf.providePrototype(new Op0<>(I::new) {});
         });
     }
 

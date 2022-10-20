@@ -26,7 +26,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.BuildException;
-import app.packed.bean.BeanExtensionPoint;
+import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
@@ -39,7 +39,7 @@ public class MethodInstanceTest {
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
-        MixedMethods.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedMethods.class)));
+        MixedMethods.test(c -> c.provide(new Op0<>(MixedMethods::new) {}));
     }
 
     // /** Tests lazy {@link Provide2#instantionMode()} on instance methods. */

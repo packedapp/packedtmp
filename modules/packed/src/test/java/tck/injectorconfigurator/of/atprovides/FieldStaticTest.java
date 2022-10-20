@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bean.BeanExtensionPoint;
+import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
@@ -38,7 +38,7 @@ public class FieldStaticTest {
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
         MixedFieldsInstantiable.test(c -> c.provide(MixedFieldsInstantiable.class));
-        MixedFieldsInstantiable.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedFieldsInstantiable.class)));
+        MixedFieldsInstantiable.test(c -> c.provide(new Op0<>(MixedFieldsInstantiable::new) {}));
     }
 
     /** Tests prototype {@link Provide#constant()} on static fields. */

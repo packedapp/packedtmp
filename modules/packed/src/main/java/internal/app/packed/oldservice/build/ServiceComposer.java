@@ -26,7 +26,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
-import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
 import app.packed.operation.Op;
@@ -146,13 +145,13 @@ public abstract /* sealed */ class ServiceComposer extends AbstractComposer /* p
     public abstract void map(Op<?> factory);
 
     public void prototype(Class<?> implementation) {
-        prototype(BeanExtensionPoint.factoryOf(implementation));
+        throw new UnsupportedOperationException();
     }
 
     public abstract void prototype(Op<?> factory);
 
     public void provide(Class<?> implementation) {
-        provide(BeanExtensionPoint.factoryOf(implementation));
+        throw new UnsupportedOperationException();
     }
 
     public abstract void provide(Op<?> factory);
@@ -330,7 +329,8 @@ public abstract /* sealed */ class ServiceComposer extends AbstractComposer /* p
     }
 
     public void replace(Class<?> implementation) {
-        replace(BeanExtensionPoint.factoryOf(implementation));
+        throw new UnsupportedOperationException();
+
     }
 
     /**

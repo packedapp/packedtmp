@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.bean.BeanExtensionPoint;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
@@ -153,10 +152,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     static Builder<Void> builder() {
         return new PackedApplicationDriver.Builder<>(null);
-    }
-
-    static <A> Builder<A> builder(Class<A> wrapperType) {
-        return builder(BeanExtensionPoint.factoryOf(wrapperType));
     }
 
     static <A> Builder<A> builder(Op<A> wrapperFactory) {

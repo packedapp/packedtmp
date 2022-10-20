@@ -26,7 +26,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.BuildException;
-import app.packed.bean.BeanExtensionPoint;
+import app.packed.operation.Op0;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
@@ -39,7 +39,7 @@ public class FieldInstanceTest {
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
-        MixedFields.test(c -> c.provide(BeanExtensionPoint.factoryOf(MixedFields.class)));
+        MixedFields.test(c -> c.provide(new Op0<>(MixedFields::new) {}));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */
