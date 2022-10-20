@@ -35,7 +35,6 @@ import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import internal.app.packed.oldservice.inject.InternalDependency;
-import internal.app.packed.operation.op.PackedOp.PackedCapturingOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
@@ -250,19 +249,19 @@ class PackageCapturingOpHelper {
         return value;
     }
 
-    // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
-    // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
-
-    // Den kommer ind i InternalFactory
-    record FactoryMetadata() {
-        // find single Constructor... extract information about function type
-
-        // must be a public type readable for anyone
-
-        // create MH to access it
-
-        // store it
-
-        // and keep it for all furt
-    }
+//    // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
+//    // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
+//
+//    // Den kommer ind i InternalFactory
+//    record FactoryMetadata() {
+//        // find single Constructor... extract information about function type
+//
+//        // must be a public type readable for anyone
+//
+//        // create MH to access it
+//
+//        // store it
+//
+//        // and keep it for all furt
+//    }
 }

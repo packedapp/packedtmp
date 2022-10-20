@@ -55,8 +55,8 @@ public abstract non-sealed class CapturingOp<R> implements Op<R> {
         return op.bind(argument);
     }
 
-    PackedOp<R> canonicalize() {
-        throw new UnsupportedOperationException();
+    public Op<R> canonicalize() {
+        return op;
     }
 
     /** {@inheritDoc} */

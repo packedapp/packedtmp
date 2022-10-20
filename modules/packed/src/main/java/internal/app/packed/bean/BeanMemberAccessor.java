@@ -17,13 +17,11 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.LookupValue;
 
@@ -57,17 +55,6 @@ public abstract sealed class BeanMemberAccessor {
         } else {
             return ((ModuleDescriptorAccessor) this).lookup();
         }
-    }
-
-    /**
-     * Extracts a method handle from the specified factory.s
-     * 
-     * @param factory
-     *            the factory to extract a method handle for
-     * @return the method handle
-     */
-    public final MethodHandle toMethodHandle(PackedOp<?> factory) {
-        return factory.toMethodHandle(lookup());
     }
 
     /**

@@ -43,8 +43,6 @@ import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
-import internal.app.packed.operation.OperationTarget.ConstructorOperationTarget;
-import internal.app.packed.operation.op.ExecutableOp;
 import internal.app.packed.operation.op.PackedOp;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.ClassUtil;
@@ -244,9 +242,6 @@ public final class BeanSetup {
             throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
         }
 
-        BeanSetup bean = new BeanSetup(installedBy, kind, beanClass, sourceKind, source, realm, extensionOwner);
-
-        // No reason to maintain some of these in props
         boolean multiInstall = false;
         BeanIntrospector customIntrospector = null;
         String prefix = null;
@@ -272,6 +267,8 @@ public final class BeanSetup {
 
         BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
 
+        // Create the bean
+        BeanSetup bean = new BeanSetup(installedBy, kind, beanClass, sourceKind, source, realm, extensionOwner);
         ContainerSetup container = bean.container;
 
         if (prefix == null) {
@@ -288,7 +285,7 @@ public final class BeanSetup {
                 class MuInst {
                     int counter;
                 }
-                MuInst i = (MuInst) bean.container.beanClassMap.compute(beanClass, (c, o) -> {
+                MuInst i = (MuInst) container.beanClassMap.compute(beanClass, (c, o) -> {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
@@ -307,7 +304,7 @@ public final class BeanSetup {
                     i.counter = next;
                 }
             } else {
-                bean.container.beanClassMap.compute(beanClass, (c, o) -> {
+                container.beanClassMap.compute(beanClass, (c, o) -> {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
@@ -326,30 +323,15 @@ public final class BeanSetup {
         }
         bean.name = n;
 
-        if (bean.sourceKind == BeanSourceKind.CLASS && kind.hasInstances()) {
-            ExecutableOp<?> eo = ExecutableOp.DEFAULT_FACTORY.get((Class<?>) bean.source);
-            MethodHandle mh = eo.toMethodHandle(bean.realm.beanAccessor().lookup());
-
-            OperationType type = eo.operationType;
-
-            OperationSetup os = new OperationSetup(bean, type, new InvocationSite(InvocationType.raw(), installedBy),
-                    new ConstructorOperationTarget(mh, eo.executable), null);
-            bean.operations.add(os);
-        } else if (sourceKind == BeanSourceKind.OP) {
-            PackedOp<?> op = (PackedOp<?>) bean.source; // We always unpack source Op to PackedOp
-
-            // Extract a MethodHandlefrom the factory
-            MethodHandle mh = bean.realm.beanAccessor().toMethodHandle(op);
-
-            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(bean, mh), null);
+        if (sourceKind == BeanSourceKind.OP) {
+            PackedOp<?> op = (PackedOp<?>) bean.source;
+            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), installedBy),
+                    new BeanInstanceAccess(bean, op.operation), null);
             bean.operations.add(os);
         }
-        
-        bean.injectionManager = new BeanInjectionManager(bean);
-
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
-        if (sourceKind != BeanSourceKind.NONE && bean.beanClass.getModule() != Introspector.JAVA_BASE_MODULE) {
+        if (sourceKind != BeanSourceKind.NONE) {
             new Introspector(beanModel, bean, customIntrospector).introspect();
         }
 

@@ -34,12 +34,17 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import app.packed.operation.InvocationType;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.oldservice.inject.BeanInjectionManager;
+import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget.ConstructorOperationTarget;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
@@ -80,7 +85,7 @@ public final class Introspector {
     // Should be made lazily??? I think
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
-
+    
     public Introspector(BeanModel model, BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
         this.beanIntrospector = beanIntrospector;
@@ -116,10 +121,25 @@ public final class Introspector {
         });
     }
 
+    private void findFactory() {
+        ExecutableOp<?> eo = ExecutableOp.DEFAULT_FACTORY.get(bean.beanClass);
+        MethodHandle mh = eo.toMethodHandle(bean.realm.beanAccessor().lookup());
+
+        OperationSetup os = new OperationSetup(bean, eo.operationType, new InvocationSite(InvocationType.raw(), bean.installedBy),
+                new ConstructorOperationTarget(mh, eo.executable), null);
+        bean.operations.add(os);
+
+    }
     /** Introspects the bean. */
     public void introspect() {
         // Process all annotations on the class
         introspectClass();
+
+        if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
+            findFactory();
+        }
+
+        bean.injectionManager = new BeanInjectionManager(bean);
 
         // Process all fields on the bean
         Class<?> beanClass = bean.beanClass;

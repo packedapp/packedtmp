@@ -19,41 +19,33 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.lang.invoke.VarHandle;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.util.LookupUtil;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.operation.InvocationSite;
+import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.util.MethodHandleUtil;
 
 /** The internal implementation of Op. */
-@SuppressWarnings("rawtypes")
 public abstract non-sealed class PackedOp<R> implements Op<R> {
 
-    /** A var handle that can update the {@link #container()} field in this class. */
-    private static final VarHandle VH_CAPTURING_OP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), CapturingOp.class, "op", PackedOp.class);
+    /** The method handle. */
+    public final MethodHandle operation;
 
     /** The operation type of this op. */
-    final OperationType type;
+    public final OperationType type;
 
-    PackedOp(OperationType type) {
+    PackedOp(OperationType type, MethodHandle operation) {
         this.type = requireNonNull(type, "type is null");
-        this.mh = null;
-    }
-
-    final MethodHandle mh;
-
-    PackedOp(OperationType type, MethodHandle mh) {
-        this.type = requireNonNull(type, "type is null");
-        this.mh = mh;
+        this.operation = requireNonNull(operation);
     }
 
     /** {@inheritDoc} */
@@ -86,7 +78,9 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         }
         // TODO check types...
 
-        return new BoundOp<>(newType, this, position, args);
+        MethodHandle newmh = MethodHandles.insertArguments(this.operation, position, args);
+
+        return new BoundOp<>(newType, newmh, this, position, args);
     }
 
     /** {@inheritDoc} */
@@ -94,18 +88,21 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         return bind(0, argument);
     }
 
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite,
+            @Nullable NestedBindingSetup nestedBinding);
+
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {
         requireNonNull(action, "action is null");
         if (type.returnType() == void.class) {
             throw new UnsupportedOperationException("This method cannot be used on Op's that have void return type, [ type = " + type + "]");
         }
+        MethodHandle mh = PeekableOp.ACCEPT.bindTo(action);
+        MethodHandle consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
 
-        return new PeekableOp<>(this, action);
-    }
-
-    public MethodHandle toMethodHandle(Lookup lookup) {
-        return requireNonNull(mh);
+        MethodHandle mhNew = MethodHandles.filterReturnValue(mh, consumer);
+        mhNew = MethodHandleUtil.castReturnType(mhNew, type().returnType());
+        return new PeekableOp<>(this, mhNew);
     }
 
     /** {@inheritDoc} */
@@ -118,83 +115,12 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         return PackageCapturingOpHelper.create(clazz, function);
     }
 
-    @SuppressWarnings("unchecked")
     public static <R> PackedOp<R> crack(Op<R> op) {
         requireNonNull(op, "op is null");
         if (op instanceof PackedOp<R> pop) {
             return pop;
         } else {
-            // if capturingop had a canonicalizde we could just call that and get an IFa
-            Object result = VH_CAPTURING_OP.get(op);
-            return (PackedOp<R>) result;
-        }
-    }
-
-    /** A binding op. */
-    static final class BoundOp<R> extends PackedOp<R> {
-
-        /** The arguments to insert. */
-        private final Object[] arguments;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final int index;
-        final PackedOp<R> delegate;
-
-        BoundOp(OperationType type, PackedOp<R> delegate, int index, Object[] arguments) {
-            super(type);
-            this.delegate = delegate;
-            this.index = index;
-            this.arguments = arguments;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = delegate.toMethodHandle(lookup);
-            return MethodHandles.insertArguments(mh, index, arguments);
-        }
-    }
-
-    static final class PackedCapturingOp<R> extends PackedOp<R> {
-
-        /**
-         * @param typeLiteralOrKey
-         */
-        PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
-            super(type, methodHandle);
-        }
-    }
-
-    /** An implementation of the {@link Op#peek(Consumer)}} method. */
-    static final class PeekableOp<R> extends PackedOp<R> {
-
-        /** A method handle for {@link Function#apply(Object)}. */
-        private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
-
-        /** The method handle that was unreflected. */
-        private final MethodHandle consumer;
-
-        private final PackedOp<?> delegate;
-
-        PeekableOp(PackedOp<R> delegate, Consumer<? super R> action) {
-            super(delegate.type);
-            this.delegate = delegate;
-            MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
-            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = delegate.toMethodHandle(lookup);
-            mh = MethodHandles.filterReturnValue(mh, consumer);
-            return MethodHandleUtil.castReturnType(mh, type().returnType());
-        }
-
-        @SuppressWarnings({ "unchecked", "unused" })
-        private static Object accept(Consumer consumer, Object object) {
-            consumer.accept(object);
-            return object;
+            return (PackedOp<R>) ((CapturingOp<R>) op).canonicalize();
         }
     }
 }
