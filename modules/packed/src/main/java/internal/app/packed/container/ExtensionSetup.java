@@ -21,7 +21,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** A handle for setting the private field Extension#setup. */
-    private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "setup",
+    private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "extension",
             ExtensionSetup.class);
 
     /** The container where the extension is used. */

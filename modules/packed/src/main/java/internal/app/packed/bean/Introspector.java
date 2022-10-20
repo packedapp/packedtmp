@@ -111,7 +111,7 @@ public final class Introspector {
             }
 
             // Notify the bean introspector that is being used
-            introspector.onPreIntrospect();
+            introspector.onIntrospectionStop();
             return new Delegate(extension, introspector, fullAccess);
         });
     }
@@ -213,7 +213,7 @@ public final class Introspector {
 
         // Call into every BeanScanner and tell them its all over
         for (Delegate e : extensions.values()) {
-            e.introspector.onPostIntrospect();
+            e.introspector.onIntrospectionStart();
         }
     }
     

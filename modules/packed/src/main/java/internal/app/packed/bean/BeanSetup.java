@@ -102,9 +102,6 @@ public final class BeanSetup {
     @Nullable
     public BeanSetup nextBean;
 
-    @Nullable
-    public Runnable onWiringAction;
-
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 

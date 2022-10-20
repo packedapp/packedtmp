@@ -37,7 +37,7 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
         return Optional.ofNullable(navigator().root().share.dispatcher);
     }
 
-    public Collection<EntryPointOperationMirror> entryPoints() {
+    public Collection<EntryPointMirror> entryPoints() {
         // Vi behoever jo strengt taget ikke selv holde styr paa dem
         // OperationMirror.findAllOperationsAssingableTo(EntryPointOperationMirror);
         
@@ -58,7 +58,7 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
     /**
      * @return stuff
      */
-    public Optional<EntryPointOperationMirror> main() {
+    public Optional<EntryPointMirror> main() {
         return Optional.empty();
     }
 

@@ -9,12 +9,12 @@ import app.packed.operation.OperationMirror;
  * instance.
  */
 // Ditch Operation at the end???
-public class EntryPointOperationMirror extends OperationMirror {
+public class EntryPointMirror extends OperationMirror {
 
     /** The unique id of the entry point within the application. */
     private final int entryPointId;
 
-    EntryPointOperationMirror(int entryPointId) {
+    EntryPointMirror(int entryPointId) {
         this.entryPointId = entryPointId;
     }
 

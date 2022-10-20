@@ -52,6 +52,9 @@ import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
+ * 
+ * This class contains a number of overridable callback methods, all of them starting with {@code on}. Make list
+ * 
  * @see Extension#newBeanIntrospector
  */
 public abstract class BeanIntrospector {
@@ -65,8 +68,7 @@ public abstract class BeanIntrospector {
 
     /** {@return an annotation reader for the bean class.} */
     public final AnnotationReader beanAnnotations() {
-        // AnnotationReader.of(beanClass());
-        throw new UnsupportedOperationException();
+        return new BeanAnnotationReader(beanClass().getAnnotations());
     }
 
     /** {@return the class that is being introspected.} */
@@ -74,9 +76,19 @@ public abstract class BeanIntrospector {
         return setup().bean.beanClass;
     }
 
+    /** {@return the type of extension that installed the bean.} */
     public final Class<? extends Extension<?>> beanInstalledBy() {
-        // Ideen er at vi kan checke at vi selv er registranten...
-        throw new UnsupportedOperationException();
+        return setup().bean.installedBy.extensionType;
+    }
+
+    /** {@return an annotation reader for the bean class.} */
+    public final BeanKind beanKind() {
+        return setup().bean.beanKind;
+    }
+
+    /** {@return an annotation reader for the bean class.} */
+    public final BeanSourceKind beanSourceKind() {
+        return setup().bean.sourceKind;
     }
 
     /**
@@ -139,22 +151,16 @@ public abstract class BeanIntrospector {
         throw new InternalExtensionException(setup().extension.fullName() + " failed to handle field annotation(s) " + field.hooks());
     }
 
-    public void onMethod(OnMethod method) {
-        // Test if getClass()==BeanScanner forgot to implement
-        // Not we want to return generic bean scanner from newBeanScanner
-        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + method.hooks());
-    }
-
     /**
-     * A callback method that is called after any other methods on this class.
+     * A callback method that is called after any other callback methods on this class.
      * <p>
      * This method can be used to provide final validation or registration of the bean.
      * <p>
      * If an exception is thrown at any time doing processing of the bean this method will not be called.
      * 
-     * @see #onPreIntrospect()
+     * @see #onIntrospectionStop()
      */
-    public void onPostIntrospect() {}
+    public void onIntrospectionStart() {}
 
     /**
      * A callback method that is invoked before any calls to {@link #onClass(OnClass)}, {@link #onField(OnField)},
@@ -162,9 +168,15 @@ public abstract class BeanIntrospector {
      * <p>
      * This method can be used to setup data structures or perform validation.
      * 
-     * @see #onPostIntrospect()
+     * @see #onIntrospectionStart()
      */
-    public void onPreIntrospect() {}
+    public void onIntrospectionStop() {}
+
+    public void onMethod(OnMethod method) {
+        // Test if getClass()==BeanScanner forgot to implement
+        // Not we want to return generic bean scanner from newBeanScanner
+        throw new InternalExtensionException(setup().extension.fullName() + " failed to handle method annotation(s) " + method.hooks());
+    }
 
     /**
      * {@return the internal configuration class.}

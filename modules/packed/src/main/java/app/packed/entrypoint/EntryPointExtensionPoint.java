@@ -29,7 +29,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
 
     EntryPointExtensionPoint() {}
     
-    public OperationHandle specializeMirror(OperationHandle configuration, int id, Supplier<? extends EntryPointOperationMirror> supplier) {
+    public OperationHandle specializeMirror(OperationHandle configuration, int id, Supplier<? extends EntryPointMirror> supplier) {
         // Ved ikke lige helt hvordan den skal fungere
         return configuration;
     }
@@ -90,7 +90,7 @@ public class EntryPointExtensionPoint extends ExtensionPoint<EntryPointExtension
          *             if no entry point with the specified id exists
          * @throws IllegalStateException
          *             if the method is invoked more than once
-         * @see EntryPointOperationMirror#id()
+         * @see EntryPointMirror#id()
          */
         void selectEntryPoint(int id);
     }

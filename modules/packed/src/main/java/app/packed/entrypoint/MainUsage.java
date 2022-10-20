@@ -21,18 +21,18 @@ import app.packed.container.BaseAssembly;
 /**
  *
  */
-public class MainUse extends BaseAssembly {
+public class MainUsage extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-         installInstance(new MyBean());
+        installInstance(new MyBean());
     }
 
     public static void main(String[] args) {
-        //long l = System.nanoTime();
-        App.run(new MainUse());
-        //System.out.println(System.nanoTime() - l);
+        // long l = System.nanoTime();
+        App.run(new MainUsage());
+        // System.out.println(System.nanoTime() - l);
     }
 
     public static class MyBean {

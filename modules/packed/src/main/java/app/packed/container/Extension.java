@@ -83,7 +83,7 @@ import internal.app.packed.util.ThrowableUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    private final ExtensionSetup setup;
+    private final ExtensionSetup extension;
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -92,7 +92,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if attempting to construct the extension manually
      */
     protected Extension() {
-        this.setup = ExtensionModel.initalizeExtension(this);
+        this.extension = ExtensionModel.initalizeExtension(this);
     }
 
     /** {@return an extension point for the bean extension.} */
@@ -102,7 +102,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /** {@return the build goal.} */
     protected final BuildGoal buildGoal() {
-        return setup.container.application.goal;
+        return extension.container.application.goal;
     }
 
     /**
@@ -112,7 +112,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension is no longer configurable.
      */
     protected final void checkIsConfigurable() {
-        ExtensionTreeSetup realm = setup.extensionRealm;
+        ExtensionTreeSetup realm = extension.extensionRealm;
         if (realm.isClosed()) {
             throw new IllegalStateException(realm.realmType() + " is no longer configurable");
         }
@@ -124,7 +124,7 @@ public abstract class Extension<E extends Extension<E>> {
 
     /** {@return the path of the container that this extension belongs to.} */
     protected final NamespacePath containerPath() {
-        return setup.container.path();
+        return extension.container.path();
     }
 
     // Ved ikke om vi draeber den, eller bare saetter en stor warning
@@ -140,14 +140,14 @@ public abstract class Extension<E extends Extension<E>> {
      *           questions about what exact extension is using another extension
      */
     protected final boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
-        return setup.container.isExtensionUsed(extensionType);
+        return extension.container.isExtensionUsed(extensionType);
     }
 
     /**
      * @return
      */
     protected final boolean isRoot() {
-        return setup.treeParent == null;
+        return extension.treeParent == null;
     }
 
     /**
@@ -157,17 +157,21 @@ public abstract class Extension<E extends Extension<E>> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionNavigator<E> navigator() {
-        ExtensionSetup s = setup;
-        return new ExtensionNavigator(s, s.extensionType);
+        return new ExtensionNavigator(extension, extension.extensionType);
     }
 
     /**
      * Whenever a Hook annotation is found
+     * <p>
+     * This method is never called more than once for a single bean.
      * 
-     * @return a new bean scanner
+     * @return a new bean introspector
+     * 
+     * @throws InternalExtensionException
+     *             if the method is not overridden
      */
     protected BeanIntrospector newBeanIntrospector() {
-        return new BeanIntrospector() {};
+        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
     /**
@@ -177,10 +181,12 @@ public abstract class Extension<E extends Extension<E>> {
      * This method should never return null.
      * 
      * @return a mirror for the extension
+     * @throws InternalExtensionException
+     *             if the method is not overridden
      */
     protected ExtensionMirror<E> newExtensionMirror() {
-        // This method should never be called
-        throw new InternalExtensionException("The extension does not support custom mirrors");
+        // This method is only called if an exception forgot to override the method
+        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
     /**
@@ -194,7 +200,8 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the extension does not support extension points.
      */
     protected ExtensionPoint<E> newExtensionPoint() {
-        throw new UnsupportedOperationException(getClass() + " does not define any extension points.");
+        // I think it is the same as newExtensionMirror an internal excetion
+        throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
     /**
@@ -213,7 +220,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     // Hmm InternalExtensionException hvis det er brugerens skyld??
     protected void onApplicationClose() {
-        for (ExtensionSetup e = setup.treeFirstChild; e != null; e = e.treeNextSiebling) {
+        for (ExtensionSetup e = extension.treeFirstChild; e != null; e = e.treeNextSiebling) {
             e.instance().onApplicationClose();
         }
     }
@@ -243,7 +250,7 @@ public abstract class Extension<E extends Extension<E>> {
      */
     // When the realm in which the extension's container is located is closed
     protected void onAssemblyClose() {
-        ExtensionSetup s = setup;
+        ExtensionSetup s = extension;
         for (ExtensionSetup c = s.treeFirstChild; c != null; c = c.treeNextSiebling) {
             if (c.container.assembly == s.container.assembly) {
                 c.instance().onAssemblyClose();
@@ -266,14 +273,14 @@ public abstract class Extension<E extends Extension<E>> {
     /** @return the parent of this extension if present. */
     @SuppressWarnings("unchecked")
     protected final Optional<E> parent() {
-        ExtensionSetup parent = setup.treeParent;
+        ExtensionSetup parent = extension.treeParent;
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
     /** {@return the root extension in the application.} */
     @SuppressWarnings("unchecked")
     protected final E root() {
-        ExtensionSetup s = setup;
+        ExtensionSetup s = extension;
         while (s.treeParent != null) {
             s = s.treeParent;
         }
@@ -303,12 +310,12 @@ public abstract class Extension<E extends Extension<E>> {
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
         if (getClass().getModule() != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
-                    + /* simple extension name */ setup.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
+                    + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
 
         // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
         // been consumed
-        WireletWrapper wirelets = setup.container.wirelets;
+        WireletWrapper wirelets = extension.container.wirelets;
         if (wirelets == null || wirelets.unconsumed() == 0) {
             return WireletSelection.of();
         }
@@ -342,7 +349,7 @@ public abstract class Extension<E extends Extension<E>> {
         Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR.get(extensionPointClass);
 
         // Check that the extension of requested extension point's is a direct dependency of the requesting extension
-        if (!setup.model.dependsOn(otherExtensionClass)) {
+        if (!extension.model.dependsOn(otherExtensionClass)) {
             // Special message if you try to use your own extension point
             if (otherExtensionClass == getClass()) {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
@@ -351,7 +358,7 @@ public abstract class Extension<E extends Extension<E>> {
                     getClass().getSimpleName() + " must declare " + format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
         }
 
-        ExtensionSetup otherExtension = setup.container.useExtensionSetup(otherExtensionClass, setup);
+        ExtensionSetup otherExtension = extension.container.useExtensionSetup(otherExtensionClass, extension);
 
         // Create a new extension point
         ExtensionPoint<?> newExtensionPoint = otherExtension.instance().newExtensionPoint();
@@ -367,7 +374,7 @@ public abstract class Extension<E extends Extension<E>> {
         }
 
         // Initializes the extension point
-        newExtensionPoint.initialize(otherExtension, setup);
+        newExtensionPoint.initialize(otherExtension, extension);
 
         return (P) newExtensionPoint;
     }

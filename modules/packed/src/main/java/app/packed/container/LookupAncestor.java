@@ -49,6 +49,7 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 // Uhhh, her er der en vi ikke kan binde foer super sent...
 //     
 
+// InjectAncestor?
 @BindingHook(extension = BeanExtension.class)
 public final /* value */ class LookupAncestor<T> {
 
