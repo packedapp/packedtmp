@@ -56,7 +56,7 @@ public final class ExtensionNavigator<E extends Extension<E>> implements Iterabl
     }
 
     public ExtensionDescriptor extensionDescriptor() {
-        return originExtension.model;
+        return originExtension.descriptor();
     }
 
     @Override

@@ -52,6 +52,10 @@ public final class AssemblySetup extends RealmSetup {
     private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onAssemblyClose", void.class);
 
+    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onApplicationClose", void.class);
+    
     /** The application that the assembly is used to built. */
     public final ApplicationSetup application;
 
@@ -67,7 +71,7 @@ public final class AssemblySetup extends RealmSetup {
     /**
      * All extensions that are used in the assembly (if non embedded) ordered accordingly to the natural extension order.
      */
-    final TreeSet<ExtensionSetup> extensions = new TreeSet<>((c1, c2) -> -c1.model.compareTo(c2.model));
+    final TreeSet<ExtensionSetup> extensions = new TreeSet<>();
 
     /** Whether or not assembly is open for configuration. */
     private boolean isClosed;
@@ -131,20 +135,20 @@ public final class AssemblySetup extends RealmSetup {
         // In which case an Iterator might throw ConcurrentModificationException
 
         // Test and see if we are closing the root container of the application
-        
+
         // Problemet er jo vi kan tilfoeje nye extensions mens vi lukker ned
-        
+
         // ExtensionSetup[] exts = container.extensions.values().toArray(new ExtensionSetup[container.extensions.size()]);
         // Arrays.sort(exts);
-        
+
         if (isRoot) {
             // Root container
             // We must also close all extensions application-wide.
-            ArrayList<ExtensionTreeSetup> list = new ArrayList<>(extensions.size());
+            ArrayList<ExtensionSetup> list = new ArrayList<>(extensions.size());
 
             ExtensionSetup e = extensions.pollFirst();
             while (e != null) {
-                list.add(e.extensionRealm);
+                list.add(e);
                 onAssemblyClose(e.instance());
                 e = extensions.pollFirst();
             }
@@ -154,8 +158,16 @@ public final class AssemblySetup extends RealmSetup {
             container.application.injectionManager.finish(container.lifetime.pool, container);
 
             // Close all extensions application wide
-            for (ExtensionTreeSetup extension : list) {
-                extension.close();
+            for (ExtensionSetup extension : list) {
+                try {
+                    MH_EXTENSION_ON_APPLICATION_CLOSE.invokeExact(extension.instance());
+                } catch (Throwable t) {
+                    throw ThrowableUtil.orUndeclared(t);
+                }
+
+                extension.extensionRealm.isClosed = true;
+                // extension.
+//                extension.close();
             }
 
             // The application has been built successfully

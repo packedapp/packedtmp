@@ -253,7 +253,7 @@ public class ContainerMirror implements Mirror {
         // Cannot return a null mirror
         if (mirror == null) {
             throw new InternalExtensionException(
-                    "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionMirror()");
+                    "Extension " + extension.descriptor().fullName() + " returned null from " + extension.descriptor().name() + ".newExtensionMirror()");
         }
 
         // If we expect a mirror of a particular type, check it
@@ -274,7 +274,7 @@ public class ContainerMirror implements Mirror {
             Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
             if (mirrorExtensionType != extension.extensionType) {
                 throw new InternalExtensionException(
-                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+                        "Extension " + extension.descriptor().fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }
 
@@ -309,7 +309,7 @@ public class ContainerMirror implements Mirror {
         // Cannot return a null mirror
         if (mirror == null) {
             throw new InternalExtensionException(
-                    "Extension " + extension.model.fullName() + " returned null from " + extension.model.name() + ".newExtensionMirror()");
+                    "Extension " + extension.descriptor().fullName() + " returned null from " + extension.descriptor().name() + ".newExtensionMirror()");
         }
 
         // If we expect a mirror of a particular type, check it
@@ -330,7 +330,7 @@ public class ContainerMirror implements Mirror {
             Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
             if (mirrorExtensionType != extension.extensionType) {
                 throw new InternalExtensionException(
-                        "Extension " + extension.model.fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+                        "Extension " + extension.descriptor().fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }
 

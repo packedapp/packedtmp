@@ -116,7 +116,7 @@ public abstract class BeanIntrospector {
         if (this.setup != null) {
             throw new IllegalStateException("This scanner has already been initialized.");
         }
-        this.setup = new Setup(operator.model, bean);
+        this.setup = new Setup(operator.descriptor(), bean);
     }
 
     /**

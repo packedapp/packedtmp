@@ -8,6 +8,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.oldservice.inject.ExtensionInjectionManager;
 import internal.app.packed.util.AbstractTreeNode;
@@ -41,8 +42,25 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     private Extension<?> instance;
 
     /** A static model of the extension. */
-    public final ExtensionModel model;
+    private final ExtensionModel model;
 
+    
+    public ExtensionDescriptor descriptor() {
+        return model;
+    }
+
+    public static ExtensionSetup initalizeExtension(Extension<?> instance) {
+        ExtensionModel.Wrapper wrapper = ExtensionModel.CONSTRUCT.get();
+        if (wrapper == null) {
+            throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
+        }
+        ExtensionSetup s = wrapper.setup;
+        wrapper.setup = null;
+        if (s == null) {
+            throw new IllegalStateException();
+        }
+        return s;
+    }
     /**
      * Creates a new extension setup.
      * 
@@ -58,7 +76,7 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
-            this.extensionRealm = new ExtensionTreeSetup(this, extensionType);
+            this.extensionRealm = new ExtensionTreeSetup(extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionRealm = parent.extensionRealm;

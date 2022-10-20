@@ -172,17 +172,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return name;
     }
 
-    private static class Wrapper {
+    static class Wrapper {
 
-        @Nullable
-        private ExtensionSetup setup;
+        @Nullable ExtensionSetup setup;
 
         private Wrapper(ExtensionSetup setup) {
             this.setup = setup;
         }
     }
 
-    private static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
+    static final ThreadLocal<Wrapper> CONSTRUCT = new ThreadLocal<>();
 
     /**
      * Creates a new instance of the extension.
@@ -200,19 +199,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         } finally {
             CONSTRUCT.remove();
         }
-    }
-
-    public static ExtensionSetup initalizeExtension(Extension<?> instance) {
-        Wrapper wrapper = CONSTRUCT.get();
-        if (wrapper == null) {
-            throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
-        }
-        ExtensionSetup s = wrapper.setup;
-        wrapper.setup = null;
-        if (s == null) {
-            throw new IllegalStateException();
-        }
-        return s;
     }
 
     /** {@inheritDoc} */

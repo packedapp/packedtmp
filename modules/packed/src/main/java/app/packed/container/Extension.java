@@ -92,7 +92,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if attempting to construct the extension manually
      */
     protected Extension() {
-        this.extension = ExtensionModel.initalizeExtension(this);
+        this.extension = ExtensionSetup.initalizeExtension(this);
     }
 
     /** {@return an extension point for the bean extension.} */
@@ -310,7 +310,7 @@ public abstract class Extension<E extends Extension<E>> {
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
         if (getClass().getModule() != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + getClass().getModule().getName() + ") as '"
-                    + /* simple extension name */ extension.model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
+                    + /* simple extension name */ extension.descriptor().name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
 
         // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
@@ -349,7 +349,7 @@ public abstract class Extension<E extends Extension<E>> {
         Class<? extends Extension<?>> otherExtensionClass = ExtensionPoint.EXTENSION_POINT_TO_EXTENSION_CLASS_EXTRACTOR.get(extensionPointClass);
 
         // Check that the extension of requested extension point's is a direct dependency of the requesting extension
-        if (!extension.model.dependsOn(otherExtensionClass)) {
+        if (!extension.descriptor().dependsOn(otherExtensionClass)) {
             // Special message if you try to use your own extension point
             if (otherExtensionClass == getClass()) {
                 throw new InternalExtensionException(otherExtensionClass.getSimpleName() + " cannot use its own extension point " + extensionPointClass);
@@ -367,7 +367,7 @@ public abstract class Extension<E extends Extension<E>> {
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
             if (newExtensionPoint == null) {
                 throw new NullPointerException(
-                        "Extension " + otherExtension.model.fullName() + " returned null from " + otherExtension.model.name() + ".newExtensionPoint()");
+                        "Extension " + otherExtension.descriptor().fullName() + " returned null from " + otherExtension.descriptor().name() + ".newExtensionPoint()");
             }
             throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
                     + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());
