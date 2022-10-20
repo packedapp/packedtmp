@@ -158,7 +158,7 @@ public abstract class Extension<E extends Extension<E>> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final ExtensionNavigator<E> navigator() {
         ExtensionSetup s = setup;
-        return new ExtensionNavigatorImpl(s, s.extensionType);
+        return new ExtensionNavigator(s, s.extensionType);
     }
 
     /**

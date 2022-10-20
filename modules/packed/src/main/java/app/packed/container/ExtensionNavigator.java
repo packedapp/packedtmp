@@ -15,8 +15,14 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.util.AbstractTreeNode;
 
 /**
  * Represents a rooted tree of extensions of the same type with a single extension as the origin.
@@ -24,24 +30,18 @@ import java.util.stream.StreamSupport;
  * @param <E>
  *            the type of extensions
  */
-public interface ExtensionNavigator<E extends Extension<E>> extends Iterable<E> {
+public final class ExtensionNavigator<E extends Extension<E>> implements Iterable<E> {
 
-    ExtensionDescriptor extensionDescriptor();
+    private final Class<E> extensionType;
+    private final ExtensionSetup originExtension;
 
-    default E origin() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
-     * of an application does not have a parent extension.
-     */
-    default boolean isRoot() {
-        return root() == origin();
+    ExtensionNavigator(ExtensionSetup originExtension, Class<E> extensionType) {
+        this.originExtension = requireNonNull(originExtension);
+        this.extensionType = requireNonNull(extensionType);
     }
 
     /** {@return the number of extensions in the tree.} */
-    default int count() {
+    public int count() {
         int size = 0;
         for (@SuppressWarnings("unused")
         E t : this) {
@@ -50,22 +50,71 @@ public interface ExtensionNavigator<E extends Extension<E>> extends Iterable<E> 
         return size;
     }
 
-    /** {@return the root of the tree.} */
-    E root();
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ExtensionNavigator<?> en && (originExtension == en.originExtension);
+    }
 
-    default Stream<E> stream() {
+    public ExtensionDescriptor extensionDescriptor() {
+        return originExtension.model;
+    }
+
+    @Override
+    public int hashCode() {
+        return originExtension.hashCode();
+    }
+
+    /**
+     * {@return whether or not this extension has a parent extension.} Only extensions that are used in the root container
+     * of an application does not have a parent extension.
+     */
+    boolean isRoot() {
+        return originExtension.treeParent == null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<E> iterator() {
+        return new AbstractTreeNode.MappedPreOrderIterator<>(originExtension, e -> (E) extensionType.cast(e.instance()));
+    }
+
+//    /** {@return the root of the tree.} */
+//    public root();
+
+    public E origin() {
+        return extensionType.cast(originExtension.instance());
+    }
+
+    /**
+     * @return
+     */
+    public E root() {
+        ExtensionSetup s = originExtension;
+        while (s.treeParent != null) {
+            s = s.treeParent;
+        }
+        return extensionType.cast(s.instance());
+    }
+
+    public Stream<E> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    // Is both root, current, and no children
-    // mostly for tests
-    static <E extends Extension<E>> ExtensionNavigator<E> ofSingle(E extension) {
-        // Den her kan godt vaere public
-        // Men dem der iterere kan ikke
-
-        // Hmm vi kan jo ikke returnere collection
-        throw new UnsupportedOperationException();
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return "ExtensionTree<" + extensionType.getSimpleName() + ">";
     }
+
+//    // Is both root, current, and no children
+//    // mostly for tests
+//    static <E extends Extension<E>> ExtensionNavigator<E> ofSingle(E extension) {
+//        // Den her kan godt vaere public
+//        // Men dem der iterere kan ikke
+//
+//        // Hmm vi kan jo ikke returnere collection
+//        throw new UnsupportedOperationException();
+//    }
 
     // Node operations
     // boolean isRoot();

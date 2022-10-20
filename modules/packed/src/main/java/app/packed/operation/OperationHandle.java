@@ -16,10 +16,13 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
+import java.util.Collection;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
@@ -51,11 +54,11 @@ import internal.app.packed.operation.PackedOperationHandle;
  */
 // Must be used within #onX I would think????
 public sealed interface OperationHandle permits PackedOperationHandle {
- 
+
     default void onBuild(Consumer<MethodHandle> action) {
-        
+
     }
-    
+
     /**
      * 
      * <p>
@@ -70,18 +73,18 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      * @see ExtensionBeanConfiguration#initializeWithDelayed(Class, Supplier)
      */
     MethodHandle buildInvoker(); // was computeMethodHandle()?
-    
+
     /** {@return the invocation type of this operation.} */
     InvocationType invocationType();
 
     OnBinding parameter(int index);
 
     default OperationHandle spawnNewBean() {
-        // I'm not sure this is needed. 
+        // I'm not sure this is needed.
         // It is always only configured on the bean
-        
+
         // Can't see we will ever need to combi it
-        
+
         // A new bean will be created. I think we need to configure something when making the bean as well
         // Maybe we need a bean option and call this method for every operation.
         // I don't know can we have methods that can do both
@@ -106,6 +109,42 @@ public sealed interface OperationHandle permits PackedOperationHandle {
 
     /** {@return the type of this operation.} */
     OperationType type();
+
+    public static Supplier<MethodHandle[]> supplier(OperationHandle[] operations) {
+        return () -> {
+            MethodHandle[] mhs = new MethodHandle[operations.length];
+            for (int i = 0; i < operations.length; i++) {
+                mhs[i] = operations[i].buildInvoker();
+            }
+            return mhs; // .freeze();
+        };
+    }
+
+    public static <K> Supplier<Map<K, MethodHandle>> supplierMap(Map<K, OperationHandle> operations) {
+        return () -> {
+            throw new UnsupportedOperationException();
+        };
+    }
+
+    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, OperationHandle[] operations) {
+        return bean;
+    }
+
+    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, Collection<OperationHandle> operations) {
+        return bean;
+    }
+
+    public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
+            Map<K, OperationHandle> operations) {
+        bean.initializeWithDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
+        return bean;
+    }
+
+    private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {
+//        Map<K, U> result = map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, valueMapper));
+//        return Map.copyOf(result);
+        throw new UnsupportedOperationException();
+    }
 
     public interface Option {
         static Option spawnBean() {

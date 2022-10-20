@@ -278,7 +278,7 @@ public class ContainerMirror implements Mirror {
             }
         }
 
-        mirror.initialize(new ExtensionNavigatorImpl(extension, extension.extensionType));
+        mirror.initialize(new ExtensionNavigator(extension, extension.extensionType));
         return mirror;
     }
 
@@ -334,7 +334,7 @@ public class ContainerMirror implements Mirror {
             }
         }
 
-        mirror.initialize(new ExtensionNavigatorImpl(extension, extension.extensionType));
+        mirror.initialize(new ExtensionNavigator(extension, extension.extensionType));
         return mirror;
     }
 }

@@ -55,7 +55,7 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
      * {@link #initialize(ExtensionNavigatorImpl)}
      */
     @Nullable
-    private ExtensionNavigatorImpl<E> navigator;
+    private ExtensionNavigator<E> navigator;
 
     /**
      * Create a new extension mirror.
@@ -155,7 +155,7 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
      * @param extension
      *            the internal configuration of the extension to mirror
      */
-    final void initialize(ExtensionNavigatorImpl<E> extensions) {
+    final void initialize(ExtensionNavigator<E> extensions) {
         if (this.navigator != null) {
             throw new IllegalStateException("This mirror has already been initialized.");
         }
@@ -169,7 +169,7 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
      *             if called from the constructor of the mirror
      */
     protected final ExtensionNavigator<E> navigator() {
-        ExtensionNavigatorImpl<E> n = navigator;
+        ExtensionNavigator<E> n = navigator;
         if (n == null) {
             throw new IllegalStateException(
                     "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
