@@ -78,29 +78,29 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
     /** {@inheritDoc} */
     @Override
-    public <K> ProvideableBeanConfiguration<T> initializeWith(Class<K> key, K instance) {
-        super.initializeWith(key, instance);
+    public <K> ProvideableBeanConfiguration<T> overrideService(Class<K> key, K instance) {
+        super.overrideService(key, instance);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <K> ProvideableBeanConfiguration<T> initializeWith(Key<K> key, K instance) {
-        super.initializeWith(key, instance);
+    public <K> ProvideableBeanConfiguration<T> overrideService(Key<K> key, K instance) {
+        super.overrideService(key, instance);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <K> ProvideableBeanConfiguration<T> initializeWithDelayed(Class<K> key, Supplier<K> supplier) {
-        super.initializeWithDelayed(key, supplier);
+    public <K> ProvideableBeanConfiguration<T> overrideServiceDelayed(Class<K> key, Supplier<K> supplier) {
+        super.overrideServiceDelayed(key, supplier);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <K> ProvideableBeanConfiguration<T> initializeWithDelayed(Key<K> key, Supplier<K> supplier) {
-        super.initializeWithDelayed(key, supplier);
+    public <K> ProvideableBeanConfiguration<T> overrideServiceDelayed(Key<K> key, Supplier<K> supplier) {
+        super.overrideServiceDelayed(key, supplier);
         return this;
     }
 

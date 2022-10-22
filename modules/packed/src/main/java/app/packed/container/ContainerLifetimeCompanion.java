@@ -35,12 +35,20 @@ import app.packed.base.Key;
 //Alt konfigurationen omkring managed state maa ligger paa application/container driver
 //Det er udelukkende extension exponering
 // Maaske defineret nested paa ExtensionPoint? Eller paa ContainerDriver___
-public interface ContainerWrapperCompanion {
+public interface ContainerLifetimeCompanion {
 
     static <E extends Extension<E>> Builder<E> builder(MethodHandles.Lookup lookup, Class<E> extensionType) {
         throw new UnsupportedOperationException();
     }
+    
+    // ting
+    //// Notify extension
+    
+    //// Key som man er tilgaengelig for
 
+    //// ExtensionBean toKey
+    //// Fallback if extension is not available
+    
     // Hvad hvis extensionen ikke er installeret?
     interface Builder<E extends Extension<E>> {
         Builder<E> onBuild(E extension);
@@ -49,9 +57,12 @@ public interface ContainerWrapperCompanion {
 
         <B, C> Builder<E> provide(Key<C> companionType, Class<B> extensionBeanType, Function<B, C> extractor);
 
-        ContainerWrapperCompanion build();
+        ContainerLifetimeCompanion build();
     }
 }
+
+// The owner, the installer, other extensions
+
 //ExtractSingleExportedService (not the whole ServiceLocator)
 //ServiceLocator
 //JobResult

@@ -27,13 +27,8 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.LifetimeOp;
 import internal.app.packed.container.ContainerSetup;
 
-/**
- * The lifetime of an application
- */
+/** The lifetime of a container. */
 public final class ContainerLifetimeSetup extends LifetimeSetup {
-
-    // All eagerly instantiated beans in order
-    public final ArrayList<BeanSetup> beans = new ArrayList<>();
 
     /** Any child lifetimes. */
     private List<LifetimeSetup> children;
@@ -41,12 +36,28 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
+    
+    
+    
+    ArrayList<LifetimeOp> initialize = new ArrayList<>();
+
+    ArrayList<MethodHandle> initializeMh = new ArrayList<>();
+
+
+    // All eagerly instantiated beans in order
+    public final ArrayList<BeanSetup> beans = new ArrayList<>();
+
     // Skal kopieres ind i internal lifetime launcher
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /** The lifetime constant pool. */
     public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
 
+    ArrayList<LifetimeOp> start = new ArrayList<>();
+    ArrayList<MethodHandle> startMh = new ArrayList<>();
+    ArrayList<LifetimeOp> stop = new ArrayList<>();
+
+    ArrayList<MethodHandle> stopMh = new ArrayList<>();
     /**
      * @param origin
      * @param parent
@@ -55,23 +66,28 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         super(parent);
         this.container = container;
     }
-
+    
     public LifetimeSetup addChild(ContainerSetup component) {
         LifetimeSetup l = new ContainerLifetimeSetup(component, this);
+        return addChild(l);
+    }
+    public LifetimeSetup addChild(LifetimeSetup lifetime) {
         if (children == null) {
             children = new ArrayList<>(1);
         }
-        children.add(l);
-        return l;
+        children.add(lifetime);
+        return lifetime;
     }
-    
-    ArrayList<LifetimeOp> initialize = new ArrayList<>();
-    ArrayList<LifetimeOp> start = new ArrayList<>();
-    ArrayList<LifetimeOp> stop = new ArrayList<>();
 
-    ArrayList<MethodHandle> initializeMh = new ArrayList<>();
-    ArrayList<MethodHandle> startMh = new ArrayList<>();
-    ArrayList<MethodHandle> stopMh = new ArrayList<>();
+    public ContainerLifetimeMirror mirror() {
+        return (ContainerLifetimeMirror) super.mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    LifetimeMirror mirror0() {
+        return new ContainerLifetimeMirror();
+    }
 
     // Should be fully resolved now
     public void processLifetimeOps() {
@@ -90,18 +106,8 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
                     throw new Error();
                 }
             }
-            
+
         }
-        
-    }
 
-    public ContainerLifetimeMirror mirror() {
-        return (ContainerLifetimeMirror) super.mirror();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    LifetimeMirror mirror0() {
-        return new ContainerLifetimeMirror();
     }
 }

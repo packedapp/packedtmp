@@ -70,7 +70,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if called more than once. Or if called before the handle can be computed
      * @throws UnsupportedOperationException
      *             if method handle are not supported
-     * @see ExtensionBeanConfiguration#initializeWithDelayed(Class, Supplier)
+     * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
      */
     MethodHandle buildInvoker(); // was computeMethodHandle()?
 
@@ -136,7 +136,7 @@ public sealed interface OperationHandle permits PackedOperationHandle {
 
     public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
             Map<K, OperationHandle> operations) {
-        bean.initializeWithDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
+        bean.overrideServiceDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
         return bean;
     }
 

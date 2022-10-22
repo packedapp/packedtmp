@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerWrapperCompanion;
+import app.packed.container.ContainerLifetimeCompanion;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.ManagedLifetimeController;
@@ -183,7 +183,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @throws UnsupportedOperationException
          *             if this builder does not have a wrapper
          */
-        default Builder addCompanion(ContainerWrapperCompanion... companions) {
+        default Builder addCompanion(ContainerLifetimeCompanion... companions) {
             return this;
         }
 

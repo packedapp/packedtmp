@@ -15,23 +15,25 @@
  */
 package app.packed.container;
 
+import app.packed.bean.BeanExtension;
+import app.packed.container.Extension.DependsOn;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- *
+ * Ligesom bean extension bliver den kun lavet hvis der skal installeres en ny container
  */
 
 // For
-//// Container beans kunne staa med ContainerExtension som owner og de kunne
+//// Container beans kunne staa med ContainerExtension som manager og de kunne
 //// Information omkring containere
+////// Det eneste der er lidt underligt der, er hvis ContainerExtension bliver brugt ved nye containers.
+////// Saa kan container beans i root containeren jo ikke rigtig fungere
 
 // Imod
 //// Vi har ikke nogle annoteringer der skal bruges
 
-//// Hvis vi skal have et mirror bliver det svaert at sige det ikke skal installeres som default
-//// -- Og saa giver det jo ikke mening at ApplicationExtension ikke bliver installeret ogsaa
-
+@DependsOn(extensions = BeanExtension.class)
 public class ContainerExtension extends Extension<ContainerExtension> {
 
     /** The container we are installing new containers into. */
@@ -41,5 +43,4 @@ public class ContainerExtension extends Extension<ContainerExtension> {
     ContainerExtension() {
         this.container = ExtensionSetup.crack(this).container;
     }
-
 }

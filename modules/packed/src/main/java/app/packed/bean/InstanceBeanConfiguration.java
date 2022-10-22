@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.lifetime.RunState;
+import internal.app.packed.base.SpecFix;
 
 /**
  * A base configuration class for beans that are instantiable.
@@ -41,31 +42,7 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     }
 
     // How do we handle null?
-    
-    public <K> InstanceBeanConfiguration<T> initializeWith(Class<K> key, K instance) {
-        return initializeWith(Key.of(key), instance);
-    }
 
-    public <K> InstanceBeanConfiguration<T> initializeWith(Key<K> key, K instance) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <K> InstanceBeanConfiguration<T> initializeWithDelayed(Class<K> key, Supplier<K> supplier) {
-        return initializeWithDelayed(Key.of(key), supplier);
-    }
-
-    public <K> InstanceBeanConfiguration<T> initializeWithDelayed(Key<K> key, Supplier<K> supplier) {
-        // delayedInitiatedWith
-        // Taenker vi har et filled array som er available when initiating the lifetime
-
-        // Her skal vi ogsaa taenke ind at det skal vaere en application singleton vi injecter ind i.
-        // Altsaa vi vil helst ikke initiere en Session extension bean med MHs hver gang
-
-        return this;
-    }
-
-    
-    
     /**
      * <p>
      * The decorator must return a non-null bean instance that is assignable to {@link #beanClass()}. Failure do to so will
@@ -95,6 +72,42 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     @Override
     public InstanceBeanConfiguration<T> named(String name) {
         super.named(name);
+        return this;
+    }
+
+    @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
+            " Det er jo ihvertfald ikke en service binding laengere" })
+    // @Initializer -> Kan man ikke bruge det til at over
+    // Tror ikke man baade kan initialize en Key, og saa bruge den som en service andet steds.
+    // Tjah det er jo en build time instans... Saa det kan jo bare vaere -> inject()
+    // bindKey?
+    // overrideService(); takeService();
+    
+    // Overrides all occurenses of the service. and binds it to the instance
+    // Tager ikke null... Masske vi kan have en overrideServiceAsMissing
+    
+    // Det betyder vi skal have et map med key
+    // Og vi skal ikke laengere eagerly resolve services
+    // Saa naar man resolver en service for en bean. Skal man foerst kigge i mappet..
+    public <K> InstanceBeanConfiguration<T> overrideService(Class<K> key, K instance) {
+        return overrideService(Key.of(key), instance);
+    }
+
+    public <K> InstanceBeanConfiguration<T> overrideService(Key<K> key, K instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Class<K> key, Supplier<K> supplier) {
+        return overrideServiceDelayed(Key.of(key), supplier);
+    }
+
+    public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Key<K> key, Supplier<K> supplier) {
+        // delayedInitiatedWith
+        // Taenker vi har et filled array som er available when initiating the lifetime
+
+        // Her skal vi ogsaa taenke ind at det skal vaere en application singleton vi injecter ind i.
+        // Altsaa vi vil helst ikke initiere en Session extension bean med MHs hver gang
+
         return this;
     }
 
@@ -129,9 +142,36 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     }
 }
 
+//Skal bruges paa params som skal "bootstrappes" med...
+//Maaske bare @Bootstrap
+
+//beforeIntrospec();
+//ignoreAnnotation.
+//addAnnotation
+//resolve();
+interface stuff {
+ 
+ 
+}
 // inject, bind, provide
 //// Ikke provide... vi har allerede provideAs
 //// bind syntes jeg er fint at det er positionelt
+
+
+//Den bliver koert foerend vi returnere BeanConfiguration.
+//Og som giver ejeren af beanen stor control...
+
+//beanExtension.wrapNext(Consumer<?> action);
+//beanExtension.wrapAll(Consumer<?> action);
+//? Er en der har fuld kontrol over hvad der sker
+
+//Alternativ resolver vi kun til en service. Hvis vi ikke bliver initializet
+//Mit eneste problem er, at det kun virker for factory/initailizatio operations.
+//Ellers bliver de resolved som en service. Maaske det kan skabe lidt problemer
+//Tror nu det er bedre... Maa jeg indroemme.. Den foeles ikke helt rigtig den her annotering...
+@interface ZInitializer {
+
+}
 
 // ServiceLocator sl = ServiceLocator.of(xxx) <-- return InternalServiceLocator
 // Syntes man skal angive key.. for let at goere provideInstance(serviceLocator);

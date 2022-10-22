@@ -236,6 +236,101 @@ public final class BeanSetup {
     }
 
     // Maybe move to bean extension???
+    static BeanSetup installx(BeanInstaller installerBean, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+            throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
+        }
+
+        boolean multiInstall = installerBean.multiInstall;
+        BeanIntrospector customIntrospector = installerBean.introspector;
+        String prefix = installerBean.namePrefix;
+
+        BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
+
+        ExtensionSetup installedBy = installerBean.useSite == null ? installerBean.beanExtension : installerBean.useSite.usedBy();
+        // Create the bean
+
+        RealmSetup realm = installerBean.useSite == null ? installerBean.beanExtension.container.assembly : installedBy.extensionRealm;
+        BeanSetup bean = new BeanSetup(installedBy, installerBean.kind, beanClass, sourceKind, source, realm, null);
+        ContainerSetup container = bean.container;
+
+        if (prefix == null) {
+            prefix = "Functional";
+            if (beanModel != null) {
+                prefix = beanModel.simpleName();
+            }
+        }
+        // TODO virker ikke med functional beans og naming
+        String n = prefix;
+
+        if (beanClass != void.class) {
+            if (multiInstall) {
+                class MuInst {
+                    int counter;
+                }
+                MuInst i = (MuInst) container.beanClassMap.compute(beanClass, (c, o) -> {
+                    if (o == null) {
+                        return new MuInst();
+                    } else if (o instanceof BeanSetup) {
+                        throw new DublicateBeanClassException("Oops");
+                    } else {
+                        ((MuInst) o).counter += 1;
+                        return o;
+                    }
+                });
+                int next = i.counter;
+                if (next > 0) {
+                    n = prefix + next;
+                }
+                while (container.children.putIfAbsent(n, bean) != null) {
+                    n = prefix + ++next;
+                    i.counter = next;
+                }
+            } else {
+                container.beanClassMap.compute(beanClass, (c, o) -> {
+                    if (o == null) {
+                        return bean;
+                    } else if (o instanceof BeanSetup) {
+                        throw new DublicateBeanClassException("A non-multi bean has already been defined for " + bean.beanClass);
+                    } else {
+                        // We already have some multiple beans installed
+                        throw new DublicateBeanClassException("Oops");
+                    }
+                });
+                // Not multi install, so should be able to add it first time
+                int size = 0;
+                while (container.children.putIfAbsent(n, bean) != null) {
+                    n = prefix + ++size;
+                }
+            }
+        }
+        bean.name = n;
+
+        if (sourceKind == BeanSourceKind.OP) {
+            PackedOp<?> op = (PackedOp<?>) bean.source;
+            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), installedBy),
+                    new BeanInstanceAccess(bean, op.operation), null);
+            bean.operations.add(os);
+        }
+
+        // Scan the bean class for annotations unless the bean class is void or is from a java package
+        if (sourceKind != BeanSourceKind.NONE) {
+            new Introspector(beanModel, bean, customIntrospector).introspect();
+        }
+
+        // Bean installed successfully, add bean to the container
+        BeanSetup siebling = container.beanLast;
+        if (siebling == null) {
+            container.beanFirst = bean;
+        } else {
+            siebling.nextBean = bean;
+        }
+        container.beanLast = bean;
+
+        return bean;
+    }
+
+    // Maybe move to bean extension???
     static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup installedBy,
             RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
         if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {

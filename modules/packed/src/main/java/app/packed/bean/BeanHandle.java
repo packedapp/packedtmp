@@ -29,6 +29,7 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.service.ProvideableBeanConfiguration;
+import internal.app.packed.bean.BeanInstaller;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.BeanSetup.BeanInstallOption;
 
@@ -62,6 +63,10 @@ public final /* primitive */ class BeanHandle<T> {
 
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, MethodHandle methodHandle) {
         return addOperation(operator, Op.ofMethodHandle(methodHandle));
+    }
+
+    public <K> OperationHandle overrideService(Key<K> key, K instance) {
+        throw new UnsupportedOperationException();
     }
 
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
@@ -137,6 +142,38 @@ public final /* primitive */ class BeanHandle<T> {
     public void specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
         bean.mirrorSupplier = supplier;
+    }
+
+    /**
+     *
+     * <p>
+     * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
+     * are limited.
+     */
+    public sealed static abstract class Installer permits BeanInstaller {
+
+        public abstract Installer installIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
+
+        public abstract Installer synthetic();
+
+        public abstract Installer multiInstall();
+
+        public abstract Installer namePrefix(String prefix);
+
+        public abstract Installer introspectWith(BeanIntrospector introspector);
+
+        public abstract BeanHandle<Void> installSourceless();
+
+        public abstract <T> BeanHandle<T> install(Class<T> beanClass);
+
+        public abstract <T> BeanHandle<T> install(Op<T> operation);
+
+        public abstract <T> BeanHandle<T> installInstance(T instance);
+
+    
+        protected <T> BeanHandle<T> from(BeanSetup bs) {
+            return new BeanHandle<>(bs);
+        }
     }
 
     /** Various install options that can be provided when creating a {@link BeanHandle}. */

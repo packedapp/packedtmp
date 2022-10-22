@@ -67,6 +67,8 @@ public class BeanExtension extends Extension<BeanExtension> {
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
 
+        // BeanHandle bh = container.prepare(BeanKind.Container).install(implementation);
+        
         // Install the bean
         BeanSetup bean = install(BeanKind.CONTAINER, implementation, BeanSourceKind.CLASS, implementation, null, null);
 

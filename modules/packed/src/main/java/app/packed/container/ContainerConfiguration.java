@@ -95,7 +95,7 @@ public class ContainerConfiguration {
      *            optional wirelets
      * @return the component that was linked
      */
-    public ContainerMirror link(Assembly assembly, Wirelet... wirelets) {
+    public AssemblyMirror link(Assembly assembly, Wirelet... wirelets) {
         // Check that the assembly is still configurable
         checkIsConfigurable();
 
@@ -105,7 +105,7 @@ public class ContainerConfiguration {
         // Build the assembly
         as.build();
 
-        return (ContainerMirror) as.container.mirror();
+        return as.mirror();
     }
 
     /**

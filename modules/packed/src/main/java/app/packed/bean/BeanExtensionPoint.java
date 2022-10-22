@@ -12,6 +12,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
+import internal.app.packed.base.SpecFix;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -30,7 +31,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     // Same container I think
-    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, InstanceBeanConfiguration<P> beanToInitialize, BiConsumer<? super B, ? super P> consumer) {
+    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, InstanceBeanConfiguration<P> beanToInitialize,
+            BiConsumer<? super B, ? super P> consumer) {
         // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
         // Ja det syntes jeg...
         // Skal de vaere samme container??
@@ -54,6 +56,14 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new InstanceBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
+    public BeanHandle.Installer builder(BeanKind kind) {
+        throw new UnsupportedOperationException();
+    }
+
+    public BeanHandle.Installer builder(BeanKind kind, UseSite forExtension) {
+        throw new UnsupportedOperationException();
+    }
+
     // should not call anything on the returned bean
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         throw new UnsupportedOperationException();
@@ -69,6 +79,10 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new InstanceBeanConfiguration<>(new BeanHandle<>(bean));
     }
 
+    @SpecFix("Tror maaske vi skal have noget builder igen..")
+    // Skal starte med prepare(BeanKind.Container).installInstance("sdfsdf");
+    // Og saa have Installer istedet for InstallOption
+    // Vi kan jo have begge sideloebende.
     public <T> BeanHandle<T> newContainerBean(Class<T> clazz, BeanHandle.InstallOption... options) {
         BeanExtension be = extension();
         BeanSetup bean = BeanSetup.installClass(usedByExtension(), be.container.assembly, null, BeanKind.CONTAINER, clazz);

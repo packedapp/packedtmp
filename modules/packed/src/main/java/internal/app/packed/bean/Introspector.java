@@ -58,7 +58,7 @@ public final class Introspector {
     /** We never process classes that are located in the {@code java.base} module. */
     public static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
-    /** A handle for invoking the protected method {@link Extension#newExtensionMirror()}. */
+    /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
             BeanIntrospector.class, "initialize", void.class, ExtensionSetup.class, BeanSetup.class);
 
@@ -101,20 +101,19 @@ public final class Introspector {
             if (beanIntrospector != null && bean.installedBy.extensionType == extensionType) {
                 // A special introspector has been set, don't
                 introspector = beanIntrospector;
-                try {
-                    MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
-                } catch (Throwable t) {
-                    throw ThrowableUtil.orUndeclared(t);
-                }
             } else {
                 try {
                     introspector = (BeanIntrospector) MH_EXTENSION_NEW_BEAN_INTROSPECTOR.invokeExact(extension.instance());
-                    MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
                 } catch (Throwable t) {
                     throw ThrowableUtil.orUndeclared(t);
                 }
             }
-
+            
+            try {
+                MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
+            }
             // Notify the bean introspector that is being used
             introspector.onIntrospectionStop();
             return new Delegate(extension, introspector, fullAccess);
@@ -131,7 +130,7 @@ public final class Introspector {
 
     }
     /** Introspects the bean. */
-    public void introspect() {
+    void introspect() {
         // Process all annotations on the class
         introspectClass();
 

@@ -30,13 +30,22 @@ public final class ContainerHandle {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns whether or not the bean is still configurable.
+     * 
+     * @return {@code true} if the bean is still configurable
+     */
+    public boolean isConfigurable() {
+        return !container.assembly.isClosed();
+    }
+
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
 
-   public interface Option {
+    public interface InstallOption {
 
-        static Option allowRuntimeWirelets() {
+        static InstallOption allowRuntimeWirelets() {
             return null;
         }
 

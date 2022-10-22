@@ -6,7 +6,6 @@ import app.packed.base.Key;
  * A description of a service.
  */
 // isLazy.. Kan vi sige noget om det.. Det vil jeg ikke mene
-
 public /* sealed */ interface Service {
 
     /**

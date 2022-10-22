@@ -15,25 +15,42 @@
  */
 package app.packed.container;
 
-import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.bean.BeanExtensionPoint;
+import app.packed.bean.BeanHandle;
+import app.packed.lifetime.LifetimeConf;
 
 /**
  *
  */
+// Uden bean.. -> 
+
+// Med bean
+
 public class ContainerExtensionPoint extends ExtensionPoint<ContainerExtension> {
 
     /** Creates a new container extension point. */
     ContainerExtensionPoint() {}
+
+    // Hvor faar jeg methodHandle???
+    // Important the containerHandle is no longer configurable!!!!
+    public ContainerHandle linkNewManyContainer(Assembly assembly, Wirelet[] wirelets, ContainerHandle.InstallOption... options) {
+        throw new UnsupportedOperationException();
+    }
     
-    public ContainerHandle newManyContainer(ContainerHandle.Option options) {
+    public ContainerHandle newManyContainer(Wirelet[] wirelets, ContainerHandle.InstallOption... options) {
         throw new UnsupportedOperationException();
     }
     
     // alternativ har vi en speciel bean configuration
     // Hvor man kan registrere companions. Og CWC som en nested interface maaske
-    public <T> InstanceBeanConfiguration<T> newContainerWrapper(Class<T> t, ContainerWrapperCompanion... companions) {
-        throw new UnsupportedOperationException();
-    }
-    // ContainerWrapperBeanConfiguration
     
+    // Man skal kunne lave den separate. Lad os sige vi har 4 sessions, hvor vi gerne vil returner det samme
+    // Hvis man er lazy bruger man den ikke. Saa den er altid multi
+    public <T> ContainerLaunchBeanConfiguration<T> newContainerWrapper(Class<T> t, ContainerLifetimeCompanion... companions) {
+        BeanHandle<T> h = extension().use(BeanExtensionPoint.class).newManytonBean(useSite(), t, LifetimeConf.ALL);
+        for (ContainerLifetimeCompanion clc : companions) {
+            System.out.println(clc);
+        }
+        return new ContainerLaunchBeanConfiguration<>(h);
+    }
 }
