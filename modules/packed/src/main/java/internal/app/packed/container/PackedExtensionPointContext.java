@@ -16,7 +16,7 @@
 package internal.app.packed.container;
 
 import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.container.UserOrExtension;
+import app.packed.container.ApplicationOrExtension;
 
 /**
  *
@@ -25,7 +25,7 @@ public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSet
 
     /** {@inheritDoc} */
     @Override
-    public UserOrExtension realm() {
+    public ApplicationOrExtension realm() {
         return extension.extensionRealm.extensionModel.realm();
     }
 }

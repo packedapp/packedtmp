@@ -7,34 +7,21 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.InstallOption;
-import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.DublicateBeanClassException;
-import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.operation.InvocationType;
-import app.packed.operation.Op;
 import app.packed.operation.OperationType;
-import app.packed.operation.Provider;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption.CustomPrefix;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption.IntrospectWith;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption.MultiInstall;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption.Synthetic;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.NameCheck;
-import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
@@ -52,9 +39,6 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup {
-
-    /** Illegal bean classes. */
-    private static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
     /** A MethodHandle for invoking {@link BeanMirror#initialize(BeanSetup)}. */
     private static final MethodHandle MH_BEAN_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BeanMirror.class, "initialize",
@@ -76,10 +60,6 @@ public final class BeanSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
-    /** Non-null if the bean is installed for an extension. */
-    @Nullable
-    public final ExtensionSetup ownedByExtension;
-
     /** The bean's injection manager. Null for functional beans, otherwise non-null */
     @Nullable
     public BeanInjectionManager injectionManager;
@@ -89,6 +69,8 @@ public final class BeanSetup {
 
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
+
+    public final List<LifetimeOp> lifetimeOperations = new ArrayList<>();
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BeanMirror> mirrorSupplier;
@@ -103,6 +85,14 @@ public final class BeanSetup {
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
+    /** Non-null if the bean is installed for an extension. */
+    @Nullable
+    public final ExtensionSetup ownedByExtension;
+
+    public final List<ProvidedService> providingOperations = new ArrayList<>();
+
+    public boolean providingOperationsVisited;
+
     /** The realm used to install this component. */
     public final RealmSetup realm;
 
@@ -113,20 +103,19 @@ public final class BeanSetup {
     /** The type of source the installer is created from. */
     public final BeanSourceKind sourceKind;
 
-    public final List<LifetimeOp> lifetimeOperations = new ArrayList<>();
-
-    public final List<ProvidedService> providingOperations = new ArrayList<>();
-
-    public boolean providingOperationsVisited;
-
     /**
      * Create a new bean.
      */
-    private BeanSetup(ExtensionSetup installedBy, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, RealmSetup realm,
-            @Nullable ExtensionSetup extensionOwner) {
+    private BeanSetup(BeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+        ExtensionSetup installedBy = installer.useSite == null ? installer.beanExtension : installer.useSite.usedBy();
+
+        RealmSetup realm = installer.useSite == null ? installer.beanExtension.container.assembly : installedBy.extensionRealm;
+
+        ExtensionSetup extensionOwner = installedBy; // incorrect
+
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
-        this.beanKind = requireNonNull(beanKind);
+        this.beanKind = requireNonNull(installer.kind);
         this.beanClass = requireNonNull(beanClass);
         this.sourceKind = requireNonNull(sourceKind);
         this.source = source;
@@ -138,7 +127,7 @@ public final class BeanSetup {
         this.ownedByExtension = extensionOwner;
 
         ContainerLifetimeSetup cls = container.lifetime;
-        if (beanKind == BeanKind.CONTAINER) {
+        if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.FUNCTIONAL || beanKind == BeanKind.STATIC) {
             this.lifetime = cls;
             cls.beans.add(this);
         } else {
@@ -193,6 +182,7 @@ public final class BeanSetup {
         String[] paths = new String[size + 1];
         paths[size] = name;
         ContainerSetup c = container;
+        // check for null instead...
         for (int i = size - 1; i >= 0; i--) {
             paths[i] = c.name;
             c = c.treeParent;
@@ -219,43 +209,20 @@ public final class BeanSetup {
      *            the handle to extract from
      * @return the bean setup
      */
-    public static BeanSetup crack(BeanHandle<?> handle) {
+    private static BeanSetup crack(BeanHandle<?> handle) {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
-    // Maaske lave vi kinds til et int flag. Hvis vi ogsaa skal tilfoeje only if absent
+    static BeanSetup install(BeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+        BeanSetup bean = new BeanSetup(installer, beanClass, sourceKind, source);
 
-    // Eller maaske long term er det en record vi populere
-    // install(F..withSource().ifAbsent)
-
-    public static BeanSetup install(ExtensionSetup installedBy, BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            @Nullable UseSite extensionUseSite, BeanHandle.InstallOption... options) {
-        PackedExtensionPointContext c = ((PackedExtensionPointContext) extensionUseSite);
-        RealmSetup r = extensionUseSite == null ? installedBy.container.assembly : c.extension().extensionRealm;
-        return install(kind, beanClass, sourceKind, source, installedBy, r, extensionUseSite == null ? null : c.extension(), options);
-    }
-
-    // Maybe move to bean extension???
-    static BeanSetup installx(BeanInstaller installerBean, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
-        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
-        }
-
-        boolean multiInstall = installerBean.multiInstall;
-        BeanIntrospector customIntrospector = installerBean.introspector;
-        String prefix = installerBean.namePrefix;
-
-        BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
-
-        ExtensionSetup installedBy = installerBean.useSite == null ? installerBean.beanExtension : installerBean.useSite.usedBy();
-        // Create the bean
-
-        RealmSetup realm = installerBean.useSite == null ? installerBean.beanExtension.container.assembly : installedBy.extensionRealm;
-        BeanSetup bean = new BeanSetup(installedBy, installerBean.kind, beanClass, sourceKind, source, realm, null);
         ContainerSetup container = bean.container;
 
+        String prefix = installer.namePrefix;
         if (prefix == null) {
             prefix = "Functional";
+            BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
+
             if (beanModel != null) {
                 prefix = beanModel.simpleName();
             }
@@ -264,7 +231,7 @@ public final class BeanSetup {
         String n = prefix;
 
         if (beanClass != void.class) {
-            if (multiInstall) {
+            if (installer.multiInstall) {
                 class MuInst {
                     int counter;
                 }
@@ -308,17 +275,17 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), installedBy),
+            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), bean.installedBy),
                     new BeanInstanceAccess(bean, op.operation), null);
             bean.operations.add(os);
         }
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE) {
-            new Introspector(beanModel, bean, customIntrospector).introspect();
+            new Introspector(bean, installer.introspector).introspect();
         }
 
-        // Bean installed successfully, add bean to the container
+        // Bean was successfully created, add it to the container
         BeanSetup siebling = container.beanLast;
         if (siebling == null) {
             container.beanFirst = bean;
@@ -328,163 +295,5 @@ public final class BeanSetup {
         container.beanLast = bean;
 
         return bean;
-    }
-
-    // Maybe move to bean extension???
-    static BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, ExtensionSetup installedBy,
-            RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanHandle.InstallOption... options) {
-        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new IllegalArgumentException("Cannot register a bean with bean class " + beanClass);
-        }
-
-        boolean multiInstall = false;
-        BeanIntrospector customIntrospector = null;
-        String prefix = null;
-
-        // Process each option
-        requireNonNull(options, "options is null");
-        for (InstallOption o : options) {
-            requireNonNull(o, "option was null");
-            if (o instanceof BeanInstallOption.IntrospectWith ci) {
-                if (!kind.hasInstances()) {
-                    throw new IllegalArgumentException("Custom Introspector cannot be used with functional or static beans");
-                }
-                customIntrospector = ci.introspector();
-            } else if (o instanceof BeanInstallOption.CustomPrefix cp) {
-                prefix = cp.prefix();
-            } else {
-                if (!kind.hasInstances()) {
-                    throw new IllegalArgumentException("NonUnique cannot be used with functional or static beans");
-                }
-                multiInstall = true;
-            }
-        }
-
-        BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
-
-        // Create the bean
-        BeanSetup bean = new BeanSetup(installedBy, kind, beanClass, sourceKind, source, realm, extensionOwner);
-        ContainerSetup container = bean.container;
-
-        if (prefix == null) {
-            prefix = "Functional";
-            if (beanModel != null) {
-                prefix = beanModel.simpleName();
-            }
-        }
-        // TODO virker ikke med functional beans og naming
-        String n = prefix;
-
-        if (beanClass != void.class) {
-            if (multiInstall) {
-                class MuInst {
-                    int counter;
-                }
-                MuInst i = (MuInst) container.beanClassMap.compute(beanClass, (c, o) -> {
-                    if (o == null) {
-                        return new MuInst();
-                    } else if (o instanceof BeanSetup) {
-                        throw new DublicateBeanClassException("Oops");
-                    } else {
-                        ((MuInst) o).counter += 1;
-                        return o;
-                    }
-                });
-                int next = i.counter;
-                if (next > 0) {
-                    n = prefix + next;
-                }
-                while (container.children.putIfAbsent(n, bean) != null) {
-                    n = prefix + ++next;
-                    i.counter = next;
-                }
-            } else {
-                container.beanClassMap.compute(beanClass, (c, o) -> {
-                    if (o == null) {
-                        return bean;
-                    } else if (o instanceof BeanSetup) {
-                        throw new DublicateBeanClassException("A non-multi bean has already been defined for " + bean.beanClass);
-                    } else {
-                        // We already have some multiple beans installed
-                        throw new DublicateBeanClassException("Oops");
-                    }
-                });
-                // Not multi install, so should be able to add it first time
-                int size = 0;
-                while (container.children.putIfAbsent(n, bean) != null) {
-                    n = prefix + ++size;
-                }
-            }
-        }
-        bean.name = n;
-
-        if (sourceKind == BeanSourceKind.OP) {
-            PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), installedBy),
-                    new BeanInstanceAccess(bean, op.operation), null);
-            bean.operations.add(os);
-        }
-
-        // Scan the bean class for annotations unless the bean class is void or is from a java package
-        if (sourceKind != BeanSourceKind.NONE) {
-            new Introspector(beanModel, bean, customIntrospector).introspect();
-        }
-
-        // Bean installed successfully, add bean to the container
-        BeanSetup siebling = container.beanLast;
-        if (siebling == null) {
-            container.beanFirst = bean;
-        } else {
-            siebling.nextBean = bean;
-        }
-        container.beanLast = bean;
-
-        return bean;
-    }
-
-    public static BeanSetup installClass(ExtensionSetup installedBy, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind,
-            Class<?> clazz, BeanHandle.InstallOption... options) {
-        requireNonNull(clazz, "clazz is null");
-        return install(beanKind, clazz, BeanSourceKind.CLASS, clazz, installedBy, realm, extensionOwner, options);
-    }
-
-    public static BeanSetup installFunctional(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner,
-            BeanHandle.InstallOption... options) {
-        return install(BeanKind.FUNCTIONAL, void.class, BeanSourceKind.NONE, null, operator, realm, extensionOwner, options);
-    }
-
-    public static BeanSetup installInstance(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, Object instance,
-            BeanHandle.InstallOption... options) {
-        requireNonNull(instance, "instance is null");
-        return install(BeanKind.CONTAINER, instance.getClass(), BeanSourceKind.INSTANCE, instance, operator, realm, extensionOwner, options);
-    }
-
-    public static BeanSetup installOp(ExtensionSetup operator, RealmSetup realm, @Nullable ExtensionSetup extensionOwner, BeanKind beanKind, Op<?> op,
-            BeanHandle.InstallOption... options) {
-        PackedOp<?> pop = PackedOp.crack(op);
-        return install(beanKind, pop.type().returnType(), BeanSourceKind.OP, pop, operator, realm, extensionOwner, options);
-    }
-
-    /** The various bean install options. */
-    // Silly Eclipse compiler requires permits here (bug)
-    public sealed interface BeanInstallOption extends BeanHandle.InstallOption permits MultiInstall, IntrospectWith, CustomPrefix, Synthetic {
-
-        /**
-         * Allows for a custom introspector.
-         * 
-         * @see InstallOption#introspectWith(BeanIntrospector)
-         */
-        public record IntrospectWith(BeanIntrospector introspector) implements BeanInstallOption {}
-
-        /**
-         * Allows for multi install of a bean.
-         * 
-         * @see InstallOption#multiInstall()
-         */
-        public final class MultiInstall implements BeanInstallOption {}
-
-        public final class Synthetic implements BeanInstallOption {} // maybe this is only for packed, in which case a flag I think
-
-        public record CustomPrefix(String prefix) implements BeanInstallOption {}
     }
 }

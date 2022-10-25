@@ -15,9 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanHandle;
-import app.packed.lifetime.LifetimeConf;
 
 /**
  *
@@ -47,7 +45,7 @@ public class ContainerExtensionPoint extends ExtensionPoint<ContainerExtension> 
     // Man skal kunne lave den separate. Lad os sige vi har 4 sessions, hvor vi gerne vil returner det samme
     // Hvis man er lazy bruger man den ikke. Saa den er altid multi
     public <T> ContainerLaunchBeanConfiguration<T> newContainerWrapper(Class<T> t, ContainerLifetimeCompanion... companions) {
-        BeanHandle<T> h = extension().use(BeanExtensionPoint.class).newManytonBean(useSite(), t, LifetimeConf.ALL);
+        BeanHandle<T> h = null;// extension().use(BeanExtensionPoint.class).newManytonBean(useSite(), t, LifetimeConf.ALL);
         for (ContainerLifetimeCompanion clc : companions) {
             System.out.println(clc);
         }

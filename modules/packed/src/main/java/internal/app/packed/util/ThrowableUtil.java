@@ -16,36 +16,12 @@
 package internal.app.packed.util;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 /** Various {@link Throwable} utility methods. */
 public final class ThrowableUtil {
 
     /** Cannot instantiate. */
     private ThrowableUtil() {}
-
-    /**
-     * If the specified future has returned exceptionally, returns the cause. Otherwise returns null.
-     * 
-     * @param future
-     *            the completable future
-     * @return any throwable the specified future has been completed with, or null if it has not been completed or has
-     *         completed normally.
-     */
-    public static Throwable fromCompletionFuture(CompletableFuture<?> future) {
-        if (future.isCompletedExceptionally()) {
-            try {
-                future.getNow(null);
-            } catch (CancellationException e) {
-                return e;
-            } catch (CompletionException e) {
-                return e.getCause();
-            }
-        }
-        return null;
-    }
 
     /**
      * Throws the specified throwable if it is an {@link Error} or a {@link RuntimeException}. Otherwise returns the

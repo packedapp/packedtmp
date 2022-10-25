@@ -26,10 +26,10 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import testutil.util.AbstractApplicationTest;
 
-/** Tests {@link BaseContainerConfiguration#extensionsTypes()} and {@link BaseContainerConfiguration#useExtension(Class)}. */
+/** Tests {@link BaseContainerConfiguration#extensionsTypes()} and {@link BaseContainerConfiguration#use(Class)}. */
 public class ContainerConfigurationExtensionTest extends AbstractApplicationTest {
 
-    /** Tests basic use of {@link BaseContainerConfiguration#useExtension(Class)}. */
+    /** Tests basic use of {@link BaseContainerConfiguration#use(Class)}. */
     @Test
     public void use() {
         appOf(e -> e.use(TestExtension1.class, i -> {
@@ -58,8 +58,8 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
     /**
      * Tests what happens if people try to use any of the extension methods outside of the configure of the defining
      * assembly. We allow invoking {@link BaseContainerConfiguration#extensionsTypes()} and allow
-     * {@link BaseContainerConfiguration#useExtension(Class)} for extension that have already been installed. Calling
-     * {@link BaseContainerConfiguration#useExtension(Class)} with an extension that have not previously been installed will throw an
+     * {@link BaseContainerConfiguration#use(Class)} for extension that have already been installed. Calling
+     * {@link BaseContainerConfiguration#use(Class)} with an extension that have not previously been installed will throw an
      * {@link IllegalStateException}.
      */
     @Test

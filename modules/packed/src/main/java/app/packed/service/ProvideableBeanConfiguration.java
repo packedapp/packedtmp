@@ -15,17 +15,11 @@
  */
 package app.packed.service;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
-import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.oldservice.InternalServiceExtension;
-import internal.app.packed.oldservice.InternalServiceUtil;
-import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 
 /**
  * A configuration of a container bean.
@@ -33,20 +27,12 @@ import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 // ServiceableBeanConfiguration?
 public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
-    /** The internal configuration iof the bean. */
-    final BeanSetup bean;
-
-    BeanInstanceServiceSetup oldSetup;
-
-    InternalServiceExtension oldSms;
-
     /**
      * @param handle
      *            the bean driver to use for creating the bean
      */
     public ProvideableBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
-        bean = BeanSetup.crack((BeanHandle<?>) handle);
     }
 
     public Key<T> defaultKey() {
@@ -68,11 +54,14 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
     }
 
     public ProvideableBeanConfiguration<T> exportAs(Key<? super T> key) {
-        bean.container.sm.serviceExport(key, bean.accessOperation());
-        
-        requireNonNull(oldSetup);
-        oldSms.ios.exportsOrCreate().export(oldSetup);
-        
+        handle().serviceExportAs(key);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ProvideableBeanConfiguration<T> named(String name) {
+        super.named(name);
         return this;
     }
 
@@ -104,13 +93,6 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ProvideableBeanConfiguration<T> named(String name) {
-        super.named(name);
-        return this;
-    }
-
     public ProvideableBeanConfiguration<T> provide() {
         return provideAs(handle().defaultKey());
     }
@@ -138,16 +120,7 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Class)
      */
     public ProvideableBeanConfiguration<T> provideAs(Key<? super T> key) {
-        Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
-        bean.container.sm.serviceProvide(k, bean.accessOperation());
-        
-        // Old code
-        oldSms = bean.container.injectionManager;
-        oldSetup = new BeanInstanceServiceSetup(bean, k);
-        oldSms.addService(oldSetup);
-
-        bean.container.useExtensionSetup(ServiceExtension.class, null);
-        
+        handle().serviceProvideAs(key);
         return this;
     }
 }

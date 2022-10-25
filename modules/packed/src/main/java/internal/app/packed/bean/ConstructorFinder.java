@@ -23,8 +23,32 @@ import java.util.function.Function;
 
 import app.packed.bean.Inject;
 
+
 /**
- *
+ * Tries to find a single static method or constructor on the specified class using the following rules:
+ * <ul>
+ * <li>If a single static method (non-static methods are ignored) annotated with {@link Inject} is present a factory
+ * wrapping the method will be returned. If there are multiple static methods annotated with Inject this method will
+ * fail with {@link IllegalStateException}.</li>
+ * <li>If a single constructor annotated with {@link Inject} is present a factory wrapping the constructor will be
+ * returned. If there are multiple constructors annotated with Inject this method will fail with
+ * {@link IllegalStateException}.</li>
+ * <li>If there is exactly one public constructor, a factory wrapping the constructor will be returned. If there are
+ * multiple public constructors this method will fail with {@link IllegalStateException}.</li>
+ * <li>If there is exactly one protected constructor, a factory wrapping the constructor will be returned. If there are
+ * multiple protected constructors this method will fail with {@link IllegalStateException}.</li>
+ * <li>If there is exactly one package-private constructor, a factory wrapping the constructor will be returned. If
+ * there are multiple package-private constructors this method will fail with {@link IllegalStateException}.</li>
+ * <li>If there is exactly one private constructor, a factory wrapping the constructor will be returned. Otherwise an
+ * {@link IllegalStateException} is thrown.</li>
+ * </ul>
+ * <p>
+ * 
+ * @param <T>
+ *            the implementation type
+ * @param implementation
+ *            the implementation type
+ * @return a factory for the specified type
  */
 final class ConstructorFinder {
 

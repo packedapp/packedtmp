@@ -24,6 +24,7 @@ import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.lifetime.LifetimeConf;
@@ -236,12 +237,12 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().newManytonBean(implementation, LifetimeConf.START_ONLY);
+        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().newManytonBean(op, LifetimeConf.START_ONLY);
+        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

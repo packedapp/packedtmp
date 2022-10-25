@@ -19,9 +19,9 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.container.ApplicationOrExtension;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.UserOrExtension;
 import app.packed.operation.bindings.BindingKind;
 import app.packed.operation.bindings.DefaultMirror;
 import app.packed.operation.bindings.DependenciesMirror;
@@ -66,13 +66,13 @@ public class BindingMirror implements Mirror {
         return binding().index;
     }
 
-    /** {@return the user or extension that created the binding.} */
-    public UserOrExtension boundBy() {
+    /** {@return the x who created binding.} */
+    public ApplicationOrExtension boundBy() {
         return binding().boundBy();
     }
 
     /** {@return the dependencies this binding introduces.} */
-    public DependenciesMirror dependencies() {
+    DependenciesMirror dependencies() {
         throw new UnsupportedOperationException();
     }
 
@@ -142,6 +142,8 @@ interface Sandbox {
 
     Optional<DefaultMirror> fallback(); // Do we parse it even if we have been build-time resolved????
 
+    boolean isConstant();
+
     /**
      * If this dependency is the result of another operation.
      * 
@@ -162,7 +164,9 @@ interface Sandbox {
 
     // HttpRequst<?> Optional<Integer> er jo stadig provided af WebExtension...
 
-    public UserOrExtension providedBy();
+    Optional<OperationMirror> providingOperation();
+
+    public ApplicationOrExtension providedBy();
 
     /**
      * If this dependency is the result of another operation.
@@ -178,12 +182,10 @@ interface Sandbox {
     // Her er constructeren for CustomerManager...
     // Til gengaeld
 
-    public Optional<OperationMirror> providingOperation();
-
     public ResolutionState resolutionState();
 
     // Unresolved->Empty or Composite->Empty
-    Optional<UserOrExtension> resolvedBy();
+    Optional<ApplicationOrExtension> resolvedBy();
 
     Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
 

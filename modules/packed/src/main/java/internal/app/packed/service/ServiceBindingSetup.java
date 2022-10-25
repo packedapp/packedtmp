@@ -16,7 +16,7 @@
 package internal.app.packed.service;
 
 import app.packed.base.Nullable;
-import app.packed.container.UserOrExtension;
+import app.packed.container.ApplicationOrExtension;
 import app.packed.operation.BindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
@@ -49,8 +49,8 @@ public final class ServiceBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public UserOrExtension boundBy() {
-        return UserOrExtension.extension(ServiceExtension.class);
+    public ApplicationOrExtension boundBy() {
+        return ApplicationOrExtension.extension(ServiceExtension.class);
     }
 
     /** {@return whether or not the service could be resolved.} */

@@ -33,10 +33,8 @@ import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
+import internal.app.packed.operation.op.PackedOp;
 
-/**
- *
- */
 public final class BeanInstaller extends BeanHandle.Installer {
 
     /** Illegal bean classes. */
@@ -63,18 +61,30 @@ public final class BeanInstaller extends BeanHandle.Installer {
         this.useSite = useSite;
     }
 
+    private void checkClass(Class<?> beanClass) {
+        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+            throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
+        }
+
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T> BeanHandle<T> install(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
-        BeanSetup bs = BeanSetup.installx(this, beanClass, BeanSourceKind.CLASS, beanClass);
+        checkClass(beanClass);
+        BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.CLASS, beanClass);
         return from(bs);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanHandle<T> install(Op<T> operation) {
-        return null;
+    public <T> BeanHandle<T> install(Op<T> op) {
+        PackedOp<?> pop = PackedOp.crack(op);
+        Class<?> beanClass = pop.type.returnType();
+        checkClass(beanClass);
+        BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.OP, pop);
+        return from(bs);
     }
 
     /** {@inheritDoc} */
@@ -86,7 +96,11 @@ public final class BeanInstaller extends BeanHandle.Installer {
     /** {@inheritDoc} */
     @Override
     public <T> BeanHandle<T> installInstance(T instance) {
-        return null;
+        requireNonNull(instance, "instance is null");
+        Class<?> beanClass = instance.getClass();
+        checkClass(beanClass);
+        BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.INSTANCE, instance);
+        return from(bs);
     }
 
     /** {@inheritDoc} */
@@ -123,7 +137,6 @@ public final class BeanInstaller extends BeanHandle.Installer {
     public Installer namePrefix(String prefix) {
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
-
     }
 
     /** {@inheritDoc} */

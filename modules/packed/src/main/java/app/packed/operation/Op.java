@@ -188,6 +188,7 @@ interface ZandboxOp<R> {
      *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
      *             number of variables and {@code L} is the length of the additional argument array.
      */
+    // Kunne have en lazy version ogsaa
     default Op<R> bindSupplier(int position, Supplier<?> supplier, Supplier<?>... additionalSuppliers) {
         // IOBE -> now
         // NPE -> Later

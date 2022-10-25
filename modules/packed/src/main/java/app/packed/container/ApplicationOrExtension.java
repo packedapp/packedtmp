@@ -18,17 +18,17 @@ import internal.app.packed.util.ClassUtil;
 // Er ikke paa det er en Realm... anyway
 // En AssemblyRealm
 
-public /* primitive */ final class UserOrExtension {
+public /* primitive */ final class ApplicationOrExtension {
 
     /** The application realm. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static final UserOrExtension APPLICATION = new UserOrExtension((Class) Extension.class);
+    private static final ApplicationOrExtension APPLICATION = new ApplicationOrExtension((Class) Extension.class);
 
     /** The extension the realms represents. Or {@code app.packed.extension.Extension} for the application realm. */
     @SuppressWarnings("rawtypes")
     private final Class extension;
 
-    private UserOrExtension(Class<? extends Extension<?>> extension) {
+    private ApplicationOrExtension(Class<? extends Extension<?>> extension) {
         this.extension = extension;
     }
 
@@ -45,17 +45,17 @@ public /* primitive */ final class UserOrExtension {
         return extension == Extension.class;
     }
 
+    public boolean isExtension() {
+        return extension != Extension.class;
+    }
+
     /** {@inheritDoc} */
     public String toString() {
         return isApplication() ? "Application" : extension.getSimpleName();
     }
 
-    public boolean isExtension() {
-        return extension != Extension.class;
-    }
-
     /** {@return the application realm.} */
-    public static UserOrExtension application() {
+    public static ApplicationOrExtension application() {
         return APPLICATION;
     }
 
@@ -68,8 +68,8 @@ public /* primitive */ final class UserOrExtension {
      * @throws IllegalArgumentException
      *             if the specified class is not a proper subclass of Extension
      */
-    public static UserOrExtension extension(Class<? extends Extension<?>> extensionType) {
+    public static ApplicationOrExtension extension(Class<? extends Extension<?>> extensionType) {
         ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
-        return new UserOrExtension(extensionType);
+        return new ApplicationOrExtension(extensionType);
     }
 }

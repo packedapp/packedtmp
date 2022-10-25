@@ -15,37 +15,15 @@
  */
 package internal.app.packed.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
 
 import testutil.stubs.Throwables.Exception1;
-import testutil.stubs.Throwables.Throwable1;
 
 /** Tests {@link ThrowableUtil}. */
 public class ThrowableUtilTest {
 
-    /** Tests {@link ThrowableUtil#fromCompletionFuture(CompletableFuture)}. */
-    @Test
-    public void fromCompletionFuture() {
-        assertThat(ThrowableUtil.fromCompletionFuture(new CompletableFuture<>())).isNull();
-
-        CompletableFuture<String> cf = new CompletableFuture<>();
-        cf.complete("foo");
-        assertThat(ThrowableUtil.fromCompletionFuture(cf)).isNull();
-
-        cf = new CompletableFuture<>();
-        cf.completeExceptionally(Throwable1.INSTANCE);
-        assertThat(ThrowableUtil.fromCompletionFuture(cf)).isEqualTo(Throwable1.INSTANCE);
-
-        cf = new CompletableFuture<>();
-        cf.cancel(true);
-        assertThat(ThrowableUtil.fromCompletionFuture(cf)).isInstanceOf(CancellationException.class);
-    }
 
 //    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
 //    @Test

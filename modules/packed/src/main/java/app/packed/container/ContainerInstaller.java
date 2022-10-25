@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
-
-import internal.app.packed.operation.OperationSetup;
+package app.packed.container;
 
 /**
  *
  */
-// Ved ikke om vi gider have det hiraki...
-public abstract sealed class NestedBindingSetup extends BindingSetup permits CompositeBindingSetup, FusedBindingSetup {
+public interface ContainerInstaller {
 
-    /**
-     * @param operation
-     * @param index
-     */
-    public NestedBindingSetup(OperationSetup operation, int index) {
-        super(operation, index);
-    }
-
-    public final OperationSetup providedBy = null;
 }
+// Ejer
+
+// Support enten linkage(Assembly) or lav en ny XContetainerConfiguration
+// Eager, Lazy, ManyTone
+// ContainerCompanions (extension configuration)
+// Bean <- er taet knyttet til ContainerCompanions
+// Hosting (Long term)

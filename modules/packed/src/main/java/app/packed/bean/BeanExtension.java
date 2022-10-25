@@ -1,23 +1,16 @@
 package app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.base.Nullable;
-import app.packed.bean.BeanHandle.InstallOption;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionPoint.UseSite;
 import app.packed.lifetime.RunState;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.BeanInstaller;
 import internal.app.packed.bean.LifetimeOp;
 import internal.app.packed.bean.MethodIntrospector;
-import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.op.PackedOp;
 
 /**
  * An extension that is used for installing new beans into a container.
@@ -27,31 +20,11 @@ import internal.app.packed.operation.op.PackedOp;
  */
 public class BeanExtension extends Extension<BeanExtension> {
 
-    /** The container we are installing beans into. */
-    final ContainerSetup container;
-
     /** The internal configuration of the extension. */
     final ExtensionSetup extensionSetup = ExtensionSetup.crack(this);
 
     /** Create a new bean extension. */
-    BeanExtension() {
-        container = extensionSetup.container;
-    }
-
-    // Ahh er det lidt irriterende. Naar vi skal til at lave synthetisk beans taenker jeg?
-    BeanSetup install(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, BeanExtensionPoint extensionPoint, UseSite useSite,
-            BeanHandle.InstallOption... options) {
-        ExtensionSetup installingExtension = extensionPoint == null ? extensionSetup : extensionPoint.usedByExtension();
-//        PackedExtensionPointContext c = ((PackedExtensionPointContext) useSite);
-        return BeanSetup.install(installingExtension, kind, beanClass, sourceKind, source, useSite, options);
-    }
-
-    <T> BeanHandle<T> installh(BeanKind kind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source, BeanExtensionPoint extensionPoint,
-            UseSite useSite, BeanHandle.InstallOption... options) {
-        ExtensionSetup installingExtension = extensionPoint == null ? extensionSetup : extensionPoint.usedByExtension();
-//        PackedExtensionPointContext c = ((PackedExtensionPointContext) useSite);
-        return new BeanHandle<>(BeanSetup.install(installingExtension, kind, beanClass, sourceKind, source, useSite, options));
-    }
+    BeanExtension() {}
 
     /**
      * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
@@ -65,15 +38,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-
-        // BeanHandle bh = container.prepare(BeanKind.Container).install(implementation);
-        
-        // Install the bean
-        BeanSetup bean = install(BeanKind.CONTAINER, implementation, BeanSourceKind.CLASS, implementation, null, null);
-
-        // return a bean configuration
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).install(implementation);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /**
@@ -85,13 +51,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        PackedOp<?> pop = PackedOp.crack(op);
-
-        // Install the bean
-        BeanSetup bean = install(BeanKind.CONTAINER, pop.type().returnType(), BeanSourceKind.OP, pop, null, null);
-
-        // return a bean configuration
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).install(op);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /**
@@ -106,28 +67,18 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-
-        // Install the bean
-        BeanSetup bean = install(BeanKind.CONTAINER, instance.getClass(), BeanSourceKind.INSTANCE, instance, null, null);
-
-        // return a bean configuration
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).installInstance(instance);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.LAZY, implementation);
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).install(implementation);
+        return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        PackedOp<?> pop = PackedOp.crack(op);
-
-        // Install the bean
-        BeanSetup bean = install(BeanKind.LAZY, pop.type().returnType(), BeanSourceKind.OP, pop, null, null);
-
-        // return a bean configuration
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).install(op);
+        return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     /**
@@ -143,13 +94,8 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        requireNonNull(implementation, "implementation is null");
-
-        // Install the bean
-        BeanSetup bean = install(BeanKind.STATIC, implementation, BeanSourceKind.CLASS, implementation, null, null);
-
-        // return a bean configuration
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<?> handle = newBean(BeanKind.STATIC).install(implementation);
+        return new BeanConfiguration(handle);
     }
 
     /**
@@ -158,28 +104,32 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanHandle.InstallOption#multiInstall()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.CONTAINER, implementation, InstallOption.multiInstall());
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().install(implementation);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.CONTAINER, op, InstallOption.multiInstall());
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().install(op);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanSetup bean = BeanSetup.installInstance(extensionSetup, container.assembly, null, instance, InstallOption.multiInstall());
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().installInstance(instance);
+        return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanSetup bean = BeanSetup.installClass(extensionSetup, container.assembly, null, BeanKind.LAZY, implementation, InstallOption.multiInstall());
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().install(implementation);
+        return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanSetup bean = BeanSetup.installOp(extensionSetup, container.assembly, null, BeanKind.LAZY, op, InstallOption.multiInstall());
-        return new ProvideableBeanConfiguration<>(new BeanHandle<>(bean));
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().install(op);
+        return new ProvideableBeanConfiguration<>(handle); // Providable???
+    }
+
+    BeanHandle.Installer newBean(BeanKind kind) {
+        return new BeanInstaller(extensionSetup, kind, null);
     }
 
     /**
@@ -244,6 +194,6 @@ public class BeanExtension extends Extension<BeanExtension> {
     /** {@inheritDoc} */
     @Override
     protected void onAssemblyClose() {
-        container.injectionManager.resolve();
+        extensionSetup.container.injectionManager.resolve();
     }
 }

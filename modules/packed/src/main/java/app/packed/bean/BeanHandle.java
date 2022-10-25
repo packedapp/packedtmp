@@ -25,13 +25,15 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.container.Extension;
+import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanInstaller;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanSetup.BeanInstallOption;
+import internal.app.packed.oldservice.InternalServiceUtil;
+import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 
 /**
  * A bean handle represents the private configuration of a bean.
@@ -43,6 +45,9 @@ public final /* primitive */ class BeanHandle<T> {
 
     /** The configuration of the bean we are wrapping. */
     final BeanSetup bean;
+
+    /** Old shite */
+    BeanInstanceServiceSetup oldSetup;
 
     /**
      * Creates a new BeanHandle.
@@ -63,10 +68,6 @@ public final /* primitive */ class BeanHandle<T> {
 
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, MethodHandle methodHandle) {
         return addOperation(operator, Op.ofMethodHandle(methodHandle));
-    }
-
-    public <K> OperationHandle overrideService(Key<K> key, K instance) {
-        throw new UnsupportedOperationException();
     }
 
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
@@ -99,10 +100,18 @@ public final /* primitive */ class BeanHandle<T> {
      */
     @SuppressWarnings("unchecked")
     public Key<T> defaultKey() {
-        if (beanClass() == void.class) {
-            throw new UnsupportedOperationException("Keys are not support for void bean classes");
+        if (beanKind() == BeanKind.FUNCTIONAL) {
+            throw new UnsupportedOperationException("This method is not supported for functional beans");
         }
         return (Key<T>) Key.of(beanClass());
+    }
+
+    public void serviceExportAs(Key<? super T> key) {
+        bean.container.sm.serviceExport(key, bean.accessOperation());
+
+        requireNonNull(oldSetup);
+        bean.container.injectionManager.ios.exportsOrCreate().export(oldSetup);
+
     }
 
     /**
@@ -127,8 +136,23 @@ public final /* primitive */ class BeanHandle<T> {
         return List.of();
     }
 
+    public <K> OperationHandle overrideService(Key<K> key, K instance) {
+        throw new UnsupportedOperationException();
+    }
+
     public void peekInstance(Consumer<? super T> consumer) {
         throw new UnsupportedOperationException();
+    }
+
+    public void serviceProvideAs(Key<? super T> key) {
+        // container,lazy or owned by the service extension
+
+        Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
+        bean.container.sm.serviceProvide(k, bean.accessOperation());
+
+        // Old code
+        oldSetup = new BeanInstanceServiceSetup(bean, k);
+        bean.container.injectionManager.addService(oldSetup);
     }
 
     /**
@@ -152,32 +176,19 @@ public final /* primitive */ class BeanHandle<T> {
      */
     public sealed static abstract class Installer permits BeanInstaller {
 
-        public abstract Installer installIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
-
-        public abstract Installer synthetic();
-
-        public abstract Installer multiInstall();
-
-        public abstract Installer namePrefix(String prefix);
-
-        public abstract Installer introspectWith(BeanIntrospector introspector);
-
-        public abstract BeanHandle<Void> installSourceless();
+        protected <T> BeanHandle<T> from(BeanSetup bs) {
+            return new BeanHandle<>(bs);
+        }
 
         public abstract <T> BeanHandle<T> install(Class<T> beanClass);
 
         public abstract <T> BeanHandle<T> install(Op<T> operation);
 
+        public abstract Installer installIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
+
         public abstract <T> BeanHandle<T> installInstance(T instance);
 
-    
-        protected <T> BeanHandle<T> from(BeanSetup bs) {
-            return new BeanHandle<>(bs);
-        }
-    }
-
-    /** Various install options that can be provided when creating a {@link BeanHandle}. */
-    public sealed interface InstallOption permits BeanSetup.BeanInstallOption {
+        public abstract BeanHandle<Void> installSourceless();
 
         /**
          * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
@@ -189,16 +200,10 @@ public final /* primitive */ class BeanHandle<T> {
          * @return the option
          * @see Extension#newBeanIntrospector
          */
-        static InstallOption introspectWith(BeanIntrospector introspector) {
-            requireNonNull(introspector, "introspector is null");
-            return new BeanInstallOption.IntrospectWith(introspector);
-        }
+        public abstract Installer introspectWith(BeanIntrospector introspector);
 
-        // Installs if a no extension is already installed of the specific kind
-        // Maybe just move it internally
-        static InstallOption installIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
-            requireNonNull(onInstall, "introspector is null");
-            throw new UnsupportedOperationException();
+        public Installer lifetimes(LifetimeConf... confs) {
+            return this;
         }
 
         /**
@@ -211,28 +216,11 @@ public final /* primitive */ class BeanHandle<T> {
          * 
          * @return the option
          */
-        static InstallOption multiInstall() {
-            return new BeanInstallOption.MultiInstall();
-        }
+        public abstract Installer multiInstall();
 
-        /**
-         * Sets a prefix that is used for naming the bean (This can always be overridden by the user).
-         * <p>
-         * If there are no other beans with the same name (for same parent container) when creating the bean. Packed will use
-         * the specified prefix as the name of the bean. Otherwise, it will append a postfix to specified prefix in such a way
-         * that the name of the bean is unique.
-         * 
-         * @param prefix
-         *            the prefix used for naming the bean
-         * @return this builder
-         * @throws IllegalStateException
-         *             if build has previously been called on the builder
-         */
-        static InstallOption namePrefix(String prefix) {
-            return new BeanInstallOption.CustomPrefix(prefix);
-        }
+        public abstract Installer namePrefix(String prefix);
 
-        static InstallOption spawnNew() {
+        Installer spawnNew() {
             // A bean that is created per operation.
             // Obvious manyton, but should we have own kind?
             // I actually think so because, because for now it always requires manyton
@@ -254,12 +242,6 @@ public final /* primitive */ class BeanHandle<T> {
             throw new UnsupportedOperationException();
         }
 
-        static InstallOption synthetic() {
-            throw new UnsupportedOperationException();
-        }
+        public abstract Installer synthetic();
     }
-}
-
-interface SandboxBH<T> {
-
 }

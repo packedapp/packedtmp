@@ -15,6 +15,8 @@
  */
 package app.packed.operation.bindings;
 
+import java.util.concurrent.TimeUnit;
+
 import app.packed.application.ApplicationMirror;
 import app.packed.operation.BindingMirror;
 
@@ -42,23 +44,46 @@ interface TraceBinding<T> {
     // is optional
     // is default
     T get();
-    
+
     BindingMirror mirror();
 }
+
 class Usage {
-    
-    
+
+    Usage(Stub<String> stub) {
+
+    }
+
+    Usage(@DelayedDec(timeout = 1, unit=TimeUnit.SECONDS) MyRemote remote) {
+        remote.call();
+    }
+
     Usage(TraceBinding<ApplicationMirror> appMirror) {
         appMirror.get();
     }
 }
 
+interface MyRemote {
+    void call();
+}
+
 interface ServiceStub<T> {
 
     T stub();
+
     T stub(StubOption... options);
-    
+
     interface StubOption {
-        
+
     }
+}
+
+interface Stub<T> {}
+
+@interface foo {}
+
+@interface DelayedDec {
+    long timeout();
+
+    TimeUnit unit();
 }

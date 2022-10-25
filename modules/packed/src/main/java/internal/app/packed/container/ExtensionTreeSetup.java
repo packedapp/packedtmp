@@ -16,7 +16,7 @@
 package internal.app.packed.container;
 
 import app.packed.container.Extension;
-import app.packed.container.UserOrExtension;
+import app.packed.container.ApplicationOrExtension;
 
 /**
  * A single instance of this class exists per extension per application. And is used to have a single point. Where we
@@ -53,7 +53,7 @@ public final class ExtensionTreeSetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public UserOrExtension realm() {
+    public ApplicationOrExtension realm() {
         return extensionModel.realm();
     }
 

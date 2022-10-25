@@ -86,7 +86,7 @@ public final class Introspector {
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
     
-    public Introspector(BeanModel model, BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
+    public Introspector(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);

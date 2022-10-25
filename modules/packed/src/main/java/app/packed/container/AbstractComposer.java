@@ -29,8 +29,6 @@ import java.lang.invoke.MethodHandles.Lookup;
  * 
  * A composer will always instantiate a single application instance
  */
-// (synthetic Assembly -> Generaeted per module-per composer type???) Men hvis man ikke kan lave mirrors???
-// Altsaa man kan vel altid faa dem injected. Med mindre vi disable MirrorExtension...
 public abstract class AbstractComposer {
 
     ComposerAssembly<?> assembly;

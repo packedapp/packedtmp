@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package app.packed.bean;
 
-import internal.app.packed.operation.OperationSetup;
+import java.lang.annotation.Annotation;
 
 /**
  *
  */
-// Ved ikke om vi gider have det hiraki...
-public abstract sealed class NestedBindingSetup extends BindingSetup permits CompositeBindingSetup, FusedBindingSetup {
+class BeanModifier {
 
-    /**
-     * @param operation
-     * @param index
-     */
-    public NestedBindingSetup(OperationSetup operation, int index) {
-        super(operation, index);
-    }
-
-    public final OperationSetup providedBy = null;
+    // bean().useForNext(BeanModifier bm);
+    // bean().useForAll(BeanModifier bm);
+    // ind med filters
+    
+    /// bean()->new BeanModifier().hideAnnotations(OnInitialize.class, On.dd);
+    void hideAnnotations(Class<? extends Annotation> annotationType) {}
 }

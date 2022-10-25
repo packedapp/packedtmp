@@ -23,8 +23,8 @@ import internal.app.packed.container.Mirror;
  * This class can be extended by an extension to provide more detailed information about the extension. For example,
  * {@link app.packed.bean.BeanExtension} extends this class via {@link app.packed.bean.BeanExtensionMirror}.
  * <p>
- * Extension mirror instances are typically obtained via calls to {@link ApplicationMirror#useExtension(Class)} or
- * {@link ContainerMirror#useExtension(Class)}.
+ * Extension mirror instances are typically obtained via calls to {@link ApplicationMirror#use(Class)} or
+ * {@link ContainerMirror#use(Class)}.
  * <p>
  * NOTE: In order to properly implement a specialized extension mirror you:
  * <ul>
@@ -36,8 +36,8 @@ import internal.app.packed.container.Mirror;
  * @param <E>
  *            The type of extension the subclassed mirror belongs to.
  * 
- * @see ApplicationMirror#useExtension(Class)
- * @see ContainerMirror#useExtension(Class)
+ * @see ApplicationMirror#use(Class)
+ * @see ContainerMirror#use(Class)
  * @see Extension#newExtensionMirror()
  */
 public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror {
@@ -143,6 +143,12 @@ public abstract class ExtensionMirror<E extends Extension<E>> implements Mirror 
         return navigator().extensionDescriptor();
     }
 
+    /** {@return stuff.} */
+    public final Class<? extends Extension<?>> extensionClass() {
+        return navigator().extensionDescriptor().type();
+    }
+
+    
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {

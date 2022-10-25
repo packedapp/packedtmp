@@ -42,6 +42,7 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
     }
 
     public Map<ContainerMirror, Collection<BeanMirror>> elements() {
+        // beanKind.isInContainerLifetime()
         // alternative BiStream
         throw new UnsupportedOperationException();
     }

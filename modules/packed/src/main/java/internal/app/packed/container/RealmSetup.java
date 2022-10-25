@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
-import app.packed.container.UserOrExtension;
+import app.packed.container.ApplicationOrExtension;
 import internal.app.packed.bean.BeanMemberAccessor;
 
 /**
@@ -61,7 +61,7 @@ public abstract sealed class RealmSetup permits ExtensionTreeSetup, AssemblySetu
         this.accessor = beanAccessor().withLookup(lookup);
     }
 
-    public abstract UserOrExtension realm();
+    public abstract ApplicationOrExtension realm();
 
 
     /**

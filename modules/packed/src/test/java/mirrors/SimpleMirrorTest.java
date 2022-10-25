@@ -72,7 +72,7 @@ public class SimpleMirrorTest {
         
         
         // BeanMirror
-        assertThat(cm.beans()).isUnmodifiable().hasSize(1);
+        assertThat(cm.beans()).hasSize(1);
 
 //        BeanMirror bm = cm.beans().iterator().next();
 
@@ -82,7 +82,7 @@ public class SimpleMirrorTest {
         assertEquals(am, am);
 
         am.lifetime();
-        assertNotNull(am.useExtension(BeanExtensionMirror.class));
+        assertNotNull(am.use(BeanExtensionMirror.class));
 
         // Name
         assertEquals(MyAss.class.getSimpleName(), "MyAss");

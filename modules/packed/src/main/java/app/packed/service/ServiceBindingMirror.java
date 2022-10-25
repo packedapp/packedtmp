@@ -37,7 +37,7 @@ public class ServiceBindingMirror extends BindingMirror {
     /** {@return a mirror of the service extension.} */
     /// Hvad goer vi med extension beans?? De har jo saadan set en anden realm.
     public ServiceExtensionMirror extension() {
-        return operation().container().useExtension(ServiceExtensionMirror.class);
+        return operation().bean().container().use(ServiceExtensionMirror.class);
     }
 
     /** {@return whether or not the service is required.} */

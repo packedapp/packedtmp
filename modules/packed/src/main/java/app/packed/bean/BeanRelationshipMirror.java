@@ -23,6 +23,7 @@ import internal.app.packed.container.Mirror;
 
 /** A mirror that describes a relationship between two different beans. */
 // Do we support relationship to itself? I would think it was always an error?
+// Take two mirrors instead and let people override it??? ServiceDependencyMirror extends BRM
 public final class BeanRelationshipMirror implements Mirror {
 
     /** The from bean of the relationship. */

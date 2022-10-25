@@ -28,7 +28,6 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -52,11 +51,6 @@ import internal.app.packed.operation.binding.BindingSetup;
  * module).</li>
  * </ul>
  */
-//Class -> members
-//Scanning class -> Hooks
-//Bean -> Operation
-
-// Does an operation always introduce a dependency between two beans???
 public class OperationMirror implements Mirror {
 
     /**
@@ -73,12 +67,7 @@ public class OperationMirror implements Mirror {
      */
     public OperationMirror() {}
 
-    /** {@return the application the operation belongs to.} */
-    public ApplicationMirror application() {
-        return operation().bean.container.application.mirror();
-    }
-
-    /** {@return the bean the operation applies to.} */
+    /** {@return the bean that the operation is a part of.} */
     public BeanMirror bean() {
         return operation().bean.mirror();
     }
@@ -94,18 +83,15 @@ public class OperationMirror implements Mirror {
             BindingSetup bs = bindings[i];
             if (bs != null) {
                 hooks[i] = bs.mirror();
+            } else {
+                throw new IllegalStateException("No bindings");
             }
         }
         return List.of(hooks);
     }
 
-    /** {@return the container the operation belongs to.} */
-    public ContainerMirror container() {
-        return operation().bean.container.mirror();
-    }
-
     /** {@return the dependencies this operation introduces.} */
-    public DependenciesMirror dependencies() {
+    DependenciesMirror dependencies() {
         throw new UnsupportedOperationException();
     }
 
@@ -114,7 +100,7 @@ public class OperationMirror implements Mirror {
     public final boolean equals(Object other) {
         return this == other || other instanceof OperationMirror m && operation() == m.operation();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
@@ -134,11 +120,8 @@ public class OperationMirror implements Mirror {
         this.operation = operation;
     }
 
-    /** {@return the extension that created the operation.} */
-    public final Class<? extends Extension<?>> operatedBy() {
-        // It might be a different extension that actually invokes it. For example,
-        // a lifetime operations might be invoked by ContainerExtension
-        // Nahh doesn't work. Must always be BeanExtension
+    /** {@return the extension that can invoke the operation.} */
+    public Class<? extends Extension<?>> invokedBy() {
         return operation().invocationSite.invokingExtension.extensionType;
     }
 
@@ -163,18 +146,23 @@ public class OperationMirror implements Mirror {
     }
 
     /** {@return the type of the operation.} */
-    public final OperationType type() {
+    public OperationType type() {
         return operation().type;
     }
 }
 
+//Class -> members
+//Scanning class -> Hooks
+//Bean -> Operation
+
+//Does an operation always introduce a dependency between two beans???
 class SandboxOp {
 
     /** {@return the services that are available at this injection site.} */
     final Set<Key<?>> availableServices() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Returns whether or new component lifetime is created every time the operation is invoked. The lifetime will last jast
      * for the lifetime of the operation.
@@ -191,7 +179,7 @@ class SandboxOp {
     // Det er vel ikke meget anderledes end all @Get beans i denne bean starter en ny container
     // Hvori foriøvrigt det kun er den ene bean der skal launches
     //
-    
+
     final Optional<LifetimeMirror> createsLifetime() {
         // Hvad med en constructor??
         //// Alt hvad der kalder en i user code kraever en operation
@@ -210,8 +198,7 @@ class SandboxOp {
     final boolean createsNewThread() {
         // Does the operation spawn a new thread????
         // Er vel kun hvis vi fx kommer fra en daemon?
-        
-        
+
         // synchronous (in calling thread)
         // Spawn (er jo en slags asynchronous...)
         // Hoere det til i noget meta data per extension???

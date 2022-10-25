@@ -2,7 +2,6 @@ package app.packed.container;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -29,6 +28,30 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 @BindingHook(extension = MirrorExtension.class)
 public class ContainerMirror implements Mirror {
 
+    /** A ExtensionMirror class to Extension class mapping. */
+    private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
+
+        /** A type variable extractor. */
+        private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
+
+        /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
+        @Override
+        protected Class<? extends Extension<?>> computeValue(Class<?> type) {
+            // Extract the type of extension from ExtensionMirror<E>
+            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_LITERAL_EP_EXTRACTOR.extractProperSubClassOf(type,
+                    Extension.class, InternalExtensionException::new);
+
+            // Check that the mirror is in the same module as the extension itself
+            if (extensionClass.getModule() != type.getModule()) {
+                throw new InternalExtensionException("The extension mirror " + type + " must be a part of the same module (" + extensionClass.getModule()
+                        + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
+            }
+
+            return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
+        }
+    };
+
     /**
      * The internal configuration of the container we are mirroring. Is initially null but populated via
      * {@link #initialize(ContainerSetup)}.
@@ -48,35 +71,34 @@ public class ContainerMirror implements Mirror {
         return container().application.mirror();
     }
 
-    /** {@return the assembly where the container is defined.} */
+    /** {@return the assembly that defined the container.} */
     public AssemblyMirror assembly() {
         return container().assembly.mirror();
     }
 
     /** {@return a {@link Collection} view of all the beans defined in the container.} */
-    public Collection<BeanMirror> beans() {
+    // returning stream vs collection... I took a look at the methods in Collection.
+    // And size + isEmpty is the only interesting ones
+    // Arghhh den er sgu rar for Iterable...
+    // https://cr.openjdk.java.net/~smarks/reviews/8148917/IterableOnce0.html
+    public Stream<BeanMirror> beans() {
         // not technically a view but will do for now
         ArrayList<BeanMirror> beans = new ArrayList<>();
         for (var b = container().beanFirst; b != null; b = b.nextBean) {
             beans.add(b.mirror());
         }
-        return List.copyOf(beans);
+        return List.copyOf(beans).stream();
         // return CollectionUtil.unmodifiableView(children.values(), c -> c.mirror());
         // we need a filter on the view...
         // size, isEmpty, is going to get a bit slower.
     }
 
     /** {@return an unmodifiable view of all of the children of this component.} */
-    /* Sequenced */
     public Stream<ContainerMirror> children() {
         // childIterable?
         // does not work because container().containerChildren may be null
         throw new UnsupportedOperationException();
         // return CollectionUtil.unmodifiableView(container().containerChildren, c -> c.mirror());
-    }
-
-    public final Stream<ContainerMirror> descendents(boolean includeThis) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -94,27 +116,19 @@ public class ContainerMirror implements Mirror {
         return c;
     }
 
+    public Stream<ContainerMirror> descendents(boolean includeThis) {
+        // Maaske have en TreeSelector
+        // Der er 3 interessant ting taenker jeg.
+        // direct children
+        // direct ancestors
+        // direct ancestors + this
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object other) {
         return this == other || other instanceof ContainerMirror m && container() == m.container();
-    }
-
-    /** {@return a {@link Set} view of every extension that have been used in the container.} */
-    // return Map<Class<Ext>, Mirror> instead???
-    // Altsaa hvad vil bruge metoden til???
-    // Kan ikke lige umiddelbart se nogle use cases
-    // Maaske bare fjerne den
-    public Set<ExtensionDescriptor> extensions() {
-        HashSet<ExtensionDescriptor> result = new HashSet<>();
-        for (ExtensionSetup extension : container().extensions.values()) {
-            result.add(ExtensionDescriptor.of(extension.extensionType));
-        }
-        return Set.copyOf(result);
-    }
-
-    public boolean isRoot() {
-        return container().treeParent == null;
     }
 
     /** {@return a {@link Set} view of every extension type that have been used in the container.} */
@@ -124,7 +138,7 @@ public class ContainerMirror implements Mirror {
 
     /**
      * <p>
-     * If you know for certain that extension is used in the container you can use {@link #useExtension(Class)} instead.
+     * If you know for certain that extension is used in the container you can use {@link #use(Class)} instead.
      * 
      * @param <T>
      *            the type of mirror
@@ -165,11 +179,18 @@ public class ContainerMirror implements Mirror {
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
+    // isInUse?
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
     }
 
+    /** {@return whether or not the container is the root container in the application.} */
+    public boolean isApplicationRoot() {
+        return container().treeParent == null;
+    }
+
     /** {@return the containers's lifetime.} */
+    // Do we need isApplicationRoot, isLifetimeRoot
     public ContainerLifetimeMirror lifetime() {
         return container().lifetime.mirror();
     }
@@ -186,12 +207,13 @@ public class ContainerMirror implements Mirror {
         return container().name;
     }
 
-    /** {@return the parent container of this container. Or empty if the root container.} */
+    /** {@return the parent container of this container. Or empty if the root container in an application.} */
     public Optional<ContainerMirror> parent() {
         ContainerSetup p = container().treeParent;
         return p == null ? Optional.empty() : Optional.of(p.mirror());
     }
 
+    /** {@return the path of the container.} */
     public NamespacePath path() {
         return container().path();
     }
@@ -212,38 +234,14 @@ public class ContainerMirror implements Mirror {
      *            the type of mirror to return
      * @return a mirror of the specified type
      * @see ContainerConfiguration#use(Class)
-     * @see ApplicationMirror#useExtension(Class)
+     * @see ApplicationMirror#use(Class)
      * @see #findExtension(Class)
      * @throws NoSuchElementException
      *             if the mirror's extension is not in use by the container
      */
-    public <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
+    public <T extends ExtensionMirror<?>> T use(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();
     }
-
-    /** A ExtensionMirror class to Extension class mapping. */
-    private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
-
-        /** A type variable extractor. */
-        private static final TypeVariableExtractor TYPE_LITERAL_EP_EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        protected Class<? extends Extension<?>> computeValue(Class<?> type) {
-            // Extract the type of extension from ExtensionMirror<E>
-            Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) TYPE_LITERAL_EP_EXTRACTOR.extractProperSubClassOf(type,
-                    Extension.class, InternalExtensionException::new);
-
-            // Check that the mirror is in the same module as the extension itself
-            if (extensionClass.getModule() != type.getModule()) {
-                throw new InternalExtensionException("The extension mirror " + type + " must be a part of the same module (" + extensionClass.getModule()
-                        + ") as " + extensionClass + ", but was part of '" + type.getModule() + "'");
-            }
-
-            return ExtensionDescriptor.of(extensionClass).type(); // Check that the extension is valid
-        }
-    };
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -273,8 +271,8 @@ public class ContainerMirror implements Mirror {
             // Must return a mirror for the same extension
             Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
             if (mirrorExtensionType != extension.extensionType) {
-                throw new InternalExtensionException(
-                        "Extension " + extension.descriptor().fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+                throw new InternalExtensionException("Extension " + extension.descriptor().fullName()
+                        + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }
 
@@ -329,8 +327,8 @@ public class ContainerMirror implements Mirror {
             // Must return a mirror for the same extension
             Class<? extends Extension<?>> mirrorExtensionType = EXTENSION_TYPES.get(mirror.getClass());
             if (mirrorExtensionType != extension.extensionType) {
-                throw new InternalExtensionException(
-                        "Extension " + extension.descriptor().fullName() + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
+                throw new InternalExtensionException("Extension " + extension.descriptor().fullName()
+                        + " returned a mirror for another extension, other extension type: " + mirrorExtensionType);
             }
         }
 
@@ -353,6 +351,19 @@ public class ContainerMirror implements Mirror {
 // * @return a component stream consisting of this component and all of its descendants in any order
 // */
 //ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
+
+///** {@return a {@link Set} view of every extension that have been used in the container.} */
+//// return Map<Class<Ext>, Mirror> instead???
+//// Altsaa hvad vil bruge metoden til???
+//// Kan ikke lige umiddelbart se nogle use cases
+//// Maaske bare fjerne den
+//public Set<ExtensionDescriptor> extensions() {
+//    HashSet<ExtensionDescriptor> result = new HashSet<>();
+//    for (ExtensionSetup extension : container().extensions.values()) {
+//        result.add(ExtensionDescriptor.of(extension.extensionType));
+//    }
+//    return Set.copyOf(result);
+//}
 
 ///**
 // * 

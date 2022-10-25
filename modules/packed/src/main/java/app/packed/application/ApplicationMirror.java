@@ -64,7 +64,7 @@ public class ApplicationMirror implements Mirror {
         return container().assembly();
     }
 
-    /** {@return the build goal used when building the application.} */
+    /** {@return the build goal that was used when building the application.} */
     public BuildGoal buildGoal() {
         return application().goal;
     }
@@ -80,7 +80,7 @@ public class ApplicationMirror implements Mirror {
         return this == other || other instanceof ApplicationMirror m && application() == m.application();
     }
 
-    /** {@return a {@link Set} view of every extension type that has been used in the application.} */
+    /** {@return an unmodifiable {@link Set} view of every extension type that has been used in the application.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return container().extensionTypes();
     }
@@ -145,7 +145,7 @@ public class ApplicationMirror implements Mirror {
     }
 
     /**
-     * Returns an extension mirror of the specified type.
+     * Returns an extension mirror of the specified type. Or fails by throwing {@link UnsupportedOperationException}.
      * 
      * @param <T>
      *            The type of extension mirror
@@ -153,11 +153,10 @@ public class ApplicationMirror implements Mirror {
      *            The type of extension mirror
      * @return an extension mirror of the specified type
      * 
-     * @see ContainerMirror#useExtension(Class)
+     * @see ContainerMirror#use(Class)
      */
-    // Maasker drop use, og bare have extension(ServiceExtensionMirror.class).
-    public <E extends ExtensionMirror<?>> E useExtension(Class<E> type) {
-        return container().useExtension(type);
+    public <E extends ExtensionMirror<?>> E use(Class<E> type) {
+        return container().use(type);
     }
 
     public <E extends ExtensionMirror<?>> void useIfPresent(Class<E> type, Consumer<? super E> action) {

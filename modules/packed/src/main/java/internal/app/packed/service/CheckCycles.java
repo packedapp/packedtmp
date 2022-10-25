@@ -47,13 +47,13 @@ public class CheckCycles extends BaseAssembly {
     public static void main(String[] args) {
 
         ApplicationMirror am = App.newMirror(new CheckCycles());
-        for (var b : am.container().beans()) {
+        for (var b : am.container().beans().toList()) {
             System.out.println(b.beanClass().getSimpleName() + " " + b.factory().get().target());
         }
 
-        Collection<ServiceProvisionMirror> c = am.useExtension(ServiceExtensionMirror.class).provisions().values();
+        Collection<ServiceProvisionMirror> c = am.use(ServiceExtensionMirror.class).provisions().values();
 
-        Collection<ExportOperationMirror> ex = am.useExtension(ServiceExtensionMirror.class).exports().values();
+        Collection<ExportOperationMirror> ex = am.use(ServiceExtensionMirror.class).exports().values();
 
         BeanMirror b = am.container().beans().iterator().next();
 

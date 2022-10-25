@@ -33,7 +33,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerHook;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.container.UserOrExtension;
+import app.packed.container.ApplicationOrExtension;
 import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
@@ -200,8 +200,8 @@ public final class AssemblySetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public UserOrExtension realm() {
-        return UserOrExtension.application();
+    public ApplicationOrExtension realm() {
+        return ApplicationOrExtension.application();
     }
 
     /** {@inheritDoc} */

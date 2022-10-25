@@ -17,7 +17,7 @@ package internal.app.packed.operation.binding;
 
 import java.util.function.Supplier;
 
-import app.packed.container.UserOrExtension;
+import app.packed.container.ApplicationOrExtension;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -57,7 +57,7 @@ public final class FusedBindingSetup extends NestedBindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public UserOrExtension boundBy() {
-        return UserOrExtension.extension(managedBy.extensionType);
+    public ApplicationOrExtension boundBy() {
+        return ApplicationOrExtension.extension(managedBy.extensionType);
     }
 }
