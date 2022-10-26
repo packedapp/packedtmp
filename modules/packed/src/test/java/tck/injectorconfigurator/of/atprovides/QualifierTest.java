@@ -25,7 +25,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.service.DublicateServiceProvideException;
+import app.packed.service.ServiceAlreadyExistsException;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
@@ -40,16 +40,16 @@ public class QualifierTest {
     public void cannotDefineSameProvidedKeys() {
 
         AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
-        at.isExactlyInstanceOf(DublicateServiceProvideException.class);
+        at.isExactlyInstanceOf(ServiceAlreadyExistsException.class);
         at.hasNoCause();
         // TODO check message
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
-        at.isExactlyInstanceOf(DublicateServiceProvideException.class);
+        at.isExactlyInstanceOf(ServiceAlreadyExistsException.class);
         at.hasNoCause();
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
-        at.isExactlyInstanceOf(DublicateServiceProvideException.class);
+        at.isExactlyInstanceOf(ServiceAlreadyExistsException.class);
         at.hasNoCause();
     }
 

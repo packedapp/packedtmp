@@ -18,17 +18,23 @@ package app.packed.service;
 import app.packed.application.BuildException;
 
 /**
- *
+ * An exception thrown at build time to indicate a dependency cycle between multiple service providers.
  */
-public class DublicateServiceExportException extends BuildException {
+public class CircularServiceDependencyException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
     /**
+     * Creates a new exception with the specified detailed message. The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link Throwable#initCause}.
+     *
      * @param message
+     *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
      */
-    public DublicateServiceExportException(String message) {
+    // Super useful to provide the cycle I think. Don't know when we get to cross container cycles
+    // Then you can just do what ever you want it e.printBeans()
+    public CircularServiceDependencyException(String message /*, List<ServiceProvisionMirror> cycle */) {
         super(message);
     }
-
 }

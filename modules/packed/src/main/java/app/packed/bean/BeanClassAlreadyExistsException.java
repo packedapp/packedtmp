@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.bean;
 
-import app.packed.bean.BeanInstallationException;
+/**
+ * An exception that is thrown, when a bean is being installed, if there is another bean in the container of the same
+ * type.
+ * <p>
+ * Beans that have {@code void} (functional beans) never throws this exception.
+ * 
+ * @see BeanExtension#multiInstall(Class)
+ * @see BeanExtension#multiInstall(app.packed.operation.Op)
+ * @see BeanExtension#multiInstallInstance(Object)
+ */
+public class BeanClassAlreadyExistsException extends BeanInstallationException {
 
-/** An exception thrown at build-time when a binding could not an ill-formed dependency was encountered. */
-// @Nullable primitive
-// Optional<Optional<Provider<UserService>>>
-// IllegalBindingException? InvalidBindingException, UncreateableBindingException
-
-// Tror vi dropper den her
-
-public class CouldNotCreateBindingException extends BeanInstallationException {
-
-    /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -37,7 +37,7 @@ public class CouldNotCreateBindingException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CouldNotCreateBindingException(String message) {
+    public BeanClassAlreadyExistsException(String message) {
         super(message);
     }
 
@@ -51,7 +51,7 @@ public class CouldNotCreateBindingException extends BeanInstallationException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public CouldNotCreateBindingException(String message, Throwable cause) {
+    public BeanClassAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -19,8 +19,8 @@ import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.service.DublicateServiceExportException;
-import app.packed.service.DublicateServiceProvideException;
+import app.packed.service.ExportedServiceAlreadyExistsException;
+import app.packed.service.ServiceAlreadyExistsException;
 import app.packed.service.ExportOperationMirror;
 import app.packed.service.ServiceProvisionMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
@@ -84,7 +84,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
         // Fail if there is already another provider of a service with key
         if (provider != null) {
-            throw new DublicateServiceProvideException(makeDublicateProvideErrorMsg(provider, operation));
+            throw new ServiceAlreadyExistsException(makeDublicateProvideErrorMsg(provider, operation));
         }
 
         // Create a new provider
@@ -129,7 +129,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         ExportedService existing = exports.putIfAbsent(e.key, e);
         if (existing != null) {
             // A service with the key has already been exported
-            throw new DublicateServiceExportException("Jmm");
+            throw new ExportedServiceAlreadyExistsException("Jmm");
         }
         e.bos.mirrorSupplier = () -> new ExportOperationMirror(e);
     }

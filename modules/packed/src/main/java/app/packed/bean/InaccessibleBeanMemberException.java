@@ -15,14 +15,22 @@
  */
 package app.packed.bean;
 
+import java.lang.invoke.MethodHandles.Lookup;
+
+import app.packed.container.AbstractComposer;
+import app.packed.container.Assembly;
+import app.packed.container.InternalExtensionException;
+
 /**
- * An exception throw when installing a bean.
- * at is thrown when a operation could not be created because the framework had no access to the
- * underlying field, constructor or method. 
+ * This exception is thrown when installing a bean, if a member (constructor, field or method) of the bean is not
+ * accessible by the framework.
  * <p>
- * This can be resolved by providing the right access to Packed
+ * In order to make the member accessible, the right access must be provided to the framework. This can be done either
+ * by opening the package in which the bean is located to {@code app.packed} using a module descriptor. Or by specifying
+ * a lookup object using {@link Assembly#lookup(Lookup)} or {@link AbstractComposer#lookup(Lookup)}.
  * <p>
- * If an extension tries to install a bean with inaccessible members. InternalExtensionException
+ * If an extension tries to install one of its own beans without sufficient access, {@link InternalExtensionException}
+ * is thrown instead.
  */
 public class InaccessibleBeanMemberException extends BeanInstallationException {
 
@@ -39,7 +47,6 @@ public class InaccessibleBeanMemberException extends BeanInstallationException {
      */
     public InaccessibleBeanMemberException(String message) {
         super(message);
-
     }
 
     /**
@@ -56,30 +63,3 @@ public class InaccessibleBeanMemberException extends BeanInstallationException {
         super(message, cause);
     }
 }
-
-
-//If an extension tries something it does not have access to. It fails with IEE instead.
-//This is only if Packed does not have access
-
-
-//UncheckedIllegalAccessException...
-//RuntimeIllegalAccessException
-
-//AccessRestrictedException <- General one, could sound really securish, maybe have a name
-//which makes it clear it is relevant to reflection/method handlers
-//NotOpenedException
-//UndeclaredAccessException
-//Was UncheckedIllegalAccessException
-
-//InaccessibleRealmException or
-//InaccessibleModuleException
-
-//Maybe it is a build exception??? Skal jo helst klare det under build..
-
-//InaccessibleOperationException???
-//InaccessibleBeanException??? Vil ogsaa godt bruge den fra Extension som ikke er en bean
-
-//FactoryAccessException?? Nahh det er jo ikke sikkert vi overhoved skal lave en instance.
-//saa factory er et daarligt navn/
-
-//beanClass, Extension that needed access

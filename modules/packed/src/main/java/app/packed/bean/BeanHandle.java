@@ -35,7 +35,7 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.oldservice.InternalServiceUtil;
 
 /**
- * A bean handle represents the private configuration of a bean.
+ * A bean handle represents a successful installation of a bean.
  * <p>
  * Instances of {@code BeanHandle} are never exposed directly to end-users. Instead they are returned wrapped in
  * {@link BeanConfiguration} or a subclass hereof.
@@ -190,6 +190,14 @@ public final /* primitive */ class BeanHandle<T> {
      */
     public sealed static abstract class Builder permits BeanInstaller {
 
+        /**
+         * Installs the bean using the specified class as the bean source.
+         * 
+         * @param <T>
+         *            the
+         * @param beanClass
+         * @return a bean handle representing the installed bean
+         */
         public abstract <T> BeanHandle<T> build(Class<T> beanClass);
 
         public abstract <T> BeanHandle<T> build(Op<T> operation);

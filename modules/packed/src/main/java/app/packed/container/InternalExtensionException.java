@@ -15,36 +15,40 @@
  */
 package app.packed.container;
 
+import app.packed.application.BuildException;
+
 /**
  * An exception typically thrown to indicate an internal malfunction of an extension.
  * <p>
  * If you encounter this exception when using an extension. There is typically nothing you can do, except for reporting
- * it to the developer of the extension.
+ * the issue to the developer of the extension.
  */
-// Skal vi have det som en BuildException??
-// InternalExtensionBuildException
-public class InternalExtensionException extends RuntimeException {
+public class InternalExtensionException extends BuildException {
 
     /** serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates a new exception.
-     * 
+     * Creates a new exception with the specified detailed message. The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link Throwable#initCause}.
+     *
      * @param message
-     *            the message
+     *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
      */
     public InternalExtensionException(String message) {
         super(message);
     }
 
     /**
-     * Creates a new exception.
-     * 
-     * @param message
-     *            the message
+     * Creates a new exception with the specified detailed message and cause.
+     *
      * @param cause
-     *            the cause
+     *            the cause (which is saved for later retrieval by the {@link #getCause()}method). (A{@code null} value is
+     *            permitted, and indicates that the cause is nonexistent or unknown.)
+     * @param message
+     *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
+     *            method.
      */
     public InternalExtensionException(String message, Throwable cause) {
         super(message, cause);

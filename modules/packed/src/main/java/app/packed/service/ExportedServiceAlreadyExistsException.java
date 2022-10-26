@@ -20,20 +20,15 @@ import app.packed.application.BuildException;
 /**
  *
  */
-// hmm. Fungere jo ikke noedvendig via install
-
-// install(F.class) <- successed
-// conf.provide() <-- fails, but installation was sucessfull
-public class DublicateServiceProvideException extends BuildException {
+public class ExportedServiceAlreadyExistsException extends BuildException {
 
     private static final long serialVersionUID = 1L;
 
-
-    public DublicateServiceProvideException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DublicateServiceProvideException(String message) {
+    /**
+     * @param message
+     */
+    public ExportedServiceAlreadyExistsException(String message) {
         super(message);
     }
+
 }

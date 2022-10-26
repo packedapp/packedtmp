@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
 
-import app.packed.bean.BeanDefinitionException;
+import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanIntrospector;
@@ -160,7 +160,7 @@ public final class FieldIntrospector implements OnField {
      * @param field
      *            the field to introspect
      * 
-     * @throws BeanDefinitionException
+     * @throws InvalidBeanDefinitionException
      *             if there are multiple {@link BindingHook} on the field. Or if there are both {@link FieldHook} and
      *             {@link BindingHook} annotations
      * 
@@ -200,7 +200,7 @@ public final class FieldIntrospector implements OnField {
                 }
 
                 if (e.isProvision || e2.isProvision) {
-                    throw new BeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
+                    throw new InvalidBeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
                 }
 
                 // Okay we have more than 1 valid annotation

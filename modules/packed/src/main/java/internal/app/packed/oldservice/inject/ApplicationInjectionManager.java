@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 
 import app.packed.application.BuildException;
 import app.packed.base.Nullable;
-import app.packed.bean.CircularDependencyException;
+import app.packed.service.CircularServiceDependencyException;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
 import internal.app.packed.oldservice.InternalServiceExtension;
@@ -62,7 +62,7 @@ public final class ApplicationInjectionManager {
     public void finish(LifetimeObjectArenaSetup region, ContainerSetup container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
-            throw new CircularDependencyException("Dependency cycle detected: " + c.dependencies);
+            throw new CircularServiceDependencyException("Dependency cycle detected: " + c.dependencies);
         }
     }
 

@@ -1,27 +1,13 @@
-/*
- * Copyright (c) 2008 Kasper Nielsen.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package app.packed.bean;
 
-import app.packed.application.BuildException;
-
 /**
- * An exception that is thrown if a bean could not be installed.
+ * A generic exception that is thrown when An exception that is thrown if
  */
-public class BeanInstallationException extends BuildException {
+// Hmmm, a generic extension why not BeanInstallationException then. That is pretty generic
+//
+public class InvalidBeanDefinitionException extends BeanInstallationException {
 
+    /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -32,8 +18,9 @@ public class BeanInstallationException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BeanInstallationException(String message) {
+    public InvalidBeanDefinitionException(String message) {
         super(message);
+
     }
 
     /**
@@ -46,7 +33,7 @@ public class BeanInstallationException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BeanInstallationException(String message, Throwable cause) {
+    public InvalidBeanDefinitionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

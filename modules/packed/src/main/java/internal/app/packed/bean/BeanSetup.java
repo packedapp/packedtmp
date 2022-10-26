@@ -16,7 +16,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.DublicateBeanClassException;
+import app.packed.bean.BeanClassAlreadyExistsException;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
 import internal.app.packed.container.ContainerSetup;
@@ -239,7 +239,7 @@ public final class BeanSetup {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
-                        throw new DublicateBeanClassException("Oops");
+                        throw new BeanClassAlreadyExistsException("Oops");
                     } else {
                         ((MuInst) o).counter += 1;
                         return o;
@@ -258,10 +258,10 @@ public final class BeanSetup {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {
-                        throw new DublicateBeanClassException("A non-multi bean has already been defined for " + bean.beanClass);
+                        throw new BeanClassAlreadyExistsException("A non-multi bean has already been defined for " + bean.beanClass);
                     } else {
                         // We already have some multiple beans installed
-                        throw new DublicateBeanClassException("Oops");
+                        throw new BeanClassAlreadyExistsException("Oops");
                     }
                 });
                 // Not multi install, so should be able to add it first time
