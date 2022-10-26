@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.Installer;
+import app.packed.bean.BeanHandle.Builder;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
@@ -35,7 +35,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.op.PackedOp;
 
-public final class BeanInstaller extends BeanHandle.Installer {
+public final class BeanInstaller extends BeanHandle.Builder {
 
     /** Illegal bean classes. */
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
@@ -61,16 +61,9 @@ public final class BeanInstaller extends BeanHandle.Installer {
         this.useSite = useSite;
     }
 
-    private void checkClass(Class<?> beanClass) {
-        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
-        }
-
-    }
-
     /** {@inheritDoc} */
     @Override
-    public <T> BeanHandle<T> install(Class<T> beanClass) {
+    public <T> BeanHandle<T> build(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
         checkClass(beanClass);
         BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.CLASS, beanClass);
@@ -79,7 +72,7 @@ public final class BeanInstaller extends BeanHandle.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanHandle<T> install(Op<T> op) {
+    public <T> BeanHandle<T> build(Op<T> op) {
         PackedOp<?> pop = PackedOp.crack(op);
         Class<?> beanClass = pop.type.returnType();
         checkClass(beanClass);
@@ -89,13 +82,7 @@ public final class BeanInstaller extends BeanHandle.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public Installer installIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> BeanHandle<T> installInstance(T instance) {
+    public <T> BeanHandle<T> buildFromInstance(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> beanClass = instance.getClass();
         checkClass(beanClass);
@@ -105,18 +92,25 @@ public final class BeanInstaller extends BeanHandle.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public BeanHandle<Void> installSourceless() {
+    public BeanHandle<Void> buildSourceless() {
         if (kind != BeanKind.FUNCTIONAL) {
             throw new InternalExtensionException("Only functional beans can be source less");
         }
         return null;
     }
 
+    private void checkClass(Class<?> beanClass) {
+        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+            throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
+        }
+
+    }
+
     /** {@inheritDoc} */
     @Override
-    public Installer introspectWith(BeanIntrospector introspector) {
+    public Builder introspectWith(BeanIntrospector introspector) {
         if (!kind.hasInstances()) {
-            throw new InternalExtensionException("Cannot set a custom introspector for functional or static beans");
+            throw new InternalExtensionException("Cannot set a introspector for functional beans");
         }
         this.introspector = requireNonNull(introspector, "introspector is null");
         return this;
@@ -124,7 +118,7 @@ public final class BeanInstaller extends BeanHandle.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public Installer multiInstall() {
+    public Builder multiInstall() {
         if (!kind.hasInstances()) {
             throw new InternalExtensionException("multiInstall is not supported for functional or static beans");
         }
@@ -134,14 +128,20 @@ public final class BeanInstaller extends BeanHandle.Installer {
 
     /** {@inheritDoc} */
     @Override
-    public Installer namePrefix(String prefix) {
+    public Builder namePrefix(String prefix) {
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Installer synthetic() {
+    public Builder onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Builder synthetic() {
         synthetic = true;
         return this;
     }

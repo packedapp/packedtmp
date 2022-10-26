@@ -13,11 +13,11 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.container.ApplicationOrExtension;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.MirrorExtension;
+import app.packed.container.User;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
@@ -77,8 +77,8 @@ public class BeanMirror implements Mirror {
     /**
      * Returns the type (class) of the bean.
      * <p>
-     * Beans that do not have a proper class, for example, a functional bean. Will have {@code void.class} as their bean
-     * class.
+     * Beans that do not have a proper class, for example, a {@link BeanKind#FUNCTIONAL functional} bean. Will have
+     * {@code void.class} as their bean class.
      * 
      * @return the type (class) of the bean.
      */
@@ -86,7 +86,7 @@ public class BeanMirror implements Mirror {
         return bean().beanClass;
     }
 
-    /** {@return the container the bean belongs to. Is identical to #parent() which is never optional for a bean.} */
+    /** {@return the container the bean belongs to.} */
     public ContainerMirror container() {
         return bean().container.mirror();
     }
@@ -103,11 +103,11 @@ public class BeanMirror implements Mirror {
     }
 
     /**
-     * If Packed creates instances of this bean. The operation that creates them
+     * If instances of this bean is created at runtime. This method will return the operation that creates the instance.
      * 
      * @return operation that creates instances of the bean. Or empty if instances are never created
      */
-    public Optional<OperationMirror> factory() {
+    public Optional<OperationMirror> factoryOperation() {
         BeanSetup bean = bean();
         if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {
             return Optional.of(bean.operations.get(0).mirror());
@@ -170,7 +170,7 @@ public class BeanMirror implements Mirror {
     }
 
     /**
-     * Returns a collection of all of the operations declared by the bean of the specified type.
+     * Returns a stream of all of the operations declared by the bean with the specified mirror type.
      * 
      * @param <T>
      * @param operationType
@@ -195,7 +195,7 @@ public class BeanMirror implements Mirror {
     }
 
     /** {@return the owner of the bean.} */
-    public ApplicationOrExtension owner() {
+    public User owner() {
         return bean().realm.realm();
     }
 
@@ -203,9 +203,14 @@ public class BeanMirror implements Mirror {
         return bean().path();
     }
 
-    public BeanRelationshipMirror relationshipTo(BeanMirror to) {
+    /**
+     * @param to
+     *            the bean to return a relationship mirror to
+     * @return a bean relationship mirror to the
+     */
+    public Relationship relationshipTo(BeanMirror to) {
         requireNonNull(to, "to is null");
-        return new BeanRelationshipMirror(bean(), to.bean());
+        return new Relationship(bean(), to.bean());
     }
 
     private record BeanDependenciesMirror(BeanSetup bean) implements DependenciesMirror {
@@ -263,6 +268,81 @@ public class BeanMirror implements Mirror {
             return false;
         }
     }
+
+    /** This class describes the relationship between two different beans. */
+    // Do we support relationship to itself? I would think it was always an error?
+    // Take two mirrors instead and let people override it??? ServiceDependencyMirror extends BRM
+    public final class Relationship {
+
+        /** The from bean of the relationship. */
+        private final BeanSetup from;
+
+        /** The to bean of the relationship. */
+        private final BeanSetup to;
+
+        /**
+         * Creates a new mirror
+         * 
+         * @param from
+         *            the from part of the relationship
+         * @param to
+         *            the to part of the relationship
+         */
+        private Relationship(BeanSetup from, BeanSetup to) {
+            this.from = requireNonNull(from);
+            this.to = requireNonNull(to);
+        }
+
+        public DependenciesMirror dependencies() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Relationship o && (from == o.from && to == o.to);
+        }
+
+        /** {@return a mirror of the from bean of the relationship.} */
+        public BeanMirror from() {
+            return from.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            return to.hashCode() ^ from.hashCode();
+        }
+
+        /** {@return whether or not the beans are in the same application.} */
+        public boolean isInSameApplication() {
+            return from.container.application == to.container.application;
+        }
+
+        /** {@return whether or not the beans are in the same container.} */
+        public boolean isInSameContainer() {
+            return from.container == to.container;
+        }
+
+        /** {@return whether or not the beans are in the same lifetime.} */
+        public boolean isInSameLifetime() {
+            return from.lifetime == to.lifetime;
+        }
+
+        public boolean isInSameRealm() {
+            return from.realm.realm().equals(to.realm.realm());
+        }
+
+        /** {@return the reverse relationship.} */
+        public Relationship reverse() {
+            return new Relationship(to, from);
+        }
+
+        /** {@return a mirror of the to bean of the relationship.} */
+        public BeanMirror to() {
+            return to.mirror();
+        }
+    }
 }
 
 interface SSandbox {
@@ -285,5 +365,4 @@ interface SSandbox {
 
     // No instances, Instantiable, ConstantInstance
     // Scope-> BuildConstant, RuntimeConstant, Prototype...
-
 }

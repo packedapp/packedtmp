@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -72,7 +73,7 @@ public final class Introspector {
     /** The bean that is being introspected. */
     public final BeanSetup bean;
 
-    /** Non-null if a introspector was set via {@link BeanHandle.Installer#introspectWith(BeanIntrospector)}. */
+    /** Non-null if a introspector was set via {@link BeanHandle.Builder#introspectWith(BeanIntrospector)}. */
     @Nullable
     private final BeanIntrospector beanIntrospector;
 
@@ -121,11 +122,12 @@ public final class Introspector {
     }
 
     private void findFactory() {
-        ExecutableOp<?> eo = ExecutableOp.DEFAULT_FACTORY.get(bean.beanClass);
-        MethodHandle mh = eo.toMethodHandle(bean.realm.beanAccessor().lookup());
+        DefaultBeanConstructor eo = DefaultBeanConstructor.CACHE.get(bean.beanClass);
 
-        OperationSetup os = new OperationSetup(bean, eo.operationType, new InvocationSite(InvocationType.raw(), bean.installedBy),
-                new ConstructorOperationTarget(mh, eo.executable), null);
+        MethodHandle mh = oc.unreflectConstructor(eo.executable());
+        
+        OperationSetup os = new OperationSetup(bean, eo.operationType(), new InvocationSite(InvocationType.raw(), bean.installedBy),
+                new ConstructorOperationTarget(mh, eo.executable()), null);
         bean.operations.add(os);
 
     }
@@ -369,6 +371,16 @@ public final class Introspector {
             return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
         }
 
+        MethodHandle unreflectConstructor(Constructor<?> constructor) {
+            Lookup lookup = lookup(constructor);
+
+            try {
+                return lookup.unreflectConstructor(constructor);
+            } catch (IllegalAccessException e) {
+                throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
+            }
+        }
+        
         MethodHandle unreflectGetter(Field field) {
             Lookup lookup = lookup(field);
 

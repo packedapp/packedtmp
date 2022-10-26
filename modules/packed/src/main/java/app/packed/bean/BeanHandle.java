@@ -33,7 +33,6 @@ import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanInstaller;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.oldservice.InternalServiceUtil;
-import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 
 /**
  * A bean handle represents the private configuration of a bean.
@@ -45,9 +44,6 @@ public final /* primitive */ class BeanHandle<T> {
 
     /** The configuration of the bean we are wrapping. */
     final BeanSetup bean;
-
-    /** Old shite */
-    BeanInstanceServiceSetup oldSetup;
 
     /**
      * Creates a new BeanHandle.
@@ -106,14 +102,6 @@ public final /* primitive */ class BeanHandle<T> {
         return (Key<T>) Key.of(beanClass());
     }
 
-    public void serviceExportAs(Key<? super T> key) {
-        bean.container.sm.serviceExport(key, bean.accessOperation());
-
-        requireNonNull(oldSetup);
-        bean.container.injectionManager.ios.exportsOrCreate().export(oldSetup);
-
-    }
-
     /**
      * Returns whether or not the bean is still configurable.
      * 
@@ -144,15 +132,38 @@ public final /* primitive */ class BeanHandle<T> {
         throw new UnsupportedOperationException();
     }
 
+    public void serviceExportAs(Key<? super T> key) {
+        bean.container.sm.serviceExport(key, bean.accessOperation());
+
+        bean.container.injectionManager.ios.exportsOrCreate().export(bean, null);
+    }
+
+    /**
+     * Provides of the bean as a service.
+     * <p>
+     * This method is rarely called directly, but instead via the various provide methods on
+     * {@link ProvideableBeanConfiguration}.
+     * 
+     * @param key
+     *            the key of the provided serviceto which to provide the service as
+     * @throws ClassCastException
+     *             if a service could not be provided because the key is not assignable to the type of the underlying bean
+     * @throws UnsupportedOperationException
+     *             if instances of the bean cannot be provided as a service
+     * 
+     * @see ProvideableBeanConfiguration#provide()
+     * @see ProvideableBeanConfiguration#provideAs(Class)
+     * @see ProvideableBeanConfiguration#provideAs(Key)
+     */
     public void serviceProvideAs(Key<? super T> key) {
-        // container,lazy or owned by the service extension
-
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
-        bean.container.sm.serviceProvide(k, bean.accessOperation());
 
-        // Old code
-        oldSetup = new BeanInstanceServiceSetup(bean, k);
-        bean.container.injectionManager.addService(oldSetup);
+        if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
+            // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
+            // or " + BeanKind.LAZY);
+        }
+
+        bean.container.sm.provideService(k, beanKind() != BeanKind.MANYTON, bean.accessOperation());
     }
 
     /**
@@ -169,26 +180,27 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     /**
-     *
+     * An builder that can used by extensions to install new beans.
      * <p>
      * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
      * are limited.
+     * 
+     * @see BeanExtensionPoint#builder(BeanKind)
+     * @see BeanExtensionPoint#builder(BeanKind, app.packed.container.ExtensionPoint.UseSite)
      */
-    public sealed static abstract class Installer permits BeanInstaller {
+    public sealed static abstract class Builder permits BeanInstaller {
+
+        public abstract <T> BeanHandle<T> build(Class<T> beanClass);
+
+        public abstract <T> BeanHandle<T> build(Op<T> operation);
+
+        public abstract <T> BeanHandle<T> buildFromInstance(T instance);
+
+        public abstract BeanHandle<Void> buildSourceless();
 
         protected <T> BeanHandle<T> from(BeanSetup bs) {
             return new BeanHandle<>(bs);
         }
-
-        public abstract <T> BeanHandle<T> install(Class<T> beanClass);
-
-        public abstract <T> BeanHandle<T> install(Op<T> operation);
-
-        public abstract Installer installIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
-
-        public abstract <T> BeanHandle<T> installInstance(T instance);
-
-        public abstract BeanHandle<Void> installSourceless();
 
         /**
          * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
@@ -200,27 +212,28 @@ public final /* primitive */ class BeanHandle<T> {
          * @return the option
          * @see Extension#newBeanIntrospector
          */
-        public abstract Installer introspectWith(BeanIntrospector introspector);
+        public abstract Builder introspectWith(BeanIntrospector introspector);
 
-        public Installer lifetimes(LifetimeConf... confs) {
+        public Builder lifetimes(LifetimeConf... confs) {
             return this;
         }
 
         /**
-         * An option that allows for multiple beans of the same type in a single container.
+         * Allows multiple beans of the same type in a container.
          * <p>
          * By default, a container only allows a single bean of particular type if non-void.
-         * <p>
-         * Beans of kind {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC} does not support this option.
-         * {@link IllegalArgumentException} is thrown if this option is specified for such beans.
          * 
-         * @return the option
+         * @return this builder
+         * @throws UnsupportedOperationException
+         *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
          */
-        public abstract Installer multiInstall();
+        public abstract Builder multiInstall();
 
-        public abstract Installer namePrefix(String prefix);
+        public abstract Builder namePrefix(String prefix);
 
-        Installer spawnNew() {
+        public abstract Builder onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
+
+        Builder spawnNew() {
             // A bean that is created per operation.
             // Obvious manyton, but should we have own kind?
             // I actually think so because, because for now it always requires manyton
@@ -242,6 +255,11 @@ public final /* primitive */ class BeanHandle<T> {
             throw new UnsupportedOperationException();
         }
 
-        public abstract Installer synthetic();
+        /**
+         * Marks the bean as synthetic.
+         * 
+         * @return this installer
+         */
+        public abstract Builder synthetic();
     }
 }

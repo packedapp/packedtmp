@@ -29,6 +29,8 @@ import app.packed.base.Nullable;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceTransformer;
+import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 import internal.app.packed.oldservice.build.ExportedServiceSetup;
 import internal.app.packed.oldservice.build.PackedServiceTransformer;
 import internal.app.packed.oldservice.build.ServiceSetup;
@@ -86,13 +88,15 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public void export(ServiceSetup entryToExport) {
+    public void export(BeanSetup bean, ServiceSetup entryToExport) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another assembly.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        export0(new ExportedServiceSetup(entryToExport));
+        BeanInstanceServiceSetup bss = sm.beans.get(bean);
+        requireNonNull(bss);
+        export0(new ExportedServiceSetup(bss));
     }
 
     /**

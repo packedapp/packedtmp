@@ -18,7 +18,7 @@ package internal.app.packed.operation.binding;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.container.ApplicationOrExtension;
+import app.packed.container.User;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -56,7 +56,7 @@ public final class ConstantBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationOrExtension boundBy() {
-        return boundBy == null ? ApplicationOrExtension.application() : ApplicationOrExtension.extension(boundBy.extensionType);
+    public User boundBy() {
+        return boundBy == null ? User.application() : User.extension(boundBy.extensionType);
     }
 }

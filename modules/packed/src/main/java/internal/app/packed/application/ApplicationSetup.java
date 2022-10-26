@@ -98,9 +98,8 @@ public final class ApplicationSetup {
         // Services?
         // get() -> MH.invokeExact(ExtensionContext);
         // ServiceManager
-        
+
         // ServiceLocator Key -> MethodHandle
-        
 
         // Packed relies on lazily created codegeneration
 

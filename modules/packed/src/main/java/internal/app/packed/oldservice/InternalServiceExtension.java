@@ -18,6 +18,7 @@ package internal.app.packed.oldservice;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,11 +38,15 @@ import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requiremen
 import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
 import internal.app.packed.oldservice.build.ProvideAllFromServiceLocator;
 import internal.app.packed.oldservice.build.ServiceSetup;
+import internal.app.packed.oldservice.inject.BeanMemberDependencyNode;
 import internal.app.packed.oldservice.inject.ContainerOrExtensionInjectionManager;
+import internal.app.packed.oldservice.inject.DependencyHolder;
 import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.AbstractServiceLocator;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
+import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.service.ProvidedService;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
@@ -93,6 +98,14 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
      */
     public void addConsumer(DependencyNode dependant) {
         consumers.add(requireNonNull(dependant));
+    }
+
+    HashMap<BeanSetup, BeanInstanceServiceSetup> beans = new HashMap<>();
+
+    public void addService(BeanSetup bean, Key<?> key) {
+        BeanInstanceServiceSetup bis = new BeanInstanceServiceSetup(bean, key);
+        beans.put(bis.bean, bis);
+        addService(bis);
     }
 
     public void addService(ServiceSetup service) {
@@ -231,12 +244,6 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         p.add(pi);
     }
 
-    public <T> ServiceSetup provideSource(BeanSetup component, Key<T> key) {
-        ServiceSetup e = new BeanInstanceServiceSetup(component, key);
-        localServices.add(e);
-        return e;
-    }
-
     public void resolve() {
         for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
             if (c.assembly == container.assembly) {
@@ -257,5 +264,18 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         ios.requirementsOrCreate().checkForMissingDependencies();
 
         // TODO Check any contracts we might as well catch it early
+    }
+
+    /**
+     * @param provider
+     */
+    public void provideOld(ProvidedService provider) {
+        if (provider.operation.target instanceof BeanInstanceAccess bia) {
+            addService(provider.operation.bean, provider.entry.key);
+        } else {
+            DependencyHolder fh = new DependencyHolder(provider.isConstant, provider.entry.key, provider.operation);
+            DependencyNode node = new BeanMemberDependencyNode(provider.operation.bean, fh);
+            provider.operation.bean.container.injectionManager.addConsumer(node);
+        }
     }
 }

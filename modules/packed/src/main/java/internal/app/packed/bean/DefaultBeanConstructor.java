@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import app.packed.bean.Inject;
-
+import app.packed.operation.OperationType;
 
 /**
  * Tries to find a single static method or constructor on the specified class using the following rules:
@@ -50,7 +50,17 @@ import app.packed.bean.Inject;
  *            the implementation type
  * @return a factory for the specified type
  */
-final class ConstructorFinder {
+final record DefaultBeanConstructor(Constructor<?> executable, OperationType operationType) {
+
+    /** A cache of constructor. */
+    static final ClassValue<DefaultBeanConstructor> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        protected DefaultBeanConstructor computeValue(Class<?> implementation) {
+            Constructor<?> executable = DefaultBeanConstructor.getConstructor(implementation, true, e -> new IllegalArgumentException(e));
+            return new DefaultBeanConstructor(executable, OperationType.ofExecutable(executable));
+        }
+    };
 
     /**
      * @param clazz
@@ -67,7 +77,7 @@ final class ConstructorFinder {
     // InjectableConstructorMissingException
     // MissingInjectableConstructorException
     // ConstructorInjectionException (lyder mere som noget vi ville smide naar vi instantiere det
-    public static Constructor<?> getConstructor(Class<?> clazz, boolean allowInjectAnnotation, Function<String, RuntimeException> errorMaker) {
+    private static Constructor<?> getConstructor(Class<?> clazz, boolean allowInjectAnnotation, Function<String, RuntimeException> errorMaker) {
         if (clazz.isAnnotation()) { // must be checked before isInterface
             String errorMsg = format(clazz) + " is an annotation and cannot be instantiated";
             throw errorMaker.apply(errorMsg);

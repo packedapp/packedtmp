@@ -35,8 +35,11 @@ import internal.app.packed.operation.binding.ConstantBindingSetup;
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class BindingIntrospector implements OnBinding {
 
-    /** The extension that will manage the binding. */
+    /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
+
+    @Nullable
+    final Class<?> bindingHookClass;
 
     /** The index of the binding. */
     private final int index;
@@ -45,13 +48,10 @@ public final class BindingIntrospector implements OnBinding {
     @Nullable
     private Supplier<? extends BindingMirror> mirrorSupplier;
 
-    /** The operation that will have a parameter bound. */
-    public final OperationSetup operation;
-
     ///////////////
 
-    @Nullable
-    final Class<?> bindingHookClass;
+    /** The operation that will have a parameter bound. */
+    public final OperationSetup operation;
 
     Variable variable;
 
@@ -98,10 +98,6 @@ public final class BindingIntrospector implements OnBinding {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isBound() {
-        return operation.bindings[index] != null;
-    }
-
     private void checkIsBindable() {
         if (isBound()) {
             throw new IllegalStateException("A binding has already been created");
@@ -122,6 +118,10 @@ public final class BindingIntrospector implements OnBinding {
     @Override
     public Class<? extends Extension<?>> invokingExtension() {
         return operation.invocationSite.invokingExtension.extensionType;
+    }
+
+    public boolean isBound() {
+        return operation.bindings[index] != null;
     }
 
     /** {@inheritDoc} */

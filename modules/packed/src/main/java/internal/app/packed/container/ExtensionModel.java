@@ -39,7 +39,7 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.ApplicationOrExtension;
+import app.packed.container.User;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StringFormatter;
 
@@ -82,7 +82,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
 
-    private final ApplicationOrExtension realm;
+    private final User realm;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -92,7 +92,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
-        this.realm = ApplicationOrExtension.extension(extensionClass);
+        this.realm = User.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
@@ -174,7 +174,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     static class Wrapper {
 
-        @Nullable ExtensionSetup setup;
+        @Nullable
+        ExtensionSetup setup;
 
         private Wrapper(ExtensionSetup setup) {
             this.setup = setup;
@@ -207,7 +208,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return ordringDepth;
     }
 
-    public ApplicationOrExtension realm() {
+    public User realm() {
         return realm;
     }
 
@@ -317,11 +318,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
             // Create a MethodHandle for the constructor
             try {
                 Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
-                // unreflect the constructor and cast from (ExtensionClass) -> (Extension)
                 MethodHandle mh = l.unreflectConstructor(constructor);
+                // cast from (ExtensionClass) -> (Extension)
                 this.mhConstructor = MethodHandles.explicitCastArguments(mh, MethodType.methodType(Extension.class));
             } catch (IllegalAccessException e) {
-                throw new InternalExtensionException(extensionClass + " must be open to app.packed", e);
+                throw new InternalExtensionException(extensionClass + " must be open to '" + getClass().getModule().getName() + "'", e);
             }
 
             return new ExtensionModel(this);

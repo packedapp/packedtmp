@@ -23,11 +23,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /** Creates a new bean extension point */
     BeanExtensionPoint() {}
 
-    public BeanHandle.Installer builder(BeanKind kind) {
+    public BeanHandle.Builder builder(BeanKind kind) {
         return new BeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) useSite());
     }
 
-    public BeanHandle.Installer builder(BeanKind kind, UseSite forExtension) {
+    public BeanHandle.Builder builder(BeanKind kind, UseSite forExtension) {
         requireNonNull(forExtension, "forExtension");
         return new BeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) forExtension);
     }
@@ -52,12 +52,12 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).install(implementation);
+        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).build(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).install(op);
+        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).build(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -71,7 +71,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).installInstance(instance);
+        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).buildFromInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 

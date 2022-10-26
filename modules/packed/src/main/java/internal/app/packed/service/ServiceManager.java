@@ -25,6 +25,7 @@ import app.packed.service.ExportOperationMirror;
 import app.packed.service.ServiceProvisionMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.util.AbstractTreeNode;
@@ -44,6 +45,64 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
     public ServiceManager(@Nullable ServiceManager parent) {
         super(parent);
+    }
+
+    private String makeDublicateProvideErrorMsg(ProvidedService provider, OperationSetup otherOperation) {
+        boolean isSameBean = provider.operation.bean == otherOperation.bean;
+        OperationTarget existingTarget = provider.operation.target;
+        OperationTarget thisTarget = otherOperation.target;
+        Key<?> key = provider.entry.key;
+
+        if (isSameBean) {
+            return "This bean is already " + provider.operation.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
+        }
+        if (existingTarget instanceof BeanInstanceAccess) {
+            return "Another bean of type " + provider.operation.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
+        } else if (existingTarget instanceof MethodOperationTarget m) {
+            String ss = StringFormatter.formatShortWithParameters(m.method());
+            return "A method " + ss + " is already providing a service for Key<" + key + ">";
+        }
+        return thisTarget + "A service has already been bound for key " + key;
+    }
+
+    /**
+     * Provides a service from the specified operation.
+     * 
+     * @param key
+     *            the key for which to provide a service for
+     * @param operation
+     *            the operation that provides the service
+     * @return a provided service
+     */
+    public ProvidedService provideService(Key<?> key, boolean isConstant, OperationSetup operation) {
+        ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
+
+        // Check lifetimes
+        
+        // Get any existing provider of
+        ProvidedService provider = entry.provider;
+
+        // Fail if there is already another provider of a service with key
+        if (provider != null) {
+            throw new DublicateServiceProvideException(makeDublicateProvideErrorMsg(provider, operation));
+        }
+
+        // Create a new provider
+        entry.provider = provider = new ProvidedService(operation, isConstant, entry);
+
+        operation.mirrorSupplier = () -> new ServiceProvisionMirror(entry.provider);
+
+        // add the service provider to the bean
+        operation.bean.providingOperations.add(provider);
+
+        if (exportAll) {
+            serviceExport(key, operation);
+        }
+
+        // maintain old 
+        operation.bean.container.injectionManager.provideOld(provider);
+        
+        return provider;
     }
 
     public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
@@ -77,38 +136,6 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
     public void serviceExport(Key<?> key, OperationSetup operation) {
         serviceExport(new ExportedService(operation, key));
-    }
-
-    public ProvidedService serviceProvide(Key<?> key, OperationSetup operation) {
-        ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
-
-        ProvidedService provider = entry.provider;
-
-        // We must fail if there is already a provider of the service
-        if (provider != null) {
-            if (provider.operation.target instanceof BeanInstanceAccess) {
-                throw new DublicateServiceProvideException("Another bean of type " + provider.operation.bean.beanClass
-                        + " is already providing a service for Key<" + key.toStringSimple() + ">");
-            } else if (provider.operation.target instanceof MethodOperationTarget m) {
-                String ss = StringFormatter.formatShortWithParameters(m.method());
-                throw new DublicateServiceProvideException("A method " + ss + " is already providing a service for Key<" + key + ">");
-            }
-            throw new DublicateServiceProvideException("A service has already been bound for key " + key);
-        }
-
-        // Create a new provider
-        entry.provider = provider = new ProvidedService(operation, entry);
-
-        operation.mirrorSupplier = () -> new ServiceProvisionMirror(entry.provider);
-
-        // add the service provider to the bean
-        operation.bean.providingOperations.add(provider);
-
-        if (exportAll) {
-            serviceExport(key, operation);
-        }
-        
-        return provider;
     }
 
     public void verify() {

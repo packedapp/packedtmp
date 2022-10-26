@@ -69,13 +69,13 @@ public abstract class Assembly {
      * <p>
      * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
-    @Nullable ContainerConfiguration configuration;
+    @Nullable
+    ContainerConfiguration configuration;
 
     /**
-     * Invoked by the runtime as part of the build process. This method must be overridden by the application developer in
-     * order to configure the application.
+     * This method must be overridden by the application developer in order to configure the application.
      * <p>
-     * This method will never be invoked more than once for a given assembly instance.
+     * This method is never invoked more than once for a given assembly instance.
      * <p>
      * Note: This method should never be invoked directly by the user.
      */
@@ -99,7 +99,7 @@ public abstract class Assembly {
     /**
      * Returns the configuration of the <strong>root</strong> container defined by this assembly.
      * <p>
-     * This method must be called from within the {@link #build()} method.
+     * This method must only be called from within the {@link #build()} method.
      * 
      * @return the configuration of the root container
      * @throws IllegalStateException
@@ -126,7 +126,7 @@ public abstract class Assembly {
      */
     @SuppressWarnings("unused")
     private void doBuild(AssemblySetup assembly, ContainerSetup container) {
-        ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container)); 
+        ContainerConfiguration configuration = new ContainerConfiguration(new ContainerHandle(container));
         // Do we really need to guard against concurrent usage of an assembly?
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
@@ -153,23 +153,22 @@ public abstract class Assembly {
     }
 
     /**
-     * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     * Unless your private
+     * Specifies a lookup object that the framework will use will be used when access bean members installed from within
+     * this assembly.
+     * <p>
+     * This method can be used as an alternative
+     * <p>
+     * Example
      * 
      * <p>
-     * If you choose to use this method. You will typically only use it once and as the first statement in {@link #build()}.
+     * The lookup object passed to this method is only used internally. And only for the sake of accessing those bean
+     * installed by the assembly
      * <p>
-     * Lookup objects are used throughout any beans defined within this assembly. Not only in the root contianer
+     * This method will typically never be called more than once.
      * 
      * @param lookup
      *            the lookup object
      */
-    // For know this is bean install only. For all beans defined within the assembly.
-
-    // If we at some point get reflection Ops/Fns as in main(Op operation)
-    // fx via FN.ofMethod(Method) then we might revisit it.
-    // And extend it to functions
-    // I'm not totally crazy about it though.
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");
         configuration().handle.container.assembly.lookup(lookup);

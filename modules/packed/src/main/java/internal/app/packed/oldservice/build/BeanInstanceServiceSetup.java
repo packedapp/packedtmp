@@ -31,7 +31,7 @@ import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
 public final class BeanInstanceServiceSetup extends ServiceSetup {
 
     /** The singleton source we are wrapping */
-    private final BeanSetup bean;
+    public final BeanSetup bean;
 
     /**
      * Creates a new node from an instance.

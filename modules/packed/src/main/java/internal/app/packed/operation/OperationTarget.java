@@ -65,7 +65,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         /** {@inheritDoc} */
         @Override
         public Optional<OperationMirror> origin() {
-            return bean().factory();
+            return bean().factoryOperation();
         }
     }
 

@@ -35,9 +35,6 @@ import internal.app.packed.bean.MethodIntrospector;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.oldservice.ServiceConfiguration;
-import internal.app.packed.oldservice.inject.BeanMemberDependencyNode;
-import internal.app.packed.oldservice.inject.DependencyHolder;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.AbstractServiceLocator;
 import internal.app.packed.operation.OperationSetup;
 
@@ -160,14 +157,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 boolean constant = field.annotations().readRequired(Provide.class).constant();
 
                 FieldIntrospector iof = ((FieldIntrospector) field);
-
                 OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
-
-                iof.introspector.bean.container.sm.serviceProvide(key, operation);
-
-                DependencyHolder fh = new DependencyHolder(constant, key, operation);
-                DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
-                operation.bean.container.injectionManager.addConsumer(node);
+                iof.introspector.bean.container.sm.provideService(key, constant, operation);
             }
 
             /** {@inheritDoc} */
@@ -180,24 +171,17 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                     boolean constant = method.annotations().readRequired(Provide.class).constant();
 
                     MethodIntrospector iom = ((MethodIntrospector) method);
-
                     OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
-
-                    iom.introspector.bean.container.sm.serviceProvide(key, operation);
-
-                    // What is this crap?
-                    DependencyHolder fh = new DependencyHolder(constant, key, operation);
-                    DependencyNode node = new BeanMemberDependencyNode(operation.bean, fh);
-                    operation.bean.container.injectionManager.addConsumer(node);
+                    iom.introspector.bean.container.sm.provideService(key, constant, operation);
                 }
-                
+
                 if (isExporting) {
                     MethodIntrospector iom = ((MethodIntrospector) method);
 
                     OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 
                     iom.introspector.bean.container.sm.serviceExport(key, operation);
-                    
+
                 }
             }
         };
@@ -237,12 +221,12 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(implementation);
+        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).build(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(op);
+        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).build(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

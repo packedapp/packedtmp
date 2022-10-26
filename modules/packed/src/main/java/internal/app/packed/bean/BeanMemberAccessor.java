@@ -36,19 +36,6 @@ import internal.app.packed.util.LookupValue;
  */
 public abstract sealed class BeanMemberAccessor {
 
-    /** A cache of bean models per accessor. */
-    private final ClassValue<HookModel> beanModels = new ClassValue<>() {
-
-        @Override
-        protected HookModel computeValue(Class<?> type) {
-            return new HookModel();
-        }
-    };
-
-    public final HookModel beanModelOf(Class<?> beanClass) {
-        return beanModels.get(beanClass);
-    }
-
     Lookup lookup() {
         if (this instanceof ModuleLookupAccessor lookupAccessor) {
             return lookupAccessor.lookup;
@@ -76,8 +63,6 @@ public abstract sealed class BeanMemberAccessor {
     public static BeanMemberAccessor defaultFor(Class<?> sourceType) {
         return ModuleDescriptorAccessor.MODELS.get(sourceType);
     }
-
-    record HookModel() {}
 
     /**
      * An accessor that uses relies on a module being open to Packed. Either via a module descriptor, or via command line

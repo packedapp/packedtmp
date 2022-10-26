@@ -18,7 +18,7 @@ package internal.app.packed.operation.binding;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.ApplicationOrExtension;
+import app.packed.container.User;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
@@ -45,7 +45,7 @@ public abstract class BindingSetup {
         this.index = index;
     }
 
-    public abstract ApplicationOrExtension boundBy();
+    public abstract User boundBy();
     
     /** {@return a new mirror.} */
     public BindingMirror mirror() {

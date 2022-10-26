@@ -22,9 +22,11 @@ import internal.app.packed.container.Mirror;
  * <p>
  * An instance of this class is typically obtained by calling a application mirror factory method such as
  * {@link App#newMirror(Assembly, Wirelet...)}.
- * 
  * <p>
- * Like most other mirrors this class is overridable via
+ * Instances of ApplicationMirror can be injected at runtime simply by declaring a dependency on it. This will
+ * automatically install the {@link MirrorExtension} which will provide an instance at runtime.
+ * <p>
+ * Like many other mirrors this class is overridable via
  * {@link ApplicationDriver.Builder#specializeMirror(java.util.function.Supplier)}
  */
 @BindingHook(extension = MirrorExtension.class)

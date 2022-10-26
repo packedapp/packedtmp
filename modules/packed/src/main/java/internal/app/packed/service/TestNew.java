@@ -35,7 +35,7 @@ public class TestNew extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provideInstance("foo");
+        provideInstance("foo").provide();
         provide(Fop.class);
     }
 

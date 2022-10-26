@@ -32,9 +32,12 @@ public final class ProvidedService {
     public final ServiceManagerEntry entry;
 
     public MethodHandle provider;
-    
-    ProvidedService(OperationSetup operation, ServiceManagerEntry entry) {
+
+    public final boolean isConstant;
+
+    ProvidedService(OperationSetup operation, boolean isConstant, ServiceManagerEntry entry) {
         this.operation = operation;
         this.entry = entry;
+        this.isConstant = isConstant;
     }
 }

@@ -19,7 +19,7 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.container.ApplicationOrExtension;
+import app.packed.container.User;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.operation.bindings.BindingKind;
@@ -67,7 +67,7 @@ public class BindingMirror implements Mirror {
     }
 
     /** {@return the x who created binding.} */
-    public ApplicationOrExtension boundBy() {
+    public User boundBy() {
         return binding().boundBy();
     }
 
@@ -166,7 +166,7 @@ interface Sandbox {
 
     Optional<OperationMirror> providingOperation();
 
-    public ApplicationOrExtension providedBy();
+    public User providedBy();
 
     /**
      * If this dependency is the result of another operation.
@@ -185,7 +185,7 @@ interface Sandbox {
     public ResolutionState resolutionState();
 
     // Unresolved->Empty or Composite->Empty
-    Optional<ApplicationOrExtension> resolvedBy();
+    Optional<User> resolvedBy();
 
     Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
 
