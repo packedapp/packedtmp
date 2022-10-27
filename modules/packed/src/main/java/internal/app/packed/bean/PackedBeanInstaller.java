@@ -45,7 +45,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     BeanIntrospector introspector;
 
-    final BeanKind kind;
+    private final BeanKind kind;
 
     boolean multiInstall;
 
@@ -100,7 +100,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-        BeanSetup bs = BeanSetup.install(this, beanClass, sourceKind, source);
+        BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source);
         return from(bs);
     }
 

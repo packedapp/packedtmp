@@ -30,18 +30,6 @@ public class BeanConfiguration {
         return handle.beanKind();
     }
 
-    /**
-     * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not.
-     * 
-     * @throws IllegalStateException
-     *             if the bean is no longer configurable
-     */
-    protected final void checkIsConfigurable() {
-        if (!handle.isConfigurable()) {
-            throw new IllegalStateException("The bean is no longer configurable");
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {

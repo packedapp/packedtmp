@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanClassAlreadyExistsException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.bean.BeanClassAlreadyExistsException;
 import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
 import internal.app.packed.container.ContainerSetup;
@@ -106,7 +106,12 @@ public final class BeanSetup {
     /**
      * Create a new bean.
      */
-    private BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+    private BeanSetup(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+        this.beanKind = requireNonNull(beanKind);
+        this.beanClass = requireNonNull(beanClass);
+        this.sourceKind = requireNonNull(sourceKind);
+        this.source = source;
+
         ExtensionSetup installedBy = installer.useSite == null ? installer.beanExtension : installer.useSite.usedBy();
 
         RealmSetup realm = installer.useSite == null ? installer.beanExtension.container.assembly : installedBy.extensionRealm;
@@ -115,10 +120,7 @@ public final class BeanSetup {
 
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
-        this.beanKind = requireNonNull(installer.kind);
-        this.beanClass = requireNonNull(beanClass);
-        this.sourceKind = requireNonNull(sourceKind);
-        this.source = source;
+
 
         // I think we want to have a single field for these 2
         // I think this was made like this, when I was unsure if we could
@@ -213,8 +215,8 @@ public final class BeanSetup {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
-    static BeanSetup install(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
-        BeanSetup bean = new BeanSetup(installer, beanClass, sourceKind, source);
+    static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+        BeanSetup bean = new BeanSetup(installer, beanKind, beanClass, sourceKind, source);
 
         ContainerSetup container = bean.container;
 

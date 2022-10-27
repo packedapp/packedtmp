@@ -78,9 +78,12 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.beanKind;
     }
 
-    public void decorateInstance(Function<? super T, ? extends T> decorator) {
-        throw new UnsupportedOperationException();
+    public void checkIsConfigurable() {
+        if (!isConfigurable()) {
+            throw new IllegalStateException("The bean is no longer configurable");
+        }
     }
+
 
     /**
      * Returns the key that the bean will be made available under if provided.
@@ -118,15 +121,19 @@ public final /* primitive */ class BeanHandle<T> {
      * 
      * @return
      */
+    // Ideen er jo foerst og fremmest taenkt paa 
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
 
     public void named(String name) {
+        checkIsConfigurable();
         bean.named(name);
     }
 
     public <K> OperationHandle overrideService(Key<K> key, K instance) {
+        checkIsConfigurable();
+
         throw new UnsupportedOperationException();
     }
 
@@ -134,14 +141,17 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.path();
     }
 
-    public void peekInstance(Consumer<? super T> consumer) {
-        throw new UnsupportedOperationException();
-    }
-
+    // Spoergsmaalet er om vi vil have dem her...
+    // Eller kun i ProvideBeanConfiguration
     public void serviceExportAs(Key<? super T> key) {
-        bean.container.sm.serviceExport(key, bean.accessOperation());
+        checkIsConfigurable();
 
+        bean.container.sm.serviceExport(key, bean.accessOperation());
+        
+        
         bean.container.injectionManager.ios.exportsOrCreate().export(bean, null);
+
+
     }
 
     /**
@@ -163,6 +173,7 @@ public final /* primitive */ class BeanHandle<T> {
      */
     public void serviceProvideAs(Key<? super T> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
+        checkIsConfigurable();
 
         if (beanKind() != BeanKind.CONTAINER || beanKind() != BeanKind.LAZY) {
             // throw new UnsupportedOperationException("This method can only be called on beans of kind " + BeanKind.CONTAINER + "
@@ -182,10 +193,23 @@ public final /* primitive */ class BeanHandle<T> {
      */
     public void specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
+        checkIsConfigurable();
         bean.mirrorSupplier = supplier;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return bean.toString();
     }
+}
+
+class BeanHandleSandbox<T> {
+
+    public void decorateInstance(Function<? super T, ? extends T> decorator) {
+        throw new UnsupportedOperationException();
+    }
+    public void peekInstance(Consumer<? super T> consumer) {
+        throw new UnsupportedOperationException();
+    }
+
 }

@@ -22,7 +22,7 @@ import app.packed.operation.OperationMirror;
 /**
  * An operation that creates or destroys a lifetime.
  */
-// Taenker ikke vi b 
+// Ved ikke om den kommer med som en egentlig operation
 public final class LifetimeOperationMirror extends /* Nested */ OperationMirror {
     
     // Wehether or not this lifetime operation concerns the bean that defines it.

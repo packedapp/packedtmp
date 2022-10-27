@@ -41,27 +41,6 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         super(handle);
     }
 
-    // How do we handle null?
-
-    /**
-     * <p>
-     * The decorator must return a non-null bean instance that is assignable to {@link #beanClass()}. Failure do to so will
-     * fail with a BeanDecorationException being thrown at runtime.
-     * <p>
-     * Notice: If you return a subclass of {@link #beanClass()} and the subclass uses hooks, for example, these will be
-     * ignored. hooks are always resolved against {@link #beanClass()}
-     * 
-     * @param decorator
-     *            the decorator to apply to newly constructed bean instances
-     * @return this configuration
-     */
-    // Kan vi finde en eneste usecase?
-    // Hvornaar bliver den kaldt??? Igen er det ikke bare paa factorien???
-    InstanceBeanConfiguration<T> decorate(Function<? super T, ? extends T> decorator) {
-        handle().decorateInstance(decorator);
-        return this;
-    }
-
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     protected BeanHandle<T> handle() {
@@ -111,14 +90,47 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         return this;
     }
 
+}
+
+//Skal bruges paa params som skal "bootstrappes" med...
+//Maaske bare @Bootstrap
+
+//beforeIntrospec();
+//ignoreAnnotation.
+//addAnnotation
+//resolve();
+class InstanceBeanConfigurationSandbox<T> {
+
+    // How do we handle null?
+
+    /**
+     * <p>
+     * The decorator must return a non-null bean instance that is assignable to {@link #beanClass()}. Failure do to so will
+     * fail with a BeanDecorationException being thrown at runtime.
+     * <p>
+     * Notice: If you return a subclass of {@link #beanClass()} and the subclass uses hooks, for example, these will be
+     * ignored. hooks are always resolved against {@link #beanClass()}
+     * 
+     * @param decorator
+     *            the decorator to apply to newly constructed bean instances
+     * @return this configuration
+     */
+    // Kan vi finde en eneste usecase?
+    // Hvornaar bliver den kaldt??? Igen er det ikke bare paa factorien???
+    InstanceBeanConfiguration<T> decorate(Function<? super T, ? extends T> decorator) {
+        throw new UnsupportedOperationException();
+    }
+
     // Peek when???? Maybe wrap a factory for now
     //// Do we want to peek on instances???? I don't think so
     // peekAfterCreate
     InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
         // peek at constr
-        handle().peekInstance(consumer);
-        return this;
+       // handle().peekInstance(consumer);
+       throw new UnsupportedOperationException();
     }
+    
+
 
     /**
      * @param state
@@ -140,17 +152,6 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     InstanceBeanConfiguration<T> peekAt(RunState state, Consumer<T> action) {
         throw new UnsupportedOperationException();
     }
-}
-
-//Skal bruges paa params som skal "bootstrappes" med...
-//Maaske bare @Bootstrap
-
-//beforeIntrospec();
-//ignoreAnnotation.
-//addAnnotation
-//resolve();
-interface stuff {
- 
  
 }
 // inject, bind, provide
