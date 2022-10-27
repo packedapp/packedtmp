@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package incubator.bean.meta;
+
+import java.lang.annotation.Annotation;
 
 /**
  *
  */
-public interface DefaultMirror {
+class BeanModifier {
 
+    // bean().useForNext(BeanModifier bm);
+    // bean().useForAll(BeanModifier bm);
+    // ind med filters
+    
+    /// bean()->new BeanModifier().hideAnnotations(OnInitialize.class, On.dd);
+    void hideAnnotations(Class<? extends Annotation> annotationType) {}
 }

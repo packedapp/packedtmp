@@ -73,7 +73,7 @@ public final class Introspector {
     /** The bean that is being introspected. */
     public final BeanSetup bean;
 
-    /** Non-null if a introspector was set via {@link BeanHandle.Builder#introspectWith(BeanIntrospector)}. */
+    /** Non-null if a introspector was set via {@link BeanHandle.BeanInstaller#introspectWith(BeanIntrospector)}. */
     @Nullable
     private final BeanIntrospector beanIntrospector;
 

@@ -51,20 +51,20 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     // Map<K, V> unresolvedOptional?();
 
     /** { @return a map view of all the services that are exported from the container.} */
-    public Map<Key<?>, ExportOperationMirror> exports() {
-        LinkedHashMap<Key<?>, ExportOperationMirror> result = new LinkedHashMap<>();
+    public Map<Key<?>, ExportedServiceMirror> exports() {
+        LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
         for (ExportedService e : services.container.sm.exports.values()) {
-            ExportOperationMirror mirror = (ExportOperationMirror) e.bos.mirror();
+            ExportedServiceMirror mirror = (ExportedServiceMirror) e.bos.mirror();
             result.put(e.key, mirror);
         }
         return Collections.unmodifiableMap(result);
     }
 
     /** { @return a map view of all the services that are provided internally in the container.} */
-    public Map<Key<?>, ServiceProvisionMirror> provisions() {
-        LinkedHashMap<Key<?>, ServiceProvisionMirror> result = new LinkedHashMap<>();
+    public Map<Key<?>, ProvidedServiceMirror> provisions() {
+        LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
         for (ServiceManagerEntry e : services.container.sm.entries.values()) {
-            ServiceProvisionMirror mirror = (ServiceProvisionMirror) e.provider.operation.mirror();
+            ProvidedServiceMirror mirror = (ProvidedServiceMirror) e.provider.operation.mirror();
             result.put(e.key, mirror);
         }
         return Collections.unmodifiableMap(result);

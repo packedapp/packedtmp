@@ -27,7 +27,7 @@ public final class ServiceManagerEntry {
 
     /** All bindings (in a interned linked list) that points to this entry. */
     @Nullable
-    ServiceBindingSetup bindings;
+    public ServiceBindingSetup bindings;
 
     boolean isRequired = true; // true for now
 
@@ -44,4 +44,6 @@ public final class ServiceManagerEntry {
     ServiceManagerEntry(Key<?> key) {
         this.key = requireNonNull(key);
     }
+    
+    
 }

@@ -22,12 +22,12 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.service.Export;
-import app.packed.service.ExportOperationMirror;
-import app.packed.service.Provide;
+import app.packed.service.ExportService;
+import app.packed.service.ExportedServiceMirror;
+import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.ServiceExtensionMirror;
-import app.packed.service.ServiceProvisionMirror;
+import app.packed.service.ProvidedServiceMirror;
 
 /**
  *
@@ -51,9 +51,9 @@ public class CheckCycles extends BaseAssembly {
             System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().target());
         }
 
-        Collection<ServiceProvisionMirror> c = am.use(ServiceExtensionMirror.class).provisions().values();
+        Collection<ProvidedServiceMirror> c = am.use(ServiceExtensionMirror.class).provisions().values();
 
-        Collection<ExportOperationMirror> ex = am.use(ServiceExtensionMirror.class).exports().values();
+        Collection<ExportedServiceMirror> ex = am.use(ServiceExtensionMirror.class).exports().values();
 
         BeanMirror b = am.container().beans().iterator().next();
 
@@ -72,13 +72,13 @@ public class CheckCycles extends BaseAssembly {
 
     public record B() {
 
-        @Provide
+        @ProvideService
         String dppro() {
             return null;
         }
 
-        @Provide
-        @Export
+        @ProvideService
+        @ExportService
         C ppro() {
             return null;
         }

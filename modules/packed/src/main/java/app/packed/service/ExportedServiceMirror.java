@@ -15,34 +15,33 @@
  */
 package app.packed.service;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.base.Key;
 import app.packed.operation.OperationMirror;
-import internal.app.packed.service.ProvidedService;
+import internal.app.packed.service.ExportedService;
 
 /**
  *
  */
-// ServiceProvisionMirror
 
-// permits InternalOp
-public class ServiceProvisionMirror extends OperationMirror {
+// Skal vi kun have en klasse?
+// Skal vi have en faelles klasse? Hvad vil man soege efter
+public class ExportedServiceMirror extends OperationMirror {
 
-    final ProvidedService ps;
+    final ExportedService es;
 
-    public ServiceProvisionMirror(@SuppressWarnings("exports") ProvidedService ps) {
-        this.ps = requireNonNull(ps);
+    public ExportedServiceMirror(@SuppressWarnings("exports") ExportedService es) {
+        this.es = es;
     }
 
-    /** {@return the key of the service.} */
+    /** {@return the key that the service is exported with.} */
     public Key<?> key() {
-        return ps.entry.key;
+        return es.key;
     }
 
-    // Local bindings?
-    // Collection<ServiceBindingMirror> bindings();
-}
+//    // Hvad goer vi omvendt??? Returnere en liste??
+//    // Kun allower en? IDK
+//    public abstract Optional<ServiceProvisionMirror> service(); // Kan ikke fange alle dog
+//
+//    // find usage of the exported service
 
-// provide(Doo.class) -> BeanOperation.element = BeanClass  (Kunne ogsaa vaere constructoren???)
-// provide(Doo.class) -> BeanOperation.element = BeanClass
+}

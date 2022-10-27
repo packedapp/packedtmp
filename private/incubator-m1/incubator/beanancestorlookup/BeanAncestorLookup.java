@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package incubator.beanancestorlookup;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -23,6 +23,13 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
+
+
+// Ideen er vi gerne vil supportere at man kan faa injected container beans af den samme type
+// fra parent containeren.
+// Alternativt er det en annotering.
+// Taenker vi gerne vil configurere den
+// Om den er i samme lifetime, maa vi vide naar vi konfigurere
 
 /**
  *
@@ -51,19 +58,22 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 
 // InjectAncestor?
 @BindingHook(extension = BeanExtension.class)
-public final /* value */ class LookupAncestor<T> {
+final /* value */ class BeanAncestorLookup<T> {
 
     /** Shared instance for {@code root()}. */
-    private static final LookupAncestor<?> ROOT = new LookupAncestor<>(null);
+    private static final BeanAncestorLookup<?> ROOT = new BeanAncestorLookup<>(null);
 
     /** Ancestor, or {@code null} if root. */
     @Nullable
     private final T ancestor;
 
-    private LookupAncestor(T ancestor) {
+    private BeanAncestorLookup(T ancestor) {
         this.ancestor = ancestor;
     }
 
+    public boolean isInSameLifetime() {
+        return false;
+    }
     /**
      * If a value is present, returns the value, otherwise returns the result produced by the supplying function.
      *
@@ -77,12 +87,12 @@ public final /* value */ class LookupAncestor<T> {
         return ancestor != null ? ancestor : supplier.get();
     }
 
-    public <U> LookupAncestor<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> BeanAncestorLookup<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper);
         if (isRoot()) {
             return root();
         } else {
-            return LookupAncestor.ofNullable(mapper.apply(ancestor));
+            return BeanAncestorLookup.ofNullable(mapper.apply(ancestor));
         }
     }
 
@@ -103,12 +113,12 @@ public final /* value */ class LookupAncestor<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> LookupAncestor<T> ofNullable(T ancestor) {
-        return ancestor == null ? (LookupAncestor<T>) ROOT : new LookupAncestor<>(ancestor);
+    public static <T> BeanAncestorLookup<T> ofNullable(T ancestor) {
+        return ancestor == null ? (BeanAncestorLookup<T>) ROOT : new BeanAncestorLookup<>(ancestor);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> LookupAncestor<T> root() {
-        return (LookupAncestor<T>) ROOT;
+    public static <T> BeanAncestorLookup<T> root() {
+        return (BeanAncestorLookup<T>) ROOT;
     }
 }

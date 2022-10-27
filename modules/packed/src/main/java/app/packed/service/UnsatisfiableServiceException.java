@@ -17,11 +17,16 @@ package app.packed.service;
 
 import app.packed.application.BuildException;
 
-/**
- * An exception that is thrown when attempting to provide multiple services for the same key.
- */
-public class ServiceAlreadyExistsException extends BuildException {
+/** An exception thrown at build-time when a valid binding could not be created for an operation. */
+// Valid but the 
+// Binding
+// Giver bare ikke rigtig mening navngivningsmaessigt...
+// Dependency yws, binding no.
 
+// IDeen er er lidt at lave en generiks vi kan ikke lave den binding fordi xxx.
+public class UnsatisfiableServiceException extends BuildException {
+
+    /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -32,7 +37,7 @@ public class ServiceAlreadyExistsException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ServiceAlreadyExistsException(String message) {
+    public UnsatisfiableServiceException(String message) {
         super(message);
     }
 
@@ -46,7 +51,7 @@ public class ServiceAlreadyExistsException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public ServiceAlreadyExistsException(String message, Throwable cause) {
+    public UnsatisfiableServiceException(String message, Throwable cause) {
         super(message, cause);
     }
 }

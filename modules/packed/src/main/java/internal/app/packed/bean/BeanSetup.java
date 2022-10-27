@@ -106,7 +106,7 @@ public final class BeanSetup {
     /**
      * Create a new bean.
      */
-    private BeanSetup(BeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+    private BeanSetup(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
         ExtensionSetup installedBy = installer.useSite == null ? installer.beanExtension : installer.useSite.usedBy();
 
         RealmSetup realm = installer.useSite == null ? installer.beanExtension.container.assembly : installedBy.extensionRealm;
@@ -213,7 +213,7 @@ public final class BeanSetup {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
-    static BeanSetup install(BeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+    static BeanSetup install(PackedBeanInstaller installer, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
         BeanSetup bean = new BeanSetup(installer, beanClass, sourceKind, source);
 
         ContainerSetup container = bean.container;

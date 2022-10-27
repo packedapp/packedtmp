@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.service.Provide;
+import app.packed.service.ProvideService;
 import internal.app.packed.oldservice.InternalService;
 import internal.app.packed.oldservice.inject.DependencyProducer;
 import internal.app.packed.oldservice.runtime.RuntimeService;
@@ -39,7 +39,7 @@ public abstract non-sealed class ServiceSetup implements InternalService, Depend
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
-     * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
+     * instance methods annotated with {@link ProvideService}. In which the case the declaring class needs to be constructor
      * injected before the providing method can be invoked.
      */
     private final Key<?> key;

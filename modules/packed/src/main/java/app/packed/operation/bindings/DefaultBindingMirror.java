@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
-
-import app.packed.application.BuildException;
+package app.packed.operation.bindings;
 
 /**
  *
  */
-public class ExportedServiceAlreadyExistsException extends BuildException {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @param message
-     */
-    public ExportedServiceAlreadyExistsException(String message) {
-        super(message);
-    }
+public interface DefaultBindingMirror {
 
 }

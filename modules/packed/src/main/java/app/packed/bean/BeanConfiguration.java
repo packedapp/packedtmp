@@ -4,9 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
 
-/**
- * The base configuration class for beans.
- */
+/** The base configuration class for a bean. */
 public class BeanConfiguration {
 
     /** The bean handle. */
@@ -44,9 +42,21 @@ public class BeanConfiguration {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final boolean equals(Object obj) {
+        return obj instanceof BeanConfiguration bc && handle == bc.handle;
+    }
+
     /** {@return the bean handle that was used to create this configuration.} */
     protected BeanHandle<?> handle() {
         return handle;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int hashCode() {
+        return handle.hashCode();
     }
 
     /**
@@ -67,7 +77,7 @@ public class BeanConfiguration {
      *             with the same name.
      */
     public BeanConfiguration named(String name) {
-        handle.bean.named(name);
+        handle.named(name);
         return this;
     }
 
@@ -87,12 +97,12 @@ public class BeanConfiguration {
     // I'm not sure we want to expose midt build? IDK
     // If only for user... Maybe is nice for debugging
     public final NamespacePath path() {
-        return handle.bean.path();
+        return handle.path();
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return handle.bean.toString();
+        return handle.toString();
     }
 }

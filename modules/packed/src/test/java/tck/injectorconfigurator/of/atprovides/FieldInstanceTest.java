@@ -27,14 +27,14 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.BuildException;
 import app.packed.operation.Op0;
-import app.packed.service.Provide;
+import app.packed.service.ProvideService;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 
-/** Tests {@link Provide#constant()} on fields. */
+/** Tests {@link ProvideService#constant()} on fields. */
 public class FieldInstanceTest {
 
-    /** Tests default {@link Provide#constant()} on instance fields. */
+    /** Tests default {@link ProvideService#constant()} on instance fields. */
     @Test
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
@@ -142,10 +142,10 @@ public class FieldInstanceTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
 
-        @Provide(constant = false)
+        @ProvideService(constant = false)
         Integer p = 1;
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         Short s = 1;
 
         static void test(Consumer<? super Composer> configurator) {
@@ -172,7 +172,7 @@ public class FieldInstanceTest {
 
     public static class PrototypeField {
 
-        @Provide(constant = false)
+        @ProvideService(constant = false)
         Short s = 1;
 
         public PrototypeField(AtomicBoolean b) {
@@ -182,7 +182,7 @@ public class FieldInstanceTest {
 
     public static class SingletonField {
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         Short s = 1;
 
         public SingletonField(AtomicBoolean b) {

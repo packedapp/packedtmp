@@ -19,10 +19,10 @@ import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.service.ExportedServiceAlreadyExistsException;
-import app.packed.service.ServiceAlreadyExistsException;
-import app.packed.service.ExportOperationMirror;
-import app.packed.service.ServiceProvisionMirror;
+import app.packed.service.ExportedServiceCollisionException;
+import app.packed.service.ProvidedServiceCollisionException;
+import app.packed.service.ExportedServiceMirror;
+import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget;
@@ -84,13 +84,13 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
 
         // Fail if there is already another provider of a service with key
         if (provider != null) {
-            throw new ServiceAlreadyExistsException(makeDublicateProvideErrorMsg(provider, operation));
+            throw new ProvidedServiceCollisionException(makeDublicateProvideErrorMsg(provider, operation));
         }
 
         // Create a new provider
         entry.provider = provider = new ProvidedService(operation, isConstant, entry);
 
-        operation.mirrorSupplier = () -> new ServiceProvisionMirror(entry.provider);
+        operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 
         // add the service provider to the bean
         operation.bean.providingOperations.add(provider);
@@ -129,9 +129,9 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         ExportedService existing = exports.putIfAbsent(e.key, e);
         if (existing != null) {
             // A service with the key has already been exported
-            throw new ExportedServiceAlreadyExistsException("Jmm");
+            throw new ExportedServiceCollisionException("Jmm");
         }
-        e.bos.mirrorSupplier = () -> new ExportOperationMirror(e);
+        e.bos.mirrorSupplier = () -> new ExportedServiceMirror(e);
     }
 
     public void serviceExport(Key<?> key, OperationSetup operation) {

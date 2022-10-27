@@ -18,6 +18,7 @@ package internal.app.packed.service;
 import app.packed.base.Nullable;
 import app.packed.container.User;
 import app.packed.operation.BindingMirror;
+import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
@@ -32,6 +33,7 @@ public final class ServiceBindingSetup extends BindingSetup {
 
     /** A binding in the same container for the same key */
     @Nullable
+    public
     ServiceBindingSetup nextFriend;
 
     /** Whether or not the binding is required. */
@@ -61,6 +63,6 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public BindingMirror mirror0() {
-        throw new UnsupportedOperationException();
+        return new ServiceBindingMirror(this);
     }
 }

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.OnStart;
 import app.packed.operation.Op;
-import app.packed.service.Provide;
+import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.Qualifier;
 import app.packed.service.ServiceExtension;
@@ -220,7 +220,7 @@ public abstract class BaseAssembly extends Assembly {
     /**
      *
      * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link ProvideService}.
      *
      * @param <T>
      *            the type of bean to provide as a service

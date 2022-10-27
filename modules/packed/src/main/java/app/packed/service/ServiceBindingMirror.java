@@ -30,7 +30,7 @@ public class ServiceBindingMirror extends BindingMirror {
     /** The service binding */
     private final ServiceBindingSetup binding;
 
-    ServiceBindingMirror(ServiceBindingSetup binding) {
+   public ServiceBindingMirror(@SuppressWarnings("exports") ServiceBindingSetup binding) {
         this.binding = requireNonNull(binding);
     }
 

@@ -33,14 +33,14 @@ import internal.app.packed.operation.OperationSetup;
 @DependsOn(extensions = BeanExtension.class)
 public class EntryPointExtension extends Extension<EntryPointExtension> {
 
-    boolean hasMain;
-
-    /** An object that is shared between all entry point extensions in the same application. */
-    final ApplicationShare share;
-
     final ApplicationSetup application;
 
+    boolean hasMain;
+
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
+
+    /** An object that is shared between all entry point extensions in the same application. */
+    final ApplicationShare shared;
 
     /**
      * Create a new service extension.
@@ -51,12 +51,18 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     /* package-private */ EntryPointExtension() {
         ExtensionSetup setup = ExtensionSetup.crack(this);
         this.application = setup.container.application;
-        this.share = parent().map(e -> e.share).orElseGet(ApplicationShare::new);
+        this.shared = parent().map(e -> e.shared).orElseGet(ApplicationShare::new);
     }
 
-    @Override
-    protected ExtensionPoint<EntryPointExtension> newExtensionPoint() {
-        return new EntryPointExtensionPoint();
+    // installMain
+    // lazyMain()?
+    public <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
+        // IDK, skal vi vente med at tilfoeje dem
+        throw new UnsupportedOperationException();
+    }
+
+    public <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -86,20 +92,15 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         };
     }
 
-    // installMain
-    public <T extends Runnable> InstanceBeanConfiguration<?> installMain(Class<T> beanClass) {
-        // IDK, skal vi vente med at tilfoeje dem
-        throw new UnsupportedOperationException();
-    }
-
-    public <T extends Runnable> InstanceBeanConfiguration<?> installMainInstance(T beanInstance) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     protected EntryPointExtensionMirror newExtensionMirror() {
         return new EntryPointExtensionMirror();
+    }
+
+    @Override
+    protected ExtensionPoint<EntryPointExtension> newExtensionPoint() {
+        return new EntryPointExtensionPoint();
     }
 
     int registerEntryPoint(Class<? extends Extension<?>> extensionType, boolean isMain) {
@@ -110,9 +111,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         // method.reserveMethodHandle(EC);
         // Grim kode pfa ExtensoinSupportContest i constructoren
         if (extensionType == null) {
-            share.takeOver(EntryPointExtension.class);
+            shared.takeOver(EntryPointExtension.class);
         } else {
-            share.takeOver(extensionType);
+            shared.takeOver(extensionType);
         }
         if (isMain) {
             hasMain = true;
@@ -135,12 +136,12 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         @Nullable
         Class<? extends Extension<?>> dispatcher;
 
+        BeanConfiguration ebc;
+
         /** All entry points. */
         final List<EntryPointConf> entrypoints = new ArrayList<>();
 
         MethodHandle[] entryPoints;
-
-        BeanConfiguration ebc;
 
         void takeOver(Class<? extends Extension<?>> takeOver) {
             if (this.dispatcher != null) {
@@ -154,12 +155,12 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
         }
     }
 
-    static class EntryPointDispatcher {
-        EntryPointDispatcher() {}
-    }
-
     static class EntryPointConf {
 
+    }
+
+    static class EntryPointDispatcher {
+        EntryPointDispatcher() {}
     }
 }
 //@Override

@@ -23,7 +23,7 @@ import app.packed.container.User;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.operation.bindings.BindingKind;
-import app.packed.operation.bindings.DefaultMirror;
+import app.packed.operation.bindings.DefaultBindingMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
@@ -140,7 +140,7 @@ interface Sandbox {
     // RuntimeResolvable
     // Composite -> composite.all.isSatisfiable
 
-    Optional<DefaultMirror> fallback(); // Do we parse it even if we have been build-time resolved????
+    Optional<DefaultBindingMirror> fallback(); // Do we parse it even if we have been build-time resolved????
 
     boolean isConstant();
 

@@ -1,14 +1,15 @@
 package app.packed.bean;
 
+import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.lifetime.RunState;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanInstaller;
 import internal.app.packed.bean.LifetimeOp;
 import internal.app.packed.bean.MethodIntrospector;
+import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -126,8 +127,8 @@ public class BeanExtension extends Extension<BeanExtension> {
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
-    BeanHandle.Builder newBean(BeanKind kind) {
-        return new BeanInstaller(extensionSetup, kind, null);
+    BeanInstaller newBean(BeanKind kind) {
+        return new PackedBeanInstaller(extensionSetup, kind, null);
     }
 
     /**
@@ -141,6 +142,13 @@ public class BeanExtension extends Extension<BeanExtension> {
     @Override
     protected BeanIntrospector newBeanIntrospector() {
         return new BeanIntrospector() {
+
+            @Override
+            public void onField(OnField field) {
+                if (field.annotations().isAnnotationPresent(Inject.class)) {
+                    
+                }
+            }
 
             @Override
             public void onMethod(OnMethod method) {

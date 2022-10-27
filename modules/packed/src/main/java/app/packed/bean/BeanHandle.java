@@ -24,32 +24,30 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.container.Extension;
-import app.packed.lifetime.LifetimeConf;
+import app.packed.base.NamespacePath;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanInstaller;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.oldservice.InternalServiceUtil;
 
 /**
- * A bean handle represents a successful installation of a bean.
+ * A bean handle is a reference to an installed bean, private to the extension that installed the bean.
  * <p>
  * Instances of {@code BeanHandle} are never exposed directly to end-users. Instead they are returned wrapped in
  * {@link BeanConfiguration} or a subclass hereof.
  */
 public final /* primitive */ class BeanHandle<T> {
 
-    /** The configuration of the bean we are wrapping. */
-    final BeanSetup bean;
+    /** The bean we are wrapping. */
+    private final BeanSetup bean;
 
     /**
      * Creates a new BeanHandle.
      * 
      * @param bean
-     *            the configuration of the bean we wrap
+     *            the bean to wrap
      */
     BeanHandle(BeanSetup bean) {
         this.bean = requireNonNull(bean);
@@ -124,8 +122,16 @@ public final /* primitive */ class BeanHandle<T> {
         return List.of();
     }
 
+    public void named(String name) {
+        bean.named(name);
+    }
+
     public <K> OperationHandle overrideService(Key<K> key, K instance) {
         throw new UnsupportedOperationException();
+    }
+
+    public NamespacePath path() {
+        return bean.path();
     }
 
     public void peekInstance(Consumer<? super T> consumer) {
@@ -179,95 +185,7 @@ public final /* primitive */ class BeanHandle<T> {
         bean.mirrorSupplier = supplier;
     }
 
-    /**
-     * An builder that can used by extensions to install new beans.
-     * <p>
-     * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
-     * are limited.
-     * 
-     * @see BeanExtensionPoint#builder(BeanKind)
-     * @see BeanExtensionPoint#builder(BeanKind, app.packed.container.ExtensionPoint.UseSite)
-     */
-    public sealed static abstract class Builder permits BeanInstaller {
-
-        /**
-         * Installs the bean using the specified class as the bean source.
-         * 
-         * @param <T>
-         *            the
-         * @param beanClass
-         * @return a bean handle representing the installed bean
-         */
-        public abstract <T> BeanHandle<T> build(Class<T> beanClass);
-
-        public abstract <T> BeanHandle<T> build(Op<T> operation);
-
-        public abstract <T> BeanHandle<T> buildFromInstance(T instance);
-
-        public abstract BeanHandle<Void> buildSourceless();
-
-        protected <T> BeanHandle<T> from(BeanSetup bs) {
-            return new BeanHandle<>(bs);
-        }
-
-        /**
-         * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
-         * Normally, the runtime would call {@link Extension#newBeanIntrospector} to obtain an introspector for the registering
-         * extension.
-         * 
-         * @param introspector
-         *            the introspector to use
-         * @return the option
-         * @see Extension#newBeanIntrospector
-         */
-        public abstract Builder introspectWith(BeanIntrospector introspector);
-
-        public Builder lifetimes(LifetimeConf... confs) {
-            return this;
-        }
-
-        /**
-         * Allows multiple beans of the same type in a container.
-         * <p>
-         * By default, a container only allows a single bean of particular type if non-void.
-         * 
-         * @return this builder
-         * @throws UnsupportedOperationException
-         *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
-         */
-        public abstract Builder multiInstall();
-
-        public abstract Builder namePrefix(String prefix);
-
-        public abstract Builder onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
-
-        Builder spawnNew() {
-            // A bean that is created per operation.
-            // Obvious manyton, but should we have own kind?
-            // I actually think so because, because for now it always requires manyton
-
-            // Some questions, do we support @Schedule? Or anything like it?
-            // I don't think we need to set up the support for it by default. Only if used
-            // So overhead is not needed
-
-            // But I think those annotations that make sense are always "callback" extensions
-            // From other threads
-            // Single threaded vs multi-threaded
-            // If we are single threaded it is obviously always only the request method
-            // If we are multi threaded we create own little "world"
-            // I think that is the difference, between the two
-
-            // Maybe bean is always single threaded.
-            // And container is always multi threaded
-
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * Marks the bean as synthetic.
-         * 
-         * @return this installer
-         */
-        public abstract Builder synthetic();
+    public String toString() {
+        return bean.toString();
     }
 }

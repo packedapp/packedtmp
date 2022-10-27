@@ -154,7 +154,7 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             @Override
             public void onField(OnField field) {
                 Key<?> key = field.fieldToKey();
-                boolean constant = field.annotations().readRequired(Provide.class).constant();
+                boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
                 FieldIntrospector iof = ((FieldIntrospector) field);
                 OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
@@ -165,10 +165,10 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
             @Override
             public void onMethod(OnMethod method) {
                 Key<?> key = method.methodToKey();
-                boolean isProviding = method.annotations().isAnnotationPresent(Provide.class);
-                boolean isExporting = method.annotations().isAnnotationPresent(Export.class);
+                boolean isProviding = method.annotations().isAnnotationPresent(ProvideService.class);
+                boolean isExporting = method.annotations().isAnnotationPresent(ExportService.class);
                 if (isProviding) {
-                    boolean constant = method.annotations().readRequired(Provide.class).constant();
+                    boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
                     MethodIntrospector iom = ((MethodIntrospector) method);
                     OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());

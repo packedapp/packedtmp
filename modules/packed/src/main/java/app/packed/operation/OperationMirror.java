@@ -32,8 +32,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.bindings.DependenciesMirror;
-import app.packed.service.ExportOperationMirror;
-import internal.app.packed.container.ExtensionSetup;
+import app.packed.service.ExportedServiceMirror;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
@@ -43,7 +42,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
  * the {@link app.packed.service.ServiceExtension} provides details about an exported service via
- * {@link ExportOperationMirror}.
+ * {@link ExportedServiceMirror}.
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
@@ -55,7 +54,7 @@ public class OperationMirror implements Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
-     * {@link #initialize(ExtensionSetup)}.
+     * {@link #initialize(OperationSetup)}.
      */
     @Nullable
     private OperationSetup operation;

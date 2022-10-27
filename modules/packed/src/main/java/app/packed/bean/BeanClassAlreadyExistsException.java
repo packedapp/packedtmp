@@ -16,10 +16,10 @@
 package app.packed.bean;
 
 /**
- * An exception that is thrown, when a bean is being installed, if there is another bean in the container of the same
- * type.
+ * An exception thrown when a bean is being installed, and there is another bean in the same container with the same
+ * bean class.
  * <p>
- * Beans that have {@code void} (functional beans) never throws this exception.
+ * Installation of beans with a {@code void} bean class (functional beans) never fails.
  * 
  * @see BeanExtension#multiInstall(Class)
  * @see BeanExtension#multiInstall(app.packed.operation.Op)

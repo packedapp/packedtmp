@@ -22,18 +22,17 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-// IDK
 public final class ProvidedService {
-
-    /** The operation that provides the service. */
-    public final OperationSetup operation;
 
     /** The key under which this service is provided. */
     public final ServiceManagerEntry entry;
 
-    public MethodHandle provider;
-
     public final boolean isConstant;
+
+    /** The operation that provides the service. */
+    public final OperationSetup operation;
+
+    public MethodHandle provider;
 
     ProvidedService(OperationSetup operation, boolean isConstant, ServiceManagerEntry entry) {
         this.operation = operation;

@@ -21,12 +21,12 @@ import app.packed.bean.InstanceBeanConfiguration;
 /**
  *
  */
-public class ContainerLaunchBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
+public class ContainerLauncherBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
      * @param handle
      */
-    ContainerLaunchBeanConfiguration(BeanHandle<T> handle) {
+    ContainerLauncherBeanConfiguration(BeanHandle<T> handle) {
         super(handle);
     }
     // addCompanion 

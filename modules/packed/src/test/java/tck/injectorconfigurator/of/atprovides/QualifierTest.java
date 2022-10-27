@@ -25,8 +25,8 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.service.ServiceAlreadyExistsException;
-import app.packed.service.Provide;
+import app.packed.service.ProvidedServiceCollisionException;
+import app.packed.service.ProvideService;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 import testutil.stubs.annotation.StringQualifier;
@@ -40,16 +40,16 @@ public class QualifierTest {
     public void cannotDefineSameProvidedKeys() {
 
         AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
-        at.isExactlyInstanceOf(ServiceAlreadyExistsException.class);
+        at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
         at.hasNoCause();
         // TODO check message
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
-        at.isExactlyInstanceOf(ServiceAlreadyExistsException.class);
+        at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
         at.hasNoCause();
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
-        at.isExactlyInstanceOf(ServiceAlreadyExistsException.class);
+        at.isExactlyInstanceOf(ProvidedServiceCollisionException.class);
         at.hasNoCause();
     }
 
@@ -93,22 +93,22 @@ public class QualifierTest {
 
     public static class MultipleIdenticalQualifiedFieldKeys {
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("A")
         private Long B = 0L;
     }
 
     public static class MultipleIdenticalQualifiedMemberKeys {
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -117,13 +117,13 @@ public class QualifierTest {
 
     public static class MultipleIdenticalQualifiedMethodKeys {
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("A")
         static Long a() {
             return 0L;
         }
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -136,15 +136,15 @@ public class QualifierTest {
         // @StringQualifier("A")
         // private static Long A;
 
-        @Provide(constant = false)
+        @ProvideService(constant = false)
         @StringQualifier("B")
         private static Long B;
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         @StringQualifier("C")
         private static Long C;
 
-        @Provide(constant = true)
+        @ProvideService(constant = true)
         private static Long L;
     }
 }

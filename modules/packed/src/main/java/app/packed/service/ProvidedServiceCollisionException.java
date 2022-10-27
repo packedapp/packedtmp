@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.service;
 
 import app.packed.application.BuildException;
 
-/** An exception thrown at build-time when a valid binding could not be created for an operation. */
-// Valid but the 
-// Binding
-// Giver bare ikke rigtig mening navngivningsmaessigt...
-// Dependency yws, binding no.
+/**
+ * An exception that is thrown when attempting to provide multiple services for the same key.
+ */
+// was ServiceAlreadyExistsException 
+public class ProvidedServiceCollisionException extends BuildException {
 
-// IDeen er er lidt at lave en generiks vi kan ikke lave den binding fordi xxx.
-public class UnsatisfiableBindingException extends BuildException {
-
-    /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -37,7 +33,7 @@ public class UnsatisfiableBindingException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableBindingException(String message) {
+    public ProvidedServiceCollisionException(String message) {
         super(message);
     }
 
@@ -51,7 +47,7 @@ public class UnsatisfiableBindingException extends BuildException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public UnsatisfiableBindingException(String message, Throwable cause) {
+    public ProvidedServiceCollisionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

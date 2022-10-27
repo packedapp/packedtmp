@@ -30,9 +30,11 @@ import internal.app.packed.util.AbstractTreeNode;
  * @param <E>
  *            the type of extensions
  */
-public final class ExtensionNavigator<E extends Extension<E>> implements Iterable<E> {
+public final /* primitive */ class ExtensionNavigator<E extends Extension<E>> implements Iterable<E> {
 
+    /** We save the extension type mainly for casting. */
     private final Class<E> extensionType;
+    
     private final ExtensionSetup originExtension;
 
     ExtensionNavigator(ExtensionSetup originExtension, Class<E> extensionType) {

@@ -56,9 +56,9 @@ public final class BindingIntrospector implements OnBinding {
     Variable variable;
 
     public BindingIntrospector(OperationSetup operation, int index, ExtensionSetup bindingExtension, @Nullable Class<?> bindingHookClass, Variable var) {
-        this.operation = operation;
+        this.operation = requireNonNull(operation);
         this.index = index;
-        this.bindingExtension = bindingExtension;
+        this.bindingExtension = requireNonNull(bindingExtension);
         this.variable = var;
         this.bindingHookClass = bindingHookClass;
     }

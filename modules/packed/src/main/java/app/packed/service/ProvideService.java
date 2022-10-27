@@ -25,56 +25,36 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 
 /**
- * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
- * 
- * Or a final field.
- * 
- * Using this annotation on non-final fields are not supported. Eller.... hvad er forskellen paa at expose en metode der
- * return non-final-field;.... Maaske skriv noget med volatile og multiple threads
+ * An annotation indicating that an annotated method or field on a bean provides a service to the container in which the
+ * bean is installed. The key under which the service is registered is return type of the method or the field type
+ * respectively.
  * 
  * <p>
  * Both fields and methods can make used of qualifiers to specify the exact key they are made available under. For
  * example, given to two qualifier annotations: {@code @Left} and {@code @Right}<pre>
  *  &#64;Left
- *  &#64;Provide
+ *  &#64;ProvideService
  *  String name = "left";
  *   
  *  &#64;Right
- *  &#64;Provide
+ *  &#64;ProvideService
  *  String provide() {
  *      return "right";
  *  }
  *  </pre>
  * 
- * The field will is made available with the key {@code Key<@Left String>} while the method will be made available under
+ * The field will is made available with the key {@code Key<@Left String>} while the method will be made available with
  * the key {@code Key<@Right String>}.
- * <p>
- * Injection is never performed on any objects provided by a annotated field or method is <b>never</b> injected. This
- * must be done manually if needed, for example, via <pre> 
- *   &#64;Provides
- *   public SomeObject provide(String name, Injector i) {
- *       SomeObject o = new SomeObject(name);
- *       i.injectMembers(o, MethodHandles.lookup());
- *       return o;
- *   }
- * </pre>
- * <p>
- * The annotation can be used on both static and non-static fields and methods. However, if you use a non-static field
- * or method you implicitly introduces a dependency to the instance of the type on which the field or method is located.
- * This is normally not a problem, however in some situations it can lead to circles in the dependency graph.
- * <p>
- * 
- * If using
  * <p>
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @MethodHook(allowInvoke = true, extension = ServiceExtension.class)
 @FieldHook(allowGet = true, extension = ServiceExtension.class)
-public @interface Provide {
+public @interface ProvideService {
 
     /**
      * Indicates whether or not the provided value is a constant.

@@ -9,7 +9,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import internal.app.packed.application.ApplicationSetup;
-import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;
 
@@ -30,7 +29,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
-     * {@link #initialize(ExtensionSetup)}.
+     * {@link #initialize(LifetimeSetup)}.
      */
     @Nullable
     private LifetimeSetup lifetime;

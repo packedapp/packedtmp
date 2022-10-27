@@ -17,6 +17,7 @@ package app.packed.bean;
 
 import java.util.Optional;
 
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.LifetimeOperationMirror;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationMirror;
@@ -26,20 +27,20 @@ import app.packed.operation.OperationMirror;
  */
 // Mit eneste problem er om vi fx har operationer der baade kan kalde paa flere tidspunkter??
 // OnInitialize, OnStart (Hvor tit sker det... Laver vi ikke bare flere operationer saa)
+// 
 public class BeanLifecycleOperationMirror extends OperationMirror {
 
-    public String stage() {
-        // Maaske har vi en mere finindeling her end i runState()
-        // Saa vi fx ogsaa kan sige <<instantiate>>
-        return "<<instantiate>>";
+    /**
+     * The lifetime the operation is run in.
+     * 
+     * @return
+     */
+    public LifetimeMirror lifetime() {
+        throw new UnsupportedOperationException();
     }
-    
-    public RunState runState() {
-        return RunState.INITIALIZED;
-    }
-    
+
     /** {@return the lifetime operation this operation is a part of.} */
-    
+
     // IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
     // Saa er det ikke en lifetime. Fx restart
     public LifetimeOperationMirror lifetimeOperation() {
@@ -52,13 +53,23 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
     Optional<BeanLifecycleOperationMirror> previous() {
         return Optional.empty();
     }
-    
+
+    public RunState runState() {
+        return RunState.INITIALIZED;
+    }
+
+    public String stage() {
+        // Maaske har vi en mere finindeling her end i runState()
+        // Saa vi fx ogsaa kan sige <<instantiate>>
+        return "<<instantiate>>";
+    }
+
     /**
      * A mirror for an operation that creates a new instance of a bean.
      * <p>
      * The operator of this operation is always {@link BeanExtension}.
      */
-    // IDK know if we want this 
+    // IDK know if we want this
     public static class BeanInstantiationOperationMirror extends BeanLifecycleOperationMirror {}
 
     // Hvis jeg register en instance har min bean ikke en

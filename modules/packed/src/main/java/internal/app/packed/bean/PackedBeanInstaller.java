@@ -23,8 +23,9 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtensionPoint;
+import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.bean.BeanHandle;
-import app.packed.bean.BeanHandle.Builder;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
@@ -35,7 +36,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
 import internal.app.packed.operation.op.PackedOp;
 
-public final class BeanInstaller extends BeanHandle.Builder {
+public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller {
 
     /** Illegal bean classes. */
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
@@ -55,7 +56,7 @@ public final class BeanInstaller extends BeanHandle.Builder {
     @Nullable
     final PackedExtensionPointContext useSite;
 
-    public BeanInstaller(ExtensionSetup beanExtension, BeanKind kind, @Nullable PackedExtensionPointContext useSite) {
+    public PackedBeanInstaller(ExtensionSetup beanExtension, BeanKind kind, @Nullable PackedExtensionPointContext useSite) {
         this.beanExtension = requireNonNull(beanExtension);
         this.kind = requireNonNull(kind, "kind is null");
         this.useSite = useSite;
@@ -65,29 +66,25 @@ public final class BeanInstaller extends BeanHandle.Builder {
     @Override
     public <T> BeanHandle<T> build(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
-        checkClass(beanClass);
-        BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.CLASS, beanClass);
-        return from(bs);
+        return install(beanClass, BeanSourceKind.CLASS, beanClass);
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> BeanHandle<T> build(Op<T> op) {
         PackedOp<?> pop = PackedOp.crack(op);
         Class<?> beanClass = pop.type.returnType();
-        checkClass(beanClass);
-        BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.OP, pop);
-        return from(bs);
+        return install((Class<T>) beanClass, BeanSourceKind.OP, pop);
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> BeanHandle<T> buildFromInstance(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> beanClass = instance.getClass();
-        checkClass(beanClass);
-        BeanSetup bs = BeanSetup.install(this, beanClass, BeanSourceKind.INSTANCE, instance);
-        return from(bs);
+        return install((Class<T>) beanClass, BeanSourceKind.INSTANCE, instance);
     }
 
     /** {@inheritDoc} */
@@ -96,19 +93,20 @@ public final class BeanInstaller extends BeanHandle.Builder {
         if (kind != BeanKind.FUNCTIONAL) {
             throw new InternalExtensionException("Only functional beans can be source less");
         }
-        return null;
+        return install(void.class, BeanSourceKind.NONE, null);
     }
 
-    private void checkClass(Class<?> beanClass) {
-        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+    private <T> BeanHandle<T> install(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
+        if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-
+        BeanSetup bs = BeanSetup.install(this, beanClass, sourceKind, source);
+        return from(bs);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Builder introspectWith(BeanIntrospector introspector) {
+    public BeanInstaller introspectWith(BeanIntrospector introspector) {
         if (!kind.hasInstances()) {
             throw new InternalExtensionException("Cannot set a introspector for functional beans");
         }
@@ -118,7 +116,7 @@ public final class BeanInstaller extends BeanHandle.Builder {
 
     /** {@inheritDoc} */
     @Override
-    public Builder multiInstall() {
+    public BeanInstaller multiInstall() {
         if (!kind.hasInstances()) {
             throw new InternalExtensionException("multiInstall is not supported for functional or static beans");
         }
@@ -128,20 +126,20 @@ public final class BeanInstaller extends BeanHandle.Builder {
 
     /** {@inheritDoc} */
     @Override
-    public Builder namePrefix(String prefix) {
+    public BeanInstaller namePrefix(String prefix) {
         this.namePrefix = requireNonNull(prefix, "prefix is null");
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Builder onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
+    public BeanInstaller onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Builder synthetic() {
+    public BeanInstaller synthetic() {
         synthetic = true;
         return this;
     }

@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bean;
+package app.packed.service;
 
-import java.lang.annotation.Annotation;
+import app.packed.application.BuildException;
 
 /**
  *
  */
-class BeanModifier {
+public class ExportedServiceCollisionException extends BuildException {
 
-    // bean().useForNext(BeanModifier bm);
-    // bean().useForAll(BeanModifier bm);
-    // ind med filters
-    
-    /// bean()->new BeanModifier().hideAnnotations(OnInitialize.class, On.dd);
-    void hideAnnotations(Class<? extends Annotation> annotationType) {}
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public ExportedServiceCollisionException(String message) {
+        super(message);
+    }
 }

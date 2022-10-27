@@ -10,12 +10,12 @@ import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
- * Extension points are the main mechanism by which extensions use other extensions. Developers that are not creating
- * their own extensions will likely never have to deal with these type of classes.
+ * Extension points are the main mechanism by which extensions use other extensions. Developers that do not create their
+ * own extensions will likely never have to deal with these type of classes.
  * <p>
- * An extension point instance is acquired by calling {@link Extension#use(Class)}. Whereby Packed will create a new
- * instance (using constructor injection). Extension point instances are <strong>never</strong> cached, instead they are
- * instantiated every time they are requested.
+ * An extension point instance is acquired by calling {@link Extension#use(Class)}. Whereby the framework will create a
+ * new instance (using constructor injection). Extension point instances are <strong>never</strong> cached, instead they
+ * are instantiated every time they are requested.
  * <p>
  * An extension that requests a specific extension point. Must define the extension that the extension point is a part
  * of as a direct dependency using {@link DependsOn}. Failure to do so will result in an
@@ -39,16 +39,15 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
  * module).</li>
  * <li>Should name the extension point class {@code $NAME_OF_EXTENSION$}Point.</li>
  * </ul>
+ * <p>
+ * The main reason that end-users uses {@code Extension} instances and extensions uses {@code ExtensionPoint} instances
+ * is that it allows an extension to "hide" highly specialized methods that no end-users would ever need.
  * 
  * @see Extension#use(Class)
  * @see UseSite
  * 
  * @param <E>
  *            The type of extension this extension point is a part of.
- * 
- * @apiNote The main reason that end-users uses {@code Extension} instances and extensions uses {@code ExtensionPoint}
- *          instances is that it allows an extension to "hide" highly specialized methods that no end-users would ever
- *          need.
  */
 public abstract class ExtensionPoint<E extends Extension<E>> {
 

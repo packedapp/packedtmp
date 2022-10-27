@@ -19,13 +19,17 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 import app.packed.application.App;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.service.Provide;
+import app.packed.service.ProvideService;
+import app.packed.service.ProvidedServiceMirror;
+import app.packed.service.ServiceBindingMirror;
 
 /**
  *
@@ -35,13 +39,38 @@ public class TestNew extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provideInstance("foo").provide();
+        provideInstance("foo");
         provide(Fop.class);
+        install(Gop.class);
     }
 
     public static void main(String[] args) {
         App.run(new TestNew());
+
+        for (BeanMirror b : App.newMirror(new TestNew()).container().beans().toList()) {
+            b.operations(ProvidedServiceMirror.class).forEach(e -> {
+                List<ServiceBindingMirror> sbm = e.useSites().toList();
+                System.out.println(sbm);
+                System.out.println("Bean " + b.path() + " provides services for key " + e.key());
+                for (var v : sbm) {
+                    System.out.println("Bound to " + v.operation().target());
+                }
+            });
+        }
+        //
         System.out.println("Bye");
+    }
+
+    public static class Gop {
+        public Gop() {
+
+        }
+
+        @ProvideService
+        public Long sss(Integer i) {
+            return 34L;
+        }
+
     }
 
     public static class Fop {
@@ -49,7 +78,7 @@ public class TestNew extends BaseAssembly {
 
         }
 
-        @Provide
+        @ProvideService
         public int foo(@XX("Nice") String s) {
             return 34;
         }
@@ -66,7 +95,7 @@ public class TestNew extends BaseAssembly {
                 public void onBinding(OnBinding h) {
                     XX rr = h.annotations().readRequired(XX.class);
                     System.out.println(rr);
-                    h.bind(123);
+                    // h.bind(123);
                     System.out.println("Got h " + h.hookClass());
                 }
             };
