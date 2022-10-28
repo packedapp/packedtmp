@@ -15,6 +15,9 @@
  */
 package app.packed.operation;
 
+import static java.util.Objects.checkIndex;
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.Map;
@@ -27,6 +30,8 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
+import internal.app.packed.bean.BeanAnalyzerOnBinding;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * This class currently supports:
@@ -52,10 +57,13 @@ import app.packed.bean.InstanceBeanConfiguration;
  * @see OnMethod#newOperation(InstanceBeanConfiguration)
  */
 // Must be used within #onX I would think????
-public sealed interface OperationHandle permits PackedOperationHandle {
+public final class OperationHandle {
 
-    default void onBuild(Consumer<MethodHandle> action) {
+    /** The wrapped operation. */
+    private final OperationSetup operation;
 
+    OperationHandle(OperationSetup operation) {
+        this.operation = requireNonNull(operation);
     }
 
     /**
@@ -71,14 +79,33 @@ public sealed interface OperationHandle permits PackedOperationHandle {
      *             if method handle are not supported
      * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
      */
-    MethodHandle buildInvoker(); // was computeMethodHandle()?
+    public MethodHandle buildInvoker() {
+        // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
+
+        if (operation.isComputed) {
+            throw new IllegalStateException("This method can only be called once");
+        }
+
+        operation.isComputed = true;
+        // application.checkIsComputable
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return the invocation type of this operation.} */
-    InvocationType invocationType();
+    public InvocationType invocationType() {
+        return operation.invocationSite.invocationType;
+    }
 
-    OnBinding parameter(int index);
+    void onBuild(Consumer<MethodHandle> action) {
 
-    default OperationHandle spawnNewBean() {
+    }
+
+    public OnBinding parameter(int index) {
+        checkIndex(index, operation.type.parameterCount());
+        return new BeanAnalyzerOnBinding(operation, index, operation.invocationSite.invokingExtension, null, operation.type.parameter(index));
+    }
+
+    OperationHandle spawnNewBean() {
         // I'm not sure this is needed.
         // It is always only configured on the bean
 
@@ -104,10 +131,38 @@ public sealed interface OperationHandle permits PackedOperationHandle {
     // to someone they cannot specialize with a mirror that is not a subtype of the specified type
     // For example, LifetimeOperationMirror.
     // However, the best thing we can do is a runtime exception. As the supplier is lazy
-    OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier);
+    public OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
+        if (operation.isComputed) {
+            throw new IllegalStateException("Cannot set a mirror after an invoker has been computed");
+        }
+        operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
+        return this;
+    }
 
     /** {@return the type of this operation.} */
-    OperationType type();
+    public OperationType type() {
+        return operation.type;
+    }
+
+    private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {
+//        Map<K, U> result = map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, valueMapper));
+//        return Map.copyOf(result);
+        throw new UnsupportedOperationException();
+    }
+
+    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, Collection<OperationHandle> operations) {
+        return bean;
+    }
+
+    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, OperationHandle[] operations) {
+        return bean;
+    }
+
+    public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
+            Map<K, OperationHandle> operations) {
+        bean.overrideServiceDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
+        return bean;
+    }
 
     public static Supplier<MethodHandle[]> supplier(OperationHandle[] operations) {
         return () -> {
@@ -123,26 +178,6 @@ public sealed interface OperationHandle permits PackedOperationHandle {
         return () -> {
             throw new UnsupportedOperationException();
         };
-    }
-
-    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, OperationHandle[] operations) {
-        return bean;
-    }
-
-    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, Collection<OperationHandle> operations) {
-        return bean;
-    }
-
-    public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
-            Map<K, OperationHandle> operations) {
-        bean.overrideServiceDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
-        return bean;
-    }
-
-    private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {
-//        Map<K, U> result = map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, valueMapper));
-//        return Map.copyOf(result);
-        throw new UnsupportedOperationException();
     }
 
     public interface Option {

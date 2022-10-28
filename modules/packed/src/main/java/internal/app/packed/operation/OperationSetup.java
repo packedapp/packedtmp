@@ -26,7 +26,6 @@ import app.packed.base.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
-import app.packed.operation.PackedOperationHandle;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
@@ -42,7 +41,7 @@ public final class OperationSetup {
             void.class, OperationSetup.class);
 
     /** A MethodHandle for creating a new handle {@link OperationMirror#initialize(OperationSetup)}. */
-    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), PackedOperationHandle.class,
+    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), OperationHandle.class,
             OperationSetup.class);
 
     /** An empty array of {@code BindingSetup}. */
