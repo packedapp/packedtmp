@@ -34,16 +34,15 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
-import internal.app.packed.operation.PackedOperationHandle;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class MethodIntrospector implements OnMethod {
+public final class BeanAnalyzerOnMethod implements OnMethod {
 
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
 
     /** The internal introspector */
-    public final Introspector introspector;
+    public final BeanAnalyzer introspector;
 
     /** The underlying method. */
     private final Method method;
@@ -55,7 +54,7 @@ public final class MethodIntrospector implements OnMethod {
     @Nullable
     private OperationType type;
 
-    MethodIntrospector(Introspector introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
+    BeanAnalyzerOnMethod(BeanAnalyzer introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
         this.introspector = introspector;
         this.operator = operator;
         this.method = method;
@@ -93,7 +92,7 @@ public final class MethodIntrospector implements OnMethod {
         // Maaske er det et speciel tilfaelde af man vil invoke fra en anden container...
         // Tag den med i compute() istedet for???
         OperationSetup os = newOperation(BeanSetup.crack(operator).ownedByExtension, invocationType);
-        return new PackedOperationHandle(this.operator, os);
+        return os.toHandle();
     }
 
     // We expose this directly do bean extension, entry point, service extension

@@ -358,7 +358,7 @@ public abstract class Extension<E extends Extension<E>> {
                     getClass().getSimpleName() + " must declare " + format(otherExtensionClass) + " as a dependency in order to use " + extensionPointClass);
         }
 
-        ExtensionSetup otherExtension = extension.container.useExtensionSetup(otherExtensionClass, extension);
+        ExtensionSetup otherExtension = extension.container.safeUseExtensionSetup(otherExtensionClass, extension);
 
         // Create a new extension point
         ExtensionPoint<?> newExtensionPoint = otherExtension.instance().newExtensionPoint();

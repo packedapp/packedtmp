@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.lifetime;
 
 import app.packed.lifetime.RunState;
 import internal.app.packed.operation.OperationSetup;

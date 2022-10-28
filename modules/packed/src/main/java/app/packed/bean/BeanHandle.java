@@ -191,6 +191,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @apiNote the specified supplier may be called multiple times for the same bean. In which case an equivalent mirror
      *          must be returned
      */
+    // I think move it to the installer. Why wait?
     public void specializeMirror(Supplier<? extends BeanMirror> supplier) {
         requireNonNull(supplier, "supplier is null");
         checkIsConfigurable();

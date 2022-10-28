@@ -19,11 +19,7 @@ import java.lang.annotation.Annotation;
 
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 
-/**
- *
- */
-// If we don't have meta annotations. It really just is a wrapper.
-// That could probably be public than
+/** Implementation of {@link AnnotationReader}. */
 public record BeanAnnotationReader(Annotation[] annotations) implements AnnotationReader {
 
     /** {@inheritDoc} */

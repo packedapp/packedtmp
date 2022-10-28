@@ -14,6 +14,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanClassAlreadyExistsException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
@@ -25,6 +26,7 @@ import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.lifetime.LifetimeOp;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.InvocationSite;
@@ -121,7 +123,6 @@ public final class BeanSetup {
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
 
-
         // I think we want to have a single field for these 2
         // I think this was made like this, when I was unsure if we could
         // have containers managed by extensions
@@ -215,12 +216,17 @@ public final class BeanSetup {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
 
-    static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source) {
+    static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
+            @Nullable BeanIntrospector introspector,
+            @Nullable String namePrefix,
+            boolean multiInstall,
+            boolean synthetic
+    ) {
         BeanSetup bean = new BeanSetup(installer, beanKind, beanClass, sourceKind, source);
 
         ContainerSetup container = bean.container;
 
-        String prefix = installer.namePrefix;
+        String prefix = namePrefix;
         if (prefix == null) {
             prefix = "Functional";
             BeanModel beanModel = sourceKind == BeanSourceKind.NONE ? null : new BeanModel(beanClass);
@@ -233,7 +239,7 @@ public final class BeanSetup {
         String n = prefix;
 
         if (beanClass != void.class) {
-            if (installer.multiInstall) {
+            if (multiInstall) {
                 class MuInst {
                     int counter;
                 }
@@ -284,7 +290,7 @@ public final class BeanSetup {
 
         // Scan the bean class for annotations unless the bean class is void or is from a java package
         if (sourceKind != BeanSourceKind.NONE) {
-            new Introspector(bean, installer.introspector).introspect();
+            new BeanAnalyzer(bean, introspector).introspect();
         }
 
         // Bean was successfully created, add it to the container

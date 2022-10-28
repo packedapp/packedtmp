@@ -46,9 +46,9 @@ import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanAnnotationReader;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BindingIntrospector;
-import internal.app.packed.bean.FieldIntrospector;
-import internal.app.packed.bean.MethodIntrospector;
+import internal.app.packed.bean.BeanAnalyzerOnBinding;
+import internal.app.packed.bean.BeanAnalyzerOnField;
+import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -255,7 +255,7 @@ public abstract class BeanIntrospector {
     // Saa bliver BeanVariable
 
     // Can be on the bean. Or on a composite.
-    public sealed interface OnBinding permits BindingIntrospector {
+    public sealed interface OnBinding permits BeanAnalyzerOnBinding {
 
         // Hmm idk about the unwrapping and stuff here
         AnnotationReader annotations();
@@ -445,7 +445,7 @@ public abstract class BeanIntrospector {
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
-    public sealed interface OnField permits FieldIntrospector {
+    public sealed interface OnField permits BeanAnalyzerOnField {
 
         /** {@return an annotation reader for the field.} */
         AnnotationReader annotations();
@@ -542,7 +542,7 @@ public abstract class BeanIntrospector {
      * This class represents a {@link Method} on a bean.
      * 
      */
-    public sealed interface OnMethod permits MethodIntrospector {
+    public sealed interface OnMethod permits BeanAnalyzerOnMethod {
 
         /** {@return an annotation reader for the method.} */
         AnnotationReader annotations();

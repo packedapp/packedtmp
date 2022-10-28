@@ -25,17 +25,86 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     /** Creates a new bean extension point */
     BeanExtensionPoint() {}
 
+    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, BeanHandle<P> beanToInitialize, BiConsumer<? super B, ? super P> consumer) {
+
+    }
+
+    // Same container I think0-=
+    // Could we have it on initialize? Nahh, fungere vel egentligt kun med container beans
+    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, InstanceBeanConfiguration<P> beanToInitialize,
+            BiConsumer<? super B, ? super P> consumer) {
+        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
+        // Ja det syntes jeg...
+        // Skal de vaere samme container??
+
+        // Packed will call consumer(T, P) once provideBean has been initialized
+        // Skal vi checke provideBean depends on consumerBean
+        // framework will call
+        // consumer(T, P) at initialization time
+
+    }
+
+    public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).install(implementation);
+        return new ProvideableBeanConfiguration<>(handle);
+    }
+
+    public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).install(op);
+        return new ProvideableBeanConfiguration<>(handle);
+    }
+
+    // should not call anything on the returned bean
+    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).installInstance(instance);
+        return new ProvideableBeanConfiguration<>(handle);
+    }
 
     /**
-     * An builder that can used by extensions to install new beans.
+     * Creates a new installer that can be used to install new beans for the application.
+     * 
+     * @param kind
+     *            the kind of bean to installer
+     * @return the installer
+     */
+    public BeanInstaller newInstaller(BeanKind kind) {
+        return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) useSite());
+    }
+
+    /**
+     * Creates a new installer that can be used to install new beans for another extension.
+     * 
+     * @param kind
+     *            the kind of bean to installer
+     * @return the installer
+     */
+    public BeanInstaller newInstaller(BeanKind kind, UseSite forExtension) {
+        requireNonNull(forExtension, "forExtension");
+        return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) forExtension);
+    }
+
+    /**
+     * An installer for installing beans into a container.
      * <p>
      * The various install methods can be called multiple times to install multiple beans. However, the use cases for this
      * are limited.
      * 
-     * @see BeanExtensionPoint#builder(BeanKind)
-     * @see BeanExtensionPoint#builder(BeanKind, app.packed.container.ExtensionPoint.UseSite)
+     * @see BeanExtensionPoint#newInstaller(BeanKind)
+     * @see BeanExtensionPoint#newInstaller(BeanKind, app.packed.container.ExtensionPoint.UseSite)
      */
     public sealed static abstract class BeanInstaller permits PackedBeanInstaller {
+
+        protected <T> BeanHandle<T> from(BeanSetup bs) {
+            return new BeanHandle<>(bs);
+        }
 
         /**
          * Installs the bean using the specified class as the bean source.
@@ -45,17 +114,13 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          * @param beanClass
          * @return a bean handle representing the installed bean
          */
-        public abstract <T> BeanHandle<T> build(Class<T> beanClass);
+        public abstract <T> BeanHandle<T> install(Class<T> beanClass);
 
-        public abstract <T> BeanHandle<T> build(Op<T> operation);
+        public abstract <T> BeanHandle<T> install(Op<T> operation);
 
-        public abstract <T> BeanHandle<T> buildFromInstance(T instance);
+        public abstract <T> BeanHandle<T> installInstance(T instance);
 
-        public abstract BeanHandle<Void> buildSourceless();
-
-        protected <T> BeanHandle<T> from(BeanSetup bs) {
-            return new BeanHandle<>(bs);
-        }
+        public abstract BeanHandle<Void> installNoSource();
 
         /**
          * An option that allows for a special bean introspector to be used when introspecting the bean for the extension.
@@ -116,58 +181,6 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          * @return this installer
          */
         public abstract BeanInstaller synthetic();
-    }
-    
-    public BeanInstaller builder(BeanKind kind) {
-        return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) useSite());
-    }
-
-    public BeanInstaller builder(BeanKind kind, UseSite forExtension) {
-        requireNonNull(forExtension, "forExtension");
-        return new PackedBeanInstaller(extension().extensionSetup, kind, (PackedExtensionPointContext) forExtension);
-    }
-
-    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, BeanHandle<P> beanToInitialize, BiConsumer<? super B, ? super P> consumer) {
-
-    }
-
-    // Same container I think0-=
-    // Could we have it on initialize? Nahh, fungere vel egentligt kun med container beans
-    <B, P> void callbackOnInitialize(InstanceBeanConfiguration<B> extensionBean, InstanceBeanConfiguration<P> beanToInitialize,
-            BiConsumer<? super B, ? super P> consumer) {
-        // Skal vi checke at consumerBean bliver initialiseret foerend provider bean???
-        // Ja det syntes jeg...
-        // Skal de vaere samme container??
-
-        // Packed will call consumer(T, P) once provideBean has been initialized
-        // Skal vi checke provideBean depends on consumerBean
-        // framework will call
-        // consumer(T, P) at initialization time
-
-    }
-
-    public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).build(implementation);
-        return new ProvideableBeanConfiguration<>(handle);
-    }
-
-    public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).build(op);
-        return new ProvideableBeanConfiguration<>(handle);
-    }
-
-    // should not call anything on the returned bean
-    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = builder(BeanKind.CONTAINER, useSite()).buildFromInstance(instance);
-        return new ProvideableBeanConfiguration<>(handle);
     }
 
     /**

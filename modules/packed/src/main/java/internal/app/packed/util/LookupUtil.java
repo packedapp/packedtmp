@@ -40,6 +40,16 @@ public final class LookupUtil {
         return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && lookup.previousLookupClass() == null;
     }
 
+    public static MethodHandle lookupConstructorPrivate(MethodHandles.Lookup caller, Class<?> inClass, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(void.class, parameterTypes);
+        try {
+            MethodHandles.Lookup l = MethodHandles.privateLookupIn(inClass, caller);
+            return l.findConstructor(inClass, mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+    
     public static MethodHandle lookupConstructor(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(void.class, parameterTypes);
         try {

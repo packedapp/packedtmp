@@ -31,7 +31,6 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import internal.app.packed.application.ApplicationSetup;
@@ -207,14 +206,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         assert name != null;
     }
 
-    public int beanCount() {
-        int count = 0;
-        for (var b = beanFirst; b != null; b = b.nextBean) {
-            count += 1;
-        }
-        return count;
-    }
-
     /** {@return a unmodifiable view of all extension types that are in used in no particular order.} */
     public Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -251,7 +242,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extensions.containsKey(extensionClass);
     }
 
-    /** {@return a new mirror.} */
+    /** {@return a new container mirror.} */
     public ContainerMirror mirror() {
         ContainerMirror mirror = ClassUtil.mirrorHelper(ContainerMirror.class, ContainerMirror::new, specializedMirror);
 
@@ -264,7 +255,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return mirror;
     }
 
-    /** {@inheritDoc} */
     public void named(String newName) {
         // We start by validating the new name of the component
         NameCheck.checkComponentName(newName);
@@ -316,20 +306,21 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
 
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
+     * <p>
+     * If the requesting extension is non-null. The calller must already have checked that the requested extension is a
+     * direct dependency of the requesting extension.
      * 
      * @param extensionClass
-     *            the type of extension
+     *            the type of extension to return a setup for
      * @param requestedByExtension
      *            non-null if it is another extension that is requesting the extension
-     * @return the extension's context
+     * @return the extension setup
      * @throws IllegalStateException
      *             if an extension of the specified type has not already been installed and the container is no longer
      *             configurable
-     * @throws InternalExtensionException
-     *             if the
      */
     // Any dependencies needed have been checked
-    public ExtensionSetup useExtensionSetup(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
+    public ExtensionSetup safeUseExtensionSetup(Class<? extends Extension<?>> extensionClass, @Nullable ExtensionSetup requestedByExtension) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
@@ -360,7 +351,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             }
 
             // The extension must be recursively installed into the root container if not already installed in parent
-            ExtensionSetup extensionParent = treeParent == null ? null : treeParent.useExtensionSetup(extensionClass, requestedByExtension);
+            ExtensionSetup extensionParent = treeParent == null ? null : treeParent.safeUseExtensionSetup(extensionClass, requestedByExtension);
 
             // Create the extension. (This will also add an entry to #extensions)
 

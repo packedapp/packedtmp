@@ -41,17 +41,18 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
     /** Illegal bean classes. */
     static final Set<Class<?>> ILLEGAL_BEAN_CLASSES = Set.of(Void.class, Key.class, Op.class, Optional.class, Provider.class);
 
-    final ExtensionSetup beanExtension;
-
-    BeanIntrospector introspector;
-
+    /** The kind of bean being installed. */
     private final BeanKind kind;
 
-    boolean multiInstall;
+    private BeanIntrospector introspector;
 
-    String namePrefix;
+    private String namePrefix;
 
-    boolean synthetic;
+    private boolean multiInstall;
+
+    private boolean synthetic;
+
+    final ExtensionSetup beanExtension;
 
     @Nullable
     final PackedExtensionPointContext useSite;
@@ -64,7 +65,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanHandle<T> build(Class<T> beanClass) {
+    public <T> BeanHandle<T> install(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
         return install(beanClass, BeanSourceKind.CLASS, beanClass);
     }
@@ -72,7 +73,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> BeanHandle<T> build(Op<T> op) {
+    public <T> BeanHandle<T> install(Op<T> op) {
         PackedOp<?> pop = PackedOp.crack(op);
         Class<?> beanClass = pop.type.returnType();
         return install((Class<T>) beanClass, BeanSourceKind.OP, pop);
@@ -81,7 +82,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> BeanHandle<T> buildFromInstance(T instance) {
+    public <T> BeanHandle<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> beanClass = instance.getClass();
         return install((Class<T>) beanClass, BeanSourceKind.INSTANCE, instance);
@@ -89,7 +90,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     /** {@inheritDoc} */
     @Override
-    public BeanHandle<Void> buildSourceless() {
+    public BeanHandle<Void> installNoSource() {
         if (kind != BeanKind.FUNCTIONAL) {
             throw new InternalExtensionException("Only functional beans can be source less");
         }
@@ -100,7 +101,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-        BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source);
+        BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, namePrefix, multiInstall, synthetic);
         return from(bs);
     }
 

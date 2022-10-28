@@ -24,7 +24,6 @@ import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.LifetimeOp;
 import internal.app.packed.container.ContainerSetup;
 
 /** The lifetime of a container. */

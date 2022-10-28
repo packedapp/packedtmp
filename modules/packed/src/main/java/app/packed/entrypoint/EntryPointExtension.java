@@ -18,7 +18,7 @@ import app.packed.operation.InvocationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
-import internal.app.packed.bean.MethodIntrospector;
+import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -83,9 +83,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 MainThreadOfControl mc = application.entryPoints.mainThread();
 
                 mc.isStatic = Modifier.isStatic(method.getModifiers());
-                mc.cs = ((MethodIntrospector) method).introspector.bean;
+                mc.cs = ((BeanAnalyzerOnMethod) method).introspector.bean;
 
-                OperationSetup os = ((MethodIntrospector) method).newOperation(setup, InvocationType.defaults());
+                OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(setup, InvocationType.defaults());
                 mc.methodHandle = os.target.methodHandle;
             }
 

@@ -27,7 +27,6 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
-import internal.app.packed.operation.PackedOperationHandle;
 
 /**
  * This class currently supports:

@@ -52,9 +52,9 @@ import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
- * This class is responsible for finding fields, methods, parameters that have hook annotations.
+ * This class is responsible for introspecting a single bean.
  */
-public final class Introspector {
+public final class BeanAnalyzer {
 
     /** We never process classes that are located in the {@code java.base} module. */
     public static final Module JAVA_BASE_MODULE = Object.class.getModule();
@@ -81,22 +81,22 @@ public final class Introspector {
     // I think we sort in BeanFields...
     // But then should we sort annotations as well?
     /** Every extension that is activated by a hook. */
-    private final LinkedHashMap<Class<? extends Extension<?>>, Delegate> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension<?>>, Contributor> extensions = new LinkedHashMap<>();
 
     // Should be made lazily??? I think
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
-    
-    public Introspector(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
+
+    public BeanAnalyzer(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
-    public Delegate computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    public Contributor computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
-            ExtensionSetup extension = bean.container.useExtensionSetup(extensionType, null);
+            ExtensionSetup extension = bean.container.safeUseExtensionSetup(extensionType, null);
 
             BeanIntrospector introspector;
             if (beanIntrospector != null && bean.installedBy.extensionType == extensionType) {
@@ -109,7 +109,7 @@ public final class Introspector {
                     throw ThrowableUtil.orUndeclared(t);
                 }
             }
-            
+
             try {
                 MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
             } catch (Throwable t) {
@@ -117,34 +117,37 @@ public final class Introspector {
             }
             // Notify the bean introspector that is being used
             introspector.onIntrospectionStop();
-            return new Delegate(extension, introspector, fullAccess);
+            return new Contributor(extension, introspector, fullAccess);
         });
     }
 
-    private void findFactory() {
-        DefaultBeanConstructor eo = DefaultBeanConstructor.CACHE.get(bean.beanClass);
+    /** Find a constructor on the bean and create an operation for it. */
+    private void findConstructor() {
+        BeanAnalyzerOnConstructor constructor = BeanAnalyzerOnConstructor.CACHE.get(bean.beanClass);
 
-        MethodHandle mh = oc.unreflectConstructor(eo.executable());
-        
-        OperationSetup os = new OperationSetup(bean, eo.operationType(), new InvocationSite(InvocationType.raw(), bean.installedBy),
-                new ConstructorOperationTarget(mh, eo.executable()), null);
+        MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
+
+        OperationSetup os = new OperationSetup(bean, constructor.operationType(), new InvocationSite(InvocationType.raw(), bean.installedBy),
+                new ConstructorOperationTarget(mh, constructor.constructor()), null);
         bean.operations.add(os);
 
     }
+
     /** Introspects the bean. */
     void introspect() {
-        // Process all annotations on the class
+
+        // First, we process all annotations on the class
         introspectClass();
 
+        // If a we have a (instantiating) class source, we need to find a constructor we can use
         if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
-            findFactory();
+            findConstructor();
         }
 
-        bean.injectionManager = new BeanInjectionManager(bean);
+        bean.injectionManager = new BeanInjectionManager(bean); // legacy
 
-        // Process all fields on the bean
-        Class<?> beanClass = bean.beanClass;
-        FieldIntrospector.introspectFields(this, beanClass);
+        // Introspect all fields on the bean and its super classes
+        BeanAnalyzerOnField.introspectFields(this, bean.beanClass);
 
         // Process all methods on the bean
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -172,6 +175,7 @@ public final class Introspector {
 
         HashSet<Package> packages = new HashSet<>();
         HashMap<MethodHelper, HashSet<Package>> types = new HashMap<>();
+        Class<?> beanClass = bean.beanClass;
 
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
@@ -229,15 +233,25 @@ public final class Introspector {
         // Now run through all operation bindings that have not been resolved
 
         for (OperationSetup o : bean.operations) {
-            o.resolve(this);
+            resolveOperation(o);
         }
 
         // Call into every BeanScanner and tell them its all over
-        for (Delegate e : extensions.values()) {
+        for (Contributor e : extensions.values()) {
             e.introspector.onIntrospectionStart();
         }
     }
 
+
+    // We need it for calling into nested
+    public void resolveOperation(OperationSetup operation) {
+        for (int i = 0; i < operation.bindings.length; i++) {
+            if (operation.bindings[i] == null) {
+                BeanAnalyzerOnParameter.bind(this, operation, i);
+            }
+        }
+    }
+    
     private void introspectClass() {}
 
     /**
@@ -253,9 +267,9 @@ public final class Introspector {
             Class<? extends Annotation> a1Type = a1.annotationType();
             MethodAnnotationCache fh = MethodAnnotationCache.CACHE.get(a1Type);
             if (fh != null) {
-                Delegate ei = computeExtensionEntry(fh.extensionType, false);
+                Contributor ei = computeExtensionEntry(fh.extensionType, false);
 
-                MethodIntrospector pbm = new MethodIntrospector(Introspector.this, ei.extension, method, annotations, fh.isInvokable);
+                BeanAnalyzerOnMethod pbm = new BeanAnalyzerOnMethod(BeanAnalyzer.this, ei.extension, method, annotations, fh.isInvokable);
 
                 ei.introspector.onMethod(pbm);
             }
@@ -270,7 +284,10 @@ public final class Introspector {
         }
     }
 
-    public record Delegate(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
+    /**
+     * An instance of this class is created per extension that participates in the introspection.
+     */
+    public record Contributor(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
     private record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
 
@@ -362,15 +379,6 @@ public final class Introspector {
             }
         }
 
-        private static boolean needsPrivateLookup(Member m) {
-            // Needs private lookup, unless class is public or protected and member is public
-            // We are comparing against the members declaring class..
-            // We could store boolean isPublicOrProcected in a field.
-            // But do not know how it would work with abstract super classes in other modules...
-            int classModifiers = m.getDeclaringClass().getModifiers();
-            return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
-        }
-
         MethodHandle unreflectConstructor(Constructor<?> constructor) {
             Lookup lookup = lookup(constructor);
 
@@ -380,7 +388,7 @@ public final class Introspector {
                 throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
             }
         }
-        
+
         MethodHandle unreflectGetter(Field field) {
             Lookup lookup = lookup(field);
 
@@ -389,6 +397,15 @@ public final class Introspector {
             } catch (IllegalAccessException e) {
                 throw new InaccessibleBeanMemberException("Could not create a MethodHandle", e);
             }
+        }
+
+        private static boolean needsPrivateLookup(Member m) {
+            // Needs private lookup, unless class is public or protected and member is public
+            // We are comparing against the members declaring class..
+            // We could store boolean isPublicOrProcected in a field.
+            // But do not know how it would work with abstract super classes in other modules...
+            int classModifiers = m.getDeclaringClass().getModifiers();
+            return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
         }
     }
 }

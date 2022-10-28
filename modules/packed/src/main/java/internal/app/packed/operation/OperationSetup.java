@@ -23,10 +23,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
+import app.packed.operation.PackedOperationHandle;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.Introspector;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.util.ClassUtil;
@@ -39,6 +40,10 @@ public final class OperationSetup {
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
             void.class, OperationSetup.class);
+
+    /** A MethodHandle for creating a new handle {@link OperationMirror#initialize(OperationSetup)}. */
+    private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), PackedOperationHandle.class,
+            OperationSetup.class);
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
@@ -53,7 +58,7 @@ public final class OperationSetup {
     public final InvocationSite invocationSite;
 
     /** Whether or not an invoker has been computed */
-    boolean isComputed;
+    public boolean isComputed;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
@@ -68,7 +73,8 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite, OperationTarget operationTarget, @Nullable NestedBindingSetup nestedBinding) {
+    public OperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite, OperationTarget operationTarget,
+            @Nullable NestedBindingSetup nestedBinding) {
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
         this.invocationSite = requireNonNull(invocationSite);
@@ -89,13 +95,21 @@ public final class OperationSetup {
         throw new UnsupportedOperationException();
     }
 
+    public OperationHandle toHandle() {
+        try {
+            return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
     /**
      * 
      */
     public void codegen() {
 
     }
-    
+
     // readOnly. Will not work if for example, resolving a binding
     public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
@@ -117,14 +131,5 @@ public final class OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
-    }
-
-    // We need it for calling into nested
-    public void resolve(Introspector introspector) {
-        for (int i = 0; i < bindings.length; i++) {
-            if (bindings[i] == null) {
-                ParameterIntrospector.bind(introspector, this, i);
-            }
-        }
     }
 }

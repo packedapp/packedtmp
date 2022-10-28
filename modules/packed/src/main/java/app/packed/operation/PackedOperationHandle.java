@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation;
+package app.packed.operation;
 
 import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
@@ -22,26 +22,29 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
-import app.packed.operation.InvocationType;
-import app.packed.operation.OperationHandle;
-import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationType;
-import internal.app.packed.bean.BindingIntrospector;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.bean.BeanAnalyzerOnBinding;
+import internal.app.packed.operation.OperationSetup;
 
 /** Implementation of {@link OperationHandle}. */
-public record PackedOperationHandle(ExtensionSetup extension, OperationSetup os) implements OperationHandle {
+public final class PackedOperationHandle implements OperationHandle {
+
+    /** The wrapped operation. */
+    private final OperationSetup operation;
+
+ PackedOperationHandle(OperationSetup operation) {
+        this.operation = requireNonNull(operation);
+    }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle buildInvoker() {
         // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
-        
-        if (os.isComputed) {
+
+        if (operation.isComputed) {
             throw new IllegalStateException("This method can only be called once");
         }
-        
-        os.isComputed = true;
+
+        operation.isComputed = true;
         // application.checkIsComputable
         throw new UnsupportedOperationException();
     }
@@ -49,28 +52,28 @@ public record PackedOperationHandle(ExtensionSetup extension, OperationSetup os)
     /** {@inheritDoc} */
     @Override
     public InvocationType invocationType() {
-        return os.invocationSite.invocationType;
+        return operation.invocationSite.invocationType;
     }
 
     /** {@inheritDoc} */
     public OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        if (os.isComputed) {
+        if (operation.isComputed) {
             throw new IllegalStateException("Cannot set a mirror after an invoker has been computed");
         }
-        os.mirrorSupplier = requireNonNull(supplier, "supplier is null");
+        operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationType type() {
-        return os.type;
+        return operation.type;
     }
 
     /** {@inheritDoc} */
     @Override
     public OnBinding parameter(int index) {
-        checkIndex(index, os.type.parameterCount());
-        return new BindingIntrospector(os, index, extension, null, os.type.parameter(index));
+        checkIndex(index, operation.type.parameterCount());
+        return new BeanAnalyzerOnBinding(operation, index, operation.invocationSite.invokingExtension, null, operation.type.parameter(index));
     }
 }

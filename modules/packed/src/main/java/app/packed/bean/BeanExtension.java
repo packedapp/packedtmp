@@ -7,10 +7,10 @@ import app.packed.lifetime.RunState;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.LifetimeOp;
-import internal.app.packed.bean.MethodIntrospector;
+import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.lifetime.LifetimeOp;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -39,7 +39,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).build(implementation);
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -49,10 +49,10 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @param op
      *            the factory to install
      * @return the configuration of the bean
-     * @see CommonContainerAssembly#build(Op)
+     * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).build(op);
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -68,17 +68,17 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).buildFromInstance(instance);
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).build(implementation);
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).build(op);
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
@@ -93,7 +93,7 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = newBean(BeanKind.STATIC).build(implementation);
+        BeanHandle<?> handle = newBean(BeanKind.STATIC).install(implementation);
         return new BeanConfiguration(handle);
     }
 
@@ -103,27 +103,27 @@ public class BeanExtension extends Extension<BeanExtension> {
      * @see BeanHandle.InstallOption#multiInstall()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().build(implementation);
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().build(op);
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().buildFromInstance(instance);
+        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().build(implementation);
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().build(op);
+        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
@@ -157,7 +157,7 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
-                    OperationSetup os = ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.INITIALIZING, os));
                     os.bean.operations.add(os);
                 }
@@ -165,7 +165,7 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (ar.isAnnotationPresent(OnStart.class)) {
                     @SuppressWarnings("unused")
                     OnStart oi = ar.readRequired(OnStart.class);
-                    OperationSetup os = ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STARTING, os));
                     os.bean.operations.add(os);
                 }
@@ -173,13 +173,13 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (ar.isAnnotationPresent(OnStop.class)) {
                     @SuppressWarnings("unused")
                     OnStop oi = ar.readRequired(OnStop.class);
-                    OperationSetup os = ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STOPPING, os));
                     os.bean.operations.add(os);
                 }
 
                 if (ar.isAnnotationPresent(Inject.class)) {
-                    ((MethodIntrospector) method).newOperation(extensionSetup, InvocationType.defaults());
+                    ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
                 }
             }
         };

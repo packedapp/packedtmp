@@ -30,8 +30,8 @@ import app.packed.container.Extension.DependsOn;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
-import internal.app.packed.bean.FieldIntrospector;
-import internal.app.packed.bean.MethodIntrospector;
+import internal.app.packed.bean.BeanAnalyzerOnField;
+import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.oldservice.ServiceConfiguration;
@@ -156,9 +156,9 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
-                FieldIntrospector iof = ((FieldIntrospector) field);
+                BeanAnalyzerOnField iof = ((BeanAnalyzerOnField) field);
                 OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
-                iof.introspector.bean.container.sm.provideService(key, constant, operation);
+                iof.analyzer.bean.container.sm.provideService(key, constant, operation);
             }
 
             /** {@inheritDoc} */
@@ -170,13 +170,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 if (isProviding) {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
-                    MethodIntrospector iom = ((MethodIntrospector) method);
+                    BeanAnalyzerOnMethod iom = ((BeanAnalyzerOnMethod) method);
                     OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
                     iom.introspector.bean.container.sm.provideService(key, constant, operation);
                 }
 
                 if (isExporting) {
-                    MethodIntrospector iom = ((MethodIntrospector) method);
+                    BeanAnalyzerOnMethod iom = ((BeanAnalyzerOnMethod) method);
 
                     OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
 
@@ -221,12 +221,12 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).build(implementation);
+        BeanHandle<T> handle = bean().newInstaller(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().builder(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).build(op);
+        BeanHandle<T> handle = bean().newInstaller(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

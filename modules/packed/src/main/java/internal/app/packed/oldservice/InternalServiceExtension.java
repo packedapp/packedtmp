@@ -110,7 +110,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
 
     public void addService(ServiceSetup service) {
         requireNonNull(service);
-        container.useExtensionSetup(ServiceExtension.class, null);
+        container.safeUseExtensionSetup(ServiceExtension.class, null);
         localServices.add(service);
     }
 
