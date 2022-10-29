@@ -39,11 +39,9 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.InvocationType;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
-import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.ConstructorOperationTarget;
 import internal.app.packed.util.ClassUtil;
@@ -93,7 +91,7 @@ public final class BeanAnalyzer {
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
-    public Contributor computeExtensionEntry(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    public Contributor computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.safeUseExtensionSetup(extensionType, null);
@@ -127,7 +125,7 @@ public final class BeanAnalyzer {
 
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
-        OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy, new InvocationSite(InvocationType.raw(), bean.installedBy),
+        OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy, 
                 new ConstructorOperationTarget(mh, constructor.constructor()), null);
         bean.operations.add(os);
 
@@ -266,11 +264,11 @@ public final class BeanAnalyzer {
             Class<? extends Annotation> a1Type = a1.annotationType();
             MethodAnnotationCache fh = MethodAnnotationCache.CACHE.get(a1Type);
             if (fh != null) {
-                Contributor ei = computeExtensionEntry(fh.extensionType, false);
+                Contributor contributor = computeContributor(fh.extensionType, false);
 
-                BeanAnalyzerOnMethod pbm = new BeanAnalyzerOnMethod(BeanAnalyzer.this, ei.extension, method, annotations, fh.isInvokable);
+                BeanAnalyzerOnMethod pbm = new BeanAnalyzerOnMethod(BeanAnalyzer.this, contributor, method, annotations, fh.isInvokable);
 
-                ei.introspector.onMethod(pbm);
+                contributor.introspector.onMethod(pbm);
             }
         }
     }

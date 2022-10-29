@@ -44,7 +44,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     /** A static model of the extension. */
     private final ExtensionModel model;
 
-    
     public ExtensionDescriptor descriptor() {
         return model;
     }

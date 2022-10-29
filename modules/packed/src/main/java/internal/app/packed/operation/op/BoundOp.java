@@ -21,7 +21,6 @@ import app.packed.base.Nullable;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 
@@ -45,9 +44,8 @@ final class BoundOp<R> extends PackedOp<R> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationSite invocationSite,
-            @Nullable NestedBindingSetup nestedBinding) {
-        OperationSetup os = delegate.newOperationSetup(bean, type, operator, invocationSite, nestedBinding);
+    public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
+        OperationSetup os = delegate.newOperationSetup(bean, type, operator, nestedBinding);
         return os;
         // insert bindings
     }

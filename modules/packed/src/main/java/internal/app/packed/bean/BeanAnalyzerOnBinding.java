@@ -117,7 +117,7 @@ public final class BeanAnalyzerOnBinding implements OnBinding {
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension<?>> invokingExtension() {
-        return operation.invocationSite.invokingExtension.extensionType;
+        return operation.operator.extensionType;
     }
 
     public boolean isBound() {

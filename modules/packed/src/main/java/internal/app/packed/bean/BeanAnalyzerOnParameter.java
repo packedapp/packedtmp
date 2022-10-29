@@ -49,7 +49,7 @@ public final class BeanAnalyzerOnParameter {
         ParameterAnnotationCache fh = ParameterAnnotationCache.CACHE.get(var.getType());
         if (fh != null) {
             System.out.println("Got something");
-            Contributor ei = introspector.computeExtensionEntry(fh.extensionType, false);
+            Contributor ei = introspector.computeContributor(fh.extensionType, false);
             BeanAnalyzerOnBinding h = new BeanAnalyzerOnBinding(os, index, ei.extension(), var.getType(), var);
             ei.introspector().onBinding(h);
         }
@@ -75,7 +75,7 @@ public final class BeanAnalyzerOnParameter {
             Class<? extends Annotation> a1Type = a1.annotationType();
             ParameterAnnotationCache fh = ParameterAnnotationCache.CACHE.get(a1Type);
             if (fh != null) {
-                Contributor ei = introspector.computeExtensionEntry(fh.extensionType, false);
+                Contributor ei = introspector.computeContributor(fh.extensionType, false);
 
                 BeanAnalyzerOnBinding h = new BeanAnalyzerOnBinding(os, index, ei.extension(), a1Type, var);
                 ei.introspector().onBinding(h);

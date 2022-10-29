@@ -122,7 +122,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the extension that can invoke the operation.} */
     public Class<? extends Extension<?>> invokedBy() {
-        return operation().invocationSite.invokingExtension.extensionType;
+        return operation().operator.extensionType;
     }
 
     ContainerMirror invokedFromContainer() {

@@ -18,7 +18,6 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
-import app.packed.operation.InvocationType;
 import app.packed.operation.OperationType;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -29,7 +28,6 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeOp;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
-import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
 import internal.app.packed.operation.op.PackedOp;
@@ -142,8 +140,7 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup accessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
-        return new OperationSetup(this, OperationType.of(beanClass), installedBy, new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(this, null),
-                null);
+        return new OperationSetup(this, OperationType.of(beanClass), installedBy, new BeanInstanceAccess(this, null), null);
     }
 
     /** {@return a new mirror.} */
@@ -217,11 +214,7 @@ public final class BeanSetup {
     }
 
     static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
-            @Nullable BeanIntrospector introspector,
-            @Nullable String namePrefix,
-            boolean multiInstall,
-            boolean synthetic
-    ) {
+            @Nullable BeanIntrospector introspector, @Nullable String namePrefix, boolean multiInstall, boolean synthetic) {
         BeanSetup bean = new BeanSetup(installer, beanKind, beanClass, sourceKind, source);
 
         ContainerSetup container = bean.container;
@@ -283,8 +276,7 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = new OperationSetup(bean, op.type(), bean.installedBy, new InvocationSite(InvocationType.raw(), bean.installedBy),
-                    new BeanInstanceAccess(bean, op.operation), null);
+            OperationSetup os = new OperationSetup(bean, op.type(), bean.installedBy, new BeanInstanceAccess(bean, op.operation), null);
             bean.operations.add(os);
         }
 

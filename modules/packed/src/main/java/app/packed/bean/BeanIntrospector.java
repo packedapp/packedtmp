@@ -510,7 +510,7 @@ public abstract class BeanIntrospector {
          * @throws IllegalArgumentException
          *             if the specified operator is not a direct ancestor of the bean that declares the field
          */
-        OperationHandle newGetOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType);
+        OperationHandle newGetOperation();
 
         /**
          * @param operator
@@ -526,14 +526,14 @@ public abstract class BeanIntrospector {
          *          varargs of access modes and then allow repeat calls to methodHandleNow. No matter what we must declare the
          *          invocation types when we create the operation, so we can check access before creating the actual operation
          */
-        OperationHandle newOperation(InstanceBeanConfiguration<?> operator, VarHandle.AccessMode accessMode, InvocationType invocationType);
+        OperationHandle newOperation( VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
          * 
          * @return an operation configuration object
          */
-        OperationHandle newSetOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType);
+        OperationHandle newSetOperation();
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}
@@ -621,8 +621,9 @@ public abstract class BeanIntrospector {
          * @throws IllegalArgumentException
          *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
          */
-        OperationHandle newOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType);
+        OperationHandle newOperation();
 
+        
         /** {@return a operation type for this method.} */
         OperationType operationType();
 

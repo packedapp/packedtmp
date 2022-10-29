@@ -29,7 +29,6 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
@@ -38,7 +37,6 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 
@@ -71,11 +69,10 @@ public final class BeanAnalyzerOnField implements OnField {
         this.annotations = annotations;
     }
 
-    private OperationSetup add(MethodHandle mh, InvocationType invocationType, AccessMode accessMode) {
+    private OperationSetup add(MethodHandle mh, AccessMode accessMode) {
         FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
         OperationType ot = OperationType.ofFieldAccess(field, accessMode);
-        InvocationSite oi = new InvocationSite(invocationType, operator); // operator??
-        OperationSetup bos = new OperationSetup(analyzer.bean, ot, operator, oi, fot, null);
+        OperationSetup bos = new OperationSetup(analyzer.bean, ot, operator, fot, null);
         analyzer.bean.operations.add(bos);
         return bos;
     }
@@ -99,22 +96,22 @@ public final class BeanAnalyzerOnField implements OnField {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType) {
+    public OperationHandle newGetOperation() {
         MethodHandle mh = analyzer.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        OperationSetup os = add(mh, invocationType, accessMode);
+        OperationSetup os = add(mh, accessMode);
         return os.toHandle();
     }
 
     public OperationSetup newInternalGetOperation(ExtensionSetup operator, InvocationType invocationType) {
         MethodHandle mh = analyzer.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return add(mh, invocationType, accessMode);
+        return add(mh, accessMode);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(InstanceBeanConfiguration<?> operator, AccessMode accessMode, InvocationType invocationType) {
+    public OperationHandle newOperation(AccessMode accessMode) {
 
         Lookup lookup = analyzer.oc.lookup(field);
 
@@ -126,13 +123,13 @@ public final class BeanAnalyzerOnField implements OnField {
         }
 
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
-        OperationSetup os = add(mh, invocationType, accessMode);
+        OperationSetup os = add(mh, accessMode);
         return os.toHandle();
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newSetOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType) {
+    public OperationHandle newSetOperation() {
         Lookup lookup = analyzer.oc.lookup(field);
 
         MethodHandle methodHandle;
@@ -143,7 +140,7 @@ public final class BeanAnalyzerOnField implements OnField {
         }
 
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        OperationSetup os = add(methodHandle, invocationType, accessMode);
+        OperationSetup os = add(methodHandle, accessMode);
         return os.toHandle();
     }
 
@@ -231,7 +228,7 @@ public final class BeanAnalyzerOnField implements OnField {
             // All done. Let us see if we only had a single match or multiple matches
             if (multiMatch == null) {
                 // Get the matching extension, installing it if needed.
-                BeanAnalyzer.Contributor entry = introspector.computeExtensionEntry(e.extensionType, false);
+                BeanAnalyzer.Contributor entry = introspector.computeContributor(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
                 BeanAnalyzerOnField f = new BeanAnalyzerOnField(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
@@ -241,7 +238,7 @@ public final class BeanAnalyzerOnField implements OnField {
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiField mf : multiMatch.values()) {
-                    BeanAnalyzer.Contributor entry = introspector.computeExtensionEntry(mf.extensionClass, false);
+                    BeanAnalyzer.Contributor entry = introspector.computeContributor(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
                     BeanAnalyzerOnField f = new BeanAnalyzerOnField(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),

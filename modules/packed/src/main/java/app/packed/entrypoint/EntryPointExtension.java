@@ -14,7 +14,6 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
-import app.packed.operation.InvocationType;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
@@ -36,8 +35,6 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
     final ApplicationSetup application;
 
     boolean hasMain;
-
-    private final ExtensionSetup setup = ExtensionSetup.crack(this);
 
     /** An object that is shared between all entry point extensions in the same application. */
     final ApplicationShare shared;
@@ -83,9 +80,9 @@ public class EntryPointExtension extends Extension<EntryPointExtension> {
                 MainThreadOfControl mc = application.entryPoints.mainThread();
 
                 mc.isStatic = Modifier.isStatic(method.getModifiers());
-                mc.cs = ((BeanAnalyzerOnMethod) method).introspector.bean;
+                mc.cs = ((BeanAnalyzerOnMethod) method).analyzer.bean;
 
-                OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(setup, InvocationType.defaults());
+                OperationSetup os = OperationSetup.crack(method.newOperation());
                 mc.methodHandle = os.target.methodHandle;
             }
 

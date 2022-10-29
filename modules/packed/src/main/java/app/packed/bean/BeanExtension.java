@@ -4,10 +4,8 @@ import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.lifetime.RunState;
-import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
-import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeOp;
@@ -146,7 +144,7 @@ public class BeanExtension extends Extension<BeanExtension> {
             @Override
             public void onField(OnField field) {
                 if (field.annotations().isAnnotationPresent(Inject.class)) {
-                    
+
                 }
             }
 
@@ -157,7 +155,7 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
-                    OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup os = OperationSetup.crack(method.newOperation());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.INITIALIZING, os));
                     os.bean.operations.add(os);
                 }
@@ -165,7 +163,7 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (ar.isAnnotationPresent(OnStart.class)) {
                     @SuppressWarnings("unused")
                     OnStart oi = ar.readRequired(OnStart.class);
-                    OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup os = OperationSetup.crack(method.newOperation());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STARTING, os));
                     os.bean.operations.add(os);
                 }
@@ -173,13 +171,13 @@ public class BeanExtension extends Extension<BeanExtension> {
                 if (ar.isAnnotationPresent(OnStop.class)) {
                     @SuppressWarnings("unused")
                     OnStop oi = ar.readRequired(OnStop.class);
-                    OperationSetup os = ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup os = OperationSetup.crack(method.newOperation());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STOPPING, os));
                     os.bean.operations.add(os);
                 }
 
                 if (ar.isAnnotationPresent(Inject.class)) {
-                    ((BeanAnalyzerOnMethod) method).newOperation(extensionSetup, InvocationType.defaults());
+                    OperationSetup.crack(method.newOperation());
                 }
             }
         };

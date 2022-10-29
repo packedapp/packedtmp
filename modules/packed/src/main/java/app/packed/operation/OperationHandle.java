@@ -62,6 +62,9 @@ import internal.app.packed.operation.OperationSetup;
 /// Teardown (Og hvad skal der laves her, alle bindings er solvet)
 /// Codegen
 
+// 2 ways to consume
+// Manual...
+// By Injection Into bean, Via a rewriter?
 public final class OperationHandle {
 
     /** The wrapped operation. */
@@ -70,19 +73,20 @@ public final class OperationHandle {
     OperationHandle(OperationSetup operation) {
         this.operation = requireNonNull(operation);
     }
-    public void operatedBy(Object extensionHandle) {
 
+    public void operatedBy(Object extensionHandle) {
+        // Do we create a new handle, and invalidate this handle?
     }
 
     public boolean hasBindingsBeenResolved() {
         return false;
     }
-     
+
     // manualBinding().bind
     public OnBinding bindableParameter(int parameterIndex) {
         // custom invocationContext must have been set before calling this method
         checkIndex(parameterIndex, operation.type.parameterCount());
-        return new BeanAnalyzerOnBinding(operation, parameterIndex, operation.invocationSite.invokingExtension, null, operation.type.parameter(parameterIndex));
+        return new BeanAnalyzerOnBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
     /**
@@ -94,10 +98,9 @@ public final class OperationHandle {
      * 
      * @throws IllegalStateException
      *             if called more than once. Or if called before the handle can be computed
-     * @throws UnsupportedOperationException
-     *             if method handle are not supported
      * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
      */
+    // codegen?
     public MethodHandle buildInvoker() {
         // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
 
@@ -154,10 +157,10 @@ public final class OperationHandle {
     }
 
     public void resolveBindings() {
-        // If we don't call this ourselves. It will be called immediately after 
+        // If we don't call this ourselves. It will be called immediately after
         // onMethod, onField, ect
     }
-    
+
     /** {@return the type of this operation.} */
     public OperationType type() {
         return operation.type;
@@ -199,11 +202,14 @@ public final class OperationHandle {
         };
     }
 
-    public interface Option {
-        static Option spawnBean() {
-            throw new UnsupportedOperationException();
-        }
-    }
+}
+
+interface OpNew {
+    // Kunne jo godt bare tage extensionen, og checke paa typen
+    void invokeFrom(Object extensionHandle); // -> buildInvoker
+
+    // Alt kan laves via invokeFrom(EH);
+    void invokeFrom(InstanceBeanConfiguration<?> bean); // int index
 }
 
 interface ZandboxOperationHandle {

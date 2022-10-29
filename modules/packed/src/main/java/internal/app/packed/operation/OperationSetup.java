@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -36,6 +37,10 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** Represents an operation on a bean. */
 public final class OperationSetup {
+
+    /** A handle that can access OperationHandle#operation. */
+    private static final VarHandle VH_OPERATION_HANDLE_OPERATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
+            OperationSetup.class);
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
@@ -55,7 +60,7 @@ public final class OperationSetup {
     public final BindingSetup[] bindings;
 
     /** By who and how this operation is invoked */
-    public final InvocationSite invocationSite;
+    public InvocationSite invocationSite;
 
     /** Whether or not an invoker has been computed */
     public boolean isComputed;
@@ -73,13 +78,15 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationSite invocationSite, OperationTarget operationTarget,
+    public ExtensionSetup operator;
+
+    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget,
             @Nullable NestedBindingSetup nestedBinding) {
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
-        this.invocationSite = requireNonNull(invocationSite);
         this.target = requireNonNull(operationTarget);
         this.nestedBinding = nestedBinding;
+        this.operator = requireNonNull(operator);
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
     }
 
@@ -118,6 +125,17 @@ public final class OperationSetup {
             }
             binding.accept(bs);
         }
+    }
+
+    /**
+     * Extracts a bean setup from a bean handle.
+     * 
+     * @param handle
+     *            the handle to extract from
+     * @return the bean setup
+     */
+    public static OperationSetup crack(OperationHandle handle) {
+        return (OperationSetup) VH_OPERATION_HANDLE_OPERATION.get(handle);
     }
 
     /** {@return a new mirror.} */

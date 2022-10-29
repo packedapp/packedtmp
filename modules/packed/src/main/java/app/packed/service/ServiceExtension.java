@@ -80,7 +80,6 @@ import internal.app.packed.operation.OperationSetup;
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
-// Rename to ExportExtension or ServiceExportExtension
 @DependsOn(extensions = BeanExtension.class)
 public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
 
@@ -171,16 +170,16 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
                     BeanAnalyzerOnMethod iom = ((BeanAnalyzerOnMethod) method);
-                    OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
-                    iom.introspector.bean.container.sm.provideService(key, constant, operation);
+                    OperationSetup operation = OperationSetup.crack(method.newOperation());
+                    iom.analyzer.bean.container.sm.provideService(key, constant, operation);
                 }
 
                 if (isExporting) {
                     BeanAnalyzerOnMethod iom = ((BeanAnalyzerOnMethod) method);
 
-                    OperationSetup operation = iom.newOperation(setup, InvocationType.defaults());
+                    OperationSetup operation = OperationSetup.crack(method.newOperation());
 
-                    iom.introspector.bean.container.sm.serviceExport(key, operation);
+                    iom.analyzer.bean.container.sm.serviceExport(key, operation);
 
                 }
             }

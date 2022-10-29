@@ -38,6 +38,7 @@ public class MainUsage extends BaseAssembly {
     public static class MyBean {
 
         @Main
-        public void hello() {}
+        public void hello() {
+        }
     }
 }

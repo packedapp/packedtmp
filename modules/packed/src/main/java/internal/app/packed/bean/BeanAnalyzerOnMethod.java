@@ -15,8 +15,6 @@
  */
 package internal.app.packed.bean;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -26,37 +24,34 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
-import app.packed.bean.InstanceBeanConfiguration;
-import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.InvocationSite;
+import internal.app.packed.bean.BeanAnalyzer.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class BeanAnalyzerOnMethod implements OnMethod {
 
+    /** The internal introspector */
+    public final BeanAnalyzer analyzer;
+
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
 
-    /** The internal introspector */
-    public final BeanAnalyzer introspector;
+    /** The extension that will operate any operations. */
+    public final Contributor contributor;
 
     /** The underlying method. */
     private final Method method;
-
-    /** The extension that will operate any operations. */
-    public final ExtensionSetup operator;
 
     /** The operation type (lazily created). */
     @Nullable
     private OperationType type;
 
-    BeanAnalyzerOnMethod(BeanAnalyzer introspector, ExtensionSetup operator, Method method, Annotation[] annotations, boolean allowInvoke) {
-        this.introspector = introspector;
-        this.operator = operator;
+    BeanAnalyzerOnMethod(BeanAnalyzer analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+        this.analyzer = analyzer;
+        this.contributor = contributor;
         this.method = method;
         this.annotations = annotations;
     }
@@ -86,22 +81,11 @@ public final class BeanAnalyzerOnMethod implements OnMethod {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(InstanceBeanConfiguration<?> operator, InvocationType invocationType) {
-        requireNonNull(operator, "operator is null");
-        // TODO, we must check this.operator er samme som operator eller en child of
-        // Maaske er det et speciel tilfaelde af man vil invoke fra en anden container...
-        // Tag den med i compute() istedet for???
-        OperationSetup os = newOperation(BeanSetup.crack(operator).ownedByExtension, invocationType);
-        return os.toHandle();
-    }
-
-    // We expose this directly do bean extension, entry point, service extension
-    // Extensions that do not necessarily have an extension bean installed to invoke the methods
-    public OperationSetup newOperation(ExtensionSetup extension, InvocationType invocationType) {
+    public OperationHandle newOperation() {
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
 
         MethodHandle methodHandle;
-        Lookup lookup = introspector.oc.lookup(method);
+        Lookup lookup = analyzer.oc.lookup(method);
         try {
             methodHandle = lookup.unreflect(method);
         } catch (IllegalAccessException e) {
@@ -109,10 +93,9 @@ public final class BeanAnalyzerOnMethod implements OnMethod {
         }
 
         MethodOperationTarget mot = new MethodOperationTarget(methodHandle, method);
-        InvocationSite oi = new InvocationSite(invocationType, extension);
-        OperationSetup bos = new OperationSetup(introspector.bean, operationType(), extension, oi, mot, null);
-        introspector.bean.operations.add(bos);
-        return bos;
+        OperationSetup bos = new OperationSetup(analyzer.bean, operationType(), contributor.extension(), mot, null);
+        analyzer.bean.operations.add(bos);
+        return bos.toHandle();
     }
 
     /** {@inheritDoc} */
