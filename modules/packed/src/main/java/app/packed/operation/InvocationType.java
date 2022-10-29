@@ -23,6 +23,10 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 /**
  *
  */
+// I can't see why we should not define context here
+// I think we should have a builder probably.
+// So we can condense information
+
 public interface InvocationType {
 
     OptionalInt beanInstanceIndex();
@@ -76,6 +80,7 @@ public interface InvocationType {
     }
 }
 
+// I 
 class PackedInvocationType implements InvocationType {
 
     /** {@inheritDoc} */

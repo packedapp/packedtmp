@@ -83,7 +83,7 @@ import internal.app.packed.util.ThrowableUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    private final ExtensionSetup extension;
+    private final ExtensionSetup extension; //handle + handle()
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.

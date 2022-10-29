@@ -36,7 +36,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * This class currently supports:
  * <ul>
- * <li>Creating handles that can invoke the underlying operation.</li>
+ * <li>Creating method handles that can invoke the underlying operation.</li>
  * <li>Special processing of dependencies.</li>
  * <li>Specialize the mirror that is exposed for the operation.</li>
  * </ul>
@@ -56,7 +56,12 @@ import internal.app.packed.operation.OperationSetup;
  * @see OnField#newOperation(InstanceBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
  * @see OnMethod#newOperation(InstanceBeanConfiguration)
  */
-// Must be used within #onX I would think????
+
+/// Setup
+//// Bindings
+/// Teardown (Og hvad skal der laves her, alle bindings er solvet)
+/// Codegen
+
 public final class OperationHandle {
 
     /** The wrapped operation. */
@@ -64,6 +69,20 @@ public final class OperationHandle {
 
     OperationHandle(OperationSetup operation) {
         this.operation = requireNonNull(operation);
+    }
+    public void operatedBy(Object extensionHandle) {
+
+    }
+
+    public boolean hasBindingsBeenResolved() {
+        return false;
+    }
+     
+    // manualBinding().bind
+    public OnBinding bindableParameter(int parameterIndex) {
+        // custom invocationContext must have been set before calling this method
+        checkIndex(parameterIndex, operation.type.parameterCount());
+        return new BeanAnalyzerOnBinding(operation, parameterIndex, operation.invocationSite.invokingExtension, null, operation.type.parameter(parameterIndex));
     }
 
     /**
@@ -100,11 +119,6 @@ public final class OperationHandle {
 
     }
 
-    public OnBinding parameter(int index) {
-        checkIndex(index, operation.type.parameterCount());
-        return new BeanAnalyzerOnBinding(operation, index, operation.invocationSite.invokingExtension, null, operation.type.parameter(index));
-    }
-
     OperationHandle spawnNewBean() {
         // I'm not sure this is needed.
         // It is always only configured on the bean
@@ -139,6 +153,11 @@ public final class OperationHandle {
         return this;
     }
 
+    public void resolveBindings() {
+        // If we don't call this ourselves. It will be called immediately after 
+        // onMethod, onField, ect
+    }
+    
     /** {@return the type of this operation.} */
     public OperationType type() {
         return operation.type;

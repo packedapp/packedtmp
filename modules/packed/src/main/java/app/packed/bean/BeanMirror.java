@@ -44,8 +44,6 @@ public class BeanMirror implements Mirror {
 
     /**
      * Create a new bean mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
      */
     public BeanMirror() {}
 

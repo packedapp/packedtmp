@@ -142,7 +142,7 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup accessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
-        return new OperationSetup(this, OperationType.of(beanClass), new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(this, null),
+        return new OperationSetup(this, OperationType.of(beanClass), installedBy, new InvocationSite(InvocationType.raw(), installedBy), new BeanInstanceAccess(this, null),
                 null);
     }
 
@@ -283,7 +283,7 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = new OperationSetup(bean, op.type(), new InvocationSite(InvocationType.raw(), bean.installedBy),
+            OperationSetup os = new OperationSetup(bean, op.type(), bean.installedBy, new InvocationSite(InvocationType.raw(), bean.installedBy),
                     new BeanInstanceAccess(bean, op.operation), null);
             bean.operations.add(os);
         }

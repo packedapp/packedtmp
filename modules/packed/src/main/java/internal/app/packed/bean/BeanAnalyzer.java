@@ -127,7 +127,7 @@ public final class BeanAnalyzer {
 
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
-        OperationSetup os = new OperationSetup(bean, constructor.operationType(), new InvocationSite(InvocationType.raw(), bean.installedBy),
+        OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy, new InvocationSite(InvocationType.raw(), bean.installedBy),
                 new ConstructorOperationTarget(mh, constructor.constructor()), null);
         bean.operations.add(os);
 
@@ -242,7 +242,6 @@ public final class BeanAnalyzer {
         }
     }
 
-
     // We need it for calling into nested
     public void resolveOperation(OperationSetup operation) {
         for (int i = 0; i < operation.bindings.length; i++) {
@@ -251,7 +250,7 @@ public final class BeanAnalyzer {
             }
         }
     }
-    
+
     private void introspectClass() {}
 
     /**

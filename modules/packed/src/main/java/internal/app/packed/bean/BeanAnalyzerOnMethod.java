@@ -110,7 +110,7 @@ public final class BeanAnalyzerOnMethod implements OnMethod {
 
         MethodOperationTarget mot = new MethodOperationTarget(methodHandle, method);
         InvocationSite oi = new InvocationSite(invocationType, extension);
-        OperationSetup bos = new OperationSetup(introspector.bean, operationType(), oi, mot, null);
+        OperationSetup bos = new OperationSetup(introspector.bean, operationType(), extension, oi, mot, null);
         introspector.bean.operations.add(bos);
         return bos;
     }

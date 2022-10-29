@@ -27,6 +27,7 @@ import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.util.ClassUtil;
@@ -72,7 +73,7 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite, OperationTarget operationTarget,
+    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationSite invocationSite, OperationTarget operationTarget,
             @Nullable NestedBindingSetup nestedBinding) {
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);

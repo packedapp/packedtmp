@@ -75,7 +75,7 @@ public final class BeanAnalyzerOnField implements OnField {
         FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
         OperationType ot = OperationType.ofFieldAccess(field, accessMode);
         InvocationSite oi = new InvocationSite(invocationType, operator); // operator??
-        OperationSetup bos = new OperationSetup(analyzer.bean, ot, oi, fot, null);
+        OperationSetup bos = new OperationSetup(analyzer.bean, ot, operator, oi, fot, null);
         analyzer.bean.operations.add(bos);
         return bos;
     }

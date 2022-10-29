@@ -100,6 +100,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * @see BeanExtensionPoint#newInstaller(BeanKind)
      * @see BeanExtensionPoint#newInstaller(BeanKind, app.packed.container.ExtensionPoint.UseSite)
      */
+    // Maybe put it back on handle. If we get OperationInstaller
     public sealed static abstract class BeanInstaller permits PackedBeanInstaller {
 
         protected <T> BeanHandle<T> from(BeanSetup bs) {

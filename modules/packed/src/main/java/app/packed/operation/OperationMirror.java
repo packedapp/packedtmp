@@ -28,6 +28,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -122,6 +123,10 @@ public class OperationMirror implements Mirror {
     /** {@return the extension that can invoke the operation.} */
     public Class<? extends Extension<?>> invokedBy() {
         return operation().invocationSite.invokingExtension.extensionType;
+    }
+
+    ContainerMirror invokedFromContainer() {
+        throw new UnsupportedOperationException();
     }
 
     /**

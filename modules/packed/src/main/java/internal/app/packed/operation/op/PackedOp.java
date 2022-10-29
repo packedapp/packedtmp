@@ -29,6 +29,7 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
@@ -88,7 +89,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite,
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator,InvocationSite invocationSite,
             @Nullable NestedBindingSetup nestedBinding);
 
     /** {@inheritDoc} */

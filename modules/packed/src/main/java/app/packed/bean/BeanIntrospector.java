@@ -44,11 +44,11 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanAnnotationReader;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.BeanAnalyzerOnBinding;
 import internal.app.packed.bean.BeanAnalyzerOnField;
 import internal.app.packed.bean.BeanAnalyzerOnMethod;
+import internal.app.packed.bean.BeanAnnotationReader;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -216,7 +216,8 @@ public abstract class BeanIntrospector {
         Annotation[] readAnyOf(Class<?>... annotationTypes);
 
         /**
-         * Returns a annotation of the specified type or throws {@link InvalidBeanDefinitionException} if the annotation is not present
+         * Returns a annotation of the specified type or throws {@link InvalidBeanDefinitionException} if the annotation is not
+         * present
          * 
          * @param <T>
          *            the type of the annotation to query for and return if present
@@ -260,6 +261,9 @@ public abstract class BeanIntrospector {
         // Hmm idk about the unwrapping and stuff here
         AnnotationReader annotations();
 
+        default boolean isOperation(OperationHandle operation) {
+            return false;
+        }
         /**
          * Binds the specified value to the parameter.
          * <p>
@@ -329,7 +333,7 @@ public abstract class BeanIntrospector {
          * @return
          * 
          * @throws UnsupportedOperationException
-         *             if called via {@link OperationHandle#parameter(int)}
+         *             if called via {@link OperationHandle#bindableParameter(int)}
          */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
@@ -465,8 +469,8 @@ public abstract class BeanIntrospector {
         Field field();
 
         /**
-         * Attempts to convert field to a {@link Key} or fails by throwing {@link InvalidBeanDefinitionException} if the field does not
-         * represent a proper key.
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link InvalidBeanDefinitionException} if the field
+         * does not represent a proper key.
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
          * key. As a binding hook is typically used in cases where this would be needed.
@@ -500,7 +504,8 @@ public abstract class BeanIntrospector {
          * 
          * @param operator
          *            the bean that will invoke the operation. The operator must be defined in the same container (or in a
-         *            parent container) as the bean that declares the field
+         *            parent container) as the bean that declares the field. The owner of the bean must also be identical to the
+         *            extension that defines the introspector.
          * @return an operation handle
          * @throws IllegalArgumentException
          *             if the specified operator is not a direct ancestor of the bean that declares the field
@@ -582,8 +587,8 @@ public abstract class BeanIntrospector {
         Method method();
 
         /**
-         * Attempts to convert field to a {@link Key} or fails by throwing {@link InvalidBeanDefinitionException} if the field does not
-         * represent a proper key.
+         * Attempts to convert field to a {@link Key} or fails by throwing {@link InvalidBeanDefinitionException} if the field
+         * does not represent a proper key.
          * <p>
          * This method will not attempt to peel away injection wrapper types such as {@link Optional} before constructing the
          * key. As a binding hook is typically used in cases where this would be needed.

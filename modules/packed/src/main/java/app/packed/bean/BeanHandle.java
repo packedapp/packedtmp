@@ -54,17 +54,10 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     // We need a extension bean
+    // Dem der resolver bindings, skal goeres mens man introspector...
     public OperationHandle addFunctionalOperation(InstanceBeanConfiguration<?> operator, Class<?> functionalInterface, OperationType type,
             Object functionInstance) {
         // Function, OpType.of(void.class, HttpRequest.class, HttpResponse.class), someFunc)
-        throw new UnsupportedOperationException();
-    }
-
-    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, MethodHandle methodHandle) {
-        return addOperation(operator, Op.ofMethodHandle(methodHandle));
-    }
-
-    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
         throw new UnsupportedOperationException();
     }
 
@@ -83,7 +76,6 @@ public final /* primitive */ class BeanHandle<T> {
             throw new IllegalStateException("The bean is no longer configurable");
         }
     }
-
 
     /**
      * Returns the key that the bean will be made available under if provided.
@@ -206,6 +198,13 @@ public final /* primitive */ class BeanHandle<T> {
 
 class BeanHandleSandbox<T> {
 
+    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, MethodHandle methodHandle) {
+        return addOperation(operator, Op.ofMethodHandle(methodHandle));
+    }
+
+    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
+        throw new UnsupportedOperationException();
+    }
     public void decorateInstance(Function<? super T, ? extends T> decorator) {
         throw new UnsupportedOperationException();
     }

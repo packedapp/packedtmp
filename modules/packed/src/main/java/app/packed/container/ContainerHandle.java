@@ -10,6 +10,7 @@ import internal.app.packed.container.ContainerSetup;
 /**
  *
  */
+// Must contain
 public final class ContainerHandle {
 
     final ContainerSetup container;

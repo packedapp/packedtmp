@@ -24,6 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.InvocationSite;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
@@ -44,8 +45,8 @@ final class PeekableOp<R> extends PackedOp<R> {
 
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, InvocationSite invocationSite, @Nullable NestedBindingSetup nestedBinding) {
-        return delegate.newOperationSetup(bean, type, invocationSite, nestedBinding);
+    public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, InvocationSite invocationSite, @Nullable NestedBindingSetup nestedBinding) {
+        return delegate.newOperationSetup(bean, type, operator, invocationSite, nestedBinding);
     }
 
     @SuppressWarnings({ "unused", "unchecked" })

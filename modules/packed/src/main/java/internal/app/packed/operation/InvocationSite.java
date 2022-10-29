@@ -23,17 +23,17 @@ import internal.app.packed.container.ExtensionSetup;
 
 /** The invocation site of an operation. */
 public final class InvocationSite {
-    // Add info about context I think
+    // Add info about context I think (it should be in the InvocationType)
 
     // Nested operations have the same invocation site
-    
+
     // Do we compute something lazily?
-    
+
     /** The invocation type for this operation. */
     @Nullable // for bean access? Maybe just an empty type
     public final InvocationType invocationType;
 
-    /** The extension that operates the operation. MethodHandles will be generated relative to this. */
+    /** The extension that operates the operation. MethodHandles will be generated relative to this extension. */
     public final ExtensionSetup invokingExtension;
 
     public InvocationSite(InvocationType invocationType, ExtensionSetup invokingExtension) {
