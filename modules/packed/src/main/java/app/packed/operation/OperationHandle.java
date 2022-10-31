@@ -62,6 +62,8 @@ import internal.app.packed.operation.OperationSetup;
 /// Teardown (Og hvad skal der laves her, alle bindings er solvet)
 /// Codegen
 
+/// Configuration -> Set InvocationType, Set InvocationBean, Set Context
+
 // 2 ways to consume
 // Manual...
 // By Injection Into bean, Via a rewriter?
@@ -70,21 +72,16 @@ public final class OperationHandle {
     /** The wrapped operation. */
     private final OperationSetup operation;
 
+    /**
+     * Creates a new handle.
+     * 
+     * @param operation
+     *            the operation to wrap
+     */
     OperationHandle(OperationSetup operation) {
         this.operation = requireNonNull(operation);
     }
 
-    // manualBinding().bind
-    public OnBinding bindableParameter(int parameterIndex) {
-        operation.finalizeConfiguration();
-        // custom invocationContext must have been set before calling this method
-        checkIndex(parameterIndex, operation.type.parameterCount());
-        return new IntrospectedBeanBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
-    }
-
-    protected void checkConfigurable() {
-        
-    }
     /**
      * 
      * <p>
@@ -96,21 +93,17 @@ public final class OperationHandle {
      *             if called more than once. Or if called before the handle can be computed
      * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
      */
-    // codegen?
     public MethodHandle buildInvoker() {
-        // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
-
-        if (operation.isComputed) {
-            throw new IllegalStateException("This method can only be called once");
-        }
-
-        operation.isComputed = true;
-        // application.checkIsComputable
-        throw new UnsupportedOperationException();
+        return operation.buildInvoker();
     }
 
-    public boolean hasBindingsBeenResolved() {
-        return false;
+    /**
+     * Checks that operation is still configurable
+     */
+    private void checkConfigurable() {
+        if (operation.isConfigurationDisabled) {
+            throw new IllegalStateException("The operation is no longer configurable");
+        }
     }
 
     /** {@return the invocation type of this operation.} */
@@ -118,8 +111,25 @@ public final class OperationHandle {
         return operation.invocationSite.invocationType;
     }
 
-    void onBuild(Consumer<MethodHandle> action) {
+    /**
+     * <p>
+     * The operation can no longer be configured after calling this method.
+     * 
+     * @param parameterIndex
+     *            the index of the parameter to bind
+     * @return a bindable object
+     * @throws IndexOutOfBoundsException
+     *             if the parameter index is out of bounds
+     */
+    public OnBinding manualBinding(int parameterIndex) {
+        operation.isConfigurationDisabled = true;
+        // custom invocationContext must have been set before calling this method
+        checkIndex(parameterIndex, operation.type.parameterCount());
+        return new IntrospectedBeanBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+    }
 
+    void onBuild(Consumer<MethodHandle> action) {
+        // operation.bean.container.application.addCodegenCallback
     }
 
     public void operatedBy(Object extensionHandle) {
@@ -127,12 +137,8 @@ public final class OperationHandle {
         // Do we create a new handle, and invalidate this handle?
     }
 
-    public void resolveBindings() {
-        // If we don't call this ourselves. It will be called immediately after
-        // onMethod, onField, ect
-    }
-
     OperationHandle spawnNewBean() {
+        checkConfigurable();
         // I'm not sure this is needed.
         // It is always only configured on the bean
 
@@ -217,6 +223,15 @@ interface OpNew {
 
 interface ZandboxOperationHandle {
 
+    default boolean hasBindingsBeenResolved() {
+        return false;
+    }
+
+    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
+        // Vi kan fx sige String -> StringReturnWrapper
+        throw new UnsupportedOperationException();
+    }
+
     // /**
 //  * If this operation is created from a variable (typically a field), returns its accessMode. Otherwise empty.
 //  * 
@@ -231,11 +246,6 @@ interface ZandboxOperationHandle {
 //        throw new UnsupportedOperationException();
 //    }
 
-    default <F, T> OperationHandle mapReturn(Class<F> fromType, Class<T> toType, Function<F, T> function) {
-        // Vi kan fx sige String -> StringReturnWrapper
-        throw new UnsupportedOperationException();
-    }
-
     // Hvad hvis vi vil injecte ting??? Return is always the first parameter I would think
     // Additional parameters will be like any other bindings
     // Will it create an additional operation? I would think so if it needs injection
@@ -244,13 +254,22 @@ interface ZandboxOperationHandle {
         throw new UnsupportedOperationException();
     }
 
-    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
-    // Eller vi bare kan genbruge BeanDependency
-
-// non void return matching invocation type
+    // non void return matching invocation type
     default OperationHandle mapReturn(Op<?> op) {
         // Vi kan fx sige String -> StringReturnWrapper
         throw new UnsupportedOperationException();
+    }
+
+    // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
+    // Eller vi bare kan genbruge BeanDependency
+
+    default void resolveBindings() {
+        // we need the introspected bean...
+
+        // Hmm, I don't like it
+
+        // If we don't call this ourselves. It will be called immediately after
+        // onMethod, onField, ect
     }
 
     Sandbox resultAssignableToOrFail(Class<?> clz); // ignores any return value

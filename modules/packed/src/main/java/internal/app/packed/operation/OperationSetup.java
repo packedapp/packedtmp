@@ -38,10 +38,6 @@ import internal.app.packed.util.ThrowableUtil;
 /** Represents an operation on a bean. */
 public final class OperationSetup {
 
-    /** A handle that can access OperationHandle#operation. */
-    private static final VarHandle VH_OPERATION_HANDLE_OPERATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
-            OperationSetup.class);
-
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
             void.class, OperationSetup.class);
@@ -53,6 +49,10 @@ public final class OperationSetup {
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
 
+    /** A handle that can access OperationHandle#operation. */
+    private static final VarHandle VH_OPERATION_HANDLE_OPERATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
+            OperationSetup.class);
+
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
 
@@ -63,7 +63,10 @@ public final class OperationSetup {
     public InvocationSite invocationSite;
 
     /** Whether or not an invoker has been computed */
-    public boolean isComputed;
+    private boolean isComputed;
+
+    /** Whether or not this operation can still be configured. */
+    public boolean isConfigurationDisabled;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
@@ -72,13 +75,13 @@ public final class OperationSetup {
     @Nullable
     public final NestedBindingSetup nestedBinding;
 
+    public ExtensionSetup operator;
+
     /** The target of the operation. */
     public final OperationTarget target;
 
     /** The type of the operation. */
     public final OperationType type;
-
-    public ExtensionSetup operator;
 
     public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget,
             @Nullable NestedBindingSetup nestedBinding) {
@@ -91,43 +94,15 @@ public final class OperationSetup {
     }
 
     public MethodHandle buildInvoker() {
-        // Hav en version der tager en ExtensionBeanConfiguration eller bring back ExtensionContext
-
         if (isComputed) {
             throw new IllegalStateException("This method can only be called once");
         }
 
         isComputed = true;
-        // application.checkIsComputable
+        bean.container.application.checkCodegen();
+
+        // Must be computed relative to operator
         throw new UnsupportedOperationException();
-    }
-
-    /** {@return an operation handle for this operation.} */
-    public OperationHandle toHandle() {
-        try {
-            return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
-    public void finalizeConfiguration() {
-
-    }
-
-    public boolean isConfigurable() {
-        return true;
-    }
-
-    public void resolve() {
-
-    }
-
-    /**
-     * 
-     */
-    public void codegen() {
-
     }
 
     // readOnly. Will not work if for example, resolving a binding
@@ -138,17 +113,6 @@ public final class OperationSetup {
             }
             binding.accept(bs);
         }
-    }
-
-    /**
-     * Extracts a bean setup from a bean handle.
-     * 
-     * @param handle
-     *            the handle to extract from
-     * @return the bean setup
-     */
-    public static OperationSetup crack(OperationHandle handle) {
-        return (OperationSetup) VH_OPERATION_HANDLE_OPERATION.get(handle);
     }
 
     /** {@return a new mirror.} */
@@ -162,5 +126,25 @@ public final class OperationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** {@return an operation handle for this operation.} */
+    public OperationHandle toHandle() {
+        try {
+            return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    /**
+     * Extracts a bean setup from a bean handle.
+     * 
+     * @param handle
+     *            the handle to extract from
+     * @return the bean setup
+     */
+    public static OperationSetup crack(OperationHandle handle) {
+        return (OperationSetup) VH_OPERATION_HANDLE_OPERATION.get(handle);
     }
 }

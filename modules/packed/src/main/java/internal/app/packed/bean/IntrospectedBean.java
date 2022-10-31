@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,6 +85,8 @@ public final class IntrospectedBean {
     // Should be made lazily??? I think
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
+
+    final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
     IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
@@ -225,26 +228,12 @@ public final class IntrospectedBean {
                 }
             }
         }
-
-        // Introspection of members are done.
-        // Now run through all operation bindings that have not been resolved
-
-        for (OperationSetup o : bean.operations) {
-            resolveOperation(o);
-        }
+        // Should be empty... Maybe just an assert
+        resolveOperations();
 
         // Call into every BeanScanner and tell them its all over
         for (Contributor e : extensions.values()) {
-            e.introspector.onIntrospectionStart();
-        }
-    }
-
-    // We need it for calling into nested
-    void resolveOperation(OperationSetup operation) {
-        for (int i = 0; i < operation.bindings.length; i++) {
-            if (operation.bindings[i] == null) {
-                IntrospectedBeanParameter.bind(this, operation, i);
-            }
+            e.introspector.onIntrospectionStop();
         }
     }
 
@@ -269,6 +258,24 @@ public final class IntrospectedBean {
 
                 contributor.introspector.onMethod(pbm);
             }
+        }
+    }
+
+    // We need it for calling into nested
+    void resolveOperation(OperationSetup operation) {
+        for (int i = 0; i < operation.bindings.length; i++) {
+            if (operation.bindings[i] == null) {
+                IntrospectedBeanParameter.bind(this, operation, i);
+            }
+        }
+    }
+
+    /**
+     * 
+     */
+    void resolveOperations() {
+        for (OperationSetup os = unBoundOperations.pollFirst(); os != null; os = unBoundOperations.pollFirst()) {
+            resolveOperation(os);
         }
     }
 
@@ -404,9 +411,4 @@ public final class IntrospectedBean {
             return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
         }
     }
-
-    /**
-     * 
-     */
-    void resolveOperations() {}
 }

@@ -62,7 +62,7 @@ public final class IntrospectedBeanField implements OnField {
     public final IntrospectedBean introspectedBean;
 
     /** Whether or not we can create new operations from this class. */
-    private boolean isClosed;
+    private boolean isConfigurationDisabled;
 
     private IntrospectedBeanField(IntrospectedBean introspectedBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet,
             Annotation[] annotations) {
@@ -83,13 +83,13 @@ public final class IntrospectedBeanField implements OnField {
     /** Callback into an extension's {@link BeanIntrospector#onField(OnField)} method. */
     private void callbackOnFieldHook() {
         contributer.introspector().onField(this);
-        isClosed = true;
+        isConfigurationDisabled = true;
         introspectedBean.resolveOperations(); // resolve bindings on any operations we have created
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
     private void checkConfigurable() {
-        if (isClosed) {
+        if (isConfigurationDisabled) {
             throw new IllegalStateException("This method must be called from within " + BeanIntrospector.class + ":onField");
         }
     }
@@ -136,6 +136,7 @@ public final class IntrospectedBeanField implements OnField {
         FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
         OperationType operationType = OperationType.ofFieldAccess(field, accessMode);
         OperationSetup operation = new OperationSetup(introspectedBean.bean, operationType, contributer.extension(), fot, null);
+        introspectedBean.unBoundOperations.add(operation);
         introspectedBean.bean.operations.add(operation);
         return operation.toHandle();
     }

@@ -48,8 +48,6 @@ public final class IntrospectedBeanBinding implements OnBinding {
     @Nullable
     private Supplier<? extends BindingMirror> mirrorSupplier;
 
-    ///////////////
-
     /** The operation that will have a parameter bound. */
     public final OperationSetup operation;
 
@@ -102,10 +100,6 @@ public final class IntrospectedBeanBinding implements OnBinding {
         if (isBound()) {
             throw new IllegalStateException("A binding has already been created");
         }
-        // Eller er det introspectoren???
-        if (bindingExtension.extensionRealm.isClosed()) {
-            throw new IllegalStateException("Cannot create a binding after " + bindingExtension.extensionType + " has been closed");
-        }
     }
 
     /** {@inheritDoc} */
@@ -120,6 +114,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
         return operation.operator.extensionType;
     }
 
+    /** {@return whether or not a binding has already been created.} */
     public boolean isBound() {
         return operation.bindings[index] != null;
     }

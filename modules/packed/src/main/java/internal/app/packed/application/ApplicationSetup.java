@@ -84,13 +84,12 @@ public final class ApplicationSetup {
         this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
     }
 
+    private boolean isCodegen;
+
     /**
      * 
      */
     public void close() {
-//        if (goal.isLaunchable()) {
-//            container.codegen();
-//        }
 
         // For each lifetime create lifetime operations
         //// And install them in the lifetime
@@ -103,11 +102,29 @@ public final class ApplicationSetup {
 
         // Packed relies on lazily created codegeneration
 
-        // If this fails it is always a bug in either Packed or one of its extensions.
-        // It is never a user error.
-        codegenActions.forEach(r -> r.run());
+        
+        isCodegen = true;
+        if (goal.isLaunchable()) {
 
+            // If this fails it is always a bug in either Packed or one of its extensions.
+            // It is never a user error.
+            for (Runnable r : codegenActions) {
+                r.run();
+            }
+        }
         launcher = new PackedApplicationLauncher(this);
+    }
+
+    public void addCodegenAction(Runnable runnable) {
+        if (isCodegen) {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void checkCodegen() {
+        if (!isCodegen) {
+            throw new IllegalStateException();
+        }
     }
 
     /** {@return a mirror that can be exposed to end-users.} */
