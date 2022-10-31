@@ -17,39 +17,35 @@ package app.packed.bean;
 
 import app.packed.operation.Op;
 
-/** This enum represents the source type that was used installing a bean. */
+/** This enum represents the type of source used when installing a bean. */
 public enum BeanSourceKind {
 
     /**
-     * A {@link Class} was specified when creating the bean.
+     * A {@link Class} was specified when installing the bean.
      * 
-     * @see BeanKind#STATIC
-     * @see BeanKind#CONTAINER
-     * @see BeanKind#LAZY
-     * @see BeanKind#MANYTON
+     * @see BeanExtension#install(Class)
+     * @see BeanExtension#installLazy(Class)
+     * @see BeanExtension#installStatic(Class)
      */
     CLASS,
 
     /**
-     * A bean instance was specified when creating the bean.
+     * A bean instance was specified when installing the bean.
      * 
-     * @see BeanKind#CONTAINER
+     * @see BeanExtension#installInstance(Object)
      */
     INSTANCE,
 
     /**
-     * No source was specified when creating the bean.
-     * 
-     * @see BeanKind#FUNCTIONAL
+     * No source was specified when installing the bean.
      */
     NONE,
 
     /**
-     * An {@link Op} was specified when creating the bean.
+     * An {@link Op} was specified when installing the bean.
      * 
-     * @see BeanKind#CONTAINER
-     * @see BeanKind#LAZY
-     * @see BeanKind#MANYTON
+     * @see BeanExtension#install(Op)
+     * @see BeanExtension#installLazy(Op)
      */
     OP;
 }

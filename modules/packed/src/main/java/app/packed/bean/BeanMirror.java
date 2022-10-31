@@ -105,6 +105,7 @@ public class BeanMirror implements Mirror {
      * 
      * @return operation that creates instances of the bean. Or empty if instances are never created
      */
+    // instantiatedBy
     public Optional<OperationMirror> factoryOperation() {
         BeanSetup bean = bean();
         if (bean.beanKind.hasInstances() && bean.sourceKind != BeanSourceKind.INSTANCE) {

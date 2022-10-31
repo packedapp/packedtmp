@@ -26,15 +26,15 @@ import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
-import internal.app.packed.bean.BeanAnalyzer.Contributor;
+import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 
 /** Internal implementation of BeanMethod. Discard after use. */
-public final class BeanAnalyzerOnMethod implements OnMethod {
+public final class IntrospectedBeanMethod implements OnMethod {
 
     /** The internal introspector */
-    public final BeanAnalyzer analyzer;
+    public final IntrospectedBean analyzer;
 
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
@@ -49,7 +49,7 @@ public final class BeanAnalyzerOnMethod implements OnMethod {
     @Nullable
     private OperationType type;
 
-    BeanAnalyzerOnMethod(BeanAnalyzer analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
+    IntrospectedBeanMethod(IntrospectedBean analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
         this.analyzer = analyzer;
         this.contributor = contributor;
         this.method = method;

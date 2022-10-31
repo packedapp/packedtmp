@@ -280,9 +280,9 @@ public final class BeanSetup {
             bean.operations.add(os);
         }
 
-        // Scan the bean class for annotations unless the bean class is void or is from a java package
+        // Scan the bean class for annotations unless the bean class is void
         if (sourceKind != BeanSourceKind.NONE) {
-            new BeanAnalyzer(bean, introspector).introspect();
+            new IntrospectedBean(bean, introspector).introspect();
         }
 
         // Bean was successfully created, add it to the container

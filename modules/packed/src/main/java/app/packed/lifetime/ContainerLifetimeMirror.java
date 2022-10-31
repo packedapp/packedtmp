@@ -28,17 +28,13 @@ import app.packed.operation.OperationMirror;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 
 /**
- *
+ * This mirror represents a container lifetime.
  */
 public final class ContainerLifetimeMirror extends LifetimeMirror {
 
-    /** {@return the container} */
+    /** {@return the container that is the root of the lifetime.} */
     public ContainerMirror container() {
-        return containerLifetime().container.mirror();
-    }
-
-    private ContainerLifetimeSetup containerLifetime() {
-        return (ContainerLifetimeSetup) lifetime();
+        return setup().container.mirror();
     }
 
     public Map<ContainerMirror, Collection<BeanMirror>> elements() {
@@ -75,6 +71,10 @@ public final class ContainerLifetimeMirror extends LifetimeMirror {
 //            }
 //        }
         return Collections.unmodifiableList(operations);
+    }
+
+    private ContainerLifetimeSetup setup() {
+        return (ContainerLifetimeSetup) lifetime();
     }
 
     /** {@return the root of the tree.} */

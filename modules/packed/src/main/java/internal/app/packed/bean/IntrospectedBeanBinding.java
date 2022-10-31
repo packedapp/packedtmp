@@ -33,7 +33,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.ConstantBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
-public final class BeanAnalyzerOnBinding implements OnBinding {
+public final class IntrospectedBeanBinding implements OnBinding {
 
     /** The extension that manages the binding. */
     private final ExtensionSetup bindingExtension;
@@ -55,7 +55,7 @@ public final class BeanAnalyzerOnBinding implements OnBinding {
 
     Variable variable;
 
-    public BeanAnalyzerOnBinding(OperationSetup operation, int index, ExtensionSetup bindingExtension, @Nullable Class<?> bindingHookClass, Variable var) {
+    public IntrospectedBeanBinding(OperationSetup operation, int index, ExtensionSetup bindingExtension, @Nullable Class<?> bindingHookClass, Variable var) {
         this.operation = requireNonNull(operation);
         this.index = index;
         this.bindingExtension = requireNonNull(bindingExtension);

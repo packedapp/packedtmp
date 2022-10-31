@@ -30,7 +30,7 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
-import internal.app.packed.bean.BeanAnalyzerOnBinding;
+import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -51,10 +51,10 @@ import internal.app.packed.operation.OperationSetup;
  * <ul>
  * </ul>
  * 
- * @see OnField#newGetOperation(InstanceBeanConfiguration)
- * @see OnField#newSetOperation(InstanceBeanConfiguration)
- * @see OnField#newOperation(InstanceBeanConfiguration, java.lang.invoke.VarHandle.AccessMode)
- * @see OnMethod#newOperation(InstanceBeanConfiguration)
+ * @see OnField#newGetOperation()
+ * @see OnField#newSetOperation()
+ * @see OnField#newOperation(java.lang.invoke.VarHandle.AccessMode)
+ * @see OnMethod#newOperation()
  */
 
 /// Setup
@@ -74,21 +74,17 @@ public final class OperationHandle {
         this.operation = requireNonNull(operation);
     }
 
-    public void operatedBy(Object extensionHandle) {
-        // Do we create a new handle, and invalidate this handle?
-    }
-
-    public boolean hasBindingsBeenResolved() {
-        return false;
-    }
-
     // manualBinding().bind
     public OnBinding bindableParameter(int parameterIndex) {
+        operation.finalizeConfiguration();
         // custom invocationContext must have been set before calling this method
         checkIndex(parameterIndex, operation.type.parameterCount());
-        return new BeanAnalyzerOnBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+        return new IntrospectedBeanBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
+    protected void checkConfigurable() {
+        
+    }
     /**
      * 
      * <p>
@@ -113,6 +109,10 @@ public final class OperationHandle {
         throw new UnsupportedOperationException();
     }
 
+    public boolean hasBindingsBeenResolved() {
+        return false;
+    }
+
     /** {@return the invocation type of this operation.} */
     public InvocationType invocationType() {
         return operation.invocationSite.invocationType;
@@ -120,6 +120,16 @@ public final class OperationHandle {
 
     void onBuild(Consumer<MethodHandle> action) {
 
+    }
+
+    public void operatedBy(Object extensionHandle) {
+        checkConfigurable();
+        // Do we create a new handle, and invalidate this handle?
+    }
+
+    public void resolveBindings() {
+        // If we don't call this ourselves. It will be called immediately after
+        // onMethod, onField, ect
     }
 
     OperationHandle spawnNewBean() {
@@ -149,16 +159,9 @@ public final class OperationHandle {
     // For example, LifetimeOperationMirror.
     // However, the best thing we can do is a runtime exception. As the supplier is lazy
     public OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        if (operation.isComputed) {
-            throw new IllegalStateException("Cannot set a mirror after an invoker has been computed");
-        }
+        checkConfigurable();
         operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
         return this;
-    }
-
-    public void resolveBindings() {
-        // If we don't call this ourselves. It will be called immediately after
-        // onMethod, onField, ect
     }
 
     /** {@return the type of this operation.} */
@@ -205,11 +208,11 @@ public final class OperationHandle {
 }
 
 interface OpNew {
-    // Kunne jo godt bare tage extensionen, og checke paa typen
-    void invokeFrom(Object extensionHandle); // -> buildInvoker
-
     // Alt kan laves via invokeFrom(EH);
     void invokeFrom(InstanceBeanConfiguration<?> bean); // int index
+
+    // Kunne jo godt bare tage extensionen, og checke paa typen
+    void invokeFrom(Object extensionHandle); // -> buildInvoker
 }
 
 interface ZandboxOperationHandle {

@@ -140,10 +140,7 @@ public final /* primitive */ class BeanHandle<T> {
 
         bean.container.sm.serviceExport(key, bean.accessOperation());
         
-        
         bean.container.injectionManager.ios.exportsOrCreate().export(bean, null);
-
-
     }
 
     /**
@@ -163,6 +160,7 @@ public final /* primitive */ class BeanHandle<T> {
      * @see ProvideableBeanConfiguration#provideAs(Class)
      * @see ProvideableBeanConfiguration#provideAs(Key)
      */
+    // Move them to ServiceExtensionPoint?
     public void serviceProvideAs(Key<? super T> key) {
         Key<?> k = InternalServiceUtil.checkKey(bean.beanClass, key);
         checkIsConfigurable();

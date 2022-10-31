@@ -44,11 +44,11 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanAnalyzerOnBinding;
-import internal.app.packed.bean.BeanAnalyzerOnField;
-import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.bean.BeanAnnotationReader;
 import internal.app.packed.bean.BeanSetup;
+import internal.app.packed.bean.IntrospectedBeanBinding;
+import internal.app.packed.bean.IntrospectedBeanField;
+import internal.app.packed.bean.IntrospectedBeanMethod;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
@@ -57,6 +57,13 @@ import internal.app.packed.container.ExtensionSetup;
  * 
  * @see Extension#newBeanIntrospector
  */
+
+// Operations
+/// OnX
+//// Man kan lave ny operationer
+//// Operationen er configurable indtil onX returnere, man kalder customBinding(int index), eller
+//// Kalder OH.resolveParameters
+//// - Bindings kan ikke overskrives
 public abstract class BeanIntrospector {
 
     /**
@@ -256,14 +263,11 @@ public abstract class BeanIntrospector {
     // Saa bliver BeanVariable
 
     // Can be on the bean. Or on a composite.
-    public sealed interface OnBinding permits BeanAnalyzerOnBinding {
+    public sealed interface OnBinding permits IntrospectedBeanBinding {
 
         // Hmm idk about the unwrapping and stuff here
         AnnotationReader annotations();
 
-        default boolean isOperation(OperationHandle operation) {
-            return false;
-        }
         /**
          * Binds the specified value to the parameter.
          * <p>
@@ -290,11 +294,6 @@ public abstract class BeanIntrospector {
          */
         void bindEmpty();
 
-        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
-        // PerApplicationInstance
-
-        // Kan only do this if is invoking extension!!
-
         /**
          * @param index
          *            the index of the argument
@@ -312,6 +311,11 @@ public abstract class BeanIntrospector {
             // Kan jo faktisk ogsaa bruges med context?
             return bindToInvocationArgument(index, index);
         }
+
+        // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
+        // PerApplicationInstance
+
+        // Kan only do this if is invoking extension!!
 
         default OnBinding bindToInvocationArgument(int index, int operationIndex) {
             // Used from ops.
@@ -339,6 +343,10 @@ public abstract class BeanIntrospector {
 
         /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
+
+        default boolean isOperation(OperationHandle operation) {
+            return false;
+        }
 
         void provide(MethodHandle methodHandle);
 
@@ -449,7 +457,7 @@ public abstract class BeanIntrospector {
      * 
      * @apiNote There are currently no support for obtaining a {@link VarHandle} for a field.
      */
-    public sealed interface OnField permits BeanAnalyzerOnField {
+    public sealed interface OnField permits IntrospectedBeanField {
 
         /** {@return an annotation reader for the field.} */
         AnnotationReader annotations();
@@ -462,7 +470,13 @@ public abstract class BeanIntrospector {
          *             always thrown
          */
         default void failWith(String postFix) {
-            throw new InvalidBeanDefinitionException("OOPS " + postFix);
+            throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
+        }
+
+        default void failIf(boolean condition, String postFix) {
+            if (condition) {
+                throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
+            }
         }
 
         /** {@return the underlying field.} */
@@ -495,43 +509,46 @@ public abstract class BeanIntrospector {
          * {@return the modifiers of the field.}
          * 
          * @see Field#getModifiers()
-         * @apiNote the method is named getModifiers instead of modifiers to be consistent with {@link Field#getModifiers()}
          */
         int modifiers();
 
         /**
-         * Creates a new operation that reads the field as specified by {@link Lookup#unreflectGetter(Field)}.
+         * Creates a new operation that read a field as specified by {@link Lookup#unreflectGetter(Field)}.
+         * <p>
+         * If an {@link OperationMirror} is created for this operation. It will report
+         * {@link OperationTargetMirror.OfFieldAccess} as its {@link OperationMirror#target()}.
          * 
-         * @param operator
-         *            the bean that will invoke the operation. The operator must be defined in the same container (or in a
-         *            parent container) as the bean that declares the field. The owner of the bean must also be identical to the
-         *            extension that defines the introspector.
          * @return an operation handle
-         * @throws IllegalArgumentException
-         *             if the specified operator is not a direct ancestor of the bean that declares the field
          */
         OperationHandle newGetOperation();
 
         /**
-         * @param operator
+         * Creates a new operation that can read or/and write a field as specified by
+         * {@link VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)}.
+         * <p>
+         * If an {@link OperationMirror} is created for this operation. It will report
+         * {@link OperationTargetMirror.OfFieldAccess} as its {@link OperationMirror#target()}.
+         * 
          * @param accessMode
-         *            the access mode determines the operation type as exposed via the mirror api. However, extensions are free
-         *            to use any access mode they want
-         * @return
+         *            the access mode of the operation
+         * 
+         * @return an operation handle
          * 
          * @see VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)
          * 
          * @apiNote there are currently no way to create more than 1 MethodHandle per operation (for example 1 for read and 1
          *          for write). You must create an operation per access mode. If this is needed at some point. We could take a
-         *          varargs of access modes and then allow repeat calls to methodHandleNow. No matter what we must declare the
-         *          invocation types when we create the operation, so we can check access before creating the actual operation
+         *          varargs of access modes and then allow repeat calls to methodHandleNow.
          */
-        OperationHandle newOperation( VarHandle.AccessMode accessMode);
+        OperationHandle newOperation(VarHandle.AccessMode accessMode);
 
         /**
-         * Creates a new operation that writes a field as specified by {@link Lookup#unreflectSetter(Field)}.
+         * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
+         * <p>
+         * If an {@link OperationMirror} is created for this operation. It will report
+         * {@link OperationTargetMirror.OfFieldAccess} as its {@link OperationMirror#target()}.
          * 
-         * @return an operation configuration object
+         * @return an operation handle
          */
         OperationHandle newSetOperation();
 
@@ -547,7 +564,7 @@ public abstract class BeanIntrospector {
      * This class represents a {@link Method} on a bean.
      * 
      */
-    public sealed interface OnMethod permits BeanAnalyzerOnMethod {
+    public sealed interface OnMethod permits IntrospectedBeanMethod {
 
         /** {@return an annotation reader for the method.} */
         AnnotationReader annotations();
@@ -608,41 +625,16 @@ public abstract class BeanIntrospector {
          * If an {@link OperationMirror} is created for this operation. It will report
          * {@link OperationTargetMirror.OfMethodInvoke} as its {@link OperationMirror#target()}.
          * 
-         * @param operator
-         *            the extension bean that will invoke the operation. The extension bean must be located in the same (or in a
-         *            direct ancestor) container as the bean that declares the method.
-         * @param invocationType
          * @return an operation handle
          * 
          * @see Lookup#unreflect(Method)
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowAllAccess()
-         * 
-         * @throws IllegalArgumentException
-         *             if the specified operator is not in the same container as (or a direct ancestor of) the method's bean.
          */
         OperationHandle newOperation();
 
-        
         /** {@return a operation type for this method.} */
         OperationType operationType();
-
-        //
-        //// Support for raw methods handles???
-        /// **
-        // * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or
-        //// transformations
-        // * that may have been configured elsewhere).
-        // *
-        // * @return a direct method handle to the underlying method
-        // * @see Lookup#unreflect(Method)
-        // * @see BeanMethodHook#allowInvoke()
-        // * @see BeanClassHook#allowAllAccess()
-        // *
-        // * @throws UnsupportedOperationException
-        // * if invocation access has not been granted via {@link BeanMethodHook#allowInvoke()} or
-        // * BeanClassHook#allowAllAccess()
-        // */
     }
 
     /** A small utility record to hold the both the extension model and the bean in one field. */

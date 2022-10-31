@@ -20,16 +20,16 @@ import java.lang.annotation.Annotation;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.Extension;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.BeanAnalyzer.Contributor;
+import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public final class BeanAnalyzerOnParameter {
+public final class IntrospectedBeanParameter {
 
-    public static void bind(BeanAnalyzer introspector, OperationSetup os, int index) {
+    public static void bind(IntrospectedBean introspector, OperationSetup os, int index) {
         Variable var = os.type.parameter(index);
 
         // if isComposit
@@ -50,7 +50,7 @@ public final class BeanAnalyzerOnParameter {
         if (fh != null) {
             System.out.println("Got something");
             Contributor ei = introspector.computeContributor(fh.extensionType, false);
-            BeanAnalyzerOnBinding h = new BeanAnalyzerOnBinding(os, index, ei.extension(), var.getType(), var);
+            IntrospectedBeanBinding h = new IntrospectedBeanBinding(os, index, ei.extension(), var.getType(), var);
             ei.introspector().onBinding(h);
         }
         if (os.bindings[index] != null) {
@@ -68,7 +68,7 @@ public final class BeanAnalyzerOnParameter {
      * @param var
      *            the method to look for annotations on
      */
-    private static void introspectForHookAnnotations(BeanAnalyzer introspector, Variable var, OperationSetup os, int index) {
+    private static void introspectForHookAnnotations(IntrospectedBean introspector, Variable var, OperationSetup os, int index) {
         Annotation[] annotations = var.getAnnotations();
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
@@ -77,7 +77,7 @@ public final class BeanAnalyzerOnParameter {
             if (fh != null) {
                 Contributor ei = introspector.computeContributor(fh.extensionType, false);
 
-                BeanAnalyzerOnBinding h = new BeanAnalyzerOnBinding(os, index, ei.extension(), a1Type, var);
+                IntrospectedBeanBinding h = new IntrospectedBeanBinding(os, index, ei.extension(), a1Type, var);
                 ei.introspector().onBinding(h);
             }
         }

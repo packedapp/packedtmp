@@ -157,7 +157,6 @@ public class BeanExtension extends Extension<BeanExtension> {
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
                     OperationSetup os = OperationSetup.crack(method.newOperation());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.INITIALIZING, os));
-                    os.bean.operations.add(os);
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
@@ -165,7 +164,6 @@ public class BeanExtension extends Extension<BeanExtension> {
                     OnStart oi = ar.readRequired(OnStart.class);
                     OperationSetup os = OperationSetup.crack(method.newOperation());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STARTING, os));
-                    os.bean.operations.add(os);
                 }
 
                 if (ar.isAnnotationPresent(OnStop.class)) {
@@ -173,7 +171,6 @@ public class BeanExtension extends Extension<BeanExtension> {
                     OnStop oi = ar.readRequired(OnStop.class);
                     OperationSetup os = OperationSetup.crack(method.newOperation());
                     os.bean.lifetimeOperations.add(new LifetimeOp(RunState.STOPPING, os));
-                    os.bean.operations.add(os);
                 }
 
                 if (ar.isAnnotationPresent(Inject.class)) {

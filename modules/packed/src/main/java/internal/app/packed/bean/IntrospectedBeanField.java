@@ -26,22 +26,22 @@ import java.util.IdentityHashMap;
 
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.operation.InvocationType;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 
-/** Responsible for analysing fields on a bean. */
-public final class BeanAnalyzerOnField implements OnField {
+/** Responsible for introspecting fields on a bean. */
+public final class IntrospectedBeanField implements OnField {
 
     /** Whether or not the field can be read. */
     final boolean allowGet;
@@ -49,38 +49,49 @@ public final class BeanAnalyzerOnField implements OnField {
     /** Whether or not the field can be written. */
     final boolean allowSet;
 
-    public final BeanAnalyzer analyzer;
-
     /** The annotations on the field */
     final Annotation[] annotations;
+
+    /** The extension that will operate any operations. */
+    public final Contributor contributer;
 
     /** The bean member. */
     protected final Field field;
 
-    /** The extension that will operate any operations. */
-    public final ExtensionSetup operator;
+    /** The introspected bean. */
+    public final IntrospectedBean introspectedBean;
 
-    private BeanAnalyzerOnField(BeanAnalyzer analyzer, ExtensionSetup operator, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations) {
-        this.analyzer = analyzer;
-        this.operator = operator;
+    /** Whether or not we can create new operations from this class. */
+    private boolean isClosed;
+
+    private IntrospectedBeanField(IntrospectedBean introspectedBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet,
+            Annotation[] annotations) {
+        this.introspectedBean = introspectedBean;
+        this.contributer = contributer;
         this.field = field;
         this.allowGet = allowGet;
         this.allowSet = allowSet;
         this.annotations = annotations;
     }
 
-    private OperationSetup add(MethodHandle mh, AccessMode accessMode) {
-        FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
-        OperationType ot = OperationType.ofFieldAccess(field, accessMode);
-        OperationSetup bos = new OperationSetup(analyzer.bean, ot, operator, fot, null);
-        analyzer.bean.operations.add(bos);
-        return bos;
-    }
-
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
         return new BeanAnnotationReader(annotations);
+    }
+
+    /** Callback into an extension's {@link BeanIntrospector#onField(OnField)} method. */
+    private void callbackOnFieldHook() {
+        contributer.introspector().onField(this);
+        isClosed = true;
+        introspectedBean.resolveOperations(); // resolve bindings on any operations we have created
+    }
+
+    /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
+    private void checkConfigurable() {
+        if (isClosed) {
+            throw new IllegalStateException("This method must be called from within " + BeanIntrospector.class + ":onField");
+        }
     }
 
     /** {@inheritDoc} */
@@ -90,6 +101,7 @@ public final class BeanAnalyzerOnField implements OnField {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int modifiers() {
         return field.getModifiers();
     }
@@ -97,23 +109,17 @@ public final class BeanAnalyzerOnField implements OnField {
     /** {@inheritDoc} */
     @Override
     public OperationHandle newGetOperation() {
-        MethodHandle mh = analyzer.oc.unreflectGetter(field);
+        checkConfigurable();
+        MethodHandle mh = introspectedBean.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        OperationSetup os = add(mh, accessMode);
-        return os.toHandle();
-    }
-
-    public OperationSetup newInternalGetOperation(ExtensionSetup operator, InvocationType invocationType) {
-        MethodHandle mh = analyzer.oc.unreflectGetter(field);
-        AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return add(mh, accessMode);
+        return newOperation(mh, accessMode);
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newOperation(AccessMode accessMode) {
-
-        Lookup lookup = analyzer.oc.lookup(field);
+        checkConfigurable();
+        Lookup lookup = introspectedBean.oc.lookup(field);
 
         VarHandle varHandle;
         try {
@@ -123,14 +129,22 @@ public final class BeanAnalyzerOnField implements OnField {
         }
 
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
-        OperationSetup os = add(mh, accessMode);
-        return os.toHandle();
+        return newOperation(mh, accessMode);
+    }
+
+    private OperationHandle newOperation(MethodHandle mh, AccessMode accessMode) {
+        FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
+        OperationType operationType = OperationType.ofFieldAccess(field, accessMode);
+        OperationSetup operation = new OperationSetup(introspectedBean.bean, operationType, contributer.extension(), fot, null);
+        introspectedBean.bean.operations.add(operation);
+        return operation.toHandle();
     }
 
     /** {@inheritDoc} */
     @Override
     public OperationHandle newSetOperation() {
-        Lookup lookup = analyzer.oc.lookup(field);
+        checkConfigurable();
+        Lookup lookup = introspectedBean.oc.lookup(field);
 
         MethodHandle methodHandle;
         try {
@@ -140,8 +154,7 @@ public final class BeanAnalyzerOnField implements OnField {
         }
 
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        OperationSetup os = add(methodHandle, accessMode);
-        return os.toHandle();
+        return newOperation(methodHandle, accessMode);
     }
 
     /** {@inheritDoc} */
@@ -150,10 +163,24 @@ public final class BeanAnalyzerOnField implements OnField {
         return Variable.ofField(field);
     }
 
+    static void introspectAllFields(IntrospectedBean introspector, Class<?> clazz) {
+        // We never process classes in the "java.base" module.
+        if (clazz.getModule() != IntrospectedBean.JAVA_BASE_MODULE) {
+
+            // Recursively call into superclass, before processing own fields
+            introspectAllFields(introspector, clazz.getSuperclass());
+
+            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
+
+            // Iterate over all declared fields
+            for (Field field : clazz.getDeclaredFields()) {
+                introspectSingleField(introspector, field);
+            }
+        }
+    }
+
     /**
-     * Introspect a single field on a bean.
-     * 
-     * Look for hook annotations on a single field.
+     * Introspect a single field on a bean looking for hook annotations.
      * 
      * @param field
      *            the field to introspect
@@ -165,7 +192,7 @@ public final class BeanAnalyzerOnField implements OnField {
      * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
      *          allow it.
      */
-    private static void introspectField(BeanAnalyzer introspector, Field field) {
+    private static void introspectSingleField(IntrospectedBean introspector, Field field) {
         // Get all annotations on the field
         Annotation[] annotations = field.getAnnotations();
 
@@ -186,7 +213,7 @@ public final class BeanAnalyzerOnField implements OnField {
             IdentityHashMap<Class<? extends Extension<?>>, MultiField> multiMatch = null;
 
             // Try to find additional meta annotations.
-            for (int j = i; j < annotations.length; j++) {
+            for (int j = i + 1; j < annotations.length; j++) {
                 Annotation annotation2 = annotations[j];
 
                 // Look in the annotation cache to see if the annotation is a meta annotation
@@ -225,43 +252,25 @@ public final class BeanAnalyzerOnField implements OnField {
                 });
             }
 
-            // All done. Let us see if we only had a single match or multiple matches
+            // All done. Let's see if we only had a single match or multiple matches
             if (multiMatch == null) {
                 // Get the matching extension, installing it if needed.
-                BeanAnalyzer.Contributor entry = introspector.computeContributor(e.extensionType, false);
+                IntrospectedBean.Contributor contributor = introspector.computeContributor(e.extensionType, false);
 
                 // Create the wrapped field that is exposed to the extension
-                BeanAnalyzerOnField f = new BeanAnalyzerOnField(introspector, entry.extension(), field, e.isGettable || entry.hasFullAccess(),
-                        e.isSettable || entry.hasFullAccess(), new Annotation[] { annotation });
-
-                entry.introspector().onField(f); // Calls BeanIntrospection.onField
+                IntrospectedBeanField f = new IntrospectedBeanField(introspector, contributor, field, e.isGettable || contributor.hasFullAccess(),
+                        e.isSettable || contributor.hasFullAccess(), new Annotation[] { annotation });
+                f.callbackOnFieldHook();
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
                 for (MultiField mf : multiMatch.values()) {
-                    BeanAnalyzer.Contributor entry = introspector.computeContributor(mf.extensionClass, false);
+                    IntrospectedBean.Contributor contributor = introspector.computeContributor(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    BeanAnalyzerOnField f = new BeanAnalyzerOnField(introspector, entry.extension(), field, mf.allowGet || entry.hasFullAccess(),
-                            mf.allowSet || entry.hasFullAccess(), annotations);
-
-                    entry.introspector().onField(f); // Calls BeanIntrospection.onField
+                    IntrospectedBeanField f = new IntrospectedBeanField(introspector, contributor, field, mf.allowGet || contributor.hasFullAccess(),
+                            mf.allowSet || contributor.hasFullAccess(), annotations);
+                    f.callbackOnFieldHook();
                 }
-            }
-        }
-    }
-
-    static void introspectFields(BeanAnalyzer introspector, Class<?> clazz) {
-        // We never process classes in the "java.base" module.
-        if (clazz.getModule() != BeanAnalyzer.JAVA_BASE_MODULE) {
-
-            // Recursively call into superclass, before processing own fields
-            introspectFields(introspector, clazz.getSuperclass());
-
-            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
-
-            // Iterate over all declared fields
-            for (Field field : clazz.getDeclaredFields()) {
-                introspectField(introspector, field);
             }
         }
     }
@@ -283,10 +292,10 @@ public final class BeanAnalyzerOnField implements OnField {
                 if (provisionHook == fieldHook) { // check both null
                     return null;
                 } else if (provisionHook == null) {
-                    BeanAnalyzer.checkExtensionClass(type, fieldHook.extension());
+                    IntrospectedBean.checkExtensionClass(type, fieldHook.extension());
                     return new FieldAnnotationCache(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
                 } else if (fieldHook == null) {
-                    BeanAnalyzer.checkExtensionClass(type, provisionHook.extension());
+                    IntrospectedBean.checkExtensionClass(type, provisionHook.extension());
                     return new FieldAnnotationCache(annotationType, provisionHook.extension(), false, true, true);
                 } else {
                     throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);

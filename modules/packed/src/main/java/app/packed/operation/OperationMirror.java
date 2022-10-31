@@ -39,7 +39,7 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
- * A mirror for a bean operation.
+ * A mirror for an operation on a bean.
  * <p>
  * This class can be extended to provide more detailed information about a particular type of operation. For example,
  * the {@link app.packed.service.ServiceExtension} provides details about an exported service via
@@ -47,8 +47,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * <p>
  * NOTE: Subclasses of this class:
  * <ul>
- * <li>Must be located in the same module as the extension it is a member of (iff the extension is defined in a
- * module).</li>
+ * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
 public class OperationMirror implements Mirror {
@@ -60,14 +59,10 @@ public class OperationMirror implements Mirror {
     @Nullable
     private OperationSetup operation;
 
-    /**
-     * Create a new operation mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
+    /** Create a new operation mirror. */
     public OperationMirror() {}
 
-    /** {@return the bean that the operation is a part of.} */
+    /** {@return the bean that this operation is a part of.} */
     public BeanMirror bean() {
         return operation().bean.mirror();
     }
@@ -323,12 +318,6 @@ class SandboxOp {
     }
 
 }
-//Is invoked by an extension
-
-//A bean function
-//A bean method
-//A bean field get/set/compute
-
 //A bean constructor is _not_ an operation... Or maybe
 
 //AnnotatedElement????? Nah, Det er targettt der kan vaere annoteret

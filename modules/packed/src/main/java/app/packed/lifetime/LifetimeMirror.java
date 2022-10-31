@@ -13,7 +13,7 @@ import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;
 
 /**
- * A component whose lifetime is managed by Packed.
+ * A mirror of a lifetime.
  * <p>
  * Stuff managed
  * <p>
@@ -24,6 +24,9 @@ import internal.app.packed.lifetime.LifetimeSetup;
  * Validator beans
  * 
  */
+// Lifetime - The period during which something exists, lasts, or is in progress.
+
+// Life cycle - A series of stages through which an organism passes between recurrences of a primary stage.
 //https://thesaurus.plus/related/life_cycle/lifetime
 public abstract sealed class LifetimeMirror implements Mirror permits BeanLifetimeMirror, ContainerLifetimeMirror {
 

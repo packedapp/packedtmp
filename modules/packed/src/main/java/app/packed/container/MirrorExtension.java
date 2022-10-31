@@ -19,7 +19,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.BeanAnalyzerOnBinding;
+import internal.app.packed.bean.IntrospectedBeanBinding;
 
 
 /**
@@ -49,7 +49,7 @@ public class MirrorExtension extends Extension<MirrorExtension> {
 
             @Override
             public void onBinding(OnBinding binding) {
-                BeanSetup bean = ((BeanAnalyzerOnBinding) binding).operation.bean;
+                BeanSetup bean = ((IntrospectedBeanBinding) binding).operation.bean;
                 if (binding.hookClass() == ApplicationMirror.class) {
                     binding.bind(bean.container.application.mirror());
                 } else if (binding.hookClass() == ContainerMirror.class) {

@@ -25,13 +25,10 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.container.Extension;
+import app.packed.container.BasicExtension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.lifetime.LifetimeConf;
-import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
-import internal.app.packed.bean.BeanAnalyzerOnField;
-import internal.app.packed.bean.BeanAnalyzerOnMethod;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.oldservice.ServiceConfiguration;
@@ -81,7 +78,7 @@ import internal.app.packed.operation.OperationSetup;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
 @DependsOn(extensions = BeanExtension.class)
-public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtension> {
+public non-sealed class ServiceExtension extends BasicExtension<ServiceExtension> {
 
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
 
@@ -155,9 +152,8 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
-                BeanAnalyzerOnField iof = ((BeanAnalyzerOnField) field);
-                OperationSetup operation = iof.newInternalGetOperation(setup, InvocationType.defaults());
-                iof.analyzer.bean.container.sm.provideService(key, constant, operation);
+                OperationSetup operation = OperationSetup.crack(field.newGetOperation());
+                setup.container.sm.provideService(key, constant, operation);
             }
 
             /** {@inheritDoc} */
@@ -169,18 +165,13 @@ public /* non-sealed */ class ServiceExtension extends Extension<ServiceExtensio
                 if (isProviding) {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
-                    BeanAnalyzerOnMethod iom = ((BeanAnalyzerOnMethod) method);
                     OperationSetup operation = OperationSetup.crack(method.newOperation());
-                    iom.analyzer.bean.container.sm.provideService(key, constant, operation);
+                    setup.container.sm.provideService(key, constant, operation);
                 }
 
                 if (isExporting) {
-                    BeanAnalyzerOnMethod iom = ((BeanAnalyzerOnMethod) method);
-
                     OperationSetup operation = OperationSetup.crack(method.newOperation());
-
-                    iom.analyzer.bean.container.sm.serviceExport(key, operation);
-
+                    setup.container.sm.serviceExport(key, operation);
                 }
             }
         };

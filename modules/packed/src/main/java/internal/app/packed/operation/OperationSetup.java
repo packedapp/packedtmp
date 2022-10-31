@@ -102,12 +102,25 @@ public final class OperationSetup {
         throw new UnsupportedOperationException();
     }
 
+    /** {@return an operation handle for this operation.} */
     public OperationHandle toHandle() {
         try {
             return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+
+    public void finalizeConfiguration() {
+
+    }
+
+    public boolean isConfigurable() {
+        return true;
+    }
+
+    public void resolve() {
+
     }
 
     /**

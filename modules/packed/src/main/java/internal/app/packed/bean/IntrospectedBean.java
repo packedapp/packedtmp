@@ -50,12 +50,12 @@ import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
- * This class is responsible for introspecting a single bean.
+ * This class represents a single bean being introspected.
  */
-public final class BeanAnalyzer {
+public final class IntrospectedBean {
 
     /** We never process classes that are located in the {@code java.base} module. */
-    public static final Module JAVA_BASE_MODULE = Object.class.getModule();
+    static final Module JAVA_BASE_MODULE = Object.class.getModule();
 
     /** A handle for invoking the protected method {@link BeanIntrospector#initialize()}. */
     private static final MethodHandle MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
@@ -85,13 +85,13 @@ public final class BeanAnalyzer {
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
 
-    public BeanAnalyzer(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
+    IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
-    public Contributor computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
+    Contributor computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.safeUseExtensionSetup(extensionType, null);
@@ -121,17 +121,16 @@ public final class BeanAnalyzer {
 
     /** Find a constructor on the bean and create an operation for it. */
     private void findConstructor() {
-        BeanAnalyzerOnConstructor constructor = BeanAnalyzerOnConstructor.CACHE.get(bean.beanClass);
+        IntrospectedBeanConstructor constructor = IntrospectedBeanConstructor.CACHE.get(bean.beanClass);
 
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
-        OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy, 
+        OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy,
                 new ConstructorOperationTarget(mh, constructor.constructor()), null);
         bean.operations.add(os);
-
     }
 
-    /** Introspects the bean. */
+    /** Introspect the bean. */
     void introspect() {
 
         // First, we process all annotations on the class
@@ -145,7 +144,7 @@ public final class BeanAnalyzer {
         bean.injectionManager = new BeanInjectionManager(bean); // legacy
 
         // Introspect all fields on the bean and its super classes
-        BeanAnalyzerOnField.introspectFields(this, bean.beanClass);
+        IntrospectedBeanField.introspectAllFields(this, bean.beanClass);
 
         // Process all methods on the bean
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -241,10 +240,10 @@ public final class BeanAnalyzer {
     }
 
     // We need it for calling into nested
-    public void resolveOperation(OperationSetup operation) {
+    void resolveOperation(OperationSetup operation) {
         for (int i = 0; i < operation.bindings.length; i++) {
             if (operation.bindings[i] == null) {
-                BeanAnalyzerOnParameter.bind(this, operation, i);
+                IntrospectedBeanParameter.bind(this, operation, i);
             }
         }
     }
@@ -266,7 +265,7 @@ public final class BeanAnalyzer {
             if (fh != null) {
                 Contributor contributor = computeContributor(fh.extensionType, false);
 
-                BeanAnalyzerOnMethod pbm = new BeanAnalyzerOnMethod(BeanAnalyzer.this, contributor, method, annotations, fh.isInvokable);
+                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(IntrospectedBean.this, contributor, method, annotations, fh.isInvokable);
 
                 contributor.introspector.onMethod(pbm);
             }
@@ -405,4 +404,9 @@ public final class BeanAnalyzer {
             return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
         }
     }
+
+    /**
+     * 
+     */
+    void resolveOperations() {}
 }
