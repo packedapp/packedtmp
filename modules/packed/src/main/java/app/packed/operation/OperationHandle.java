@@ -34,6 +34,20 @@ import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
 /**
+ * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation
+ * known as its {@link OperationTargetMirror target}.
+ * 
+ * A handle is normally
+ * 
+ * 
+ * This class is used to configure a operation.
+ * 
+ * This class contains a number of configuration methods:
+ * 
+ * List them
+ * 
+ * 
+ * 
  * This class currently supports:
  * <ul>
  * <li>Creating method handles that can invoke the underlying operation.</li>
@@ -83,14 +97,15 @@ public final class OperationHandle {
     }
 
     /**
-     * 
+     * Creates a new method handle that can invoke the underlying operation. Taking into account the invocation type and
+     * site.
      * <p>
      * The method type of the returned method handle will be {@code invocationType().methodType()}.
      * 
      * @return
      * 
      * @throws IllegalStateException
-     *             if called more than once. Or if called before the handle can be computed
+     *             if called more than once. Or if called before the code generating phase of the application
      * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
      */
     public MethodHandle buildInvoker() {
@@ -102,7 +117,7 @@ public final class OperationHandle {
      */
     private void checkConfigurable() {
         if (operation.isConfigurationDisabled) {
-            throw new IllegalStateException("The operation is no longer configurable");
+            throw new IllegalStateException("This operation is no longer configurable");
         }
     }
 
@@ -128,10 +143,13 @@ public final class OperationHandle {
         return new IntrospectedBeanBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
-    void onBuild(Consumer<MethodHandle> action) {
-        // operation.bean.container.application.addCodegenCallback
+    public void onBuild(Consumer<MethodHandle> action) {
+        requireNonNull(action, "action is null");
+        operation.bean.container.application.addCodegenAction(() -> action.accept(buildInvoker()));
     }
 
+    // I think this needs to be first operation...
+    // Once we start calling onBuild() which schedules it for the extension its over
     public void operatedBy(Object extensionHandle) {
         checkConfigurable();
         // Do we create a new handle, and invalidate this handle?
@@ -159,6 +177,8 @@ public final class OperationHandle {
      * 
      * @param supplier
      *            a mirror supplier
+     * @throws IllegalStateException
+     *             if the operation is no longer configurable
      */
     // I don't know if have a forceMirrorBaseType??? Basic idea being that if delegate the operation
     // to someone they cannot specialize with a mirror that is not a subtype of the specified type

@@ -132,7 +132,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
             return constructor.toString();
         }
     }
-    
+
     public static final class MethodOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodInvoke {
 
         private final Method method;

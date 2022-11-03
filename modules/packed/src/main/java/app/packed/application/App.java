@@ -33,7 +33,7 @@ import app.packed.lifetime.RunState;
 public final class App {
 
     /** The default driver. */
-    private static final ApplicationDriver<Void> DEFAULT_DRIVER = ApplicationDriver.builder().buildVoid();
+    private static final ApplicationDriver<Void> DEFAULT_DRIVER = ApplicationDriver.builder().managedLifetime().buildVoid();
 
     /** Not today Satan, not today. */
     private App() {}

@@ -322,6 +322,7 @@ public final class IntrospectedBean {
         private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
 
         /** A lookup object that can be used to access {@link #type}. */
+        @SuppressWarnings("unused")
         private final MethodHandles.Lookup lookup;
 
         /** A lookup that can be used on non-public members. */
@@ -354,7 +355,8 @@ public final class IntrospectedBean {
 
             // See if we need private access, otherwise just return ordinary lookup.
             if (!needsPrivateLookup(member)) {
-                return lookup;
+                // Hmm
+               // return lookup;
             }
 
             if (!privateLookupInitialized) {

@@ -68,6 +68,12 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     // Det betyder vi skal have et map med key
     // Og vi skal ikke laengere eagerly resolve services
     // Saa naar man resolver en service for en bean. Skal man foerst kigge i mappet..
+    // Does not override hoooks I think
+    // Problemet er vi allerede har installeret ServiceExtension'en
+    
+    // installer().overrideService(asdasd).install(Key, instance);
+    //// Hvordan vil den supportere WebExtension.install()???
+    //// installer() fungere bare ikke
     public <K> InstanceBeanConfiguration<T> overrideService(Class<K> key, K instance) {
         return overrideService(Key.of(key), instance);
     }
@@ -76,6 +82,9 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         throw new UnsupportedOperationException();
     }
 
+    // Jeg syntes den er forfaerdelig... isaer navngivningsmaessigt.
+    // Vi maa have en special ExtensionBeanConfiguration...
+    // Eller endnu bedre en speciel klasse.
     public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Class<K> key, Supplier<K> supplier) {
         return overrideServiceDelayed(Key.of(key), supplier);
     }

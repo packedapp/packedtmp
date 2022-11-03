@@ -27,6 +27,8 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 // I think we should have a builder probably.
 // So we can condense information
 
+// InvocationSite, InvocationType, Invocation contexts
+
 public interface InvocationType {
 
     OptionalInt beanInstanceIndex();

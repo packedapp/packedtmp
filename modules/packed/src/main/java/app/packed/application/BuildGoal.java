@@ -61,5 +61,4 @@ public enum BuildGoal {
     public boolean isLaunchable() {
         return this == LAUNCH || this == NEW_LAUNCHER || this == NEW_IMAGE;
     }
-
 }

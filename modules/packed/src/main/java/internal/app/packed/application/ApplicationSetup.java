@@ -42,6 +42,9 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
             "initialize", void.class, ApplicationSetup.class);
 
+    /** A list of actions that should be run doing the code generating phase. */
+    private final ArrayList<Runnable> codegenActions = new ArrayList<>();
+
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
@@ -52,11 +55,16 @@ public final class ApplicationSetup {
     @Nullable
     public EntryPointSetup entryPoints;
 
+    /** The build goal. */
     public final BuildGoal goal;
 
     /** The tree this service manager is a part of. */
     public final ApplicationInjectionManager injectionManager = new ApplicationInjectionManager();
 
+    /** Whether or not we are in the code generating phase. */
+    private boolean isInCodegenPhase;
+
+    /** A launcher for launching the application. Is not created for {@link BuildGoal#VERIFY} or {@link BuildGoal#NEW_MIRROR}. */
     @Nullable
     PackedApplicationLauncher launcher;
 
@@ -64,67 +72,67 @@ public final class ApplicationSetup {
     @Nullable
     final DynamicAccessor runtimeAccessor;
 
-    final ArrayList<Runnable> codegenActions = new ArrayList<>();
-
     /**
      * Create a new application setup
-     * 
-     * @param driver
-     *            the application's driver
      */
-    public ApplicationSetup(PackedApplicationDriver<?> driver, BuildGoal goal, AssemblySetup realm, Wirelet[] wirelets) {
-        this.driver = driver;
+    public ApplicationSetup(PackedApplicationDriver<?> driver, BuildGoal goal, AssemblySetup assembly, Wirelet[] wirelets) {
+        this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
 
         // Create the root container of the application
-        this.container = new ContainerSetup(this, realm, null, wirelets);
+        this.container = new ContainerSetup(this, assembly, null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
         this.runtimeAccessor = driver.lifetimeKind() == OldLifetimeKind.MANAGED ? container.lifetime.pool.reserve(PackedManagedLifetime.class) : null;
     }
 
-    private boolean isCodegen;
+    public void addCodegenAction(Runnable action) {
+        requireNonNull(action, "action is null");
+        if (isInCodegenPhase) {
+            throw new IllegalStateException("This method must be called before the code generating phase is started");
+        }
+        codegenActions.add(action);
+    }
 
     /**
+     * Checks that we are in the code generating phase.
      * 
+     * @throws IllegalStateException
+     *             if not in the code generating phase
      */
-    public void close() {
+    public void checkInCodegenPhase() {
+        // Should we check that launcher is null? (codegen phase done)
+        if (!isInCodegenPhase) {
+            throw new IllegalStateException();
+        }
+    }
+
+    /** This method is responsible for generating code to run the application. */
+    public void codegen() {
+        isInCodegenPhase = true;
+
+        // Vi bliver noedt til at have noget med order de bliver genereret i...
+        /// Fx .overrideServiceDelayed der skal vi jo resolve Object[] efter de er genereret...
+
+        // Saa reverse extension order tror jeg
+        // Nah burde stadig virke
+        
+        
+        // Do we need callbacks on extensions???
 
         // For each lifetime create lifetime operations
         //// And install them in the lifetime
 
-        // Services?
-        // get() -> MH.invokeExact(ExtensionContext);
-        // ServiceManager
-
-        // ServiceLocator Key -> MethodHandle
-
         // Packed relies on lazily created codegeneration
 
-        
-        isCodegen = true;
-        if (goal.isLaunchable()) {
-
-            // If this fails it is always a bug in either Packed or one of its extensions.
-            // It is never a user error.
-            for (Runnable r : codegenActions) {
-                r.run();
-            }
+        // If this fails it is always a bug in either Packed or one of its extensions.
+        // It is never a user error.
+        for (Runnable r : codegenActions) {
+            r.run();
         }
         launcher = new PackedApplicationLauncher(this);
-    }
-
-    public void addCodegenAction(Runnable runnable) {
-        if (isCodegen) {
-            throw new IllegalStateException();
-        }
-    }
-
-    public void checkCodegen() {
-        if (!isCodegen) {
-            throw new IllegalStateException();
-        }
+        isInCodegenPhase = false;
     }
 
     /** {@return a mirror that can be exposed to end-users.} */

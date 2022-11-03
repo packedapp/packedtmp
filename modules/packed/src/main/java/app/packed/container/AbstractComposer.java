@@ -47,6 +47,7 @@ public abstract class AbstractComposer {
      * 
      * @see Assembly#container()
      */
+    // Maybe another so can be exposed as container?
     protected final ContainerConfiguration container() {
         ContainerConfiguration c = assembly.configuration;
         if (c == null) {

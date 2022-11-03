@@ -51,7 +51,7 @@ import internal.app.packed.util.LookupUtil;
  * 
  * @see BaseAssembly
  */
-public abstract class Assembly {
+public non-sealed abstract class Assembly extends RootAssembly {
 
     /** A var handle that can update the {@link #configuration} field in this class. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);

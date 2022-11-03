@@ -18,6 +18,8 @@ import internal.app.packed.util.ClassUtil;
 // Er ikke paa det er en Realm... anyway
 // En AssemblyRealm
 
+/// XIdentity
+
 public /* primitive */ final class User {
 
     /** The application realm. */

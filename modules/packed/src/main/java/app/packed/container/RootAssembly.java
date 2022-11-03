@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.container;
 
-/** The phase in the lifecycle of an application. */
-// Another name than 
-// Taenkt som naar man bygger ting og fx bruger IO.
-// Saa er det maaske fint an indikere hvornaar man goer hvad.
-public enum ApplicationPhase {
-    BUILD_TIME, RUNTIME;
+/**
+ *
+ */
+public sealed abstract class RootAssembly permits Assembly, DelegatingAssembly {
+
 }
-// Build_Time
-//// Compose
-//// Code generation
-// Run_time
-// 

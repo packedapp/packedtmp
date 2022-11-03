@@ -32,7 +32,7 @@ import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
 import internal.app.packed.operation.OperationTarget;
 
 /**
- * The target of an operation.
+ * The target of an operation. This is typically a method
  * 
  * @see OperationMirror#target()
  */

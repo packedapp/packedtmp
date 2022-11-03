@@ -44,7 +44,7 @@ public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.Buil
 
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
     // present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
-    List<Class<? extends ContainerHook>> containerHooks();
+    List<Class<? extends AssemblyHook>> containerHooks();
 
     /** @return whether or not this assembly defines the root container in the application.} */
     boolean isRoot();

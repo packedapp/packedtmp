@@ -350,11 +350,16 @@ public interface ServiceLocator {
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
 
+            private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
+                    "serviceLocator", ServiceLocator.class);
+
+            private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class, CONV);
+
             public ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);
             }
         }
-        return Composer.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets);
+        return ServiceLocatorAssembly.DRIVER.launch(new ServiceLocatorAssembly(action), wirelets);
     }
 
     /**
@@ -368,11 +373,6 @@ public interface ServiceLocator {
      */
     public static final class Composer extends AbstractComposer {
 
-        private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-                "serviceLocator", ServiceLocator.class);
-
-        private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class, CONV);
-
         private boolean initialized;
 
         /** For internal use only. */
@@ -384,6 +384,7 @@ public interface ServiceLocator {
          * @return an instance of the injector extension
          */
         private ServiceExtension extension() {
+            // container().onFirstUse(ServiceExtension.class, e -> e.exportAll());
             ServiceExtension se = container().use(ServiceExtension.class);
             if (!initialized) {
                 se.exportAll();
@@ -458,18 +459,17 @@ public interface ServiceLocator {
             extension();
             return container().use(BeanExtension.class).install(op);
         }
-        
+
         public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
             extension();
             return container().use(BeanExtension.class).installInstance(instance);
         }
-        
+
         public <T> ProvideableBeanConfiguration<T> install(Class<T> op) {
             extension();
             return container().use(BeanExtension.class).install(op);
         }
 
-        
         /**
          * Binds all services from the specified injector.
          * <p>

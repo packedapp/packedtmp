@@ -16,35 +16,39 @@ import java.lang.invoke.MethodHandles;
  * Assembly : Will be applied to all containers installed by the user
  * 
  * <p>
- * 
- * Composer
- * 
- * Extension
+ * Extension (Nope...
  * 
  * Is ignored on any other classes.
  */
 
-// Vi inkludere alle containere defineret i en assembly.
+// We include all containers by default. Because that is also how lookup(Lookup) works (and bean hooks)
 // Fordi det er det vi ogsaa goer med beans hook. Det giver ingen mening ikke at goere det.
-// Ligesom Lookup ogsaa gaelder alle containere
-
+// Ligesom Lookup ogsaa gaelder alle containere i den assembly
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Repeatable(ContainerHook.All.class)
-public @interface ContainerHook {
+@Repeatable(AssemblyHook.All.class)
+public @interface AssemblyHook {
+
+    // After og before, Inner or Outer kan ogsaa bruge den med lifecycle
+    // boolean applyBeforeSubclasses() default true;
+
+    //Consumer<ContainerMirror>[] verifiers() default {};
+
+    /**
+     * Whether or not the hook applies to all containers defined by the assembly.
+     * <p>
+     * This will never apply to containers defined by other assemblies.
+     * 
+     * @return
+     */
+    boolean applyToAllContainers() default true;
 
     /** {@return the processors that should be applied for every container the assembly defines.} */
     Class<? extends Processor>[] value();
 
-    /**
-     * @return
-     */
-    // applyToAllContainersInAssembly instead?
-    boolean applyToRootOnly() default false; // maybe to true anyway
-
-    /** An annotation that allows for placing multiple {@link ContainerHook} annotations on a single target. */
+    /** An annotation that allows for placing multiple {@link AssemblyHook} annotations on a single assembly. */
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
     @Inherited
@@ -52,7 +56,7 @@ public @interface ContainerHook {
     @interface All {
 
         /** An array of assembly hook declarations. */
-        ContainerHook[] value();
+        AssemblyHook[] value();
     }
 
     /**

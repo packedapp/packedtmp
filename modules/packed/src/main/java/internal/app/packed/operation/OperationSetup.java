@@ -50,7 +50,7 @@ public final class OperationSetup {
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
 
     /** A handle that can access OperationHandle#operation. */
-    private static final VarHandle VH_OPERATION_HANDLE_OPERATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
+    private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
             OperationSetup.class);
 
     /** The bean this operation belongs to. */
@@ -93,15 +93,18 @@ public final class OperationSetup {
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
     }
 
+    // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
+    // Fx freeze arrayet
     public MethodHandle buildInvoker() {
+        bean.container.application.checkInCodegenPhase();
+
         if (isComputed) {
             throw new IllegalStateException("This method can only be called once");
         }
 
         isComputed = true;
-        bean.container.application.checkCodegen();
 
-        // Must be computed relative to operator
+        // Must be computed relative to invocating site
         throw new UnsupportedOperationException();
     }
 
@@ -145,6 +148,6 @@ public final class OperationSetup {
      * @return the bean setup
      */
     public static OperationSetup crack(OperationHandle handle) {
-        return (OperationSetup) VH_OPERATION_HANDLE_OPERATION.get(handle);
+        return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);
     }
 }

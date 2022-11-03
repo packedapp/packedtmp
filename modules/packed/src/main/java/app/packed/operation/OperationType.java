@@ -26,6 +26,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
@@ -33,8 +34,8 @@ import java.util.StringJoiner;
 /**
  * An operation type represents the arguments and return variable for an operation.
  * 
- * @apiNote This class is modelled after {@link MethodType}. But includes information about annotations and unerased
- *          type information.
+ * @apiNote This class is modelled after {@link MethodType}. But uses {@link Type} instead of {@link Class} as the base
+ *          element, additional in includes annotations on element.
  */
 
 // Mit problem med den her er lidt method return type...
@@ -101,6 +102,10 @@ public final /* primitive */ class OperationType {
         return hashCode;
     }
 
+    public Variable parameter(int index) {
+        return parameterVars[index];
+    }
+
     /**
      * Return an array of field descriptors for the parameter types of the method type described by this descriptor
      * 
@@ -109,10 +114,6 @@ public final /* primitive */ class OperationType {
      */
     public Variable[] parameterArray() {
         return Arrays.copyOf(parameterVars, parameterVars.length);
-    }
-
-    public Variable parameter(int index) {
-        return parameterVars[index];
     }
 
     /** {@return the number of parameter variables in this operation type.} */
@@ -175,6 +176,20 @@ public final /* primitive */ class OperationType {
         return sj.toString();
     }
 
+    public static void mainx(String[] args) throws Throwable {
+        Field f = OperationType.class.getDeclaredField("NO_PARAMETERS");
+        System.out.println(f);
+        VarHandle vh = MethodHandles.lookup().unreflectVarHandle(f);
+
+        vh.getVolatile();
+        MethodHandles.lookup().unreflectGetter(f).invoke();
+        System.out.println(vh.hasInvokeExactBehavior());
+
+        MethodType mt = vh.accessModeType(AccessMode.COMPARE_AND_EXCHANGE);
+        System.out.println(OperationType.ofFieldAccess(f, AccessMode.COMPARE_AND_EXCHANGE_RELEASE));
+        System.out.println(mt);
+    }
+
     public static OperationType of(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         return new OperationType(Variable.of(returnType), NO_PARAMETERS);
@@ -234,67 +249,6 @@ public final /* primitive */ class OperationType {
         }
     }
 
-    /**
-     * {@return an operation type representing the signature of the specified executable.}
-     * 
-     * @param methodType
-     *            the method type to convert
-     */
-    public static OperationType ofMethodType(MethodType methodType) {
-        requireNonNull(methodType, "methodType is null");
-        Variable returnVar = Variable.of(methodType.returnType());
-        int count = methodType.parameterCount();
-        if (count == 0) {
-            return new OperationType(returnVar, NO_PARAMETERS);
-        } else {
-            Variable[] vars = new Variable[count];
-            for (int i = 0; i < count; i++) {
-                vars[i] = Variable.of(methodType.parameterType(i));
-            }
-            return new OperationType(returnVar, vars);
-        }
-    }
-
-    public static OperationType ofFieldGet(Field field) {
-        requireNonNull(field, "field is null");
-        return OperationType.of(Variable.ofField(field));
-    }
-
-    public static OperationType ofFieldSet(Field field) {
-        requireNonNull(field, "field is null");
-        return OperationType.of(Variable.of(void.class), Variable.ofField(field));
-    }
-
-    class NonStatic {
-        List<?> f;
-
-        NonStatic(List<?> l) {}
-
-        public void me(List<?> l) {}
-    }
-
-    static class Static {
-        List<?> f;
-
-        Static(List<?> l) {}
-
-        public void me(List<?> l) {}
-    }
-
-    public static void mainx(String[] args) throws Throwable {
-        Field f = OperationType.class.getDeclaredField("NO_PARAMETERS");
-        System.out.println(f);
-        VarHandle vh = MethodHandles.lookup().unreflectVarHandle(f);
-
-        vh.getVolatile();
-        MethodHandles.lookup().unreflectGetter(f).invoke();
-        System.out.println(vh.hasInvokeExactBehavior());
-
-        MethodType mt = vh.accessModeType(AccessMode.COMPARE_AND_EXCHANGE);
-        System.out.println(OperationType.ofFieldAccess(f, AccessMode.COMPARE_AND_EXCHANGE_RELEASE));
-        System.out.println(mt);
-    }
-
     // I think we can move this internally
     public static OperationType ofFieldAccess(Field field, AccessMode accessMode) {
         requireNonNull(field, "field is null");
@@ -324,5 +278,52 @@ public final /* primitive */ class OperationType {
         default: // getAndUpdate
             return of(fieldVar, fieldVar);
         }
+    }
+
+    public static OperationType ofFieldGet(Field field) {
+        requireNonNull(field, "field is null");
+        return OperationType.of(Variable.ofField(field));
+    }
+
+    public static OperationType ofFieldSet(Field field) {
+        requireNonNull(field, "field is null");
+        return OperationType.of(Variable.of(void.class), Variable.ofField(field));
+    }
+
+    /**
+     * {@return an operation type representing the signature of the specified executable.}
+     * 
+     * @param methodType
+     *            the method type to convert
+     */
+    public static OperationType ofMethodType(MethodType methodType) {
+        requireNonNull(methodType, "methodType is null");
+        Variable returnVar = Variable.of(methodType.returnType());
+        int count = methodType.parameterCount();
+        if (count == 0) {
+            return new OperationType(returnVar, NO_PARAMETERS);
+        } else {
+            Variable[] vars = new Variable[count];
+            for (int i = 0; i < count; i++) {
+                vars[i] = Variable.of(methodType.parameterType(i));
+            }
+            return new OperationType(returnVar, vars);
+        }
+    }
+
+    class NonStatic {
+        List<?> f;
+
+        NonStatic(List<?> l) {}
+
+        public void me(List<?> l) {}
+    }
+
+    static class Static {
+        List<?> f;
+
+        Static(List<?> l) {}
+
+        public void me(List<?> l) {}
     }
 }

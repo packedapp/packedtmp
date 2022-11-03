@@ -30,7 +30,7 @@ import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
-import app.packed.container.ContainerHook;
+import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.User;
@@ -55,7 +55,7 @@ public final class AssemblySetup extends RealmSetup {
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onAssemblyClose", void.class);
-    
+
     /** The application that the assembly is used to built. */
     public final ApplicationSetup application;
 
@@ -168,8 +168,11 @@ public final class AssemblySetup extends RealmSetup {
                 extension.extensionRealm.isClosed = true;
             }
 
-            // The application has been built successfully
-            application.close();
+            // The application has been built successfully.
+            // If we need to launch it, generate code for it
+            if (application.goal.isLaunchable()) {
+                application.codegen();
+            }
 
         } else {
             // Similar to above, except we do not close extension trees
@@ -220,7 +223,7 @@ public final class AssemblySetup extends RealmSetup {
 
         /** {@inheritDoc} */
         @Override
-        public List<Class<? extends ContainerHook>> containerHooks() {
+        public List<Class<? extends AssemblyHook>> containerHooks() {
             return List.of(); // TODO implement
         }
 
