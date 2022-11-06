@@ -8,9 +8,9 @@ import app.packed.operation.OperationHandle;
 import internal.app.packed.container.ContainerSetup;
 
 /**
- *
+ * A container handle is a reference to an installed container, private to the extension that installed the container.
+ * 
  */
-// Must contain
 public final class ContainerHandle {
 
     final ContainerSetup container;
