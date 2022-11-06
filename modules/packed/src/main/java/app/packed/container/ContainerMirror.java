@@ -240,7 +240,11 @@ public class ContainerMirror implements Mirror {
      *             if the mirror's extension is not in use by the container
      */
     public <T extends ExtensionMirror<?>> T use(Class<T> extensionMirrorType) {
-        return findExtension(extensionMirrorType).orElseThrow();
+        Optional<T> op = findExtension(extensionMirrorType);
+        if (op.isEmpty()) {
+            throw new NoSuchElementException(extensionMirrorType + " is not present in this container");
+        }
+        return op.get();
     }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */

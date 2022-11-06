@@ -93,7 +93,7 @@ public abstract class AbstractComposer {
 
     // Kan annoteres og man kan override build
     // Assembly and composer must be in the same module
-    public static abstract class ComposerAssembly<C extends AbstractComposer> extends Assembly {
+    public static abstract class ComposerAssembly<C extends AbstractComposer> extends ContainerAssembly {
         private final C composer;
         private final ComposerAction<? super C> action;
 

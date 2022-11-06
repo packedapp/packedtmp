@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.operation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,8 +21,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
-
-import app.packed.operation.Variable;
 
 /**
  *

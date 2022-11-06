@@ -19,10 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.container.AbstractComposer;
-import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerLifetimeCompanion;
+import app.packed.container.BridgeOuter;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.ManagedLifetimeController;
@@ -183,7 +181,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @throws UnsupportedOperationException
          *             if this builder does not have a wrapper
          */
-        default Builder addCompanion(ContainerLifetimeCompanion... companions) {
+        default Builder addCompanion(BridgeOuter... companions) {
             return this;
         }
 
@@ -299,26 +297,26 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
     }
     
-    static <A> ApplicationDriver<A> of(Class<A> type, ComposerAction<Composer<A>> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Ville jo vaere fedt at genbruge den for ikke application-drivere.
-    // Apps on Apps.
-    
-    // Den fungere bare ikke geniferciret
-    public final class Composer<A> extends AbstractComposer {
-
-        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer<A>> action, Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        /// Hmm interessant
-        // fungere dog ikke super godt mht til den generiske parameter
-        static ApplicationDriver<Void> of(ComposerAction<? super Composer<Void>> action, Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-    }
+//    static <A> ApplicationDriver<A> of(Class<A> type, ComposerAction<Composer<A>> action) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    // Ville jo vaere fedt at genbruge den for ikke application-drivere.
+//    // Apps on Apps.
+//    
+//    // Den fungere bare ikke geniferciret
+//    public final class Composer<A> extends AbstractComposer {
+//
+//        static <A> ApplicationDriver<A> of(Class<A> application, ComposerAction<? super Composer<A>> action, Wirelet... wirelets) {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        /// Hmm interessant
+//        // fungere dog ikke super godt mht til den generiske parameter
+//        static ApplicationDriver<Void> of(ComposerAction<? super Composer<Void>> action, Wirelet... wirelets) {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
 }
 
 // Foer var den som wirelet.

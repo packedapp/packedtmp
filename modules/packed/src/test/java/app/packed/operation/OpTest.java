@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.operation;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -22,12 +22,11 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Disabled;
 
-import app.packed.operation.Op;
 import app.packed.service.Qualifier;
 
 /** Test of {@link Op}. */
 @Disabled
-public class FactoryTest {
+public class OpTest {
 
     
 

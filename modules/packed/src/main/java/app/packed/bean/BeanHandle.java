@@ -36,7 +36,7 @@ import internal.app.packed.oldservice.InternalServiceUtil;
  * A bean handle is a reference to an installed bean, private to the extension that installed the bean.
  * <p>
  * Instances of {@code BeanHandle} are never exposed directly to end-users. Instead they are returned wrapped in
- * {@link BeanConfiguration} or a subclass hereof.
+ * {@link BeanConfiguration} (or subclasses hereof).
  */
 public final /* primitive */ class BeanHandle<T> {
 
@@ -71,6 +71,15 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.beanKind;
     }
 
+    /**
+     * Checks that the bean is still configurable or throws an {@link IllegalStateException} if not
+     * <p>
+     * A bean declared by the application is configurable as long as the assembly from which it was installed is
+     * configurable. A bean declared by the application is configurable as long as the extension is configurable.
+     * 
+     * @throws IllegalStateException
+     *             if the bean is no longer configurable
+     */
     public void checkIsConfigurable() {
         if (!isConfigurable()) {
             throw new IllegalStateException("The bean is no longer configurable");
@@ -113,11 +122,19 @@ public final /* primitive */ class BeanHandle<T> {
      * 
      * @return
      */
-    // Ideen er jo foerst og fremmest taenkt paa 
+    // Ideen er jo foerst og fremmest taenkt paa
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }
 
+    /**
+     * Sets the name of the bean, overriding any existing name.
+     * 
+     * @param name
+     *            the name of the bean
+     * @throws IllegalArgumentException
+     *             if another bean with the specified name already exists
+     */
     public void named(String name) {
         checkIsConfigurable();
         bean.named(name);
@@ -133,13 +150,13 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.path();
     }
 
-    // Spoergsmaalet er om vi vil have dem her...
+    // Spoergsmaalet er om vi vil have dem her istedet for ServiceExtensionPoint
     // Eller kun i ProvideBeanConfiguration
     public void serviceExportAs(Key<? super T> key) {
         checkIsConfigurable();
 
         bean.container.sm.serviceExport(key, bean.accessOperation());
-        
+
         bean.container.injectionManager.ios.exportsOrCreate().export(bean, null);
     }
 
@@ -203,9 +220,11 @@ class BeanHandleSandbox<T> {
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
         throw new UnsupportedOperationException();
     }
+
     public void decorateInstance(Function<? super T, ? extends T> decorator) {
         throw new UnsupportedOperationException();
     }
+
     public void peekInstance(Consumer<? super T> consumer) {
         throw new UnsupportedOperationException();
     }

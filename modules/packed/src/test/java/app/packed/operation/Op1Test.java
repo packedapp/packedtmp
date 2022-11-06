@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.operation;
 
 import static testutil.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
-
-import app.packed.operation.Op1;
 
 /** Tests {@link Op1}. */
 public class Op1Test {

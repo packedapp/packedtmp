@@ -24,14 +24,14 @@ import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.lifetime.RunState;
 
 /**
- * An annotation used to indicate that a particular method should be invoked whenever the bean reaches the
- * {@link RunState#INITIALIZING} state.
+ * An annotation used to indicate that a particular method on bean should be invoked as part of the bean's
+ * initialization.
  * <p>
  * This annotation can, for example, be used like this:
  *
  * <pre>{@code  @OnInitialize
  * public void onInit() {
- *   System.out.println("This component is being initialized");
+ *   System.out.println("This bean is being initialized");
  * }}
  * </pre>
  * <p>
@@ -63,6 +63,8 @@ import app.packed.lifetime.RunState;
  * 
  * @see OnStart
  * @see OnStop
+ * 
+ * @see BeanLifecycleOperationMirror
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

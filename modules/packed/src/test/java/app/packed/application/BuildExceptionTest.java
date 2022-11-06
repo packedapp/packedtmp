@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package app.packed.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.BuildException;
 import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link BuildException}. */

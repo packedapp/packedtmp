@@ -58,7 +58,7 @@ import app.packed.operation.Op;
 // Tror udelukkende det er for extensions..
 // De andre ting er defineret
 
-public interface ContainerLifetimeCompanion {
+interface ContainerLifetimeCompanion {
 
     Set<Key<?>> keys(); // will be override services
     
@@ -75,7 +75,7 @@ public interface ContainerLifetimeCompanion {
 
     // Hvad hvis extensionen ikke er installeret?
     interface Builder<E extends Extension<E>> {
-        ContainerLifetimeCompanion build();
+        void build();
 
         // or maybe extensionOptional
         Builder<E> requireExtension();

@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.container;
+
+import static java.util.Objects.requireNonNull;
+
+import app.packed.container.bridge.PackedBridge;
 
 /**
  *
  */
-public class Factory2Test {
+public final class BridgeOuter {
 
+    final PackedBridge<?> bridge;
+
+    BridgeOuter(PackedBridge<?> bridge) {
+        this.bridge = requireNonNull(bridge);
+    }
 }

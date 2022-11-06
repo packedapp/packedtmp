@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.application.sandbox;
 
 /**
  *
  */
-public sealed abstract class RootAssembly permits Assembly, DelegatingAssembly {
+// Det der lidt taeller for descriptor over mirror.
+// Er at den ligger fast naar den er defineret og kan bruges paa tvaers
+// af applicationer
+public interface ApplicationLayerDescriptor {
 
 }
+// or mirror?

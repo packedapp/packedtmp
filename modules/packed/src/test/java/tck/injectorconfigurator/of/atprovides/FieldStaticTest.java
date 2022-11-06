@@ -28,8 +28,8 @@ import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;
 
 /**
- * Tests {@link ProvideService#constant()} on static fields. In general we do not need to create an instance of the parent if
- * we have static {@link ProvideService} fields. Unlike for instance fields.
+ * Tests {@link ProvideService#constant()} on static fields. In general we do not need to create an instance of the
+ * parent if we have static {@link ProvideService} fields. Unlike for instance fields.
  */
 public class FieldStaticTest {
 
@@ -59,7 +59,7 @@ public class FieldStaticTest {
         @ProvideService(constant = true)
         private static Short S;
 
-        public   MixedFieldsInstantiable() {
+        public MixedFieldsInstantiable() {
             // assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
@@ -94,7 +94,7 @@ public class FieldStaticTest {
      * A helper class that should never be instantiated. Because we can read the value of the fields without an instance of
      * BindStaticNoInstantiation.
      */
-public    static class MixedFieldsNoInstantiation {
+    public static class MixedFieldsNoInstantiation {
 
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;

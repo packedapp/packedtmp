@@ -13,27 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.bridge;
 
-import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 
-import app.packed.operation.Op1;
-import app.packed.service.ServiceExtension;
+import app.packed.container.Extension;
 
 /**
  *
  */
-public class CLCUsage {
 
-    public static void main(String[] args) {
+//Ideen er vi share den her mellem EB og Builder
+//Vi kan gaa far Builder->EB man aldrig den anden vej
+//PackedEB er altid super condensed
+//Builderen laver en copy on write
 
-        BridgeInner<ServiceExtension> b = BridgeInner.builder(MethodHandles.lookup(), ServiceExtension.class);
-        b.onUse(s -> s.exportAll());
-        b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
-        b.build();
+public final class PackedBridge<E> {
+    final Class<? extends Extension<?>> extensionClass;
+    
+    PackedBridge(Class<? extends Extension<?>> extensionClass) {
+        this.extensionClass = extensionClass;
     }
 
-    public class MyExtBean {
-        String foo;
+    /**
+     * @param action
+     * @return
+     */
+    public PackedBridge<E> onUse(Consumer<E> action) {
+        return null;
     }
 }

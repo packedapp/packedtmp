@@ -15,28 +15,42 @@
  */
 package app.packed.container;
 
+import app.packed.application.BuildException;
+
 /**
- *
+ * An assembly that delegates to another assembly.
+ * <p>
+ * A typical use case for using a delegating assembly is to hide methods on the original assembly. Or to configure the
+ * assembly, for example, in test scenarios where only an assembly class can be specified in an annotation.
+ * <p>
+ * Delegating assemblies cannot use the {@link AssemblyHook} annotation. If a delegating assembly is used when creating
+ * an application, a {@link BuildException} is thrown.
  */
+public non-sealed abstract class DelegatingAssembly extends Assembly {
 
-// Ideen er lidt at have en general klasse man kan wrappe en assembly i
+    /** {@return the assembly to be delegated to.} */
+    protected abstract Assembly delegateTo();
 
-// Der er lidt flere modeller.
-
-// Tager den anden Assembly i constructuren
-// Laver den fra en metode
-
-//// Tror det vigtigt vi tager noget der kan representeres ved en Class saaledes at vi kan smide den i nogle
-//// test annoteringer a.la. @RunWith(MyDelAssembly.class)
-
-
-// Noget composer noget ville ogsaa vaere godt
-
-// Fx med den opening ting
-// Den tager en Assembly og hvis assemblies module er det samme eller aaben til. Ellers faar vi en fejl
-// Saa kan man lave sjov og ballede
-
-// Ved ikke om der er flere use cases
-public non-sealed abstract class DelegatingAssembly extends RootAssembly {
-
+    // Kan jo saa argumentere for hvorfor man ikke kan specificere wirelets for alle assemblies????
+    // Altsaa det ikke mening kun at give tilladelse til at have den her
+    // Kunne endda have en instans metode paa Assembly....
+    static Assembly wireWith(Assembly assembly, Wirelet... wirelets) {
+        return assembly;
+    }
 }
+//Delegated vs Delegating? DelegatingSpliterator, DelegatedExecutorService
+//Der er lidt flere modeller.
+
+//Tager den anden Assembly i constructuren
+//Laver den fra en metode
+
+////Tror det vigtigt vi tager noget der kan representeres ved en Class saaledes at vi kan smide den i nogle
+////test annoteringer a.la. @RunWith(MyDelAssembly.class)
+
+//Noget composer noget ville ogsaa vaere godt
+
+//Fx med den opening ting
+//Den tager en Assembly og hvis assemblies module er det samme eller aaben til. Ellers faar vi en fejl
+//Saa kan man lave sjov og ballede
+
+//Ved ikke om der er flere use cases

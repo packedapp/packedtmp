@@ -13,11 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.application;
+package app.packed.application.sandbox;
 
-import app.packed.container.ContainerAssembly;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
+ * Assemblies...
+ * 
+ * 
+ * Beans????
  */
-public abstract class ApplicationBootstrapAssembly extends ContainerAssembly {}
+// InLayer
+
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface InLayer {
+    
+    /**
+     * @return the layer
+     */
+    Class<? extends ApplicationLayer> value();
+}

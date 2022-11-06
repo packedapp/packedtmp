@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.operation;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static testutil.assertj.Assertions.checkThat;
 
 import java.util.List;
@@ -25,17 +26,15 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
-import app.packed.operation.CapturingOp;
-import app.packed.operation.Op;
-import app.packed.operation.Op0;
 
 /** Tests {@link Op}. */
-public class FactoryXTest {
+public class OpXTest {
 
     /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
     @Test
     public void integerFactory0() {
         Op<Integer> f = new Op0<>(() -> 1) {};
+        assertEquals(Integer.class, f.type().returnType());
         checkThat(f).is(Integer.class);
         checkThat(f).hasNoDependencies();
 
@@ -65,10 +64,10 @@ public class FactoryXTest {
     public void typeParameterIndeterminable() {
         // TODO change to Factory instead of BaseFactory
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Op0(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <R> for " + CapturingOp.class.getSimpleName() + "<R> on class " + FactoryXTest.class.getPackageName());
+                .withMessageStartingWith("Cannot determine type variable <R> for " + CapturingOp.class.getSimpleName() + "<R> on class " + OpXTest.class.getPackageName());
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <T> for " + CapturingOp.class.getSimpleName() + "<R> on class " + FactoryXTest.class.getCanonicalName());
+                .withMessageStartingWith("Cannot determine type variable <T> for " + CapturingOp.class.getSimpleName() + "<R> on class " + OpXTest.class.getCanonicalName());
     }
 
     @Test

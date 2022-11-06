@@ -26,6 +26,8 @@ import internal.app.packed.container.ExtensionSetup;
 // Det der taeller imod den er at vi dokumentere protected members
 // Og ogsaa grunden til den blev droppet i foerste omgang
 
+// Det eneste er for at dokumentere extensions der bruger interne APIs
+
 // Det kan ogsaa vaere vi ender med en stor gang internal fifilifoo ogsaa for FileExtension, TemplateExtension, ect..
 // Fx TestExtension kunne sagtens bruge interne APIs
 public abstract sealed class BasicExtension<E extends BasicExtension<E>> extends Extension<E>permits ServiceExtension {
