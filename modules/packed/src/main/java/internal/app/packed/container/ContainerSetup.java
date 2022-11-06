@@ -235,7 +235,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
      * @see ContainerConfiguration#isExtensionUsed(Class)
-     * @see ContainerMirror#isExtensionUsed(Class)
+     * @see ContainerMirror#isUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");

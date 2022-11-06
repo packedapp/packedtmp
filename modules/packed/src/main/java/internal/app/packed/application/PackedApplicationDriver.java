@@ -37,7 +37,6 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.OldLifetimeKind;
-import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.operation.op.PackedOp;
@@ -228,8 +227,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private final HashSet<Class<? extends Extension<?>>> disabledExtensions = new HashSet<>();
 
+        /** Factory, if A is non-void. */
         @Nullable
-        PackedOp<A> factory;
+        public final PackedOp<A> factory;
 
         /**
          * All application drivers except {@link PackedApplicationDriver#PRIMORDIAL} has either an unmanaged or managed
@@ -241,8 +241,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private Wirelet wirelet;
 
-        public Builder(Op<A> factory) {
-            this.factory = factory == null ? null : PackedOp.crack(factory);
+        public Builder(PackedOp<A> factory) {
+            this.factory = factory;
 
             // Problemet med at komme laengere er lidt InternalInfuser som er bygget op omkring den faar en klasse
             // og ikke et internal factory
@@ -356,7 +356,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** A mapped wrapper of an {@link ApplicationLauncher}. */
+    /** A application launcher that maps the result of the launch. */
     public record MappedApplicationImage<A, F> (ApplicationLauncher<F> image, Function<? super F, ? extends A> mapper) implements ApplicationLauncher<A> {
 
         /** {@inheritDoc} */

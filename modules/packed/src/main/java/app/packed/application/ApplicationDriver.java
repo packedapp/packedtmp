@@ -27,6 +27,7 @@ import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
+import internal.app.packed.operation.op.PackedOp;
 
 /**
  * Application drivers are responsible for creating (root) applications.
@@ -152,8 +153,13 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         return new PackedApplicationDriver.Builder<>(null);
     }
 
+    static <A> Builder<A> builder(MethodHandles.Lookup lookup, Class<A> wrapper) {
+        throw new UnsupportedOperationException();
+    }
+
     static <A> Builder<A> builder(Op<A> wrapperFactory) {
-        return new PackedApplicationDriver.Builder<>(wrapperFactory);
+        PackedOp<A> op = PackedOp.crack(wrapperFactory);
+        return new PackedApplicationDriver.Builder<>(op);
     }
 
     /**
@@ -161,11 +167,11 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * {@link ApplicationDriver#builder()}.
      */
     /* sealed */ interface Builder<A> /* permits PackedApplicationDriver.Builder */ {
-     // Environment + Application Interface + Result
+        // Environment + Application Interface + Result
 
-     // Refactoring
-     //// En build(Wirelet... wirelets) metode
-     //// Companion objects must be added in order of the recieving MethodHandle
+        // Refactoring
+        //// En build(Wirelet... wirelets) metode
+        //// Companion objects must be added in order of the recieving MethodHandle
 
         // Maaske konfigure man dem direkte paa extension support klassen
         //// Det jeg taener er at man maaske har mulighed for at konfigure dem. F.eks.
@@ -296,7 +302,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 //        }
 
     }
-    
+
 //    static <A> ApplicationDriver<A> of(Class<A> type, ComposerAction<Composer<A>> action) {
 //        throw new UnsupportedOperationException();
 //    }

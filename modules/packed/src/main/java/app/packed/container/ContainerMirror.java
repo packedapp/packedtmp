@@ -20,15 +20,11 @@ import internal.app.packed.container.Mirror;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
-/**
- * A mirror of a single container.
- * <p>
- * Instances of this class is typically via {@link ApplicationMirror}.
- */
+/** A mirror of a single container. */
 @BindingHook(extension = MirrorExtension.class)
 public class ContainerMirror implements Mirror {
 
-    /** A ExtensionMirror class to Extension class mapping. */
+    /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {
 
         /** A type variable extractor. */
@@ -171,6 +167,11 @@ public class ContainerMirror implements Mirror {
         this.container = container;
     }
 
+    /** {@return whether or not the container is the root container in the application.} */
+    public boolean isApplicationRoot() {
+        return container().treeParent == null;
+    }
+
     /**
      * Returns whether or not an extension of the specified type is in use by the container.
      * 
@@ -179,14 +180,8 @@ public class ContainerMirror implements Mirror {
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
-    // isInUse?
-    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
+    public boolean isUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
-    }
-
-    /** {@return whether or not the container is the root container in the application.} */
-    public boolean isApplicationRoot() {
-        return container().treeParent == null;
     }
 
     /** {@return the containers's lifetime.} */

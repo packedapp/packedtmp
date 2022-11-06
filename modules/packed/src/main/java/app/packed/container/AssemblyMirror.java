@@ -24,6 +24,7 @@ import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.Mirror;
 
 /** A mirror of an {@link Assembly}. */
+// What about delegating assemblies
 public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.BuildtimeAssemblyMirror {
 
     /** {@return the application this assembly contributes to.} */
@@ -44,7 +45,7 @@ public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.Buil
 
     /** {@return a list of hooks that are applied to containers defined by the assembly.} */
     // present on ContainerMirror as well? Maybe a ContainerHookMirror, I really think it should be
-    List<Class<? extends AssemblyHook>> containerHooks();
+    List<Class<? extends AssemblyHook>> hooks();
 
     /** @return whether or not this assembly defines the root container in the application.} */
     boolean isRoot();
@@ -54,14 +55,3 @@ public sealed interface AssemblyMirror extends Mirror permits AssemblySetup.Buil
      */
     Optional<AssemblyMirror> parent();
 }
-
-///**
-//* {@return the module of the application. This is always the module of the Assembly or ComposerAction class that
-//* defines the application container.}
-//* 
-//* Altsaa hvis en application skal have et module... Skal container+Bean vel ogsaa
-//*/
-////Hmm, hvis applikation = Container specialization... Ved component
-////Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
-////Maaske vi skal have et realm mirror????
-//Module module();

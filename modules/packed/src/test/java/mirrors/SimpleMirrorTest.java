@@ -57,7 +57,7 @@ public class SimpleMirrorTest {
         assertThat(asm.children()).isEmpty();
         assertEquals(am.container(), asm.container());
         assertTrue(asm.isRoot());
-        assertThat(asm.containerHooks()).isEmpty();
+        assertThat(asm.hooks()).isEmpty();
         assertThat(asm.parent()).isEmpty();
 
         /// BuildGoal

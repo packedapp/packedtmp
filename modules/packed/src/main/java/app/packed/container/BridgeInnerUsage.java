@@ -13,33 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.bridge;
+package app.packed.container;
 
-import java.util.function.Consumer;
+import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Extension;
+import app.packed.operation.Op1;
+import app.packed.service.ServiceExtension;
 
 /**
  *
  */
+class BridgeInnerUsage {
 
-//Ideen er vi share den her mellem EB og Builder
-//Vi kan gaa far Builder->EB man aldrig den anden vej
-//PackedEB er altid super condensed
-//Builderen laver en copy on write
-
-public final class PackedBridge<E> {
-    final Class<? extends Extension<?>> extensionClass;
-    
-    PackedBridge(Class<? extends Extension<?>> extensionClass) {
-        this.extensionClass = extensionClass;
+    public static void main(String[] args) {
+        BridgeInner<ServiceExtension> b = BridgeInner.builder(MethodHandles.lookup(), ServiceExtension.class);
+        b.onUse(s -> s.exportAll());
+        b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
+        b.build();
     }
 
-    /**
-     * @param action
-     * @return
-     */
-    public PackedBridge<E> onUse(Consumer<E> action) {
-        return null;
+    public class MyExtBean {
+        String foo;
     }
 }

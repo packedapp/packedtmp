@@ -21,17 +21,22 @@ import app.packed.bean.BeanMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 
-
 /**
  * This extension is used to provide mirror functionality at runtime.
  * <p>
- * It can be used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror} or {@link BeanMirror}.
+ * This extension is used to inject mirrors of type {@link ApplicationMirror}, {@link ContainerMirror} or
+ * {@link BeanMirror} at runtime.
  * <p>
- * This extension is mainly here as a kind of a marker extension. Indicating that somewhere in the application someone
- * has decided to reference a mirror. In which case the whole mirror shebang is available at runtime.
+ * This extension is mainly here as a kind of "marker extension". Indicating that somewhere in the application someone
+ * has decided to reference a mirror. In which case the mirroring of the whole application is available at runtime.
  * <p>
  * Maybe at some point we will support a compact mirror mode where each extension can keep a minimal set of information
  * that is needed at runtime.
+ * 
+ * @see ApplicationMirror
+ * @see ContainerMirror
+ * @see AssemblyMirror
+ * @see BeanMirror
  */
 public class MirrorExtension extends Extension<MirrorExtension> {
 
@@ -39,7 +44,8 @@ public class MirrorExtension extends Extension<MirrorExtension> {
     MirrorExtension() {}
 
     /**
-     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, and {@link BeanMirror}.
+     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, {@link AssemblyMirror}, and
+     * {@link BeanMirror}.
      * 
      * {@inheritDoc}
      */
@@ -56,11 +62,12 @@ public class MirrorExtension extends Extension<MirrorExtension> {
                     binding.bind(bean.container.mirror());
                 } else if (binding.hookClass() == BeanMirror.class) {
                     binding.bind(bean.mirror());
+                } else if (binding.hookClass() == AssemblyMirror.class) {
+                    binding.bind(bean.container.assembly);
                 } else {
                     super.onBinding(binding);
                 }
-
-                // Could bind the operation... but if we have multiple operations. This is non-trivial
+                // Could bind the Operation... but if we have multiple operations. This is non-trivial
             }
         };
     }

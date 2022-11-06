@@ -22,13 +22,13 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
-import app.packed.container.bridge.PackedBridge;
 import app.packed.operation.Op;
+import internal.app.packed.application.PackedBridge;
 
 /**
  *
  */
-public class BridgeInner<E extends Extension<E>> {
+public final class BridgeInner<E extends Extension<E>> {
 
     private PackedBridge<E> bridge;
 

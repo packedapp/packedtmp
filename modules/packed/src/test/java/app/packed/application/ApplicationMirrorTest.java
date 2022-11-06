@@ -55,7 +55,7 @@ public class ApplicationMirrorTest {
         assertThat(asm.children()).isEmpty();
         assertEquals(m.container(), asm.container());
         assertTrue(asm.isRoot());
-        assertThat(asm.containerHooks()).isEmpty();
+        assertThat(asm.hooks()).isEmpty();
         assertThat(asm.parent()).isEmpty();
 
         /// BuildGoal

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package internal.app.packed.application;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
@@ -22,6 +22,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.base.Key;
+import app.packed.container.AbstractComposer;
+import app.packed.container.Extension;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.operation.Op;
 

@@ -248,7 +248,7 @@ public final class AssemblySetup extends RealmSetup {
 
         /** {@inheritDoc} */
         @Override
-        public List<Class<? extends AssemblyHook>> containerHooks() {
+        public List<Class<? extends AssemblyHook>> hooks() {
             return List.of(); // TODO implement
         }
 

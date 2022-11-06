@@ -13,33 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import static java.util.Objects.requireNonNull;
+package internal.app.packed.application;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import internal.app.packed.application.PackedBridge;
+import app.packed.container.Extension;
 
 /**
  *
  */
-public final class BridgeOuter {
 
-    /** The actual lifetime bridge. */
-    final PackedBridge<?> bridge;
+//Ideen er vi share den her mellem EB og Builder
+//Vi kan gaa far Builder->EB man aldrig den anden vej
+//PackedEB er altid super condensed
+//Builderen laver en copy on write
 
-    BridgeOuter(PackedBridge<?> bridge) {
-        this.bridge = requireNonNull(bridge);
+public final class PackedBridge<E> {
+    
+    final Class<? extends Extension<?>> extensionClass;
+    
+    PackedBridge(Class<? extends Extension<?>> extensionClass) {
+        this.extensionClass = extensionClass;
+    }
+
+    /**
+     * @param action
+     * @return
+     */
+    public PackedBridge<E> onUse(Consumer<E> action) {
+        return null;
     }
     
     public List<Class<?>> invocationArguments() {
-        return bridge.invocationArguments();
+        return List.of();
     }
     
     public Set<Key<?>> keys() {
-        return bridge.keys();
+        return Set.of();
+    }
+    
+    
+    // ExtensionBean -> T
+    public class Extractor {
+        
     }
 }

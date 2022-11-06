@@ -10,17 +10,11 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 /**
+ * An annotation that can be places on an assembly.
+ * 
  * Can be used on subclasses of {@link Assembly} or as a meta-annotation that can be applied to {@link Assembly}
  * subclass.
- * 
- * Assembly : Will be applied to all containers installed by the user
- * 
- * <p>
- * Extension (Nope...
- * 
- * Is ignored on any other classes.
  */
-
 // We include all containers by default. Because that is also how lookup(Lookup) works (and bean hooks)
 // Fordi det er det vi ogsaa goer med beans hook. Det giver ingen mening ikke at goere det.
 // Ligesom Lookup ogsaa gaelder alle containere i den assembly
@@ -31,17 +25,10 @@ import java.lang.invoke.MethodHandles;
 @Repeatable(AssemblyHook.All.class)
 public @interface AssemblyHook {
 
-    // After og before, Inner or Outer kan ogsaa bruge den med lifecycle
-    // boolean applyBeforeSubclasses() default true;
-
-    //Consumer<ContainerMirror>[] verifiers() default {};
-
     /**
-     * Whether or not the hook applies to all containers defined by the assembly.
-     * <p>
-     * This will never apply to containers defined by other assemblies.
+     * Whether or not the hook applies to all containers defined by the assembly. The default value is {@code true}.
      * 
-     * @return
+     * @return whether or not the hook should be applied to all containers defined by the assembly
      */
     boolean applyToAllContainers() default true;
 
@@ -98,9 +85,11 @@ public @interface AssemblyHook {
         default void onCompleted(ContainerMirror mirror) {};
     }
 }
-// Saa vi vil maaske have et ContainerConfiguration.onComplete(Consumer<? super ContainerConfiguration)
 
-//// Not a listerner, because we might change things
+// After og before, Inner or Outer kan ogsaa bruge den med lifecycle
+// boolean applyBeforeSubclasses() default true;
+
+//Consumer<ContainerMirror>[] verifiers() default {};
 
 //// is invoked exactly once per hook instance. As the first method.
 // default void onBootstrap(Bootstrap bootstrap) {};

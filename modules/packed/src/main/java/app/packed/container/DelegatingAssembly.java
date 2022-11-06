@@ -21,10 +21,10 @@ import app.packed.application.BuildException;
  * An assembly that delegates to another assembly.
  * <p>
  * A typical use case for using a delegating assembly is to hide methods on the original assembly. Or to configure the
- * assembly, for example, in test scenarios where only an assembly class can be specified in an annotation.
+ * assembly, for example, in test scenarios where you want to specify an assembly class in an annotation.
  * <p>
- * Delegating assemblies cannot use the {@link AssemblyHook} annotation. If a delegating assembly is used when creating
- * an application, a {@link BuildException} is thrown.
+ * Delegating assemblies cannot use the {@link AssemblyHook} annotation. Attempting to use a delegating assembly with
+ * an assembly hook will result in a {@link BuildException} being thrown.
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 

@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.application.sandbox;
 
-import java.lang.invoke.MethodHandles;
-
-import app.packed.operation.Op1;
-import app.packed.service.ServiceExtension;
-
-/**
- *
- */
-public class CLCUsage {
-
-    public static void main(String[] args) {
-
-        BridgeInner<ServiceExtension> b = BridgeInner.builder(MethodHandles.lookup(), ServiceExtension.class);
-        b.onUse(s -> s.exportAll());
-        b.provideUp(new Op1<MyExtBean, String>(e -> e.foo) {});
-        b.build();
-    }
-
-    public class MyExtBean {
-        String foo;
-    }
+/** The phase in the lifecycle of an application. */
+// Another name than 
+// Taenkt som naar man bygger ting og fx bruger IO.
+// Saa er det maaske fint an indikere hvornaar man goer hvad.
+public enum ApplicationPhase {
+    BUILD_TIME, RUNTIME;
 }
+// Build_Time
+//// Compose
+//// Code generation
+// Run_time
+// 
