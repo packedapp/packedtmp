@@ -72,25 +72,34 @@ public final class AssemblyMetaModel {
 
     private final Map<String, Class<? extends Annotation>> bindings;
 
-    /** A cache of any extensions a particular annotation activates. */
+    /** A cache of field annotations. */
     private final ClassValue<AnnotatedFieldRecord> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
 
         @Override
         protected AnnotatedFieldRecord computeValue(Class<?> type) {
             @SuppressWarnings("unchecked")
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
+            AnnotatedFieldRecord result = null;
+
             FieldHook fieldHook = type.getAnnotation(FieldHook.class);
+            if (fieldHook != null) {
+                checkExtensionClass(type, fieldHook.extension());
+                result = new AnnotatedFieldRecord(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
+            }
+
             BindingHook bindingHook = type.getAnnotation(BindingHook.class);
+            if (bindingHook != null) {
+                if (fieldHook != null) {
+                    throw new InternalExtensionException(annotationType + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
+                }
+                checkExtensionClass(type, bindingHook.extension());
+                return new AnnotatedFieldRecord(annotationType, bindingHook.extension(), false, true, true);
+            }
+
             FieldEntry cl = fields.get(type.getName());
 
-            // fields tror jeg man slaa op i... Kan ikke vaere begge typer
-            
             if (cl != null) {
-                if (cl.isBindingHook()) {
-                    if (bindingHook != null) {
-                        throw new InternalExtensionException("POOPS");
-                    }
-                } else if (fieldHook != null) {
+                if (result != null) {
                     throw new InternalExtensionException("POOPS");
                 }
                 Class<?> declaringClass = cl.annotationType.getDeclaringClass();
@@ -99,21 +108,10 @@ public final class AssemblyMetaModel {
                 }
                 @SuppressWarnings("unchecked")
                 Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
-                return new AnnotatedFieldRecord(annotationType, extensionClass, cl.allowGet, cl.allowSet, cl.isBindingHook);
+                result = new AnnotatedFieldRecord(annotationType, extensionClass, cl.allowGet, cl.allowSet, cl.isBindingHook);
             }
 
-            if (bindingHook == fieldHook) { // check both null
-                return null;
-            } else if (bindingHook == null) {
-                checkExtensionClass(type, fieldHook.extension());
-                return new AnnotatedFieldRecord(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
-            } else if (fieldHook == null) {
-                checkExtensionClass(type, bindingHook.extension());
-                return new AnnotatedFieldRecord(annotationType, bindingHook.extension(), false, true, true);
-            } else {
-                // The annotation is annotated with both FieldHook and BindingHook
-                throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
-            }
+            return result;
         }
     };
 
@@ -172,7 +170,7 @@ public final class AssemblyMetaModel {
         this.bindings = Map.copyOf(bindings);
     }
 
-    AnnotatedFieldRecord lookupAnnotatedFieldRecord(Class<? extends Annotation> fieldAnnotation) {
+    AnnotatedFieldRecord lookupAnnotatedField(Class<? extends Annotation> fieldAnnotation) {
         return FIELD_ANNOTATION_CACHE.get(fieldAnnotation);
     }
 

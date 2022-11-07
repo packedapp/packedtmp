@@ -202,7 +202,7 @@ public final class IntrospectedBeanField implements OnField {
             Annotation annotation = annotations[i];
 
             // Look in the field annotation cache to see if the annotation is a meta annotation
-            AnnotatedFieldRecord e = introspector.assemblyMetaModel.lookupAnnotatedFieldRecord(annotation.annotationType());
+            AnnotatedFieldRecord e = introspector.assemblyMetaModel.lookupAnnotatedField(annotation.annotationType());
 
             // The annotation is neither a field or binding annotation
             if (e == null) {
@@ -218,7 +218,7 @@ public final class IntrospectedBeanField implements OnField {
                 Annotation annotation2 = annotations[j];
 
                 // Look in the annotation cache to see if the annotation is a meta annotation
-                AnnotatedFieldRecord e2 = introspector.assemblyMetaModel.lookupAnnotatedFieldRecord(annotation2.annotationType());
+                AnnotatedFieldRecord e2 = introspector.assemblyMetaModel.lookupAnnotatedField(annotation2.annotationType());
 
                 // The annotation is neither a field or provision annotation
                 if (e2 == null) {
