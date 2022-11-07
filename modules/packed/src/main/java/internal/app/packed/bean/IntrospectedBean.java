@@ -88,8 +88,11 @@ public final class IntrospectedBean {
 
     final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
+    final AssemblyMetaModel assemblyMetaModel;
+
     IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
+        this.assemblyMetaModel = bean.container.assembly.assemblyModel.metaModel;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
@@ -356,7 +359,7 @@ public final class IntrospectedBean {
             // See if we need private access, otherwise just return ordinary lookup.
             if (!needsPrivateLookup(member)) {
                 // Hmm
-               // return lookup;
+                // return lookup;
             }
 
             if (!privateLookupInitialized) {

@@ -14,6 +14,7 @@ import app.packed.container.Assembly;
 import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.DelegatingAssembly;
+import internal.app.packed.bean.AssemblyMetaModel;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A model of an {@link Assembly}. */
@@ -66,15 +67,18 @@ public final /* primitive */ class AssemblyModel {
             if (!hooks.isEmpty() && DelegatingAssembly.class.isAssignableFrom(type)) {
                 throw new BuildException("Delegating assemblies cannot use @" + AssemblyHook.class.getSimpleName() + " annotations, assembly type =" + type);
             }
-            return new AssemblyModel(hooks.toArray(s -> new AssemblyHook.Processor[s]));
+            return new AssemblyModel(type, hooks.toArray(s -> new AssemblyHook.Processor[s]));
         }
     };
 
     /** Any hooks that have been specified on the assembly. */
     private final AssemblyHook.Processor[] hooks;
 
-    private AssemblyModel(AssemblyHook.Processor[] hooks) {
+    public final AssemblyMetaModel metaModel;
+
+    private AssemblyModel(Class<?> assemblyClass, AssemblyHook.Processor[] hooks) {
         this.hooks = requireNonNull(hooks);
+        this.metaModel = AssemblyMetaModel.of(assemblyClass);
     }
 
     public void postBuild(ContainerConfiguration configuration) {

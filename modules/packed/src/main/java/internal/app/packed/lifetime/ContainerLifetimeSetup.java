@@ -35,9 +35,6 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    
-    
-    
     ArrayList<LifetimeOp> initialize = new ArrayList<>();
 
     ArrayList<MethodHandle> initializeMh = new ArrayList<>();
@@ -57,6 +54,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     ArrayList<LifetimeOp> stop = new ArrayList<>();
 
     ArrayList<MethodHandle> stopMh = new ArrayList<>();
+    
     /**
      * @param origin
      * @param parent

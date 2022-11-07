@@ -19,7 +19,7 @@ import app.packed.bean.BeanHandle;
 import app.packed.bean.InstanceBeanConfiguration;
 
 /**
- *
+ * A bean that creates a new container lifetime.
  */
 public class ContainerLauncherBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
@@ -37,6 +37,5 @@ public class ContainerLauncherBeanConfiguration<T> extends InstanceBeanConfigura
     
     public ContainerHandle newManyContainer(Wirelet[] wirelets, ContainerHandle.InstallOption... options) {
         throw new UnsupportedOperationException();
-    }
-    
+    } 
 }

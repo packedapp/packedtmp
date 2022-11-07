@@ -15,13 +15,35 @@
  */
 package app.packed.application.sandbox;
 
+import java.util.Optional;
+
 /**
- *
+ * An application layer descriptor.
  */
 // Det der lidt taeller for descriptor over mirror.
 // Er at den ligger fast naar den er defineret og kan bruges paa tvaers
 // af applicationer
 public interface ApplicationLayerDescriptor {
 
+    /** {@return the application layer class.} */
+    Class<? extends ApplicationLayer> applicationLayerClass();
+    
+    /** {@return the name of the application layer.} */
+    String name();
+
+    /** {@return any parent application layer this layer has.} */
+    Optional<ApplicationLayerDescriptor> parent();
+
+    /**
+     * Returns a descriptor for the specified application layer.
+     * 
+     * @param applicationLayer
+     *            the type of application layer to return a descriptor for
+     * @return a descriptor for the specified application layer
+     * @throws RuntimeException
+     *             if the definition of the application layer is invalid.
+     */
+    static ApplicationLayerDescriptor of(Class<? extends ApplicationLayer> applicationLayer) {
+        throw new UnsupportedOperationException();
+    }
 }
-// or mirror?

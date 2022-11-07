@@ -25,7 +25,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.container.BasicExtension;
+import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
@@ -78,7 +78,7 @@ import internal.app.packed.operation.OperationSetup;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
 @DependsOn(extensions = BeanExtension.class)
-public non-sealed class ServiceExtension extends BasicExtension<ServiceExtension> {
+public class ServiceExtension extends Extension<ServiceExtension> {
 
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
 

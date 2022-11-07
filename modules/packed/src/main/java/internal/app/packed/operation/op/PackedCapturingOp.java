@@ -18,17 +18,24 @@ package internal.app.packed.operation.op;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
+import app.packed.operation.Op0;
+import app.packed.operation.Op1;
+import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 
+/**
+ * An op that captures 1 or more type variables.
+ * 
+ * @see Op0
+ * @see Op1
+ * @see Op2
+ */
 final class PackedCapturingOp<R> extends PackedOp<R> {
 
-    /**
-     * @param typeLiteralOrKey
-     */
     PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
         super(type, methodHandle);
     }

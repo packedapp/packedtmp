@@ -18,7 +18,6 @@ package internal.app.packed.operation.op;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.operation.Op;
@@ -32,9 +31,10 @@ import internal.app.packed.util.LookupUtil;
 /** An implementation of the {@link Op#peek(Consumer)}} method. */
 final class PeekableOp<R> extends PackedOp<R> {
 
-    /** A method handle for {@link Function#apply(Object)}. */
+    /** A method handle for {@link #accept(Consumer, Object)}. */
     static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
 
+    /** The op that is being peeked on. */
     final PackedOp<?> delegate;
 
     PeekableOp(PackedOp<R> delegate, MethodHandle methodHandle) {

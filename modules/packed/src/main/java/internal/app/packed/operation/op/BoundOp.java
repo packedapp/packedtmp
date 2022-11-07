@@ -24,7 +24,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 
-/** A binding op. */
+/** A op that binds 1 or more constants. */
 final class BoundOp<R> extends PackedOp<R> {
 
     /** The arguments to insert. */

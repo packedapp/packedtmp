@@ -123,6 +123,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         // Launch the application
         PackedApplicationLauncher launcher = as.application.launcher;
+        // as= null? For GC?
         return launcher.launchImmediately(this);
     }
 
@@ -143,7 +144,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Build the application
         AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_IMAGE, assembly, wirelets);
         as.build();
-        
+
         // Create a reusable launcher
         return new ReusableApplicationImage<>(this, as.application);
     }
@@ -183,7 +184,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Build the application
         AssemblySetup as = new AssemblySetup(this, BuildGoal.NEW_MIRROR, assembly, wirelets);
         as.build();
-        
+
         // Create a mirror for the application
         return as.application.mirror();
     }

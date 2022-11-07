@@ -32,10 +32,10 @@ import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
+import internal.app.packed.bean.AssemblyMetaModel.FieldRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
@@ -202,7 +202,7 @@ public final class IntrospectedBeanField implements OnField {
             Annotation annotation = annotations[i];
 
             // Look in the field annotation cache to see if the annotation is a meta annotation
-            FieldAnnotationCache e = FieldAnnotationCache.CACHE.get(annotation.annotationType());
+            FieldRecord e = introspector.assemblyMetaModel.lookupFieldAnnotation(annotation.annotationType());
 
             // The annotation is neither a field or binding annotation
             if (e == null) {
@@ -218,14 +218,14 @@ public final class IntrospectedBeanField implements OnField {
                 Annotation annotation2 = annotations[j];
 
                 // Look in the annotation cache to see if the annotation is a meta annotation
-                FieldAnnotationCache e2 = FieldAnnotationCache.CACHE.get(annotation2.annotationType());
+                FieldRecord e2 = introspector.assemblyMetaModel.lookupFieldAnnotation(annotation2.annotationType());
 
                 // The annotation is neither a field or provision annotation
                 if (e2 == null) {
                     continue;
                 }
 
-                if (e.isProvision || e2.isProvision) {
+                if (e.isProvision() || e2.isProvision()) {
                     throw new InvalidBeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
                 }
 
@@ -235,20 +235,20 @@ public final class IntrospectedBeanField implements OnField {
                 if (multiMatch == null) {
                     multiMatch = new IdentityHashMap<>();
                     // Start by adding the first match
-                    multiMatch.put(e.extensionType, new MultiField(e.extensionType, e.isGettable, e.isSettable, annotation));
+                    multiMatch.put(e.extensionType(), new MultiField(e.extensionType(), e.isGettable(), e.isSettable(), annotation));
                 }
 
                 // Add this match
-                multiMatch.compute(e2.extensionType, (Class<? extends Extension<?>> key, MultiField value) -> {
+                multiMatch.compute(e2.extensionType(), (Class<? extends Extension<?>> key, MultiField value) -> {
                     if (value == null) {
-                        return new MultiField(key, e2.isGettable, e2.isSettable, annotation2);
+                        return new MultiField(key, e2.isGettable(), e2.isSettable(), annotation2);
                     } else {
                         Annotation[] a = new Annotation[value.annotations.length + 1];
                         for (int k = 0; k < value.annotations.length; k++) {
                             a[k] = value.annotations[k];
                         }
                         a[a.length - 1] = annotation2;
-                        return new MultiField(key, e2.isGettable && value.allowGet, e2.isSettable && e2.isSettable, a);
+                        return new MultiField(key, e2.isGettable() && value.allowGet, e2.isSettable() && e2.isSettable(), a);
                     }
                 });
             }
@@ -256,11 +256,11 @@ public final class IntrospectedBeanField implements OnField {
             // All done. Let's see if we only had a single match or multiple matches
             if (multiMatch == null) {
                 // Get the matching extension, installing it if needed.
-                IntrospectedBean.Contributor contributor = introspector.computeContributor(e.extensionType, false);
+                IntrospectedBean.Contributor contributor = introspector.computeContributor(e.extensionType(), false);
 
                 // Create the wrapped field that is exposed to the extension
-                IntrospectedBeanField f = new IntrospectedBeanField(introspector, contributor, field, e.isGettable || contributor.hasFullAccess(),
-                        e.isSettable || contributor.hasFullAccess(), new Annotation[] { annotation });
+                IntrospectedBeanField f = new IntrospectedBeanField(introspector, contributor, field, e.isGettable() || contributor.hasFullAccess(),
+                        e.isSettable() || contributor.hasFullAccess(), new Annotation[] { annotation });
                 f.callbackOnFieldHook();
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
@@ -274,34 +274,5 @@ public final class IntrospectedBeanField implements OnField {
                 }
             }
         }
-    }
-
-    /** Cache the various annotations that are placed on fields. */
-    private record FieldAnnotationCache(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable,
-            boolean isSettable, boolean isProvision) {
-
-        /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<FieldAnnotationCache> CACHE = new ClassValue<>() {
-
-            @Override
-            protected FieldAnnotationCache computeValue(Class<?> type) {
-                @SuppressWarnings("unchecked")
-                Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
-                FieldHook fieldHook = type.getAnnotation(FieldHook.class);
-                BindingHook provisionHook = type.getAnnotation(BindingHook.class);
-
-                if (provisionHook == fieldHook) { // check both null
-                    return null;
-                } else if (provisionHook == null) {
-                    IntrospectedBean.checkExtensionClass(type, fieldHook.extension());
-                    return new FieldAnnotationCache(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
-                } else if (fieldHook == null) {
-                    IntrospectedBean.checkExtensionClass(type, provisionHook.extension());
-                    return new FieldAnnotationCache(annotationType, provisionHook.extension(), false, true, true);
-                } else {
-                    throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
-                }
-            }
-        };
     }
 }

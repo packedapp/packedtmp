@@ -15,6 +15,7 @@
  */
 package internal.app.packed.application;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -32,11 +33,19 @@ import app.packed.container.Extension;
 //Builderen laver en copy on write
 
 public final class PackedBridge<E> {
-    
+
     final Class<? extends Extension<?>> extensionClass;
-    
+
     PackedBridge(Class<? extends Extension<?>> extensionClass) {
         this.extensionClass = extensionClass;
+    }
+
+    public List<Class<?>> invocationArguments() {
+        return List.of();
+    }
+
+    public Set<Key<?>> keys() {
+        return Set.of();
     }
 
     /**
@@ -46,18 +55,19 @@ public final class PackedBridge<E> {
     public PackedBridge<E> onUse(Consumer<E> action) {
         return null;
     }
-    
-    public List<Class<?>> invocationArguments() {
-        return List.of();
-    }
-    
-    public Set<Key<?>> keys() {
-        return Set.of();
-    }
-    
-    
+
     // ExtensionBean -> T
     public class Extractor {
+        Key<?> key;
         
+        // Must be resolved in lifetime container...
+        Set<Key<?>> requirements; // must only make use of services... Or maybe just resolve it as OperationType
+        // Hvor bliver det her en synthetic metode???
+        // Paa beanen? Ja det maa det jo vaere...
+        // Hvis vi har flere dependencies... kan det jo ikke vaere paa extension beanen...
+        // 
+        
+        MethodHandle extractor;
     }
+
 }

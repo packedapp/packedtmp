@@ -51,12 +51,12 @@ public final class AssemblySetup extends RealmSetup {
             void.class, AssemblySetup.class, AssemblyModel.class, ContainerSetup.class);
 
     /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
-    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onApplicationClose", void.class);
-
-    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
     private static final MethodHandle MH_DELEGATING_ASSEMBLY_DELEGATE_TO = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), DelegatingAssembly.class,
             "delegateTo", Assembly.class);
+
+    /** A handle for invoking the protected method {@link Extension#onApplicationClose()}. */
+    private static final MethodHandle MH_EXTENSION_ON_APPLICATION_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onApplicationClose", void.class);
 
     /** A handle for invoking the protected method {@link Extension#onAssemblyClose()}. */
     private static final MethodHandle MH_EXTENSION_ON_ASSEMBLY_CLOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
@@ -67,6 +67,9 @@ public final class AssemblySetup extends RealmSetup {
 
     /** The assembly instance. */
     final Assembly assembly;
+
+    /** A model of the assembly. */
+    public final AssemblyModel assemblyModel;
 
     /** The container that the assembly defines. */
     public final ContainerSetup container;
@@ -96,6 +99,10 @@ public final class AssemblySetup extends RealmSetup {
         if (assembly instanceof ComposerAssembly) {
             throw new IllegalArgumentException("Cannot specify an instance of " + ComposerAssembly.class + " when linking");
         }
+
+        /** A model of the assembly. */
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
+
         this.container = new ContainerSetup(application, this, linkTo, wirelets);
     }
 
@@ -114,34 +121,13 @@ public final class AssemblySetup extends RealmSetup {
     public AssemblySetup(PackedApplicationDriver<?> applicationDriver, BuildGoal goal, Assembly assembly, Wirelet[] wirelets) {
         this.assembly = requireNonNull(assembly, "assembly is null");
         this.application = new ApplicationSetup(applicationDriver, goal, this, wirelets);
+        this.assemblyModel = AssemblyModel.of(assembly.getClass());
 
         this.container = application.container;
     }
 
-    private Assembly unpack(Assembly assembly, int depth) {
-        if (assembly instanceof DelegatingAssembly da) {
-            Assembly ass;
-            try {
-                ass = (Assembly) MH_DELEGATING_ASSEMBLY_DELEGATE_TO.invokeExact(da);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-            // need to check null
-            // We need to get the model. So we can fail if Hook annotations on the delagating
-            if (depth == 0) {
-                throw new StackOverflowError("Too many delegating assemblies");
-            }
-            return unpack(ass, depth - 1);
-        } else {
-            return assembly;
-        }
-    }
-
     public void build() {
         // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
-
-        /** A model of the assembly. */
-        AssemblyModel assemblyModel = AssemblyModel.of(assembly.getClass());
 
         try {
             MH_ASSEMBLY_DO_BUILD.invokeExact((ContainerAssembly) assembly, this, assemblyModel, container);
@@ -240,6 +226,25 @@ public final class AssemblySetup extends RealmSetup {
             return assembly.getClass();
         } else {
             return assembly.getClass();
+        }
+    }
+
+    private Assembly unpack(Assembly assembly, int depth) {
+        if (assembly instanceof DelegatingAssembly da) {
+            Assembly ass;
+            try {
+                ass = (Assembly) MH_DELEGATING_ASSEMBLY_DELEGATE_TO.invokeExact(da);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+            // need to check null
+            // We need to get the model. So we can fail if Hook annotations on the delagating
+            if (depth == 0) {
+                throw new StackOverflowError("Too many delegating assemblies");
+            }
+            return unpack(ass, depth - 1);
+        } else {
+            return assembly;
         }
     }
 
