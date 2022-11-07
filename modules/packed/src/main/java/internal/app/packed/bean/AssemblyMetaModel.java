@@ -26,14 +26,32 @@ import java.util.Map;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bean.BeanExtensionPoint.MethodHook;
+import app.packed.bean.BeanIntrospector.OnBinding;
+import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.CustomHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import internal.app.packed.util.ClassUtil;
 
 /**
  *
  */
 public final class AssemblyMetaModel {
+
+    /** A cache of any extensions a particular annotation activates. */
+    private static final ClassValue<MethodAnnotationCache> ANNOTATED_METHOD_CACHE = new ClassValue<>() {
+
+        @Override
+        protected MethodAnnotationCache computeValue(Class<?> type) {
+            MethodHook h = type.getAnnotation(MethodHook.class);
+            if (h == null) {
+                return null;
+            }
+            checkExtensionClass(type, h.extension());
+            return new MethodAnnotationCache(h.extension(), h.allowInvoke());
+        }
+    };
 
     private static final ClassValue<AssemblyMetaModel> MODELS = new ClassValue<>() {
 
@@ -55,10 +73,57 @@ public final class AssemblyMetaModel {
     private final Map<String, Class<? extends Annotation>> bindings;
 
     /** A cache of any extensions a particular annotation activates. */
-    private final ClassValue<ParameterAnnotationCache> PARAMETER_CACHE = new ClassValue<>() {
+    private final ClassValue<AnnotatedFieldRecord> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
 
         @Override
-        protected ParameterAnnotationCache computeValue(Class<?> type) {
+        protected AnnotatedFieldRecord computeValue(Class<?> type) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
+            FieldHook fieldHook = type.getAnnotation(FieldHook.class);
+            BindingHook bindingHook = type.getAnnotation(BindingHook.class);
+            FieldEntry cl = fields.get(type.getName());
+
+            // fields tror jeg man slaa op i... Kan ikke vaere begge typer
+            
+            if (cl != null) {
+                if (cl.isBindingHook()) {
+                    if (bindingHook != null) {
+                        throw new InternalExtensionException("POOPS");
+                    }
+                } else if (fieldHook != null) {
+                    throw new InternalExtensionException("POOPS");
+                }
+                Class<?> declaringClass = cl.annotationType.getDeclaringClass();
+                if (!Extension.class.isAssignableFrom(declaringClass)) {
+                    throw new InternalExtensionException("oops");
+                }
+                @SuppressWarnings("unchecked")
+                Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
+                return new AnnotatedFieldRecord(annotationType, extensionClass, cl.allowGet, cl.allowSet, cl.isBindingHook);
+            }
+
+            if (bindingHook == fieldHook) { // check both null
+                return null;
+            } else if (bindingHook == null) {
+                checkExtensionClass(type, fieldHook.extension());
+                return new AnnotatedFieldRecord(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
+            } else if (fieldHook == null) {
+                checkExtensionClass(type, bindingHook.extension());
+                return new AnnotatedFieldRecord(annotationType, bindingHook.extension(), false, true, true);
+            } else {
+                // The annotation is annotated with both FieldHook and BindingHook
+                throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
+            }
+        }
+    };
+
+    private final Map<String, FieldEntry> fields = Map.of();
+
+    /** A cache of any extensions a particular annotation activates. */
+    private final ClassValue<ParameterTypeRecord> PARAMETER_TYPE_CACHE = new ClassValue<>() {
+
+        @Override
+        protected ParameterTypeRecord computeValue(Class<?> type) {
             BindingHook h = type.getAnnotation(BindingHook.class);
 
             Class<? extends Annotation> cl = bindings.get(type.getName());
@@ -69,57 +134,17 @@ public final class AssemblyMetaModel {
                 }
                 @SuppressWarnings("unchecked")
                 Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
-                return new ParameterAnnotationCache(extensionClass);
+                return new ParameterTypeRecord(extensionClass);
             }
-            
+
             if (h == null) {
                 return null;
             }
 
             // checkExtensionClass(type, h.extension());
-            return new ParameterAnnotationCache(h.extension());
+            return new ParameterTypeRecord(h.extension());
         }
     };
-
-    /** A cache of any extensions a particular annotation activates. */
-    private final ClassValue<FieldRecord> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
-
-        @Override
-        protected FieldRecord computeValue(Class<?> type) {
-            @SuppressWarnings("unchecked")
-            Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
-            FieldHook fieldHook = type.getAnnotation(FieldHook.class);
-            BindingHook provisionHook = type.getAnnotation(BindingHook.class);
-
-            Class<? extends Annotation> cl = bindings.get(type.getName());
-            if (cl != null) {
-                Class<?> declaringClass = cl.getDeclaringClass();
-                if (!Extension.class.isAssignableFrom(declaringClass)) {
-                    throw new InternalExtensionException("oops");
-                }
-                @SuppressWarnings("unchecked")
-                Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
-                return new FieldRecord(annotationType, extensionClass, true, true, false);
-            }
-
-            // assembly.meta.getMetaAnnotation
-
-            if (provisionHook == fieldHook) { // check both null
-                return null;
-            } else if (provisionHook == null) {
-                IntrospectedBean.checkExtensionClass(type, fieldHook.extension());
-                return new FieldRecord(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
-            } else if (fieldHook == null) {
-                IntrospectedBean.checkExtensionClass(type, provisionHook.extension());
-                return new FieldRecord(annotationType, provisionHook.extension(), false, true, true);
-            } else {
-                throw new InternalExtensionException(type + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
-            }
-        }
-    };
-    
-    final Map<String, String> fieldOrBindingHook = Map.of();
-
 
     // Tror ikke vi skal bruge den til noget
     @Nullable
@@ -147,22 +172,39 @@ public final class AssemblyMetaModel {
         this.bindings = Map.copyOf(bindings);
     }
 
-    FieldRecord lookupFieldAnnotation(Class<? extends Annotation> fieldAnnotation) {
+    AnnotatedFieldRecord lookupAnnotatedFieldRecord(Class<? extends Annotation> fieldAnnotation) {
         return FIELD_ANNOTATION_CACHE.get(fieldAnnotation);
     }
 
-    ParameterAnnotationCache lookupParameterCache(Class<?> fieldAnnotation) {
-        return PARAMETER_CACHE.get(fieldAnnotation);
+    MethodAnnotationCache lookupAnnotatedMethod(Class<? extends Annotation> fieldAnnotation) {
+        return ANNOTATED_METHOD_CACHE.get(fieldAnnotation);
+    }
+
+    ParameterTypeRecord lookupParameterType(Class<?> fieldAnnotation) {
+        return PARAMETER_TYPE_CACHE.get(fieldAnnotation);
+    }
+
+    static void checkExtensionClass(Class<?> annotationType, Class<? extends Extension<?>> extensionType) {
+        ClassUtil.checkProperSubclass(Extension.class, extensionType, s -> new InternalExtensionException(s));
+        if (extensionType.getModule() != annotationType.getModule()) {
+            throw new InternalExtensionException(
+                    "The annotation " + annotationType + " and the extension " + extensionType + " must be declared in the same module");
+        }
     }
 
     public static AssemblyMetaModel of(Class<?> clazz) {
         return MODELS.get(clazz);
     }
 
-    record ParameterAnnotationCache(Class<? extends Extension<?>> extensionType) {
+    record FieldEntry(Class<? extends Annotation> annotationType, boolean isBindingHook, boolean allowGet, boolean allowSet) {}
 
-    }
+    record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {}
 
-    record FieldRecord(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
-            boolean isProvision) {}
+    record ParameterTypeRecord(Class<? extends Extension<?>> extensionType) {}
+
+    /**
+     * A hook annotation on a field, is either a plain {@link OnBinding} hook or a {@link OnField} hook.
+     */
+    record AnnotatedFieldRecord(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
+            boolean isBindingHook) {}
 }

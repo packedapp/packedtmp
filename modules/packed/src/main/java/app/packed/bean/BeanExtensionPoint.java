@@ -195,6 +195,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
+        
+        // IDK about this...
+        enum BindingKind {
+            PROVIDE, PEEK, DEFAULT, ADAPT, CONVERT, TRANSFORM, REPLACE
+        }
     }
 
     @Target(ElementType.ANNOTATION_TYPE)

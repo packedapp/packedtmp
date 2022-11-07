@@ -18,7 +18,7 @@ package internal.app.packed.bean;
 import java.lang.annotation.Annotation;
 
 import app.packed.operation.Variable;
-import internal.app.packed.bean.AssemblyMetaModel.ParameterAnnotationCache;
+import internal.app.packed.bean.AssemblyMetaModel.ParameterTypeRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
@@ -44,7 +44,7 @@ public final class IntrospectedBeanParameter {
         if (os.bindings[index] != null) {
             return;
         }
-        ParameterAnnotationCache fh = introspector.assemblyMetaModel.lookupParameterCache(var.getType());// .lookupParameterCache(var.getType());
+        ParameterTypeRecord fh = introspector.assemblyMetaModel.lookupParameterType(var.getType());// .lookupParameterCache(var.getType());
         if (fh != null) {
             Contributor ei = introspector.computeContributor(fh.extensionType(), false);
             IntrospectedBeanBinding h = new IntrospectedBeanBinding(os, index, ei.extension(), var.getType(), var);
@@ -70,7 +70,7 @@ public final class IntrospectedBeanParameter {
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
-            ParameterAnnotationCache fh = introspector.assemblyMetaModel.lookupParameterCache(var.getType());
+            ParameterTypeRecord fh = introspector.assemblyMetaModel.lookupParameterType(var.getType());
             if (fh != null) {
                 Contributor ei = introspector.computeContributor(fh.extensionType(), false);
 

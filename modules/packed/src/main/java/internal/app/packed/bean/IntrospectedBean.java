@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanSourceKind;
@@ -41,6 +40,7 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
+import internal.app.packed.bean.AssemblyMetaModel.MethodAnnotationCache;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.OperationSetup;
@@ -253,11 +253,11 @@ public final class IntrospectedBean {
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
-            MethodAnnotationCache fh = MethodAnnotationCache.CACHE.get(a1Type);
+            MethodAnnotationCache fh = assemblyMetaModel.lookupAnnotatedMethod(a1Type);
             if (fh != null) {
-                Contributor contributor = computeContributor(fh.extensionType, false);
+                Contributor contributor = computeContributor(fh.extensionType(), false);
 
-                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(IntrospectedBean.this, contributor, method, annotations, fh.isInvokable);
+                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(IntrospectedBean.this, contributor, method, annotations, fh.isInvokable());
 
                 contributor.introspector.onMethod(pbm);
             }
@@ -295,22 +295,6 @@ public final class IntrospectedBean {
      */
     public record Contributor(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 
-    private record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {
-
-        /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<MethodAnnotationCache> CACHE = new ClassValue<>() {
-
-            @Override
-            protected MethodAnnotationCache computeValue(Class<?> type) {
-                MethodHook h = type.getAnnotation(MethodHook.class);
-                if (h == null) {
-                    return null;
-                }
-                checkExtensionClass(type, h.extension());
-                return new MethodAnnotationCache(h.extension(), h.allowInvoke());
-            }
-        };
-    }
 
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.

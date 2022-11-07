@@ -35,12 +35,12 @@ import app.packed.container.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.AssemblyMetaModel.FieldRecord;
+import internal.app.packed.bean.AssemblyMetaModel.AnnotatedFieldRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
 
-/** Responsible for introspecting fields on a bean. */
+/** Responsible for introspecting bean fields. */
 public final class IntrospectedBeanField implements OnField {
 
     /** Whether or not the field can be read. */
@@ -50,16 +50,16 @@ public final class IntrospectedBeanField implements OnField {
     final boolean allowSet;
 
     /** The annotations on the field */
-    final Annotation[] annotations;
+    private final Annotation[] annotations;
 
     /** The extension that will operate any operations. */
-    public final Contributor contributer;
+    private final Contributor contributer;
 
     /** The bean member. */
     protected final Field field;
 
     /** The introspected bean. */
-    public final IntrospectedBean introspectedBean;
+    private final IntrospectedBean introspectedBean;
 
     /** Whether or not we can create new operations from this class. */
     private boolean isConfigurationDisabled;
@@ -202,7 +202,7 @@ public final class IntrospectedBeanField implements OnField {
             Annotation annotation = annotations[i];
 
             // Look in the field annotation cache to see if the annotation is a meta annotation
-            FieldRecord e = introspector.assemblyMetaModel.lookupFieldAnnotation(annotation.annotationType());
+            AnnotatedFieldRecord e = introspector.assemblyMetaModel.lookupAnnotatedFieldRecord(annotation.annotationType());
 
             // The annotation is neither a field or binding annotation
             if (e == null) {
@@ -218,14 +218,14 @@ public final class IntrospectedBeanField implements OnField {
                 Annotation annotation2 = annotations[j];
 
                 // Look in the annotation cache to see if the annotation is a meta annotation
-                FieldRecord e2 = introspector.assemblyMetaModel.lookupFieldAnnotation(annotation2.annotationType());
+                AnnotatedFieldRecord e2 = introspector.assemblyMetaModel.lookupAnnotatedFieldRecord(annotation2.annotationType());
 
                 // The annotation is neither a field or provision annotation
                 if (e2 == null) {
                     continue;
                 }
 
-                if (e.isProvision() || e2.isProvision()) {
+                if (e.isBindingHook() || e2.isBindingHook()) {
                     throw new InvalidBeanDefinitionException("Cannot use both " + annotation + " and " + annotation2);
                 }
 
