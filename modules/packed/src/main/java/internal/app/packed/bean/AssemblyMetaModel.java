@@ -18,11 +18,15 @@ package internal.app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
+import app.packed.bean.CustomHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 
@@ -30,9 +34,6 @@ import app.packed.container.InternalExtensionException;
  *
  */
 public final class AssemblyMetaModel {
-
-    @Nullable
-    private final AssemblyMetaModel parent;
 
     private static final ClassValue<AssemblyMetaModel> MODELS = new ClassValue<>() {
 
@@ -42,38 +43,43 @@ public final class AssemblyMetaModel {
                 return new AssemblyMetaModel();
             }
             AssemblyMetaModel parent = AssemblyMetaModel.of(type.getSuperclass());
-            Meta[] meta = type.getAnnotationsByType(Meta.class);
+            Annotation[] meta = type.getDeclaredAnnotations();
             if (meta.length == 0) {
                 return parent;
             }
+
             return new AssemblyMetaModel(parent, meta);
         }
     };
 
-    private AssemblyMetaModel() {
-        this.parent = null;
-    }
+    private final Map<String, Class<? extends Annotation>> bindings;
 
-    private AssemblyMetaModel(AssemblyMetaModel parent, Meta[] meta) {
-        this.parent = requireNonNull(parent);
-    }
+    /** A cache of any extensions a particular annotation activates. */
+    private final ClassValue<ParameterAnnotationCache> PARAMETER_CACHE = new ClassValue<>() {
 
-    public static AssemblyMetaModel of(Class<?> clazz) {
-        return MODELS.get(clazz);
-    }
+        @Override
+        protected ParameterAnnotationCache computeValue(Class<?> type) {
+            BindingHook h = type.getAnnotation(BindingHook.class);
 
-    @interface Meta {
+            Class<? extends Annotation> cl = bindings.get(type.getName());
+            if (cl != null) {
+                Class<?> declaringClass = cl.getDeclaringClass();
+                if (!Extension.class.isAssignableFrom(declaringClass)) {
+                    throw new InternalExtensionException("oops");
+                }
+                @SuppressWarnings("unchecked")
+                Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
+                return new ParameterAnnotationCache(extensionClass);
+            }
+            
+            if (h == null) {
+                return null;
+            }
 
-    }
-
-    FieldRecord lookupFieldAnnotation(Class<? extends Annotation> fieldAnnotation) {
-        return FIELD_ANNOTATION_CACHE.get(fieldAnnotation);
-    }
-
-    final Map<String, String> fieldOrBindingHook = Map.of();
-
-    record FieldRecord(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
-            boolean isProvision) {}
+            // checkExtensionClass(type, h.extension());
+            return new ParameterAnnotationCache(h.extension());
+        }
+    };
 
     /** A cache of any extensions a particular annotation activates. */
     private final ClassValue<FieldRecord> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
@@ -85,8 +91,17 @@ public final class AssemblyMetaModel {
             FieldHook fieldHook = type.getAnnotation(FieldHook.class);
             BindingHook provisionHook = type.getAnnotation(BindingHook.class);
 
-            fieldOrBindingHook.get(type.getName());
-            
+            Class<? extends Annotation> cl = bindings.get(type.getName());
+            if (cl != null) {
+                Class<?> declaringClass = cl.getDeclaringClass();
+                if (!Extension.class.isAssignableFrom(declaringClass)) {
+                    throw new InternalExtensionException("oops");
+                }
+                @SuppressWarnings("unchecked")
+                Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
+                return new FieldRecord(annotationType, extensionClass, true, true, false);
+            }
+
             // assembly.meta.getMetaAnnotation
 
             if (provisionHook == fieldHook) { // check both null
@@ -102,4 +117,52 @@ public final class AssemblyMetaModel {
             }
         }
     };
+    
+    final Map<String, String> fieldOrBindingHook = Map.of();
+
+
+    // Tror ikke vi skal bruge den til noget
+    @Nullable
+    private final AssemblyMetaModel parent;
+
+    private AssemblyMetaModel() {
+        this.parent = null;
+        this.bindings = Map.of();
+    }
+
+    private AssemblyMetaModel(AssemblyMetaModel parent, Annotation[] annotations) {
+        this.parent = requireNonNull(parent);
+        List<AssemblyMetaHolder> holders = new ArrayList<>();
+        for (Annotation a : annotations) {
+            if (a.annotationType().isAnnotationPresent(CustomHook.class)) {
+                holders.add(new AssemblyMetaHolder(a.annotationType()));
+            }
+        }
+        Map<String, Class<? extends Annotation>> bindings = new HashMap<>();
+        for (AssemblyMetaHolder h : holders) {
+            for (String s : h.bindings) {
+                bindings.put(s, h.annotationType);
+            }
+        }
+        this.bindings = Map.copyOf(bindings);
+    }
+
+    FieldRecord lookupFieldAnnotation(Class<? extends Annotation> fieldAnnotation) {
+        return FIELD_ANNOTATION_CACHE.get(fieldAnnotation);
+    }
+
+    ParameterAnnotationCache lookupParameterCache(Class<?> fieldAnnotation) {
+        return PARAMETER_CACHE.get(fieldAnnotation);
+    }
+
+    public static AssemblyMetaModel of(Class<?> clazz) {
+        return MODELS.get(clazz);
+    }
+
+    record ParameterAnnotationCache(Class<? extends Extension<?>> extensionType) {
+
+    }
+
+    record FieldRecord(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
+            boolean isProvision) {}
 }

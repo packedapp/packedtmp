@@ -95,6 +95,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
         MethodOperationTarget mot = new MethodOperationTarget(methodHandle, method);
         OperationSetup bos = new OperationSetup(analyzer.bean, operationType(), contributor.extension(), mot, null);
         analyzer.bean.operations.add(bos);
+        analyzer.unBoundOperations.add(bos);
         return bos.toHandle();
     }
 

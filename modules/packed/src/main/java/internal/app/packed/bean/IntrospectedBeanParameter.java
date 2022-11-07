@@ -17,9 +17,8 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.container.Extension;
 import app.packed.operation.Variable;
+import internal.app.packed.bean.AssemblyMetaModel.ParameterAnnotationCache;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
@@ -45,11 +44,9 @@ public final class IntrospectedBeanParameter {
         if (os.bindings[index] != null) {
             return;
         }
-
-        ParameterAnnotationCache fh = ParameterAnnotationCache.CACHE.get(var.getType());
+        ParameterAnnotationCache fh = introspector.assemblyMetaModel.lookupParameterCache(var.getType());// .lookupParameterCache(var.getType());
         if (fh != null) {
-            System.out.println("Got something");
-            Contributor ei = introspector.computeContributor(fh.extensionType, false);
+            Contributor ei = introspector.computeContributor(fh.extensionType(), false);
             IntrospectedBeanBinding h = new IntrospectedBeanBinding(os, index, ei.extension(), var.getType(), var);
             ei.introspector().onBinding(h);
         }
@@ -73,9 +70,9 @@ public final class IntrospectedBeanParameter {
         for (int i = 0; i < annotations.length; i++) {
             Annotation a1 = annotations[i];
             Class<? extends Annotation> a1Type = a1.annotationType();
-            ParameterAnnotationCache fh = ParameterAnnotationCache.CACHE.get(a1Type);
+            ParameterAnnotationCache fh = introspector.assemblyMetaModel.lookupParameterCache(var.getType());
             if (fh != null) {
-                Contributor ei = introspector.computeContributor(fh.extensionType, false);
+                Contributor ei = introspector.computeContributor(fh.extensionType(), false);
 
                 IntrospectedBeanBinding h = new IntrospectedBeanBinding(os, index, ei.extension(), a1Type, var);
                 ei.introspector().onBinding(h);
@@ -83,20 +80,4 @@ public final class IntrospectedBeanParameter {
         }
     }
 
-    private record ParameterAnnotationCache(Class<? extends Extension<?>> extensionType) {
-
-        /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<ParameterAnnotationCache> CACHE = new ClassValue<>() {
-
-            @Override
-            protected ParameterAnnotationCache computeValue(Class<?> type) {
-                BindingHook h = type.getAnnotation(BindingHook.class);
-                if (h == null) {
-                    return null;
-                }
-                // checkExtensionClass(type, h.extension());
-                return new ParameterAnnotationCache(h.extension());
-            }
-        };
-    }
 }

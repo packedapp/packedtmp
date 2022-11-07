@@ -13,40 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+
+import app.packed.operation.Provider;
 
 /**
  *
  */
-public class SSAccept {
+public class S0SAccept2 {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Thread t = new Thread(new Foo());
+        System.out.println("DAV");
+        ChannelManager mn = new ChannelManager();
+        PackedSelectorProvider psp = new PackedSelectorProvider(mn);
+        
+        ServerSocketChannel ssc = psp.openServerSocketChannel();
+        
+        Thread t = new Thread(new Foo(ssc));
+        t.start();
         Thread.sleep(1000);
 
-        t.interrupt();
-        
-        
+        mn.closeAll();
+        //t.interrupt();
+
         Thread.sleep(100000);
+        
+        System.out.println("Bte");
     }
 
     // ListenToSocket();
 
     // SocketChannelProcessor
+    
+    
+    public class MyBean {
+        // Must always manual bind to a socket...
+        // So if want to create Multiple... we need a provider
+        Provider<Socket> socketProvider;
+        
+    }
 
-    public static class Foo implements Runnable {
+    public record Foo(ServerSocketChannel c) implements Runnable {
 
+        
         /** {@inheritDoc} */
         @Override
         public void run() {
-            ServerSocketChannel c = null;
             try {
-                c = ServerSocketChannel.open();
                 System.out.println(c.isBlocking());
                 c.bind(new InetSocketAddress("localhost", 7000));
 

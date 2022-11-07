@@ -171,6 +171,8 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the method is not overridden
      */
     protected BeanIntrospector newBeanIntrospector() {
+        // TODO we should provide some context... 
+        // Or maybe just return a default BeanIntrospector, where nothing is overridden
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
 
