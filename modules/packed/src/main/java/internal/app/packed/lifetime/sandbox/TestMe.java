@@ -31,7 +31,6 @@ public class TestMe extends BaseAssembly {
     protected void build() {
         bean().multiInstall(Foo.class);
         bean().multiInstall(Foo.class);
-        use(MyExt.class).hashCode();
     }
 
     public static void main(String[] args) {
@@ -39,7 +38,9 @@ public class TestMe extends BaseAssembly {
         App.print(new TestMe());
     }
 
-    public record Foo() {}
+    public record Foo() {
+        
+    }
 
     @DependsOn(extensions = BeanExtension.class)
     public static class MyExt extends Extension<MyExt> {

@@ -26,6 +26,7 @@ import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
+import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
@@ -33,14 +34,14 @@ import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class IntrospectedBeanMethod implements OnMethod {
 
-    /** The internal introspector */
-    public final IntrospectedBean analyzer;
-
     /** Annotations on the method read via {@link Method#getAnnotations()}. */
     private final Annotation[] annotations;
 
     /** The extension that will operate any operations. */
     public final Contributor contributor;
+
+    /** The internal introspector */
+    public final IntrospectedBean introspectedBean;
 
     /** The underlying method. */
     private final Method method;
@@ -50,10 +51,33 @@ public final class IntrospectedBeanMethod implements OnMethod {
     private OperationType type;
 
     IntrospectedBeanMethod(IntrospectedBean analyzer, Contributor contributor, Method method, Annotation[] annotations, boolean allowInvoke) {
-        this.analyzer = analyzer;
+        this.introspectedBean = analyzer;
         this.contributor = contributor;
         this.method = method;
         this.annotations = annotations;
+    }
+    
+
+    /**
+     * Look for hook annotations on a single method.
+     * 
+     * @param method
+     *            the method to look for annotations on
+     */
+    static void introspectMethodForAnnotations(IntrospectedBean iBean, Method method) {
+        Annotation[] annotations = method.getAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            Annotation a1 = annotations[i];
+            Class<? extends Annotation> a1Type = a1.annotationType();
+            AnnotatedMethod fh = iBean.hookModel.lookupAnnotationOnMethod(a1Type);
+            if (fh != null) {
+                Contributor contributor = iBean.computeContributor(fh.extensionType(), false);
+
+                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(iBean, contributor, method, annotations, fh.isInvokable());
+
+                contributor.introspector().onMethod(pbm);
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -85,7 +109,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
 
         MethodHandle methodHandle;
-        Lookup lookup = analyzer.oc.lookup(method);
+        Lookup lookup = introspectedBean.oc.lookup(method);
         try {
             methodHandle = lookup.unreflect(method);
         } catch (IllegalAccessException e) {
@@ -93,9 +117,9 @@ public final class IntrospectedBeanMethod implements OnMethod {
         }
 
         MethodOperationTarget mot = new MethodOperationTarget(methodHandle, method);
-        OperationSetup bos = new OperationSetup(analyzer.bean, operationType(), contributor.extension(), mot, null);
-        analyzer.bean.operations.add(bos);
-        analyzer.unBoundOperations.add(bos);
+        OperationSetup bos = new OperationSetup(introspectedBean.bean, operationType(), contributor.extension(), mot, null);
+        introspectedBean.bean.operations.add(bos);
+        introspectedBean.unBoundOperations.add(bos);
         return bos.toHandle();
     }
 

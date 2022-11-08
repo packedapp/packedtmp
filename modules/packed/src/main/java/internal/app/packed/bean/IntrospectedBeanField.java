@@ -35,7 +35,7 @@ import app.packed.container.Extension;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
-import internal.app.packed.bean.AssemblyMetaModel.AnnotatedFieldRecord;
+import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
@@ -59,14 +59,14 @@ public final class IntrospectedBeanField implements OnField {
     protected final Field field;
 
     /** The introspected bean. */
-    private final IntrospectedBean introspectedBean;
+    private final IntrospectedBean iBean;
 
     /** Whether or not we can create new operations from this class. */
     private boolean isConfigurationDisabled;
 
-    private IntrospectedBeanField(IntrospectedBean introspectedBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet,
-            Annotation[] annotations) {
-        this.introspectedBean = introspectedBean;
+    private IntrospectedBeanField(IntrospectedBean iBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet,
+            Annotation[] annotations, AnnotatedField... annotatedFields) {
+        this.iBean = iBean;
         this.contributer = contributer;
         this.field = field;
         this.allowGet = allowGet;
@@ -81,10 +81,10 @@ public final class IntrospectedBeanField implements OnField {
     }
 
     /** Callback into an extension's {@link BeanIntrospector#onField(OnField)} method. */
-    private void callbackOnFieldHook() {
+    private void callBeanIntrospectorOnField() {
         contributer.introspector().onField(this);
         isConfigurationDisabled = true;
-        introspectedBean.resolveOperations(); // resolve bindings on any operations we have created
+        iBean.resolveOperations(); // resolve bindings for any operation(s) that have been created
     }
 
     /** Check that we calling from within {@link BeanIntrospector#onField(OnField).} */
@@ -110,7 +110,7 @@ public final class IntrospectedBeanField implements OnField {
     @Override
     public OperationHandle newGetOperation() {
         checkConfigurable();
-        MethodHandle mh = introspectedBean.oc.unreflectGetter(field);
+        MethodHandle mh = iBean.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
         return newOperation(mh, accessMode);
     }
@@ -119,7 +119,7 @@ public final class IntrospectedBeanField implements OnField {
     @Override
     public OperationHandle newOperation(AccessMode accessMode) {
         checkConfigurable();
-        Lookup lookup = introspectedBean.oc.lookup(field);
+        Lookup lookup = iBean.oc.lookup(field);
 
         VarHandle varHandle;
         try {
@@ -135,9 +135,9 @@ public final class IntrospectedBeanField implements OnField {
     private OperationHandle newOperation(MethodHandle mh, AccessMode accessMode) {
         FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
         OperationType operationType = OperationType.ofFieldAccess(field, accessMode);
-        OperationSetup operation = new OperationSetup(introspectedBean.bean, operationType, contributer.extension(), fot, null);
-        introspectedBean.unBoundOperations.add(operation);
-        introspectedBean.bean.operations.add(operation);
+        OperationSetup operation = new OperationSetup(iBean.bean, operationType, contributer.extension(), fot, null);
+        iBean.unBoundOperations.add(operation);
+        iBean.bean.operations.add(operation);
         return operation.toHandle();
     }
 
@@ -145,7 +145,7 @@ public final class IntrospectedBeanField implements OnField {
     @Override
     public OperationHandle newSetOperation() {
         checkConfigurable();
-        Lookup lookup = introspectedBean.oc.lookup(field);
+        Lookup lookup = iBean.oc.lookup(field);
 
         MethodHandle methodHandle;
         try {
@@ -164,22 +164,6 @@ public final class IntrospectedBeanField implements OnField {
         return Variable.ofField(field);
     }
 
-    static void introspectAllFields(IntrospectedBean introspector, Class<?> clazz) {
-        // We never process classes in the "java.base" module.
-        if (clazz.getModule() != IntrospectedBean.JAVA_BASE_MODULE) {
-
-            // Recursively call into superclass, before processing own fields
-            introspectAllFields(introspector, clazz.getSuperclass());
-
-            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
-
-            // Iterate over all declared fields
-            for (Field field : clazz.getDeclaredFields()) {
-                introspectSingleField(introspector, field);
-            }
-        }
-    }
-
     /**
      * Introspect a single field on a bean looking for hook annotations.
      * 
@@ -193,7 +177,7 @@ public final class IntrospectedBeanField implements OnField {
      * @apiNote Currently we allow multiple {@link FieldHook} on a field. This might change in the future, but for now we
      *          allow it.
      */
-    private static void introspectSingleField(IntrospectedBean introspector, Field field) {
+    static void introspectFieldForAnnotations(IntrospectedBean iBean, Field field) {
         // Get all annotations on the field
         Annotation[] annotations = field.getAnnotations();
 
@@ -202,7 +186,7 @@ public final class IntrospectedBeanField implements OnField {
             Annotation annotation = annotations[i];
 
             // Look in the field annotation cache to see if the annotation is a meta annotation
-            AnnotatedFieldRecord e = introspector.assemblyMetaModel.lookupAnnotatedField(annotation.annotationType());
+            AnnotatedField e = iBean.hookModel.lookupAnnotationOnField(annotation.annotationType());
 
             // The annotation is neither a field or binding annotation
             if (e == null) {
@@ -210,15 +194,15 @@ public final class IntrospectedBeanField implements OnField {
             }
 
             // A record + map that we use if have multi field hook annotations
-            record MultiField(Class<? extends Extension<?>> extensionClass, boolean allowGet, boolean allowSet, Annotation... annotations) {}
-            IdentityHashMap<Class<? extends Extension<?>>, MultiField> multiMatch = null;
+            record MultiMatch(Class<? extends Extension<?>> extensionClass, boolean allowGet, boolean allowSet, Annotation... annotations) {}
+            IdentityHashMap<Class<? extends Extension<?>>, MultiMatch> multiMatches = null;
 
             // Try to find additional meta annotations.
             for (int j = i + 1; j < annotations.length; j++) {
                 Annotation annotation2 = annotations[j];
 
                 // Look in the annotation cache to see if the annotation is a meta annotation
-                AnnotatedFieldRecord e2 = introspector.assemblyMetaModel.lookupAnnotatedField(annotation2.annotationType());
+                AnnotatedField e2 = iBean.hookModel.lookupAnnotationOnField(annotation2.annotationType());
 
                 // The annotation is neither a field or provision annotation
                 if (e2 == null) {
@@ -232,45 +216,45 @@ public final class IntrospectedBeanField implements OnField {
                 // Okay we have more than 1 valid annotation
 
                 // Check to see if we need to create the multi match map
-                if (multiMatch == null) {
-                    multiMatch = new IdentityHashMap<>();
+                if (multiMatches == null) {
+                    multiMatches = new IdentityHashMap<>();
                     // Start by adding the first match
-                    multiMatch.put(e.extensionType(), new MultiField(e.extensionType(), e.isGettable(), e.isSettable(), annotation));
+                    multiMatches.put(e.extensionType(), new MultiMatch(e.extensionType(), e.isGettable(), e.isSettable(), annotation));
                 }
 
                 // Add this match
-                multiMatch.compute(e2.extensionType(), (Class<? extends Extension<?>> key, MultiField value) -> {
+                multiMatches.compute(e2.extensionType(), (Class<? extends Extension<?>> key, MultiMatch value) -> {
                     if (value == null) {
-                        return new MultiField(key, e2.isGettable(), e2.isSettable(), annotation2);
+                        return new MultiMatch(key, e2.isGettable(), e2.isSettable(), annotation2);
                     } else {
                         Annotation[] a = new Annotation[value.annotations.length + 1];
                         for (int k = 0; k < value.annotations.length; k++) {
                             a[k] = value.annotations[k];
                         }
                         a[a.length - 1] = annotation2;
-                        return new MultiField(key, e2.isGettable() && value.allowGet, e2.isSettable() && e2.isSettable(), a);
+                        return new MultiMatch(key, e2.isGettable() && value.allowGet, e2.isSettable() && e2.isSettable(), a);
                     }
                 });
             }
 
             // All done. Let's see if we only had a single match or multiple matches
-            if (multiMatch == null) {
+            if (multiMatches == null) {
                 // Get the matching extension, installing it if needed.
-                IntrospectedBean.Contributor contributor = introspector.computeContributor(e.extensionType(), false);
+                IntrospectedBean.Contributor contributor = iBean.computeContributor(e.extensionType(), false);
 
                 // Create the wrapped field that is exposed to the extension
-                IntrospectedBeanField f = new IntrospectedBeanField(introspector, contributor, field, e.isGettable() || contributor.hasFullAccess(),
-                        e.isSettable() || contributor.hasFullAccess(), new Annotation[] { annotation });
-                f.callbackOnFieldHook();
+                IntrospectedBeanField f = new IntrospectedBeanField(iBean, contributor, field, e.isGettable() || contributor.hasFullAccess(),
+                        e.isSettable() || contributor.hasFullAccess(), annotations);
+                f.callBeanIntrospectorOnField();
             } else {
                 // TODO we should sort by extension order when we have more than 1 match
-                for (MultiField mf : multiMatch.values()) {
-                    IntrospectedBean.Contributor contributor = introspector.computeContributor(mf.extensionClass, false);
+                for (MultiMatch mf : multiMatches.values()) {
+                    IntrospectedBean.Contributor contributor = iBean.computeContributor(mf.extensionClass, false);
 
                     // Create the wrapped field that is exposed to the extension
-                    IntrospectedBeanField f = new IntrospectedBeanField(introspector, contributor, field, mf.allowGet || contributor.hasFullAccess(),
+                    IntrospectedBeanField f = new IntrospectedBeanField(iBean, contributor, field, mf.allowGet || contributor.hasFullAccess(),
                             mf.allowSet || contributor.hasFullAccess(), annotations);
-                    f.callbackOnFieldHook();
+                    f.callBeanIntrospectorOnField();
                 }
             }
         }

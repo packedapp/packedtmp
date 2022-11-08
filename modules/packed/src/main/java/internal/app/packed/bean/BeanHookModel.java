@@ -37,85 +37,83 @@ import internal.app.packed.util.ClassUtil;
 /**
  *
  */
-public final class AssemblyMetaModel {
+public final class BeanHookModel {
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<MethodAnnotationCache> ANNOTATED_METHOD_CACHE = new ClassValue<>() {
+    private static final ClassValue<AnnotatedMethod> ANNOTATED_METHOD_CACHE = new ClassValue<>() {
 
         @Override
-        protected MethodAnnotationCache computeValue(Class<?> type) {
+        protected AnnotatedMethod computeValue(Class<?> type) {
             MethodHook h = type.getAnnotation(MethodHook.class);
             if (h == null) {
                 return null;
             }
             checkExtensionClass(type, h.extension());
-            return new MethodAnnotationCache(h.extension(), h.allowInvoke());
+            return new AnnotatedMethod(h.extension(), h.allowInvoke());
         }
     };
 
-    private static final ClassValue<AssemblyMetaModel> MODELS = new ClassValue<>() {
+    private static final ClassValue<BeanHookModel> MODELS = new ClassValue<>() {
 
         @Override
-        protected AssemblyMetaModel computeValue(Class<?> type) {
+        protected BeanHookModel computeValue(Class<?> type) {
             if (type == Object.class) {
-                return new AssemblyMetaModel();
+                return new BeanHookModel();
             }
-            AssemblyMetaModel parent = AssemblyMetaModel.of(type.getSuperclass());
+            BeanHookModel parent = BeanHookModel.of(type.getSuperclass());
             Annotation[] meta = type.getDeclaredAnnotations();
             if (meta.length == 0) {
                 return parent;
             }
 
-            return new AssemblyMetaModel(parent, meta);
+            return new BeanHookModel(parent, meta);
         }
     };
 
     private final Map<String, Class<? extends Annotation>> bindings;
 
     /** A cache of field annotations. */
-    private final ClassValue<AnnotatedFieldRecord> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
+    private final ClassValue<AnnotatedField> FIELD_ANNOTATION_CACHE = new ClassValue<>() {
 
         @Override
-        protected AnnotatedFieldRecord computeValue(Class<?> type) {
+        protected AnnotatedField computeValue(Class<?> type) {
             @SuppressWarnings("unchecked")
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) type;
-            AnnotatedFieldRecord result = null;
+
+            // Er det her en RAW thingy???
+            // Der er ingen grund til vi laeser typen flere gange vel
+            AnnotatedField result = null;
 
             FieldHook fieldHook = type.getAnnotation(FieldHook.class);
             if (fieldHook != null) {
                 checkExtensionClass(type, fieldHook.extension());
-                result = new AnnotatedFieldRecord(annotationType, fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
+                result = new AnnotatedField(fieldHook.extension(), fieldHook.allowGet(), fieldHook.allowSet(), false);
             }
 
             BindingHook bindingHook = type.getAnnotation(BindingHook.class);
             if (bindingHook != null) {
-                if (fieldHook != null) {
+                if (result != null) {
                     throw new InternalExtensionException(annotationType + " cannot both be annotated with " + FieldHook.class + " and " + BindingHook.class);
                 }
                 checkExtensionClass(type, bindingHook.extension());
-                return new AnnotatedFieldRecord(annotationType, bindingHook.extension(), false, true, true);
+                result = new AnnotatedField(bindingHook.extension(), false, true, true);
             }
 
-            FieldEntry cl = fields.get(type.getName());
+            // See if we have a custom hook
+            CustomAnnotatedField customHook = fieldHooks.get(type.getName());
 
-            if (cl != null) {
+            if (customHook != null) {
                 if (result != null) {
                     throw new InternalExtensionException("POOPS");
                 }
-                Class<?> declaringClass = cl.annotationType.getDeclaringClass();
-                if (!Extension.class.isAssignableFrom(declaringClass)) {
-                    throw new InternalExtensionException("oops");
-                }
-                @SuppressWarnings("unchecked")
-                Class<? extends Extension<?>> extensionClass = (Class<? extends Extension<?>>) declaringClass;
-                result = new AnnotatedFieldRecord(annotationType, extensionClass, cl.allowGet, cl.allowSet, cl.isBindingHook);
+                result = new AnnotatedField(extract(annotationType), customHook.allowGet, customHook.allowSet, customHook.isBindingHook);
             }
 
             return result;
         }
     };
 
-    private final Map<String, FieldEntry> fields = Map.of();
+    private final Map<String, CustomAnnotatedField> fieldHooks = Map.of();
 
     /** A cache of any extensions a particular annotation activates. */
     private final ClassValue<ParameterTypeRecord> PARAMETER_TYPE_CACHE = new ClassValue<>() {
@@ -146,14 +144,14 @@ public final class AssemblyMetaModel {
 
     // Tror ikke vi skal bruge den til noget
     @Nullable
-    private final AssemblyMetaModel parent;
+    private final BeanHookModel parent;
 
-    private AssemblyMetaModel() {
+    private BeanHookModel() {
         this.parent = null;
         this.bindings = Map.of();
     }
 
-    private AssemblyMetaModel(AssemblyMetaModel parent, Annotation[] annotations) {
+    private BeanHookModel(BeanHookModel parent, Annotation[] annotations) {
         this.parent = requireNonNull(parent);
         List<AssemblyMetaHolder> holders = new ArrayList<>();
         for (Annotation a : annotations) {
@@ -170,11 +168,11 @@ public final class AssemblyMetaModel {
         this.bindings = Map.copyOf(bindings);
     }
 
-    AnnotatedFieldRecord lookupAnnotatedField(Class<? extends Annotation> fieldAnnotation) {
+    AnnotatedField lookupAnnotationOnField(Class<? extends Annotation> fieldAnnotation) {
         return FIELD_ANNOTATION_CACHE.get(fieldAnnotation);
     }
 
-    MethodAnnotationCache lookupAnnotatedMethod(Class<? extends Annotation> fieldAnnotation) {
+    AnnotatedMethod lookupAnnotationOnMethod(Class<? extends Annotation> fieldAnnotation) {
         return ANNOTATED_METHOD_CACHE.get(fieldAnnotation);
     }
 
@@ -190,19 +188,27 @@ public final class AssemblyMetaModel {
         }
     }
 
-    public static AssemblyMetaModel of(Class<?> clazz) {
+    @SuppressWarnings("unchecked")
+    private static Class<? extends Extension<?>> extract(Class<? extends Annotation> annotationtype) {
+        Class<?> declaringClass = annotationtype.getDeclaringClass();
+        if (!Extension.class.isAssignableFrom(declaringClass)) {
+            throw new InternalExtensionException("oops");
+        }
+        return (Class<? extends Extension<?>>) declaringClass;
+    }
+
+    public static BeanHookModel of(Class<?> clazz) {
         return MODELS.get(clazz);
     }
 
-    record FieldEntry(Class<? extends Annotation> annotationType, boolean isBindingHook, boolean allowGet, boolean allowSet) {}
+    private record CustomAnnotatedField(Class<? extends Annotation> annotationType, boolean isBindingHook, boolean allowGet, boolean allowSet) {}
 
-    record MethodAnnotationCache(Class<? extends Extension<?>> extensionType, boolean isInvokable) {}
+    record AnnotatedMethod(Class<? extends Extension<?>> extensionType, boolean isInvokable) {}
 
     record ParameterTypeRecord(Class<? extends Extension<?>> extensionType) {}
 
     /**
      * A hook annotation on a field, is either a plain {@link OnBinding} hook or a {@link OnField} hook.
      */
-    record AnnotatedFieldRecord(Class<? extends Annotation> annotationType, Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable,
-            boolean isBindingHook) {}
+    record AnnotatedField(Class<? extends Extension<?>> extensionType, boolean isGettable, boolean isSettable, boolean isBindingHook) {}
 }

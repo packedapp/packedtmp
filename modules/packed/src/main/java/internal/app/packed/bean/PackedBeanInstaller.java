@@ -67,7 +67,12 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
     @Override
     public <T> BeanHandle<T> install(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
-        return install(beanClass, BeanSourceKind.CLASS, beanClass);
+        
+        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
+            throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
+        }
+        BeanSetup bean = BeanSetup.install(this, kind, beanClass, BeanSourceKind.CLASS, beanClass, introspector, namePrefix, multiInstall, synthetic);
+        return from(bean);
     }
 
     /** {@inheritDoc} */
@@ -94,15 +99,16 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
         if (kind != BeanKind.FUNCTIONAL) {
             throw new InternalExtensionException("Only functional beans can be source less");
         }
-        return install(void.class, BeanSourceKind.NONE, null);
+        BeanSetup bean = BeanSetup.install(this, kind, void.class, BeanSourceKind.NONE, null, introspector, namePrefix, multiInstall, synthetic);
+        return from(bean);
     }
 
     private <T> BeanHandle<T> install(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-        BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, namePrefix, multiInstall, synthetic);
-        return from(bs);
+        BeanSetup bean = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, namePrefix, multiInstall, synthetic);
+        return from(bean);
     }
 
     /** {@inheritDoc} */

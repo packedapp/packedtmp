@@ -14,7 +14,7 @@ import app.packed.container.Assembly;
 import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.DelegatingAssembly;
-import internal.app.packed.bean.AssemblyMetaModel;
+import internal.app.packed.bean.BeanHookModel;
 import internal.app.packed.util.ThrowableUtil;
 
 /** A model of an {@link Assembly}. */
@@ -74,11 +74,11 @@ public final /* primitive */ class AssemblyModel {
     /** Any hooks that have been specified on the assembly. */
     private final AssemblyHook.Processor[] hooks;
 
-    public final AssemblyMetaModel metaModel;
+    public final BeanHookModel hookModel;
 
     private AssemblyModel(Class<?> assemblyClass, AssemblyHook.Processor[] hooks) {
         this.hooks = requireNonNull(hooks);
-        this.metaModel = AssemblyMetaModel.of(assemblyClass);
+        this.hookModel = BeanHookModel.of(assemblyClass);
     }
 
     public void postBuild(ContainerConfiguration configuration) {

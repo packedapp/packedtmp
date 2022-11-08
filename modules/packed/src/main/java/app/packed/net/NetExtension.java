@@ -71,4 +71,5 @@ public final class NetExtension extends Extension<NetExtension> {
     @CustomHook
     @CustomBindingHook(className = "java.nio.channels.spi.SelectorProvider")
     public @interface JavaNetworkSupport {} // JavaNioChannelSupport
+
 }

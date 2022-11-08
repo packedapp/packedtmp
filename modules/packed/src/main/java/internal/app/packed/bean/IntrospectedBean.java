@@ -17,7 +17,6 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -38,14 +37,11 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
-import internal.app.packed.bean.AssemblyMetaModel.MethodAnnotationCache;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.ConstructorOperationTarget;
-import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
@@ -82,29 +78,36 @@ public final class IntrospectedBean {
     /** Every extension that is activated by a hook. */
     private final LinkedHashMap<Class<? extends Extension<?>>, Contributor> extensions = new LinkedHashMap<>();
 
+    final BeanHookModel hookModel;
+
     // Should be made lazily??? I think
     // I think we embed once we gotten rid of use cases outside of this introspector
     final OpenClass oc;
 
     final ArrayDeque<OperationSetup> unBoundOperations = new ArrayDeque<>();
 
-    final AssemblyMetaModel assemblyMetaModel;
-
     IntrospectedBean(BeanSetup bean, @Nullable BeanIntrospector beanIntrospector) {
         this.bean = bean;
-        this.assemblyMetaModel = bean.container.assembly.assemblyModel.metaModel;
+        this.hookModel = bean.container.assembly.assemblyModel.hookModel;
         this.beanIntrospector = beanIntrospector;
         this.oc = new OpenClass(PACKED, bean.beanClass);
     }
 
+    /**
+     * @param extensionType
+     * @param fullAccess
+     * @return the contributor
+     */
     Contributor computeContributor(Class<? extends Extension<?>> extensionType, boolean fullAccess) {
         return extensions.computeIfAbsent(extensionType, c -> {
             // Get the extension (installing it if necessary)
             ExtensionSetup extension = bean.container.safeUseExtensionSetup(extensionType, null);
 
-            BeanIntrospector introspector;
+            final BeanIntrospector introspector;
+
+            // if a special bean introspected has been set from the extension that is installing the bean
+            // Use this bean introspector, otherwise create a new one
             if (beanIntrospector != null && bean.installedBy.extensionType == extensionType) {
-                // A special introspector has been set, don't
                 introspector = beanIntrospector;
             } else {
                 try {
@@ -114,13 +117,15 @@ public final class IntrospectedBean {
                 }
             }
 
+            // Call BeanIntrospector#initialize
             try {
                 MH_EXTENSION_BEAN_INTROSPECTOR_INITIALIZE.invokeExact(introspector, extension, bean);
             } catch (Throwable t) {
                 throw ThrowableUtil.orUndeclared(t);
             }
-            // Notify the bean introspector that is being used
-            introspector.onIntrospectionStop();
+
+            // Notify the bean introspector that it is being used
+            introspector.onIntrospectionStart();
             return new Contributor(extension, introspector, fullAccess);
         });
     }
@@ -150,7 +155,7 @@ public final class IntrospectedBean {
         bean.injectionManager = new BeanInjectionManager(bean); // legacy
 
         // Introspect all fields on the bean and its super classes
-        IntrospectedBeanField.introspectAllFields(this, bean.beanClass);
+        introspectAllFields(this, bean.beanClass);
 
         // Process all methods on the bean
         record MethodHelper(int hash, String name, Class<?>[] parameterTypes) {
@@ -187,7 +192,7 @@ public final class IntrospectedBean {
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 types.put(new MethodHelper(m), packages);
-                introspectMethod(m);// move this to step 2???
+                IntrospectedBeanMethod.introspectMethodForAnnotations(this, m);
             }
         }
 
@@ -206,7 +211,7 @@ public final class IntrospectedBean {
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
                         // but not include static methods on interfaces.
-                        introspectMethod(m);
+                        IntrospectedBeanMethod.introspectMethodForAnnotations(this, m);
                     }
                 } else if (!m.isBridge() && !m.isSynthetic()) { // TODO should we include synthetic methods??
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -227,14 +232,14 @@ public final class IntrospectedBean {
                     case Modifier.PRIVATE:
                         // Private methods are never overridden
                     }
-                    introspectMethod(m);
+                    IntrospectedBeanMethod.introspectMethodForAnnotations(this, m);
                 }
             }
         }
         // Should be empty... Maybe just an assert
         resolveOperations();
 
-        // Call into every BeanScanner and tell them its all over
+        // Call into every BeanIntrospector and tell them it is all over
         for (Contributor e : extensions.values()) {
             e.introspector.onIntrospectionStop();
         }
@@ -243,50 +248,31 @@ public final class IntrospectedBean {
     private void introspectClass() {}
 
     /**
-     * Look for hook annotations on a single method.
-     * 
-     * @param method
-     *            the method to look for annotations on
-     */
-    private void introspectMethod(Method method) {
-        Annotation[] annotations = method.getAnnotations();
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation a1 = annotations[i];
-            Class<? extends Annotation> a1Type = a1.annotationType();
-            MethodAnnotationCache fh = assemblyMetaModel.lookupAnnotatedMethod(a1Type);
-            if (fh != null) {
-                Contributor contributor = computeContributor(fh.extensionType(), false);
-
-                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(IntrospectedBean.this, contributor, method, annotations, fh.isInvokable());
-
-                contributor.introspector.onMethod(pbm);
-            }
-        }
-    }
-
-    // We need it for calling into nested
-    void resolveOperation(OperationSetup operation) {
-        for (int i = 0; i < operation.bindings.length; i++) {
-            if (operation.bindings[i] == null) {
-                IntrospectedBeanParameter.bind(this, operation, i);
-            }
-        }
-    }
-
-    /**
      * 
      */
     void resolveOperations() {
-        for (OperationSetup os = unBoundOperations.pollFirst(); os != null; os = unBoundOperations.pollFirst()) {
-            resolveOperation(os);
+        for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {
+            for (int i = 0; i < operation.bindings.length; i++) {
+                if (operation.bindings[i] == null) {
+                    IntrospectedBeanParameter.resolveParameter(this, operation, i);
+                }
+            }
         }
     }
 
-    static void checkExtensionClass(Class<?> annotationType, Class<? extends Extension<?>> extensionType) {
-        ClassUtil.checkProperSubclass(Extension.class, extensionType, s -> new InternalExtensionException(s));
-        if (extensionType.getModule() != annotationType.getModule()) {
-            throw new InternalExtensionException(
-                    "The annotation " + annotationType + " and the extension " + extensionType + " must be declared in the same module");
+    static void introspectAllFields(IntrospectedBean introspector, Class<?> clazz) {
+        // We never process classes in the "java.base" module.
+        if (clazz.getModule() != IntrospectedBean.JAVA_BASE_MODULE) {
+
+            // Recursively call into superclass, before processing own fields
+            introspectAllFields(introspector, clazz.getSuperclass());
+
+            // PackedDevToolsIntegration.INSTANCE.reflectMembers(c, fields);
+
+            // Iterate over all declared fields
+            for (Field field : clazz.getDeclaredFields()) {
+                IntrospectedBeanField.introspectFieldForAnnotations(introspector, field);
+            }
         }
     }
 
@@ -294,7 +280,6 @@ public final class IntrospectedBean {
      * An instance of this class is created per extension that participates in the introspection.
      */
     public record Contributor(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
-
 
     /**
      * An open class is a thin wrapper for a single class and a {@link Lookup} object.
