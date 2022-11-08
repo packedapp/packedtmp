@@ -140,7 +140,8 @@ public final class OperationHandle {
         operation.isConfigurationDisabled = true;
         // custom invocationContext must have been set before calling this method
         checkIndex(parameterIndex, operation.type.parameterCount());
-        return new IntrospectedBeanBinding(operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+        // Does not work currently because we don't have an introspected bean
+        return new IntrospectedBeanBinding(null, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
     public void onBuild(Consumer<MethodHandle> action) {

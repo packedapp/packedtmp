@@ -13,26 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package app.packed.net;
 
-import internal.app.packed.operation.OperationSetup;
+import java.nio.channels.spi.SelectorProvider;
+
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-// Ved ikke om vi gider have det hiraki...
-public abstract sealed class NestedBindingSetup extends BindingSetup permits CompositeBindingSetup, FusedBindingSetup {
+public class Usage extends BaseAssembly {
 
-    /**
-     * @param operation
-     * @param index
-     */
-    public NestedBindingSetup(OperationSetup operation, int index) {
-        super(operation, index);
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        install(Bean.class);
+    }
+    public static void main(String[] args) {
+        App.run(new Usage());
     }
 
-    public OperationSetup nestedOperation;
+    public static class Bean {
+        
+        public Bean(SelectorProvider psp) {
 
-
-    public final OperationSetup providedBy = null;
+        }
+    }
 }

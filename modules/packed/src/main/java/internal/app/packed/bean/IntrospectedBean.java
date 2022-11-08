@@ -42,6 +42,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.ConstructorOperationTarget;
+import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
@@ -139,6 +140,8 @@ public final class IntrospectedBean {
         OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy,
                 new ConstructorOperationTarget(mh, constructor.constructor()), null);
         bean.operations.add(os);
+        unBoundOperations.add(os);
+        resolveOperations();
     }
 
     /** Introspect the bean. */
@@ -252,15 +255,21 @@ public final class IntrospectedBean {
      */
     void resolveOperations() {
         for (OperationSetup operation = unBoundOperations.pollFirst(); operation != null; operation = unBoundOperations.pollFirst()) {
-            for (int i = 0; i < operation.bindings.length; i++) {
-                if (operation.bindings[i] == null) {
-                    IntrospectedBeanParameter.resolveParameter(this, operation, i);
-                }
+            resolveOperation(operation);
+        }
+    }
+    void resolveOperation(OperationSetup operation) {
+        //System.out.println(operation.target + " " + operation.bindings.length);
+        //System.out.println(operation.type);
+        for (int i = 0; i < operation.bindings.length; i++) {
+            BindingSetup binding = operation.bindings[i];
+            if (binding == null) {
+                IntrospectedBeanParameter.resolveParameter(this, operation, i);
             }
         }
     }
 
-    static void introspectAllFields(IntrospectedBean introspector, Class<?> clazz) {
+    private static void introspectAllFields(IntrospectedBean introspector, Class<?> clazz) {
         // We never process classes in the "java.base" module.
         if (clazz.getModule() != IntrospectedBean.JAVA_BASE_MODULE) {
 
@@ -277,7 +286,8 @@ public final class IntrospectedBean {
     }
 
     /**
-     * An instance of this class is created per extension that participates in the introspection.
+     * An instance of this class is created per extension that participates in the introspection. The main purpose of the
+     * class is to make sure that the extension points to the same bean introspector for the whole of the introspection.
      */
     public record Contributor(ExtensionSetup extension, BeanIntrospector introspector, boolean hasFullAccess) {}
 

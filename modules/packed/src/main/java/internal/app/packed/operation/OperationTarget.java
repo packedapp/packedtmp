@@ -16,6 +16,7 @@
 package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -43,6 +44,24 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         this.requiresBeanInstance = requiresBeanInstance;
     }
 
+    public static final class BeanSynthetic extends OperationTarget implements OperationTargetMirror.OfSyntheticInvoke {
+
+        /**
+         * @param methodHandle
+         * @param requiresBeanInstance
+         */
+        public BeanSynthetic(MethodHandle methodHandle, boolean requiresBeanInstance) {
+            super(methodHandle, requiresBeanInstance);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType methodType() {
+            throw new UnsupportedOperationException();
+        }
+        
+    }
+    
     public static final class BeanInstanceAccess extends OperationTarget implements OperationTargetMirror.OfAccessBeanInstance {
 
         private final BeanSetup bean;

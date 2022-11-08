@@ -45,13 +45,14 @@ final class IntrospectedBeanParameter {
         ParameterTypeRecord hook = iBean.hookModel.lookupParameterType(var.getType());
         if (hook != null) {
             Contributor contributor = iBean.computeContributor(hook.extensionType(), false);
-            IntrospectedBeanBinding h = new IntrospectedBeanBinding(operation, index, contributor.extension(), var.getType(), var);
+            IntrospectedBeanBinding h = new IntrospectedBeanBinding(iBean, operation, index, contributor.extension(), var.getType(), var);
             contributor.introspector().onBinding(h);
             if (operation.bindings[index] != null) {
                 return;
             }
         }
 
+        //System.out.println("Resolve as service " + var + " for " + operation.operator.extensionType);
         // finally resolve as service
         InternalDependency ia = InternalDependency.fromOperationType(operation.type).get(index);
         operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
@@ -75,7 +76,7 @@ final class IntrospectedBeanParameter {
             if (hook != null) {
                 Contributor ei = introspector.computeContributor(hook.extensionType(), false);
 
-                IntrospectedBeanBinding h = new IntrospectedBeanBinding(os, index, ei.extension(), a1Type, var);
+                IntrospectedBeanBinding h = new IntrospectedBeanBinding(introspector, os, index, ei.extension(), a1Type, var);
                 ei.introspector().onBinding(h);
                 return true;
             }

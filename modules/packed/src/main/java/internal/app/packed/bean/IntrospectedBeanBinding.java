@@ -31,6 +31,8 @@ import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.ConstantBindingSetup;
+import internal.app.packed.operation.binding.FusedBindingSetup;
+import internal.app.packed.operation.op.PackedOp;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class IntrospectedBeanBinding implements OnBinding {
@@ -53,8 +55,12 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
     Variable variable;
 
-    public IntrospectedBeanBinding(OperationSetup operation, int index, ExtensionSetup bindingExtension, @Nullable Class<?> bindingHookClass, Variable var) {
+    final IntrospectedBean iBean;
+
+    public IntrospectedBeanBinding(IntrospectedBean iBean, OperationSetup operation, int index, ExtensionSetup bindingExtension,
+            @Nullable Class<?> bindingHookClass, Variable var) {
         this.operation = requireNonNull(operation);
+        this.iBean = iBean;
         this.index = index;
         this.bindingExtension = requireNonNull(bindingExtension);
         this.variable = var;
@@ -128,7 +134,12 @@ public final class IntrospectedBeanBinding implements OnBinding {
     /** {@inheritDoc} */
     @Override
     public void provide(Op<?> op) {
-        throw new UnsupportedOperationException();
+        PackedOp<?> pop = PackedOp.crack(op);
+        FusedBindingSetup fbs = new FusedBindingSetup(operation, index);
+        OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension, fbs);
+        fbs.nestedOperation = os;
+        iBean.unBoundOperations.add(os);
+        operation.bindings[index] = fbs;
     }
 
     /** {@inheritDoc} */

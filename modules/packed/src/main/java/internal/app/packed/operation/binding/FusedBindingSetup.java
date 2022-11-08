@@ -33,8 +33,6 @@ public final class FusedBindingSetup extends NestedBindingSetup {
     // Eller er det en extension bean??? Det er hvem der styrer vaerdien
     public ExtensionSetup managedBy;
 
-    public final OperationSetup operation;
-
     /** Supplies a mirror for the operation */
     public Supplier<? extends BindingMirror> specializedMirror;
 
@@ -44,20 +42,17 @@ public final class FusedBindingSetup extends NestedBindingSetup {
      */
     public FusedBindingSetup(OperationSetup original, int index) {
         super(original, index);
-        operation = null;
     }
-    
-
-    /** {@inheritDoc} */
-    @Override
-    public BindingMirror mirror0() {
-        return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
-    }
-
 
     /** {@inheritDoc} */
     @Override
     public User boundBy() {
         return User.extension(managedBy.extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMirror mirror0() {
+        return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
     }
 }

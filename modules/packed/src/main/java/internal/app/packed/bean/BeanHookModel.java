@@ -121,7 +121,6 @@ public final class BeanHookModel {
         @Override
         protected ParameterTypeRecord computeValue(Class<?> type) {
             BindingHook h = type.getAnnotation(BindingHook.class);
-
             Class<? extends Annotation> cl = bindings.get(type.getName());
             if (cl != null) {
                 Class<?> declaringClass = cl.getDeclaringClass();
@@ -176,8 +175,8 @@ public final class BeanHookModel {
         return ANNOTATED_METHOD_CACHE.get(fieldAnnotation);
     }
 
-    ParameterTypeRecord lookupParameterType(Class<?> fieldAnnotation) {
-        return PARAMETER_TYPE_CACHE.get(fieldAnnotation);
+    ParameterTypeRecord lookupParameterType(Class<?> parameterType) {
+        return PARAMETER_TYPE_CACHE.get(parameterType);
     }
 
     static void checkExtensionClass(Class<?> annotationType, Class<? extends Extension<?>> extensionType) {

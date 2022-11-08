@@ -26,7 +26,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
- * The internal configuration of a single binding.
+ * The internal configuration of a single binding in an operation.
  */
 public abstract class BindingSetup {
 

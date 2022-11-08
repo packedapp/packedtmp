@@ -25,6 +25,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 
 /**
@@ -43,6 +44,6 @@ final class PackedCapturingOp<R> extends PackedOp<R> {
     /** {@inheritDoc} */
     @Override
     public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
-        return new OperationSetup(bean, type, operator, null, nestedBinding);
+        return new OperationSetup(bean, type, operator, new OperationTarget.BeanSynthetic(operation, false), nestedBinding);
     }
 }
