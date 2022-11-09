@@ -15,8 +15,6 @@
  */
 package internal.app.packed.operation.binding;
 
-import app.packed.container.User;
-import app.packed.operation.BindingMirror;
 import app.packed.operation.bindings.CompositeBindingMirror;
 import internal.app.packed.operation.OperationSetup;
 
@@ -30,21 +28,7 @@ public final class CompositeBindingSetup extends NestedBindingSetup {
      * @param index
      */
     public CompositeBindingSetup(OperationSetup operation, int index) {
-        super(operation, index);
-    }
-    
-
-    /** {@inheritDoc} */
-    @Override
-    public User boundBy() {
-        // A composite binding is always bound by the bean itself
-        return operation.bean.realm.realm();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public BindingMirror mirror0() {
-        return new CompositeBindingMirror();
+        super(operation, index, operation.bean.realm.realm());
+        this.mirrorSupplier = () -> new CompositeBindingMirror();
     }
 }

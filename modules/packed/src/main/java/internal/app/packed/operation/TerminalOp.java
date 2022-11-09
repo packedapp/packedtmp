@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 
@@ -24,14 +24,12 @@ import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 
 /**
  *
  */
-public abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
+abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
     /**
      * @param type
@@ -57,7 +55,7 @@ public abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
-            return new OperationSetup(bean, type, operator, new OperationTarget.BeanSynthetic(operation, false), nestedBinding);
+            return new OperationSetup(bean, type, operator, new OperationTarget.MethodHandleOperationTarget(operation, false), nestedBinding);
         }
     }
 }

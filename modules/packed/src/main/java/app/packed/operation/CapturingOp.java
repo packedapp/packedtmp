@@ -18,7 +18,7 @@ package app.packed.operation;
 import java.util.function.Consumer;
 
 import app.packed.framework.Nullable;
-import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.PackedOp;
 
 /**
  * A abstract op that captures the type an annotated return type and annotated type apra

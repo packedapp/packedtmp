@@ -21,7 +21,6 @@ import app.packed.container.User;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.util.ClassUtil;
 
 /**
  *
@@ -41,18 +40,6 @@ public final class FusedBindingSetup extends NestedBindingSetup {
      * @param index
      */
     public FusedBindingSetup(OperationSetup original, int index) {
-        super(original, index);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public User boundBy() {
-        return User.extension(managedBy.extensionType);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BindingMirror mirror0() {
-        return ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, specializedMirror);
+        super(original, index, User.application());
     }
 }

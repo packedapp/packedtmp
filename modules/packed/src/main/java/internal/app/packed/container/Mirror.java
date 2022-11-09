@@ -11,4 +11,5 @@ package internal.app.packed.container;
 
 // Maybe seal it, and the have
 // findAll(Class<? extends Mirror>);
+// FrameworkMirror? Mhhhh we can never stop than
 public interface Mirror {}

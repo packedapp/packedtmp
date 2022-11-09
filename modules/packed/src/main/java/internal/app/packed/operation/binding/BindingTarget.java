@@ -15,21 +15,24 @@
  */
 package internal.app.packed.operation.binding;
 
-import app.packed.container.User;
-import internal.app.packed.operation.OperationSetup;
-
 /**
  *
  */
-public class ConstantBindingSetup extends BindingSetup {
+public abstract sealed class BindingTarget {
 
-    /**
-     * @param operation
-     * @param index
-     * @param target
-     */
-    public ConstantBindingSetup(OperationSetup operation, int index, User user, BindingTarget target) {
-        super(operation, index, user, target);
+    public static final class CompositeBindingTarget extends BindingTarget {
+
     }
 
+    public static final class ExtensionServiceBindingTarget extends BindingTarget {
+
+    }
+
+    public static final class ServiceBindingTarget extends BindingTarget {
+
+    }
+
+    public static final class BindingHookTarget extends BindingTarget {
+
+    }
 }

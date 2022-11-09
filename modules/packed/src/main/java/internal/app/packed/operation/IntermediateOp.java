@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,14 +24,13 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
 /**
  *
  */
-public abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
+abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /**
      * @param type
@@ -67,7 +66,7 @@ public abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
             return object;
         }
     }
-    
+
     /** A op that binds 1 or more constants. */
     static final class BoundOp<R> extends IntermediateOp<R> {
 

@@ -17,11 +17,13 @@ package internal.app.packed.operation.binding;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Supplier;
 
 import app.packed.container.User;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
@@ -34,23 +36,42 @@ public abstract class BindingSetup {
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
+    public final User boundBy;
+
     /** The index into {@link OperationSetup#bindings}. */
     public final int index;
 
     /** The underlying operation. */
     public final OperationSetup operation;
 
-    public BindingSetup(OperationSetup operation, int index) {
+    /** Supplies a mirror for the operation */
+    public final BindingTarget target;
+
+    /** Supplies a mirror for the operation */
+    public Supplier<? extends BindingMirror> mirrorSupplier;
+    
+    public BindingSetup(OperationSetup operation, int index, User user) {
         this.operation = operation;
         this.index = index;
+        this.target = null;
+        this.boundBy = user;
     }
 
-    public abstract User boundBy();
-    
+    public BindingSetup(OperationSetup operation, int index, User user, BindingTarget target) {
+        this.operation = operation;
+        this.index = index;
+        this.target = target;
+        this.boundBy = user;
+    }
+
+    public final User boundBy() {
+        return boundBy;
+    }
+
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
-        BindingMirror mirror = mirror0();
-        
+        BindingMirror mirror = ClassUtil.mirrorHelper(BindingMirror.class, BindingMirror::new, mirrorSupplier);
+
         // Initialize BindingMirror by calling BindingMirror#initialize(BindingSetup)
         try {
             MH_BINDING_MIRROR_INITIALIZE.invokeExact(mirror, this);
@@ -59,9 +80,4 @@ public abstract class BindingSetup {
         }
         return mirror;
     }
-    
-    protected abstract BindingMirror mirror0();
-    
-    public abstract MethodHandle read();
-    
 }

@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.Inject;
 import app.packed.framework.Nullable;
-import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.PackedOp;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an

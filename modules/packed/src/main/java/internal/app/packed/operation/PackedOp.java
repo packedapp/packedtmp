@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,10 +30,9 @@ import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.IntermediateOp.BoundOp;
+import internal.app.packed.operation.IntermediateOp.PeekableOp;
 import internal.app.packed.operation.binding.NestedBindingSetup;
-import internal.app.packed.operation.op.IntermediateOp.BoundOp;
-import internal.app.packed.operation.op.IntermediateOp.PeekableOp;
 import internal.app.packed.util.MethodHandleUtil;
 
 /** The internal implementation of Op. */
@@ -114,7 +113,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
     }
 
     public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
-        return CapturingOpHelper.create(clazz, function);
+        return TerminalOpCaptureHelper.create(clazz, function);
     }
 
     public static <R> PackedOp<R> crack(Op<R> op) {

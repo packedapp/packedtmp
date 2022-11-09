@@ -15,18 +15,15 @@
  */
 package internal.app.packed.operation.binding;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.application.PackedBridge;
-import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-public class CompanionBinding extends BindingSetup {
+public class CompanionBinding  {
 
     PackedBridge<?> bridge;
 
@@ -47,29 +44,14 @@ public class CompanionBinding extends BindingSetup {
     
     // Kan vel kun paa ting man direkte depender paa?
     
-    /**
-     * @param operation
-     * @param index
-     */
-    public CompanionBinding(OperationSetup operation, int index) {
-        super(operation, index);
-    }
 
     /** {@inheritDoc} */
-    @Override
     public User boundBy() {
         return User.extension(BeanExtension.class);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected BindingMirror mirror0() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle read() {
         throw new UnsupportedOperationException();
     }
 

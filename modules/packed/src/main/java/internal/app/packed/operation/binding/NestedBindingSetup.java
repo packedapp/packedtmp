@@ -15,8 +15,7 @@
  */
 package internal.app.packed.operation.binding;
 
-import java.lang.invoke.MethodHandle;
-
+import app.packed.container.User;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -29,18 +28,18 @@ public abstract sealed class NestedBindingSetup extends BindingSetup permits Com
      * @param operation
      * @param index
      */
-    public NestedBindingSetup(OperationSetup operation, int index) {
-        super(operation, index);
+    public NestedBindingSetup(OperationSetup operation, int index, User user) {
+        super(operation, index, user);
     }
 
     public OperationSetup nestedOperation;
 
     public final OperationSetup providedBy = null;
     
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle read() {
-        return nestedOperation.buildInvoker();
-    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public MethodHandle read() {
+//        return nestedOperation.buildInvoker();
+//    }
 }

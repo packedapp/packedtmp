@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
@@ -35,14 +35,14 @@ import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import app.packed.service.TypeToken;
 import internal.app.packed.oldservice.inject.InternalDependency;
-import internal.app.packed.operation.op.TerminalOp.PackedCapturingOp;
+import internal.app.packed.operation.TerminalOp.PackedCapturingOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
  *
  */
-class CapturingOpHelper {
+class TerminalOpCaptureHelper {
 
     /** A cache of extracted type variables from subclasses of this class. */
     static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
@@ -149,7 +149,7 @@ class CapturingOpHelper {
     @SuppressWarnings("unchecked")
     public static <R> PackedOp<R> create(Class<?> clazz, Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        TypeToken<R> typeLiteral = (TypeToken<R>) CapturingOpHelper.CACHE.get(clazz);
+        TypeToken<R> typeLiteral = (TypeToken<R>) TerminalOpCaptureHelper.CACHE.get(clazz);
         // analyze();
 
         final MethodHandle methodHandle;

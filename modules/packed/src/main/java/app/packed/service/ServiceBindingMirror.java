@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 import app.packed.operation.BindingMirror;
 import internal.app.packed.service.ServiceBindingSetup;
 
@@ -55,5 +57,9 @@ public class ServiceBindingMirror extends BindingMirror {
     /** {@return the binding key.} */
     public Key<?> key() {
         return binding.entry.key;
+    }
+
+    public Optional<ProvidedServiceMirror> providedService() {
+        throw new UnsupportedOperationException();
     }
 }

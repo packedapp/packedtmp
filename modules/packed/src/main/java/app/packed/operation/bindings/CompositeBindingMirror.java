@@ -29,7 +29,7 @@ import app.packed.operation.BindingMirror;
 public class CompositeBindingMirror extends BindingMirror {
 
     public List<BindingMirror> bindings() {
-        throw new UnsupportedOperationException();
+        return providingOperation().get().bindings();
     }
 
     // Tror ikke laengere vi bliver resolved som en compond.

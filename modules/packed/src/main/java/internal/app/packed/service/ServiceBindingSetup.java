@@ -15,11 +15,8 @@
  */
 package internal.app.packed.service;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.container.User;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingMirror;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
@@ -35,8 +32,7 @@ public final class ServiceBindingSetup extends BindingSetup {
 
     /** A binding in the same container for the same key */
     @Nullable
-    public
-    ServiceBindingSetup nextFriend;
+    public ServiceBindingSetup nextFriend;
 
     /** Whether or not the binding is required. */
     public final boolean required;
@@ -46,15 +42,10 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param index
      */
     ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
-        super(operation, index);
+        super(operation, index, User.extension(ServiceExtension.class));
         this.entry = entry;
         this.required = required;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public User boundBy() {
-        return User.extension(ServiceExtension.class);
+        mirrorSupplier = () -> new ServiceBindingMirror(this);
     }
 
     /** {@return whether or not the service could be resolved.} */
@@ -62,15 +53,9 @@ public final class ServiceBindingSetup extends BindingSetup {
         return entry.provider != null;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BindingMirror mirror0() {
-        return new ServiceBindingMirror(this);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle read() {
-        return entry.provider.operation.buildInvoker();
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public MethodHandle read() {
+//        return entry.provider.operation.buildInvoker();
+//    }
 }

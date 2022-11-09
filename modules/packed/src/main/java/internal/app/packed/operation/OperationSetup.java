@@ -133,7 +133,7 @@ public final class OperationSetup {
         // We create a new method that a
         for (int i = 0; i < bindings.length; i++) {
             System.out.println("BT " + bindings[i].getClass());
-            mh = MethodHandles.collectArguments(mh, i, bindings[i].read());
+          //  mh = MethodHandles.collectArguments(mh, i, bindings[i].read());
         }
 
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X

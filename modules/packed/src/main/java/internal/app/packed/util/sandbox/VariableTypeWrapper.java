@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.base;
+package internal.app.packed.util.sandbox;
 
 import static java.util.Objects.requireNonNull;
 

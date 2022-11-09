@@ -16,8 +16,8 @@ module app.packed {
     exports app.packed.operation.bindings;
 
     /* Special support for packed-devtoolks */
-    uses internal.app.packed.base.devtools.PackedDevToolsIntegration;
-    exports internal.app.packed.base.devtools to app.packed.devtools;
+    uses internal.app.packed.framework.devtools.PackedDevToolsIntegration;
+    exports internal.app.packed.framework.devtools to app.packed.devtools;
 }
 
 // requires static org.graalvm.sdk;

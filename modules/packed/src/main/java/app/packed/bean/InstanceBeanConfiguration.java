@@ -21,7 +21,7 @@ import java.util.function.Function;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.service.Key;
-import internal.app.packed.base.SpecFix;
+import internal.app.packed.util.sandbox.SpecFix;
 
 /**
  * A base configuration class for beans that are instantiable.

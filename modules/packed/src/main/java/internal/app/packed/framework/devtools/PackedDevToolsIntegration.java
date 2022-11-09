@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.base.devtools;
+package internal.app.packed.framework.devtools;
 
 import java.lang.reflect.Member;
 
@@ -27,6 +27,9 @@ public abstract class PackedDevToolsIntegration {
 
     static {
         // ServiceLoader adds ~ 12 ms to startup time
+        
+        // Maybe just a Class.forname()....
+        
         INSTANCE = new NoDevTools();// ServiceLoader.load(PackedDevToolsIntegration.class).findFirst().orElseGet(() -> new NoDevTools());
     }
 

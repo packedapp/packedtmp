@@ -35,7 +35,7 @@ import app.packed.operation.Provider;
 import app.packed.service.Key;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.PackedExtensionPointContext;
-import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.PackedOp;
 
 public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller {
 

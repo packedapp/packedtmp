@@ -18,21 +18,25 @@ package app.packed.operation;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.container.User;
-import app.packed.framework.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.container.User;
+import app.packed.framework.Nullable;
 import app.packed.operation.bindings.BindingKind;
 import app.packed.operation.bindings.DefaultBindingMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
+import internal.app.packed.operation.OperationTarget.ConstantOperationTarget;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
  * A mirror representing the bound parameter of an operation.
  * 
  * @see OperationMirror#bindings()
+ */
+/**
+ *
  */
 public class BindingMirror implements Mirror {
 
@@ -101,9 +105,28 @@ public class BindingMirror implements Mirror {
         this.binding = binding;
     }
 
+    /**
+     * Either the binding itself is a constant. Or the providing method provides a constant.
+     * 
+     * @return whether or not the a constant
+     */
+    public boolean isConstant() {
+        Optional<OperationMirror> p = providingOperation();
+        return isConstantBinding() || (p.isPresent() && p.get().target() instanceof ConstantOperationTarget);
+    }
+
+    public boolean isConstantBinding() {
+        // Can either be a constant. Or from a ConstantOperation
+        return false;
+    }
+
     /** {@return the operation that declares this binding.} */
     public OperationMirror operation() {
         return binding().operation.mirror();
+    }
+
+    public Optional<OperationMirror> providingOperation() {
+        return Optional.empty();
     }
 
     /** {@return the underlying variable that has been bound.} */
@@ -144,6 +167,8 @@ interface Sandbox {
 
     boolean isConstant();
 
+    public User providedBy();
+
     /**
      * If this dependency is the result of another operation.
      * 
@@ -165,8 +190,6 @@ interface Sandbox {
     // HttpRequst<?> Optional<Integer> er jo stadig provided af WebExtension...
 
     Optional<OperationMirror> providingOperation();
-
-    public User providedBy();
 
     /**
      * If this dependency is the result of another operation.

@@ -22,13 +22,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import app.packed.bean.BeanMirror;
-import app.packed.operation.OperationTargetMirror.OfAccessBeanInstance;
+import app.packed.operation.OperationTargetMirror.OfConstant;
 import app.packed.operation.OperationTargetMirror.OfConstructorInvoke;
 import app.packed.operation.OperationTargetMirror.OfFieldAccess;
 import app.packed.operation.OperationTargetMirror.OfFunctionCall;
+import app.packed.operation.OperationTargetMirror.OfLifetimePoolAccess;
+import app.packed.operation.OperationTargetMirror.OfMethodHandleInvoke;
 import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
-import app.packed.operation.OperationTargetMirror.OfSyntheticInvoke;
 import internal.app.packed.operation.OperationTarget;
 
 /**
@@ -45,9 +45,21 @@ import internal.app.packed.operation.OperationTarget;
 // OperationLocationmirror?
 // OperationKindMirror?
 // InvocationSiteMirror
-public sealed interface OperationTargetMirror permits OperationTarget, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfAccessBeanInstance, OfMethodInvoke, OfSyntheticInvoke {
+public sealed interface OperationTargetMirror permits OperationTarget, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant {
 
     // AnnotataionReader annotations()???
+
+    /**
+     * Represents an operation that simply returns a constant.
+     * <p>
+     * An {@link OperationMirror operation} with {@code constant} target never has any {@link OperationMirror#bindings()
+     * bindings}.
+     */
+    public non-sealed interface OfConstant extends OperationTargetMirror {
+
+        /** {@return the type of constant.} */
+        Class<?> constantType();
+    }
 
     // Members
     /** Represents an operation that invokes a constructor. */
@@ -90,16 +102,21 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
     }
 
     /**
-     * Represents an operation that simply return a bean instance.
+     * Represents an operation that it performed sometime in the lifetime of X
+     * And then returned for subsequent invocations.
+     * <p>
+     * This is typically for access container beans that are created as
+     * part of their container lifetime creation.
+     * .
      * <p>
      * This is typically used for beans whose instance is provided or exported as a service.
      */
-    public non-sealed interface OfAccessBeanInstance extends OperationTargetMirror {
+    //
+    public non-sealed interface OfLifetimePoolAccess extends OperationTargetMirror {
+
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
         Optional<OperationMirror> origin();
-
-        BeanMirror bean();
 
         // Accessing an instance that have previously been computed
         // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
@@ -112,15 +129,14 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
         // Har maaske ogsaa noget LifetimePoolMirror her????
     } // ofLifetimePool? Hmm
 
+    public non-sealed interface OfMethodHandleInvoke extends OperationTargetMirror {
+        MethodType methodType();
+    }
+
     /** Represents an operation that invokes a method. */
     public non-sealed interface OfMethodInvoke extends OperationTargetMirror {
 
         /** {@return the invokable method.} */
         Method method();
-    }
-
-    // Maybe just MethodHandleInvoke
-    public non-sealed interface OfSyntheticInvoke extends OperationTargetMirror {
-        MethodType methodType();
     }
 }

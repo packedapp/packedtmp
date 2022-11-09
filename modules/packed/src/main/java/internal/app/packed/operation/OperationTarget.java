@@ -18,6 +18,7 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
@@ -26,7 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.bean.BeanMirror;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTargetMirror;
 import internal.app.packed.bean.BeanSetup;
@@ -47,27 +48,9 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         this.requiresBeanInstance = requiresBeanInstance;
     }
 
-    public static final class BeanSynthetic extends OperationTarget implements OperationTargetMirror.OfSyntheticInvoke {
+    public static final class BeanInstanceAccess extends OperationTarget implements OperationTargetMirror.OfLifetimePoolAccess {
 
-        /**
-         * @param methodHandle
-         * @param requiresBeanInstance
-         */
-        public BeanSynthetic(MethodHandle methodHandle, boolean requiresBeanInstance) {
-            super(methodHandle, requiresBeanInstance);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType methodType() {
-            throw new UnsupportedOperationException();
-        }
-        
-    }
-    
-    public static final class BeanInstanceAccess extends OperationTarget implements OperationTargetMirror.OfAccessBeanInstance {
-
-        private final BeanSetup bean;
+        public final BeanSetup bean;
 
         /**
          * @param methodHandle
@@ -80,14 +63,75 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
 
         /** {@inheritDoc} */
         @Override
-        public BeanMirror bean() {
-            return bean.mirror();
+        public Optional<OperationMirror> origin() {
+            return bean.mirror().factoryOperation();
+        }
+    }
+
+    public static final class MethodHandleOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodHandleInvoke {
+
+        /**
+         * @param methodHandle
+         * @param requiresBeanInstance
+         */
+        public MethodHandleOperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance) {
+            super(methodHandle, requiresBeanInstance);
         }
 
         /** {@inheritDoc} */
         @Override
-        public Optional<OperationMirror> origin() {
-            return bean().factoryOperation();
+        public MethodType methodType() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    /** An operation target that simply returns a constant. */
+    public static final class ConstantOperationTarget extends OperationTarget implements OperationTargetMirror.OfConstant {
+
+        /** The constant. */
+        @Nullable
+        public final Object constant;
+
+        /** The type of the constant. */
+        public final Class<?> constantType;
+
+        /**
+         * @param methodHandle
+         * @param requiresBeanInstance
+         */
+        public ConstantOperationTarget(Class<?> constantType, @Nullable Object constant) {
+            super(MethodHandles.constant(constantType, constant), false);
+            this.constantType = constantType;
+            this.constant = constant;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> constantType() {
+            return constantType;
+        }
+    }
+
+    public static final class ConstructorOperationTarget extends OperationTarget implements OperationTargetMirror.OfConstructorInvoke {
+
+        private final Constructor<?> constructor;
+
+        /**
+         * @param methodHandle
+         * @param requiresBeanInstance
+         */
+        public ConstructorOperationTarget(MethodHandle methodHandle, Constructor<?> constructor) {
+            super(methodHandle, false);
+            this.constructor = constructor;
+        }
+
+        /** {@return the invokable method.} */
+        public Constructor<?> constructor() {
+            return constructor;
+        }
+
+        public String toString() {
+            return constructor.toString();
         }
     }
 
@@ -129,29 +173,6 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         @Override
         public Field field() {
             return field;
-        }
-    }
-
-    public static final class ConstructorOperationTarget extends OperationTarget implements OperationTargetMirror.OfConstructorInvoke {
-
-        private final Constructor<?> constructor;
-
-        /**
-         * @param methodHandle
-         * @param requiresBeanInstance
-         */
-        public ConstructorOperationTarget(MethodHandle methodHandle, Constructor<?> constructor) {
-            super(methodHandle, false);
-            this.constructor = constructor;
-        }
-
-        /** {@return the invokable method.} */
-        public Constructor<?> constructor() {
-            return constructor;
-        }
-
-        public String toString() {
-            return constructor.toString();
         }
     }
 

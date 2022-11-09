@@ -40,7 +40,7 @@ import app.packed.lifetime.sandbox.OldLifetimeKind;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblySetup;
-import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.PackedOp;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;

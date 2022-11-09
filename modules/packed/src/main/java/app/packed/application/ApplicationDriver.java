@@ -26,7 +26,7 @@ import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
-import internal.app.packed.operation.op.PackedOp;
+import internal.app.packed.operation.PackedOp;
 
 /**
  * Application drivers are responsible for creating (root) applications.
