@@ -15,7 +15,6 @@
  */
 package app.packed.application;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
@@ -192,9 +191,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         }
 
         <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets);
-
-        
-        <S> ApplicationDriver<S> build(Class<S> wrapperType, MethodHandle wrapperFactory, Wirelet... wirelets);
 
         /**
          * Creates a new artifact driver.

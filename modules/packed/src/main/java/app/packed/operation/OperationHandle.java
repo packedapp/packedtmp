@@ -191,7 +191,7 @@ public final class OperationHandle {
     /**
      * Registers an action that will be performed doing the code generation phase of the application.
      * <p>
-     * This method is typically used for storing the {@link MethodHandle} returned by {@link #buildInvoker()} in some kind
+     * This method is typically used for storing the method handle returned by {@link #buildInvoker()} in some kind
      * of data structure.
      * 
      * @param action

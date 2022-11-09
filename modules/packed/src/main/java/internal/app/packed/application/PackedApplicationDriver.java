@@ -256,18 +256,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <S> ApplicationDriver<S> build(Class<S> artifactType, MethodHandle mh, Wirelet... wirelets) {
-            // mh = mh.asType(mh.type().changeReturnType(Object.class));
-            // TODO fix....
-            this.mhConstructor = mh;
+        public <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
+            this.mhConstructor = PackedOp.crack(op).operation;
 
             return new PackedApplicationDriver<>(this);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
-            return null;
         }
 
         /** {@inheritDoc} */

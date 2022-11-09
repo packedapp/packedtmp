@@ -17,8 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,10 +37,10 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 import app.packed.operation.Op;
+import app.packed.operation.Op1;
 import app.packed.operation.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
 import internal.app.packed.oldservice.PackedServiceLocator;
-import internal.app.packed.util.LookupUtil;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -350,10 +348,8 @@ public interface ServiceLocator {
     static ServiceLocator of(ComposerAction<? super Composer> action, Wirelet... wirelets) {
         class ServiceLocatorAssembly extends ComposerAssembly<Composer> {
 
-            private static final MethodHandle CONV = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationInitializationContext.class,
-                    "serviceLocator", ServiceLocator.class);
-
-            private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class, CONV);
+            private static final ApplicationDriver<ServiceLocator> DRIVER = ApplicationDriver.builder().build(ServiceLocator.class,
+                    new Op1<ApplicationInitializationContext, ServiceLocator>(c -> c.serviceLocator()) {});
 
             public ServiceLocatorAssembly(ComposerAction<? super Composer> action) {
                 super(new Composer(), action);

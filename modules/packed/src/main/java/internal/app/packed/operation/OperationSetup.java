@@ -112,6 +112,7 @@ public final class OperationSetup {
         if (true) {
             return null;
         }
+        @SuppressWarnings("unused")
         MethodHandle mh = target.methodHandle;
         System.out.println("--------------------------------");
         System.out.println(type);

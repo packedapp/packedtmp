@@ -381,6 +381,56 @@ public abstract class Extension<E extends Extension<E>> {
         return (P) newExtensionPoint;
     }
 
+    /**
+     * If an extension depends on other extensions (most do). They must annotated with this annotation, indicating exactly
+     * what extensions they depend upon. This should include dependencies that are only used in some cases.
+     * <p>
+     * Trying to use other that use other extensions that are not explicitly defined using this annotation. Will fail by
+     * throwing an {@link InternalExtensionException}. This includes both explicit usage, for example, via
+     * {@link Extension#use(Class)} or usage of hook annotations from other extensions.
+     * <p>
+     * All classes that are declared as dependencies will be loaded together with annotated extension. However, the
+     * dependency (extension) class will not be initialized before it is usage for the first time.
+     */
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    public @interface DependsOn {
+
+        /** {@return other extensions the annotated extension depends on.} */
+        Class<? extends Extension<?>>[] extensions() default {};
+
+        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
+        // Den kraever bare at den allerede har vaeret listet som optionally
+        /**
+         * Extensions that are optionally used will be attempted to be resolved using the annotated extension classes class
+         * loader.
+         */
+        String[] optionally() default {};
+    }
+}
+
+class Zandbox {
+
+
+    // I think we need some more use cases
+    public static abstract class Bootstrap {
+
+        protected abstract void bootstrap();
+
+        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
+
+        }
+
+        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
+            return alternative.get();
+        }
+    }
+
+    @interface BootstrapWith {
+        Class<? extends Zandbox.Bootstrap> value();
+    }
+
     // Vi kan sagtens lave den en normal metode fx pa ExtensionPoint...
     // Og saa et Lookup object som parameter...
     @SuppressWarnings("unchecked")
@@ -431,54 +481,7 @@ public abstract class Extension<E extends Extension<E>> {
 
         throw new UnsupportedOperationException();
     }
-
-    // I think we need some more use cases
-    public static abstract class Bootstrap {
-
-        protected abstract void bootstrap();
-
-        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
-
-        }
-
-        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
-            return alternative.get();
-        }
-    }
-
-    public @interface BootstrapWith {
-        Class<? extends Extension.Bootstrap> value();
-    }
-
-    /**
-     * If an extension depends on other extensions (most do). They must annotated with this annotation, indicating exactly
-     * what extensions they depend upon. This should include dependencies that are only used in some cases.
-     * <p>
-     * Trying to use other that use other extensions that are not explicitly defined using this annotation. Will fail by
-     * throwing an {@link InternalExtensionException}. This includes both explicit usage, for example, via
-     * {@link Extension#use(Class)} or usage of hook annotations from other extensions.
-     * <p>
-     * All classes that are declared as dependencies will be loaded together with annotated extension. However, the
-     * dependency (extension) class will not be initialized before it is usage for the first time.
-     */
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    public @interface DependsOn {
-
-        /** {@return other extensions the annotated extension depends on.} */
-        Class<? extends Extension<?>>[] extensions() default {};
-
-        // Den der $dependsOnOptionally(String, Class, Supplier) kan vi stadig have
-        // Den kraever bare at den allerede har vaeret listet som optionally
-        /**
-         * Extensions that are optionally used will be attempted to be resolved using the annotated extension classes class
-         * loader.
-         */
-        String[] optionally() default {};
-    }
 }
-
 class Zarchive {
 
     /**
