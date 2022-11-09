@@ -23,6 +23,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.container.Extension;
+import app.packed.container.User;
 import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
@@ -30,8 +31,8 @@ import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
+import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.operation.binding.OldConstantBindingSetup;
-import internal.app.packed.operation.binding.FusedBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class IntrospectedBeanBinding implements OnBinding {
@@ -128,8 +129,8 @@ public final class IntrospectedBeanBinding implements OnBinding {
     @Override
     public void provide(Op<?> op) {
         PackedOp<?> pop = PackedOp.crack(op);
-        FusedBindingSetup fbs = new FusedBindingSetup(operation, index);
-        OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension, fbs);
+        NestedBindingSetup fbs = new NestedBindingSetup(operation, index, User.application());
+        OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension);
         if (variable.getType() != os.target.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
         }

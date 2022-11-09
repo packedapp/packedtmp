@@ -22,8 +22,8 @@ import java.lang.reflect.Method;
 
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnMethod;
-import app.packed.framework.Nullable;
 import app.packed.bean.InaccessibleBeanMemberException;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
@@ -117,7 +117,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
         }
 
         MethodOperationTarget mot = new MethodOperationTarget(methodHandle, method);
-        OperationSetup bos = new OperationSetup(introspectedBean.bean, operationType(), contributor.extension(), mot, null);
+        OperationSetup bos = new OperationSetup(introspectedBean.bean, operationType(), contributor.extension(), mot);
         introspectedBean.bean.operations.add(bos);
         introspectedBean.unBoundOperations.add(bos);
         return bos.toHandle();

@@ -135,7 +135,7 @@ public final class IntrospectedBeanField implements OnField {
     private OperationHandle newOperation(MethodHandle mh, AccessMode accessMode) {
         FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
         OperationType operationType = OperationType.ofFieldAccess(field, accessMode);
-        OperationSetup operation = new OperationSetup(iBean.bean, operationType, contributer.extension(), fot, null);
+        OperationSetup operation = new OperationSetup(iBean.bean, operationType, contributer.extension(), fot);
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
         return operation.toHandle();

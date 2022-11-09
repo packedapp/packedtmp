@@ -21,15 +21,21 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public class ConstantBindingSetup extends BindingSetup {
+public final class ConstantBindingSetup extends BindingSetup {
+
+    public final Class<?> constantType;
+    
+    public final Object constant;
 
     /**
      * @param operation
      * @param index
      * @param target
      */
-    public ConstantBindingSetup(OperationSetup operation, int index, User user, BindingTarget target) {
+    public ConstantBindingSetup(OperationSetup operation, int index, User user, BindingTarget target, Class<?> constantType, Object constant) {
         super(operation, index, user, target);
+        this.constant = constant;
+        this.constantType = constantType;
     }
 
 }

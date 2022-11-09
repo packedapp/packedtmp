@@ -15,20 +15,22 @@
  */
 package internal.app.packed.operation.binding;
 
-import app.packed.operation.bindings.CompositeBindingMirror;
+import static java.util.Objects.requireNonNull;
+
+import app.packed.container.User;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * A composite binding.
+ *
  */
-public final class CompositeBindingSetup extends NestedBindingSetup {
+public final class OperationalBindingSetup extends BindingSetup {
 
-    /**
-     * @param operation
-     * @param index
-     */
-    public CompositeBindingSetup(OperationSetup operation, int index) {
-        super(operation, index, operation.bean.realm.realm());
-        this.mirrorSupplier = () -> new CompositeBindingMirror();
+    /** The operation that will produce values for the binding. */
+    public final OperationSetup providingOperation;
+
+    public OperationalBindingSetup(OperationSetup operation, int index, User user, BindingTarget target, OperationSetup providingOperation) {
+        super(operation, index, user, target);
+        this.providingOperation = requireNonNull(providingOperation);
     }
+
 }

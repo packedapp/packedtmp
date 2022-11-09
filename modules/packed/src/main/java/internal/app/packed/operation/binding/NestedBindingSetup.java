@@ -15,14 +15,18 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.util.function.Supplier;
+
 import app.packed.container.User;
+import app.packed.operation.BindingMirror;
+import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
 // Ved ikke om vi gider have det hiraki...
-public abstract sealed class NestedBindingSetup extends BindingSetup permits CompositeBindingSetup, FusedBindingSetup {
+public class NestedBindingSetup extends BindingSetup  {
 
     /**
      * @param operation
@@ -31,6 +35,11 @@ public abstract sealed class NestedBindingSetup extends BindingSetup permits Com
     public NestedBindingSetup(OperationSetup operation, int index, User user) {
         super(operation, index, user);
     }
+    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
+    public ExtensionSetup managedBy;
+
+    /** Supplies a mirror for the operation */
+    public Supplier<? extends BindingMirror> specializedMirror;
 
     public OperationSetup nestedOperation;
 

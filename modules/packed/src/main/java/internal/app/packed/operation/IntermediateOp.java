@@ -19,12 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.binding.NestedBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
 /**
@@ -56,8 +54,8 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
-            return delegate.newOperationSetup(bean, type, operator, nestedBinding);
+        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
+            return delegate.newOperationSetup(bean, type, operator);
         }
 
         @SuppressWarnings({ "unused", "unchecked" })
@@ -87,8 +85,8 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
-            OperationSetup os = delegate.newOperationSetup(bean, type, operator, nestedBinding);
+        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
+            OperationSetup os = delegate.newOperationSetup(bean, type, operator);
             return os;
             // insert bindings
         }

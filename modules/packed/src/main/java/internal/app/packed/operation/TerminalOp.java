@@ -16,15 +16,14 @@
 package internal.app.packed.operation;
 
 import java.lang.invoke.MethodHandle;
+import java.util.function.Function;
 
-import app.packed.framework.Nullable;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.binding.NestedBindingSetup;
 
 /**
  *
@@ -54,8 +53,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
-            return new OperationSetup(bean, type, operator, new OperationTarget.MethodHandleOperationTarget(operation, false), nestedBinding);
+        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
+            return new OperationSetup(bean, type, operator, new OperationTarget.FunctionOperationTarget(operation, false, Function.class));
         }
     }
 }

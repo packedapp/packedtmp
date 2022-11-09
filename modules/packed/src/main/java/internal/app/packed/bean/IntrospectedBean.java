@@ -138,7 +138,7 @@ public final class IntrospectedBean {
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
         OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy,
-                new ConstructorOperationTarget(mh, constructor.constructor()), null);
+                new ConstructorOperationTarget(mh, constructor.constructor()));
         bean.operations.add(os);
         unBoundOperations.add(os);
         resolveOperations();

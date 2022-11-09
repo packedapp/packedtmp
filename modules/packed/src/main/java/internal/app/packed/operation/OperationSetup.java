@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
@@ -77,10 +76,6 @@ public final class OperationSetup {
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
 
-    /** Any nested binding this operation is a part of. */
-    @Nullable
-    public final NestedBindingSetup nestedBinding;
-
     public ExtensionSetup operator;
 
     /** The target of the operation. */
@@ -89,12 +84,11 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget,
-            @Nullable NestedBindingSetup nestedBinding) {
+    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget
+           ) {
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
         this.target = requireNonNull(operationTarget);
-        this.nestedBinding = nestedBinding;
         this.operator = requireNonNull(operator);
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
     }

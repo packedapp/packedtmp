@@ -68,6 +68,27 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         }
     }
 
+    public static final class FunctionOperationTarget extends OperationTarget implements OperationTargetMirror.OfFunctionCall {
+
+        // Can read it from the method... no 
+        private final Class<?> functionalInterface;
+
+        /**
+         * @param methodHandle
+         * @param requiresBeanInstance
+         */
+        public FunctionOperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance, Class<?> functionalInterface) {
+            super(methodHandle, requiresBeanInstance);
+            this.functionalInterface=requireNonNull(functionalInterface);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> functionalInterface() {
+            return functionalInterface;
+        }
+    }
+
     public static final class MethodHandleOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodHandleInvoke {
 
         /**
