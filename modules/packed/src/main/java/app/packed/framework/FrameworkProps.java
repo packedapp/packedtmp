@@ -23,13 +23,13 @@ import java.util.Set;
 final class FrameworkProps {
 
     /** A set of module names that makes of the framework. So far we only have one. */
-    static final Set<String> MODULE_NAMES = Set.of(Framework.class.getModule().getName());
+    static final Set<String> MODULE_NAMES = Set.of("app.packed");
 
     static final String NAME = "Packed";
-
-    public static void main(String[] args) {
-        Package p = FrameworkProps.class.getPackage();
-        System.out.printf("%s%n  Title: %s%n  Version: %s%n  Vendor: %s%n", FrameworkProps.class.getName(), p.getImplementationTitle(),
-                p.getImplementationVersion(), p.getImplementationVendor());
-    }
+//
+//    public static void main(String[] args) {
+//        Package p = FrameworkProps.class.getPackage();
+//        System.out.printf("%s%n  Title: %s%n  Version: %s%n  Vendor: %s%n", FrameworkProps.class.getName(), p.getImplementationTitle(),
+//                p.getImplementationVersion(), p.getImplementationVendor());
+//    }
 }

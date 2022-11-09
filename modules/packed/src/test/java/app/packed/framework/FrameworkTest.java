@@ -27,7 +27,7 @@ public class FrameworkTest {
     @Test
     public void various() {
         assertEquals("Packed", Framework.name());
-        assertEquals(Set.of(FrameworkTest.class.getModule().getName()), Framework.moduleNames());
+        assertEquals(Set.of("app.packed"), Framework.moduleNames());
     }
 
 }
