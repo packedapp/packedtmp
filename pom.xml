@@ -1,19 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>app.packed</groupId>
   <artifactId>packed-root-pom</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Packed-Root-Pom</name>
   <description>Packed Root POM</description>
-  
   <!-- ==================================================================== -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.plugin.clean>3.2.0</version.plugin.clean>
+    <version.plugin.bundle>5.1.7</version.plugin.bundle>
+    <version.plugin.compiler>3.10.1</version.plugin.compiler>
+    <version.plugin.install>3.0.1</version.plugin.install>
+    <version.plugin.deploy>3.0.0</version.plugin.deploy>
+    <version.plugin.staging>1.6.13</version.plugin.staging>
+    <version.plugin.versions>2.11.0</version.plugin.versions>
+    <version.plugin.javadoc>3.4.1</version.plugin.javadoc>
+    <version.plugin.source>3.2.1</version.plugin.source>
+    <version.plugin.shade>3.4.1</version.plugin.shade>
+    <version.plugin.gpg>3.0.1</version.plugin.gpg>
+    <version.plugin.jxr>3.2.0</version.plugin.jxr>
+    <version.plugin.invoker>3.3.0</version.plugin.invoker>
+    <version.plugin.buildhelper>3.3.0</version.plugin.buildhelper>
+    <version.plugin.jar>3.3.0</version.plugin.jar>
+    <version.plugin.site>4.0.0-M3</version.plugin.site>
+    <version.plugin.exec>3.1.0</version.plugin.exec>
+    <version.plugin.plugin>3.6.4</version.plugin.plugin>
+    <version.plugin.release>2.5.3</version.plugin.release>
+    <version.plugin.resources>3.3.0</version.plugin.resources>
+    <version.plugin.assembly>3.4.2</version.plugin.assembly>
+    <version.plugin.dependency>3.3.0</version.plugin.dependency>
+    <version.plugin.help>3.2.0</version.plugin.help>
+    <version.plugin.surefire>3.0.0-M7</version.plugin.surefire>
+    <version.plugin.pitest>1.9.2</version.plugin.pitest>
+    <version.plugin.animal-sniffer>1.21</version.plugin.animal-sniffer>
+    <version.plugin.enforcer>3.1.0</version.plugin.enforcer>
+    <version.plugin.jacoco>0.8.8</version.plugin.jacoco>
+    <version.plugin.coveralls>4.3.0</version.plugin.coveralls>
+    <version.plugin.checkstyle>3.1.2</version.plugin.checkstyle>
+    <version.plugin.jitwatch>1.1</version.plugin.jitwatch>
+    <version.plugin.spotbugs>4.2.3</version.plugin.spotbugs>
+    <version.plugin.modulemaker>1.9</version.plugin.modulemaker>
+    <version.plugin.license>3.0</version.plugin.license>
   </properties>
-  
   <!-- ==================================================================== -->
   <licenses>
     <license>
@@ -22,7 +53,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <!-- ==================================================================== -->
   <issueManagement>
     <system>GitHub</system>
@@ -34,8 +64,7 @@
     <developerConnection>scm:git:https://github.com/packedapp/packedtmp.git</developerConnection>
     <url>https://github.com/packedapp/packedtmp</url>
   </scm>
-
-  <!-- ==================================================================== -->  
+  <!-- ==================================================================== -->
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
@@ -45,10 +74,81 @@
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
- </distributionManagement>
-
+  </distributionManagement>
   <!-- ==================================================================== -->
   <modules>
     <module>modules</module>
   </modules>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${version.plugin.clean}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <version>${version.plugin.invoker}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${version.plugin.deploy}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${version.plugin.install}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${version.plugin.site}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${version.plugin.compiler}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${version.plugin.jar}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${version.plugin.resources}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${version.plugin.surefire}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${version.plugin.shade}</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${version.plugin.javadoc}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${version.plugin.enforcer}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <fail>true</fail>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.2.5,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -77,15 +77,10 @@
   <build>
     <!-- <directory>${project.basedir}/target.tmp</directory> -->
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
-      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
         <configuration>
           <source>18</source>
           <target>18</target>
@@ -95,7 +90,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M7</version>
         <configuration>
           <argLine>--enable-preview</argLine>
         </configuration>
@@ -134,7 +128,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.4.1</version>
         <configuration>
           <excludePackageNames>packed.*:*.internals.*:*.test.*:*.examples.*:</excludePackageNames>
           <additionalOptions>-tag "apiNote:a:API Note:" -tag "implSpec:a:Implementation Requirements:" -tag "implNote:a:Implementation Note:"</additionalOptions>
