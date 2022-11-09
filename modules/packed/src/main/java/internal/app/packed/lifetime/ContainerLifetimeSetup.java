@@ -106,7 +106,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
             orderBeans(b);
         }
         if (orderedBeans.add(bean)) {
-            System.out.println("Codegen " + bean.path());
+           // System.out.println("Codegen " + bean.path());
             processBean(bean);
             // addFactory, that installs the bean into Object[]
             // then all initiali
