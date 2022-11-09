@@ -32,10 +32,13 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
+import internal.app.packed.operation.op.IntermediateOp.BoundOp;
+import internal.app.packed.operation.op.IntermediateOp.PeekableOp;
 import internal.app.packed.util.MethodHandleUtil;
 
 /** The internal implementation of Op. */
-public abstract non-sealed class PackedOp<R> implements Op<R> {
+@SuppressWarnings("rawtypes")
+public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp, TerminalOp {
 
     /** The method handle. */
     public final MethodHandle operation;
@@ -111,7 +114,7 @@ public abstract non-sealed class PackedOp<R> implements Op<R> {
     }
 
     public static <R> PackedOp<R> capture(Class<?> clazz, Object function) {
-        return PackageCapturingOpHelper.create(clazz, function);
+        return CapturingOpHelper.create(clazz, function);
     }
 
     public static <R> PackedOp<R> crack(Op<R> op) {

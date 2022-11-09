@@ -29,21 +29,35 @@ import internal.app.packed.operation.OperationTarget;
 import internal.app.packed.operation.binding.NestedBindingSetup;
 
 /**
- * An op that captures 1 or more type variables.
- * 
- * @see Op0
- * @see Op1
- * @see Op2
+ *
  */
-final class PackedCapturingOp<R> extends PackedOp<R> {
+public abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
-    PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
-        super(type, methodHandle);
+    /**
+     * @param type
+     * @param operation
+     */
+    TerminalOp(OperationType type, MethodHandle operation) {
+        super(type, operation);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
-        return new OperationSetup(bean, type, operator, new OperationTarget.BeanSynthetic(operation, false), nestedBinding);
+    /**
+     * An op that captures 1 or more type variables.
+     * 
+     * @see Op0
+     * @see Op1
+     * @see Op2
+     */
+    static final class PackedCapturingOp<R> extends TerminalOp<R> {
+
+        PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
+            super(type, methodHandle);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, @Nullable NestedBindingSetup nestedBinding) {
+            return new OperationSetup(bean, type, operator, new OperationTarget.BeanSynthetic(operation, false), nestedBinding);
+        }
     }
 }

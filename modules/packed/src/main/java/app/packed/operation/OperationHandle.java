@@ -134,6 +134,7 @@ public final class OperationHandle {
      *             if called more than once. Or if called before the code generating phase of the application
      * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
      */
+    // invokeAsMethodHandle???
     public MethodHandle buildInvoker() {
         return operation.buildInvoker();
     }

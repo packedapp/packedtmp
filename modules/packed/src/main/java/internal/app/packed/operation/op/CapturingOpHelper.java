@@ -35,13 +35,14 @@ import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import app.packed.service.TypeToken;
 import internal.app.packed.oldservice.inject.InternalDependency;
+import internal.app.packed.operation.op.TerminalOp.PackedCapturingOp;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
  *
  */
-class PackageCapturingOpHelper {
+class CapturingOpHelper {
 
     /** A cache of extracted type variables from subclasses of this class. */
     static final ClassValue<TypeToken<?>> CACHE = new ClassValue<>() {
@@ -148,7 +149,7 @@ class PackageCapturingOpHelper {
     @SuppressWarnings("unchecked")
     public static <R> PackedOp<R> create(Class<?> clazz, Object function) {
         requireNonNull(function, "function is null"); // should have already been checked by subclasses
-        TypeToken<R> typeLiteral = (TypeToken<R>) PackageCapturingOpHelper.CACHE.get(clazz);
+        TypeToken<R> typeLiteral = (TypeToken<R>) CapturingOpHelper.CACHE.get(clazz);
         // analyze();
 
         final MethodHandle methodHandle;
