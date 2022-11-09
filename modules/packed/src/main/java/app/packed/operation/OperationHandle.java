@@ -30,6 +30,7 @@ import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
+import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
@@ -83,14 +84,13 @@ import internal.app.packed.operation.OperationSetup;
  */
 
 /// Configuration -> Set InvocationType, Set InvocationBean, Set Context
-
-// 2 ways to consume
-// Manual...
-// By Injection Into bean, Via a rewriter?
 public final class OperationHandle {
 
     /** The wrapped operation. */
     private final OperationSetup operation;
+
+    /** The bean that is being introspected. */
+    private final IntrospectedBean iBean;
 
     /**
      * Creates a new handle.
@@ -98,8 +98,9 @@ public final class OperationHandle {
      * @param operation
      *            the operation to wrap
      */
-    OperationHandle(OperationSetup operation) {
+    OperationHandle(OperationSetup operation, IntrospectedBean iBean) {
         this.operation = requireNonNull(operation);
+        this.iBean = requireNonNull(iBean);
     }
 
     /**
@@ -114,12 +115,10 @@ public final class OperationHandle {
      */
     public OnBinding bindManually(int parameterIndex) {
         // This method does not throw IllegalStateExtension, but OnBinding may.
-
         operation.isConfigurationDisabled = true;
         // custom invocationContext must have been set before calling this method
         checkIndex(parameterIndex, operation.type.parameterCount());
-        // Does not work currently because we don't have an introspected bean
-        return new IntrospectedBeanBinding(null, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+        return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
     /**
@@ -175,7 +174,7 @@ public final class OperationHandle {
 
     public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
         requireNonNull(bean, "bean is null");
-        
+
         // Hvorfor maa man egentlig ikke det her???
         // Vi kan jo altid bare lave vores egen og injecte den...
         if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
@@ -192,8 +191,8 @@ public final class OperationHandle {
     /**
      * Registers an action that will be performed doing the code generation phase of the application.
      * <p>
-     * This method is typically used for storing the method handle returned by {@link #buildInvoker()} in some kind
-     * of data structure.
+     * This method is typically used for storing the method handle returned by {@link #buildInvoker()} in some kind of data
+     * structure.
      * 
      * @param action
      *            the action to perform
@@ -242,6 +241,9 @@ public final class OperationHandle {
 
 interface OpNew {
 
+    default void relativise(Extension<?> extension) {
+        
+    }
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
     default void operatedBy(Object extensionHandle) {

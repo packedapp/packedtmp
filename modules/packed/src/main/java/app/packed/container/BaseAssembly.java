@@ -18,6 +18,7 @@ package app.packed.container;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanExtension;
+import app.packed.bean.CustomHook.JavaBaseSupport;
 import app.packed.bean.OnStart;
 import app.packed.operation.Op;
 import app.packed.service.ProvideService;
@@ -27,19 +28,12 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 
 /**
- * Extends {@link Assembly} with shortcuts for some commonly used extensions.
+ * Extends {@link ContainerAssembly} with shortcuts for some commonly used extensions and their methods.
  * <p>
- * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
+ * For example, instead of calling use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
  * <p>
  * All extensions defined in this module
- * 
- * time() TimeExtension
- * <p>
- * 
- * With common functionality provide by app.packed.base
- * 
- * <p>
  * 
  * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
  * for:
@@ -80,6 +74,7 @@ import app.packed.service.ServiceLocator;
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
+@JavaBaseSupport
 public abstract class BaseAssembly extends ContainerAssembly {
 
     /**

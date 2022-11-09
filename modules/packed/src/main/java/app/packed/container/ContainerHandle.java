@@ -13,6 +13,7 @@ import internal.app.packed.container.ContainerSetup;
  */
 public final class ContainerHandle {
 
+    /** The container that can be configured. */
     final ContainerSetup container;
 
     ContainerHandle(ContainerSetup container) {

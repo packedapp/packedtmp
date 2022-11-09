@@ -28,39 +28,13 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 /**
  *
  */
-@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-
-//Kan man redirecte til extensions der ikke er i meta annoteringens module??? I don't really think so
-// Vil mene Meta annotering skal vaere i samme module som extensionen...
-
 public @interface CustomHook {
 
-    /**
-     *
-     * @see FieldHook
-     */
-    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @Inherited
-    @Repeatable(CustomHook.CustomFieldHook.All.class)
-    @interface CustomFieldHook {
-
-        String annotation();
-
-        @Retention(RetentionPolicy.RUNTIME)
-        @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
-        @Inherited
-        @Documented
-        @interface All {
-            CustomFieldHook[] value();
-        }
-    }
-    
-    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+    @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
@@ -70,11 +44,42 @@ public @interface CustomHook {
         String className();
 
         @Retention(RetentionPolicy.RUNTIME)
-        @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+        @Target(ElementType.ANNOTATION_TYPE)
         @Inherited
         @Documented
         @interface All {
             CustomBindingHook[] value();
         }
     }
+
+    /**
+     *
+     * @see FieldHook
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.ANNOTATION_TYPE)
+    @Documented
+    @Inherited
+    @Repeatable(CustomHook.CustomFieldHook.All.class)
+    @interface CustomFieldHook {
+
+        String annotation();
+
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.ANNOTATION_TYPE)
+        @Inherited
+        @Documented
+        @interface All {
+            CustomFieldHook[] value();
+        }
+    }
+
+    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @Inherited
+    @CustomHook
+    // Logger, Net, File
+    // Meta annotation hooks annotations does not have to live on the extension
+    public @interface JavaBaseSupport {}
 }

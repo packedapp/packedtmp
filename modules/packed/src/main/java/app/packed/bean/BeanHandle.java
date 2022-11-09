@@ -87,9 +87,9 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     /**
-     * Returns the key that the bean will be made available under if provided.
+     * Returns the key that the bean will be made available under if provided as service.
      * 
-     * @return
+     * @return the default key
      * 
      * @see ProvideableBeanConfiguration#provide()
      * @see ProvideableBeanConfiguration#export()

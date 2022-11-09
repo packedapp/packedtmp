@@ -138,7 +138,7 @@ public final class IntrospectedBeanField implements OnField {
         OperationSetup operation = new OperationSetup(iBean.bean, operationType, contributer.extension(), fot);
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
-        return operation.toHandle();
+        return operation.toHandle(iBean);
     }
 
     /** {@inheritDoc} */

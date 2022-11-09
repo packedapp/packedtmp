@@ -131,15 +131,21 @@ public final class IntrospectedBeanBinding implements OnBinding {
     /** {@inheritDoc} */
     @Override
     public void provide(Op<?> op) {
+        checkIsBindable();
         PackedOp<?> pop = PackedOp.crack(op);
-       
-        BindingHookTarget bht = new BindingHookTarget();
+
         OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension);
-        OperationalBindingSetup obs = new OperationalBindingSetup(os, index, User.application(), bht, os);
+        OperationalBindingSetup obs = new OperationalBindingSetup(os, index, User.application(), new BindingHookTarget(), os);
+
         if (variable.getType() != os.target.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
         }
-        iBean.unBoundOperations.add(os);
+        if (iBean != null) {
+            iBean.unBoundOperations.add(os);
+        } else {
+            // os.re
+        }
+
         operation.bindings[index] = obs;
     }
 

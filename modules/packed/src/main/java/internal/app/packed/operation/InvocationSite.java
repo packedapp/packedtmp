@@ -36,6 +36,8 @@ public final class InvocationSite {
     /** The extension that operates the operation. MethodHandles will be generated relative to this extension. */
     public final ExtensionSetup invokingExtension;
 
+    // Should we store the bean as well???
+    
     public InvocationSite(InvocationType invocationType, ExtensionSetup invokingExtension) {
         this.invocationType = requireNonNull(invocationType);
         this.invokingExtension = requireNonNull(invokingExtension);

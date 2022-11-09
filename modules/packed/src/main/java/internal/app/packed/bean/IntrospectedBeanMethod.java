@@ -120,7 +120,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
         OperationSetup bos = new OperationSetup(introspectedBean.bean, operationType(), contributor.extension(), mot);
         introspectedBean.bean.operations.add(bos);
         introspectedBean.unBoundOperations.add(bos);
-        return bos.toHandle();
+        return bos.toHandle(introspectedBean);
     }
 
     /** {@inheritDoc} */
