@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.service.ServiceContract;
 import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requirement;
 import internal.app.packed.oldservice.runtime.AbstractServiceLocator;

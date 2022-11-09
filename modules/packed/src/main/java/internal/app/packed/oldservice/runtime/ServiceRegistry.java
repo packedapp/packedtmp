@@ -26,7 +26,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import internal.app.packed.oldservice.InternalServiceUtil;
 import internal.app.packed.oldservice.build.ServiceComposer;
 import internal.app.packed.oldservice.sandbox.Service;

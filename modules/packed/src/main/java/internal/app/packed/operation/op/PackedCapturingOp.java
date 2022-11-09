@@ -17,7 +17,7 @@ package internal.app.packed.operation.op;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;

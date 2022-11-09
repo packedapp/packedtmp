@@ -17,8 +17,8 @@ package internal.app.packed.service;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Nullable;
 import app.packed.container.User;
+import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;

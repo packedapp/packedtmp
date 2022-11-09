@@ -30,7 +30,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 
 /**
  *

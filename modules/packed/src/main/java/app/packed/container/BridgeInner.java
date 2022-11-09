@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import app.packed.operation.Op;
 import internal.app.packed.application.PackedBridge;
 

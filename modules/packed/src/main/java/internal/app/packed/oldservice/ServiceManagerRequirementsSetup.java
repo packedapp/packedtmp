@@ -22,8 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import app.packed.application.BuildException;
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.inject.DependencyProducer;

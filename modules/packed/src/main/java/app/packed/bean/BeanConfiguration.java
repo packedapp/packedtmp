@@ -2,8 +2,8 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.base.NamespacePath;
 import app.packed.container.User;
+import app.packed.framework.NamespacePath;
 
 /** The base configuration class for a bean. */
 public class BeanConfiguration {

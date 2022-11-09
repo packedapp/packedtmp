@@ -23,8 +23,8 @@ import java.util.ArrayList;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
-import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;

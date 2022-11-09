@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
@@ -32,6 +31,7 @@ import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.CustomHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 
 /**

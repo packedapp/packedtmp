@@ -17,8 +17,8 @@ package testutil.assertj;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.base.Key;
-import app.packed.base.TypeToken;
+import app.packed.framework.Key;
+import app.packed.framework.TypeToken;
 import app.packed.operation.Op;
 
 /**

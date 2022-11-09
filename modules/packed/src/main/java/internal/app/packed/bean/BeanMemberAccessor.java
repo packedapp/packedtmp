@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.base.Nullable;
 import app.packed.container.Assembly;
+import app.packed.framework.Nullable;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.LookupValue;
 

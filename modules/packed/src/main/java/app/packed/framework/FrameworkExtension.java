@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.framework;
+
+import app.packed.container.Extension;
 
 /**
- * Various utility classes that have multiple uses within this library
+ * A framework extension is an extension that is implemented as part of the framework.
+ * <p>
+ * A framework extension must be places in one of {@link Framework#moduleNames()} modules
+ * or the unnamed module.
  */
-package app.packed.base;
+// Must be overridden from a module coming from a valid list stored in app.packed.base
+// FrameworkExtension instead?
+public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {
+
+}

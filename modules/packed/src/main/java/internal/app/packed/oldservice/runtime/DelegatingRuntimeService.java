@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 
 /**
  * A delegating runtime service node.

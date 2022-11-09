@@ -17,9 +17,9 @@ package internal.app.packed.oldservice;
 
 import java.util.Map;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import internal.app.packed.oldservice.build.ServiceSetup;
 
 /**

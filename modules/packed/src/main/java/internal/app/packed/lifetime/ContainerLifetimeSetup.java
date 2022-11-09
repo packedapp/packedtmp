@@ -21,9 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;

@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanClassAlreadyExistsException;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanHandle;
@@ -21,6 +19,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
+import app.packed.framework.NamespacePath;
+import app.packed.framework.Nullable;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanClassMapContainer.MuInst;
 import internal.app.packed.container.ContainerSetup;

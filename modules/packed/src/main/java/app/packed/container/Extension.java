@@ -23,30 +23,19 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Modifier;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-import app.packed.application.BuildException;
 import app.packed.application.BuildGoal;
-import app.packed.base.NamespacePath;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
+import app.packed.framework.NamespacePath;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
-import internal.app.packed.container.ExtensionModel;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedWireletSelection;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.util.ClassUtil;
-import internal.app.packed.util.StackWalkerUtil;
-import internal.app.packed.util.ThrowableUtil;
 
 /**
  * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
@@ -78,8 +67,6 @@ import internal.app.packed.util.ThrowableUtil;
  * @param <E>
  *            The type of the extension subclass
  */
-// Platform extension, Base extension
-// Platform extension kunne baade vaere any packed extension. Og en platform extension
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
@@ -408,241 +395,4 @@ public abstract class Extension<E extends Extension<E>> {
          */
         String[] optionally() default {};
     }
-}
-
-class Zandbox {
-
-
-    // I think we need some more use cases
-    public static abstract class Bootstrap {
-
-        protected abstract void bootstrap();
-
-        protected final void dependsOn(Class<? extends Extension<?>> extensionClass) {
-
-        }
-
-        protected final <T> T dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
-            return alternative.get();
-        }
-    }
-
-    @interface BootstrapWith {
-        Class<? extends Zandbox.Bootstrap> value();
-    }
-
-    // Vi kan sagtens lave den en normal metode fx pa ExtensionPoint...
-    // Og saa et Lookup object som parameter...
-    @SuppressWarnings("unchecked")
-    protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
-        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
-        // Attempt to load an extension with the specified name
-        Optional<Class<? extends Extension<?>>> dependency = ExtensionModel.bootstrap(callerClass).dependsOnOptionally(extensionName);
-        // The extension does not exist, return an alternative value
-        if (dependency.isEmpty()) {
-            return alternative.get();
-        }
-
-        // The dependency exists, load the bootstrap class
-        Class<?> c;
-        String bootstrapClassName = dependency.get().getName() + "$" + bootstrapClass;
-        try {
-            c = Class.forName(bootstrapClassName, true, callerClass.getClassLoader());
-        } catch (ClassNotFoundException e) {
-            throw new InternalExtensionException("Could not load class " + bootstrapClassName, e);
-        }
-
-        // Must be a static class. As the value should be stored in a static field
-        if (!Modifier.isStatic(c.getModifiers())) {
-            throw new IllegalArgumentException();
-        }
-
-        MethodHandle constructor;
-        // TODO fix visibility
-        try {
-            constructor = MethodHandles.lookup().findConstructor(c, MethodType.methodType(void.class));
-        } catch (NoSuchMethodException e) {
-            throw new BuildException("A container hook must provide an empty constructor, hook = " + c, e);
-        } catch (IllegalAccessException e) {
-            throw new BuildException("Can't see it sorry, hook = " + c, e);
-        }
-        Object result;
-
-        try {
-            result = constructor.invoke();
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        return (T) result;
-    }
-
-    protected static <T> T $dependsOnIfAvailable2(Class<T> returnType, String testExistence, Lookup ifPresentLookup, String ifPresentClass,
-            Supplier<T> ifUnavailable) {
-
-        throw new UnsupportedOperationException();
-    }
-}
-class Zarchive {
-
-    /**
-     * @param extensionType
-     *            the extension type to test
-     * @return {@code true} if the extension is disabled, otherwise {@code false}
-     * 
-     */
-    // Kan disable den paa application driver...
-    // Er det kombination af isExtensionDisabled og isUsed
-    /// Maaske bare Set<Class<? extends Extension<?>>> disabledExtensions(); disabledExtension.contains
-    /// Maaske vi skal have en selvstaedig classe.
-    /// Disabled kan ogsaa vaere hvis vi koere med whitelist
-
-    /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
-    /// Maaske det er vigtigt at have de 2 options.
-    /// isExtensionUsable() , makeUnusable
-    protected final boolean isExtensionBanned(Class<? extends Extension<?>> extensionType) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected static <T extends Extension<T>> void $addDependencyLazyInit(Class<? extends Extension<?>> dependency, Class<T> thisExtension,
-            Consumer<? super T> action) {
-        // Bliver kaldt hvis den specificeret
-        // Registeres ogsaa som dependeenc
-        // $ = Static Init (s + i = $)
-    }
-
-//  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
-//      throw new Error();
-//  }
-//
-//  protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
-//      throw new Error();
-//  }
-
-    // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
-    // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
-    // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
-    /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
-
-    // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
-    // onFinish cannot add new extensions...
-
-//  protected static <T extends Extension, A> void $attributeAdd(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
-//
-//  protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
-
-//  /**
-//   * Only parent extensions will be linked
-//   */
-//  // Maaske skal vi have det for begge to
-//  protected static void $connectParentOnly() {
-//      ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
-//  }
-
-    // An instance of extensorType will automatically be installed whenever the extensor is used
-    // protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>>
-    // extensorType) {}
-
-    // Hmm, er det overhoved interessant at faa en Subtension???
-    // Vil vi ikke hellere have extensionen.
-    // Og man kan vel ikke bruge hook annoteringer
-//  
-//  @SafeVarargs
-//  protected static void $cycleBreaker(Class<? extends Extension<?>>... extensions) {
-    // Man maa saette den via noget VarHandle vaerk
-
-//      // A -DependsOn(B)
-//      // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
-//
-//      // Specified extension must have a dependency on this extension
-//      // And must be in same module
-//      throw new UnsupportedOperationException();
-//  }
-
-//  protected static void $lookup(MethodHandles.Lookup lookup) {
-//      // Nej den giver sgu ikke saerlig god mening...
-//      // Men har et requirement paa app.packed.base
-//      // 
-//  }
-    //
-//  /**
-//   * Returns a configuration object for this extension. The configuration object can be used standalone in situations
-//   * where the extension needs to delegate responsibility to classes that cannot invoke the protected methods on
-//   * {@code Extension}, for example, due to class-member visibility rules.
-//   * <p>
-//   * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
-//   * need to use an extension configuration in the constructor. You can declare {@code ExtensionConfiguration} as a
-//   * parameter in the extension's constructor and the let the runtime dependency inject it into the extension instance.
-//   * Another alternative is to override {@link #onNew()} to perform post initialization.
-//   * 
-//   * @throws IllegalStateException
-//   *             if invoked from the constructor of the extension.
-//   * @return a configuration object for this extension
-//   */
-//  protected final ExtensionConfiguration configuration() {
-//      return setup;
-//  }
-
-    /**
-     * Registers an optional dependency of this extension. The extension
-     * <p>
-     * The class loader of the caller (extension) class will be used when attempting to locate the dependency.
-     * 
-     * @param extensionName
-     *            fully qualified name of the extension class
-     * @return the extension class if the extension could be loaded, otherwise empty
-     * @throws UnsupportedOperationException
-     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-     *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
-     *             this method was not called directly from an extension class initializer.
-     * @see #$dependsOn(Class...)
-     * @see Class#forName(String, boolean, ClassLoader)
-     */
-    protected static Optional<Class<? extends Extension<?>>> $dependsOnIfAvailable(String extensionName) {
-//        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
-        return Optional.empty();
-    }
-
-    static void $libraryFor(Module module) {
-        // Will fail if the module, class does not have version
-        // protected static void $libraryVersion(Module|Class m);
-        // protected static void $libraryWrapper(Module m);
-
-        // libraryFor(
-        // Er det mere et foreignLibray???
-        // ConverterExtension er jo sin egen version
-        // will extract verions
-    }
-
-    protected static void $requiresClassGenFullAccessToModule() {
-        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
-
-        // Det kan ogsaa bare vaere en dependency paa en extension...
-        // Det er faktisk maaske det lettes
-        // dependsOn(FullClassGenExtension.class);
-
-        // Tror faktisk ikke vi supportere det udover annotation
-
-    }
-
-    static final void preFinalMethod() {
-        // Lav versioner der tager 1,2,3 og vargs parametere...
-
-        // Ideen er lidt at vi kan capture alle kald...
-        // Ogsaa dem fra final metoder...
-        // Hvor vi ikke kan dekore
-
-        /// Are we complicating things to much???
-
-        // Saa denne klasser bliver kun noedt til at blive kaldt af end-brugere hvis de har en abstract
-        // extension klasse... Men har folk det?? I don't think so
-
-        // Man kunne ogsaa bruge en final metode.. Hvis man vil increase sikkerheden...
-        // fx setPassword(String password) {
-        //// preFinalMethod("******");
-        //// ....
-        // }
-        // Her vil man nok ikke vaelge at
-    }
-
-    // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
 }

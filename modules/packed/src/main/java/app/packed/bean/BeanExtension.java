@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.framework.FrameworkExtension;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
@@ -17,7 +17,7 @@ import internal.app.packed.operation.OperationSetup;
  * All containers use this extension either directly or indirectly. As every container either defines at least 1 bean.
  * Or has a container descendants who does.
  */
-public class BeanExtension extends Extension<BeanExtension> {
+public class BeanExtension extends FrameworkExtension<BeanExtension> {
 
     /** The internal configuration of the extension. */
     final ExtensionSetup extensionSetup = ExtensionSetup.crack(this);

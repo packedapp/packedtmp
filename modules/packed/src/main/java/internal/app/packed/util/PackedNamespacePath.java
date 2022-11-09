@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
-import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
+import app.packed.framework.NamespacePath;
+import app.packed.framework.Nullable;
 
 /** The default implementation of {@link NamespacePath}. */
 public final class PackedNamespacePath implements NamespacePath {

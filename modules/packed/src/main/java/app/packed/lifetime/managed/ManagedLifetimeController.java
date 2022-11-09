@@ -18,7 +18,7 @@ package app.packed.lifetime.managed;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.RunState;
 
 // This is basically something thats wraps a state that is 100 Linear

@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.OldLifetimeKind;
 import app.packed.service.ServiceLocator;

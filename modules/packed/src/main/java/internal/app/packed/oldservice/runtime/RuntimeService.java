@@ -18,7 +18,7 @@ package internal.app.packed.oldservice.runtime;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import app.packed.operation.Provider;
 import internal.app.packed.oldservice.InternalService;
 

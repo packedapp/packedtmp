@@ -17,8 +17,8 @@ package internal.app.packed.service;
 
 import java.util.LinkedHashMap;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvidedServiceCollisionException;

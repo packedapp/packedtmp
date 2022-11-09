@@ -15,7 +15,7 @@
  */
 package internal.app.packed.bean;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 
 /**
  * 

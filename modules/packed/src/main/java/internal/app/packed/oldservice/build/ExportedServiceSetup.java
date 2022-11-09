@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.DelegatingRuntimeService;

@@ -17,7 +17,7 @@ package internal.app.packed.oldservice;
 
 import java.util.function.Function;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import internal.app.packed.oldservice.build.ServiceSetup;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.sandbox.Service;

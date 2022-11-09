@@ -29,9 +29,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.base.Nullable;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.Inject;
+import app.packed.framework.Nullable;
 import internal.app.packed.operation.op.PackedOp;
 
 /**

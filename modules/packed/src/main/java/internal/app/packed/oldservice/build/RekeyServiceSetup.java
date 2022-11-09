@@ -17,8 +17,8 @@ package internal.app.packed.oldservice.build;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.DelegatingRuntimeService;
 import internal.app.packed.oldservice.runtime.RuntimeService;

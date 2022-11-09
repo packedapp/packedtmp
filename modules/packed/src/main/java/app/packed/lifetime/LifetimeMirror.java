@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;

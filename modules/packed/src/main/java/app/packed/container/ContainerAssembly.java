@@ -19,9 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+
+import app.packed.framework.Nullable;
+
 import java.lang.invoke.VarHandle;
 
-import app.packed.base.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;

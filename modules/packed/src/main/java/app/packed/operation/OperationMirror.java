@@ -25,12 +25,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.service.ExportedServiceMirror;

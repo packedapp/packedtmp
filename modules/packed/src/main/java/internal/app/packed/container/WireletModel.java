@@ -22,9 +22,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
-import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.Wirelet;
+import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 
 /** A model of a {@link Wirelet}. */

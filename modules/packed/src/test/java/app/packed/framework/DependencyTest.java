@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.framework;
 
-import static app.packed.base.DependencyAssert.assertThat;
+import static app.packed.framework.DependencyAssert.assertThat;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

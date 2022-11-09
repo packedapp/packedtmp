@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import app.packed.base.Key;
 import app.packed.container.ExtensionMirror;
+import app.packed.framework.Key;
 import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.service.ExportedService;
 import internal.app.packed.service.ServiceManagerEntry;

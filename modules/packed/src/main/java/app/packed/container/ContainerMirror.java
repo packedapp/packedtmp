@@ -9,9 +9,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.framework.NamespacePath;
+import app.packed.framework.Nullable;
 import app.packed.bean.BeanMirror;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;

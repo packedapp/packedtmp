@@ -1,6 +1,6 @@
 module app.packed {
     exports app.packed.application;
-    exports app.packed.base;
+    exports app.packed.framework;
     exports app.packed.bean;
     exports app.packed.container;
     exports app.packed.operation;

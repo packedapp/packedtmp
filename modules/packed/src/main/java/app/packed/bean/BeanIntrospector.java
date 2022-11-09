@@ -27,14 +27,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.base.InvalidKeyException;
-import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
+import app.packed.framework.InvalidKeyException;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.InvocationType;
 import app.packed.operation.Op;

@@ -1,8 +1,8 @@
 package app.packed.container;
 
-import app.packed.base.Nullable;
 import app.packed.container.Extension.DependsOn;
 import app.packed.entrypoint.EntryPointExtensionPoint;
+import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.PackedExtensionPointContext;

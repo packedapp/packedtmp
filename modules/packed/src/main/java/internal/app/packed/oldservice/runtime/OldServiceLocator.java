@@ -24,10 +24,10 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
-import app.packed.base.Key;
-import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.framework.Key;
+import app.packed.framework.TypeToken;
 import app.packed.operation.Provider;
 
 /**

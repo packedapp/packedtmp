@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import app.packed.operation.Provider;
 import internal.app.packed.oldservice.sandbox.Service;
 

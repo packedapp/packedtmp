@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 
 import app.packed.bean.BeanExtension;
 import app.packed.bean.OnStart;
-import app.packed.net.NetExtension;
 import app.packed.operation.Op;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
@@ -81,7 +80,6 @@ import app.packed.service.ServiceLocator;
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
-@NetExtension.JavaNetworkSupport
 public abstract class BaseAssembly extends ContainerAssembly {
 
     /**

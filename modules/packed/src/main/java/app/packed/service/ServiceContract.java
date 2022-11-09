@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationMirror;
-import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
+import app.packed.framework.Key;
 
 /**
  * A service contract details of a contractee.

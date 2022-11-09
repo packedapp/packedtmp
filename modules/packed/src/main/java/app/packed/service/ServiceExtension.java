@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.base.Key;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.framework.FrameworkExtension;
+import app.packed.framework.Key;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;
@@ -78,7 +78,7 @@ import internal.app.packed.operation.OperationSetup;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 
 @DependsOn(extensions = BeanExtension.class)
-public class ServiceExtension extends Extension<ServiceExtension> {
+public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
 

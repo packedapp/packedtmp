@@ -17,7 +17,7 @@ package internal.app.packed.oldservice;
 
 import java.util.Optional;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 
 /**
  *

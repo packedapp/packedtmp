@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.operation.Variable;
 import internal.app.packed.oldservice.InternalServiceUtil;
 import internal.app.packed.oldservice.build.ServiceSetup;

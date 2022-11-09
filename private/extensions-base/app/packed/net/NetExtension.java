@@ -27,15 +27,15 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.CustomHook;
 import app.packed.bean.CustomHook.CustomBindingHook;
-import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.operation.Op1;
+import extension.IncubatorExtension;
 
 /**
  *
  */
 @DependsOn(extensions = BeanExtension.class)
-public final class NetExtension extends Extension<NetExtension> {
+public final class NetExtension extends IncubatorExtension<NetExtension> {
     NetExtension() {}
 
     /**

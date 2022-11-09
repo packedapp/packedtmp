@@ -34,9 +34,9 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.framework.Nullable;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.User;

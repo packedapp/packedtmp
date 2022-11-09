@@ -1,4 +1,4 @@
-package app.packed.base;
+package app.packed.framework;
 
 // Hvis vi ikke kan lave en valid key...
 // F.eks. Optional<

@@ -25,9 +25,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import app.packed.base.Key;
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
+import app.packed.framework.Key;
 import app.packed.operation.Op;
 import app.packed.service.Qualifier;
 import app.packed.service.ServiceLocator;

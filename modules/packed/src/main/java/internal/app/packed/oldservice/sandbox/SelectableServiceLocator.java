@@ -15,8 +15,8 @@
  */
 package internal.app.packed.oldservice.sandbox;
 
-import app.packed.base.Key;
 import app.packed.container.AbstractComposer.ComposerAction;
+import app.packed.framework.Key;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.oldservice.build.ServiceComposer;
 import internal.app.packed.oldservice.runtime.OldServiceLocator;

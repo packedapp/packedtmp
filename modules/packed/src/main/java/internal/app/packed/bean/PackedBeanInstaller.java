@@ -22,8 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.bean.BeanHandle;
@@ -31,6 +29,8 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.container.InternalExtensionException;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.Provider;
 import internal.app.packed.container.ExtensionSetup;

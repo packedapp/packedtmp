@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.oldservice.build.ServiceSetup;
 import internal.app.packed.util.ThrowableUtil;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.framework;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeToken.CanonicalizedTypeToken;
+import app.packed.framework.TypeToken.CanonicalizedTypeToken;
 import testutil.stubs.annotation.AnnotationInstances;
 
 /** Tests {@link TypeToken}. */

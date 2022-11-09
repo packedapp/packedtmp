@@ -17,7 +17,7 @@ package internal.app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.Accessor;
 import internal.app.packed.util.ThrowableUtil;

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import app.packed.operation.Provider;
 import internal.app.packed.oldservice.sandbox.Service;
 
@@ -36,7 +36,7 @@ import internal.app.packed.oldservice.sandbox.Service;
  * @see OldServiceLocator#selectAll()
  * @see OldServiceLocator#selectAssignableTo(Class)
  * @see OldServiceLocator#selectWithAnyQualifiers(Class)
- * @see OldServiceLocator#selectWithAnyQualifiers(app.packed.base.TypeToken)
+ * @see OldServiceLocator#selectWithAnyQualifiers(app.packed.framework.TypeToken)
  */
 public interface ServiceSelection<S> extends OldServiceLocator {
 

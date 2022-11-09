@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.List;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 
 /**
  *

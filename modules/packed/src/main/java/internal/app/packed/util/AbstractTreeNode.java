@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 
 /**
  *

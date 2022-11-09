@@ -17,7 +17,7 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
 

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanIntrospector;
@@ -14,6 +13,8 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
+import app.packed.framework.FrameworkExtension;
+import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
@@ -30,7 +31,7 @@ import internal.app.packed.operation.OperationSetup;
 // ExecutionModel
 
 @DependsOn(extensions = BeanExtension.class)
-public class EntryPointExtension extends Extension<EntryPointExtension> {
+public class EntryPointExtension extends FrameworkExtension<EntryPointExtension> {
 
     final ApplicationSetup application;
 

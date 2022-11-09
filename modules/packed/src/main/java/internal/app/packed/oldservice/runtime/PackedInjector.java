@@ -17,7 +17,7 @@ package internal.app.packed.oldservice.runtime;
 
 import java.util.Map;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import internal.app.packed.oldservice.sandbox.Service;
 
 /** The default implementation of {@link OldServiceLocator}. */

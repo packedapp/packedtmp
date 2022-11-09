@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;

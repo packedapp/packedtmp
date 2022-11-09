@@ -21,12 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.base.NamespacePath;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.framework.NamespacePath;
 import app.packed.service.ProvideableBeanConfiguration;
 
 /**

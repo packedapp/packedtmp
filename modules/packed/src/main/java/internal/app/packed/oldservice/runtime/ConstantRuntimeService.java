@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 
 /** An runtime service holding a constant. */
 record ConstantRuntimeService(Key<?> key, Object constant) implements RuntimeService {

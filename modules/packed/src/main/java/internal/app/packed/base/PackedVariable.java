@@ -18,7 +18,7 @@ package internal.app.packed.base;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import app.packed.base.TypeToken;
+import app.packed.framework.TypeToken;
 import app.packed.operation.Variable;
 
 /** Implementation of {@link Variable}. We basically wrap an annotation part and a type part. */

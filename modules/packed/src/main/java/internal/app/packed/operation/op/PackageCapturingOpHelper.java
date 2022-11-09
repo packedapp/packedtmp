@@ -28,7 +28,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.base.TypeToken;
+import app.packed.framework.TypeToken;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;

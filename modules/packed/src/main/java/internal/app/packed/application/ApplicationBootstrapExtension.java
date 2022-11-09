@@ -15,10 +15,8 @@
  */
 package internal.app.packed.application;
 
-import app.packed.container.Extension;
-
 /**
  * A "synthetic" extension that operates operations in bootstrap applications.
  */
 // Don't know if need this. But I think we do
-public class ApplicationBootstrapExtension extends Extension<ApplicationBootstrapExtension> {}
+public class ApplicationBootstrapExtension /*extends Extension<ApplicationBootstrapExtension> */ {}

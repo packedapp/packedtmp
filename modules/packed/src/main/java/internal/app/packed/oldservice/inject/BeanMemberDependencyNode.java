@@ -18,7 +18,7 @@ package internal.app.packed.oldservice.inject;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.BuildException;
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
 import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;

@@ -20,9 +20,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnMethod;
+import app.packed.framework.Nullable;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;

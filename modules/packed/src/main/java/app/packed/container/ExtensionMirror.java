@@ -12,7 +12,7 @@ import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import internal.app.packed.container.Mirror;
 
 /**

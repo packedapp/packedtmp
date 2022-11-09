@@ -18,7 +18,7 @@ package internal.app.packed.oldservice.inject;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.Accessor;
 

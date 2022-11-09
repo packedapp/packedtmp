@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 
 import app.packed.application.BuildException;
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.service.CircularServiceDependencyException;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.lifetime.LifetimeObjectArenaSetup;

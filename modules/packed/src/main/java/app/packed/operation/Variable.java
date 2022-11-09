@@ -24,7 +24,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
-import app.packed.base.TypeToken;
+import app.packed.framework.TypeToken;
 import internal.app.packed.base.PackedVariable;
 import internal.app.packed.base.VariableTypeWrapper;
 

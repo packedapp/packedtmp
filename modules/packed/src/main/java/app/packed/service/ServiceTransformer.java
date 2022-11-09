@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import app.packed.operation.Op;
 
 /**
@@ -262,7 +262,7 @@ public interface ServiceTransformer {
      *             if the type of any new key is not assignable to the service type
      */
     // Take text from Map#compute
-    default void rekeyAll(Function<Key<?>, app.packed.base.Key<?>> rekeyingFunction) {
+    default void rekeyAll(Function<Key<?>, app.packed.framework.Key<?>> rekeyingFunction) {
         for (Key<?> s : keys()) {
             Key<?> key = rekeyingFunction.apply(s);
             if (key == null) {

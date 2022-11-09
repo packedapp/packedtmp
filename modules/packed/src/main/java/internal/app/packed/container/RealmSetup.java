@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.base.Nullable;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Assembly;
 import app.packed.container.User;
+import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanMemberAccessor;
 
 /**

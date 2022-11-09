@@ -31,9 +31,9 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
+import app.packed.framework.TypeToken;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;

@@ -18,8 +18,8 @@ package internal.app.packed.oldservice.inject;
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import internal.app.packed.operation.OperationSetup;
 
 /**

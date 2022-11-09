@@ -18,8 +18,8 @@ package app.packed.operation;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.base.Nullable;
 import app.packed.container.User;
+import app.packed.framework.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.operation.bindings.BindingKind;

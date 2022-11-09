@@ -18,6 +18,7 @@ package app.packed.container;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
+import app.packed.framework.FrameworkExtension;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 
@@ -38,7 +39,7 @@ import internal.app.packed.bean.IntrospectedBeanBinding;
  * @see AssemblyMirror
  * @see BeanMirror
  */
-public class MirrorExtension extends Extension<MirrorExtension> {
+public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
 
     /** Create a new mirror extension. */
     MirrorExtension() {}

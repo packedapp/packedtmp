@@ -17,7 +17,7 @@ package internal.app.packed.oldservice;
 
 import java.util.Map;
 
-import app.packed.base.Key;
+import app.packed.framework.Key;
 import internal.app.packed.oldservice.runtime.ServiceRegistry;
 import internal.app.packed.oldservice.sandbox.Service;
 import internal.app.packed.util.CollectionUtil;

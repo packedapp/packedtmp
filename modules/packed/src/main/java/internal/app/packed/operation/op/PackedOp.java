@@ -23,7 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;

@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.op;
+package app.packed.framework;
 
-import app.packed.net.NetExtension;
+import java.util.Set;
 
 /**
  *
  */
-public class Ffff {
+final class FrameworkProps {
+    
+    /** A set of module names that makes of the framework. So far we only have one. */
+    static final Set<String> MODULE_NAMES = Set.of(Framework.class.getModule().getName());
 
-    public static void main(String[] args) {
-        System.out.println("SDSD");
-        System.out.println(NetExtension.JavaNetworkSupport.class);
-        System.out.println(NetExtension.JavaNetworkSupport.class.getDeclaringClass());
-    }
+    static final String NAME = "Packed";
 }

@@ -3,7 +3,7 @@ package internal.app.packed.lifetime;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;

@@ -17,7 +17,7 @@ package app.packed.operation;
 
 import java.util.function.Consumer;
 
-import app.packed.base.Nullable;
+import app.packed.framework.Nullable;
 import internal.app.packed.operation.op.PackedOp;
 
 /**

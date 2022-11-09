@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Key;
-import app.packed.base.Nullable;
+import app.packed.framework.Key;
+import app.packed.framework.Nullable;
 import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;

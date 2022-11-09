@@ -8,10 +8,10 @@ import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
+import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.oldservice.inject.ExtensionInjectionManager;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;

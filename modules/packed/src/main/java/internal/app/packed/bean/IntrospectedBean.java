@@ -31,12 +31,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
+import app.packed.framework.Nullable;
 import internal.app.packed.base.devtools.PackedDevToolsIntegration;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;

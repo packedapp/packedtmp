@@ -17,6 +17,7 @@ package app.packed.container;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.framework.FrameworkExtension;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -34,7 +35,7 @@ import internal.app.packed.container.ExtensionSetup;
 //// Vi har ikke nogle annoteringer der skal bruges
 
 @DependsOn(extensions = BeanExtension.class)
-public class ContainerExtension extends Extension<ContainerExtension> {
+public class ContainerExtension extends FrameworkExtension<ContainerExtension> {
 
     /** The container we are installing new containers into. */
     final ContainerSetup container;
