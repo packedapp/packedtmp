@@ -96,7 +96,7 @@ public class ImageMicro {
     }
 
     public static class MyExtension extends Extension<MyExtension> {
-
+        MyExtension(){}
     }
 
 }

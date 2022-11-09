@@ -1,5 +1,4 @@
 /bin*
-/.clover/
 private
 target
 target.tmp
@@ -8,8 +7,5 @@ target.tmp
 .project
 .settings
 dependency-reduced-pom.xml
-/sandbox
 .DS_Store
 /trace*
-/meta-annotations/
-.java-version

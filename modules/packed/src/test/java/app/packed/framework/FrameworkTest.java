@@ -29,5 +29,4 @@ public class FrameworkTest {
         assertEquals("Packed", Framework.name());
         assertEquals(Set.of("app.packed"), Framework.moduleNames());
     }
-
 }

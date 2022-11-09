@@ -52,7 +52,7 @@ public class ImageBigMicro {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
-                        install(A.class);
+                        provide(A.class);
                         install(NeedsA.class);
                     }
                 });
@@ -69,21 +69,21 @@ public class ImageBigMicro {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
-                        install(A.class);
+                        provide(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
                             link(new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
-                                    install(A.class);
+                                    provide(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
                                         link(new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());
-                                                install(A.class);
+                                                provide(A.class);
                                                 install(NeedsA.class);
                                             }
                                         });
@@ -105,21 +105,21 @@ public class ImageBigMicro {
                     @Override
                     public void build() {
                         lookup(MethodHandles.lookup());
-                        installInstance(new A());
+                        provideInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
                             link(new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     lookup(MethodHandles.lookup());
-                                    installInstance(new A());
+                                    provideInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
                                         link(new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 lookup(MethodHandles.lookup());
-                                                installInstance(new A());
+                                                provideInstance(new A());
                                                 installInstance(new NeedsA(new A()));
                                             }
                                         });
@@ -151,6 +151,12 @@ public class ImageBigMicro {
         return null;
     }
 }
+
+//9 Nov 2022
+//ImageBigMicro.install253     avgt    5  2079,420 ± 30,003  ns/op
+//ImageBigMicro.install253NOS  avgt    5    23,093 ±  0,061  ns/op
+//ImageBigMicro.install31      avgt    5   184,329 ±  1,714  ns/op
+
 // 30 August 2020
 // ImageBigMicro.install253  avgt    5  26602.802 ± 2293.217  ns/op
 // ImageBigMicro.install31   avgt    5   3110.621 ±   22.553  ns/op

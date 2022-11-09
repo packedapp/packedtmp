@@ -91,6 +91,13 @@ public class AppConstructionMicro {
     }
 }
 
+//9 Nov 2022 - M1
+//AppConstructionMicro.appRun000Beans    avgt    5     243,449 ±    3,099  ns/op
+//AppConstructionMicro.appRun001Beans    avgt    5    1584,016 ±    9,651  ns/op
+//AppConstructionMicro.appRun005Beans    avgt    5    6934,713 ±  139,177  ns/op
+//AppConstructionMicro.appRun050Beans    avgt    5   69777,371 ± 1354,975  ns/op
+//AppConstructionMicro.appRun500Beans    avgt    5  701972,811 ± 3994,279  ns/op
+
 //10 Okt 2022 - M1
 //AppConstructionMicro.appRun000Beans    avgt    5       61,833 ±     0,314  ns/op
 //AppConstructionMicro.appRun001Beans    avgt    5     1424,898 ±    30,154  ns/op
