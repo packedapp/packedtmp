@@ -18,13 +18,15 @@ package app.packed.framework;
 import app.packed.container.Extension;
 
 /**
- * A framework extension is an extension that is implemented as part of the framework.
+ * A framework extension indicates that an extension is part of the framework.
  * <p>
- * 
+ * Framework extensions receive no special treatment by the framework. It merely server as a marker class to easily see
+ * if a particular extension is part of the framework.
  * <p>
- * A framework extension must be places in a module with a name in contained in {@link Framework#moduleNames()} or the
- * unnamed module.
+ * A framework extension must be places in a {@link Module module} whose {@link Module#getName() name} is contained in
+ * {@link Framework#moduleNames()} or the unnamed module.
  * 
  * @implNote we do not make use of sealed classes because in the future the framework may consists of multiple modules.
  */
+// Are test extensions part of the framework?? Hmm Maybe have a FrameworkTestExtension?
 public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}
