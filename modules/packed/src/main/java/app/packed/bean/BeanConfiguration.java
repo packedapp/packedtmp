@@ -3,6 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.NamespacePath;
+import app.packed.container.User;
 
 /** The base configuration class for a bean. */
 public class BeanConfiguration {
@@ -67,6 +68,11 @@ public class BeanConfiguration {
     public BeanConfiguration named(String name) {
         handle.named(name);
         return this;
+    }
+
+    /** {@return the owner of the bean.} */
+    public final User owner() {
+        return handle.owner();
     }
 
     /**

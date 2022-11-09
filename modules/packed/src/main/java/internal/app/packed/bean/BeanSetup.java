@@ -6,7 +6,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import app.packed.base.NamespacePath;
@@ -19,8 +22,10 @@ import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.BeanSourceKind;
 import app.packed.operation.OperationType;
+import internal.app.packed.bean.BeanClassMapContainer.MuInst;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
@@ -70,8 +75,6 @@ public final class BeanSetup {
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
-    public final List<LifetimeOp> lifetimeOperations = new ArrayList<>();
-
     /** Supplies a mirror for the operation */
     public Supplier<? extends BeanMirror> mirrorSupplier;
 
@@ -85,15 +88,18 @@ public final class BeanSetup {
     /** Operations declared by the bean. */
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
-    /** Non-null if the bean is installed for an extension. */
-    @Nullable
-    public final ExtensionSetup ownedByExtension;
+    /** The beans lifetime operations. */
+    public final List<LifetimeOp> operationsLifetime = new ArrayList<>();
 
-    public final List<ProvidedService> providingOperations = new ArrayList<>();
+    public final List<ProvidedService> operationsProviders = new ArrayList<>();
+
+    /** Non-null if the bean is owned by an extension. */
+    @Nullable
+    public final ExtensionSetup ownedBy;
 
     public boolean providingOperationsVisited;
 
-    /** The realm used to install this component. */
+    /** The assembly or extension used to install this component. */
     public final RealmSetup realm;
 
     /** The source ({@code null}, {@link Class}, {@link PackedOp}, or an instance) */
@@ -116,7 +122,6 @@ public final class BeanSetup {
 
         RealmSetup realm = installer.useSite == null ? installer.beanExtension.container.assembly : installedBy.extensionRealm;
 
-        ExtensionSetup extensionOwner = installedBy; // incorrect
 
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
@@ -125,7 +130,11 @@ public final class BeanSetup {
         // I think this was made like this, when I was unsure if we could
         // have containers managed by extensions
         this.realm = requireNonNull(realm);
-        this.ownedByExtension = extensionOwner;
+        if (realm instanceof ExtensionTreeSetup s) {
+            this.ownedBy = installer.useSite.extension();
+        } else {
+            this.ownedBy = null;
+        }
 
         ContainerLifetimeSetup cls = container.lifetime;
         if (beanKind == BeanKind.CONTAINER || beanKind == BeanKind.FUNCTIONAL || beanKind == BeanKind.STATIC) {
@@ -134,13 +143,20 @@ public final class BeanSetup {
         } else {
             this.lifetime = new BeanLifetimeSetup(cls, this);
         }
+    }
 
+    public Set<BeanSetup> dependsOn() {
+        HashSet<BeanSetup> result = new HashSet<>();
+        for (OperationSetup os : operations) {
+            result.addAll(os.dependsOn());
+        }
+        return result;
     }
 
     // Relative to x
-    public OperationSetup accessOperation() {
+    public OperationSetup instanceAccessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
-        return new OperationSetup(this, OperationType.of(beanClass), installedBy, new BeanInstanceAccess(this, null), null);
+        return new OperationSetup(this, OperationType.of(beanClass), installedBy, new BeanInstanceAccess(this, injectionManager.dependencyAccessor()), null);
     }
 
     /** {@return a new mirror.} */
@@ -231,12 +247,17 @@ public final class BeanSetup {
         // TODO virker ikke med functional beans og naming
         String n = prefix;
 
+        HashMap<Class<?>, Object> bcm = installer.beanExtension.container.beanClassMap;
+        if (installer.useSite != null) {
+            bcm = installer.useSite.usedBy().beanClassMap;
+
+        }
+
+        // if (installer.useSite.extension())
+
         if (beanClass != void.class) {
             if (multiInstall) {
-                class MuInst {
-                    int counter;
-                }
-                MuInst i = (MuInst) container.beanClassMap.compute(beanClass, (c, o) -> {
+                MuInst i = (MuInst) bcm.compute(beanClass, (c, o) -> {
                     if (o == null) {
                         return new MuInst();
                     } else if (o instanceof BeanSetup) {
@@ -255,7 +276,7 @@ public final class BeanSetup {
                     i.counter = next;
                 }
             } else {
-                container.beanClassMap.compute(beanClass, (c, o) -> {
+                bcm.compute(beanClass, (c, o) -> {
                     if (o == null) {
                         return bean;
                     } else if (o instanceof BeanSetup) {

@@ -15,37 +15,51 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.container.User;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
 
 /**
  * A binding to a constant.
  */
+// Tror maaske vi skal have en MH adaptor som kan wrappe den i Optional osv.
 public final class ConstantBindingSetup extends BindingSetup {
+
+    /** Non-null if bound by an application. */
+    @Nullable
+    private final ExtensionSetup boundBy;
 
     /** The constant that was bound. */
     @Nullable
-    public final Object constant;
-
-    // Eller er det en extension bean??? Det er hvem der styrer vaerdien
-    @Nullable
-    public ExtensionSetup boundBy;
+    private final Object constant;
 
     /** Supplies a mirror for the operation */
     private final Supplier<? extends BindingMirror> specializedMirror;
 
-    public ConstantBindingSetup(OperationSetup operation, ExtensionSetup boundBy, int index, Object constant,
+    // Hmm, laver vi den her lazily, fx hvis vi kun vil mirrors
+    final MethodHandle adaptor;
+
+    public ConstantBindingSetup(OperationSetup operation, @Nullable ExtensionSetup boundBy, int index, Object constant, @Nullable MethodHandle adaptor,
             Supplier<? extends BindingMirror> specializedMirror) {
         super(operation, index);
         this.boundBy = boundBy;
         this.constant = constant;
+        this.adaptor = adaptor;
         this.specializedMirror = specializedMirror;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public User boundBy() {
+        return boundBy == null ? User.application() : User.extension(boundBy.extensionType);
     }
 
     /** {@inheritDoc} */
@@ -56,7 +70,8 @@ public final class ConstantBindingSetup extends BindingSetup {
 
     /** {@inheritDoc} */
     @Override
-    public User boundBy() {
-        return boundBy == null ? User.application() : User.extension(boundBy.extensionType);
+    public MethodHandle read() {
+        MethodHandle mh = MethodHandles.constant(constant == null ? Object.class : constant.getClass(), constant);
+        return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
     }
 }

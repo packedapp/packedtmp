@@ -17,11 +17,13 @@ package internal.app.packed.bean;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.bean.BeanExtension;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.ParameterTypeRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 
 /**
  *
@@ -52,10 +54,22 @@ final class IntrospectedBeanParameter {
             }
         }
 
-        //System.out.println("Resolve as service " + var + " for " + operation.operator.extensionType);
+        // System.out.println("Resolve as service " + var + " for " + operation.operator.extensionType);
         // finally resolve as service
-        InternalDependency ia = InternalDependency.fromOperationType(operation.type).get(index);
-        operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
+
+        // Okay we calling in here with extension services as well.
+        // Need to handle it
+
+        boolean resolveAsService = operation.operator.extensionType == BeanExtension.class;
+
+        if (resolveAsService) {
+            InternalDependency ia = InternalDependency.fromOperationType(operation.type).get(index);
+            operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
+        } else {
+            ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, var.getType());
+            operation.bindings[index] = b;
+            operation.operator.bindings.add(b);
+        }
     }
 
     /**
@@ -63,7 +77,7 @@ final class IntrospectedBeanParameter {
      * 
      * @param var
      *            the method to look for annotations on
-     * @return 
+     * @return
      */
     private static boolean tryResolveAsBindingHook(IntrospectedBean introspector, Variable var, OperationSetup os, int index) {
 

@@ -17,7 +17,6 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,6 +24,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
+import app.packed.container.User;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -104,6 +104,18 @@ public final /* primitive */ class BeanHandle<T> {
         return (Key<T>) Key.of(beanClass());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof BeanHandle<?> b && bean == b.bean;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return bean.hashCode();
+    }
+
     /**
      * Returns whether or not the bean is still configurable.
      * 
@@ -155,7 +167,7 @@ public final /* primitive */ class BeanHandle<T> {
     public void serviceExportAs(Key<? super T> key) {
         checkIsConfigurable();
 
-        bean.container.sm.serviceExport(key, bean.accessOperation());
+        bean.container.sm.serviceExport(key, bean.instanceAccessOperation());
 
         bean.container.injectionManager.ios.exportsOrCreate().export(bean, null);
     }
@@ -187,7 +199,7 @@ public final /* primitive */ class BeanHandle<T> {
             // or " + BeanKind.LAZY);
         }
 
-        bean.container.sm.provideService(k, beanKind() != BeanKind.MANYTON, bean.accessOperation());
+        bean.container.sm.provideService(k, beanKind() != BeanKind.MANYTON, bean.instanceAccessOperation());
     }
 
     /**
@@ -209,13 +221,16 @@ public final /* primitive */ class BeanHandle<T> {
     public String toString() {
         return bean.toString();
     }
+
+    /**
+     * @return
+     */
+    public User owner() {
+        return bean.ownedBy == null ? User.application() : User.extension(bean.ownedBy.extensionType);
+    }
 }
 
 class BeanHandleSandbox<T> {
-
-    public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, MethodHandle methodHandle) {
-        return addOperation(operator, Op.ofMethodHandle(methodHandle));
-    }
 
     public OperationHandle addOperation(InstanceBeanConfiguration<?> operator, Op<?> operation) {
         throw new UnsupportedOperationException();

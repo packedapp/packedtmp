@@ -16,7 +16,6 @@
 package app.packed.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.AnnotatedElement;
@@ -337,7 +336,7 @@ public abstract class BeanIntrospector {
          * @return
          * 
          * @throws UnsupportedOperationException
-         *             if called via {@link OperationHandle#manualBinding(int)}
+         *             if called via {@link OperationHandle#bindManually(int)}
          */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 
@@ -347,8 +346,6 @@ public abstract class BeanIntrospector {
         default boolean isOperation(OperationHandle operation) {
             return false;
         }
-
-        void provide(MethodHandle methodHandle);
 
         void provide(Op<?> op);
 

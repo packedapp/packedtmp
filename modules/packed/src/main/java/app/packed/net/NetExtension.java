@@ -55,11 +55,11 @@ public final class NetExtension extends Extension<NetExtension> {
             @Override
             public void onBinding(OnBinding binding) {
                 if (binding.variable().getType() == SelectorProvider.class) {
-                    binding.provide(new Op1<>(PackedSelectorProvider::new) {});
+                    binding.provide(new Op1<ChannelManager, SelectorProvider>(PackedSelectorProvider::new) {});
                 } else {
                     super.onBinding(binding);
                 }
-                bean().install(ChannelManager.class);
+                bean().installIfAbsent(ChannelManager.class);
             }
         };
     }

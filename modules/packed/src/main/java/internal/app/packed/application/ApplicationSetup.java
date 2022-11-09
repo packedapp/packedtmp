@@ -64,13 +64,18 @@ public final class ApplicationSetup {
     /** Whether or not we are in the code generating phase. */
     private boolean isInCodegenPhase;
 
-    /** A launcher for launching the application. Is not created for {@link BuildGoal#VERIFY} or {@link BuildGoal#NEW_MIRROR}. */
+    /**
+     * A launcher for launching the application. Is not created for {@link BuildGoal#VERIFY} or
+     * {@link BuildGoal#NEW_MIRROR}.
+     */
     @Nullable
     PackedApplicationLauncher launcher;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
     final DynamicAccessor runtimeAccessor;
+
+    public final CodegenHelper codegenHelper = new CodegenHelper();
 
     /**
      * Create a new application setup
@@ -117,8 +122,7 @@ public final class ApplicationSetup {
 
         // Saa reverse extension order tror jeg
         // Nah burde stadig virke
-        
-        
+
         // Do we need callbacks on extensions???
 
         // For each lifetime create lifetime operations
@@ -128,6 +132,10 @@ public final class ApplicationSetup {
 
         // If this fails it is always a bug in either Packed or one of its extensions.
         // It is never a user error.
+
+        // Codegeneration for the root lifetime
+        container.lifetime.codegen();
+
         for (Runnable r : codegenActions) {
             r.run();
         }

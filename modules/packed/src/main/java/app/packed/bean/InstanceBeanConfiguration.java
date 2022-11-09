@@ -17,10 +17,10 @@ package app.packed.bean;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.base.Key;
 import app.packed.lifetime.RunState;
+import app.packed.operation.Op;
 import internal.app.packed.base.SpecFix;
 
 /**
@@ -47,15 +47,15 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         return (BeanHandle<T>) super.handle();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public InstanceBeanConfiguration<T> named(String name) {
-        super.named(name);
-        return this;
+    public <K> InstanceBeanConfiguration<T> initializeWith(Op<?> op) {
+        throw new UnsupportedOperationException();
     }
 
     @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
             " Det er jo ihvertfald ikke en service binding laengere" })
+    // Hvad hvis man bruger servicen i baade constructoren og i @OnStop...
+    // Saa fungere det her initialize jo ikke...
+    
     // @Initializer -> Kan man ikke bruge det til at over
     // Tror ikke man baade kan initialize en Key, og saa bruge den som en service andet steds.
     // Tjah det er jo en build time instans... Saa det kan jo bare vaere -> inject()
@@ -74,31 +74,22 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
     // installer().overrideService(asdasd).install(Key, instance);
     //// Hvordan vil den supportere WebExtension.install()???
     //// installer() fungere bare ikke
-    public <K> InstanceBeanConfiguration<T> overrideService(Class<K> key, K instance) {
-        return overrideService(Key.of(key), instance);
+    
+    // initializeWith
+    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
+        return initializeWithInstance(Key.of(key), instance);
     }
 
-    public <K> InstanceBeanConfiguration<T> overrideService(Key<K> key, K instance) {
+    public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
         throw new UnsupportedOperationException();
     }
-
-    // Jeg syntes den er forfaerdelig... isaer navngivningsmaessigt.
-    // Vi maa have en special ExtensionBeanConfiguration...
-    // Eller endnu bedre en speciel klasse.
-    public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Class<K> key, Supplier<K> supplier) {
-        return overrideServiceDelayed(Key.of(key), supplier);
-    }
-
-    public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Key<K> key, Supplier<K> supplier) {
-        // delayedInitiatedWith
-        // Taenker vi har et filled array som er available when initiating the lifetime
-
-        // Her skal vi ogsaa taenke ind at det skal vaere en application singleton vi injecter ind i.
-        // Altsaa vi vil helst ikke initiere en Session extension bean med MHs hver gang
-
+    
+    /** {@inheritDoc} */
+    @Override
+    public InstanceBeanConfiguration<T> named(String name) {
+        super.named(name);
         return this;
     }
-
 }
 
 //Skal bruges paa params som skal "bootstrappes" med...
@@ -163,6 +154,25 @@ class InstanceBeanConfigurationSandbox<T> {
     }
  
 }
+//
+//// Jeg syntes den er forfaerdelig... isaer navngivningsmaessigt.
+//// Vi maa have en special ExtensionBeanConfiguration...
+//// Eller endnu bedre en speciel klasse.
+//@Deprecated
+//public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Class<K> key, Supplier<K> supplier) {
+//  return overrideServiceDelayed(Key.of(key), supplier);
+//}
+//
+//@Deprecated
+//public <K> InstanceBeanConfiguration<T> overrideServiceDelayed(Key<K> key, Supplier<K> supplier) {
+//  // delayedInitiatedWith
+//  // Taenker vi har et filled array som er available when initiating the lifetime
+//
+//  // Her skal vi ogsaa taenke ind at det skal vaere en application singleton vi injecter ind i.
+//  // Altsaa vi vil helst ikke initiere en Session extension bean med MHs hver gang
+//
+//  return this;
+//}
 // inject, bind, provide
 //// Ikke provide... vi har allerede provideAs
 //// bind syntes jeg er fint at det er positionelt

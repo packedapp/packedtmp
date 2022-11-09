@@ -157,6 +157,8 @@ public final class IntrospectedBean {
 
         bean.injectionManager = new BeanInjectionManager(bean); // legacy
 
+        // See also java.lang.PublicMethods
+
         // Introspect all fields on the bean and its super classes
         introspectAllFields(this, bean.beanClass);
 
@@ -258,9 +260,10 @@ public final class IntrospectedBean {
             resolveOperation(operation);
         }
     }
+
     void resolveOperation(OperationSetup operation) {
-        //System.out.println(operation.target + " " + operation.bindings.length);
-        //System.out.println(operation.type);
+        // System.out.println(operation.target + " " + operation.bindings.length);
+        // System.out.println(operation.type);
         for (int i = 0; i < operation.bindings.length; i++) {
             BindingSetup binding = operation.bindings[i];
             if (binding == null) {

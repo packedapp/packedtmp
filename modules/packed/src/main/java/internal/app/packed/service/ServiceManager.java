@@ -78,7 +78,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
         // Check lifetimes
-        
+
         // Get any existing provider of
         ProvidedService provider = entry.provider;
 
@@ -93,15 +93,15 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 
         // add the service provider to the bean
-        operation.bean.providingOperations.add(provider);
+        operation.bean.operationsProviders.add(provider);
 
         if (exportAll) {
             serviceExport(key, operation);
         }
 
-        // maintain old 
+        // maintain old
         operation.bean.container.injectionManager.provideOld(provider);
-        
+
         return provider;
     }
 
@@ -144,7 +144,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
                 for (var b = e.bindings; b != null; b = b.nextFriend) {
                     System.out.println("Binding not resolved " + b);
                 }
-                throw new UnsatisfiableServiceDependencyException();
+                throw new UnsatisfiableServiceDependencyException("For key " + e.key);
             }
         }
     }

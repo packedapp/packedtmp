@@ -77,11 +77,14 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
      */
     public non-sealed interface OfFunctionCall extends OperationTargetMirror {
 
-        default Method actualMethod() {
+        /** {@return the functional interface.} */
+        Class<?> functionalInterface();
+
+        default Method implementationMethod() {
             throw new UnsupportedOperationException();
         }
 
-        default Method functionalInterfaceMethod() {
+        default Method interfaceMethod() {
             throw new UnsupportedOperationException();
         }
     }

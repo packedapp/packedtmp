@@ -37,6 +37,7 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.managed.ManagedLifetimeController;
 import app.packed.lifetime.sandbox.OldLifetimeKind;
+import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.operation.op.PackedOp;
@@ -265,6 +266,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
+        public <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
             // Find a method handle for the application shell's constructor
             InternalInfuser.Builder builder = InternalInfuser.builder(caller, implementation, ApplicationInitializationContext.class);
@@ -283,11 +290,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
-        private <S> PackedApplicationDriver<S> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
-            return new PackedApplicationDriver<>(this);
-        }
-
 //      /** {@inheritDoc} */
 //      @Override
 //      public Builder disable(@SuppressWarnings("unchecked") Class<? extends Extension<?>>... extensionTypes) {
@@ -297,6 +299,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 //          }
 //          return this;
 //      }
+
+        private <S> PackedApplicationDriver<S> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationInitializationContext.class));
+            return new PackedApplicationDriver<>(this);
+        }
 
         /** {@inheritDoc} */
         @Override

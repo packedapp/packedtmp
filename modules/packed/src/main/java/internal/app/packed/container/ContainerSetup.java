@@ -68,7 +68,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     @Nullable
     public BeanSetup beanLast;
 
-    /** Maintain unique names for beans and child containers. */
+    /** Maintains unique names for beans and child containers. */
     public final HashMap<String, Object> children = new HashMap<>();
 
     /** The depth of the component in the application tree. */
@@ -361,14 +361,3 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         return extension;
     }
 }
-//
-//public void codegen() {
-//  for (ContainerSetup e = treeFirstChild; e != null; e = e.treeNextSiebling) {
-//      e.codegen();
-//  }
-//  for (BeanSetup b = beanFirst; b != null; b = b.nextBean) {
-//      for (OperationSetup o : b.operations) {
-//          o.codegen();
-//      }
-//  }
-//}

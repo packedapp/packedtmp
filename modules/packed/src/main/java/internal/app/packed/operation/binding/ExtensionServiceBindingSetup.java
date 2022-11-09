@@ -17,30 +17,45 @@ package internal.app.packed.operation.binding;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.bean.BeanExtension;
+import app.packed.container.User;
+import app.packed.operation.BindingMirror;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-// Ved ikke om vi gider have det hiraki...
-public abstract sealed class NestedBindingSetup extends BindingSetup permits CompositeBindingSetup, FusedBindingSetup {
+public class ExtensionServiceBindingSetup extends BindingSetup {
+
+    public BeanSetup extensionBean;
+
+    public final Class<?> extensionBeanClass;
 
     /**
      * @param operation
      * @param index
      */
-    public NestedBindingSetup(OperationSetup operation, int index) {
+    public ExtensionServiceBindingSetup(OperationSetup operation, int index, Class<?> extensionBeanClass) {
         super(operation, index);
+        this.extensionBeanClass = extensionBeanClass;
     }
-
-    public OperationSetup nestedOperation;
-
-    public final OperationSetup providedBy = null;
-    
 
     /** {@inheritDoc} */
     @Override
+    public User boundBy() {
+        return User.extension(BeanExtension.class);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected BindingMirror mirror0() {
+        throw new UnsupportedOperationException();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public MethodHandle read() {
-        return nestedOperation.buildInvoker();
+        return extensionBean.injectionManager.dependencyAccessor();
     }
 }

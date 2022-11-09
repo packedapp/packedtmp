@@ -15,6 +15,8 @@
  */
 package internal.app.packed.service;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.base.Nullable;
 import app.packed.container.User;
 import app.packed.operation.BindingMirror;
@@ -64,5 +66,11 @@ public final class ServiceBindingSetup extends BindingSetup {
     @Override
     public BindingMirror mirror0() {
         return new ServiceBindingMirror(this);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle read() {
+        return entry.provider.operation.buildInvoker();
     }
 }

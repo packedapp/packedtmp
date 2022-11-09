@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package internal.app.packed.bean;
+
+import java.util.HashMap;
 
 /**
  *
  */
-public class UnsatisfiableServiceDependencyException extends RuntimeException {
+public final class BeanClassMapContainer {
 
-    private static final long serialVersionUID = 1L;
-
-    public UnsatisfiableServiceDependencyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public UnsatisfiableServiceDependencyException(String message) {
-        super(message);
-    }
+    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
+    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
     
-    
+    public static class MuInst {
+        int counter;
+    }
 }

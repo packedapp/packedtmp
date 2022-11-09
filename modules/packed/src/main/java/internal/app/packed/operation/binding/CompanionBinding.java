@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
 import app.packed.operation.BindingMirror;
@@ -62,6 +64,12 @@ public class CompanionBinding extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     protected BindingMirror mirror0() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle read() {
         throw new UnsupportedOperationException();
     }
 

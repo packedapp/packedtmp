@@ -19,7 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -29,8 +32,11 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.binding.BindingSetup;
+import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.operation.binding.NestedBindingSetup;
+import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -78,7 +84,7 @@ public final class OperationSetup {
     public ExtensionSetup operator;
 
     /** The target of the operation. */
-    public final OperationTarget target;
+    public OperationTarget target;
 
     /** The type of the operation. */
     public final OperationType type;
@@ -103,16 +109,48 @@ public final class OperationSetup {
         }
 
         isComputed = true;
+        if (true) {
+            return null;
+        }
+        MethodHandle mh = target.methodHandle;
+        System.out.println("--------------------------------");
+        System.out.println(type);
+        System.out.println("Building [bean = " + bean.path() + ": " + mh);
 
+        if (bindings.length == 0) {
+            if (target.requiresBeanInstance) {
+                return MethodHandles.collectArguments(mh, 0, bean.injectionManager.dependencyAccessor());
+            } else {
+                return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+            }
+        }
+        if (target.requiresBeanInstance) {
+            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.dependencyAccessor());
+        }
+        int count = bindings.length + (target.requiresBeanInstance ? 1 : 0);
+
+        // We create a new method that a
+        for (int i = 0; i < bindings.length; i++) {
+            System.out.println("BT " + bindings[i].getClass());
+            mh = MethodHandles.collectArguments(mh, i, bindings[i].read());
+        }
+
+        // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
+        System.out.println("Building [bean = " + bean.path() + ": " + mh);
+        MethodType mt = MethodType.methodType(target.methodHandle.type().returnType(), LifetimeObjectArena.class);
+        mh = MethodHandles.permuteArguments(mh, mt, new int[count]);
+
+        requireNonNull(mh);
+        return mh;
         // Must be computed relative to invocating site
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     // readOnly. Will not work if for example, resolving a binding
     public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             if (bs instanceof NestedBindingSetup nested) {
-                nested.operation.forEachBinding(binding);
+                nested.nestedOperation.forEachBinding(binding);
             }
             binding.accept(bs);
         }
@@ -138,6 +176,19 @@ public final class OperationSetup {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+
+    public Set<BeanSetup> dependsOn() {
+        HashSet<BeanSetup> result = new HashSet<>();
+        forEachBinding(b -> {
+            if (b instanceof ExtensionServiceBindingSetup s) {
+                requireNonNull(s.extensionBean);
+                result.add(s.extensionBean);
+            } else if (b instanceof ServiceBindingSetup s) {
+                result.add(s.entry.provider.operation.bean);
+            }
+        });
+        return result;
     }
 
     /**

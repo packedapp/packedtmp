@@ -19,25 +19,39 @@ import static java.util.Objects.checkIndex;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.Collection;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.base.Key;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
+import app.packed.container.Extension;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
 /**
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation
  * known as its {@link OperationTargetMirror target}.
+ * <p>
+ * Operation handles can only be constructed by {@link Extension extensions}.
  * 
- * A handle is normally
+ * Operation handles are the main way in which the framework supports such as annotations on fields and methods.
+ * <p>
+ * Operation handles may be obtained in any of these ways:
+ * <ul>
+ * <li>By calling {@link OnMethod#newOperation} to create a new operation that can {@code invoke} the underlying
+ * {@link Method}.
+ * <li>By calling {@link OnField#newGetOperation} to create a new operation that can {@code get} the value of the
+ * underlying {@link Field}.
+ * <li>By calling {@link OnField#newSetOperation} to create a new operation that car {@code set} the value of the
+ * underlying {@link Field}.
+ * <li>By calling {@link OnField#newOperation(java.lang.invoke.VarHandle.AccessMode)} to create a new operation that can
+ * {@code access} the underlying {@link Field}.
+ * </ul>
  * 
  * 
  * This class is used to configure a operation.
@@ -61,20 +75,12 @@ import internal.app.packed.operation.OperationSetup;
  * <li>Name the operation (not implemented yet).</li>
  * </ul>
  * <p>
- * This class may support:
- * <ul>
- * </ul>
  * 
+ * @see OnMethod#newOperation()
  * @see OnField#newGetOperation()
  * @see OnField#newSetOperation()
  * @see OnField#newOperation(java.lang.invoke.VarHandle.AccessMode)
- * @see OnMethod#newOperation()
  */
-
-/// Setup
-//// Bindings
-/// Teardown (Og hvad skal der laves her, alle bindings er solvet)
-/// Codegen
 
 /// Configuration -> Set InvocationType, Set InvocationBean, Set Context
 
@@ -94,6 +100,26 @@ public final class OperationHandle {
      */
     OperationHandle(OperationSetup operation) {
         this.operation = requireNonNull(operation);
+    }
+
+    /**
+     * <p>
+     * The operation is no longer configurable when this method returns.
+     * 
+     * @param parameterIndex
+     *            the index of the parameter to bind
+     * @return a bindable object
+     * @throws IndexOutOfBoundsException
+     *             if the parameter index is out of bounds
+     */
+    public OnBinding bindManually(int parameterIndex) {
+        // This method does not throw IllegalStateExtension, but OnBinding may.
+
+        operation.isConfigurationDisabled = true;
+        // custom invocationContext must have been set before calling this method
+        checkIndex(parameterIndex, operation.type.parameterCount());
+        // Does not work currently because we don't have an introspected bean
+        return new IntrospectedBeanBinding(null, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
     /**
@@ -121,43 +147,110 @@ public final class OperationHandle {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof OperationHandle h && operation == h.operation;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return operation.hashCode();
+    }
+
     /** {@return the invocation type of this operation.} */
     public InvocationType invocationType() {
         return operation.invocationSite.invocationType;
     }
 
-    /**
-     * <p>
-     * The operation can no longer be configured after calling this method.
-     * 
-     * @param parameterIndex
-     *            the index of the parameter to bind
-     * @return a bindable object
-     * @throws IndexOutOfBoundsException
-     *             if the parameter index is out of bounds
-     */
-    public OnBinding manualBinding(int parameterIndex) {
-        operation.isConfigurationDisabled = true;
-        // custom invocationContext must have been set before calling this method
-        checkIndex(parameterIndex, operation.type.parameterCount());
-        // Does not work currently because we don't have an introspected bean
-        return new IntrospectedBeanBinding(null, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+    // Kan kaldes en gang
+    public void invokeFrom(InstanceBeanConfiguration<?> bean) {
+        // Vi kan have et application.HashMap<BeanSetup, Map<Key, Supplier>> delayedCodegen;
+        // Som de bruger.
+        // BeanSetup.codegenInjectIntoBean(IBC<?>, Key, Supplier);
+        throw new UnsupportedOperationException();
     }
 
-    public void onBuild(Consumer<MethodHandle> action) {
-        requireNonNull(action, "action is null");
-        operation.bean.container.application.addCodegenAction(() -> action.accept(buildInvoker()));
+    public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
+        requireNonNull(bean, "bean is null");
+        
+        // Hvorfor maa man egentlig ikke det her???
+        // Vi kan jo altid bare lave vores egen og injecte den...
+        if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
+            throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
+        }
+        return operation.bean.container.application.codegenHelper.addArray(bean, this);
     }
+
+    public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
+        // check is type
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Registers an action that will be performed doing the code generation phase of the application.
+     * <p>
+     * This method is typically used for storing the {@link MethodHandle} returned by {@link #buildInvoker()} in some kind
+     * of data structure.
+     * 
+     * @param action
+     *            the action to perform
+     * @throws IllegalStateException
+     *             if the operation is no longer configurable
+     */
+    public void onCodegen(Consumer<OperationHandle> action) {
+        requireNonNull(action, "action is null");
+        checkConfigurable();
+        operation.bean.container.application.addCodegenAction(() -> action.accept(this));
+    }
+
+    /**
+     * Specializes the mirror that is returned for the operation.
+     * <p>
+     * The specified supplier may be called multiple times for the same operation.
+     * <p>
+     * The specified supplier should never return {@code null}.
+     * 
+     * @param supplier
+     *            a mirror supplier that is only called if a mirror is needed
+     * @throws IllegalStateException
+     *             if the operation is no longer configurable
+     */
+    // I don't know if have a forceMirrorBaseType??? Basic idea being that if delegate the operation
+    // to someone they cannot specialize with a mirror that is not a subtype of the specified type
+    // For example, LifetimeOperationMirror.
+    // However, the best thing we can do is a runtime exception. As the supplier is lazy
+    public void specializeMirror(Supplier<? extends OperationMirror> supplier) {
+        checkConfigurable();
+        operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return operation.toString();
+    }
+
+    /** {@return the type of this operation.} */
+    public OperationType type() {
+        return operation.type;
+    }
+
+}
+
+interface OpNew {
 
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
-    public void operatedBy(Object extensionHandle) {
-        checkConfigurable();
+    default void operatedBy(Object extensionHandle) {
+        // delegateTo, transferTo
+        // Maybe the method is on ExtensionPoint.UseSite
+        // checkConfigurable();
         // Do we create a new handle, and invalidate this handle?
     }
 
-    OperationHandle spawnNewBean() {
-        checkConfigurable();
+    default void spawnNewBean() {
         // I'm not sure this is needed.
         // It is always only configured on the bean
 
@@ -166,80 +259,8 @@ public final class OperationHandle {
         // A new bean will be created. I think we need to configure something when making the bean as well
         // Maybe we need a bean option and call this method for every operation.
         // I don't know can we have methods that can do both
-        return this;
     }
 
-    /**
-     * Adds a supplier that creates the mirror that will be returned when a mirror for the operation is requested.
-     * <p>
-     * The supplier may be called multiple times for the same operation.
-     * <p>
-     * The supplier should never return {@code null}.
-     * 
-     * @param supplier
-     *            a mirror supplier
-     * @throws IllegalStateException
-     *             if the operation is no longer configurable
-     */
-    // I don't know if have a forceMirrorBaseType??? Basic idea being that if delegate the operation
-    // to someone they cannot specialize with a mirror that is not a subtype of the specified type
-    // For example, LifetimeOperationMirror.
-    // However, the best thing we can do is a runtime exception. As the supplier is lazy
-    public OperationHandle specializeMirror(Supplier<? extends OperationMirror> supplier) {
-        checkConfigurable();
-        operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
-        return this;
-    }
-
-    /** {@return the type of this operation.} */
-    public OperationType type() {
-        return operation.type;
-    }
-
-    private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {
-//        Map<K, U> result = map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, valueMapper));
-//        return Map.copyOf(result);
-        throw new UnsupportedOperationException();
-    }
-
-    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, Collection<OperationHandle> operations) {
-        return bean;
-    }
-
-    public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, OperationHandle[] operations) {
-        return bean;
-    }
-
-    public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
-            Map<K, OperationHandle> operations) {
-        bean.overrideServiceDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
-        return bean;
-    }
-
-    public static Supplier<MethodHandle[]> supplier(OperationHandle[] operations) {
-        return () -> {
-            MethodHandle[] mhs = new MethodHandle[operations.length];
-            for (int i = 0; i < operations.length; i++) {
-                mhs[i] = operations[i].buildInvoker();
-            }
-            return mhs; // .freeze();
-        };
-    }
-
-    public static <K> Supplier<Map<K, MethodHandle>> supplierMap(Map<K, OperationHandle> operations) {
-        return () -> {
-            throw new UnsupportedOperationException();
-        };
-    }
-
-}
-
-interface OpNew {
-    // Alt kan laves via invokeFrom(EH);
-    void invokeFrom(InstanceBeanConfiguration<?> bean); // int index
-
-    // Kunne jo godt bare tage extensionen, og checke paa typen
-    void invokeFrom(Object extensionHandle); // -> buildInvoker
 }
 
 interface ZandboxOperationHandle {
@@ -298,6 +319,43 @@ interface ZandboxOperationHandle {
     Sandbox resultVoid(); // returnIgnore?
 
     Sandbox resultVoidOrFail(); // fails if non-void with BeanDeclarationException
+
+    //
+//  private static <K, U, V> Map<K, U> copyOf(Map<K, V> map, Function<V, U> valueMapper) {
+////      Map<K, U> result = map.entrySet().stream().collect(Collectors.toMap(Entry::getKey, valueMapper));
+////      return Map.copyOf(result);
+//      throw new UnsupportedOperationException();
+//  }
+//
+//  public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, Collection<OperationHandle> operations) {
+//      return bean;
+//  }
+//
+//  public static <B extends InstanceBeanConfiguration<?>> B initializeWithMethodHandleArray(B bean, OperationHandle[] operations) {
+//      return bean;
+//  }
+//
+//  public static <B extends InstanceBeanConfiguration<?>, K> B initializeWithMethodHandleMap(B bean, Key<Map<K, MethodHandle>> key,
+//          Map<K, OperationHandle> operations) {
+//      bean.overrideServiceDelayed(key, () -> copyOf(operations, h -> h.buildInvoker()));
+//      return bean;
+//  }
+//
+//  public static Supplier<MethodHandle[]> supplier(OperationHandle[] operations) {
+//      return () -> {
+//          MethodHandle[] mhs = new MethodHandle[operations.length];
+//          for (int i = 0; i < operations.length; i++) {
+//              mhs[i] = operations[i].buildInvoker();
+//          }
+//          return mhs; // .freeze();
+//      };
+//  }
+//
+//  public static <K> Supplier<Map<K, MethodHandle>> supplierMap(Map<K, OperationHandle> operations) {
+//      return () -> {
+//          throw new UnsupportedOperationException();
+//      };
+//  }
 }
 
 // Hvad goer vi med annoteringer paa Field/Update???

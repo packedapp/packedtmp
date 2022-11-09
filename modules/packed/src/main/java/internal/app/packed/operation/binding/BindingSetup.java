@@ -61,4 +61,7 @@ public abstract class BindingSetup {
     }
     
     protected abstract BindingMirror mirror0();
+    
+    public abstract MethodHandle read();
+    
 }

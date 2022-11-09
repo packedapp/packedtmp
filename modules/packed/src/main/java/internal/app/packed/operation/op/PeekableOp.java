@@ -35,7 +35,7 @@ final class PeekableOp<R> extends PackedOp<R> {
     static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
 
     /** The op that is being peeked on. */
-    final PackedOp<?> delegate;
+    private final PackedOp<?> delegate;
 
     PeekableOp(PackedOp<R> delegate, MethodHandle methodHandle) {
         super(delegate.type, methodHandle);

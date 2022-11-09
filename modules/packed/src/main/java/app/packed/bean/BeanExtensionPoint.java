@@ -14,7 +14,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionPoint;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
-import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.PackedBeanInstaller;
 import internal.app.packed.container.PackedExtensionPointContext;
@@ -46,26 +45,46 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
     public <T> InstanceBeanConfiguration<T> install(Class<T> implementation) {
         BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).install(implementation);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> install(Op<T> op) {
         BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).install(op);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new InstanceBeanConfiguration<>(handle);
     }
 
-    // should not call anything on the returned bean
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
-        throw new UnsupportedOperationException();
+        return installIfAbsent(clazz, c -> {});
     }
 
+    /**
+     * <p>
+     * The configuration might be di
+     * 
+     * @param <T>
+     *            the type of bean to install
+     * @param clazz
+     * @param action
+     * @return a bean configuration
+     * @implNote the implementation may use to return different bean configuration instances for subsequent invocations.
+     *           Even for action and the returned bean
+     */
     public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
-        throw new UnsupportedOperationException();
+//        class Tmp {
+//            InstanceBeanConfiguration<T> conf;
+//        }
+//        Tmp tmp = new Tmp();
+//        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).InstallIfAbsent(clazz, h -> action.accept(tmp.conf = new InstanceBeanConfiguration<>(h)));
+//        return tmp.conf == null ? new InstanceBeanConfiguration<>(handle) : tmp.conf;
+        
+        requireNonNull(action, "action is null");
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).installIfAbsent(clazz, h -> action.accept(new InstanceBeanConfiguration<>(h)));
+        return new InstanceBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {
         BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER, useSite()).installInstance(instance);
-        return new ProvideableBeanConfiguration<>(handle);
+        return new InstanceBeanConfiguration<>(handle);
     }
 
     /**
@@ -122,6 +141,8 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         public abstract <T> BeanHandle<T> installInstance(T instance);
 
+        public abstract <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall);
+
         public abstract BeanHandle<Void> installNoSource();
 
         /**
@@ -152,8 +173,6 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         public abstract BeanInstaller multiInstall();
 
         public abstract BeanInstaller namePrefix(String prefix);
-
-        public abstract BeanInstaller onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall);
 
         BeanInstaller spawnNew() {
             // A bean that is created per operation.
@@ -195,7 +214,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
-        
+
         // IDK about this...
         enum BindingKind {
             PROVIDE, PEEK, DEFAULT, ADAPT, CONVERT, TRANSFORM, REPLACE

@@ -191,6 +191,9 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
+        <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets);
+
+        
         <S> ApplicationDriver<S> build(Class<S> wrapperType, MethodHandle wrapperFactory, Wirelet... wirelets);
 
         /**

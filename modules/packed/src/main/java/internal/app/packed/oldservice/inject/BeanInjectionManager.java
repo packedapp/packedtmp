@@ -49,7 +49,7 @@ public final class BeanInjectionManager implements DependencyProducer {
 
         // Can only register a single extension bean of a particular type
         if (bean.realm instanceof ExtensionTreeSetup e) {
-            ExtensionInjectionManager eim = bean.ownedByExtension.injectionManager;
+            ExtensionInjectionManager eim = bean.ownedBy.injectionManager;
             if (bean.beanKind == BeanKind.CONTAINER) {
                 eim.addBean(bean);
             }

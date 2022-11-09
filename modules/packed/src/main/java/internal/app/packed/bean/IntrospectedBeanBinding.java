@@ -17,7 +17,6 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
@@ -93,7 +92,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
         // Check assignable to
         // Create a bound thing
         //
-        operation.bindings[index] = new ConstantBindingSetup(operation, bindingExtension, index, obj, mirrorSupplier);
+        operation.bindings[index] = new ConstantBindingSetup(operation, bindingExtension, index, obj, null, mirrorSupplier);
     }
 
     /** {@inheritDoc} */
@@ -127,16 +126,13 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
     /** {@inheritDoc} */
     @Override
-    public void provide(MethodHandle methodHandle) {
-        provide(Op.ofMethodHandle(methodHandle));
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void provide(Op<?> op) {
         PackedOp<?> pop = PackedOp.crack(op);
         FusedBindingSetup fbs = new FusedBindingSetup(operation, index);
         OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension, fbs);
+        if (variable.getType() != os.target.methodHandle.type().returnType()) {
+//            System.out.println("FixIt");
+        }
         fbs.nestedOperation = os;
         iBean.unBoundOperations.add(os);
         operation.bindings[index] = fbs;

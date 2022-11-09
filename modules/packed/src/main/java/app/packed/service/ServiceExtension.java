@@ -176,6 +176,12 @@ public class ServiceExtension extends Extension<ServiceExtension> {
             }
         };
     }
+//
+//    @Override
+//    protected void onAssemblyClose() {
+//        super.onAssemblyClose();
+//        delegate.container.sm.verify();
+//    }
 
     /** {@return a mirror for this extension.} */
     @Override

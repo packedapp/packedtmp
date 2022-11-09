@@ -17,6 +17,7 @@ package internal.app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -67,12 +68,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
     @Override
     public <T> BeanHandle<T> install(Class<T> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
-        
-        if (ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
-            throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
-        }
-        BeanSetup bean = BeanSetup.install(this, kind, beanClass, BeanSourceKind.CLASS, beanClass, introspector, namePrefix, multiInstall, synthetic);
-        return from(bean);
+        return install(beanClass, BeanSourceKind.CLASS, beanClass);
     }
 
     /** {@inheritDoc} */
@@ -99,16 +95,15 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
         if (kind != BeanKind.FUNCTIONAL) {
             throw new InternalExtensionException("Only functional beans can be source less");
         }
-        BeanSetup bean = BeanSetup.install(this, kind, void.class, BeanSourceKind.NONE, null, introspector, namePrefix, multiInstall, synthetic);
-        return from(bean);
+        return install(void.class, BeanSourceKind.NONE, null);
     }
 
     private <T> BeanHandle<T> install(Class<T> beanClass, BeanSourceKind sourceKind, Object source) {
         if (sourceKind != BeanSourceKind.NONE && ILLEGAL_BEAN_CLASSES.contains(beanClass)) {
             throw new IllegalArgumentException("Cannot install a bean with bean class " + beanClass);
         }
-        BeanSetup bean = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, namePrefix, multiInstall, synthetic);
-        return from(bean);
+        BeanSetup bs = BeanSetup.install(this, kind, beanClass, sourceKind, source, introspector, namePrefix, multiInstall, synthetic);
+        return from(bs);
     }
 
     /** {@inheritDoc} */
@@ -140,14 +135,29 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller onlyInstallIfAbsent(Consumer<? super BeanHandle<?>> onInstall) {
-        throw new UnsupportedOperationException();
+    public BeanInstaller synthetic() {
+        synthetic = true;
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller synthetic() {
-        synthetic = true;
-        return this;
+    public <T> BeanHandle<T> installIfAbsent(Class<T> beanClass, Consumer<? super BeanHandle<T>> onInstall) {
+        requireNonNull(beanClass, "beanClass is null");
+        HashMap<Class<?>, Object> bcm = beanExtension.container.beanClassMap;
+        if (useSite != null) {
+            bcm = useSite.usedBy().beanClassMap;
+        }
+        Object object = bcm.get(beanClass);
+        if (object != null) {
+            if (object instanceof BeanSetup b) {
+                return from(b);
+            } else {
+                throw new IllegalArgumentException("MultiInstall Bean");
+            }
+        }
+        BeanHandle<T> handle = install(beanClass, BeanSourceKind.CLASS, beanClass);
+        onInstall.accept(handle);
+        return handle;
     }
 }

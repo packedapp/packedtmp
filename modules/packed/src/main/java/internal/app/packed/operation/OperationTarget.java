@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
@@ -40,6 +42,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
     public final boolean requiresBeanInstance;
 
     protected OperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance) {
+        requireNonNull(methodHandle);
         this.methodHandle = methodHandle;
         this.requiresBeanInstance = requiresBeanInstance;
     }

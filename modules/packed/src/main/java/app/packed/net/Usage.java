@@ -15,8 +15,6 @@
  */
 package app.packed.net;
 
-import java.nio.channels.spi.SelectorProvider;
-
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 
@@ -28,15 +26,23 @@ public class Usage extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        install(Bean.class);
+        provide(MyBean.class);
+        install(MyOtherBean.class);
     }
     public static void main(String[] args) {
         App.run(new Usage());
     }
 
-    public static class Bean {
+    public static class MyBean {
         
-        public Bean(SelectorProvider psp) {
+//        public MyBean(SelectorProvider psp) {
+//
+//        }
+    }
+    
+    public static class MyOtherBean {
+        
+        public MyOtherBean(MyBean psp) {
 
         }
     }

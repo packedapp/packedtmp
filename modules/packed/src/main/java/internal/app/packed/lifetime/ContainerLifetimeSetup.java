@@ -17,14 +17,19 @@ package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanKind;
+import app.packed.bean.BeanSourceKind;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.lifetime.RunState;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
+import internal.app.packed.operation.OperationSetup;
 
 /** The lifetime of a container. */
 public final class ContainerLifetimeSetup extends LifetimeSetup {
@@ -35,10 +40,9 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     /** The root container of the lifetime. */
     public final ContainerSetup container;
 
-    ArrayList<LifetimeOp> initialize = new ArrayList<>();
+    ArrayList<OperationSetup> initialize = new ArrayList<>();
 
     ArrayList<MethodHandle> initializeMh = new ArrayList<>();
-
 
     // All eagerly instantiated beans in order
     public final ArrayList<BeanSetup> beans = new ArrayList<>();
@@ -54,7 +58,7 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     ArrayList<LifetimeOp> stop = new ArrayList<>();
 
     ArrayList<MethodHandle> stopMh = new ArrayList<>();
-    
+
     /**
      * @param origin
      * @param parent
@@ -63,11 +67,19 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         super(parent);
         this.container = container;
     }
-    
+
     public LifetimeSetup addChild(ContainerSetup component) {
         LifetimeSetup l = new ContainerLifetimeSetup(component, this);
         return addChild(l);
     }
+
+    public void codegen() {
+        for (BeanSetup bs : beans) {
+            orderBeans(bs);
+        }
+        // generate MH
+    }
+
     public LifetimeSetup addChild(LifetimeSetup lifetime) {
         if (children == null) {
             children = new ArrayList<>(1);
@@ -86,25 +98,45 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         return new ContainerLifetimeMirror();
     }
 
-    // Should be fully resolved now
-    public void processLifetimeOps() {
-        for (BeanSetup bs : beans) {
-            for (LifetimeOp lop : bs.lifetimeOperations) {
-                if (lop.state() == RunState.INITIALIZING) {
-                    initialize.add(lop);
-                    initializeMh.add(lop.os().buildInvoker());
-                } else if (lop.state() == RunState.STARTING) {
-                    start.add(lop);
-                    startMh.add(lop.os().buildInvoker());
-                } else if (lop.state() == RunState.STOPPING) {
-                    stop.add(lop);
-                    stopMh.add(lop.os().buildInvoker());
-                } else {
-                    throw new Error();
-                }
-            }
+    LinkedHashSet<BeanSetup> orderedBeans = new LinkedHashSet<>();
+
+    private void orderBeans(BeanSetup bean) {
+        Set<BeanSetup> dependsOn = bean.dependsOn();
+        for (BeanSetup b : dependsOn) {
+            orderBeans(b);
+        }
+        if (orderedBeans.add(bean)) {
+            System.out.println("Codegen " + bean.path());
+            processBean(bean);
+            // addFactory, that installs the bean into Object[]
+            // then all initiali
 
         }
 
+    }
+
+    // Should be fully resolved now
+    public void processBean(BeanSetup bs) {
+        if (bs.beanKind == BeanKind.CONTAINER || bs.beanKind == BeanKind.LAZY) {
+            if (bs.sourceKind != BeanSourceKind.INSTANCE) {
+                initialize.add(bs.operations.get(0));
+                initializeMh.add(bs.operations.get(0).buildInvoker());
+            }
+        }
+        
+        for (LifetimeOp lop : bs.operationsLifetime) {
+            if (lop.state() == RunState.INITIALIZING) {
+                initialize.add(lop.os());
+                initializeMh.add(lop.os().buildInvoker());
+            } else if (lop.state() == RunState.STARTING) {
+                start.add(lop);
+                startMh.add(lop.os().buildInvoker());
+            } else if (lop.state() == RunState.STOPPING) {
+                stop.add(lop);
+                stopMh.add(lop.os().buildInvoker());
+            } else {
+                throw new Error();
+            }
+        }
     }
 }

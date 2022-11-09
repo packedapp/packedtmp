@@ -5,12 +5,16 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.oldservice.inject.ExtensionInjectionManager;
+import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
@@ -24,6 +28,11 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     /** A handle for setting the private field Extension#setup. */
     private static final VarHandle VH_EXTENSION_SETUP = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "extension",
             ExtensionSetup.class);
+
+    /** A map of all non-void bean classes. Used for controlling non-multi-install beans. */
+    public final HashMap<Class<?>, Object> beanClassMap = new HashMap<>();
+
+    public final ArrayList<ExtensionServiceBindingSetup> bindings = new ArrayList<>();
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -44,22 +53,6 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
     /** A static model of the extension. */
     private final ExtensionModel model;
 
-    public ExtensionDescriptor descriptor() {
-        return model;
-    }
-
-    public static ExtensionSetup initalizeExtension(Extension<?> instance) {
-        ExtensionModel.Wrapper wrapper = ExtensionModel.CONSTRUCT.get();
-        if (wrapper == null) {
-            throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
-        }
-        ExtensionSetup s = wrapper.setup;
-        wrapper.setup = null;
-        if (s == null) {
-            throw new IllegalStateException();
-        }
-        return s;
-    }
     /**
      * Creates a new extension setup.
      * 
@@ -75,13 +68,46 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         this.container = requireNonNull(container);
         this.extensionType = requireNonNull(extensionType);
         if (parent == null) {
-            this.extensionRealm = new ExtensionTreeSetup(extensionType);
+            this.extensionRealm = new ExtensionTreeSetup(this, extensionType);
             this.injectionManager = new ExtensionInjectionManager(null);
         } else {
             this.extensionRealm = parent.extensionRealm;
             this.injectionManager = new ExtensionInjectionManager(parent.injectionManager);
         }
         this.model = requireNonNull(extensionRealm.extensionModel);
+    }
+
+    public void close() {
+        for (ExtensionSetup c = treeFirstChild; c != null; c = c.treeNextSiebling) {
+            c.close();
+        }
+        for (ExtensionServiceBindingSetup binding : bindings) {
+            Class<?> ebc = binding.extensionBeanClass;
+            ExtensionSetup e = this;
+            while (e != null) {
+                Object val = e.beanClassMap.get(ebc);
+                if (val instanceof BeanSetup b) {
+                    binding.extensionBean = b;
+                    break;
+                } else if (val != null) {
+                    throw new InternalExtensionException("sd");
+                }
+                e = e.treeParent;
+            }
+            if (binding.extensionBean == null) {
+                throw new InternalExtensionException("Could not resolve " + ebc + " for " + binding);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(ExtensionSetup o) {
+        return model.compareTo(o.model);
+    }
+
+    public ExtensionDescriptor descriptor() {
+        return model;
     }
 
     void initialize() {
@@ -130,9 +156,16 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
         return (ExtensionSetup) VH_EXTENSION_SETUP.get(extension);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(ExtensionSetup o) {
-        return model.compareTo(o.model);
+    public static ExtensionSetup initalizeExtension(Extension<?> instance) {
+        ExtensionModel.Wrapper wrapper = ExtensionModel.CONSTRUCT.get();
+        if (wrapper == null) {
+            throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
+        }
+        ExtensionSetup s = wrapper.setup;
+        wrapper.setup = null;
+        if (s == null) {
+            throw new IllegalStateException();
+        }
+        return s;
     }
 }
