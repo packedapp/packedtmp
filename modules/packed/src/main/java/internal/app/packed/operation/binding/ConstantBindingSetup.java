@@ -37,5 +37,11 @@ public final class ConstantBindingSetup extends BindingSetup {
         this.constant = constant;
         this.constantType = constantType;
     }
-
 }
+
+///** {@inheritDoc} */
+//@Override
+//public MethodHandle read() {
+//MethodHandle mh = MethodHandles.constant(constant == null ? Object.class : constant.getClass(), constant);
+//return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+//}

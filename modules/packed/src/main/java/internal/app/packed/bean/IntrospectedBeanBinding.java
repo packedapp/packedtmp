@@ -31,8 +31,10 @@ import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.binding.NestedBindingSetup;
-import internal.app.packed.operation.binding.OldConstantBindingSetup;
+import internal.app.packed.operation.binding.BindingTarget;
+import internal.app.packed.operation.binding.BindingTarget.BindingHookTarget;
+import internal.app.packed.operation.binding.ConstantBindingSetup;
+import internal.app.packed.operation.binding.OperationalBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class IntrospectedBeanBinding implements OnBinding {
@@ -93,7 +95,8 @@ public final class IntrospectedBeanBinding implements OnBinding {
         // Check assignable to
         // Create a bound thing
         //
-        operation.bindings[index] = new OldConstantBindingSetup(operation, bindingExtension, index, obj, mirrorSupplier);
+        BindingTarget bt = new BindingHookTarget();
+        operation.bindings[index] = new ConstantBindingSetup(operation, index, User.extension(bindingExtension.extensionType), bt, Object.class, obj);
     }
 
     /** {@inheritDoc} */
@@ -129,14 +132,15 @@ public final class IntrospectedBeanBinding implements OnBinding {
     @Override
     public void provide(Op<?> op) {
         PackedOp<?> pop = PackedOp.crack(op);
-        NestedBindingSetup fbs = new NestedBindingSetup(operation, index, User.application());
+       
+        BindingHookTarget bht = new BindingHookTarget();
         OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension);
+        OperationalBindingSetup obs = new OperationalBindingSetup(os, index, User.application(), bht, os);
         if (variable.getType() != os.target.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
         }
-        fbs.nestedOperation = os;
         iBean.unBoundOperations.add(os);
-        operation.bindings[index] = fbs;
+        operation.bindings[index] = obs;
     }
 
     /** {@inheritDoc} */

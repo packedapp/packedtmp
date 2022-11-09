@@ -34,7 +34,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.operation.binding.NestedBindingSetup;
+import internal.app.packed.operation.binding.OperationalBindingSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -84,8 +84,7 @@ public final class OperationSetup {
     /** The type of the operation. */
     public final OperationType type;
 
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget
-           ) {
+    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget) {
         this.bean = requireNonNull(bean);
         this.type = requireNonNull(type);
         this.target = requireNonNull(operationTarget);
@@ -127,7 +126,7 @@ public final class OperationSetup {
         // We create a new method that a
         for (int i = 0; i < bindings.length; i++) {
             System.out.println("BT " + bindings[i].getClass());
-          //  mh = MethodHandles.collectArguments(mh, i, bindings[i].read());
+            // mh = MethodHandles.collectArguments(mh, i, bindings[i].read());
         }
 
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
@@ -144,8 +143,8 @@ public final class OperationSetup {
     // readOnly. Will not work if for example, resolving a binding
     public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
-            if (bs instanceof NestedBindingSetup nested) {
-                nested.nestedOperation.forEachBinding(binding);
+            if (bs instanceof OperationalBindingSetup nested) {
+                nested.providingOperation.forEachBinding(binding);
             }
             binding.accept(bs);
         }
