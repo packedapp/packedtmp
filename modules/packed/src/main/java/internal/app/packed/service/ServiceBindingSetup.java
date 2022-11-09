@@ -42,7 +42,7 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param index
      */
     ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
-        super(operation, index, User.extension(ServiceExtension.class));
+        super(operation, index, User.extension(ServiceExtension.class), null);
         this.entry = entry;
         this.required = required;
         mirrorSupplier = () -> new ServiceBindingMirror(this);

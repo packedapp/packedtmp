@@ -18,8 +18,13 @@ package internal.app.packed.operation.binding;
 /**
  *
  */
+// Hvad skal vi bruge den til???? Naar vi har Mirror???
 public abstract sealed class BindingTarget {
 
+    public static final class OpTarget extends BindingTarget {
+
+    }
+    
     public static final class CompositeBindingTarget extends BindingTarget {
 
     }

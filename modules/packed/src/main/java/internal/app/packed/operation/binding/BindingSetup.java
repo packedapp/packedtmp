@@ -30,6 +30,10 @@ import internal.app.packed.util.ThrowableUtil;
 /**
  * The internal configuration of a single binding in an operation.
  */
+
+// Fungere ikke super godt mht til Constant.
+// fx beanConf.injectConstantInto <--- nu er vi lige pludselig en constant
+
 public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
@@ -49,13 +53,6 @@ public abstract class BindingSetup {
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BindingMirror> mirrorSupplier;
-    
-    public BindingSetup(OperationSetup operation, int index, User user) {
-        this.operation = operation;
-        this.index = index;
-        this.target = null;
-        this.boundBy = user;
-    }
 
     public BindingSetup(OperationSetup operation, int index, User user, BindingTarget target) {
         this.operation = operation;

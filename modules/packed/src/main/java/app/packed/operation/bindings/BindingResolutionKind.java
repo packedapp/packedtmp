@@ -28,4 +28,5 @@ enum BindingResolutionPhase {
     // operation binding but instantly resolved at run time (transaction, @Param)
     RUNTIME;
 }
+
 // Forskellen er lidt at delayed ikke smide BeanInstallationException

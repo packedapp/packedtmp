@@ -32,5 +32,4 @@ public final class OperationalBindingSetup extends BindingSetup {
         super(operation, index, user, target);
         this.providingOperation = requireNonNull(providingOperation);
     }
-
 }

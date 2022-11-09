@@ -23,7 +23,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public class ExtensionServiceBindingSetup extends BindingSetup {
+public final class ExtensionServiceBindingSetup extends BindingSetup {
 
     public BeanSetup extensionBean;
 
@@ -34,7 +34,7 @@ public class ExtensionServiceBindingSetup extends BindingSetup {
      * @param index
      */
     public ExtensionServiceBindingSetup(OperationSetup operation, int index, Class<?> extensionBeanClass) {
-        super(operation, index, User.extension(BeanExtension.class));
+        super(operation, index, User.extension(BeanExtension.class), null);
         this.extensionBeanClass = extensionBeanClass;
     }
 

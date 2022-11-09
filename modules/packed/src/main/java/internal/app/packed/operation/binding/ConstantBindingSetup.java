@@ -18,13 +18,12 @@ package internal.app.packed.operation.binding;
 import app.packed.container.User;
 import internal.app.packed.operation.OperationSetup;
 
-/**
- *
- */
+/** A binding to a constant. */
 public final class ConstantBindingSetup extends BindingSetup {
 
     public final Class<?> constantType;
-    
+
+    /** The constant */
     public final Object constant;
 
     /**
