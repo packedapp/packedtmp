@@ -15,6 +15,6 @@
  */
 
 /**
- * Various utility classes that have multiple uses within this library
+ * Framework classes.
  */
 package app.packed.framework;
