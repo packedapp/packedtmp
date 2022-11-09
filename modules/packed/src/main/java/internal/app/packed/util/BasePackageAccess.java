@@ -20,9 +20,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
-import app.packed.framework.TypeToken;
+import app.packed.service.Key;
+import app.packed.service.TypeToken;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
 public final class BasePackageAccess {

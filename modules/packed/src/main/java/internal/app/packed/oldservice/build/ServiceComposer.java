@@ -27,8 +27,8 @@ import java.util.function.Predicate;
 
 import app.packed.bean.BeanMirror;
 import app.packed.container.AbstractComposer;
-import app.packed.framework.Key;
 import app.packed.operation.Op;
+import app.packed.service.Key;
 import app.packed.service.Qualifier;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.oldservice.sandbox.Service;

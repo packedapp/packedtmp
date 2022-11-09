@@ -27,8 +27,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.framework.Key;
 import app.packed.operation.Op;
+import app.packed.service.Key;
 import app.packed.service.ServiceTransformer;
 import internal.app.packed.oldservice.InternalService;
 import internal.app.packed.oldservice.runtime.OldServiceLocator;
@@ -124,7 +124,7 @@ public final class PackedServiceTransformer implements ServiceTransformer {
 
     /** {@inheritDoc} */
     @Override
-    public void rekeyAll(Function<Key<?>, app.packed.framework.Key<?>> function) {
+    public void rekeyAll(Function<Key<?>, app.packed.service.Key<?>> function) {
         requireNonNull(function, "function is null");
 
         // We don't replace in-map as we want to be able to swap keys.

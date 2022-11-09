@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.List;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionTreeSetup;

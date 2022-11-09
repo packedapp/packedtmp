@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;

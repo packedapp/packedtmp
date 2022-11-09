@@ -20,11 +20,11 @@ import app.packed.container.Extension;
 /**
  * A framework extension is an extension that is implemented as part of the framework.
  * <p>
- * A framework extension must be places in one of {@link Framework#moduleNames()} modules
- * or the unnamed module.
+ * 
+ * <p>
+ * A framework extension must be places in a module with a name in contained in {@link Framework#moduleNames()} or the
+ * unnamed module.
+ * 
+ * @implNote we do not make use of sealed classes because in the future the framework may consists of multiple modules.
  */
-// Must be overridden from a module coming from a valid list stored in app.packed.base
-// FrameworkExtension instead?
-public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {
-
-}
+public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}

@@ -18,8 +18,8 @@ package internal.app.packed.oldservice.runtime;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.framework.Key;
 import app.packed.operation.Provider;
+import app.packed.service.Key;
 import internal.app.packed.oldservice.InternalService;
 
 /** Represents a service at runtime. */

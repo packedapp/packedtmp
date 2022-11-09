@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.container.Extension;
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 import internal.app.packed.application.PackedBridge;
 import internal.app.packed.container.ExtensionSetup;
 

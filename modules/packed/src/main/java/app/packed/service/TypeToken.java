@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.service;
 
 import static internal.app.packed.util.StringFormatter.format;
 import static internal.app.packed.util.StringFormatter.formatSimple;
@@ -26,6 +26,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import app.packed.framework.Nullable;
 import internal.app.packed.util.BasePackageAccess;
 import internal.app.packed.util.BasePackageAccess.AppPackedBaseAccess;
 import internal.app.packed.util.ClassUtil;

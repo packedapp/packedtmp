@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 import app.packed.service.ProvideService;
 import internal.app.packed.oldservice.InternalService;
 import internal.app.packed.oldservice.inject.DependencyProducer;

@@ -17,7 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.framework.Key;
 import app.packed.operation.BindingMirror;
 import internal.app.packed.service.ServiceBindingSetup;
 

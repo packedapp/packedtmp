@@ -31,7 +31,6 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.container.AbstractComposer;
 import app.packed.container.AbstractComposer.ComposerAction;
 import app.packed.container.AbstractComposer.ComposerAssembly;
-import app.packed.framework.Key;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.BaseAssembly;

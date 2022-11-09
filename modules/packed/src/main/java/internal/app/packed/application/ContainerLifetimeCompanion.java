@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 import app.packed.container.AbstractComposer;
 import app.packed.container.Extension;
 import app.packed.container.AbstractComposer.ComposerAction;
-import app.packed.framework.Key;
 import app.packed.operation.Op;
+import app.packed.service.Key;
 
 /**
  * Bruges til at kommunikere med en extension paa tvaers af en container lifetime

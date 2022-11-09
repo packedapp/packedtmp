@@ -26,9 +26,9 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 
 import app.packed.application.BuildGoal;
+import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint;
 import app.packed.bean.BeanIntrospector;
-import app.packed.framework.NamespacePath;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import internal.app.packed.container.ExtensionSetup;

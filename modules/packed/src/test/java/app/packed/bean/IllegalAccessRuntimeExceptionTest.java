@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.bean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bean.InaccessibleBeanMemberException;
 import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link InaccessibleBeanMemberException}. */

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.service;
 
 import static internal.app.packed.util.StringFormatter.format;
 import static internal.app.packed.util.StringFormatter.formatSimple;
@@ -32,9 +32,8 @@ import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.Function;
 
-import app.packed.framework.TypeToken.CanonicalizedTypeToken;
-import app.packed.service.Qualifier;
-import app.packed.service.Tag;
+import app.packed.framework.Nullable;
+import app.packed.service.TypeToken.CanonicalizedTypeToken;
 import internal.app.packed.util.AnnotationUtil;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.QualifierUtil;

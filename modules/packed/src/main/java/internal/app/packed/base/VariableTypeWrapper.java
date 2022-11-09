@@ -25,8 +25,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
-import app.packed.framework.TypeToken;
 import app.packed.operation.Variable;
+import app.packed.service.TypeToken;
 import internal.app.packed.util.ReflectionUtil;
 
 /**

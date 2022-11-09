@@ -22,12 +22,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.application.NamespacePath;
 import app.packed.container.User;
-import app.packed.framework.Key;
-import app.packed.framework.NamespacePath;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
+import app.packed.service.Key;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.oldservice.InternalServiceUtil;

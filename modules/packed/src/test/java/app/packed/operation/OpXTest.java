@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.framework.TypeToken;
+import app.packed.service.TypeToken;
 
 /** Tests {@link Op}. */
 public class OpXTest {

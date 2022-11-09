@@ -18,9 +18,9 @@ package app.packed.bean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.framework.Key;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
+import app.packed.service.Key;
 import internal.app.packed.base.SpecFix;
 
 /**

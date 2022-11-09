@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedHashMap;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.oldservice.InternalServiceExtension;

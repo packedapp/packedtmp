@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.framework.NamespacePath;
+import app.packed.application.NamespacePath;
 
 /**
  *

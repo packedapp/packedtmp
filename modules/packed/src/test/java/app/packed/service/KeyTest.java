@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.service;
 
-import static app.packed.framework.TypeLiteralTest.TL_INTEGER;
-import static app.packed.framework.TypeLiteralTest.TL_LIST_WILDCARD;
+import static app.packed.service.TypeLiteralTest.TL_INTEGER;
+import static app.packed.service.TypeLiteralTest.TL_LIST_WILDCARD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;

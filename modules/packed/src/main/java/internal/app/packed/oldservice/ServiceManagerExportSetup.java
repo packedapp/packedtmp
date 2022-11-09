@@ -24,8 +24,8 @@ import java.util.LinkedHashSet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceTransformer;

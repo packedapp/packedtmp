@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package internal.app.packed.oldservice.inject;
 
-import static app.packed.framework.DependencyAssert.assertThat;
+import static internal.app.packed.oldservice.inject.DependencyAssert.assertThat;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -32,8 +32,9 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import app.packed.service.Key;
 import app.packed.service.Qualifier;
-import internal.app.packed.oldservice.inject.InternalDependency;
+import app.packed.service.TypeToken;
 
 /**
  *

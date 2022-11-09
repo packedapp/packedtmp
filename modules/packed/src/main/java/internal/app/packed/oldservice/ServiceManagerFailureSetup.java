@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 import internal.app.packed.oldservice.build.ExportedServiceSetup;
 import internal.app.packed.oldservice.build.ServiceSetup;
 

@@ -26,7 +26,6 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
 import app.packed.container.Extension.DependsOn;
 import app.packed.framework.FrameworkExtension;
-import app.packed.framework.Key;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;

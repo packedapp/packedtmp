@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.framework.NamespacePath;
+import app.packed.application.NamespacePath;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ExtensionSetup;

@@ -25,7 +25,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.service.ProvidedServiceCollisionException;
-import app.packed.framework.Key;
+import app.packed.service.Key;
 import app.packed.service.ProvideService;
 import app.packed.service.ServiceLocator;
 import app.packed.service.ServiceLocator.Composer;

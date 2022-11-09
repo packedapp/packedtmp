@@ -25,13 +25,13 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import app.packed.application.NamespacePath;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
-import app.packed.framework.NamespacePath;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;

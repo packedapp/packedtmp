@@ -22,9 +22,9 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLauncher;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.framework.Key;
 import app.packed.lifetime.RunState;
 import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.service.Key;
 import app.packed.service.ServiceLocator;
 
 /**

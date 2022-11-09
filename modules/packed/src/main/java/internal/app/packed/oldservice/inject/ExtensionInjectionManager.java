@@ -21,8 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.container.InternalExtensionException;
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;
 
 /**

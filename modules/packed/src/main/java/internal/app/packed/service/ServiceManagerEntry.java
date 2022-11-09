@@ -17,8 +17,8 @@ package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 
 /**
  * An entry in a service manager.

@@ -23,8 +23,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.framework.Key;
 import app.packed.operation.Provider;
+import app.packed.service.Key;
 import internal.app.packed.oldservice.sandbox.Service;
 
 /** Implementation of {@link ServiceSelection}. */

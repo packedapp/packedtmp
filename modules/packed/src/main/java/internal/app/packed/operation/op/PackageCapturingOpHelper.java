@@ -28,12 +28,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.framework.TypeToken;
 import app.packed.operation.CapturingOp;
 import app.packed.operation.Op0;
 import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
+import app.packed.service.TypeToken;
 import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;

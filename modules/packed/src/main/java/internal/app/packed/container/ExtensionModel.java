@@ -36,10 +36,12 @@ import java.util.stream.Collectors;
 
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.framework.Nullable;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.User;
+import app.packed.framework.Framework;
+import app.packed.framework.FrameworkExtension;
+import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StringFormatter;
 
@@ -60,6 +62,14 @@ public final class ExtensionModel implements ExtensionDescriptor {
         @Override
         protected ExtensionModel computeValue(Class<?> extensionClass) {
             ClassUtil.checkProperSubclass(Extension.class, extensionClass, s -> new InternalExtensionException(s));
+            // Check that
+            if (FrameworkExtension.class.isAssignableFrom(extensionClass)) {
+                Module m = extensionClass.getModule();
+                if (m.isNamed() && !Framework.moduleNames().contains(m.getName())) {
+                    throw new InternalExtensionException("Extension " + extensionClass + " extends " + FrameworkExtension.class
+                            + " but is not located in module(s) " + Framework.moduleNames() + " or the unnamed module");
+                }
+            }
             return Loader.load((Class) extensionClass, null);
         }
     };

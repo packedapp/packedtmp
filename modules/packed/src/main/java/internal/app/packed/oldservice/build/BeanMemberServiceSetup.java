@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
+import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
 import internal.app.packed.oldservice.InternalServiceExtension;

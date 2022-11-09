@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import app.packed.framework.Key;
-import app.packed.framework.TypeToken;
 import app.packed.operation.Provider;
+import app.packed.service.Key;
+import app.packed.service.TypeToken;
 import internal.app.packed.oldservice.sandbox.Service;
 
 /**

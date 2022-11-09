@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 import app.packed.service.ServiceLocator;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.AExt;

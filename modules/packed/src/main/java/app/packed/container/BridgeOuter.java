@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 import internal.app.packed.application.PackedBridge;
 
 /**

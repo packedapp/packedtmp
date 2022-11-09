@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 
 /** A runtime service that uses a {@link Function} to map a service instance from another service. */
 public final class MappingRuntimeService implements RuntimeService {

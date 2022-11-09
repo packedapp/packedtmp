@@ -17,10 +17,10 @@ package internal.app.packed.service;
 
 import java.util.LinkedHashMap;
 
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
 import app.packed.service.ExportedServiceCollisionException;
 import app.packed.service.ExportedServiceMirror;
+import app.packed.service.Key;
 import app.packed.service.ProvidedServiceCollisionException;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;

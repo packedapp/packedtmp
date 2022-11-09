@@ -15,21 +15,19 @@
  */
 package app.packed.framework;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Set;
 
-/**
- *
- */
-final class FrameworkProps {
+import org.junit.jupiter.api.Test;
 
-    /** A set of module names that makes of the framework. So far we only have one. */
-    static final Set<String> MODULE_NAMES = Set.of(Framework.class.getModule().getName());
+/** Tests {@link Framework}. */
+public class FrameworkTest {
 
-    static final String NAME = "Packed";
-
-    public static void main(String[] args) {
-        Package p = FrameworkProps.class.getPackage();
-        System.out.printf("%s%n  Title: %s%n  Version: %s%n  Vendor: %s%n", FrameworkProps.class.getName(), p.getImplementationTitle(),
-                p.getImplementationVersion(), p.getImplementationVendor());
+    @Test
+    public void various() {
+        assertEquals("Packed", Framework.name());
+        assertEquals(Set.of(FrameworkTest.class.getModule().getName()), Framework.moduleNames());
     }
+
 }

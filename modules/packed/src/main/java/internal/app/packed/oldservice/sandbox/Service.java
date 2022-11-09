@@ -1,6 +1,6 @@
 package internal.app.packed.oldservice.sandbox;
 
-import app.packed.framework.Key;
+import app.packed.service.Key;
 
 /**
  * A description of a service.

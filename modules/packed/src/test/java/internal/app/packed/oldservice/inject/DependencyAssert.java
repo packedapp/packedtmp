@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package internal.app.packed.oldservice.inject;
 
 import org.assertj.core.api.AbstractAssert;
 
-import internal.app.packed.oldservice.inject.InternalDependency;
+import app.packed.service.Key;
 
 /**
  *

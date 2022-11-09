@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.application;
 
 import java.nio.file.Path;
 
+import app.packed.framework.Nullable;
 import internal.app.packed.util.PackedNamespacePath;
 
 /**

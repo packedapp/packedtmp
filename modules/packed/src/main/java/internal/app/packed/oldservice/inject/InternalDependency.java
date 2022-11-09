@@ -31,11 +31,11 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.application.BuildException;
-import app.packed.framework.Key;
 import app.packed.framework.Nullable;
-import app.packed.framework.TypeToken;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
+import app.packed.service.Key;
+import app.packed.service.TypeToken;
 import internal.app.packed.errorhandling.ErrorMessageBuilder;
 import internal.app.packed.util.BasePackageAccess;
 import internal.app.packed.util.ClassUtil;
