@@ -27,15 +27,14 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.LifetimeObjectArena;
-import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.oldservice.InternalServiceExtension;
+import internal.app.packed.service.old.InternalServiceExtension;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-public final class ApplicationInitializationContext implements LifetimePoolWriteable {
+public final class ApplicationInitializationContext {
 
     /** The configuration of the application we are launching. */
     public final ApplicationSetup application;
@@ -51,6 +50,7 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
+    public
     final PackedManagedLifetime runtime;
 
     /** Wirelets specified if instantiating an image. */
@@ -90,13 +90,6 @@ public final class ApplicationInitializationContext implements LifetimePoolWrite
     public ServiceLocator serviceLocator() {
         InternalServiceExtension sm = application.container.injectionManager;
         return sm == null ? ServiceLocator.of() : sm.newNewServiceLocator(application.driver, pool);
-    }
-    
-    @Override
-    public void writeToPool(LifetimeObjectArena pool) {
-        if (runtime != null) {
-            application.runtimeAccessor.store(pool, runtime);
-        }
     }
 
     /**

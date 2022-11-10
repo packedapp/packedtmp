@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice.inject;
+package internal.app.packed.service.old;
 
 import java.lang.invoke.MethodHandle;
-import java.util.List;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
-import internal.app.packed.lifetime.pool.Accessor;
+import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.pool.LifetimeAccessor;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -43,10 +44,12 @@ public final class BeanInjectionManager {
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
-    public final Accessor lifetimePoolAccessor;
+    public final LifetimeAccessor lifetimePoolAccessor;
+
+    final BeanSetup bs;
 
     public BeanInjectionManager(BeanSetup bean) {
-
+        this.bs = bean;
         // Can only register a single extension bean of a particular type
         if (bean.realm instanceof ExtensionTreeSetup e) {
             ExtensionInjectionManager eim = bean.ownedBy.injectionManager;
@@ -59,7 +62,7 @@ public final class BeanInjectionManager {
         }
 
         if (bean.sourceKind == BeanSourceKind.INSTANCE) {
-            this.lifetimePoolAccessor = new Accessor.ConstantAccessor(bean.source);
+            this.lifetimePoolAccessor = new LifetimeAccessor.ConstantAccessor(bean.source);
         } else if (bean.beanKind == BeanKind.CONTAINER) {
             this.lifetimePoolAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
         } else if (bean.beanKind == BeanKind.LAZY) {
@@ -73,23 +76,23 @@ public final class BeanInjectionManager {
             // Kan have en provide
             this.instanceNode = null;
         } else {
-
             OperationSetup os = bean.operations.get(0);
-
-            List<InternalDependency> dependencies = InternalDependency.fromOperationType(os.type);// null;//factory.dependencies();
-            this.instanceNode = new DependencyNode(dependencies, os, os.target.methodHandle, os.target.methodHandle.type().parameterCount(),null, this);
-
+            this.instanceNode = new DependencyNode(os, lifetimePoolAccessor);
             bean.container.injectionManager.addConsumer(instanceNode);
         }
     }
 
     public MethodHandle accessBean() {
-        // If we have a singleton accessor return a method handle that can read the single bean instance
-        // Otherwise return a method handle that can instantiate a new bean
-        if (lifetimePoolAccessor != null) {
+        if (bs.sourceKind == BeanSourceKind.INSTANCE) {
+            MethodHandle mh = MethodHandles.constant(bs.source.getClass(), bs.source);
+            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+        }
+        if (bs.beanKind == BeanKind.CONTAINER) {
             return lifetimePoolAccessor.poolReader(); // MethodHandle(ConstantPool)T
-        } else {
+        }
+        if (bs.beanKind == BeanKind.MANYTON) {
             return instanceNode.operation.buildInvoker(); // MethodHandle(ConstantPool)T
         }
+        throw new Error();
     }
 }

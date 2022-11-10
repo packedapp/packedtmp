@@ -21,9 +21,7 @@ import app.packed.application.BuildException;
 import app.packed.service.CircularServiceDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
-import internal.app.packed.oldservice.InternalServiceExtension;
-import internal.app.packed.oldservice.inject.DependencyNode;
+import internal.app.packed.service.old.InternalServiceExtension;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link InternalServiceExtension service composers}
@@ -34,8 +32,8 @@ import internal.app.packed.oldservice.inject.DependencyNode;
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
  * 
- * Responsible for invoking the {@link DependencyNode#onAllDependenciesResolved(LifetimeObjectArenaSetup)} callback for
- * every {@link DependencyNode}. We do this here, because we guarantee that all dependants of a dependant are always
+ * Responsible for invoking the callback for
+ * every DependencyNode. We do this here, because we guarantee that all dependants of a dependant are always
  * invoked before the dependant itself.
  */
 public final class CircularServiceDependencyChecker {

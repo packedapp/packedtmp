@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice.runtime;
+package internal.app.packed.service.old;
 
-import app.packed.operation.Provider;
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-public /* primitive */ record PackedProvider<T> (RuntimeService service) implements Provider<T> {
+// En wrapper der goer at vi kan delay lidt det at smide exceptiosn for dublicate keys.
+public final class ServiceDelegate {
 
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public T provide() {
-        return (T) service.provideInstance();
+    private BuildtimeService service;
+
+    public BuildtimeService getSingle() {
+        requireNonNull(service);
+        return service;
+    }
+
+    void resolve(InternalServiceExtension sbm, BuildtimeService b) {
+        if (service == null) {
+            this.service = b;
+        } 
     }
 }

@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice;
+package internal.app.packed.service.old;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import app.packed.application.BuildException;
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
-import internal.app.packed.oldservice.inject.DependencyNode;
-import internal.app.packed.oldservice.inject.InternalDependency;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.
@@ -53,10 +50,10 @@ public final class ServiceManagerRequirementsSetup {
     // Skal jo erstattet af noget Contract...
     boolean manualRequirementsManagement;
 
+    final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
+
     /** A list of all dependencies that have not been resolved */
     private ArrayList<ServiceDependencyRequirement> unresolvedRequirements;
-
-    final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
 
     public void checkForMissingDependencies() {
         if (unresolvedRequirements != null) {
@@ -67,13 +64,13 @@ public final class ServiceManagerRequirementsSetup {
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
                     // Has at least on dependency, so a source is present
-                    List<InternalDependency> dependencies = e.entry.dependencies;
-
-                    if (dependencies.size() == 1) {
-                        sb.append("single ");
-                    }
-                   // DependencyDescriptor dependency = e.dependency;
-                    sb.append("parameter on ");
+//                    List<InternalDependency> dependencies = e.entry.dependencies;
+//
+//                    if (dependencies.size() == 1) {
+//                        sb.append("single ");
+//                    }
+//                   // DependencyDescriptor dependency = e.dependency;
+//                    sb.append("parameter on ");
                   //  if (dependency.variable() != null) {
 
 //                        Executable ed = ((PackedParameterDescriptor) dependency.variable().get()).unsafeExecutable();
@@ -150,8 +147,6 @@ public final class ServiceManagerRequirementsSetup {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 
-    record ServiceDependencyRequirement(InternalDependency dependency, DependencyNode entry) {}
-
     static class Requirement {
 
         // Always starts out as optional
@@ -174,6 +169,8 @@ public final class ServiceManagerRequirementsSetup {
 
         record FromInjectable(DependencyNode i, int dependencyIndex, InternalDependency d) {}
     }
+
+    record ServiceDependencyRequirement(InternalDependency dependency, DependencyNode entry) {}
 
 }
 // exactContract(Contract, forceValidate)

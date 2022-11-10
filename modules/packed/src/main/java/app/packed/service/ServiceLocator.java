@@ -39,7 +39,7 @@ import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.oldservice.PackedServiceLocator;
+import internal.app.packed.service.PackedServiceLocator;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -328,7 +328,7 @@ public interface ServiceLocator {
 
     /** {@return a service locator that provides no services.} */
     static ServiceLocator of() {
-        return new PackedServiceLocator(Map.of());
+        return new PackedServiceLocator(null, Map.of());
     }
 
     /**
@@ -504,7 +504,7 @@ public interface ServiceLocator {
         // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
         public void provideAll(ServiceLocator injector) {
             extension();
-            container().use(ServiceExtension.class).provideAll(injector);
+            throw new UnsupportedOperationException();
         }
 
         /**

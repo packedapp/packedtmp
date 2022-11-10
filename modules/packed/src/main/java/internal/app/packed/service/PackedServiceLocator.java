@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice;
+package internal.app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,42 +25,39 @@ import java.util.Set;
 import app.packed.operation.Provider;
 import app.packed.service.Key;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.oldservice.runtime.RuntimeService;
+import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
  */
-public record PackedServiceLocator(Map<Key<?>, ? extends RuntimeService> services) implements ServiceLocator {
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> Optional<T> findInstance(Key<T> key) {
-        requireNonNull(key, "key is null");
-        RuntimeService s = services.get(key);
-        if (s == null) {
-            return Optional.empty();
-        }
-        @SuppressWarnings("unchecked")
-        T t = (T) s.provideInstance();
-        return Optional.of(t);
-    }
+public record PackedServiceLocator(LifetimeObjectArena arena, Map<Key<?>, MethodHandle> map) implements ServiceLocator {
 
     /** {@inheritDoc} */
     @Override
     public <T> Optional<Provider<T>> findProvider(Key<T> key) {
         requireNonNull(key, "key is null");
-        RuntimeService s = services.get(key);
-        if (s == null) {
+        MethodHandle provider = map.get(key);
+        if (provider == null) {
             return Optional.empty();
         }
-        @SuppressWarnings("unchecked")
-        Provider<T> provider = (Provider<T>) s.provider();
-        return Optional.of(provider);
+        Provider<T> p = new Provider<>() {
+
+            @Override
+            public T provide() {
+                try {
+                    return (T) provider.invoke(arena);
+                } catch (Throwable e) {
+                    throw ThrowableUtil.orUndeclared(e);
+                }
+            }
+        };
+        return Optional.of(p);
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<Key<?>> keys() {
-        return services.keySet();
+        return map.keySet();
     }
 }

@@ -7,9 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.container.ExtensionMirror;
-import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.service.ExportedService;
 import internal.app.packed.service.ServiceManagerEntry;
+import internal.app.packed.service.old.InternalServiceExtension;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {

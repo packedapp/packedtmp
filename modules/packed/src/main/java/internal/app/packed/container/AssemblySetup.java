@@ -166,7 +166,6 @@ public final class AssemblySetup extends RealmSetup {
 
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
-            container.application.injectionManager.finish(container.lifetime.pool, container);
 
             // Close every extension tree
             for (ExtensionSetup extension : list) {

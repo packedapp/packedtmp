@@ -18,7 +18,7 @@ package internal.app.packed.lifetime;
 import java.util.ArrayList;
 
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
+import internal.app.packed.lifetime.pool.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 
 /**
@@ -58,8 +58,11 @@ public final class LifetimeObjectArenaSetup {
     public LifetimeObjectArena newRuntimePool(ApplicationInitializationContext launchContext) {
         LifetimeObjectArena pool = LifetimeObjectArena.create(size);
 
-        launchContext.writeToPool(pool);
-
+        
+        if (launchContext.runtime != null) {
+            launchContext.application.runtimeAccessor.store(pool, launchContext.runtime);
+        }
+        
         for (LifetimePoolWriteable e : entries) {
             e.writeToPool(pool);
         }

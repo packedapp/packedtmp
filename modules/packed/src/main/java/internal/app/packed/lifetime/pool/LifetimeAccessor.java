@@ -24,7 +24,7 @@ import internal.app.packed.util.MethodHandleUtil;
 /**
  *
  */
-public sealed interface Accessor {
+public sealed interface LifetimeAccessor {
 
     Class<?> type();
 
@@ -34,7 +34,7 @@ public sealed interface Accessor {
     
     MethodHandle poolReader();
     
-    public record ConstantAccessor(Object constant, Class<?> type) implements Accessor {
+    public record ConstantAccessor(Object constant, Class<?> type) implements LifetimeAccessor {
 
         public ConstantAccessor(Object constant) {
             this(constant, constant.getClass());
@@ -64,7 +64,7 @@ public sealed interface Accessor {
         }
     }
 
-    public record DynamicAccessor(Class<?> type, int index) implements Accessor {
+    public record DynamicAccessor(Class<?> type, int index) implements LifetimeAccessor {
 
         // Skal vi vide hvor vi bliver laest fra???
         public MethodHandle poolReader() {

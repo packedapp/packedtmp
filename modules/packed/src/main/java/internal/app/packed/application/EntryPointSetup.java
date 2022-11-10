@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.pool.Accessor;
+import internal.app.packed.lifetime.pool.LifetimeAccessor;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -53,7 +53,7 @@ public class EntryPointSetup {
             }
 
             try {
-                Accessor sa = l.cs.injectionManager.lifetimePoolAccessor;
+                LifetimeAccessor sa = l.cs.injectionManager.lifetimePoolAccessor;
                 if (sa != null && !l.isStatic) {
                     Object o = sa.read(launchContext.pool());
                     l.methodHandle.invoke(o);

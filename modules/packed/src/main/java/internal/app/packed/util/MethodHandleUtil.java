@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
 
-import internal.app.packed.oldservice.inject.InternalDependency;
+import internal.app.packed.service.old.InternalDependency;
 
 /**
  *

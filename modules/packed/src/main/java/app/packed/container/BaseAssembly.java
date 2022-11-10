@@ -25,7 +25,6 @@ import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
 import app.packed.service.Qualifier;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceLocator;
 
 /**
  * Extends {@link ContainerAssembly} with shortcuts for some commonly used extensions and their methods.
@@ -226,10 +225,6 @@ public abstract class BaseAssembly extends ContainerAssembly {
     protected final <T> ProvideableBeanConfiguration<T> provide(Op<T> factory) {
         ProvideableBeanConfiguration<T> configuration = bean().install(factory);
         return configuration.provide();
-    }
-
-    protected final void provideAll(ServiceLocator locator) {
-        service().provideAll(locator);
     }
 
     /**

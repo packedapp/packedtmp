@@ -24,21 +24,13 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import app.packed.framework.Nullable;
 import app.packed.operation.Variable;
 import app.packed.service.Key;
-import internal.app.packed.oldservice.InternalServiceUtil;
-import internal.app.packed.oldservice.build.ServiceSetup;
-import internal.app.packed.oldservice.inject.InternalDependency;
-import internal.app.packed.oldservice.runtime.ServiceRegistry;
-import internal.app.packed.oldservice.sandbox.Service;
+import internal.app.packed.service.old.InternalDependency;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**
@@ -121,22 +113,22 @@ class MethodHandleBuilderHelper {
                 Key<?> kk = sd.key();
 
                 // Injection Context
-                if (kk.equalsTo(ServiceRegistry.class)) {
-                    // TODO we have a non-constant injection context, when we have a dynamic injector
-                    // Vi just add it as a normal entry with no indexes, will be picked up in the next section
-                    HashSet<Key<?>> keys = new HashSet<>();
-                    Map<Key<?>, Service> services = new HashMap<>();
-                    for (Entry<Key<?>, InternalInfuser.Entry> e : aa.keys.entrySet()) {
-                        if (!e.getValue().isHidden()) {
-                            keys.add(e.getKey());
-                            services.put(e.getKey(), ServiceSetup.simple(e.getKey(), false));
-                        }
-                    }
-
-                    ServiceRegistry pic= InternalServiceUtil.copyOf(services);
-                    InternalInfuser.Entry e = new InternalInfuser.Entry(MethodHandles.constant(ServiceRegistry.class, pic), false, false, new int[0]);
-                    aa.keys.putIfAbsent(kk, e);
-                }
+//                if (kk.equalsTo(ServiceRegistry.class)) {
+//                    // TODO we have a non-constant injection context, when we have a dynamic injector
+//                    // Vi just add it as a normal entry with no indexes, will be picked up in the next section
+//                    HashSet<Key<?>> keys = new HashSet<>();
+//                    Map<Key<?>, Service> services = new HashMap<>();
+//                    for (Entry<Key<?>, InternalInfuser.Entry> e : aa.keys.entrySet()) {
+//                        if (!e.getValue().isHidden()) {
+//                            keys.add(e.getKey());
+//                            services.put(e.getKey(), BuildtimeService.simple(e.getKey(), false));
+//                        }
+//                    }
+//
+//                    ServiceRegistry pic= InternalServiceUtil.copyOf(services);
+//                    InternalInfuser.Entry e = new InternalInfuser.Entry(MethodHandles.constant(ServiceRegistry.class, pic), false, false, new int[0]);
+//                    aa.keys.putIfAbsent(kk, e);
+//                }
 
                 InternalInfuser.Entry entry = aa.keys.get(kk);
                 if (entry != null) {

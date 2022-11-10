@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice;
+package internal.app.packed.service.old;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -31,22 +33,15 @@ import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.PackedWireletSelection;
+import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.LifetimeObjectArena;
-import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requirement;
-import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
-import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
-import internal.app.packed.oldservice.build.BeanMemberServiceSetup;
-import internal.app.packed.oldservice.build.ProvideAllFromServiceLocator;
-import internal.app.packed.oldservice.build.ServiceSetup;
-import internal.app.packed.oldservice.inject.ContainerOrExtensionInjectionManager;
-import internal.app.packed.oldservice.inject.DependencyHolder;
-import internal.app.packed.oldservice.inject.DependencyNode;
-import internal.app.packed.oldservice.runtime.AbstractServiceLocator;
-import internal.app.packed.oldservice.runtime.RuntimeService;
-import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
+import internal.app.packed.lifetime.pool.LifetimeAccessor;
+import internal.app.packed.lifetime.pool.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
+import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.service.ProvidedService;
 
 /**
@@ -55,27 +50,20 @@ import internal.app.packed.service.ProvidedService;
 public final class InternalServiceExtension extends ContainerOrExtensionInjectionManager {
 
     /** All dependants that needs to be resolved. */
-    public final ArrayList<DependencyNode> consumers = new ArrayList<>();
+    public final ArrayList<DependencyNode> dependecyNodes = new ArrayList<>();
 
     /** */
     public final ContainerSetup container;
 
-    /** An error manager that is lazily initialized. */
-    @Nullable
-    private ServiceManagerFailureSetup em;
-
     public final ContainerServiceBinder ios = new ContainerServiceBinder(this);
 
     /** All explicit added build entries. */
-    private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
+    private final ArrayList<BuildtimeService> localServices = new ArrayList<>();
 
     /** Any parent this composer might have. */
     @Nullable
     private final InternalServiceExtension parent;
 
-    //// Taenker ikke de bliver added som beans... men som synthetics provide metoder paa en bean
-    /** All locators added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
-    private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
@@ -98,18 +86,27 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
      *            the injectable to add
      */
     public void addConsumer(DependencyNode dependant) {
-        consumers.add(requireNonNull(dependant));
+        dependecyNodes.add(requireNonNull(dependant));
     }
 
-    HashMap<BeanSetup, BeanInstanceServiceSetup> beans = new HashMap<>();
+    HashMap<BeanSetup, BuildtimeService> beans = new HashMap<>();
 
     public void addService(BeanSetup bean, Key<?> key) {
-        BeanInstanceServiceSetup bis = new BeanInstanceServiceSetup(bean, key);
-        beans.put(bis.bean, bis);
+
+        OperationSetup os = null;
+        LifetimeAccessor accessor = null;
+        if (bean.injectionManager.lifetimePoolAccessor == null) {
+            os = bean.operations.get(0);
+        } else {
+            accessor = bean.injectionManager.lifetimePoolAccessor;
+        }
+
+        BuildtimeService bis = new BuildtimeBeanMemberService(key, os, accessor);
+        beans.put(bean, bis);
         addService(bis);
     }
 
-    public void addService(ServiceSetup service) {
+    public void addService(BuildtimeService service) {
         requireNonNull(service);
         container.safeUseExtensionSetup(ServiceExtension.class, null);
         localServices.add(service);
@@ -120,46 +117,32 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         // We should make sure some stuff is no longer configurable...
     }
 
-    /**
-     * Returns an error manager.
-     * 
-     * @return an error manager
-     */
-    public ServiceManagerFailureSetup errorManager() {
-        ServiceManagerFailureSetup e = em;
-        if (e == null) {
-            e = em = new ServiceManagerFailureSetup();
-        }
-        return e;
-    }
-
     public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimeObjectArena region) {
-        Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
-        ServiceInstantiationContext con = new ServiceInstantiationContext(region);
+        Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>();
         if (ios.hasExports()) {
-            for (ServiceSetup export : ios.exports()) {
-                runtimeEntries.put(export.key(), export.toRuntimeEntry(con));
+            for (BuildtimeService export : ios.exports()) {
+                runtimeEntries.put(export.key, export.newRuntimeNode(region));
             }
         }
 
-        return new PackedServiceLocator(Map.copyOf(runtimeEntries));
+        return new PackedServiceLocator(region, Map.copyOf(runtimeEntries));
     }
 
     public void prepareDependants() {
         // First we take all locally defined services
-        for (ServiceSetup entry : localServices) {
-            resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
+        for (BuildtimeService entry : localServices) {
+            resolvedServices.computeIfAbsent(entry.key, k -> new ServiceDelegate()).resolve(this, entry);
         }
 
         // Then we take any provideAll() services
-        if (provideAll != null) {
-            // All injectors have already had wirelets transform and filter
-            for (ProvideAllFromServiceLocator fromInjector : provideAll) {
-                for (ServiceSetup entry : fromInjector.entries.values()) {
-                    resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
-                }
-            }
-        }
+//        if (provideAll != null) {
+//            // All injectors have already had wirelets transform and filter
+//            for (ProvideAllFromServiceLocator fromInjector : provideAll) {
+//                for (ServiceSetup entry : fromInjector.entries.values()) {
+//                    resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
+//                }
+//            }
+//        }
 
         // Process exports from any children
         for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
@@ -167,22 +150,18 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
 
             WireletWrapper wirelets = c.wirelets;
             if (wirelets != null) {
-                PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
+             //   PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
             }
 
             if (child != null && child.ios.hasExports()) {
-                for (ServiceSetup a : child.ios.exports()) {
-                    resolvedServices.computeIfAbsent(a.key(), k -> new ServiceDelegate()).resolve(this, a);
+                for (BuildtimeService a : child.ios.exports()) {
+                    resolvedServices.computeIfAbsent(a.key, k -> new ServiceDelegate()).resolve(this, a);
                 }
             }
         }
 
         // We now know every resolved service within the container
         // Either a local one or one exported by a child
-
-        if (em != null) {
-            ServiceManagerFailureSetup.addDuplicateNodes(em.failingDuplicateProviders);
-        }
 
         // Process own exports
         if (ios.hasExports()) {
@@ -200,7 +179,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
     }
 
     private void processWirelets(ContainerSetup container) {
-        LinkedHashMap<Key<?>, ServiceSetup> map = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, BuildtimeService> map = new LinkedHashMap<>();
 
         if (parent != null) {
             for (Entry<Key<?>, ServiceDelegate> e : parent.resolvedServices.entrySet()) {
@@ -216,34 +195,34 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         WireletWrapper wirelets = container.wirelets;
         if (wirelets != null) {
             // For now we just ignore the wirelets
-            PackedWireletSelection.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
+           // PackedWireletSelection.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
         }
 
         // If Processere wirelets...
 
-        ServiceManagerRequirementsSetup srm = ios.requirements();
-        if (srm != null) {
-            for (Requirement r : srm.requirements.values()) {
-                ServiceSetup sa = map.get(r.key);
-                if (sa != null) {
-                    for (FromInjectable i : r.list) {
-                        i.i().setProducer(i.dependencyIndex(), sa);
-                    }
-                }
-            }
-        }
+//        ServiceManagerRequirementsSetup srm = ios.requirements();
+//        if (srm != null) {
+//            for (Requirement r : srm.requirements.values()) {
+//                ServiceSetup sa = map.get(r.key);
+//                if (sa != null) {
+//                    for (FromInjectable i : r.list) {
+//                        i.i().setProducer(i.dependencyIndex(), sa);
+//                    }
+//                }
+//            }
+//        }
     }
 
-    public void provideAll(AbstractServiceLocator locator) {
-        // We add this immediately to resolved services, as their keys are immutable.
-
-        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, locator);
-        ArrayList<ProvideAllFromServiceLocator> p = provideAll;
-        if (provideAll == null) {
-            p = provideAll = new ArrayList<>(1);
-        }
-        p.add(pi);
-    }
+//    public void provideAll(AbstractServiceLocator locator) {
+//        // We add this immediately to resolved services, as their keys are immutable.
+//
+//        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, locator);
+//        ArrayList<ProvideAllFromServiceLocator> p = provideAll;
+//        if (provideAll == null) {
+//            p = provideAll = new ArrayList<>(1);
+//        }
+//        p.add(pi);
+//    }
 
     public void resolve() {
         for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
@@ -255,8 +234,8 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         // Resolve local services
         prepareDependants();
 
-        for (DependencyNode i : consumers) {
-            i.resolve(this);
+        for (DependencyNode i : dependecyNodes) {
+            resolve(i, this);
         }
 
         // Now we know every dependency that we are missing
@@ -267,27 +246,66 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         // TODO Check any contracts we might as well catch it early
     }
 
+    public static void resolve(DependencyNode node, InternalServiceExtension sbm) {
+        int providerDelta = node.operation.target.requiresBeanInstance ? 1 : 0;
+        List<InternalDependency> dependencies = InternalDependency.fromOperationType(node.operation.type);// null;//factory.dependencies();
+        for (int i = 0; i < dependencies.size(); i++) {
+            int providerIndex = i + providerDelta;
+            InternalDependency sd = dependencies.get(i);
+
+            Object e;
+
+            if (node.operation.bean.realm instanceof ExtensionTreeSetup ers) {
+                Key<?> requiredKey = sd.key();
+                Key<?> thisKey = Key.of(node.operation.bean.beanClass);
+                ContainerSetup container = node.operation.bean.container;
+                ExtensionSetup es = container.safeUseExtensionSetup(ers.realmType(), null);
+                BeanSetup bs = null;
+                if (thisKey.equals(requiredKey)) {
+                    if (es.treeParent != null) {
+                        bs = es.treeParent.injectionManager.lookup(requiredKey);
+                    }
+                } else {
+                    bs = es.injectionManager.lookup(requiredKey);
+                }
+                if (bs == null) {
+                    throw new RuntimeException("Could not resolve key " + requiredKey + " for " + ers.realmType());
+                }
+
+                e = bs.injectionManager;
+
+            } else {
+                ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
+                e = wrapper == null ? null : wrapper.getSingle();
+            }
+
+            sbm.ios.requirementsOrCreate().recordResolvedDependency(node, providerIndex, sd, e, false);
+        }
+    }
+
     /**
      * @param provider
      */
     public void provideOld(ProvidedService provider) {
+        OperationSetup o = provider.operation;
+        boolean isStatic = !o.target.requiresBeanInstance;
         if (provider.operation.target instanceof LifetimePoolAccessTarget bia) {
             addService(provider.operation.bean, provider.entry.key);
         } else {
-            DependencyHolder fh = new DependencyHolder(provider.isConstant, provider.entry.key, provider.operation);
-            BeanMemberServiceSetup sa;
-            if (fh.provideAskey != null) {
-                if (!fh.isStatic() && provider.operation.bean.injectionManager.lifetimePoolAccessor == null) {
+            BuildtimeBeanMemberService sa;
+            if (provider.entry.key != null) {
+                if (!isStatic && provider.operation.bean.injectionManager.lifetimePoolAccessor == null) {
                     throw new BuildException("Not okay)");
                 }
                 InternalServiceExtension sbm = provider.operation.bean.container.injectionManager;
-                sa = new BeanMemberServiceSetup(sbm, provider.operation.bean, fh.provideAskey, fh.provideAsConstant, provider.operation);
+                DynamicAccessor accessor = provider.isConstant ? provider.operation.bean.container.lifetime.pool.reserve(Object.class) : null;
+                sa = new BuildtimeBeanMemberService(provider.entry.key, provider.operation, accessor);
                 sbm.addService(sa);
             } else {
                 sa = null;
             }
 
-            DependencyNode node = new DependencyNode(fh.dependencies, provider.operation, fh.methodHandle(), fh.createProviders(), sa,null);
+            DependencyNode node = new DependencyNode(provider.operation, sa.accessor);
             provider.operation.bean.container.injectionManager.addConsumer(node);
         }
     }

@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice;
+package internal.app.packed.service.old;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Map;
-
 import app.packed.framework.Nullable;
-import app.packed.service.Key;
 import app.packed.service.ServiceContract;
-import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requirement;
-import internal.app.packed.oldservice.runtime.AbstractServiceLocator;
-import internal.app.packed.oldservice.sandbox.Service;
+import internal.app.packed.service.old.ServiceManagerRequirementsSetup.Requirement;
 
 /**
  *
@@ -117,33 +112,33 @@ public final class ContainerServiceBinder {
         return r;
     }
 
-    /** A service locator wrapping all exported services. */
-    static final class ExportedServiceLocator extends AbstractServiceLocator {
-
-        /** All services that this injector provides. */
-        private final Map<Key<?>, ? extends Service> services;
-
-        ExportedServiceLocator(Map<Key<?>, ? extends Service> services) {
-            this.services = requireNonNull(services);
-        }
-
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        @Override
-        public Map<Key<?>, Service> asMap() {
-            // as() + addAttribute on all services is disabled before we start the
-            // export process. So ServiceBuild can be considered as effectively final
-            return (Map) services;
-        }
-
-        @Override
-        protected String useFailedMessage(Key<?> key) {
-            // /child [ss.BaseMyAssembly] does not export a service with the specified key
-
-            // FooAssembly does not export a service with the key
-            // It has an internal service. Maybe you forgot to export it()
-            // Is that breaking encapsulation
-            // container.realm().realmType();
-            return "A service with the specified key, key = " + key;
-        }
-    }
+//    /** A service locator wrapping all exported services. */
+//    static final class ExportedServiceLocator extends AbstractServiceLocator {
+//
+//        /** All services that this injector provides. */
+//        private final Map<Key<?>, ? extends Service> services;
+//
+//        ExportedServiceLocator(Map<Key<?>, ? extends Service> services) {
+//            this.services = requireNonNull(services);
+//        }
+//
+//        @SuppressWarnings({ "rawtypes", "unchecked" })
+//        @Override
+//        public Map<Key<?>, Service> asMap() {
+//            // as() + addAttribute on all services is disabled before we start the
+//            // export process. So ServiceBuild can be considered as effectively final
+//            return (Map) services;
+//        }
+//
+//        @Override
+//        protected String useFailedMessage(Key<?> key) {
+//            // /child [ss.BaseMyAssembly] does not export a service with the specified key
+//
+//            // FooAssembly does not export a service with the key
+//            // It has an internal service. Maybe you forgot to export it()
+//            // Is that breaking encapsulation
+//            // container.realm().realmType();
+//            return "A service with the specified key, key = " + key;
+//        }
+//    }
 }

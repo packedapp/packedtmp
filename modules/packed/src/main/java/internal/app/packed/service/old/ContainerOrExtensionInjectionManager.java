@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice.inject;
-
-import internal.app.packed.oldservice.InternalServiceExtension;
+package internal.app.packed.service.old;
 
 /**
  *

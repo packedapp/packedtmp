@@ -17,18 +17,10 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import app.packed.container.Wirelet;
-import app.packed.framework.Nullable;
-import internal.app.packed.oldservice.InternalServiceExtension;
-import internal.app.packed.oldservice.Service1stPassWirelet;
-import internal.app.packed.oldservice.Service2ndPassWirelet;
-import internal.app.packed.oldservice.build.PackedServiceTransformer;
-import internal.app.packed.oldservice.build.ServiceSetup;
-import internal.app.packed.oldservice.sandbox.Service;
 
 /**
  * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.
@@ -101,12 +93,14 @@ public final class ServiceWirelets {
     // maybe even just verify... or validate
     public static Wirelet checkExactContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
-        return transformIn(t -> action.accept(t.contract()));
+        // return transformIn(t -> action.accept(t.contract()));
+        throw new UnsupportedOperationException();
     }
 
     public static Wirelet checkCompatibleContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
-        return transformIn(t -> action.accept(t.contract()));
+        throw new UnsupportedOperationException();
+        // return transformIn(t -> action.accept(t.contract()));
     }
 
     public static <T> Wirelet provideInstance(Class<T> key, T instance) {
@@ -122,7 +116,6 @@ public final class ServiceWirelets {
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
-     * @see ServiceTransformer#provideInstance(Object)
      */
     public static <T> Wirelet provideInstance(Key<T> key, T instance) {
         requireNonNull(key, "key is null");
@@ -151,24 +144,20 @@ public final class ServiceWirelets {
      */
     public static Wirelet transformIn(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
-        return new Service1stPassWirelet() {
-            /** {@inheritDoc} */
-            @Override
-            protected void process(InternalServiceExtension child) {
-                child.ios.exportsOrCreate().transform(transformation);
-            }
-        };
+        throw new UnsupportedOperationException();
     }
 
     public static Wirelet transformOut(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
-        return new Service2ndPassWirelet() {
-            @Override
-            protected void process(@Nullable InternalServiceExtension parent, InternalServiceExtension child, Map<Key<?>, ServiceSetup> map) {
-                // child.ios.newServiceContract() to calc service contract
-                PackedServiceTransformer.transformInplace(map, transformation);
-            }
-        };
+        throw new UnsupportedOperationException();
+//        return new Service2ndPassWirelet() {
+//            @Override
+//            protected void process(@Nullable InternalServiceExtension parent, InternalServiceExtension child, Map<Key<?>, ?> map) {
+//                // child.ios.newServiceContract() to calc service contract
+//                throw new UnsupportedOperationException();
+//                //PackedServiceTransformer.transformInplace(map, transformation);
+//            }
+//        };
     }
 }
 
@@ -209,10 +198,10 @@ class ServiceWSandbox {
     // Kan bruge extensionen
 
     static Wirelet exportTransitiveAll() {
-        return exportTransitiveIf(s -> true);
+        throw new UnsupportedOperationException();
     }
 
-    static Wirelet exportTransitiveIf(Predicate<? extends Service> filter) {
+    static Wirelet exportTransitiveIf(Predicate<?> filter) {
         throw new UnsupportedOperationException();
     }
 

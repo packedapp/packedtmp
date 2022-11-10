@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice;
+package internal.app.packed.service;
 
-import app.packed.container.Wirelet;
+import app.packed.service.Key;
 
-/** A wirelet that is processed in a first pass. */
-public abstract class Service1stPassWirelet extends Wirelet {
-    protected abstract void process(InternalServiceExtension sm);
+/**
+ *
+ */
+public class InternalServiceUtil {
+
+    public static Key<?> checkKey(Class<?> beanClass, Class<?> key) {
+        return Key.of(key);
+    }
+
+    public static Key<?> checkKey(Class<?> beanClass, Key<?> key) {
+        return key;
+    }
 }
- 

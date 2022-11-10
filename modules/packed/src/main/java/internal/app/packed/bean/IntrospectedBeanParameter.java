@@ -21,9 +21,9 @@ import app.packed.bean.BeanExtension;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.ParameterTypeRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
-import internal.app.packed.oldservice.inject.InternalDependency;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
+import internal.app.packed.service.old.InternalDependency;
 
 /**
  *

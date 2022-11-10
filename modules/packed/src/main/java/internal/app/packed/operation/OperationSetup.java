@@ -122,10 +122,10 @@ public final class OperationSetup {
         isComputed = true;
 
         MethodHandle mh = target.methodHandle;
-        System.out.println("--------Build Invoker-------------------");
-        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
-        System.out.println(type);
-        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
+//        System.out.println("--------Build Invoker-------------------");
+//        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
+//        System.out.println(type);
+//        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
 
         //if (target instanceof BeanInstanceAccess)
         if (bindings.length == 0) {
@@ -142,7 +142,7 @@ public final class OperationSetup {
         }
 
         for (int i = 0; i < bindings.length; i++) {
-            System.out.println("BT " + bindings[i].getClass());
+        //    System.out.println("BT " + bindings[i].getClass());
             mh = bindings[i].bindIntoOperation(mh);
         }
 
@@ -155,7 +155,7 @@ public final class OperationSetup {
         }
 
         requireNonNull(mh);
-        System.out.println(mh.type());
+     //   System.out.println(mh.type());
         return mh;
         // Must be computed relative to invocating site
         // throw new UnsupportedOperationException();

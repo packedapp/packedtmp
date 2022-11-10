@@ -13,35 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice;
+package internal.app.packed.service.old;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
-import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceTransformer;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
-import internal.app.packed.oldservice.build.ExportedServiceSetup;
-import internal.app.packed.oldservice.build.PackedServiceTransformer;
-import internal.app.packed.oldservice.build.ServiceSetup;
-import internal.app.packed.oldservice.runtime.ServiceRegistry;
 
 /**
  * This class manages everything to do with exporting of services.
  *
  * @see ServiceExtension#exportAll()
  */
-public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
+public final class ServiceManagerExportSetup implements Iterable<BuildtimeService> {
 
     /** The config site, if we export all entries. */
     private boolean exportAll;
@@ -51,17 +43,14 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * {@link ServiceExtension#export(Key)}.
      */
     @Nullable
-    private ArrayList<ExportedServiceSetup> exportedEntries;
+    private ArrayList<BuildtimeExportedService> exportedEntries;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
-    private final LinkedHashMap<Key<?>, ServiceSetup> resolvedExports = new LinkedHashMap<>();
+    private final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
     private final InternalServiceExtension sm;
-
-    @Nullable
-    Consumer<? super ServiceTransformer> transformer;
 
     /**
      * Creates a new export manager.
@@ -88,15 +77,15 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public void export(BeanSetup bean, ServiceSetup entryToExport) {
+    public void export(BeanSetup bean, BuildtimeService entryToExport) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another assembly.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        BeanInstanceServiceSetup bss = sm.beans.get(bean);
+        BuildtimeService bss = sm.beans.get(bean);
         requireNonNull(bss);
-        export0(new ExportedServiceSetup(bss));
+        export0( new BuildtimeExportedService(bss));
     }
 
     /**
@@ -108,12 +97,12 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      *            the build entry to export
      * @return a configuration object that can be exposed to the user
      */
-    private <T> ExportedServiceConfigurationSetup<T> export0(ExportedServiceSetup entry) {
+    private <T> ExportedServiceConfigurationSetup<T> export0(BuildtimeExportedService entry) {
         // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
         // F.eks. hvis en extension publisher en service vi gerne vil exportere
         // Saa sker det maaske foerst naar den completer.
         // dvs efter assembly.configure() returnere
-        ArrayList<ExportedServiceSetup> e = exportedEntries;
+        ArrayList<BuildtimeExportedService> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
         }
@@ -129,15 +118,15 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         exportAll = true;
     }
 
-    /**
-     * Returns all exported services in a service registry. Or null if there are no exported services.
-     * 
-     * @return all exported services in a service registry. Or null if there are no exported services
-     */
-    @Nullable
-    public ServiceRegistry exportsAsServiceRegistry() {
-        return resolvedExports.isEmpty() ? null : InternalServiceUtil.copyOf(resolvedExports);
-    }
+//    /**
+//     * Returns all exported services in a service registry. Or null if there are no exported services.
+//     * 
+//     * @return all exported services in a service registry. Or null if there are no exported services
+//     */
+//    @Nullable
+//    public ServiceRegistry exportsAsServiceRegistry() {
+//        return resolvedExports.isEmpty() ? null : InternalServiceUtil.copyOf(resolvedExports);
+//    }
 
     public boolean hasExports() {
         return !resolvedExports.isEmpty();
@@ -145,7 +134,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
 
     /** {@inheritDoc} */
     @Override
-    public Iterator<ServiceSetup> iterator() {
+    public Iterator<BuildtimeService> iterator() {
         return resolvedExports.values().iterator();
     }
 
@@ -159,47 +148,34 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         // to have identical structure to ServiceProvidingManager
         // Process every exported build entry
         if (exportedEntries != null) {
-            for (ExportedServiceSetup entry : exportedEntries) {
+            for (BuildtimeExportedService entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                ServiceSetup entryToExport = entry.serviceToExport;
+                BuildtimeService entryToExport = entry.serviceToExport;
                 if (entryToExport == null) {
                     ServiceDelegate wrapper = sm.resolvedServices.get(entry.exportAsKey);
                     entryToExport = wrapper == null ? null : wrapper.getSingle();
                     entry.serviceToExport = entryToExport;
-                    if (entryToExport == null) {
-                        sm.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
-                    }
                 }
 
                 if (entry.serviceToExport != null) {
-                    ServiceSetup existing = resolvedExports.putIfAbsent(entry.key(), entry);
+                    BuildtimeService existing = resolvedExports.putIfAbsent(entry.key, entry);
                     if (existing != null) {
-                        LinkedHashSet<ServiceSetup> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                        hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                        hs.add(entry);
+//                        LinkedHashSet<ServiceSetup> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+//                        hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+//                        hs.add(entry);
                     }
                 }
             }
-        }
-
-        if (sm.errorManager().failingUnresolvedKeyedExports != null) {
-            ServiceManagerFailureSetup.addUnresolvedExports(sm, sm.errorManager().failingUnresolvedKeyedExports);
-        }
-        if (sm.errorManager().failingDuplicateExports != null) {
-            // TODO add error messages
         }
 
         if (exportAll) {
             for (ServiceDelegate w : sm.resolvedServices.values()) {
-                ServiceSetup e = w.getSingle();
-                if (!resolvedExports.containsKey(e.key())) {
-                    resolvedExports.put(e.key(), new ExportedServiceSetup(e));
+                BuildtimeService e = w.getSingle();
+                if (!resolvedExports.containsKey(e.key)) {
+                    resolvedExports.put(e.key, new BuildtimeExportedService(e));
                 }
             }
-        }
-        if (transformer != null) {
-            transform(transformer);
         }
         // 
         if (!resolvedExports.keySet().equals(sm.container.sm.exports.keySet())) {
@@ -212,27 +188,14 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     /**
-     * @param transformer
-     */
-    public void setExportTransformer(Consumer<? super ServiceTransformer> transformer) {
-        if (this.transformer != null) {
-            throw new IllegalStateException("This method can only be called once");
-        }
-        this.transformer = requireNonNull(transformer, "transformer is null");
-    }
-
-    public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
-        PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.ios.newServiceContract());
-    }
-
-    /**
      * Transforms the exported services using the specified transformer.
      * 
      * @param transformer
      *            the transformer to use
      */
     public void transform(Consumer<? super ServiceTransformer> transformer) {
-        PackedServiceTransformer.transformInplace(resolvedExports, transformer);
+        throw new UnsupportedOperationException();
+        //PackedServiceTransformer.transformInplace(resolvedExports, transformer);
     }
 
     /**
@@ -241,17 +204,13 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup service) {
+    record ExportedServiceConfigurationSetup<T> (BuildtimeService service) {
 
         public ExportedServiceConfigurationSetup<T> as(@Nullable Key<? super T> key) {
             // TODO, maybe it gets disabled the minute we start analyzing exports???
             // Nah, lige saa snart, vi begynder
 //            entry.sm.checkExportConfigurable();
             return this;
-        }
-
-        public Key<?> key() {
-            return service.key();
         }
     }
 }

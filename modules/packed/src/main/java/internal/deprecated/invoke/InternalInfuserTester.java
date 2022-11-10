@@ -5,7 +5,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
 import app.packed.container.Extension;
-import internal.app.packed.oldservice.runtime.ServiceRegistry;
 import internal.app.packed.util.LookupUtil;
 
 public class InternalInfuserTester {
@@ -14,14 +13,10 @@ public class InternalInfuserTester {
 
     static final MethodHandle MH_INT_STREAM_CHARS = LookupUtil.lookupVirtualPublic(String.class, "chars", IntStream.class);
 
-    InternalInfuserTester(IntStream i, Secret s, ServiceRegistry ic, Long ll) {
-        System.out.println(ic.keys());
+    InternalInfuserTester(IntStream i, Secret s, Long ll) {
         System.out.println(i);
         System.out.println(s);
         System.out.println(ll);
-        ic.forEach(sss -> {
-            System.out.println(sss);
-        });
     }
 
     public static void main(String[] args) throws Throwable {

@@ -30,7 +30,7 @@ import app.packed.operation.OperationType;
 import app.packed.service.Key;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.oldservice.InternalServiceUtil;
+import internal.app.packed.service.InternalServiceUtil;
 
 /**
  * A bean handle is a reference to an installed bean, private to the extension that installed the bean.

@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.oldservice.build;
+package internal.app.packed.service.old;
 
-import static java.util.Objects.requireNonNull;
+import java.lang.invoke.MethodHandle;
 
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
-import internal.app.packed.oldservice.runtime.DelegatingRuntimeService;
-import internal.app.packed.oldservice.runtime.RuntimeService;
-import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 
 /**
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
  * exported.
  */
-public final class ExportedServiceSetup extends ServiceSetup {
+public final class BuildtimeExportedService extends BuildtimeService {
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
@@ -36,20 +34,8 @@ public final class ExportedServiceSetup extends ServiceSetup {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    public ServiceSetup serviceToExport;
+    public BuildtimeService serviceToExport;
 
-    /**
-     * Exports an entry via its key.
-     * 
-     * @param builder
-     *            the injector configuration this node is being added to
-     * @see ServiceExtension#export(Class)
-     * @see ServiceExtension#export(Key)
-     */
-    public ExportedServiceSetup(Key<?> exportAsKey) {
-        super(exportAsKey);
-        this.exportAsKey = requireNonNull(exportAsKey);
-    }
 
     /**
      * Exports an existing entry.
@@ -58,24 +44,15 @@ public final class ExportedServiceSetup extends ServiceSetup {
      *            the entry to export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedServiceSetup(ServiceSetup entryToExport) {
-        super(entryToExport.key());
+    public BuildtimeExportedService(BuildtimeService entryToExport) {
+        super(entryToExport.key);
         this.serviceToExport = entryToExport;
         this.exportAsKey = null;
-        // Export of export, of export????
-        // Hvad hvis en eller anden aendrer en key midt i chainen.
-        // Slaar det igennem i hele vejen ned.
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return serviceToExport.isConstant();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(key(), serviceToExport.toRuntimeEntry(context));
+    protected MethodHandle newRuntimeNode(LifetimeObjectArena context) {
+        return serviceToExport.newRuntimeNode(context);
     }
 }

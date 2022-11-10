@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.service.Key;
 import app.packed.service.Qualifier;
 import app.packed.service.TypeToken;
+import internal.app.packed.service.old.InternalDependency;
 
 /**
  *
