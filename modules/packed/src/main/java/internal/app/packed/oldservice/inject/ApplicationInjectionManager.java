@@ -108,37 +108,37 @@ public final class ApplicationInjectionManager {
     @Nullable
     private DependencyCycle detectCycle(LifetimeObjectArenaSetup region, DependencyNode node, ArrayDeque<DependencyNode> stack,
             ArrayDeque<DependencyNode> dependencies) {
-        DependencyProducer[] deps = node.producers;
-        if (deps.length > 0) {
-            stack.push(node);
-            for (int i = 0; i < deps.length; i++) {
-                DependencyProducer dependency = deps[i];
-                if (dependency != null) {
-                    DependencyNode next = dependency.dependencyConsumer();
-                    if (next != null) {
-                        if (next.needsPostProcessing) {
-                            dependencies.push(next);
-                            // See if the component is already on the stack -> A cycle has been detected
-                            if (stack.contains(next)) {
-                                // clear links not part of the circle, for example, for A->B->C->B we want to remove A
-                                while (stack.peekLast() != next) {
-                                    stack.pollLast();
-                                    dependencies.pollLast();
-                                }
-                                return new DependencyCycle(dependencies);
-                            }
-                            DependencyCycle cycle = detectCycle(region, next, stack, dependencies);
-                            if (cycle != null) {
-                                return cycle;
-                            }
-                            dependencies.pop();
-                        }
-                    }
-                }
-            }
-
-            stack.pop();
-        }
+//        DependencyProducer[] deps = node.producers;
+//        if (deps.length > 100) {
+//            stack.push(node);
+//            for (int i = 0; i < deps.length; i++) {
+//                DependencyProducer dependency = deps[i];
+//                if (dependency != null) {
+//                    DependencyNode next = dependency.dependencyConsumer();
+//                    if (next != null) {
+//                        if (next.needsPostProcessing) {
+//                            dependencies.push(next);
+//                            // See if the component is already on the stack -> A cycle has been detected
+//                            if (stack.contains(next)) {
+//                                // clear links not part of the circle, for example, for A->B->C->B we want to remove A
+//                                while (stack.peekLast() != next) {
+//                                    stack.pollLast();
+//                                    dependencies.pollLast();
+//                                }
+//                                return new DependencyCycle(dependencies);
+//                            }
+//                            DependencyCycle cycle = detectCycle(region, next, stack, dependencies);
+//                            if (cycle != null) {
+//                                return cycle;
+//                            }
+//                            dependencies.pop();
+//                        }
+//                    }
+//                }
+//            }
+//
+//            stack.pop();
+//        }
         // Hvis vi analysere skal vi ikke lave det her...
         node.onAllDependenciesResolved(region);
         return null;

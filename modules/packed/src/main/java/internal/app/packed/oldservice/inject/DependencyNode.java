@@ -15,63 +15,50 @@
  */
 package internal.app.packed.oldservice.inject;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.LifetimeObjectArenaSetup;
 import internal.app.packed.lifetime.pool.Accessor;
 import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 import internal.app.packed.oldservice.InternalServiceExtension;
 import internal.app.packed.oldservice.ServiceDelegate;
+import internal.app.packed.oldservice.build.BeanMemberServiceSetup;
+import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
  *
  */
-public abstract sealed class DependencyNode implements LifetimePoolWriteable permits BeanInstanceDependencyNode, BeanMemberDependencyNode {
-
-    /** The bean this dependency consumer is a part of. */
-    public final BeanSetup bean;
+public class DependencyNode implements LifetimePoolWriteable {
 
     /** The dependencies that must be resolved. */
     public final List<InternalDependency> dependencies;
 
     public boolean needsPostProcessing = true;
 
-    /** A method handle to the underlying constructor, method, field, factory ect. */
-    public final MethodHandle originalMethodHandle;
-
-    /** Resolved dependencies. Must match the number of parameters in {@link #originalMethodHandle}. */
-    public final DependencyProducer[] producers;
+    final OperationSetup operation;
 
     public final int providerDelta;
 
-    //////////////////////////////////////////////
-    //////////////////////////////////////////////
-
-    /** The method handle that is used at runtime and delegates to {@link #originalMethodHandle} */
-    MethodHandle runtimeMethodHandle;
+    final BeanInjectionManager bim;
+    protected final BeanMemberServiceSetup service;
 
     // Field/Method hook
-    protected DependencyNode(BeanSetup bean, List<InternalDependency> dependencies, MethodHandle mh, DependencyProducer[] dependencyProviders) {
-        this.bean = requireNonNull(bean);
-
+    public DependencyNode(List<InternalDependency> dependencies, OperationSetup operation, MethodHandle mh, int count, BeanMemberServiceSetup service,
+            BeanInjectionManager bim) {
+        this.operation = operation;
         this.dependencies = dependencies;
-        this.originalMethodHandle = mh;
-
-        this.producers = dependencyProviders;
-        this.providerDelta = producers.length == dependencies.size() ? 0 : 1;
+        this.providerDelta = count == dependencies.size() ? 0 : 1;
+        this.bim = bim;
+        this.service = service;
     }
 
     // All dependencies have been successfully resolved
@@ -81,57 +68,44 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
      * @param pool
      */
     public void onAllDependenciesResolved(LifetimeObjectArenaSetup pool) {
-        // If analysis we should not need to create method handles...
-
-        // If the injectable is a constant we need should to store an instance of it in the runtime region.
-        // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
-        // we add each node on exit when all of its dependency have already been added. In this way
-        // guarantee that all dependencies have already been visited
         if (poolAccessor() != null) {
             pool.addOrdered(this);
-            pool.postProcessing.add(() -> runtimeMethodHandle());
+            pool.postProcessing.add(() -> operation.buildInvoker());
         }
         needsPostProcessing = false;
 
     }
 
-    protected abstract Accessor poolAccessor();
+    @Nullable
+    protected Accessor poolAccessor() {
+        if (bim != null) {
+            return bim.lifetimePoolAccessor;
+        } else {
+            if (service != null) {
+                return service.accessor;
+            }
+            return null;
+        }
+    }
 
     public void resolve(InternalServiceExtension sbm) {
-        boolean buildMH = true;
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
-            if (producers[providerIndex] == null) {
-                InternalDependency sd = dependencies.get(i);
-                DependencyProducer e = resolve0(sbm, sd, providerIndex);
-                producers[providerIndex] = e;
-                if (e == null) {
-                    buildMH = false;
-                }
-            }
-        }
-        // Den er lidt her midlertidigt...
-        if (buildMH) {
-            runtimeMethodHandle();
+            InternalDependency sd = dependencies.get(i);
+            resolve0(sbm, sd, providerIndex);
         }
     }
 
     @Nullable
-    private DependencyProducer resolve0(InternalServiceExtension sbm, InternalDependency sd, int i) {
-        DependencyProducer e = null;
-
-        //// Checker om der er hooks der provider servicen
-//        HookModel hookModel = bean.hookModel;
-//        if (hookModel.sourceServices != null) {
-//            //e = hookModel.sourceServices.get(sd.key());
-//        }
+    private Object resolve0(InternalServiceExtension sbm, InternalDependency sd, int i) {
+        Object e = null;
 
         if (sbm != null) {
             if (e == null) {
-                if (bean.realm instanceof ExtensionTreeSetup ers) {
+                if (operation.bean.realm instanceof ExtensionTreeSetup ers) {
                     Key<?> requiredKey = sd.key();
-                    Key<?> thisKey = Key.of(bean.beanClass);
-                    ContainerSetup container = bean.container;
+                    Key<?> thisKey = Key.of(operation.bean.beanClass);
+                    ContainerSetup container = operation.bean.container;
                     ExtensionSetup es = container.safeUseExtensionSetup(ers.realmType(), null);
                     BeanSetup bs = null;
                     if (thisKey.equals(requiredKey)) {
@@ -158,61 +132,13 @@ public abstract sealed class DependencyNode implements LifetimePoolWriteable per
         return e;
     }
 
-    /**
-     * 
-     * <p>
-     * All possible configuration issues from users and extension should already have been checked by this point. If this
-     * method fails it is an internal problem with packed.
-     * 
-     * @return the runtime method handle
-     */
-    public final MethodHandle runtimeMethodHandle() {
-        // See if we have already build the runtime method handle
-        MethodHandle mh = runtimeMethodHandle;
-        if (mh != null) {
-            return mh;
-        }
+    public void setProducer(int index, Object p) {
 
-        // Temporary check, All dependencies should have been resolved by now
-        if (producers != null) {
-            for (int i = 0; i < producers.length; i++) {
-                requireNonNull(producers[i]);
-            }
-        }
-
-        // We create the runtime method handle a little different, depending on the
-        // number of dependencies/producers it has
-        if (producers.length == 0) {
-            mh = MethodHandles.dropArguments(originalMethodHandle, 0, LifetimeObjectArena.class);
-        } else if (producers.length == 1) {
-            mh = MethodHandles.collectArguments(originalMethodHandle, 0, producers[0].dependencyAccessor());
-        } else {
-            mh = originalMethodHandle;
-
-            // We create a new method that a
-            for (int i = 0; i < producers.length; i++) {
-                mh = MethodHandles.collectArguments(mh, i, producers[i].dependencyAccessor());
-            }
-
-            // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(originalMethodHandle.type().returnType(), LifetimeObjectArena.class);
-            mh = MethodHandles.permuteArguments(mh, mt, new int[producers.length]);
-        }
-
-        return runtimeMethodHandle = mh;
-    }
-
-    public void setProducer(int index, DependencyProducer p) {
-        int providerIndex = index + providerDelta;
-        if (producers[providerIndex] != null) {
-            throw new IllegalStateException();
-        }
-        this.producers[providerIndex] = requireNonNull(p);
     }
 
     @Override
     public void writeToPool(LifetimeObjectArena pool) {
-        MethodHandle mh = runtimeMethodHandle();
+        MethodHandle mh = operation.buildInvoker();
 
         Object instance;
         try {

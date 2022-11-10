@@ -15,6 +15,9 @@
  */
 package internal.app.packed.service;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.container.User;
 import app.packed.framework.Nullable;
 import app.packed.service.ServiceBindingMirror;
@@ -51,6 +54,13 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@return whether or not the service could be resolved.} */
     public boolean isResolved() {
         return entry.provider != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+        MethodHandle mh = entry.provider.operation.buildInvoker();
+        return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 
 //    /** {@inheritDoc} */

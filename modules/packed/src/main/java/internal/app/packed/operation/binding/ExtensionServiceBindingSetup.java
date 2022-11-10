@@ -15,6 +15,9 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
 import internal.app.packed.bean.BeanSetup;
@@ -38,10 +41,10 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
         this.extensionBeanClass = extensionBeanClass;
     }
 
-//    
-//    /** {@inheritDoc} */
-//    @Override
-//    public MethodHandle read() {
-//        return extensionBean.injectionManager.dependencyAccessor();
-//    }
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+        MethodHandle mh = extensionBean.instanceAccessOperation().buildInvoker();
+        return MethodHandles.collectArguments(methodHandle, index, mh);
+    }
 }

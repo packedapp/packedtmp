@@ -109,7 +109,8 @@ public final class ApplicationSetup {
     public void checkInCodegenPhase() {
         // Should we check that launcher is null? (codegen phase done)
         if (!isInCodegenPhase) {
-            throw new IllegalStateException();
+            // Uncommented while transitioning to new Codegen
+          //  throw new IllegalStateException();
         }
     }
 

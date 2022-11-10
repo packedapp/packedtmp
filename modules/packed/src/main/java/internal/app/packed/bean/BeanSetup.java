@@ -34,7 +34,7 @@ import internal.app.packed.lifetime.LifetimeOp;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.oldservice.inject.BeanInjectionManager;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.ClassUtil;
@@ -122,7 +122,6 @@ public final class BeanSetup {
 
         RealmSetup realm = installer.useSite == null ? installer.beanExtension.container.assembly : installedBy.extensionRealm;
 
-
         this.installedBy = requireNonNull(installedBy);
         this.container = requireNonNull(installedBy.container);
 
@@ -156,7 +155,10 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup instanceAccessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
-        return new OperationSetup(this, OperationType.of(beanClass), installedBy, new BeanInstanceAccess(this, injectionManager.dependencyAccessor()));
+        OperationSetup os = new OperationSetup(this, OperationType.of(beanClass), installedBy,
+                new LifetimePoolAccessTarget(this, injectionManager.accessBean()));
+        os.name = "InstantAccess";
+        return os;
     }
 
     /** {@return a new mirror.} */
@@ -297,7 +299,7 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = new OperationSetup(bean, op.type(), bean.installedBy, new BeanInstanceAccess(bean, op.operation));
+            OperationSetup os = new OperationSetup(bean, op.type(), bean.installedBy, new LifetimePoolAccessTarget(bean, op.mhOperation));
             bean.operations.add(os);
         }
 

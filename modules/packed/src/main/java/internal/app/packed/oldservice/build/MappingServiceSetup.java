@@ -17,12 +17,9 @@ package internal.app.packed.oldservice.build;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.framework.Nullable;
 import app.packed.service.Key;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.MappingRuntimeService;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
@@ -48,17 +45,6 @@ final class MappingServiceSetup extends ServiceSetup {
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         return new MappingRuntimeService(key(), entryToMap.toRuntimeEntry(context), function);
-    }
-
-    @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return entryToMap.dependencyConsumer();
-    }
-
-    @Override
-    public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

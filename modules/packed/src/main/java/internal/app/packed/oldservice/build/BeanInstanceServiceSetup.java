@@ -17,12 +17,8 @@ package internal.app.packed.oldservice.build;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.PrototypeRuntimeService;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
@@ -46,30 +42,17 @@ public final class BeanInstanceServiceSetup extends ServiceSetup {
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return bean.injectionManager.dependencyConsumer();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return bean.injectionManager.dependencyAccessor();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isConstant() {
-        return bean.injectionManager.singletonAccessor != null;
+        return bean.injectionManager.lifetimePoolAccessor != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), bean.injectionManager.singletonAccessor.read(context.pool));
+            return RuntimeService.constant(key(), bean.injectionManager.lifetimePoolAccessor.read(context.pool));
         } else {
-            return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
+            return new PrototypeRuntimeService(this, context.pool, bean.operations.get(0).buildInvoker());
         }
     }
 

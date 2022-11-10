@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import app.packed.application.BuildException;
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
@@ -36,16 +37,16 @@ import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requirement;
 import internal.app.packed.oldservice.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import internal.app.packed.oldservice.build.BeanInstanceServiceSetup;
+import internal.app.packed.oldservice.build.BeanMemberServiceSetup;
 import internal.app.packed.oldservice.build.ProvideAllFromServiceLocator;
 import internal.app.packed.oldservice.build.ServiceSetup;
-import internal.app.packed.oldservice.inject.BeanMemberDependencyNode;
 import internal.app.packed.oldservice.inject.ContainerOrExtensionInjectionManager;
 import internal.app.packed.oldservice.inject.DependencyHolder;
 import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.AbstractServiceLocator;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
-import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
 import internal.app.packed.service.ProvidedService;
 
 /**
@@ -270,11 +271,23 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
      * @param provider
      */
     public void provideOld(ProvidedService provider) {
-        if (provider.operation.target instanceof BeanInstanceAccess bia) {
+        if (provider.operation.target instanceof LifetimePoolAccessTarget bia) {
             addService(provider.operation.bean, provider.entry.key);
         } else {
             DependencyHolder fh = new DependencyHolder(provider.isConstant, provider.entry.key, provider.operation);
-            DependencyNode node = new BeanMemberDependencyNode(provider.operation.bean, fh);
+            BeanMemberServiceSetup sa;
+            if (fh.provideAskey != null) {
+                if (!fh.isStatic() && provider.operation.bean.injectionManager.lifetimePoolAccessor == null) {
+                    throw new BuildException("Not okay)");
+                }
+                InternalServiceExtension sbm = provider.operation.bean.container.injectionManager;
+                sa = new BeanMemberServiceSetup(sbm, provider.operation.bean, fh.provideAskey, fh.provideAsConstant, provider.operation);
+                sbm.addService(sa);
+            } else {
+                sa = null;
+            }
+
+            DependencyNode node = new DependencyNode(fh.dependencies, provider.operation, fh.methodHandle(), fh.createProviders(), sa,null);
             provider.operation.bean.container.injectionManager.addConsumer(node);
         }
     }

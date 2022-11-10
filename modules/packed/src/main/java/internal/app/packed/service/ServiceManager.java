@@ -26,7 +26,7 @@ import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget;
-import internal.app.packed.operation.OperationTarget.BeanInstanceAccess;
+import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
 import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.StringFormatter;
@@ -56,7 +56,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         if (isSameBean) {
             return "This bean is already " + provider.operation.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
         }
-        if (existingTarget instanceof BeanInstanceAccess) {
+        if (existingTarget instanceof LifetimePoolAccessTarget) {
             return "Another bean of type " + provider.operation.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
         } else if (existingTarget instanceof MethodOperationTarget m) {
             String ss = StringFormatter.formatShortWithParameters(m.method());

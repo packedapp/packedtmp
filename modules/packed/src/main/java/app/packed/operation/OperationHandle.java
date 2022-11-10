@@ -188,6 +188,12 @@ public final class OperationHandle {
         throw new UnsupportedOperationException();
     }
 
+    public void named(String name) {
+        requireNonNull(name, "name is null");
+        checkConfigurable();
+        operation.name = name;
+    }
+
     /**
      * Registers an action that will be performed doing the code generation phase of the application.
      * <p>
@@ -242,8 +248,9 @@ public final class OperationHandle {
 interface OpNew {
 
     default void relativise(Extension<?> extension) {
-        
+
     }
+
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
     default void operatedBy(Object extensionHandle) {

@@ -139,6 +139,7 @@ public final class IntrospectedBean {
 
         OperationSetup os = new OperationSetup(bean, constructor.operationType(), bean.installedBy,
                 new ConstructorOperationTarget(mh, constructor.constructor()));
+        os.name = "constructor";
         bean.operations.add(os);
         unBoundOperations.add(os);
         resolveOperations();

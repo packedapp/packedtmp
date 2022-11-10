@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.bean;
+package internal.app.packed.operation;
 
-import app.packed.bean.CustomBeanHook;
-import app.packed.bean.CustomBeanHook.CustomBindingHook;
+import app.packed.application.App;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-@CustomBeanHook
-@CustomBeanHook.CustomFieldHook(annotation = "jakarta.WebGet")
-@CustomBeanHook.CustomFieldHook(annotation = "jakarta.WebSet")
-@JakartaSupport // meta
-public @interface JakartaSupport {
+public final class Headache extends BaseAssembly {
 
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {
+        provide(E.class);
+        install(NE.class);
+        install(NE2.class);
+    }
+    
+    public static void main(String[] args) {
+        App.run(new Headache());
+    }
+
+    
+    public static class E {}
+    
+    public static class NE {
+        public NE(E e) {}
+    }
+    
+    public static class NE2 {
+        public NE2(E e) {}
+    }
 }
-
-@CustomBeanHook
-@CustomBindingHook(className = "java.lang.System.Logger")
-@CustomBindingHook(className = "java.util.logging.Logger")
-@interface JavaLoggerSupport {}
-
-
-// LoggingExtension.@LoggerSupport

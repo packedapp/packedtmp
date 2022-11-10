@@ -28,7 +28,7 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 import app.packed.bean.BeanExtensionPoint.MethodHook;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.bean.BeanIntrospector.OnField;
-import app.packed.bean.CustomHook;
+import app.packed.bean.CustomBeanHook;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.framework.Nullable;
@@ -154,7 +154,7 @@ public final class BeanHookModel {
         this.parent = requireNonNull(parent);
         List<AssemblyMetaHolder> holders = new ArrayList<>();
         for (Annotation a : annotations) {
-            if (a.annotationType().isAnnotationPresent(CustomHook.class)) {
+            if (a.annotationType().isAnnotationPresent(CustomBeanHook.class)) {
                 holders.add(new AssemblyMetaHolder(a.annotationType()));
             }
         }

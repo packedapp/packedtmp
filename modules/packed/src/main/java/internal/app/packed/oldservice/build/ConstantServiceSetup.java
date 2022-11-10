@@ -17,12 +17,7 @@ package internal.app.packed.oldservice.build;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
-import app.packed.framework.Nullable;
 import app.packed.service.Key;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
 
@@ -38,18 +33,6 @@ public final class ConstantServiceSetup extends ServiceSetup {
     public ConstantServiceSetup(Key<?> key, Object constant) {
         super(key);
         this.constant = requireNonNull(constant, "constant is null");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable DependencyNode dependencyConsumer() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return MethodHandles.constant(key().rawType(), constant);
     }
 
     /** {@inheritDoc} */

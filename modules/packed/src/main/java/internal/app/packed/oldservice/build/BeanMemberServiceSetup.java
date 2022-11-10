@@ -15,49 +15,35 @@
  */
 package internal.app.packed.oldservice.build;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
-
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.pool.Accessor.DynamicAccessor;
 import internal.app.packed.oldservice.InternalServiceExtension;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.PrototypeRuntimeService;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
 public final class BeanMemberServiceSetup extends ServiceSetup {
 
-    private final DependencyNode consumer;
-
     /** If constant, the region index to store it in */
     @Nullable
     public final DynamicAccessor accessor;
 
-    public BeanMemberServiceSetup(InternalServiceExtension im, BeanSetup beanSetup, DependencyNode dependant, Key<?> key, boolean isConst) {
+    final OperationSetup operation;
+
+    public BeanMemberServiceSetup(InternalServiceExtension im, BeanSetup beanSetup, Key<?> key, boolean isConst,
+            OperationSetup operation) {
         super(key);
-        this.consumer = requireNonNull(dependant);
+        this.operation = operation;
         // TODO fix Object
         this.accessor = isConst ? beanSetup.container.lifetime.pool.reserve(Object.class) : null;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public DependencyNode dependencyConsumer() {
-        return consumer;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return consumer.runtimeMethodHandle();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -71,13 +57,13 @@ public final class BeanMemberServiceSetup extends ServiceSetup {
         if (isConstant()) {
             return RuntimeService.constant(key(), accessor.read(context.pool));
         } else {
-            return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
+            return new PrototypeRuntimeService(this, context.pool, operation.buildInvoker());
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "@Provide " + consumer.originalMethodHandle;
+        return "@Provide " ;
     }
 }

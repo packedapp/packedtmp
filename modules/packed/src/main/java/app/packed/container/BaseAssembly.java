@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.function.Consumer;
 
 import app.packed.bean.BeanExtension;
-import app.packed.bean.CustomHook.JavaBaseSupport;
+import app.packed.bean.CustomBeanHook.JavaBaseSupport;
 import app.packed.bean.OnStart;
 import app.packed.operation.Op;
 import app.packed.service.ProvideService;

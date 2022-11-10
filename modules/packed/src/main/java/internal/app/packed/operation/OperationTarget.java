@@ -48,7 +48,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         this.requiresBeanInstance = requiresBeanInstance;
     }
 
-    public static final class BeanInstanceAccess extends OperationTarget implements OperationTargetMirror.OfLifetimePoolAccess {
+    public static final class LifetimePoolAccessTarget extends OperationTarget implements OperationTargetMirror.OfLifetimePoolAccess {
 
         public final BeanSetup bean;
 
@@ -56,7 +56,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param methodHandle
          * @param isStatic
          */
-        public BeanInstanceAccess(BeanSetup bean, MethodHandle methodHandle) {
+        public LifetimePoolAccessTarget(BeanSetup bean, MethodHandle methodHandle) {
             super(methodHandle, false);
             this.bean = bean;
         }

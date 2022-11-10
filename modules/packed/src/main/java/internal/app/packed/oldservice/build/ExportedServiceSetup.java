@@ -17,12 +17,9 @@ package internal.app.packed.oldservice.build;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.DelegatingRuntimeService;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
@@ -68,17 +65,6 @@ public final class ExportedServiceSetup extends ServiceSetup {
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
         // Slaar det igennem i hele vejen ned.
-    }
-
-    @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return serviceToExport.dependencyConsumer();
-    }
-
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return serviceToExport.dependencyAccessor();
     }
 
     /** {@inheritDoc} */

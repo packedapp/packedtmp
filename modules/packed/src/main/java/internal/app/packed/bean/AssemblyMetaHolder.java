@@ -19,8 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.bean.CustomHook;
-import app.packed.bean.CustomHook.CustomBindingHook;
+import app.packed.bean.CustomBeanHook;
+import app.packed.bean.CustomBeanHook.CustomBindingHook;
 
 /**
  *
@@ -34,7 +34,7 @@ class AssemblyMetaHolder {
 
         // Find Bindings Hooks
         Set<String> bindings = new HashSet<>();
-        CustomBindingHook[] cbh = annotationType.getAnnotationsByType(CustomHook.CustomBindingHook.class);
+        CustomBindingHook[] cbh = annotationType.getAnnotationsByType(CustomBeanHook.CustomBindingHook.class);
         for (CustomBindingHook h : cbh) {
             bindings.add(h.className());
         }

@@ -17,6 +17,9 @@ package internal.app.packed.operation.binding;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.container.User;
 import internal.app.packed.operation.OperationSetup;
 
@@ -31,5 +34,12 @@ public final class OperationalBindingSetup extends BindingSetup {
     public OperationalBindingSetup(OperationSetup operation, int index, User user, BindingTarget target, OperationSetup providingOperation) {
         super(operation, index, user, target);
         this.providingOperation = requireNonNull(providingOperation);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+        MethodHandle mh = providingOperation.buildInvoker();
+        return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 }

@@ -79,8 +79,11 @@ public final class OperationSetup {
 
     public ExtensionSetup operator;
 
+    /** The name of the operation */
+    public String name;
+
     /** The target of the operation. */
-    public OperationTarget target;
+    public final OperationTarget target;
 
     /** The type of the operation. */
     public final OperationType type;
@@ -95,47 +98,64 @@ public final class OperationSetup {
 
     // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
     // Fx freeze arrayet
+
     public MethodHandle buildInvoker() {
+        MethodHandle mh = buildInvoker0();
+        if (mh.type().parameterCount() != 1) {
+            System.err.println(mh.type());
+            throw new Error("Bean : " + bean.path() + ", operation : " + name);
+        }
+        if (mh.type().parameterType(0) != LifetimeObjectArena.class) {
+            System.err.println(mh.type());
+            throw new Error();
+        }
+        return mh;
+    }
+
+    public MethodHandle buildInvoker0() {
         bean.container.application.checkInCodegenPhase();
 
         if (isComputed) {
-            throw new IllegalStateException("This method can only be called once");
+         //   throw new IllegalStateException("This method can only be called once");
         }
 
         isComputed = true;
-        if (true) {
-            return null;
-        }
-        @SuppressWarnings("unused")
-        MethodHandle mh = target.methodHandle;
-        System.out.println("--------------------------------");
-        System.out.println(type);
-        System.out.println("Building [bean = " + bean.path() + ": " + mh);
 
+        MethodHandle mh = target.methodHandle;
+        System.out.println("--------Build Invoker-------------------");
+        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
+        System.out.println(type);
+        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
+
+        //if (target instanceof BeanInstanceAccess)
         if (bindings.length == 0) {
-            if (target.requiresBeanInstance) {
-                return MethodHandles.collectArguments(mh, 0, bean.injectionManager.dependencyAccessor());
-            } else {
+            if (!target.requiresBeanInstance) {
+                if (mh.type().parameterCount() > 0) {
+                    return mh;
+                }
                 return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
             }
         }
-        if (target.requiresBeanInstance) {
-            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.dependencyAccessor());
-        }
-        int count = bindings.length + (target.requiresBeanInstance ? 1 : 0);
 
-        // We create a new method that a
+        if (target.requiresBeanInstance) {
+            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean());
+        }
+
         for (int i = 0; i < bindings.length; i++) {
             System.out.println("BT " + bindings[i].getClass());
-            // mh = MethodHandles.collectArguments(mh, i, bindings[i].read());
+            mh = bindings[i].bindIntoOperation(mh);
         }
 
+        int count = bindings.length + (target.requiresBeanInstance ? 1 : 0);
+
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
-        System.out.println("Building [bean = " + bean.path() + ": " + mh);
-        MethodType mt = MethodType.methodType(target.methodHandle.type().returnType(), LifetimeObjectArena.class);
-        mh = MethodHandles.permuteArguments(mh, mt, new int[count]);
+        if (count != 0) {
+            MethodType mt = MethodType.methodType(target.methodHandle.type().returnType(), LifetimeObjectArena.class);
+            mh = MethodHandles.permuteArguments(mh, mt, new int[count]);
+        }
 
         requireNonNull(mh);
+        System.out.println(mh.type());
         return mh;
         // Must be computed relative to invocating site
         // throw new UnsupportedOperationException();

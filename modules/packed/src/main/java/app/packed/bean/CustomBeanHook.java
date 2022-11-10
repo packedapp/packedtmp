@@ -32,13 +32,13 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface CustomHook {
+public @interface CustomBeanHook {
 
     @Target(ElementType.ANNOTATION_TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @Repeatable(CustomHook.CustomBindingHook.All.class)
+    @Repeatable(CustomBeanHook.CustomBindingHook.All.class)
     @interface CustomBindingHook {
 
         String className();
@@ -60,7 +60,7 @@ public @interface CustomHook {
     @Target(ElementType.ANNOTATION_TYPE)
     @Documented
     @Inherited
-    @Repeatable(CustomHook.CustomFieldHook.All.class)
+    @Repeatable(CustomBeanHook.CustomFieldHook.All.class)
     @interface CustomFieldHook {
 
         String annotation();
@@ -78,7 +78,7 @@ public @interface CustomHook {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @Inherited
-    @CustomHook
+    @CustomBeanHook
     // Logger, Net, File
     // Meta annotation hooks annotations does not have to live on the extension
     public @interface JavaBaseSupport {}

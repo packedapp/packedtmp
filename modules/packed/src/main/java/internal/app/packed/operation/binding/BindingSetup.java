@@ -77,4 +77,7 @@ public abstract class BindingSetup {
         }
         return mirror;
     }
+    
+    
+    public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
 }

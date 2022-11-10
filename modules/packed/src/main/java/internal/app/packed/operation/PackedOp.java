@@ -39,14 +39,14 @@ import internal.app.packed.util.MethodHandleUtil;
 public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp, TerminalOp {
 
     /** The method handle. */
-    public final MethodHandle operation;
+    public final MethodHandle mhOperation;
 
     /** The operation type of this op. */
     public final OperationType type;
 
     PackedOp(OperationType type, MethodHandle operation) {
         this.type = requireNonNull(type, "type is null");
-        this.operation = requireNonNull(operation);
+        this.mhOperation = requireNonNull(operation);
     }
 
     /** {@inheritDoc} */
@@ -79,7 +79,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         }
         // TODO check types...
 
-        MethodHandle newmh = MethodHandles.insertArguments(this.operation, position, args);
+        MethodHandle newmh = MethodHandles.insertArguments(this.mhOperation, position, args);
 
         return new BoundOp<>(newType, newmh, this, position, args);
     }

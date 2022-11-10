@@ -22,7 +22,6 @@ import java.util.function.Function;
 import app.packed.service.Key;
 import app.packed.service.ProvideService;
 import internal.app.packed.oldservice.InternalService;
-import internal.app.packed.oldservice.inject.DependencyProducer;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
 import internal.app.packed.oldservice.sandbox.Service;
@@ -35,7 +34,7 @@ import internal.app.packed.oldservice.sandbox.Service;
  * <p>
  * Instances of this class are only exposed as a {@link Service} to end users if {@link #isKeyFrozen}. 
  */
-public abstract non-sealed class ServiceSetup implements InternalService, DependencyProducer {
+public abstract non-sealed class ServiceSetup implements InternalService {
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has

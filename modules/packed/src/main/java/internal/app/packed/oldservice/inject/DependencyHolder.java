@@ -28,13 +28,13 @@ import internal.app.packed.operation.OperationSetup;
 public final class DependencyHolder {
 
     /** Dependencies that needs to be resolved. */
-    final List<InternalDependency> dependencies;
+    public final List<InternalDependency> dependencies;
 
     final boolean isStatic;
 
     final MethodHandle mh;
 
-    final boolean provideAsConstant;
+    public final boolean provideAsConstant;
 
     @Nullable
     public final Key<?> provideAskey;
@@ -48,16 +48,15 @@ public final class DependencyHolder {
         this.mh = os.target.methodHandle;
     }
 
-    public final DependencyProducer[] createProviders() {
-        DependencyProducer[] providers = new DependencyProducer[isStatic() ? 0 : 1];
-        return providers;
+    public final int createProviders() {
+        return isStatic() ? 0 : 1;
     }
 
-    final boolean isStatic() {
+    public final boolean isStatic() {
         return isStatic;
     }
 
-    final MethodHandle methodHandle() {
+    public final MethodHandle methodHandle() {
         return mh;
     }
 }

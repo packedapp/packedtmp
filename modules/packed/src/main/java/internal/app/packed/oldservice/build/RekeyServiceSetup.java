@@ -15,15 +15,10 @@
  */
 package internal.app.packed.oldservice.build;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.framework.Nullable;
 import app.packed.service.Key;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.DelegatingRuntimeService;
 import internal.app.packed.oldservice.runtime.RuntimeService;
 import internal.app.packed.oldservice.runtime.ServiceInstantiationContext;
-import internal.app.packed.util.MethodHandleUtil;
 
 /**
  * A build entry representing an existing service that has been given a new key.
@@ -47,18 +42,6 @@ public final class RekeyServiceSetup extends ServiceSetup {
     public RekeyServiceSetup(ServiceSetup service, Key<?> key) {
         super(key);
         this.serviceToRekey = service;
-    }
-
-    @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return serviceToRekey.dependencyConsumer();
-    }
-
-    @Override
-    public MethodHandle dependencyAccessor() {
-        MethodHandle mh = serviceToRekey.dependencyAccessor();
-        return MethodHandleUtil.castReturnType(mh, key().rawType());
     }
 
     /** {@inheritDoc} */

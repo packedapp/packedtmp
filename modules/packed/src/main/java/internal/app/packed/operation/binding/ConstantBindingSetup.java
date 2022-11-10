@@ -15,6 +15,9 @@
  */
 package internal.app.packed.operation.binding;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.container.User;
 import internal.app.packed.operation.OperationSetup;
 
@@ -35,6 +38,12 @@ public final class ConstantBindingSetup extends BindingSetup {
         super(operation, index, user, target);
         this.constant = constant;
         this.constantType = constantType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+        return MethodHandles.insertArguments(methodHandle, index, constant);
     }
 }
 

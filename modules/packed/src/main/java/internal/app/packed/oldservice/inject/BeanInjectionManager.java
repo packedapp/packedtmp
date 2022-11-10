@@ -29,7 +29,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  * An injection manager for a bean.
  */
-public final class BeanInjectionManager implements DependencyProducer {
+public final class BeanInjectionManager {
 
     /**
      * A dependency node representing a bean instance and its factory method. Or {@code null} for functional beans and other
@@ -43,7 +43,7 @@ public final class BeanInjectionManager implements DependencyProducer {
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
-    public final Accessor singletonAccessor;
+    public final Accessor lifetimePoolAccessor;
 
     public BeanInjectionManager(BeanSetup bean) {
 
@@ -59,13 +59,13 @@ public final class BeanInjectionManager implements DependencyProducer {
         }
 
         if (bean.sourceKind == BeanSourceKind.INSTANCE) {
-            this.singletonAccessor = new Accessor.ConstantAccessor(bean.source);
+            this.lifetimePoolAccessor = new Accessor.ConstantAccessor(bean.source);
         } else if (bean.beanKind == BeanKind.CONTAINER) {
-            this.singletonAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
+            this.lifetimePoolAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
         } else if (bean.beanKind == BeanKind.LAZY) {
             throw new UnsupportedOperationException();
         } else {
-            this.singletonAccessor = null;
+            this.lifetimePoolAccessor = null;
         }
 
         // Only create an instance node if we have instances
@@ -73,32 +73,23 @@ public final class BeanInjectionManager implements DependencyProducer {
             // Kan have en provide
             this.instanceNode = null;
         } else {
-          
+
             OperationSetup os = bean.operations.get(0);
 
             List<InternalDependency> dependencies = InternalDependency.fromOperationType(os.type);// null;//factory.dependencies();
-            this.instanceNode = new BeanInstanceDependencyNode(bean, this, dependencies, os.target.methodHandle);
+            this.instanceNode = new DependencyNode(dependencies, os, os.target.methodHandle, os.target.methodHandle.type().parameterCount(),null, this);
 
             bean.container.injectionManager.addConsumer(instanceNode);
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
+    public MethodHandle accessBean() {
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
-        if (singletonAccessor != null) {
-            return singletonAccessor.poolReader(); // MethodHandle(ConstantPool)T
+        if (lifetimePoolAccessor != null) {
+            return lifetimePoolAccessor.poolReader(); // MethodHandle(ConstantPool)T
         } else {
-            return instanceNode.runtimeMethodHandle(); // MethodHandle(ConstantPool)T
+            return instanceNode.operation.buildInvoker(); // MethodHandle(ConstantPool)T
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return instanceNode;
     }
 }

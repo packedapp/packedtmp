@@ -26,7 +26,6 @@ import app.packed.framework.Nullable;
 import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.oldservice.inject.DependencyNode;
-import internal.app.packed.oldservice.inject.DependencyProducer;
 import internal.app.packed.oldservice.inject.InternalDependency;
 
 /**
@@ -118,7 +117,7 @@ public final class ServiceManagerRequirementsSetup {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(DependencyNode entry, int index, InternalDependency dependency, @Nullable DependencyProducer resolvedTo,
+    public void recordResolvedDependency(DependencyNode entry, int index, InternalDependency dependency, @Nullable Object resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);

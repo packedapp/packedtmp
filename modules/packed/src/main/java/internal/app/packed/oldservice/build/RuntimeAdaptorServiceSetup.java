@@ -15,11 +15,7 @@
  */
 package internal.app.packed.oldservice.build;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.framework.Nullable;
 import app.packed.service.ServiceExtension;
-import internal.app.packed.oldservice.inject.DependencyNode;
 import internal.app.packed.oldservice.runtime.DelegatingRuntimeService;
 import internal.app.packed.oldservice.runtime.OldServiceLocator;
 import internal.app.packed.oldservice.runtime.RuntimeService;
@@ -34,19 +30,6 @@ public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
     public RuntimeAdaptorServiceSetup(RuntimeService adapt) {
         super(adapt.key());
         this.adapt = adapt;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public DependencyNode dependencyConsumer() {
-        return null; // runtime entries never has any unresolved dependencies
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return adapt.dependencyAccessor();
     }
 
     /** {@inheritDoc} */

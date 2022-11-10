@@ -38,6 +38,34 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         super(type, operation);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
+        return new OperationSetup(bean, type, operator, new OperationTarget.FunctionOperationTarget(mhOperation, false, Function.class));
+    }
+
+    abstract OperationTarget newTarget();
+
+    /**
+     * An op that captures 1 or more type variables.
+     * 
+     * @see Op0
+     * @see Op1
+     * @see Op2
+     */
+    static final class MethodHandleInvoke<R> extends TerminalOp<R> {
+
+        MethodHandleInvoke(OperationType type, MethodHandle methodHandle) {
+            super(OperationType.ofMethodType(methodHandle.type()), methodHandle);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        OperationTarget newTarget() {
+            return new OperationTarget.MethodHandleOperationTarget(mhOperation, false);
+        }
+    }
+
     /**
      * An op that captures 1 or more type variables.
      * 
@@ -53,8 +81,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
-            return new OperationSetup(bean, type, operator, new OperationTarget.FunctionOperationTarget(operation, false, Function.class));
+        OperationTarget newTarget() {
+            return new OperationTarget.FunctionOperationTarget(mhOperation, false, Function.class);
         }
     }
 }

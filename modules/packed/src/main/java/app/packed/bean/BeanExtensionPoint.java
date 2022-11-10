@@ -216,6 +216,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         Class<? extends Extension<?>> extension();
 
         // IDK about this...
+        // Den virker jo kun for annotering..completesavings
         enum BindingKind {
             PROVIDE, PEEK, DEFAULT, ADAPT, CONVERT, TRANSFORM, REPLACE
         }

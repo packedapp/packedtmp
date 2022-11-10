@@ -257,7 +257,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <S> ApplicationDriver<S> build(Class<S> wrapperType, Op<S> op, Wirelet... wirelets) {
-            this.mhConstructor = PackedOp.crack(op).operation;
+            this.mhConstructor = PackedOp.crack(op).mhOperation;
 
             return new PackedApplicationDriver<>(this);
         }
