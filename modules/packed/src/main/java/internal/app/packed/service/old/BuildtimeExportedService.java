@@ -26,16 +26,13 @@ import internal.app.packed.lifetime.LifetimeObjectArena;
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
  * exported.
  */
-public final class BuildtimeExportedService extends BuildtimeService {
-
-    /** The key under which to export the entry, is null for entry exports. */
-    @Nullable
-    public final Key<?> exportAsKey;
+public final class BuildtimeExportedService implements BuildtimeService {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
     public BuildtimeService serviceToExport;
 
+    public final Key<?> key;
 
     /**
      * Exports an existing entry.
@@ -45,14 +42,19 @@ public final class BuildtimeExportedService extends BuildtimeService {
      * @see ServiceExtension#exportAll()
      */
     public BuildtimeExportedService(BuildtimeService entryToExport) {
-        super(entryToExport.key);
+        this.key = entryToExport.key();
         this.serviceToExport = entryToExport;
-        this.exportAsKey = null;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newRuntimeNode(LifetimeObjectArena context) {
-        return serviceToExport.newRuntimeNode(context);
+    public MethodHandle buildInvoker(LifetimeObjectArena context) {
+        return serviceToExport.buildInvoker(context);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> key() {
+        return key;
     }
 }

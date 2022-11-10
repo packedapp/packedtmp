@@ -15,8 +15,6 @@
  */
 package internal.app.packed.service.old;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 
 import app.packed.service.Key;
@@ -30,23 +28,14 @@ import internal.app.packed.lifetime.LifetimeObjectArena;
  * <p>
  * Instances of this class are only exposed as a to end users if {@link #isKeyFrozen}.
  */
-abstract class BuildtimeService {
+interface BuildtimeService {
 
-    /**
-     * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
-     * instance methods annotated with . In which the case the declaring class needs to be constructor injected before the
-     * providing method can be invoked.
-     */
-    public final Key<?> key;
-
-    BuildtimeService(Key<?> key) {
-        this.key = requireNonNull(key);
-    }
+    public abstract Key<?> key();
 
     /**
      * Creates a new runtime node from this node.
      *
      * @return the new runtime node
      */
-    protected abstract MethodHandle newRuntimeNode(LifetimeObjectArena context);
+    public abstract MethodHandle buildInvoker(LifetimeObjectArena context);
 }

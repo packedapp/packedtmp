@@ -138,7 +138,7 @@ public final class OperationSetup {
         }
 
         if (target.requiresBeanInstance) {
-            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean());
+            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean(bean));
         }
 
         for (int i = 0; i < bindings.length; i++) {

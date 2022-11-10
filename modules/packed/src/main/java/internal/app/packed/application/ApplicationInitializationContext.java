@@ -89,7 +89,7 @@ public final class ApplicationInitializationContext {
      */
     public ServiceLocator serviceLocator() {
         InternalServiceExtension sm = application.container.injectionManager;
-        return sm == null ? ServiceLocator.of() : sm.newNewServiceLocator(application.driver, pool);
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
     }
 
     /**

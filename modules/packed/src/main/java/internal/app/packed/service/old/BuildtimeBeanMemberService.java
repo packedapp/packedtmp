@@ -27,7 +27,7 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public final class BuildtimeBeanMemberService extends BuildtimeService {
+public final class BuildtimeBeanMemberService implements BuildtimeService {
 
     /** If constant, the region index to store it in */
     @Nullable
@@ -35,26 +35,33 @@ public final class BuildtimeBeanMemberService extends BuildtimeService {
 
     final OperationSetup operation;
 
+    final Key<?> key;
+
     public BuildtimeBeanMemberService(Key<?> key, OperationSetup operation, LifetimeAccessor accessor) {
-        super(key);
+        this.key = key;
         this.operation = operation;
         this.accessor = accessor;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected MethodHandle newRuntimeNode(LifetimeObjectArena context) {
+    public MethodHandle buildInvoker(LifetimeObjectArena context) {
         if (accessor == null) {
             return operation.buildInvoker();
         } else {
             return constant(key, accessor.read(context));
         }
     }
-    
 
     static MethodHandle constant(Key<?> key, Object constant) {
         MethodHandle mh = MethodHandles.constant(key.rawType(), constant);
         mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
         return mh;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> key() {
+        return key;
     }
 }

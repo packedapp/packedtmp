@@ -156,7 +156,7 @@ public final class BeanSetup {
     public OperationSetup instanceAccessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
         OperationSetup os = new OperationSetup(this, OperationType.of(beanClass), installedBy,
-                new LifetimePoolAccessTarget(this, injectionManager.accessBean()));
+                new LifetimePoolAccessTarget(this, injectionManager.accessBean(this)));
         os.name = "InstantAccess";
         return os;
     }

@@ -37,30 +37,19 @@ public final class BeanInjectionManager {
      * {@code void} beans.
      */
     @Nullable
-    private final DependencyNode instanceNode;
-
-    /** The parent injector. */
-    final ContainerOrExtensionInjectionManager parent;
+    private final OperationSetup operation;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
     public final LifetimeAccessor lifetimePoolAccessor;
 
-    final BeanSetup bs;
-
     public BeanInjectionManager(BeanSetup bean) {
-        this.bs = bean;
         // Can only register a single extension bean of a particular type
         if (bean.realm instanceof ExtensionTreeSetup e) {
-            ExtensionInjectionManager eim = bean.ownedBy.injectionManager;
             if (bean.beanKind == BeanKind.CONTAINER) {
-                eim.addBean(bean);
+                bean.ownedBy.injectionManager.addBean(bean);
             }
-            parent = eim;
-        } else {
-            parent = bean.container.injectionManager;
         }
-
         if (bean.sourceKind == BeanSourceKind.INSTANCE) {
             this.lifetimePoolAccessor = new LifetimeAccessor.ConstantAccessor(bean.source);
         } else if (bean.beanKind == BeanKind.CONTAINER) {
@@ -71,27 +60,25 @@ public final class BeanInjectionManager {
             this.lifetimePoolAccessor = null;
         }
 
+        OperationSetup os = null;
         // Only create an instance node if we have instances
-        if (bean.sourceKind == BeanSourceKind.INSTANCE || !bean.beanKind.hasInstances()) {
-            // Kan have en provide
-            this.instanceNode = null;
-        } else {
-            OperationSetup os = bean.operations.get(0);
-            this.instanceNode = new DependencyNode(os, lifetimePoolAccessor);
-            bean.container.injectionManager.addConsumer(instanceNode);
+        if (bean.sourceKind != BeanSourceKind.INSTANCE && bean.beanKind.hasInstances()) {
+            os = bean.operations.get(0);
+            bean.container.injectionManager.addConsumer(os, lifetimePoolAccessor);
         }
+        this.operation = os;
     }
 
-    public MethodHandle accessBean() {
-        if (bs.sourceKind == BeanSourceKind.INSTANCE) {
-            MethodHandle mh = MethodHandles.constant(bs.source.getClass(), bs.source);
+    public MethodHandle accessBean(BeanSetup bean) {
+        if (bean.sourceKind == BeanSourceKind.INSTANCE) {
+            MethodHandle mh = MethodHandles.constant(bean.source.getClass(), bean.source);
             return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
         }
-        if (bs.beanKind == BeanKind.CONTAINER) {
+        if (bean.beanKind == BeanKind.CONTAINER) {
             return lifetimePoolAccessor.poolReader(); // MethodHandle(ConstantPool)T
         }
-        if (bs.beanKind == BeanKind.MANYTON) {
-            return instanceNode.operation.buildInvoker(); // MethodHandle(ConstantPool)T
+        if (bean.beanKind == BeanKind.MANYTON) {
+            return operation.buildInvoker(); // MethodHandle(ConstantPool)T
         }
         throw new Error();
     }
