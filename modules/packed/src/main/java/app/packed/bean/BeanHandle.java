@@ -169,7 +169,7 @@ public final /* primitive */ class BeanHandle<T> {
 
         bean.container.sm.serviceExport(key, bean.instanceAccessOperation());
 
-        bean.container.injectionManager.ios.exportsOrCreate().export(bean, null);
+        bean.container.injectionManager.export(bean, null);
     }
 
     /**

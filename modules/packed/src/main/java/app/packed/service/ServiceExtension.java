@@ -133,7 +133,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkIsConfigurable();
-        delegate.ios.exportsOrCreate().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        delegate.exportsOrCreate();
 
         setup.container.sm.exportAll = true;
     }
@@ -249,8 +249,9 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
-        for (Key<?> key : keys) {
-            delegate.ios.requirementsOrCreate().require(key, false /* , cs */);
+        for (@SuppressWarnings("unused") Key<?> key : keys) {
+            //delegate.ios.requirementsOrCreate().require(key, false /* , cs */);
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -274,8 +275,9 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
         requireNonNull(keys, "keys is null");
         checkIsConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
-        for (Key<?> key : keys) {
-            delegate.ios.requirementsOrCreate().require(key, true /* , cs */);
+        for (@SuppressWarnings("unused") Key<?> key : keys) {
+            throw new UnsupportedOperationException();
+//            delegate.ios.requirementsOrCreate().require(key, true /* , cs */);
         }
     }
 

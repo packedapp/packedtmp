@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import app.packed.application.BuildException;
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
+import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.application.PackedApplicationDriver;
@@ -54,8 +55,186 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
 
     /** */
     public final ContainerSetup container;
+    /** The config site, if we export all entries. */
+    public boolean exportAll;
 
-    public final ContainerServiceBinder ios = new ContainerServiceBinder(this);
+    /**
+     * An entry to this list is added every time the user calls {@link ServiceExtension#export(Class)},
+     * {@link ServiceExtension#export(Key)}.
+     */
+    final ArrayList<BuildtimeExportedService> exportedEntries = new ArrayList<>();
+
+    /** Deals with everything about exporting services to a parent container. */
+    private boolean hasExports;
+
+    /**
+     * Creates an export for the specified configuration.
+     * 
+     * @param <T>
+     *            the type of service
+     * @param entryToExport
+     *            the entry to export
+     * @return stuff
+     */
+    // I think exporting an entry locks its any providing key it might have...
+
+    /**
+     * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key...)},
+     * {@link ServiceExtension#requireOptionally(Key...)} and add contract.
+     * <p>
+     * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
+     * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
+     * really services registered via the provide methods that could make use of them.
+     */
+    // Skal jo erstattet af noget Contract...
+    // boolean manualRequirementsManagement;
+
+    final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
+
+    /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
+    @Nullable
+    public final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
+
+    /** Handles everything to do with dependencies, for example, explicit requirements. */
+
+
+    public void export(BeanSetup bean, BuildtimeService entryToExport) {
+        // I'm not sure we need the check after, we have put export() directly on a component configuration..
+        // Perviously you could specify any entry, even something from another assembly.
+        // if (entryToExport.node != node) {
+        // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
+        // }
+        BuildtimeService bss = beans.get(bean);
+        requireNonNull(bss);
+        var entry = new BuildtimeExportedService(bss);
+        // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
+        // F.eks. hvis en extension publisher en service vi gerne vil exportere
+        // Saa sker det maaske foerst naar den completer.
+        // dvs efter assembly.configure() returnere
+
+        exportsOrCreate();
+        exportedEntries.add(entry);
+    }
+
+    /**
+     * Returns the dependency manager for this builder.
+     * 
+     * @return the dependency manager for this builder
+     */
+    public void exportsOrCreate() {
+        hasExports = true;
+    }
+
+    public boolean hasExports() {
+        return hasExports;
+    }
+
+    public boolean hasRequirements() {
+        return requirements != null;
+    }
+
+    /** {@return a service contract for this manager.} */
+    public ServiceContract newServiceContract() {
+        ServiceContract.Builder builder = ServiceContract.builder();
+
+        container.sm.exports.keySet().forEach(k -> builder.provide(k));
+
+        // Add requirements (mandatory or optional)
+        if (requirements != null && requirements != null) {
+            for (Requirement r : requirements.values()) {
+                if (r.isOptional) {
+                    builder.requireOptional(r.key);
+                } else {
+                    builder.require(r.key);
+                }
+            }
+        }
+
+        return builder.build();
+    }
+
+    /**
+     * Record a dependency that could not be resolved
+     * 
+     * @param entry
+     * @param dependency
+     */
+    public void recordResolvedDependency(DependencyNode entry, int index, InternalDependency dependency, @Nullable Object resolvedTo, boolean fromParent) {
+        requireNonNull(entry);
+        requireNonNull(dependency);
+        if (resolvedTo != null) {
+            return;
+        }
+        Key<?> key = dependency.key();
+
+        Requirement r = requirements.computeIfAbsent(key, Requirement::new);
+        r.missingDependency(entry, index, dependency);
+    }
+
+    /**
+     * This method tries to find matching entries for exports added via {@link ServiceExtension#export(Class)}and
+     * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
+     * any point, even before the
+     */
+    public void resolve(InternalServiceExtension sm) {
+        // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
+        // to have identical structure to ServiceProvidingManager
+        // Process every exported build entry
+        for (BuildtimeExportedService entry : exportedEntries) {
+            // try and find a matching service entry for key'ed exports via
+            // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
+            BuildtimeService entryToExport = entry.serviceToExport;
+            if (entryToExport == null) {
+                ServiceDelegate wrapper = sm.resolvedServices.get(entry.exportAsKey);
+                entryToExport = wrapper == null ? null : wrapper.getSingle();
+                entry.serviceToExport = entryToExport;
+            }
+
+            if (entry.serviceToExport != null) {
+                BuildtimeService existing = resolvedExports.putIfAbsent(entry.key, entry);
+                if (existing != null) {
+//                        LinkedHashSet<ServiceSetup> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+//                        hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+//                        hs.add(entry);
+                }
+            }
+        }
+
+        if (container.sm.exportAll) {
+            for (ServiceDelegate w : sm.resolvedServices.values()) {
+                BuildtimeService e = w.getSingle();
+                if (!resolvedExports.containsKey(e.key)) {
+                    resolvedExports.put(e.key, new BuildtimeExportedService(e));
+                }
+            }
+        }
+        // Finally, make the resolved exports visible.
+    }
+
+    static class Requirement {
+
+        // Always starts out as optional
+        boolean isOptional = true;
+
+        final Key<?> key;
+
+        final ArrayList<FromInjectable> list = new ArrayList<>();
+
+        Requirement(Key<?> key) {
+            this.key = key;
+        }
+
+        void missingDependency(DependencyNode i, int dependencyIndex, InternalDependency d) {
+            if (!d.isOptional()) {
+                isOptional = false;
+            }
+            list.add(new FromInjectable(i, dependencyIndex, d));
+        }
+
+        record FromInjectable(DependencyNode i, int dependencyIndex, InternalDependency d) {}
+    }
+
+    record ServiceDependencyRequirement(InternalDependency dependency, DependencyNode entry) {}
 
     /** All explicit added build entries. */
     private final ArrayList<BuildtimeService> localServices = new ArrayList<>();
@@ -119,8 +298,8 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
 
     public ServiceLocator newNewServiceLocator(PackedApplicationDriver<?> driver, LifetimeObjectArena region) {
         Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>();
-        if (ios.hasExports()) {
-            for (BuildtimeService export : ios.exports()) {
+        if (hasExports()) {
+            for (BuildtimeService export : resolvedExports.values()) {
                 runtimeEntries.put(export.key, export.newRuntimeNode(region));
             }
         }
@@ -153,8 +332,8 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
              //   PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
             }
 
-            if (child != null && child.ios.hasExports()) {
-                for (BuildtimeService a : child.ios.exports()) {
+            if (child != null && child.hasExports()) {
+                for (BuildtimeService a : child.resolvedExports.values()) {
                     resolvedServices.computeIfAbsent(a.key, k -> new ServiceDelegate()).resolve(this, a);
                 }
             }
@@ -164,8 +343,8 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         // Either a local one or one exported by a child
 
         // Process own exports
-        if (ios.hasExports()) {
-            ios.exports().resolve(this);
+        if (hasExports()) {
+            resolve(this);
         }
         // Add error messages if any nodes with the same key have been added multiple times
 
@@ -184,8 +363,8 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         if (parent != null) {
             for (Entry<Key<?>, ServiceDelegate> e : parent.resolvedServices.entrySet()) {
                 // we need to remove all of our exports.
-                if (ios.hasExports()) {
-                    if (!ios.exports().contains(e.getKey())) {
+                if (hasExports()) {
+                    if (!resolvedExports.containsKey(e.getKey())) {
                         map.put(e.getKey(), e.getValue().getSingle());
                     }
                 }
@@ -198,31 +377,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
            // PackedWireletSelection.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
         }
 
-        // If Processere wirelets...
-
-//        ServiceManagerRequirementsSetup srm = ios.requirements();
-//        if (srm != null) {
-//            for (Requirement r : srm.requirements.values()) {
-//                ServiceSetup sa = map.get(r.key);
-//                if (sa != null) {
-//                    for (FromInjectable i : r.list) {
-//                        i.i().setProducer(i.dependencyIndex(), sa);
-//                    }
-//                }
-//            }
-//        }
     }
-
-//    public void provideAll(AbstractServiceLocator locator) {
-//        // We add this immediately to resolved services, as their keys are immutable.
-//
-//        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, locator);
-//        ArrayList<ProvideAllFromServiceLocator> p = provideAll;
-//        if (provideAll == null) {
-//            p = provideAll = new ArrayList<>(1);
-//        }
-//        p.add(pi);
-//    }
 
     public void resolve() {
         for (var c = container.treeFirstChild; c != null; c = c.treeNextSiebling) {
@@ -241,7 +396,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
         // Now we know every dependency that we are missing
         // I think we must plug this in somewhere
 
-        ios.requirementsOrCreate().checkForMissingDependencies();
+       // ios.requirementsOrCreate().checkForMissingDependencies();
 
         // TODO Check any contracts we might as well catch it early
     }
@@ -279,7 +434,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
                 e = wrapper == null ? null : wrapper.getSingle();
             }
 
-            sbm.ios.requirementsOrCreate().recordResolvedDependency(node, providerIndex, sd, e, false);
+            sbm.recordResolvedDependency(node, providerIndex, sd, e, false);
         }
     }
 
