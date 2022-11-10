@@ -22,7 +22,7 @@ import java.util.Optional;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 
-/** A specialized extension mirror for the {@link EntryPointExtension}. */
+/** A mirror for {@link EntryPointExtension}. */
 public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointExtension> {
 
     /* package-private */ EntryPointExtensionMirror() {}
@@ -40,7 +40,7 @@ public final class EntryPointExtensionMirror extends ExtensionMirror<EntryPointE
     public Collection<EntryPointMirror> entryPoints() {
         // Vi behoever jo strengt taget ikke selv holde styr paa dem
         // OperationMirror.findAllOperationsAssingableTo(EntryPointOperationMirror);
-        
+
         // Man boer jo kunne extende dem EntryPoints....
         // Altsaa hvis jeg bruge CliExtension...
         return List.of();

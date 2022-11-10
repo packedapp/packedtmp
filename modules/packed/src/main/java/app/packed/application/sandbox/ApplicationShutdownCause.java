@@ -1,4 +1,4 @@
-package app.packed.lifetime.sandbox;
+package app.packed.application.sandbox;
 
 // Ved ikke om vi kan dele den mellem bean og application. 
 // Er det i virkeligheden noget med lifetime at goere
