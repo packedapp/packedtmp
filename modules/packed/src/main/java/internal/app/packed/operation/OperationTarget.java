@@ -39,15 +39,15 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
 
     public final MethodHandle methodHandle;
 
-    /** Whether or not the first argument to the method handle is the bean instance. */
-    public final boolean requiresBeanInstance;
-
-    protected OperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance) {
-        requireNonNull(methodHandle);
-        this.methodHandle = methodHandle;
-        this.requiresBeanInstance = requiresBeanInstance;
+    protected OperationTarget(MethodHandle methodHandle) {
+        this.methodHandle =  requireNonNull(methodHandle);
     }
 
+    /** Whether or not the first argument to the method handle is the bean instance. */
+    public boolean requiresBeanInstance() {
+        return false;
+    }
+        
     public static final class LifetimePoolAccessTarget extends OperationTarget implements OperationTargetMirror.OfLifetimePoolAccess {
 
         public final BeanSetup bean;
@@ -57,7 +57,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param isStatic
          */
         public LifetimePoolAccessTarget(BeanSetup bean, MethodHandle methodHandle) {
-            super(methodHandle, false);
+            super(methodHandle);
             this.bean = bean;
         }
 
@@ -77,8 +77,8 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public FunctionOperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance, Class<?> functionalInterface) {
-            super(methodHandle, requiresBeanInstance);
+        public FunctionOperationTarget(MethodHandle methodHandle, Class<?> functionalInterface) {
+            super(methodHandle);
             this.functionalInterface=requireNonNull(functionalInterface);
         }
 
@@ -95,8 +95,8 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public MethodHandleOperationTarget(MethodHandle methodHandle, boolean requiresBeanInstance) {
-            super(methodHandle, requiresBeanInstance);
+        public MethodHandleOperationTarget(MethodHandle methodHandle) {
+            super(methodHandle);
         }
 
         /** {@inheritDoc} */
@@ -121,7 +121,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param requiresBeanInstance
          */
         public ConstantOperationTarget(Class<?> constantType, @Nullable Object constant) {
-            super(MethodHandles.constant(constantType, constant), false);
+            super(MethodHandles.constant(constantType, constant));
             this.constantType = constantType;
             this.constant = constant;
         }
@@ -142,7 +142,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param requiresBeanInstance
          */
         public ConstructorOperationTarget(MethodHandle methodHandle, Constructor<?> constructor) {
-            super(methodHandle, false);
+            super(methodHandle);
             this.constructor = constructor;
         }
 
@@ -167,7 +167,7 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param requiresBeanInstance
          */
         public FieldOperationTarget(MethodHandle methodHandle, Field field, AccessMode accessMode) {
-            super(methodHandle, !Modifier.isStatic(field.getModifiers()));
+            super(methodHandle);
             this.field = field;
             this.accessMode = accessMode;
         }
@@ -195,6 +195,10 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
         public Field field() {
             return field;
         }
+        
+        public boolean requiresBeanInstance() {
+            return !Modifier.isStatic(field.getModifiers());
+        }
     }
 
     public static final class MethodOperationTarget extends OperationTarget implements OperationTargetMirror.OfMethodInvoke {
@@ -206,13 +210,17 @@ public sealed abstract class OperationTarget implements OperationTargetMirror {
          * @param requiresBeanInstance
          */
         public MethodOperationTarget(MethodHandle methodHandle, Method method) {
-            super(methodHandle, !Modifier.isStatic(method.getModifiers()));
+            super(methodHandle);
             this.method = method;
         }
 
         /** {@return the invokable method.} */
         public Method method() {
             return method;
+        }
+        
+        public boolean requiresBeanInstance() {
+            return !Modifier.isStatic(method.getModifiers());
         }
 
         public String toString() {

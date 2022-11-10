@@ -80,7 +80,7 @@ public final class OperationSetup {
     public ExtensionSetup operator;
 
     /** The name of the operation */
-    public String name;
+    public String name; // name = operator.simpleName + "Operation"
 
     /** The target of the operation. */
     public final OperationTarget target;
@@ -129,7 +129,7 @@ public final class OperationSetup {
 
         //if (target instanceof BeanInstanceAccess)
         if (bindings.length == 0) {
-            if (!target.requiresBeanInstance) {
+            if (!target.requiresBeanInstance()) {
                 if (mh.type().parameterCount() > 0) {
                     return mh;
                 }
@@ -137,7 +137,7 @@ public final class OperationSetup {
             }
         }
 
-        if (target.requiresBeanInstance) {
+        if (target.requiresBeanInstance()) {
             mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean(bean));
         }
 
@@ -146,7 +146,7 @@ public final class OperationSetup {
             mh = bindings[i].bindIntoOperation(mh);
         }
 
-        int count = bindings.length + (target.requiresBeanInstance ? 1 : 0);
+        int count = bindings.length + (target.requiresBeanInstance() ? 1 : 0);
 
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
         if (count != 0) {

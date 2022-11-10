@@ -39,6 +39,7 @@ import app.packed.operation.Op;
 import app.packed.operation.Op1;
 import app.packed.operation.Provider;
 import internal.app.packed.application.ApplicationInitializationContext;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.service.PackedServiceLocator;
 
 /**
@@ -328,7 +329,7 @@ public interface ServiceLocator {
 
     /** {@return a service locator that provides no services.} */
     static ServiceLocator of() {
-        return new PackedServiceLocator(null, Map.of());
+        return new PackedServiceLocator(LifetimeObjectArena.EMPTY, Map.of());
     }
 
     /**

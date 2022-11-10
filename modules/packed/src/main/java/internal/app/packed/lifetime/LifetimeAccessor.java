@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime.pool;
+package internal.app.packed.lifetime;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.util.MethodHandleUtil;
 
 /**

@@ -100,9 +100,9 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         MethodHandle mh = PeekableOp.ACCEPT.bindTo(action);
         MethodHandle consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
 
-        MethodHandle mhNew = MethodHandles.filterReturnValue(mh, consumer);
-        mhNew = MethodHandleUtil.castReturnType(mhNew, type().returnType());
-        return new PeekableOp<>(this, mhNew);
+        mh = MethodHandles.filterReturnValue(mh, consumer);
+        mh = MethodHandleUtil.castReturnType(mh, type().returnType());
+        return new PeekableOp<>(this, mh);
     }
 
     /** {@inheritDoc} */

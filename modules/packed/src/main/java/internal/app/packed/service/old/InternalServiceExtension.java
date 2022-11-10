@@ -37,9 +37,9 @@ import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.WireletWrapper;
+import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
-import internal.app.packed.lifetime.pool.LifetimeAccessor;
-import internal.app.packed.lifetime.pool.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
 import internal.app.packed.service.PackedServiceLocator;
@@ -182,7 +182,7 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
              bis = new BuildtimeBeanMemberService(provider.entry.key, os, accessor);
             beans.put(o.bean, bis);
         } else {
-            boolean isStatic = !o.target.requiresBeanInstance;
+            boolean isStatic = !o.target.requiresBeanInstance();
             if (!isStatic && o.bean.injectionManager.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }

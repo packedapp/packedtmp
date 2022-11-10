@@ -28,7 +28,7 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.sandbox.OldLifetimeKind;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.lifetime.pool.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;

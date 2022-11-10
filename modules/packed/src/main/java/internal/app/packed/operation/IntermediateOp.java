@@ -33,7 +33,7 @@ import internal.app.packed.util.LookupUtil;
 abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
     /** The op that is being peeked on. */
-    final PackedOp<?> delegate; // eclipse has some issues with this being final
+    private final PackedOp<?> delegate;
 
     final int[] permutationsArrays = new int[0];
 

@@ -17,7 +17,7 @@ package internal.app.packed.service.old;
 
 import java.lang.invoke.MethodHandle;
 
-import internal.app.packed.lifetime.pool.LifetimeAccessor;
+import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 

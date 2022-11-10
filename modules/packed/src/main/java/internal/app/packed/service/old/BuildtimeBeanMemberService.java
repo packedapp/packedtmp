@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.framework.Nullable;
 import app.packed.service.Key;
+import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
-import internal.app.packed.lifetime.pool.LifetimeAccessor;
 import internal.app.packed.operation.OperationSetup;
 
 /**

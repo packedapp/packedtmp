@@ -30,6 +30,7 @@ public final /* primitive */ class LifetimeObjectArena {
     public static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
     public static final LifetimeObjectArena EMPTY = new LifetimeObjectArena(0);
+    
     private final Object[] objects;
 
     private LifetimeObjectArena(int size) {

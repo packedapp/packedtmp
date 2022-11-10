@@ -18,15 +18,12 @@ package internal.app.packed.operation;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.operation.Op0;
-import app.packed.operation.Op1;
-import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 
 /**
- *
+ * A terminal op.
  */
 abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
@@ -41,38 +38,29 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
     /** {@inheritDoc} */
     @Override
     public final OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
-        return new OperationSetup(bean, type, operator, new OperationTarget.FunctionOperationTarget(mhOperation, false, Function.class));
+        return new OperationSetup(bean, type, operator, newTarget());
     }
 
+    /** {@return the target of the op.} */
+    // Maaske require det i konstrukturen...
+    // Vi skal jo altid lave det..
     abstract OperationTarget newTarget();
 
-    /**
-     * An op that captures 1 or more type variables.
-     * 
-     * @see Op0
-     * @see Op1
-     * @see Op2
-     */
+    /** An terminal op for a MethodHandle. */
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
 
-        MethodHandleInvoke(OperationType type, MethodHandle methodHandle) {
+        MethodHandleInvoke(MethodHandle methodHandle) {
             super(OperationType.ofMethodType(methodHandle.type()), methodHandle);
         }
 
         /** {@inheritDoc} */
         @Override
         OperationTarget newTarget() {
-            return new OperationTarget.MethodHandleOperationTarget(mhOperation, false);
+            return new OperationTarget.MethodHandleOperationTarget(mhOperation);
         }
     }
 
-    /**
-     * An op that captures 1 or more type variables.
-     * 
-     * @see Op0
-     * @see Op1
-     * @see Op2
-     */
+    /** An op that captures 1 or more type variables. */
     static final class PackedCapturingOp<R> extends TerminalOp<R> {
 
         PackedCapturingOp(OperationType type, MethodHandle methodHandle) {
@@ -82,7 +70,7 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         OperationTarget newTarget() {
-            return new OperationTarget.FunctionOperationTarget(mhOperation, false, Function.class);
+            return new OperationTarget.FunctionOperationTarget(mhOperation, Function.class);
         }
     }
 }

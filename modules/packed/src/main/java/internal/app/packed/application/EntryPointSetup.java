@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.lifetime.pool.LifetimeAccessor;
+import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.util.ThrowableUtil;
 
 /**

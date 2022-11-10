@@ -16,10 +16,10 @@
 package internal.app.packed.lifetime;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import internal.app.packed.application.ApplicationInitializationContext;
-import internal.app.packed.lifetime.pool.LifetimeAccessor.DynamicAccessor;
-import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
+import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 
 /**
  *
@@ -40,7 +40,7 @@ import internal.app.packed.lifetime.pool.LifetimePoolWriteable;
 public final class LifetimeObjectArenaSetup {
 
     /** All constants that should be stored in the constant pool. */
-    private final ArrayList<LifetimePoolWriteable> entries = new ArrayList<>();
+    private final ArrayList<Consumer<? super LifetimeObjectArena>> entries = new ArrayList<>();
 
     public final ArrayList<Runnable> postProcessing = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public final class LifetimeObjectArenaSetup {
 
     LifetimeObjectArenaSetup() {}
 
-    public void addOrdered(LifetimePoolWriteable c) {
+    public void addOrdered(Consumer<? super LifetimeObjectArena> c) {
         // new Exception().printStackTrace();
         // We just keep both these 2 method that does the same for now
         entries.add(c);
@@ -63,8 +63,8 @@ public final class LifetimeObjectArenaSetup {
             launchContext.application.runtimeAccessor.store(pool, launchContext.runtime);
         }
         
-        for (LifetimePoolWriteable e : entries) {
-            e.writeToPool(pool);
+        for (Consumer<? super LifetimeObjectArena> e : entries) {
+            e.accept(pool);
         }
 
         return pool;

@@ -23,8 +23,8 @@ import app.packed.bean.BeanSourceKind;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
+import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
-import internal.app.packed.lifetime.pool.LifetimeAccessor;
 import internal.app.packed.operation.OperationSetup;
 
 /**
