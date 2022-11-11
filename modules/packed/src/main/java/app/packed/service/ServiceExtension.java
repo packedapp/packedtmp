@@ -29,7 +29,6 @@ import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.service.OldServiceResolver;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -78,11 +77,8 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
 
-    private final OldServiceResolver delegate;
-
     /** Create a new service extension. */
     ServiceExtension() {
-        delegate = setup.container.injectionManager;
     }
 
     // Validates the outward facing contract
@@ -148,7 +144,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation());
-                setup.container.sm.provideService(key, constant, operation);
+                setup.container.sm.serviceProvide(key, constant, operation);
             }
 
             /** {@inheritDoc} */
@@ -161,7 +157,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
                     OperationSetup operation = OperationSetup.crack(method.newOperation());
-                    setup.container.sm.provideService(key, constant, operation);
+                    setup.container.sm.serviceProvide(key, constant, operation);
                 }
 
                 if (isExporting) {
@@ -181,7 +177,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {
-        return new ServiceExtensionMirror(setup.container, delegate);
+        return new ServiceExtensionMirror(setup.container);
     }
 
     /**

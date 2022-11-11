@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandle;
 import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.lifetime.sandbox.OldLifetimeKind;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
+import internal.app.packed.lifetime.sandbox2.OldLifetimeKind;
 import internal.app.packed.service.OldServiceResolver;
 import internal.app.packed.util.ThrowableUtil;
 

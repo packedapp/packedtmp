@@ -29,7 +29,7 @@ public final class ServiceManagerEntry {
     @Nullable
     public ServiceBindingSetup bindings;
 
-    boolean isRequired = true; // true for now
+    public boolean isRequired; // true for now
 
     /** The key of the entry. */
     public final Key<?> key;
@@ -44,6 +44,4 @@ public final class ServiceManagerEntry {
     ServiceManagerEntry(Key<?> key) {
         this.key = requireNonNull(key);
     }
-    
-    
 }

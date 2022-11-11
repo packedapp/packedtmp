@@ -191,10 +191,4 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
     protected BeanExtensionPoint newExtensionPoint() {
         return new BeanExtensionPoint();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onAssemblyClose() {
-        extensionSetup.container.injectionManager.resolve();
-    }
 }

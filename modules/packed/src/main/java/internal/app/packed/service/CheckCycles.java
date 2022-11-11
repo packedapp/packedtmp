@@ -21,13 +21,12 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
 import app.packed.service.ExportService;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.ProvideService;
 import app.packed.service.ProvideableBeanConfiguration;
-import app.packed.service.ServiceExtensionMirror;
 import app.packed.service.ProvidedServiceMirror;
+import app.packed.service.ServiceExtensionMirror;
 
 /**
  *
@@ -82,10 +81,6 @@ public class CheckCycles extends BaseAssembly {
         C ppro() {
             return null;
         }
-
-    }
-
-    public static class MyExt extends Extension<MyExt> {
 
     }
 }

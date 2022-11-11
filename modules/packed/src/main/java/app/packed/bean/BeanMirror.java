@@ -243,9 +243,9 @@ public class BeanMirror implements Mirror {
             HashSet<Class<? extends Extension<?>>> set = new HashSet<>();
             for (OperationSetup os : bean.operations) {
                 os.forEachBinding(b -> {
-                    if (b.boundBy().isExtension()) {
-                        if (b.boundBy() != bean.realm.realm()) {
-                            set.add((b.boundBy().extension()));
+                    if (b.boundBy.isExtension()) {
+                        if (b.boundBy != bean.realm.realm()) {
+                            set.add((b.boundBy.extension()));
                         }
                     }
                 });

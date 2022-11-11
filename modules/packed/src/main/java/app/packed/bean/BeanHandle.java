@@ -166,7 +166,6 @@ public final /* primitive */ class BeanHandle<T> {
     // Eller kun i ProvideBeanConfiguration
     public void serviceExportAs(Key<? super T> key) {
         checkIsConfigurable();
-
         bean.container.sm.serviceExport(key, bean.instanceAccessOperation());
     }
 
@@ -197,7 +196,7 @@ public final /* primitive */ class BeanHandle<T> {
             // or " + BeanKind.LAZY);
         }
 
-        bean.container.sm.provideService(k, beanKind() != BeanKind.MANYTON, bean.instanceAccessOperation());
+        bean.container.sm.serviceProvide(k, beanKind() != BeanKind.MANYTON, bean.instanceAccessOperation());
     }
 
     /**

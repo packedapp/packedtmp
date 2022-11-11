@@ -48,64 +48,6 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         super(parent);
     }
 
-    private String makeDublicateProvideErrorMsg(ProvidedService provider, OperationSetup otherOperation) {
-        OperationSite existingTarget = provider.operation.site;
-        OperationSite thisTarget = otherOperation.site;
-
-        Key<?> key = provider.entry.key;
-
-        if (existingTarget.bean == thisTarget.bean) {
-            return "This bean is already " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
-        }
-        if (existingTarget instanceof LifetimePoolAccessSite) {
-            return "Another bean of type " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
-        } else if (existingTarget instanceof MethodOperationSite m) {
-            String ss = StringFormatter.formatShortWithParameters(m.method());
-            return "A method " + ss + " is already providing a service for Key<" + key + ">";
-        }
-        return thisTarget + "A service has already been bound for key " + key;
-    }
-
-    /**
-     * Provides a service from the specified operation.
-     * 
-     * @param key
-     *            the key for which to provide a service for
-     * @param operation
-     *            the operation that provides the service
-     * @return a provided service
-     */
-    public ProvidedService provideService(Key<?> key, boolean isConstant, OperationSetup operation) {
-        ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
-
-        // Check lifetimes
-
-        // Get any existing provider of
-        ProvidedService provider = entry.provider;
-
-        // Fail if there is already another provider of a service with key
-        if (provider != null) {
-            throw new ProvidedServiceCollisionException(makeDublicateProvideErrorMsg(provider, operation));
-        }
-
-        // Create a new provider
-        entry.provider = provider = new ProvidedService(operation, isConstant, entry);
-
-        operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
-
-        // add the service provider to the bean
-        operation.site.bean.operationsProviders.add(provider);
-
-        if (exportAll) {
-            serviceExport(key, operation);
-        }
-
-        // maintain old
-        operation.site.bean.container.injectionManager.provideService(provider);
-
-        return provider;
-    }
-
     public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {
         return entries.compute(key, (k, v) -> {
             if (v == null) {
@@ -126,17 +68,52 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }).bindings;
     }
 
-    public void serviceExport(ExportedService e) {
+    public ExportedService serviceExport(Key<?> key, OperationSetup operation) {
+        ExportedService e = new ExportedService(operation, key);
         ExportedService existing = exports.putIfAbsent(e.key, e);
         if (existing != null) {
             // A service with the key has already been exported
             throw new ExportedServiceCollisionException("Jmm");
         }
         e.bos.mirrorSupplier = () -> new ExportedServiceMirror(e);
+        return e;
     }
 
-    public void serviceExport(Key<?> key, OperationSetup operation) {
-        serviceExport(new ExportedService(operation, key));
+    /**
+     * Provides a service from the specified operation.
+     * 
+     * @param key
+     *            the key for which to provide a service for
+     * @param operation
+     *            the operation that provides the service
+     * @return a provided service
+     */
+    public ProvidedService serviceProvide(Key<?> key, boolean isConstant, OperationSetup operation) {
+        ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
+
+        // Check lifetimes
+
+        // Fail if there is there is already an existing provider with the same key
+        if (entry.provider != null) {
+            throw new ProvidedServiceCollisionException(makeDublicateProvideErrorMsg(entry.provider, operation));
+        }
+
+        // Create a new provider
+        ProvidedService provider = entry.provider = new ProvidedService(operation, isConstant, entry);
+
+        operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
+
+        // add the service provider to the bean
+        operation.site.bean.operationsProviders.add(provider);
+
+        if (exportAll) {
+            serviceExport(key, operation);
+        }
+
+        // maintain old
+        operation.site.bean.container.injectionManager.provideService(provider);
+
+        return provider;
     }
 
     public void verify() {
@@ -148,5 +125,23 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
                 throw new UnsatisfiableServiceDependencyException("For key " + e.key);
             }
         }
+    }
+
+    private static String makeDublicateProvideErrorMsg(ProvidedService provider, OperationSetup otherOperation) {
+        OperationSite existingTarget = provider.operation.site;
+        OperationSite thisTarget = otherOperation.site;
+
+        Key<?> key = provider.entry.key;
+
+        if (existingTarget.bean == thisTarget.bean) {
+            return "This bean is already " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
+        }
+        if (existingTarget instanceof LifetimePoolAccessSite) {
+            return "Another bean of type " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
+        } else if (existingTarget instanceof MethodOperationSite m) {
+            String ss = StringFormatter.formatShortWithParameters(m.method());
+            return "A method " + ss + " is already providing a service for Key<" + key + ">";
+        }
+        return thisTarget + "A service has already been bound for key " + key;
     }
 }

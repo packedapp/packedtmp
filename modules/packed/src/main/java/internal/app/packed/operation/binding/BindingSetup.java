@@ -27,13 +27,7 @@ import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
-/**
- * The internal configuration of a single binding in an operation.
- */
-
-// Fungere ikke super godt mht til Constant.
-// fx beanConf.injectConstantInto <--- nu er vi lige pludselig en constant
-
+/** The configuration of a single binding in an operation. */
 public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
@@ -45,14 +39,14 @@ public abstract class BindingSetup {
     /** The index into {@link OperationSetup#bindings}. */
     public final int index;
 
+    /** Supplies a mirror for the operation */
+    public Supplier<? extends BindingMirror> mirrorSupplier;
+
     /** The underlying operation. */
     public final OperationSetup operation;
 
     /** Supplies a mirror for the operation */
     public final BindingTarget target;
-
-    /** Supplies a mirror for the operation */
-    public Supplier<? extends BindingMirror> mirrorSupplier;
 
     public BindingSetup(OperationSetup operation, int index, User user, BindingTarget target) {
         this.operation = operation;
@@ -61,9 +55,7 @@ public abstract class BindingSetup {
         this.boundBy = user;
     }
 
-    public final User boundBy() {
-        return boundBy;
-    }
+    public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -77,7 +69,4 @@ public abstract class BindingSetup {
         }
         return mirror;
     }
-    
-    
-    public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
 }

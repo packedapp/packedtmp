@@ -46,4 +46,8 @@ public final class Framework {
             return 0;
         }
     }
+    
+    enum Release {
+        RELEASE_1;
+    }
 }

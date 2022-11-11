@@ -62,10 +62,4 @@ public final class ServiceBindingSetup extends BindingSetup {
         MethodHandle mh = entry.provider.operation.buildInvoker();
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    public MethodHandle read() {
-//        return entry.provider.operation.buildInvoker();
-//    }
 }

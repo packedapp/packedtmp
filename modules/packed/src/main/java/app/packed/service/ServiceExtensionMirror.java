@@ -9,19 +9,15 @@ import java.util.Map;
 import app.packed.container.ExtensionMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
-import internal.app.packed.service.OldServiceResolver;
+import internal.app.packed.service.ServiceManager;
 import internal.app.packed.service.ServiceManagerEntry;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
-    /** The service manager */
-    private final OldServiceResolver services;
-
     private final ContainerSetup container;
 
-    ServiceExtensionMirror(ContainerSetup container, OldServiceResolver services) {
-        this.services = requireNonNull(services);
+    ServiceExtensionMirror(ContainerSetup container) {
         this.container = requireNonNull(container);
     }
 
@@ -38,7 +34,21 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     // Alternativet er kun at have
     public ServiceContract contract() {
-        return services.newServiceContract(container);
+        ServiceManager m = container.sm;
+        ServiceContract.Builder builder = ServiceContract.builder();
+        m.exports.keySet().forEach(k -> builder.provide(k));
+
+        for (var e : m.entries.entrySet()) {
+            ServiceManagerEntry sm = e.getValue();
+            if (sm.provider == null) {
+                if (sm.isRequired) {
+                    builder.require(e.getKey());
+                } else {
+                    builder.requireOptional(e.getKey());
+                }
+            }
+        }
+        return builder.build();
     }
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...

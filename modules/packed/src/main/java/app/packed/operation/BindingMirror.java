@@ -72,7 +72,7 @@ public class BindingMirror implements Mirror {
 
     /** {@return the x who created binding.} */
     public User boundBy() {
-        return binding().boundBy();
+        return binding().boundBy;
     }
 
     /** {@return the dependencies this binding introduces.} */
