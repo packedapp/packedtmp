@@ -31,7 +31,7 @@ import internal.app.packed.service.old.InternalDependency;
 final class IntrospectedBeanParameter {
 
     public static void resolveParameter(IntrospectedBean iBean, OperationSetup operation, int index) {
-        Variable var = operation.type.parameter(index);
+        Variable var = operation.site.type.parameter(index);
 
         // if isComposit
         // Create a new CompositeBinding
@@ -63,7 +63,7 @@ final class IntrospectedBeanParameter {
         boolean resolveAsService = operation.operator.extensionType == BeanExtension.class;
 
         if (resolveAsService) {
-            InternalDependency ia = InternalDependency.fromOperationType(operation.type).get(index);
+            InternalDependency ia = InternalDependency.fromOperationType(operation.site.type).get(index);
             operation.bindings[index] = iBean.bean.container.sm.serviceBind(ia.key(), !ia.isOptional(), operation, index);
         } else {
             ExtensionServiceBindingSetup b = new ExtensionServiceBindingSetup(operation, index, var.getType());

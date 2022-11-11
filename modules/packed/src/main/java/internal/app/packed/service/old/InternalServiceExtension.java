@@ -38,10 +38,10 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.LifetimeAccessor;
-import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
+import internal.app.packed.operation.OperationSite.LifetimePoolAccessTarget;
 import internal.app.packed.service.PackedServiceLocator;
 import internal.app.packed.service.ProvidedService;
 
@@ -168,25 +168,25 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
     public void provideOld(ProvidedService provider) {
         OperationSetup o = provider.operation;
         BuildtimeService bis ;
-        if (o.target instanceof LifetimePoolAccessTarget bia) {
+        if (o.site instanceof LifetimePoolAccessTarget bia) {
             //addService(o.bean, provider.entry.key);
             
             OperationSetup os = null;
             LifetimeAccessor accessor = null;
-            if (o.bean.injectionManager.lifetimePoolAccessor == null) {
-                os = o.bean.operations.get(0);
+            if (o.site.bean.injectionManager.lifetimePoolAccessor == null) {
+                os = o.site.bean.operations.get(0);
             } else {
-                accessor = o.bean.injectionManager.lifetimePoolAccessor;
+                accessor = o.site.bean.injectionManager.lifetimePoolAccessor;
             }
 
              bis = new BuildtimeBeanMemberService(provider.entry.key, os, accessor);
-            beans.put(o.bean, bis);
+            beans.put(o.site.bean, bis);
         } else {
-            boolean isStatic = !o.target.requiresBeanInstance();
-            if (!isStatic && o.bean.injectionManager.lifetimePoolAccessor == null) {
+            boolean isStatic = !o.site.requiresBeanInstance();
+            if (!isStatic && o.site.bean.injectionManager.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }
-            DynamicAccessor accessor = provider.isConstant ? o.bean.container.lifetime.pool.reserve(Object.class) : null;
+            DynamicAccessor accessor = provider.isConstant ? o.site.bean.container.lifetime.pool.reserve(Object.class) : null;
              bis = new BuildtimeBeanMemberService(provider.entry.key, o, accessor);
 
             addConsumer(o, accessor);
@@ -263,16 +263,16 @@ public final class InternalServiceExtension extends ContainerOrExtensionInjectio
     }
 
     private void resolve1(DependencyNode node) {
-        List<InternalDependency> dependencies = InternalDependency.fromOperationType(node.operation.type);// null;//factory.dependencies();
+        List<InternalDependency> dependencies = InternalDependency.fromOperationType(node.operation.site.type);// null;//factory.dependencies();
         for (int i = 0; i < dependencies.size(); i++) {
             InternalDependency sd = dependencies.get(i);
 
             Object e;
 
-            if (node.operation.bean.realm instanceof ExtensionTreeSetup ers) {
+            if (node.operation.site.bean.realm instanceof ExtensionTreeSetup ers) {
                 Key<?> requiredKey = sd.key();
-                Key<?> thisKey = Key.of(node.operation.bean.beanClass);
-                ContainerSetup container = node.operation.bean.container;
+                Key<?> thisKey = Key.of(node.operation.site.bean.beanClass);
+                ContainerSetup container = node.operation.site.bean.container;
                 ExtensionSetup es = container.safeUseExtensionSetup(ers.realmType(), null);
                 BeanSetup bs = null;
                 if (thisKey.equals(requiredKey)) {

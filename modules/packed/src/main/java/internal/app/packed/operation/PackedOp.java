@@ -89,7 +89,7 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         return bind(0, argument);
     }
 
-    public abstract OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator);
+    public abstract OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator);
 
     /** {@inheritDoc} */
     public final Op<R> peek(Consumer<? super R> action) {

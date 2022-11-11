@@ -86,7 +86,7 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
                 // We should be able to just take the method handle when needed
                 
                 OperationSetup os = OperationSetup.crack(method.newOperation());
-                mc.methodHandle = os.target.methodHandle;
+                mc.methodHandle = os.site.methodHandle;
             }
 
         };

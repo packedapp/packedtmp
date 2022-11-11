@@ -22,31 +22,24 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import app.packed.operation.OperationTargetMirror.OfConstant;
-import app.packed.operation.OperationTargetMirror.OfConstructorInvoke;
-import app.packed.operation.OperationTargetMirror.OfFieldAccess;
-import app.packed.operation.OperationTargetMirror.OfFunctionCall;
-import app.packed.operation.OperationTargetMirror.OfLifetimePoolAccess;
-import app.packed.operation.OperationTargetMirror.OfMethodHandleInvoke;
-import app.packed.operation.OperationTargetMirror.OfMethodInvoke;
-import internal.app.packed.operation.OperationTarget;
+import app.packed.operation.OperationSiteMirror.OfConstant;
+import app.packed.operation.OperationSiteMirror.OfConstructorInvoke;
+import app.packed.operation.OperationSiteMirror.OfFieldAccess;
+import app.packed.operation.OperationSiteMirror.OfFunctionCall;
+import app.packed.operation.OperationSiteMirror.OfLifetimePoolAccess;
+import app.packed.operation.OperationSiteMirror.OfMethodHandleInvoke;
+import app.packed.operation.OperationSiteMirror.OfMethodInvoke;
+import internal.app.packed.operation.OperationSite;
 
 /**
  * The target of an operation. This is typically a method
  * 
- * @see OperationMirror#target()
+ * @see OperationMirror#site()
  */
-// Proev at undgaa at smid for meget information fra OperationMirror her...
+public sealed interface OperationSiteMirror permits OperationSite, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant {
 
-// Hvad med Factory1<>??? Her taenker vi paa at der bliver fanget annoteringer...
-// Er det Saa Method invoke???Eller FunctionCall
-
-// Maaske drop Invoke til di
-// OperationLocationmirror?
-// OperationKindMirror?
-// InvocationSiteMirror
-public sealed interface OperationTargetMirror permits OperationTarget, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant {
-
+    OperationType type();
+    
     // AnnotataionReader annotations()???
 
     /**
@@ -55,7 +48,7 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
      * An {@link OperationMirror operation} with {@code constant} target never has any {@link OperationMirror#bindings()
      * bindings}.
      */
-    public non-sealed interface OfConstant extends OperationTargetMirror {
+    public non-sealed interface OfConstant extends OperationSiteMirror {
 
         /** {@return the type of constant.} */
         Class<?> constantType();
@@ -63,14 +56,14 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
 
     // Members
     /** Represents an operation that invokes a constructor. */
-    public non-sealed interface OfConstructorInvoke extends OperationTargetMirror {
+    public non-sealed interface OfConstructorInvoke extends OperationSiteMirror {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
     /** Represents an operation that gets, sets or updates a field. */
-    public non-sealed interface OfFieldAccess extends OperationTargetMirror {
+    public non-sealed interface OfFieldAccess extends OperationSiteMirror {
 
         AccessMode accessMode();
 
@@ -87,7 +80,7 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
      * <p>
      * method on a functional interface.
      */
-    public non-sealed interface OfFunctionCall extends OperationTargetMirror {
+    public non-sealed interface OfFunctionCall extends OperationSiteMirror {
 
         /** {@return the functional interface.} */
         Class<?> functionalInterface();
@@ -112,7 +105,7 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
      * This is typically used for beans whose instance is provided or exported as a service.
      */
     //
-    public non-sealed interface OfLifetimePoolAccess extends OperationTargetMirror {
+    public non-sealed interface OfLifetimePoolAccess extends OperationSiteMirror {
 
         // empty if the instance was provided
         // otherwise the operation that created it, and stored it somewhere.
@@ -129,12 +122,12 @@ public sealed interface OperationTargetMirror permits OperationTarget, OfConstru
         // Har maaske ogsaa noget LifetimePoolMirror her????
     } // ofLifetimePool? Hmm
 
-    public non-sealed interface OfMethodHandleInvoke extends OperationTargetMirror {
+    public non-sealed interface OfMethodHandleInvoke extends OperationSiteMirror {
         MethodType methodType();
     }
 
     /** Represents an operation that invokes a method. */
-    public non-sealed interface OfMethodInvoke extends OperationTargetMirror {
+    public non-sealed interface OfMethodInvoke extends OperationSiteMirror {
 
         /** {@return the invokable method.} */
         Method method();

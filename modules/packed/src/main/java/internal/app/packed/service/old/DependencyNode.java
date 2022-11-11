@@ -34,7 +34,7 @@ class DependencyNode {
         this.operation = operation;
         this.la = la;
         if (la != null) {
-            operation.bean.container.lifetime.pool.addOrdered(p -> {
+            operation.site.bean.container.lifetime.pool.addOrdered(p -> {
                 MethodHandle mh = operation.buildInvoker();
 
                 Object instance;

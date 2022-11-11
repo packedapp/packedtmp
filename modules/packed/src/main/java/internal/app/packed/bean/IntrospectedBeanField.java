@@ -38,7 +38,7 @@ import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationTarget.FieldOperationTarget;
+import internal.app.packed.operation.OperationSite.FieldOperationTarget;
 
 /** Responsible for introspecting bean fields. */
 public final class IntrospectedBeanField implements OnField {
@@ -64,8 +64,8 @@ public final class IntrospectedBeanField implements OnField {
     /** Whether or not we can create new operations from this class. */
     private boolean isConfigurationDisabled;
 
-    private IntrospectedBeanField(IntrospectedBean iBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet,
-            Annotation[] annotations, AnnotatedField... annotatedFields) {
+    private IntrospectedBeanField(IntrospectedBean iBean, Contributor contributer, Field field, boolean allowGet, boolean allowSet, Annotation[] annotations,
+            AnnotatedField... annotatedFields) {
         this.iBean = iBean;
         this.contributer = contributer;
         this.field = field;
@@ -133,9 +133,8 @@ public final class IntrospectedBeanField implements OnField {
     }
 
     private OperationHandle newOperation(MethodHandle mh, AccessMode accessMode) {
-        FieldOperationTarget fot = new FieldOperationTarget(mh, field, accessMode);
-        OperationType operationType = OperationType.ofFieldAccess(field, accessMode);
-        OperationSetup operation = new OperationSetup(iBean.bean, operationType, contributer.extension(), fot);
+        FieldOperationTarget fot = new FieldOperationTarget(iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field, accessMode);
+        OperationSetup operation = new OperationSetup(contributer.extension(), fot);
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
         return operation.toHandle(iBean);

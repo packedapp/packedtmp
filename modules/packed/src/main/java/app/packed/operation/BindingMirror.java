@@ -27,7 +27,7 @@ import app.packed.operation.bindings.DefaultBindingMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.OperationTarget.ConstantOperationTarget;
+import internal.app.packed.operation.OperationSite.ConstantOperationTarget;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
@@ -112,7 +112,7 @@ public class BindingMirror implements Mirror {
      */
     public boolean isConstant() {
         Optional<OperationMirror> p = providingOperation();
-        return isConstantBinding() || (p.isPresent() && p.get().target() instanceof ConstantOperationTarget);
+        return isConstantBinding() || (p.isPresent() && p.get().site() instanceof ConstantOperationTarget);
     }
 
     public boolean isConstantBinding() {
@@ -132,7 +132,7 @@ public class BindingMirror implements Mirror {
     /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
-        return b.operation.type.parameter(b.index);
+        return b.operation.site.type.parameter(b.index);
     }
 }
 //; // What are we having injected... Giver det mening for functions????

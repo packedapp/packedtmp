@@ -38,7 +38,7 @@ import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationTargetMirror;
+import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import app.packed.service.InvalidKeyException;
@@ -513,7 +513,7 @@ public abstract class BeanIntrospector {
          * Creates a new operation that read a field as specified by {@link Lookup#unreflectGetter(Field)}.
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationTargetMirror.OfFieldAccess} as its {@link OperationMirror#target()}.
+         * {@link OperationSiteMirror.OfFieldAccess} as its {@link OperationMirror#site()}.
          * 
          * @return an operation handle
          */
@@ -524,7 +524,7 @@ public abstract class BeanIntrospector {
          * {@link VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)}.
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationTargetMirror.OfFieldAccess} as its {@link OperationMirror#target()}.
+         * {@link OperationSiteMirror.OfFieldAccess} as its {@link OperationMirror#site()}.
          * 
          * @param accessMode
          *            the access mode of the operation
@@ -543,7 +543,7 @@ public abstract class BeanIntrospector {
          * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationTargetMirror.OfFieldAccess} as its {@link OperationMirror#target()}.
+         * {@link OperationSiteMirror.OfFieldAccess} as its {@link OperationMirror#site()}.
          * 
          * @return an operation handle
          */
@@ -620,7 +620,7 @@ public abstract class BeanIntrospector {
          * Creates a new operation that can invoke the underlying method.
          * <p>
          * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationTargetMirror.OfMethodInvoke} as its {@link OperationMirror#target()}.
+         * {@link OperationSiteMirror.OfMethodInvoke} as its {@link OperationMirror#site()}.
          * 
          * @return an operation handle
          * 

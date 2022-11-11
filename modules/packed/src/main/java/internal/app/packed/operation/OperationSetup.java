@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.container.ExtensionSetup;
@@ -59,9 +58,6 @@ public final class OperationSetup {
     private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
             OperationSetup.class);
 
-    /** The bean this operation belongs to. */
-    public final BeanSetup bean;
-
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
@@ -77,23 +73,18 @@ public final class OperationSetup {
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
 
-    public ExtensionSetup operator;
-
     /** The name of the operation */
     public String name; // name = operator.simpleName + "Operation"
 
-    /** The target of the operation. */
-    public final OperationTarget target;
+    public ExtensionSetup operator;
 
-    /** The type of the operation. */
-    public final OperationType type;
+    /** The operation site. */
+    public final OperationSite site;
 
-    public OperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator, OperationTarget operationTarget) {
-        this.bean = requireNonNull(bean);
-        this.type = requireNonNull(type);
-        this.target = requireNonNull(operationTarget);
+    public OperationSetup(ExtensionSetup operator, OperationSite site) {
+        this.site = requireNonNull(site);
         this.operator = requireNonNull(operator);
-        this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
+        this.bindings = site.type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[site.type.parameterCount()];
     }
 
     // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
@@ -103,7 +94,7 @@ public final class OperationSetup {
         MethodHandle mh = buildInvoker0();
         if (mh.type().parameterCount() != 1) {
             System.err.println(mh.type());
-            throw new Error("Bean : " + bean.path() + ", operation : " + name);
+            throw new Error("Bean : " + site.bean.path() + ", operation : " + name);
         }
         if (mh.type().parameterType(0) != LifetimeObjectArena.class) {
             System.err.println(mh.type());
@@ -113,7 +104,7 @@ public final class OperationSetup {
     }
 
     public MethodHandle buildInvoker0() {
-        bean.container.application.checkInCodegenPhase();
+        site.bean.container.application.checkInCodegenPhase();
 
         if (isComputed) {
          //   throw new IllegalStateException("This method can only be called once");
@@ -121,7 +112,7 @@ public final class OperationSetup {
 
         isComputed = true;
 
-        MethodHandle mh = target.methodHandle;
+        MethodHandle mh = site.methodHandle;
 //        System.out.println("--------Build Invoker-------------------");
 //        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
 //        System.out.println(type);
@@ -129,7 +120,7 @@ public final class OperationSetup {
 
         //if (target instanceof BeanInstanceAccess)
         if (bindings.length == 0) {
-            if (!target.requiresBeanInstance()) {
+            if (!site.requiresBeanInstance()) {
                 if (mh.type().parameterCount() > 0) {
                     return mh;
                 }
@@ -137,8 +128,8 @@ public final class OperationSetup {
             }
         }
 
-        if (target.requiresBeanInstance()) {
-            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean(bean));
+        if (site.requiresBeanInstance()) {
+            mh = MethodHandles.collectArguments(mh, 0, site.bean.injectionManager.accessBean(site.bean));
         }
 
         for (int i = 0; i < bindings.length; i++) {
@@ -146,11 +137,11 @@ public final class OperationSetup {
             mh = bindings[i].bindIntoOperation(mh);
         }
 
-        int count = bindings.length + (target.requiresBeanInstance() ? 1 : 0);
+        int count = bindings.length + (site.requiresBeanInstance() ? 1 : 0);
 
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
         if (count != 0) {
-            MethodType mt = MethodType.methodType(target.methodHandle.type().returnType(), LifetimeObjectArena.class);
+            MethodType mt = MethodType.methodType(site.methodHandle.type().returnType(), LifetimeObjectArena.class);
             mh = MethodHandles.permuteArguments(mh, mt, new int[count]);
         }
 
@@ -159,6 +150,19 @@ public final class OperationSetup {
         return mh;
         // Must be computed relative to invocating site
         // throw new UnsupportedOperationException();
+    }
+
+    public Set<BeanSetup> dependsOn() {
+        HashSet<BeanSetup> result = new HashSet<>();
+        forEachBinding(b -> {
+            if (b instanceof ExtensionServiceBindingSetup s) {
+                requireNonNull(s.extensionBean);
+                result.add(s.extensionBean);
+            } else if (b instanceof ServiceBindingSetup s) {
+                result.add(s.entry.provider.operation.site.bean);
+            }
+        });
+        return result;
     }
 
     // readOnly. Will not work if for example, resolving a binding
@@ -191,19 +195,6 @@ public final class OperationSetup {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-    }
-
-    public Set<BeanSetup> dependsOn() {
-        HashSet<BeanSetup> result = new HashSet<>();
-        forEachBinding(b -> {
-            if (b instanceof ExtensionServiceBindingSetup s) {
-                requireNonNull(s.extensionBean);
-                result.add(s.extensionBean);
-            } else if (b instanceof ServiceBindingSetup s) {
-                result.add(s.entry.provider.operation.bean);
-            }
-        });
-        return result;
     }
 
     /**

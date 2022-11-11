@@ -53,7 +53,7 @@ public class TestNew extends BaseAssembly {
                 System.out.println(sbm);
                 System.out.println("Bean " + b.path() + " provides services for key " + e.key());
                 for (var v : sbm) {
-                    System.out.println("Bound to " + v.operation().target());
+                    System.out.println("Bound to " + v.operation().site());
                 }
             });
         }

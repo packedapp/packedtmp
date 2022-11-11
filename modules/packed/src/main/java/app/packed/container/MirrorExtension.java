@@ -56,7 +56,7 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
 
             @Override
             public void onBinding(OnBinding binding) {
-                BeanSetup bean = ((IntrospectedBeanBinding) binding).operation.bean;
+                BeanSetup bean = ((IntrospectedBeanBinding) binding).operation.site.bean;
                 if (binding.hookClass() == ApplicationMirror.class) {
                     binding.bind(bean.container.application.mirror());
                 } else if (binding.hookClass() == ContainerMirror.class) {

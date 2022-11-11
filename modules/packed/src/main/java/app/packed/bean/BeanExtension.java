@@ -156,21 +156,21 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
                     OperationSetup os = OperationSetup.crack(method.newOperation());
-                    os.bean.operationsLifetime.add(new LifetimeOp(RunState.INITIALIZING, os));
+                    os.site.bean.operationsLifetime.add(new LifetimeOp(RunState.INITIALIZING, os));
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
                     @SuppressWarnings("unused")
                     OnStart oi = ar.readRequired(OnStart.class);
                     OperationSetup os = OperationSetup.crack(method.newOperation());
-                    os.bean.operationsLifetime.add(new LifetimeOp(RunState.STARTING, os));
+                    os.site.bean.operationsLifetime.add(new LifetimeOp(RunState.STARTING, os));
                 }
 
                 if (ar.isAnnotationPresent(OnStop.class)) {
                     @SuppressWarnings("unused")
                     OnStop oi = ar.readRequired(OnStop.class);
                     OperationSetup os = OperationSetup.crack(method.newOperation());
-                    os.bean.operationsLifetime.add(new LifetimeOp(RunState.STOPPING, os));
+                    os.site.bean.operationsLifetime.add(new LifetimeOp(RunState.STOPPING, os));
                 }
 
                 if (ar.isAnnotationPresent(Inject.class)) {

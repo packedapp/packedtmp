@@ -33,7 +33,7 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeOp;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
+import internal.app.packed.operation.OperationSite.LifetimePoolAccessTarget;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.service.old.BeanInjectionManager;
@@ -155,8 +155,8 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup instanceAccessOperation() {
         // Hmm, er det med i listen af operationer???? IDK
-        OperationSetup os = new OperationSetup(this, OperationType.of(beanClass), installedBy,
-                new LifetimePoolAccessTarget(this, injectionManager.accessBean(this)));
+        OperationSetup os = new OperationSetup(installedBy,
+                new LifetimePoolAccessTarget(this, OperationType.of(beanClass), injectionManager.accessBean(this)));
         os.name = "InstantAccess";
         return os;
     }
@@ -299,7 +299,7 @@ public final class BeanSetup {
 
         if (sourceKind == BeanSourceKind.OP) {
             PackedOp<?> op = (PackedOp<?>) bean.source;
-            OperationSetup os = new OperationSetup(bean, op.type(), bean.installedBy, new LifetimePoolAccessTarget(bean, op.mhOperation));
+            OperationSetup os = new OperationSetup(bean.installedBy, new LifetimePoolAccessTarget(bean, OperationType.of(beanClass), op.mhOperation));
             bean.operations.add(os);
         }
 

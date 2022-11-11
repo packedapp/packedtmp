@@ -25,9 +25,9 @@ import app.packed.service.ProvidedServiceCollisionException;
 import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationTarget;
-import internal.app.packed.operation.OperationTarget.LifetimePoolAccessTarget;
-import internal.app.packed.operation.OperationTarget.MethodOperationTarget;
+import internal.app.packed.operation.OperationSite;
+import internal.app.packed.operation.OperationSite.LifetimePoolAccessTarget;
+import internal.app.packed.operation.OperationSite.MethodOperationTarget;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.StringFormatter;
 
@@ -48,16 +48,16 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     }
 
     private String makeDublicateProvideErrorMsg(ProvidedService provider, OperationSetup otherOperation) {
-        boolean isSameBean = provider.operation.bean == otherOperation.bean;
-        OperationTarget existingTarget = provider.operation.target;
-        OperationTarget thisTarget = otherOperation.target;
+        OperationSite existingTarget = provider.operation.site;
+        OperationSite thisTarget = otherOperation.site;
+
         Key<?> key = provider.entry.key;
 
-        if (isSameBean) {
-            return "This bean is already " + provider.operation.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
+        if (existingTarget.bean == thisTarget.bean) {
+            return "This bean is already " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
         }
         if (existingTarget instanceof LifetimePoolAccessTarget) {
-            return "Another bean of type " + provider.operation.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
+            return "Another bean of type " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
         } else if (existingTarget instanceof MethodOperationTarget m) {
             String ss = StringFormatter.formatShortWithParameters(m.method());
             return "A method " + ss + " is already providing a service for Key<" + key + ">";
@@ -93,14 +93,14 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 
         // add the service provider to the bean
-        operation.bean.operationsProviders.add(provider);
+        operation.site.bean.operationsProviders.add(provider);
 
         if (exportAll) {
             serviceExport(key, operation);
         }
 
         // maintain old
-        operation.bean.container.injectionManager.provideOld(provider);
+        operation.site.bean.container.injectionManager.provideOld(provider);
 
         return provider;
     }

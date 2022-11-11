@@ -36,7 +36,7 @@ import internal.app.packed.operation.OperationSetup;
 
 /**
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation
- * known as its {@link OperationTargetMirror target}.
+ * known as its {@link OperationSiteMirror target}.
  * <p>
  * Operation handles can only be constructed by {@link Extension extensions}.
  * 
@@ -117,8 +117,8 @@ public final class OperationHandle {
         // This method does not throw IllegalStateExtension, but OnBinding may.
         operation.isConfigurationDisabled = true;
         // custom invocationContext must have been set before calling this method
-        checkIndex(parameterIndex, operation.type.parameterCount());
-        return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+        checkIndex(parameterIndex, operation.site.type.parameterCount());
+        return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.site.type.parameter(parameterIndex));
     }
 
     /**
@@ -180,7 +180,7 @@ public final class OperationHandle {
         if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
             throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
         }
-        return operation.bean.container.application.codegenHelper.addArray(bean, this);
+        return operation.site.bean.container.application.codegenHelper.addArray(bean, this);
     }
 
     public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
@@ -208,7 +208,7 @@ public final class OperationHandle {
     public void onCodegen(Consumer<OperationHandle> action) {
         requireNonNull(action, "action is null");
         checkConfigurable();
-        operation.bean.container.application.addCodegenAction(() -> action.accept(this));
+        operation.site.bean.container.application.addCodegenAction(() -> action.accept(this));
     }
 
     /**
@@ -240,7 +240,7 @@ public final class OperationHandle {
 
     /** {@return the type of this operation.} */
     public OperationType type() {
-        return operation.type;
+        return operation.site.type;
     }
 
 }

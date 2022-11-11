@@ -37,14 +37,14 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
     /** {@inheritDoc} */
     @Override
-    public final OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
-        return new OperationSetup(bean, type, operator, newTarget());
+    public final OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+        return new OperationSetup(operator, newTarget(bean));
     }
 
     /** {@return the target of the op.} */
     // Maaske require det i konstrukturen...
     // Vi skal jo altid lave det..
-    abstract OperationTarget newTarget();
+    abstract OperationSite newTarget(BeanSetup bean);
 
     /** An terminal op for a MethodHandle. */
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
@@ -55,8 +55,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        OperationTarget newTarget() {
-            return new OperationTarget.MethodHandleOperationTarget(mhOperation);
+        OperationSite newTarget(BeanSetup bean) {
+            return new OperationSite.MethodHandleOperationTarget(bean, type, mhOperation);
         }
     }
 
@@ -69,8 +69,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        OperationTarget newTarget() {
-            return new OperationTarget.FunctionOperationTarget(mhOperation, Function.class);
+        OperationSite newTarget(BeanSetup bean) {
+            return new OperationSite.FunctionOperationTarget(bean, type, mhOperation, Function.class);
         }
     }
 }

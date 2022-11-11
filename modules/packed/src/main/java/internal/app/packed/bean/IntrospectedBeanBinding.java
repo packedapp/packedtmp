@@ -134,10 +134,10 @@ public final class IntrospectedBeanBinding implements OnBinding {
         checkIsBindable();
         PackedOp<?> pop = PackedOp.crack(op);
 
-        OperationSetup os = pop.newOperationSetup(operation.bean, pop.type(), bindingExtension);
+        OperationSetup os = pop.newOperationSetup(operation.site.bean, bindingExtension);
         OperationalBindingSetup obs = new OperationalBindingSetup(os, index, User.application(), new BindingHookTarget(), os);
 
-        if (variable.getType() != os.target.methodHandle.type().returnType()) {
+        if (variable.getType() != os.site.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
         }
         if (iBean != null) {

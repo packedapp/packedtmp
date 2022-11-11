@@ -47,8 +47,8 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
     }
     /** {@inheritDoc} */
     @Override
-    public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
-        return delegate.newOperationSetup(bean, type, operator);
+    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+        return delegate.newOperationSetup(bean, operator);
     }
     
     /** A op that binds 1 or more constants. */
@@ -68,8 +68,8 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, OperationType type, ExtensionSetup operator) {
-            OperationSetup os = super.newOperationSetup(bean, type, operator);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+            OperationSetup os = super.newOperationSetup(bean, operator);
             // insert bindings
             return os;
         }
