@@ -7,18 +7,22 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.container.ExtensionMirror;
+import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
+import internal.app.packed.service.OldServiceResolver;
 import internal.app.packed.service.ServiceManagerEntry;
-import internal.app.packed.service.old.InternalServiceExtension;
 
 /** A specialized extension mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** The service manager */
-    private final InternalServiceExtension services;
+    private final OldServiceResolver services;
 
-    ServiceExtensionMirror(InternalServiceExtension services) {
+    private final ContainerSetup container;
+
+    ServiceExtensionMirror(ContainerSetup container, OldServiceResolver services) {
         this.services = requireNonNull(services);
+        this.container = requireNonNull(container);
     }
 
     /**
@@ -34,7 +38,7 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     // Alternativet er kun at have
     public ServiceContract contract() {
-        return services.newServiceContract();
+        return services.newServiceContract(container);
     }
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...
@@ -52,7 +56,7 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     /** { @return a map view of all the services that are exported from the container.} */
     public Map<Key<?>, ExportedServiceMirror> exports() {
         LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
-        for (ExportedService e : services.container.sm.exports.values()) {
+        for (ExportedService e : container.sm.exports.values()) {
             ExportedServiceMirror mirror = (ExportedServiceMirror) e.bos.mirror();
             result.put(e.key, mirror);
         }
@@ -62,7 +66,7 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     /** { @return a map view of all the services that are provided internally in the container.} */
     public Map<Key<?>, ProvidedServiceMirror> provisions() {
         LinkedHashMap<Key<?>, ProvidedServiceMirror> result = new LinkedHashMap<>();
-        for (ServiceManagerEntry e : services.container.sm.entries.values()) {
+        for (ServiceManagerEntry e : container.sm.entries.values()) {
             ProvidedServiceMirror mirror = (ProvidedServiceMirror) e.provider.operation.mirror();
             result.put(e.key, mirror);
         }

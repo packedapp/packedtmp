@@ -27,7 +27,7 @@ import app.packed.operation.bindings.DefaultBindingMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
-import internal.app.packed.operation.OperationSite.ConstantOperationTarget;
+import internal.app.packed.operation.OperationSite.ConstantOperationSite;
 import internal.app.packed.operation.binding.BindingSetup;
 
 /**
@@ -112,7 +112,7 @@ public class BindingMirror implements Mirror {
      */
     public boolean isConstant() {
         Optional<OperationMirror> p = providingOperation();
-        return isConstantBinding() || (p.isPresent() && p.get().site() instanceof ConstantOperationTarget);
+        return isConstantBinding() || (p.isPresent() && p.get().site() instanceof ConstantOperationSite);
     }
 
     public boolean isConstantBinding() {

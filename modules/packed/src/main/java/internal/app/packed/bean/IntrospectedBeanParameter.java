@@ -23,7 +23,7 @@ import internal.app.packed.bean.BeanHookModel.ParameterTypeRecord;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.service.old.InternalDependency;
+import internal.app.packed.operation.binding.InternalDependency;
 
 /**
  *

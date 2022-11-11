@@ -26,8 +26,8 @@ import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSite;
-import internal.app.packed.operation.OperationSite.LifetimePoolAccessTarget;
-import internal.app.packed.operation.OperationSite.MethodOperationTarget;
+import internal.app.packed.operation.OperationSite.LifetimePoolAccessSite;
+import internal.app.packed.operation.OperationSite.MethodOperationSite;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.StringFormatter;
 
@@ -41,6 +41,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
     // All provided services are automatically exported
     public boolean exportAll;
 
+    /** Exported services from the container. */
     public final LinkedHashMap<Key<?>, ExportedService> exports = new LinkedHashMap<>();
 
     public ServiceManager(@Nullable ServiceManager parent) {
@@ -56,9 +57,9 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         if (existingTarget.bean == thisTarget.bean) {
             return "This bean is already " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
         }
-        if (existingTarget instanceof LifetimePoolAccessTarget) {
+        if (existingTarget instanceof LifetimePoolAccessSite) {
             return "Another bean of type " + existingTarget.bean.beanClass + " is already providing a service for Key<" + key.toStringSimple() + ">";
-        } else if (existingTarget instanceof MethodOperationTarget m) {
+        } else if (existingTarget instanceof MethodOperationSite m) {
             String ss = StringFormatter.formatShortWithParameters(m.method());
             return "A method " + ss + " is already providing a service for Key<" + key + ">";
         }
@@ -100,7 +101,7 @@ public final class ServiceManager extends AbstractTreeNode<ServiceManager> {
         }
 
         // maintain old
-        operation.site.bean.container.injectionManager.provideOld(provider);
+        operation.site.bean.container.injectionManager.provideService(provider);
 
         return provider;
     }

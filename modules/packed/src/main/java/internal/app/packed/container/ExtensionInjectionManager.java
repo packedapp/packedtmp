@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.service.old;
+package internal.app.packed.container;
 
 import static internal.app.packed.util.StringFormatter.format;
 
@@ -33,7 +33,7 @@ import internal.app.packed.bean.BeanSetup;
  */
 // Ideen er at vi har en manager per extension instance
 // Og saa leder man op recursivt
-public final class ExtensionInjectionManager extends ContainerOrExtensionInjectionManager {
+public final class ExtensionInjectionManager {
 
     public final Map<Key<?>, BeanSetup> extensionBeans = new LinkedHashMap<>();
 

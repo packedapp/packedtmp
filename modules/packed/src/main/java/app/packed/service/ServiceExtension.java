@@ -29,7 +29,7 @@ import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.service.old.InternalServiceExtension;
+import internal.app.packed.service.OldServiceResolver;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -78,7 +78,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
 
     private final ExtensionSetup setup = ExtensionSetup.crack(this);
 
-    private final InternalServiceExtension delegate;
+    private final OldServiceResolver delegate;
 
     /** Create a new service extension. */
     ServiceExtension() {
@@ -133,7 +133,6 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkIsConfigurable();
-        delegate.hasExports = true;
 
         setup.container.sm.exportAll = true;
     }
@@ -182,7 +181,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror newExtensionMirror() {
-        return new ServiceExtensionMirror(delegate);
+        return new ServiceExtensionMirror(setup.container, delegate);
     }
 
     /**

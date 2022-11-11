@@ -28,7 +28,7 @@ import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.lifetime.sandbox.PackedManagedLifetime;
-import internal.app.packed.service.old.InternalServiceExtension;
+import internal.app.packed.service.OldServiceResolver;
 import internal.app.packed.util.ThrowableUtil;
 
 /**
@@ -88,7 +88,7 @@ public final class ApplicationInitializationContext {
      * @return a service locator for the application
      */
     public ServiceLocator serviceLocator() {
-        InternalServiceExtension sm = application.container.injectionManager;
+        OldServiceResolver sm = application.container.injectionManager;
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
     }
 

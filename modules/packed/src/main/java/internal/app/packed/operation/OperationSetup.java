@@ -82,8 +82,8 @@ public final class OperationSetup {
     public final OperationSite site;
 
     public OperationSetup(ExtensionSetup operator, OperationSite site) {
-        this.site = requireNonNull(site);
         this.operator = requireNonNull(operator);
+        this.site = requireNonNull(site);
         this.bindings = site.type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[site.type.parameterCount()];
     }
 

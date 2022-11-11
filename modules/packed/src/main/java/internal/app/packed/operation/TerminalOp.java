@@ -42,8 +42,6 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
     }
 
     /** {@return the target of the op.} */
-    // Maaske require det i konstrukturen...
-    // Vi skal jo altid lave det..
     abstract OperationSite newTarget(BeanSetup bean);
 
     /** An terminal op for a MethodHandle. */
@@ -56,7 +54,7 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         OperationSite newTarget(BeanSetup bean) {
-            return new OperationSite.MethodHandleOperationTarget(bean, type, mhOperation);
+            return new OperationSite.MethodHandleOperationSite(bean, type, mhOperation);
         }
     }
 
@@ -70,7 +68,7 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         OperationSite newTarget(BeanSetup bean) {
-            return new OperationSite.FunctionOperationTarget(bean, type, mhOperation, Function.class);
+            return new OperationSite.FunctionOperationSite(bean, type, mhOperation, Function.class);
         }
     }
 }

@@ -21,10 +21,9 @@ import app.packed.application.BuildException;
 import app.packed.service.CircularServiceDependencyException;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ContainerSetup;
-import internal.app.packed.service.old.InternalServiceExtension;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link InternalServiceExtension service composers}
+ * A service multi-composer is responsible for managing 1 or more {@link OldServiceResolver service composers}
  * that are directly connected and part of the same build.
  * <p>
  * This class server two main purposes:

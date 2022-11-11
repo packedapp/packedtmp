@@ -40,9 +40,8 @@ import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSite.ConstructorOperationTarget;
+import internal.app.packed.operation.OperationSite.ConstructorOperationSite;
 import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.service.old.BeanInjectionManager;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
@@ -137,7 +136,7 @@ public final class IntrospectedBean {
 
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
-        OperationSetup os = new OperationSetup(bean.installedBy, new ConstructorOperationTarget(bean, mh, constructor.constructor()));
+        OperationSetup os = new OperationSetup(bean.installedBy, new ConstructorOperationSite(bean, mh, constructor.constructor()));
         os.name = "constructor";
         bean.operations.add(os);
         unBoundOperations.add(os);

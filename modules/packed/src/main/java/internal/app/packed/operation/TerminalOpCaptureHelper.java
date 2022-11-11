@@ -35,7 +35,7 @@ import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import app.packed.service.TypeToken;
 import internal.app.packed.operation.TerminalOp.PackedCapturingOp;
-import internal.app.packed.service.old.InternalDependency;
+import internal.app.packed.operation.binding.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
 

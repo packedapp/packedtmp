@@ -168,8 +168,6 @@ public final /* primitive */ class BeanHandle<T> {
         checkIsConfigurable();
 
         bean.container.sm.serviceExport(key, bean.instanceAccessOperation());
-
-        bean.container.injectionManager.export(bean);
     }
 
     /**

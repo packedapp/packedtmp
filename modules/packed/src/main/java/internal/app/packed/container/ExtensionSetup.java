@@ -14,7 +14,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.framework.Nullable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.service.old.ExtensionInjectionManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;

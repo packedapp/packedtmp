@@ -38,11 +38,12 @@ import internal.app.packed.bean.BeanSetup;
  */
 public sealed abstract class OperationSite implements OperationSiteMirror {
 
+    /** The operation site's bean */
     public final BeanSetup bean;
 
     public final MethodHandle methodHandle;
 
-    /** The operation type. */
+    /** The type of operation site. */
     public final OperationType type;
 
     protected OperationSite(BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
@@ -62,7 +63,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
     }
 
     /** An operation target that simply returns a constant. */
-    public static final class ConstantOperationTarget extends OperationSite implements OperationSiteMirror.OfConstant {
+    public static final class ConstantOperationSite extends OperationSite implements OperationSiteMirror.OfConstant {
 
         /** The constant. */
         @Nullable
@@ -75,7 +76,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public ConstantOperationTarget(BeanSetup bean, OperationType operationType, Class<?> constantType, @Nullable Object constant) {
+        public ConstantOperationSite(BeanSetup bean, OperationType operationType, Class<?> constantType, @Nullable Object constant) {
             super(bean, operationType, MethodHandles.constant(constantType, constant));
             this.constantType = constantType;
             this.constant = constant;
@@ -88,7 +89,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
-    public static final class ConstructorOperationTarget extends OperationSite implements OperationSiteMirror.OfConstructorInvoke {
+    public static final class ConstructorOperationSite extends OperationSite implements OperationSiteMirror.OfConstructorInvoke {
 
         private final Constructor<?> constructor;
 
@@ -96,7 +97,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public ConstructorOperationTarget(BeanSetup bean, MethodHandle methodHandle, Constructor<?> constructor) {
+        public ConstructorOperationSite(BeanSetup bean, MethodHandle methodHandle, Constructor<?> constructor) {
             super(bean, OperationType.ofExecutable(constructor), methodHandle);
             this.constructor = constructor;
         }
@@ -111,7 +112,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
-    public static final class FieldOperationTarget extends OperationSite implements OperationSiteMirror.OfFieldAccess {
+    public static final class FieldOperationSite extends OperationSite implements OperationSiteMirror.OfFieldAccess {
 
         private final AccessMode accessMode;
 
@@ -121,7 +122,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public FieldOperationTarget(BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Field field, AccessMode accessMode) {
+        public FieldOperationSite(BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Field field, AccessMode accessMode) {
             super(bean, operationType, methodHandle);
             this.field = field;
             this.accessMode = accessMode;
@@ -156,7 +157,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
-    public static final class FunctionOperationTarget extends OperationSite implements OperationSiteMirror.OfFunctionCall {
+    public static final class FunctionOperationSite extends OperationSite implements OperationSiteMirror.OfFunctionCall {
 
         // Can read it from the method... no
         private final Class<?> functionalInterface;
@@ -165,7 +166,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public FunctionOperationTarget(BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Class<?> functionalInterface) {
+        public FunctionOperationSite(BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Class<?> functionalInterface) {
             super(bean, operationType, methodHandle);
             this.functionalInterface = requireNonNull(functionalInterface);
         }
@@ -177,14 +178,14 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
-    public static final class LifetimePoolAccessTarget extends OperationSite implements OperationSiteMirror.OfLifetimePoolAccess {
+    public static final class LifetimePoolAccessSite extends OperationSite implements OperationSiteMirror.OfLifetimePoolAccess {
 
 
         /**
          * @param methodHandle
          * @param isStatic
          */
-        public LifetimePoolAccessTarget(BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
+        public LifetimePoolAccessSite(BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
             super(bean, operationType, methodHandle);
         }
 
@@ -195,13 +196,13 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
-    public static final class MethodHandleOperationTarget extends OperationSite implements OperationSiteMirror.OfMethodHandleInvoke {
+    public static final class MethodHandleOperationSite extends OperationSite implements OperationSiteMirror.OfMethodHandleInvoke {
 
         /**
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public MethodHandleOperationTarget(BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
+        public MethodHandleOperationSite(BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
             super(bean, operationType, methodHandle);
         }
 
@@ -212,7 +213,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
-    public static final class MethodOperationTarget extends OperationSite implements OperationSiteMirror.OfMethodInvoke {
+    public static final class MethodOperationSite extends OperationSite implements OperationSiteMirror.OfMethodInvoke {
 
         private final Method method;
 
@@ -220,7 +221,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
          * @param methodHandle
          * @param requiresBeanInstance
          */
-        public MethodOperationTarget(BeanSetup bean, MethodHandle methodHandle, Method method) {
+        public MethodOperationSite(BeanSetup bean, MethodHandle methodHandle, Method method) {
             super(bean, OperationType.ofExecutable(method), methodHandle);
             this.method = method;
         }

@@ -36,8 +36,8 @@ import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.service.OldServiceResolver;
 import internal.app.packed.service.ServiceManager;
-import internal.app.packed.service.old.InternalServiceExtension;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -79,7 +79,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
     /** The container's injection manager. */
-    public final InternalServiceExtension injectionManager;
+    public final OldServiceResolver injectionManager = new OldServiceResolver();
 
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
@@ -132,8 +132,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         }
 
         requireNonNull(wirelets, "wirelets is null");
-
-        this.injectionManager = new InternalServiceExtension(this);
 
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.

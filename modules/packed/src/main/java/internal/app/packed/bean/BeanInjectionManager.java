@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.service.old;
+package internal.app.packed.bean;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.framework.Nullable;
-import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
