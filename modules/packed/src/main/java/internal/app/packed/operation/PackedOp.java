@@ -31,7 +31,7 @@ import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.IntermediateOp.BoundOp;
-import internal.app.packed.operation.IntermediateOp.PeekableOp;
+import internal.app.packed.operation.IntermediateOp.PeekingOp;
 import internal.app.packed.util.MethodHandleUtil;
 
 /** The internal implementation of Op. */
@@ -97,12 +97,12 @@ public abstract sealed class PackedOp<R> implements Op<R> permits IntermediateOp
         if (type.returnType() == void.class) {
             throw new UnsupportedOperationException("This method cannot be used on Op's that have void return type, [ type = " + type + "]");
         }
-        MethodHandle mh = PeekableOp.ACCEPT.bindTo(action);
+        MethodHandle mh = PeekingOp.ACCEPT.bindTo(action);
         MethodHandle consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(type().returnType(), type().returnType()));
 
         mh = MethodHandles.filterReturnValue(mh, consumer);
         mh = MethodHandleUtil.castReturnType(mh, type().returnType());
-        return new PeekableOp<>(this, mh);
+        return new PeekingOp<>(this, mh);
     }
 
     /** {@inheritDoc} */

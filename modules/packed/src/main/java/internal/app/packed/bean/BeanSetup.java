@@ -30,7 +30,7 @@ import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.lifetime.LifetimeOp;
+import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSite.LifetimePoolAccessSite;
@@ -88,7 +88,7 @@ public final class BeanSetup {
     public final ArrayList<OperationSetup> operations = new ArrayList<>();
 
     /** The beans lifetime operations. */
-    public final List<LifetimeOp> operationsLifetime = new ArrayList<>();
+    public final List<LifetimeOperation> operationsLifetime = new ArrayList<>();
 
     public final List<ProvidedService> operationsProviders = new ArrayList<>();
 

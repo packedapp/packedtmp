@@ -24,18 +24,18 @@ import internal.app.packed.operation.OperationSetup;
  */
 public final class ExportedService {
 
-    /** The operation that exports the service. */
-    public final OperationSetup bos;
-
     /** The key under which the service is exported */
     public final Key<?> key;
+
+    /** The operation that exports the service. */
+    public final OperationSetup os;
 
     /** A route to where the service is actually located. Null indicates directly from the operation */
     @Nullable
     public final ServicePath path;
 
     ExportedService(OperationSetup bos, Key<?> key) {
-        this.bos = bos;
+        this.os = bos;
         this.key = key;
         this.path = null;
     }

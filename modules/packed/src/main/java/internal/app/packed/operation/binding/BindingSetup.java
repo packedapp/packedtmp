@@ -28,6 +28,20 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The configuration of a single binding in an operation. */
+
+// Vi vil godt gemme noget om 
+// Hvorfor er denne binding blevet lavet... Vi saa det var en composite, Vi resolved den som en service, den var manuelt bounded
+
+// CompositeBinding (Always op)
+// OpBinding (Always constant)
+// @Anno/ Class Hook BindingOp
+//// Constant
+//// Non
+// Service/ExtensionService (Always opish)
+
+
+// Constant vs Op vs InvocationArgument
+
 public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
@@ -42,13 +56,13 @@ public abstract class BindingSetup {
     /** Supplies a mirror for the operation */
     public Supplier<? extends BindingMirror> mirrorSupplier;
 
-    /** The underlying operation. */
+    /** The operation this binding is a part of. */
     public final OperationSetup operation;
 
     /** Supplies a mirror for the operation */
-    public final BindingTarget target;
+    public final BindingOrigin target;
 
-    public BindingSetup(OperationSetup operation, int index, User user, BindingTarget target) {
+    public BindingSetup(OperationSetup operation, int index, User user, BindingOrigin target) {
         this.operation = operation;
         this.index = index;
         this.target = target;

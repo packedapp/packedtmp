@@ -21,7 +21,7 @@ import app.packed.framework.Nullable;
 import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
 
-/** The invocation site of an operation. */
+/** The location from where an operation is invoked.  */
 public final class InvocationSite {
     // Add info about context I think (it should be in the InvocationType)
 
@@ -37,7 +37,7 @@ public final class InvocationSite {
     public final ExtensionSetup invokingExtension;
 
     // Should we store the bean as well???
-    
+
     public InvocationSite(InvocationType invocationType, ExtensionSetup invokingExtension) {
         this.invocationType = requireNonNull(invocationType);
         this.invokingExtension = requireNonNull(invokingExtension);

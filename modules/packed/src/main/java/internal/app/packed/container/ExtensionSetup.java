@@ -161,10 +161,10 @@ public final class ExtensionSetup extends AbstractTreeNode<ExtensionSetup> imple
             throw new UnsupportedOperationException("An extension instance cannot be created outside of use(Class<? extends Extension> extensionClass)");
         }
         ExtensionSetup s = wrapper.setup;
-        wrapper.setup = null;
         if (s == null) {
             throw new IllegalStateException();
         }
+        wrapper.setup = null;
         return s;
     }
 }

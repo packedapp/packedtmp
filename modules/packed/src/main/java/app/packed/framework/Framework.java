@@ -20,17 +20,28 @@ import java.util.Set;
 /** This class contains information about the framework. */
 public final class Framework {
 
+    /** A set of module names that makes of the framework. So far we only have one. */
+    static final Set<String> MODULE_NAMES = Set.of("app.packed");
+
+    static final String NAME = "Packed";
+//
+//    public static void main(String[] args) {
+//        Package p = FrameworkProps.class.getPackage();
+//        System.out.printf("%s%n  Title: %s%n  Version: %s%n  Vendor: %s%n", FrameworkProps.class.getName(), p.getImplementationTitle(),
+//                p.getImplementationVersion(), p.getImplementationVendor());
+//    }
+    
     /** No framework for you. */
     private Framework() {}
 
-    /** {@return a set of module names that make up the framework.} */
+    /** {@return a set of names of all the modules that make up the framework.} */
     public static Set<String> moduleNames() {
-        return FrameworkProps.MODULE_NAMES;
+        return MODULE_NAMES;
     }
 
     /** {@return the name of the framework.} */
     public static String name() {
-        return FrameworkProps.NAME;
+        return NAME;
     }
 
     /** {return the version of the frame as a {@link Version}.} */
@@ -38,6 +49,11 @@ public final class Framework {
         throw new UnsupportedOperationException();
     }
 
+    // Maybe just add it for release 2
+    enum Release {
+        RELEASE_1;
+    }
+    
     public static final class Version implements Comparable<Version> {
 
         /** {@inheritDoc} */
@@ -45,9 +61,5 @@ public final class Framework {
         public int compareTo(Version o) {
             return 0;
         }
-    }
-    
-    enum Release {
-        RELEASE_1;
     }
 }

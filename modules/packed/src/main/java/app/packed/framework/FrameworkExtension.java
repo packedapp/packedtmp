@@ -18,10 +18,10 @@ package app.packed.framework;
 import app.packed.container.Extension;
 
 /**
- * A framework extension indicates that an extension is part of the framework.
+ * A framework extension indicates that an extension is part of the (Packed) framework.
  * <p>
  * Framework extensions receive no special treatment by the framework. It merely server as a marker class to easily see
- * if a particular extension is part of the framework.
+ * whether or not a particular extension is part of the framework.
  * <p>
  * A framework extension must be places in a {@link Module module} whose {@link Module#getName() name} is contained in
  * {@link Framework#moduleNames()} or the unnamed module.

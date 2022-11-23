@@ -53,9 +53,9 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
     /** The lifetime constant pool. */
     public final LifetimeObjectArenaSetup pool = new LifetimeObjectArenaSetup();
 
-    ArrayList<LifetimeOp> start = new ArrayList<>();
+    ArrayList<LifetimeOperation> start = new ArrayList<>();
     ArrayList<MethodHandle> startMh = new ArrayList<>();
-    ArrayList<LifetimeOp> stop = new ArrayList<>();
+    ArrayList<LifetimeOperation> stop = new ArrayList<>();
 
     ArrayList<MethodHandle> stopMh = new ArrayList<>();
 
@@ -120,20 +120,20 @@ public final class ContainerLifetimeSetup extends LifetimeSetup {
         if (bs.beanKind == BeanKind.CONTAINER || bs.beanKind == BeanKind.LAZY) {
             if (bs.sourceKind != BeanSourceKind.INSTANCE) {
                 initialize.add(bs.operations.get(0));
-                initializeMh.add(bs.operations.get(0).buildInvoker());
+                initializeMh.add(bs.operations.get(0).generateMethodHandle());
             }
         }
         
-        for (LifetimeOp lop : bs.operationsLifetime) {
+        for (LifetimeOperation lop : bs.operationsLifetime) {
             if (lop.state() == RunState.INITIALIZING) {
                 initialize.add(lop.os());
-                initializeMh.add(lop.os().buildInvoker());
+                initializeMh.add(lop.os().generateMethodHandle());
             } else if (lop.state() == RunState.STARTING) {
                 start.add(lop);
-                startMh.add(lop.os().buildInvoker());
+                startMh.add(lop.os().generateMethodHandle());
             } else if (lop.state() == RunState.STOPPING) {
                 stop.add(lop);
-                stopMh.add(lop.os().buildInvoker());
+                stopMh.add(lop.os().generateMethodHandle());
             } else {
                 throw new Error();
             }

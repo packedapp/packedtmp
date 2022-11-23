@@ -16,15 +16,17 @@
 package app.packed.container;
 
 import app.packed.application.BuildException;
+import app.packed.bean.CustomBeanHook;
 
 /**
- * An assembly that delegates to another assembly.
+ * An assembly that simply delegates to another assembly.
  * <p>
  * A typical use case for using a delegating assembly is to hide methods on the original assembly. Or to configure the
  * assembly, for example, in test scenarios where you want to specify an assembly class in an annotation.
  * <p>
- * Delegating assemblies cannot use the {@link AssemblyHook} annotation. Attempting to use a delegating assembly with
- * an assembly hook will result in a {@link BuildException} being thrown.
+ * Delegating assemblies cannot use the {@link AssemblyHook} annotation or {@link CustomBeanHook custom bean hooks}.
+ * Attempting to use any of these annotations on a delegating assembly will result in a {@link BuildException} being
+ * thrown.
  */
 public non-sealed abstract class DelegatingAssembly extends Assembly {
 

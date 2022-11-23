@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
-import app.packed.framework.Nullable;
 import app.packed.bean.BeanMirror;
+import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
@@ -20,7 +20,7 @@ import internal.app.packed.container.Mirror;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
-/** A mirror of a single container. */
+/** A mirror of a container. */
 @BindingHook(extension = MirrorExtension.class)
 public class ContainerMirror implements Mirror {
 
@@ -55,11 +55,7 @@ public class ContainerMirror implements Mirror {
     @Nullable
     private ContainerSetup container;
 
-    /**
-     * Create a new container mirror.
-     * <p>
-     * Subclasses should have a single package-protected constructor.
-     */
+    /** Create a new container mirror. */
     public ContainerMirror() {}
 
     /** {@return the application this container is a part of.} */
@@ -67,7 +63,7 @@ public class ContainerMirror implements Mirror {
         return container().application.mirror();
     }
 
-    /** {@return the assembly that defined the container.} */
+    /** {@return the assembly wherein this container was defined.} */
     public AssemblyMirror assembly() {
         return container().assembly.mirror();
     }
@@ -180,7 +176,7 @@ public class ContainerMirror implements Mirror {
      * @return {@code true} if the container uses an extension of the specified type, otherwise {@code false}
      * @see ContainerConfiguration#isExtensionUsed(Class)
      */
-    public boolean isUsed(Class<? extends Extension<?>> extensionType) {
+    public boolean isExtensionUsed(Class<? extends Extension<?>> extensionType) {
         return container().isExtensionUsed(extensionType);
     }
 

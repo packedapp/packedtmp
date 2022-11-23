@@ -20,10 +20,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import app.packed.application.BuildException;
+import app.packed.bean.BeanSourceKind;
 import app.packed.service.Key;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
-import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
@@ -38,7 +38,7 @@ public final class OldServiceResolver {
     public void addConsumer(OperationSetup operation, LifetimeAccessor la) {
         if (la != null) {
             operation.site.bean.container.lifetime.pool.addOrdered(p -> {
-                MethodHandle mh = operation.buildInvoker();
+                MethodHandle mh = operation.generateMethodHandle();
                 Object instance;
                 try {
                     instance = mh.invoke(p);
@@ -53,14 +53,14 @@ public final class OldServiceResolver {
         }
     }
 
-    public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, LifetimeObjectArena region) {
+    ServiceLocator newServiceLocator(LifetimeObjectArena region) {
         Map<Key<?>, MethodHandle> runtimeEntries = new LinkedHashMap<>();
         for (var e : nodes.entrySet()) {
             Key<?> key = e.getKey();
             DependencyNode export = e.getValue();
             MethodHandle mh;
             if (export.accessor == null) {
-                mh = export.operation.buildInvoker();
+                mh = export.operation.generateMethodHandle();
             } else {
                 mh = LifetimeObjectArena.constant(key.rawType(), export.accessor.read(region));
             }
@@ -69,13 +69,16 @@ public final class OldServiceResolver {
         return new PackedServiceLocator(region, Map.copyOf(runtimeEntries));
     }
 
-    public void provideService(ProvidedService provider) {
+    void provideService(ProvidedService provider) {
         OperationSetup o = provider.operation;
         DependencyNode bis;
         if (o.site instanceof LifetimePoolAccessSite bia) {
             OperationSetup os = null;
             LifetimeAccessor accessor = null;
             if (o.site.bean.injectionManager.lifetimePoolAccessor == null) {
+                if (o.site.bean.sourceKind == BeanSourceKind.INSTANCE) {
+                    
+                }
                 os = o.site.bean.operations.get(0);
             } else {
                 accessor = o.site.bean.injectionManager.lifetimePoolAccessor;

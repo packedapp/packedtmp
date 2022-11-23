@@ -63,7 +63,7 @@ public final class BeanInjectionManager {
         // Only create an instance node if we have instances
         if (bean.sourceKind != BeanSourceKind.INSTANCE && bean.beanKind.hasInstances()) {
             os = bean.operations.get(0);
-            bean.container.injectionManager.addConsumer(os, lifetimePoolAccessor);
+            bean.container.sm.injectionManager.addConsumer(os, lifetimePoolAccessor);
         }
         this.operation = os;
     }
@@ -77,7 +77,7 @@ public final class BeanInjectionManager {
             return lifetimePoolAccessor.poolReader(); // MethodHandle(ConstantPool)T
         }
         if (bean.beanKind == BeanKind.MANYTON) {
-            return operation.buildInvoker(); // MethodHandle(ConstantPool)T
+            return operation.generateMethodHandle(); // MethodHandle(ConstantPool)T
         }
         throw new Error();
     }

@@ -34,7 +34,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.operation.binding.OperationalBindingSetup;
+import internal.app.packed.operation.binding.OperationBindingSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -64,11 +64,11 @@ public final class OperationSetup {
     /** By who and how this operation is invoked */
     public InvocationSite invocationSite;
 
+    /** Whether or not this operation can still be configured. */
+    public boolean isClosed;
+
     /** Whether or not an invoker has been computed */
     private boolean isComputed;
-
-    /** Whether or not this operation can still be configured. */
-    public boolean isConfigurationDisabled;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
@@ -90,7 +90,7 @@ public final class OperationSetup {
     // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
     // Fx freeze arrayet
 
-    public MethodHandle buildInvoker() {
+    public MethodHandle generateMethodHandle() {
         MethodHandle mh = buildInvoker0();
         if (mh.type().parameterCount() != 1) {
             System.err.println(mh.type());
@@ -107,46 +107,50 @@ public final class OperationSetup {
         site.bean.container.application.checkInCodegenPhase();
 
         if (isComputed) {
-         //   throw new IllegalStateException("This method can only be called once");
+            // throw new IllegalStateException("This method can only be called once");
         }
 
         isComputed = true;
 
         MethodHandle mh = site.methodHandle;
+  //      System.out.println(mh.type() + " " + site);
+
 //        System.out.println("--------Build Invoker-------------------");
 //        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
 //        System.out.println(type);
 //        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
 
-        //if (target instanceof BeanInstanceAccess)
         if (bindings.length == 0) {
             if (!site.requiresBeanInstance()) {
                 if (mh.type().parameterCount() > 0) {
+//                   mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
                     return mh;
                 }
                 return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
             }
         }
+      //  mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
 
         if (site.requiresBeanInstance()) {
             mh = MethodHandles.collectArguments(mh, 0, site.bean.injectionManager.accessBean(site.bean));
         }
 
         for (int i = 0; i < bindings.length; i++) {
-        //    System.out.println("BT " + bindings[i].getClass());
+            // System.out.println("BT " + bindings[i].getClass());
             mh = bindings[i].bindIntoOperation(mh);
         }
 
-        int count = bindings.length + (site.requiresBeanInstance() ? 1 : 0);
-
+//        int count = bindings.length + (site.requiresBeanInstance() ? 1 : 0);
+//
+//        System.out.println(mh.type());
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
-        if (count != 0) {
+        if (mh.type().parameterCount() != 0) {
             MethodType mt = MethodType.methodType(site.methodHandle.type().returnType(), LifetimeObjectArena.class);
-            mh = MethodHandles.permuteArguments(mh, mt, new int[count]);
+            mh = MethodHandles.permuteArguments(mh, mt, new int[mh.type().parameterCount()]);
         }
 
         requireNonNull(mh);
-     //   System.out.println(mh.type());
+        // System.out.println(mh.type());
         return mh;
         // Must be computed relative to invocating site
         // throw new UnsupportedOperationException();
@@ -168,7 +172,7 @@ public final class OperationSetup {
     // readOnly. Will not work if for example, resolving a binding
     public void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
-            if (bs instanceof OperationalBindingSetup nested) {
+            if (bs instanceof OperationBindingSetup nested) {
                 nested.providingOperation.forEachBinding(binding);
             }
             binding.accept(bs);
@@ -198,11 +202,11 @@ public final class OperationSetup {
     }
 
     /**
-     * Extracts a bean setup from a bean handle.
+     * Extracts am operation setup from an operation handle.
      * 
      * @param handle
      *            the handle to extract from
-     * @return the bean setup
+     * @return the operation setup
      */
     public static OperationSetup crack(OperationHandle handle) {
         return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);

@@ -24,17 +24,18 @@ import internal.app.packed.operation.OperationSetup;
 /** A binding to a constant. */
 public final class ConstantBindingSetup extends BindingSetup {
 
-    public final Class<?> constantType;
-
-    /** The constant */
+    /** The constant. */
     public final Object constant;
+
+    /** The type of the constant. */
+    public final Class<?> constantType;
 
     /**
      * @param operation
      * @param index
      * @param target
      */
-    public ConstantBindingSetup(OperationSetup operation, int index, User user, BindingTarget target, Class<?> constantType, Object constant) {
+    public ConstantBindingSetup(OperationSetup operation, int index, User user, BindingOrigin target, Class<?> constantType, Object constant) {
         super(operation, index, user, target);
         this.constant = constant;
         this.constantType = constantType;

@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
-
-import java.util.Set;
+package internal.app.packed.operation.binding;
 
 /**
  *
  */
-final class FrameworkProps {
+// Hvad skal vi bruge den til???? Naar vi har Mirror??? Mirror'et skal maaske bruge den
+public abstract sealed class BindingOrigin {
 
-    /** A set of module names that makes of the framework. So far we only have one. */
-    static final Set<String> MODULE_NAMES = Set.of("app.packed");
+    public static final class OpTarget extends BindingOrigin {
 
-    static final String NAME = "Packed";
-//
-//    public static void main(String[] args) {
-//        Package p = FrameworkProps.class.getPackage();
-//        System.out.printf("%s%n  Title: %s%n  Version: %s%n  Vendor: %s%n", FrameworkProps.class.getName(), p.getImplementationTitle(),
-//                p.getImplementationVersion(), p.getImplementationVendor());
-//    }
+    }
+    
+    public static final class CompositeBindingTarget extends BindingOrigin {
+
+    }
+
+    public static final class ExtensionServiceBindingTarget extends BindingOrigin {
+
+    }
+
+    public static final class ServiceBindingTarget extends BindingOrigin {
+
+    }
+
+    public static final class BindingHookTarget extends BindingOrigin {
+
+    }
 }

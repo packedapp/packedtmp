@@ -93,10 +93,9 @@ public class TestNew extends BaseAssembly {
 
                 @Override
                 public void onBinding(OnBinding h) {
-                    new Exception().printStackTrace();
                     XX rr = h.annotations().readRequired(XX.class);
                     System.out.println(rr);
-                    // h.bind(123);
+                    h.bind("123");
                     System.out.println("Got h " + h.hookClass());
                 }
             };

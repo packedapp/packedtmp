@@ -13,14 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.lifetime;
+package app.packed.bean;
 
-import app.packed.lifetime.RunState;
-import internal.app.packed.operation.OperationSetup;
+import app.packed.operation.OperationMirror;
 
-/**
- *
- */
-public record LifetimeOp(RunState state, OperationSetup os) {
-
-}
+/** An operation that creates an instance of {@link #bean() bean}. */
+public class BeanFactoryMirror extends OperationMirror {}

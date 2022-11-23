@@ -459,6 +459,12 @@ public abstract class BeanIntrospector {
         /** {@return an annotation reader for the field.} */
         AnnotationReader annotations();
 
+        default void failIf(boolean condition, String postFix) {
+            if (condition) {
+                throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
+            }
+        }
+
         /**
          * @param postFix
          *            the message to include in the final message
@@ -468,12 +474,6 @@ public abstract class BeanIntrospector {
          */
         default void failWith(String postFix) {
             throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
-        }
-
-        default void failIf(boolean condition, String postFix) {
-            if (condition) {
-                throw new InvalidBeanDefinitionException("Field " + field() + ": " + postFix);
-            }
         }
 
         /** {@return the underlying field.} */
@@ -512,8 +512,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that read a field as specified by {@link Lookup#unreflectGetter(Field)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationSiteMirror.OfFieldAccess} as its {@link OperationMirror#site()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationSiteMirror.OfFieldAccess}
+         * as its {@link OperationMirror#site()}.
          * 
          * @return an operation handle
          */
@@ -523,8 +523,8 @@ public abstract class BeanIntrospector {
          * Creates a new operation that can read or/and write a field as specified by
          * {@link VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationSiteMirror.OfFieldAccess} as its {@link OperationMirror#site()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationSiteMirror.OfFieldAccess}
+         * as its {@link OperationMirror#site()}.
          * 
          * @param accessMode
          *            the access mode of the operation
@@ -542,8 +542,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationSiteMirror.OfFieldAccess} as its {@link OperationMirror#site()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationSiteMirror.OfFieldAccess}
+         * as its {@link OperationMirror#site()}.
          * 
          * @return an operation handle
          */
@@ -618,12 +618,10 @@ public abstract class BeanIntrospector {
 
         /**
          * Creates a new operation that can invoke the underlying method.
-         * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report
-         * {@link OperationSiteMirror.OfMethodInvoke} as its {@link OperationMirror#site()}.
          * 
          * @return an operation handle
          * 
+         * @see OperationSiteMirror.OfMethodHandleInvoke
          * @see Lookup#unreflect(Method)
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowAllAccess()

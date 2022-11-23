@@ -174,7 +174,7 @@ class TerminalOpCaptureHelper {
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
         OperationType type = OperationType.ofMethodType(methodHandle.type()); // TODO fix
-        return new PackedCapturingOp<>(type, methodHandle);
+        return new PackedCapturingOp<>(type, methodHandle, function.getClass());
 
     }
 

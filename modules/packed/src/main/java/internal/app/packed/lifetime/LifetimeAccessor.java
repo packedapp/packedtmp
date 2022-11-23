@@ -33,6 +33,9 @@ public sealed interface LifetimeAccessor {
     
     MethodHandle poolReader();
     
+    // Det giver ikke mening at indsaette constants...
+    // Vi binder dem direkte i MH
+    // Forstaar ikke jeg fik den taabelige ide.
     public record ConstantAccessor(Object constant, Class<?> type) implements LifetimeAccessor {
 
         public ConstantAccessor(Object constant) {
@@ -58,8 +61,7 @@ public sealed interface LifetimeAccessor {
         /** {@inheritDoc} */
         @Override
         public MethodHandle poolReader() {
-            MethodHandle mh = MethodHandles.constant(constant.getClass(), constant);
-            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+           throw new UnsupportedOperationException();
         }
     }
 

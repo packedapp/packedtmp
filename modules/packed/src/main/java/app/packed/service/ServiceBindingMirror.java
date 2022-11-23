@@ -26,6 +26,8 @@ import internal.app.packed.service.ServiceBindingSetup;
  * A binding of a service.
  */
 // findAll(SBM.class).filterOn(key.equals(String.class)).toList();
+
+// extends OnKeyBindingMirror?
 public class ServiceBindingMirror extends BindingMirror {
 
     /** The service binding */

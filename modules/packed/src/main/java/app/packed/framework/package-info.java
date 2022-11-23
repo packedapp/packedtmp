@@ -15,6 +15,6 @@
  */
 
 /**
- * Framework classes.
+ * Provides classes that are fundamental to the design of the framework. 
  */
 package app.packed.framework;

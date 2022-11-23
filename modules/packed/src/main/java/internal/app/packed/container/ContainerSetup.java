@@ -36,7 +36,6 @@ import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
-import internal.app.packed.service.OldServiceResolver;
 import internal.app.packed.service.ServiceManager;
 import internal.app.packed.util.AbstractTreeNode;
 import internal.app.packed.util.ClassUtil;
@@ -78,9 +77,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     // Or maybe extension types are always sorted??
     public final LinkedHashMap<Class<? extends Extension<?>>, ExtensionSetup> extensions = new LinkedHashMap<>();
 
-    /** The container's injection manager. */
-    public final OldServiceResolver injectionManager = new OldServiceResolver();
-
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
@@ -105,14 +101,14 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
     public final WireletWrapper wirelets;
 
     /**
-     * Create a new container setup.
+     * Create a new container.
      * 
      * @param application
      *            the application this container is a part of
      * @param assembly
      *            the assembly the container is defined in
      * @param parent
-     *            any parent container
+     *            any parent container, or null if root
      * @param wirelets
      *            optional wirelets
      */
@@ -120,13 +116,13 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         super(parent);
 
         this.application = requireNonNull(application);
-        this.assembly = assembly;
+        this.assembly = requireNonNull(assembly);
+        this.sm = new ServiceManager();
+        
         if (parent == null) {
-            this.sm = new ServiceManager(null);
             this.depth = 0;
-            this.lifetime = new ContainerLifetimeSetup((ContainerSetup) this, null);
+            this.lifetime = new ContainerLifetimeSetup(this, null);
         } else {
-            this.sm = new ServiceManager(parent.sm);
             this.depth = parent.depth + 1;
             this.lifetime = parent.lifetime;
         }
@@ -233,7 +229,7 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
      * @see ContainerConfiguration#isExtensionUsed(Class)
-     * @see ContainerMirror#isUsed(Class)
+     * @see ContainerMirror#isExtensionUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension<?>> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
@@ -298,10 +294,6 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
         };
     }
 
-    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * <p>
@@ -357,5 +349,9 @@ public final class ContainerSetup extends AbstractTreeNode<ContainerSetup> {
             extension.initialize();
         }
         return extension;
+    }
+
+    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        throw new UnsupportedOperationException();
     }
 }

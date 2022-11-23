@@ -59,7 +59,7 @@ public final class ServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
-        MethodHandle mh = entry.provider.operation.buildInvoker();
+        MethodHandle mh = entry.provider.operation.generateMethodHandle();
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 }

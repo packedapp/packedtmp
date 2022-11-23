@@ -10,7 +10,7 @@ package internal.app.packed.application.sandbox;
 // RuntimeApplicationException
 // LifetimeNotRunning, LifetimeNotAvailable?
 // NotRunningException
-public class ApplicationNotRunningException extends RuntimeException {
+public class ApplicationStoppedException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -21,7 +21,7 @@ public class ApplicationNotRunningException extends RuntimeException {
      * @param message
      *            the message
      */
-    public ApplicationNotRunningException(String message) {
+    public ApplicationStoppedException(String message) {
         super(message);
     }
 
@@ -33,7 +33,7 @@ public class ApplicationNotRunningException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    public ApplicationNotRunningException(String message, Throwable cause) {
+    public ApplicationStoppedException(String message, Throwable cause) {
         super(message, cause);
     }
 }

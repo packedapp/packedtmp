@@ -57,13 +57,6 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
 
     /** {@inheritDoc} */
     @Override
-    public ProvideableBeanConfiguration<T> named(String name) {
-        super.named(name);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public <K> ProvideableBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
         super.initializeWithInstance(key, instance);
         return this;
@@ -76,11 +69,19 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
         return this;
     }
 
-   
-    public ProvideableBeanConfiguration<T> provide() {
-        return provideAs(handle().defaultKey());
+    /** {@inheritDoc} */
+    @Override
+    public ProvideableBeanConfiguration<T> named(String name) {
+        super.named(name);
+        return this;
     }
-    
+
+    public ProvideableBeanConfiguration<T> provide() {
+        Key<T> defaultKey = handle().defaultKey();
+        handle().serviceProvideAs(defaultKey);
+        return this;
+    }
+
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -91,7 +92,8 @@ public class ProvideableBeanConfiguration<T> extends InstanceBeanConfiguration<T
      * @see #provideAs(Key)
      */
     public ProvideableBeanConfiguration<T> provideAs(Class<? super T> key) {
-        return provideAs(Key.of(key));
+        handle().serviceProvideAs(Key.of(key));
+        return this;
     }
 
     /**

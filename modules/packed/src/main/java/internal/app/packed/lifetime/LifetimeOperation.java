@@ -13,31 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.app.packed.operation.binding;
+package internal.app.packed.lifetime;
+
+import app.packed.lifetime.RunState;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  *
  */
-// Hvad skal vi bruge den til???? Naar vi har Mirror???
-public abstract sealed class BindingTarget {
+public record LifetimeOperation(RunState state, OperationSetup os) {
 
-    public static final class OpTarget extends BindingTarget {
-
-    }
-    
-    public static final class CompositeBindingTarget extends BindingTarget {
-
-    }
-
-    public static final class ExtensionServiceBindingTarget extends BindingTarget {
-
-    }
-
-    public static final class ServiceBindingTarget extends BindingTarget {
-
-    }
-
-    public static final class BindingHookTarget extends BindingTarget {
-
-    }
 }

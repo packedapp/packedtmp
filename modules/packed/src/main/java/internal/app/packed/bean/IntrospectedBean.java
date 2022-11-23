@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
+import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanSourceKind;
@@ -138,6 +139,8 @@ public final class IntrospectedBean {
 
         OperationSetup os = new OperationSetup(bean.installedBy, new ConstructorOperationSite(bean, mh, constructor.constructor()));
         os.name = "constructor";
+        os.mirrorSupplier = BeanFactoryMirror::new;
+        
         bean.operations.add(os);
         unBoundOperations.add(os);
         resolveOperations();

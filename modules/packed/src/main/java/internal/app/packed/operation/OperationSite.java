@@ -38,9 +38,10 @@ import internal.app.packed.bean.BeanSetup;
  */
 public sealed abstract class OperationSite implements OperationSiteMirror {
 
-    /** The operation site's bean */
+    /** The bean the operation is part of. */
     public final BeanSetup bean;
 
+    /** A method handle for the operation. May be lazily created in the future. */
     public final MethodHandle methodHandle;
 
     /** The type of operation site. */
@@ -52,7 +53,7 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         this.methodHandle = requireNonNull(methodHandle);
     }
 
-    /** Whether or not the first argument to the method handle is the bean instance. */
+    /** Whether or not the first argument to the method handle must be the bean instance. */
     public boolean requiresBeanInstance() {
         return false;
     }
@@ -213,8 +214,10 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         }
     }
 
+    /** An operation site representing the invocation of a method. */
     public static final class MethodOperationSite extends OperationSite implements OperationSiteMirror.OfMethodInvoke {
 
+        /** The actual method. */
         private final Method method;
 
         /**

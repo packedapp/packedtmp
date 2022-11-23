@@ -51,7 +51,7 @@ public class CodegenHelper {
         public MethodHandle[] get() {
             MethodHandle[] mh = new MethodHandle[handles.size()];
             for (int i = 0; i < mh.length; i++) {
-                mh[i] = handles.get(i).buildInvoker();
+                mh[i] = handles.get(i).generateMethodHandle();
             }
             return mh; // freeze
         }

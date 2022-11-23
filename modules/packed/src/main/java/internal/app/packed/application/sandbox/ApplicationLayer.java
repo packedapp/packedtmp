@@ -15,7 +15,9 @@
  */
 package internal.app.packed.application.sandbox;
 
+import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
+import internal.app.packed.application.sandbox.ThreeTier.Presentation;
 
 /**
  * not to be confused with application layers in the OSI model.
@@ -29,6 +31,9 @@ import app.packed.container.Extension;
 // Devtools has a layer test that can make sure the extensions exist
 
 // ban, prohibit, deny, 
+
+// Det giver ikke mening at en application root er i et layer...
+
 public abstract class ApplicationLayer {
 
     /** Create a root application layer. */
@@ -47,7 +52,7 @@ public abstract class ApplicationLayer {
     // no-in, out
     // out, no-in
     // no-in,no-out
-    
+
     protected final void allowServicesFrom(Class<? extends ApplicationLayer> layers) {}
 
     /**
@@ -70,3 +75,23 @@ public abstract class ApplicationLayer {
     protected final void restrictExtensionTo(String extensionName) {}
 }
 // or just define.extends(Class<? extends ApplicationLayer> parent);
+
+abstract sealed class ThreeTier<U extends ThreeTier<U>> extends ApplicationLayer {
+
+    public static final class Presentation extends ThreeTier<Presentation> {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void define() {}
+    }
+
+    public static final class FrontEnd extends ThreeTier<Presentation> {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void define() {}
+    }
+}
+
+@InLayer(Presentation.class)
+abstract class Zaa extends BaseAssembly {}

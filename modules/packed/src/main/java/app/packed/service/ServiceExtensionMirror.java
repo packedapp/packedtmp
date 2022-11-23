@@ -5,18 +5,25 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import app.packed.container.ExtensionMirror;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.service.ExportedService;
-import internal.app.packed.service.ServiceManager;
 import internal.app.packed.service.ServiceManagerEntry;
 
-/** A specialized extension mirror for the {@link ServiceExtension}. */
+/** A mirror for the {@link ServiceExtension}. */
 public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
+    /** The container the extension is a part of. */
     private final ContainerSetup container;
 
+    /**
+     * Creates a new mirror
+     * 
+     * @param container
+     *            the container the extension is a part of
+     */
     ServiceExtensionMirror(ContainerSetup container) {
         this.container = requireNonNull(container);
     }
@@ -28,26 +35,31 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
      * @throws IllegalStateException
      *             if dependencies have not been resolved
      */
-    // Den fungere ikke hvis vi ikke har resolvet alle services.
-    // Fordi vi ved jo ikke om en required service fx bliver provided af et link af en container
-    // senere hen
-
-    // Alternativet er kun at have
     public ServiceContract contract() {
-        ServiceManager m = container.sm;
-        ServiceContract.Builder builder = ServiceContract.builder();
-        m.exports.keySet().forEach(k -> builder.provide(k));
+        if (!container.assembly.isClosed()) {
+            // Den fungere ikke hvis vi ikke har resolvet alle services.
+            // Fordi vi ved jo ikke om en required service fx bliver provided af et link af en container
+            // senere hen, alternativet er kun at have
+            throw new IllegalStateException();
+        }
 
-        for (var e : m.entries.entrySet()) {
-            ServiceManagerEntry sm = e.getValue();
-            if (sm.provider == null) {
-                if (sm.isRequired) {
+        ServiceContract.Builder builder = ServiceContract.builder();
+
+        // Add all exports
+        container.sm.exports.keySet().forEach(k -> builder.provide(k));
+
+        // All all requirements
+        for (Entry<Key<?>, ServiceManagerEntry> e : container.sm.entries.entrySet()) {
+            ServiceManagerEntry sme = e.getValue();
+            if (sme.provider == null) {
+                if (sme.isRequired) {
                     builder.require(e.getKey());
                 } else {
                     builder.requireOptional(e.getKey());
                 }
             }
         }
+
         return builder.build();
     }
 
@@ -63,11 +75,11 @@ public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
     // Map<K, V> resolved
     // Map<K, V> unresolvedOptional?();
 
-    /** { @return a map view of all the services that are exported from the container.} */
+    /** { @return a map view of all the services that are exported by the container.} */
     public Map<Key<?>, ExportedServiceMirror> exports() {
         LinkedHashMap<Key<?>, ExportedServiceMirror> result = new LinkedHashMap<>();
         for (ExportedService e : container.sm.exports.values()) {
-            ExportedServiceMirror mirror = (ExportedServiceMirror) e.bos.mirror();
+            ExportedServiceMirror mirror = (ExportedServiceMirror) e.os.mirror();
             result.put(e.key, mirror);
         }
         return Collections.unmodifiableMap(result);

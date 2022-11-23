@@ -44,7 +44,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
-        MethodHandle mh = extensionBean.instanceAccessOperation().buildInvoker();
+        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 }

@@ -11,8 +11,6 @@ module app.packed {
     exports app.packed.service;
 
     // temporary sandbox thingies
-    exports app.packed.lifetime.managed;
-    exports internal.app.packed.lifetime.sandbox2;
     exports app.packed.operation.bindings;
 
     /* Special support for packed-devtoolks */

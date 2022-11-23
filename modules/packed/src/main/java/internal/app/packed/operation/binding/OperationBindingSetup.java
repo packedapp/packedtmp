@@ -26,12 +26,12 @@ import internal.app.packed.operation.OperationSetup;
 /**
  *
  */
-public final class OperationalBindingSetup extends BindingSetup {
+public final class OperationBindingSetup extends BindingSetup {
 
     /** The operation that will produce values for the binding. */
     public final OperationSetup providingOperation;
 
-    public OperationalBindingSetup(OperationSetup operation, int index, User user, BindingTarget target, OperationSetup providingOperation) {
+    public OperationBindingSetup(OperationSetup operation, int index, User user, BindingOrigin target, OperationSetup providingOperation) {
         super(operation, index, user, target);
         this.providingOperation = requireNonNull(providingOperation);
     }
@@ -39,7 +39,7 @@ public final class OperationalBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
-        MethodHandle mh = providingOperation.buildInvoker();
+        MethodHandle mh = providingOperation.generateMethodHandle();
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 }

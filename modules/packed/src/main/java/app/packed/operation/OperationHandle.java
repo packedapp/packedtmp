@@ -35,14 +35,11 @@ import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation
- * known as its {@link OperationSiteMirror target}.
+ * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation.
  * <p>
- * Operation handles can only be constructed by {@link Extension extensions}.
- * 
  * Operation handles are the main way in which the framework supports such as annotations on fields and methods.
  * <p>
- * Operation handles may be obtained in any of these ways:
+ * An operation handle can be constructed by an {@link Extension extension} in any of the following ways:
  * <ul>
  * <li>By calling {@link OnMethod#newOperation} to create a new operation that can {@code invoke} the underlying
  * {@link Method}.
@@ -86,11 +83,11 @@ import internal.app.packed.operation.OperationSetup;
 /// Configuration -> Set InvocationType, Set InvocationBean, Set Context
 public final class OperationHandle {
 
-    /** The wrapped operation. */
-    private final OperationSetup operation;
-
     /** The bean that is being introspected. */
     private final IntrospectedBean iBean;
+
+    /** The wrapped operation. */
+    private final OperationSetup operation;
 
     /**
      * Creates a new handle.
@@ -105,44 +102,27 @@ public final class OperationHandle {
 
     /**
      * <p>
-     * The operation is no longer configurable when this method returns.
+     * This operation is no longer configurable when this method returns.
      * 
      * @param parameterIndex
      *            the index of the parameter to bind
-     * @return a bindable object
+     * @return an object that can be used to bind the parameter with the specified index
      * @throws IndexOutOfBoundsException
      *             if the parameter index is out of bounds
      */
     public OnBinding bindManually(int parameterIndex) {
         // This method does not throw IllegalStateExtension, but OnBinding may.
-        operation.isConfigurationDisabled = true;
+        operation.isClosed = true;
         // custom invocationContext must have been set before calling this method
         checkIndex(parameterIndex, operation.site.type.parameterCount());
         return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.site.type.parameter(parameterIndex));
     }
 
     /**
-     * Creates a new method handle that can invoke the underlying operation. Taking into account the invocation type and
-     * site.
-     * <p>
-     * The method type of the returned method handle will be {@code invocationType().methodType()}.
-     * 
-     * @return
-     * 
-     * @throws IllegalStateException
-     *             if called more than once. Or if called before the code generating phase of the application
-     * @see ExtensionBeanConfiguration#overrideServiceDelayed(Class, Supplier)
-     */
-    // invokeAsMethodHandle???
-    public MethodHandle buildInvoker() {
-        return operation.buildInvoker();
-    }
-
-    /**
      * Checks that operation is still configurable
      */
     private void checkConfigurable() {
-        if (operation.isConfigurationDisabled) {
+        if (operation.isClosed) {
             throw new IllegalStateException("This operation is no longer configurable");
         }
     }
@@ -153,23 +133,26 @@ public final class OperationHandle {
         return obj instanceof OperationHandle h && operation == h.operation;
     }
 
+    /**
+     * Generates a method handle that can be used to invoke the underlying operation.
+     * <p>
+     * Taking into account the invocation type and site.
+     * <p>
+     * The method type of the returned method handle will be {@code invocationType().methodType()}.
+     * 
+     * @return the generated method handle
+     * 
+     * @throws IllegalStateException
+     *             if called more than once. Or if called outside of the code generating phase of the application
+     */
+    public MethodHandle generateMethodHandle() {
+        return operation.generateMethodHandle();
+    }
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return operation.hashCode();
-    }
-
-    /** {@return the invocation type of this operation.} */
-    public InvocationType invocationType() {
-        return operation.invocationSite.invocationType;
-    }
-
-    // Kan kaldes en gang
-    public void invokeFrom(InstanceBeanConfiguration<?> bean) {
-        // Vi kan have et application.HashMap<BeanSetup, Map<Key, Supplier>> delayedCodegen;
-        // Som de bruger.
-        // BeanSetup.codegenInjectIntoBean(IBC<?>, Key, Supplier);
-        throw new UnsupportedOperationException();
     }
 
     public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
@@ -188,6 +171,21 @@ public final class OperationHandle {
         throw new UnsupportedOperationException();
     }
 
+    /** {@return the invocation type of this operation.} */
+    public InvocationType invocationType() {
+        return operation.invocationSite.invocationType;
+    }
+
+    // Kan kaldes en gang
+    // ExtensionContext instead???
+    //
+    public void invokeFrom(InstanceBeanConfiguration<?> bean) {
+        // Vi kan have et application.HashMap<BeanSetup, Map<Key, Supplier>> delayedCodegen;
+        // Som de bruger.
+        // BeanSetup.codegenInjectIntoBean(IBC<?>, Key, Supplier);
+        throw new UnsupportedOperationException();
+    }
+
     public void named(String name) {
         requireNonNull(name, "name is null");
         checkConfigurable();
@@ -197,8 +195,8 @@ public final class OperationHandle {
     /**
      * Registers an action that will be performed doing the code generation phase of the application.
      * <p>
-     * This method is typically used for storing the method handle returned by {@link #buildInvoker()} in some kind of data
-     * structure.
+     * This method is typically used for storing the method handle returned by {@link #generateMethodHandle()} in some kind
+     * of data structure.
      * 
      * @param action
      *            the action to perform
@@ -247,10 +245,6 @@ public final class OperationHandle {
 
 interface OpNew {
 
-    default void relativise(Extension<?> extension) {
-
-    }
-
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
     default void operatedBy(Object extensionHandle) {
@@ -258,6 +252,10 @@ interface OpNew {
         // Maybe the method is on ExtensionPoint.UseSite
         // checkConfigurable();
         // Do we create a new handle, and invalidate this handle?
+    }
+
+    default void relativise(Extension<?> extension) {
+
     }
 
     default void spawnNewBean() {

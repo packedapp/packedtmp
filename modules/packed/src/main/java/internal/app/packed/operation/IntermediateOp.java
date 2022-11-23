@@ -21,19 +21,20 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
+import app.packed.container.User;
 import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.operation.binding.BindingOrigin;
+import internal.app.packed.operation.binding.ConstantBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
-/**
- *
- */
+/** An intermediate (non-terminal) op. */
 abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
-    /** The op that is being peeked on. */
-    private final PackedOp<?> delegate;
+    /** The next op in the chain. */
+    private final PackedOp<?> nextOp;
 
     final int[] permutationsArrays = new int[0];
 
@@ -41,16 +42,17 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
      * @param type
      * @param operation
      */
-    IntermediateOp(PackedOp<?> delegate, OperationType type, MethodHandle operation) {
+    IntermediateOp(PackedOp<?> nextOp, OperationType type, MethodHandle operation) {
         super(type, operation);
-        this.delegate = requireNonNull(delegate);
+        this.nextOp = requireNonNull(nextOp);
     }
+
     /** {@inheritDoc} */
     @Override
     public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-        return delegate.newOperationSetup(bean, operator);
+        return nextOp.newOperationSetup(bean, operator);
     }
-    
+
     /** A op that binds 1 or more constants. */
     static final class BoundOp<R> extends IntermediateOp<R> {
 
@@ -59,6 +61,8 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         final int index;
+
+        final int[] indexes = new int[0];
 
         BoundOp(OperationType type, MethodHandle methodHandle, PackedOp<R> delegate, int index, Object[] arguments) {
             super(delegate, type, methodHandle);
@@ -70,18 +74,22 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
         @Override
         public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
             OperationSetup os = super.newOperationSetup(bean, operator);
-            // insert bindings
+            for (int i = 0; i < indexes.length; i++) {
+                int index = indexes[i];
+                Object argument = arguments[i];
+                os.bindings[index] = new ConstantBindingSetup(os, index, User.application(), new BindingOrigin.BindingHookTarget(), argument.getClass(), argument);
+            }
             return os;
         }
     }
 
     /** An implementation of the {@link Op#peek(Consumer)}} method. */
-    static final class PeekableOp<R> extends IntermediateOp<R> {
+    static final class PeekingOp<R> extends IntermediateOp<R> {
 
         /** A method handle for {@link #accept(Consumer, Object)}. */
         static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
 
-        PeekableOp(PackedOp<R> delegate, MethodHandle methodHandle) {
+        PeekingOp(PackedOp<R> delegate, MethodHandle methodHandle) {
             super(delegate, delegate.type, methodHandle);
         }
 
