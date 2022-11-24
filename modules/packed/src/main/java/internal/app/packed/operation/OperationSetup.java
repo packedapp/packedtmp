@@ -21,12 +21,17 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
+import java.lang.invoke.VarHandle.AccessMode;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.bean.BeanFactoryMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationSiteMirror;
@@ -35,6 +40,11 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.operation.OperationSite.ConstructorOperationSite;
+import internal.app.packed.operation.OperationSite.FieldOperationSite;
+import internal.app.packed.operation.OperationSite.FunctionOperationSite;
+import internal.app.packed.operation.OperationSite.LifetimePoolAccessSite;
+import internal.app.packed.operation.OperationSite.MethodHandleOperationSite;
 import internal.app.packed.operation.OperationSite.MethodOperationSite;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
@@ -45,7 +55,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Represents an operation on a bean. */
-public class OperationSetup {
+public sealed abstract class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
@@ -68,7 +78,7 @@ public class OperationSetup {
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
 
-    /** By who and how this operation is invoked */
+    /** By who this operation is invoked */
     public InvocationSite invocationSite;
 
     /** Whether or not this operation can still be configured. */
@@ -83,9 +93,11 @@ public class OperationSetup {
     /** The name of the operation */
     public String name; // name = operator.simpleName + "Operation"
 
+    // Not final atm because, we might allow an extension to transfer ownership to another extension
     public ExtensionSetup operator;
 
-    public PackedInvocationType pit = PackedInvocationType.DEFAULTS;
+    /** The invocation type of this operation. */
+    public PackedInvocationType invocationType = PackedInvocationType.DEFAULTS;
 
     /** The operation site. */
     public final OperationSite site;
@@ -93,7 +105,7 @@ public class OperationSetup {
     /** The type of this operation. */
     public final OperationType type;
 
-    public OperationSetup(ExtensionSetup operator, OperationSite site) {
+    private OperationSetup(ExtensionSetup operator, OperationSite site) {
         this.operator = requireNonNull(operator);
         this.site = requireNonNull(site);
         this.type = site.type;
@@ -228,7 +240,88 @@ public class OperationSetup {
         return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);
     }
 
+    public static final class MethodHandleInvoke extends OperationSetup implements OperationSiteMirror.OfMethodHandleInvoke {
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public MethodHandleInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
+            super(operator, new MethodHandleOperationSite(bean, operationType, methodHandle));
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType methodType() {
+            return type.toMethodType();
+        }
+    }
+    
+    public static final class LifetimePoolAccessInvoke extends OperationSetup implements OperationSiteMirror.OfLifetimePoolAccess {
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public LifetimePoolAccessInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
+            super(operator, new LifetimePoolAccessSite(bean, operationType, methodHandle));
+            name = "InstantAccess";
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<OperationMirror> origin() {
+            return bean.mirror().factoryOperation();
+        }
+    }
+
     /** An operation that invokes an underlying {@link Method}. */
+    public static final class ConstructorOperationSetup extends OperationSetup implements OperationSiteMirror.OfConstructorInvoke {
+
+        /** The method to invoke. */
+        private final Constructor<?> constructor;
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public ConstructorOperationSetup(ExtensionSetup operator, BeanSetup bean, Constructor<?> constructor, MethodHandle methodHandle) {
+            super(operator, new ConstructorOperationSite(bean, methodHandle, constructor));
+            this.constructor = requireNonNull(constructor);
+            name = "constructor";
+            mirrorSupplier = BeanFactoryMirror::new;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Constructor<?> constructor() {
+            return constructor;
+        }
+    }
+
+    /** An operation that invokes an underlying {@link Constructor}. */
+    public static final class FunctionOperationSetup extends OperationSetup implements OperationSiteMirror.OfFunctionCall {
+
+        // Can read it from the method... no
+        private final Class<?> functionalInterface;
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Class<?> functionalInterface) {
+            super(operator, new FunctionOperationSite(bean, operationType, methodHandle, functionalInterface ));
+            this.functionalInterface = requireNonNull(functionalInterface);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> functionalInterface() {
+            return functionalInterface;
+        }
+    }
+
+    /** An operation that invokes an underlying {@link Constructor}. */
     public static final class MethodOperationSetup extends OperationSetup implements OperationSiteMirror.OfMethodInvoke {
 
         /** The method to invoke. */
@@ -247,6 +340,51 @@ public class OperationSetup {
         @Override
         public Method method() {
             return method;
+        }
+    }
+
+    /** An operation that can access an underlying {@link Field}. */
+    public static final class FieldOperationSetup extends OperationSetup implements OperationSiteMirror.OfFieldAccess {
+
+        /** The field to access. */
+        private final Field field;
+
+        /** The way we access the field. */
+        private final AccessMode accessMode;
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public FieldOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Field field,
+                AccessMode accessMode) {
+            super(operator, new FieldOperationSite(bean, operationType, methodHandle, field, accessMode));
+            this.field = requireNonNull(field);
+            this.accessMode = requireNonNull(accessMode);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public AccessMode accessMode() {
+            return accessMode;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean allowGet() {
+            return false;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean allowSet() {
+            return false;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Field field() {
+            return field;
         }
     }
 }

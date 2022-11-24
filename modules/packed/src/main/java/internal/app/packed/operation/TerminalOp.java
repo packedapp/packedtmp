@@ -34,14 +34,14 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         super(type, operation);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-        return new OperationSetup(operator, newOperationSite(bean));
-    }
-
-    /** {@return a new operation site for the op.} */
-    abstract OperationSite newOperationSite(BeanSetup bean);
+//    /** {@inheritDoc} */
+//    @Override
+//    public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+//        return new OperationSetup(operator, newOperationSite(bean));
+//    }
+//
+//    /** {@return a new operation site for the op.} */
+//    abstract OperationSite newOperationSite(BeanSetup bean);
 
     /** An op that wraps a MethodHandle. */
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
@@ -52,8 +52,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        OperationSite newOperationSite(BeanSetup bean) {
-            return new OperationSite.MethodHandleOperationSite(bean, type, mhOperation);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+            return new OperationSetup.MethodHandleInvoke(operator, bean, type, mhOperation);
         }
     }
 
@@ -69,8 +69,8 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
 
         /** {@inheritDoc} */
         @Override
-        OperationSite newOperationSite(BeanSetup bean) {
-            return new OperationSite.FunctionOperationSite(bean, type, mhOperation, functionalType);
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+            return new OperationSetup.FunctionOperationSetup(operator, bean, type, mhOperation, functionalType);
         }
     }
 }

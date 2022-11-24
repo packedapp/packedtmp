@@ -33,7 +33,7 @@ import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSite.LifetimePoolAccessSite;
+import internal.app.packed.operation.OperationSetup.LifetimePoolAccessInvoke;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.ClassUtil;
@@ -153,10 +153,7 @@ public final class BeanSetup {
 
     // Relative to x
     public OperationSetup instanceAccessOperation() {
-        OperationSetup os = new OperationSetup(installedBy,
-                new LifetimePoolAccessSite(this, OperationType.of(beanClass), injectionManager.accessBean(this)));
-        os.name = "InstantAccess";
-        return os;
+        return new LifetimePoolAccessInvoke(installedBy, this, OperationType.of(beanClass), injectionManager.accessBean(this));
     }
 
     /** {@return a new mirror.} */

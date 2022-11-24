@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
-import app.packed.bean.BeanFactoryMirror;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanSourceKind;
@@ -41,7 +40,7 @@ import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSite.ConstructorOperationSite;
+import internal.app.packed.operation.OperationSetup.ConstructorOperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
@@ -137,10 +136,8 @@ public final class IntrospectedBean {
 
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
-        OperationSetup os = new OperationSetup(bean.installedBy, new ConstructorOperationSite(bean, mh, constructor.constructor()));
-        os.name = "constructor";
-        os.mirrorSupplier = BeanFactoryMirror::new;
-        
+        OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, constructor.constructor(), mh);
+
         bean.operations.add(os);
         unBoundOperations.add(os);
         resolveOperations();

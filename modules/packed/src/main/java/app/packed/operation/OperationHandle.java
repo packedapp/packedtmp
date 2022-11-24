@@ -174,13 +174,13 @@ public final class OperationHandle {
 
     /** {@return the invocation type of this operation.} */
     public InvocationType invocationType() {
-        return operation.pit;
+        return operation.invocationType;
     }
 
     public void invokeAs(InvocationType invocationType) {
         requireNonNull(invocationType, "invocationType is null");
         checkConfigurable();
-        operation.pit = (PackedInvocationType) invocationType;
+        operation.invocationType = (PackedInvocationType) invocationType;
     }
 
     // Kan kaldes en gang

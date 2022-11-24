@@ -18,7 +18,6 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
@@ -27,7 +26,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.framework.Nullable;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationSiteMirror;
 import app.packed.operation.OperationType;
@@ -65,33 +63,6 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
     /** {@inheritDoc} */
     public final OperationType type() {
         return type;
-    }
-
-    /** An operation target that simply returns a constant. */
-    public static final class ConstantOperationSite extends OperationSite implements OperationSiteMirror.OfConstant {
-
-        /** The constant. */
-        @Nullable
-        public final Object constant;
-
-        /** The type of the constant. */
-        public final Class<?> constantType;
-
-        /**
-         * @param methodHandle
-         * @param requiresBeanInstance
-         */
-        public ConstantOperationSite(BeanSetup bean, OperationType operationType, Class<?> constantType, @Nullable Object constant) {
-            super(bean, operationType, MethodHandles.constant(constantType, constant));
-            this.constantType = constantType;
-            this.constant = constant;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> constantType() {
-            return constantType;
-        }
     }
 
     public static final class ConstructorOperationSite extends OperationSite implements OperationSiteMirror.OfConstructorInvoke {
