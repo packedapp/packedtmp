@@ -116,6 +116,10 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
 
         isComputed = true;
 
+        return doBuild();
+    }
+
+    protected MethodHandle doBuild() {
         MethodHandle mh = methodHandle;
         // System.out.println(mh.type() + " " + site);
 
@@ -136,6 +140,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
                 return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
             }
         }
+        
         // mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
 
         if (requiresBeanInstance()) {
@@ -159,7 +164,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         // System.out.println(mh.type());
         return mh;
     }
-
+    
     // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
     // Fx freeze arrayet
 
