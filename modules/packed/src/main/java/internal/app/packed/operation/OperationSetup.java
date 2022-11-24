@@ -25,6 +25,7 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -40,12 +41,6 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
-import internal.app.packed.operation.OperationSite.ConstructorOperationSite;
-import internal.app.packed.operation.OperationSite.FieldOperationSite;
-import internal.app.packed.operation.OperationSite.FunctionOperationSite;
-import internal.app.packed.operation.OperationSite.LifetimePoolAccessSite;
-import internal.app.packed.operation.OperationSite.MethodHandleOperationSite;
-import internal.app.packed.operation.OperationSite.MethodOperationSite;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.operation.binding.OperationBindingSetup;
@@ -55,7 +50,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Represents an operation on a bean. */
-public sealed abstract class OperationSetup {
+public sealed abstract class OperationSetup implements OperationSiteMirror {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
@@ -71,6 +66,11 @@ public sealed abstract class OperationSetup {
     /** A handle that can access OperationHandle#operation. */
     private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
             OperationSetup.class);
+
+    /** Whether or not the first argument to the method handle must be the bean instance. */
+    public boolean requiresBeanInstance() {
+        return false;
+    }
 
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
@@ -99,25 +99,23 @@ public sealed abstract class OperationSetup {
     /** The invocation type of this operation. */
     public PackedInvocationType invocationType = PackedInvocationType.DEFAULTS;
 
-    /** The operation site. */
-    public final OperationSite site;
-
     /** The type of this operation. */
     public final OperationType type;
 
-    private OperationSetup(ExtensionSetup operator, OperationSite site) {
+    private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type) {
         this.operator = requireNonNull(operator);
-        this.site = requireNonNull(site);
-        this.type = site.type;
-        this.bean = site.bean;
-        this.bindings = site.type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[site.type.parameterCount()];
+        this.type = type;
+        this.bean = bean;
+        this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
     }
+
+    public MethodHandle methodHandle;
 
     // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
     // Fx freeze arrayet
 
     public final MethodHandle buildInvoker0() {
-        site.bean.container.application.checkInCodegenPhase();
+        bean.container.application.checkInCodegenPhase();
 
         if (isComputed) {
             // throw new IllegalStateException("This method can only be called once");
@@ -125,7 +123,7 @@ public sealed abstract class OperationSetup {
 
         isComputed = true;
 
-        MethodHandle mh = site.methodHandle;
+        MethodHandle mh = methodHandle;
         // System.out.println(mh.type() + " " + site);
 
 //        System.out.println("--------Build Invoker-------------------");
@@ -134,7 +132,7 @@ public sealed abstract class OperationSetup {
 //        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
 
         if (bindings.length == 0) {
-            if (!site.requiresBeanInstance()) {
+            if (!requiresBeanInstance()) {
                 if (mh.type().parameterCount() > 0) {
 //                   mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
                     return mh;
@@ -144,8 +142,8 @@ public sealed abstract class OperationSetup {
         }
         // mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
 
-        if (site.requiresBeanInstance()) {
-            mh = MethodHandles.collectArguments(mh, 0, site.bean.injectionManager.accessBean(site.bean));
+        if (requiresBeanInstance()) {
+            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean(bean));
         }
 
         for (int i = 0; i < bindings.length; i++) {
@@ -158,7 +156,7 @@ public sealed abstract class OperationSetup {
 //        System.out.println(mh.type());
         // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X
         if (mh.type().parameterCount() != 0) {
-            MethodType mt = MethodType.methodType(site.methodHandle.type().returnType(), LifetimeObjectArena.class);
+            MethodType mt = MethodType.methodType(methodHandle.type().returnType(), LifetimeObjectArena.class);
             mh = MethodHandles.permuteArguments(mh, mt, new int[mh.type().parameterCount()]);
         }
 
@@ -173,7 +171,7 @@ public sealed abstract class OperationSetup {
                 requireNonNull(s.extensionBean);
                 result.add(s.extensionBean);
             } else if (b instanceof ServiceBindingSetup s) {
-                result.add(s.entry.provider.operation.site.bean);
+                result.add(s.entry.provider.operation.bean);
             }
         });
         return result;
@@ -193,7 +191,7 @@ public sealed abstract class OperationSetup {
         MethodHandle mh = buildInvoker0();
         if (mh.type().parameterCount() != 1) {
             System.err.println(mh.type());
-            throw new Error("Bean : " + site.bean.path() + ", operation : " + name);
+            throw new Error("Bean : " + bean.path() + ", operation : " + name);
         }
         if (mh.type().parameterType(0) != LifetimeObjectArena.class) {
             System.err.println(mh.type());
@@ -247,7 +245,8 @@ public sealed abstract class OperationSetup {
          * @param site
          */
         public MethodHandleInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
-            super(operator, new MethodHandleOperationSite(bean, operationType, methodHandle));
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
         }
 
         /** {@inheritDoc} */
@@ -256,7 +255,7 @@ public sealed abstract class OperationSetup {
             return type.toMethodType();
         }
     }
-    
+
     public static final class LifetimePoolAccessInvoke extends OperationSetup implements OperationSiteMirror.OfLifetimePoolAccess {
 
         /**
@@ -264,7 +263,8 @@ public sealed abstract class OperationSetup {
          * @param site
          */
         public LifetimePoolAccessInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
-            super(operator, new LifetimePoolAccessSite(bean, operationType, methodHandle));
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
             name = "InstantAccess";
         }
 
@@ -286,7 +286,8 @@ public sealed abstract class OperationSetup {
          * @param site
          */
         public ConstructorOperationSetup(ExtensionSetup operator, BeanSetup bean, Constructor<?> constructor, MethodHandle methodHandle) {
-            super(operator, new ConstructorOperationSite(bean, methodHandle, constructor));
+            super(operator, bean, OperationType.ofExecutable(constructor));
+            this.methodHandle = methodHandle;
             this.constructor = requireNonNull(constructor);
             name = "constructor";
             mirrorSupplier = BeanFactoryMirror::new;
@@ -309,8 +310,10 @@ public sealed abstract class OperationSetup {
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Class<?> functionalInterface) {
-            super(operator, new FunctionOperationSite(bean, operationType, methodHandle, functionalInterface ));
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle,
+                Class<?> functionalInterface) {
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
             this.functionalInterface = requireNonNull(functionalInterface);
         }
 
@@ -327,12 +330,17 @@ public sealed abstract class OperationSetup {
         /** The method to invoke. */
         private final Method method;
 
+        public boolean requiresBeanInstance() {
+            return !Modifier.isStatic(method.getModifiers());
+        }
+
         /**
          * @param operator
          * @param site
          */
-        public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, Method method, MethodHandle methodHandle) {
-            super(operator, new MethodOperationSite(bean, methodHandle, method));
+        public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, Method method, MethodHandle methodHandle) {
+            super(operator, bean, type);
+            this.methodHandle = methodHandle;
             this.method = requireNonNull(method);
         }
 
@@ -346,6 +354,10 @@ public sealed abstract class OperationSetup {
     /** An operation that can access an underlying {@link Field}. */
     public static final class FieldOperationSetup extends OperationSetup implements OperationSiteMirror.OfFieldAccess {
 
+        public boolean requiresBeanInstance() {
+            return !Modifier.isStatic(field.getModifiers());
+        }
+
         /** The field to access. */
         private final Field field;
 
@@ -358,7 +370,8 @@ public sealed abstract class OperationSetup {
          */
         public FieldOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, Field field,
                 AccessMode accessMode) {
-            super(operator, new FieldOperationSite(bean, operationType, methodHandle, field, accessMode));
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
             this.field = requireNonNull(field);
             this.accessMode = requireNonNull(accessMode);
         }

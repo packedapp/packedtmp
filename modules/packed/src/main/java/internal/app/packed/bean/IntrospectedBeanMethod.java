@@ -118,7 +118,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
             throw new InaccessibleBeanMemberException("stuff", e);
         }
 
-        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, method, methodHandle);
+        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), method, methodHandle);
         introspectedBean.bean.operations.add(operation);
         introspectedBean.unBoundOperations.add(operation);
         return operation.toHandle(introspectedBean);

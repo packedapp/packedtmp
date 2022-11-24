@@ -28,7 +28,6 @@ import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSite.LifetimePoolAccessSite;
 import internal.app.packed.util.ThrowableUtil;
 
 public final class OldServiceResolver {
@@ -37,7 +36,7 @@ public final class OldServiceResolver {
 
     public void addConsumer(OperationSetup operation, LifetimeAccessor la) {
         if (la != null) {
-            operation.site.bean.container.lifetime.pool.addOrdered(p -> {
+            operation.bean.container.lifetime.pool.addOrdered(p -> {
                 MethodHandle mh = operation.generateMethodHandle();
                 Object instance;
                 try {
@@ -72,28 +71,28 @@ public final class OldServiceResolver {
     void provideService(ProvidedService provider) {
         OperationSetup o = provider.operation;
         DependencyNode bis;
-        if (o.site instanceof LifetimePoolAccessSite bia) {
+        if (o instanceof OperationSetup.LifetimePoolAccessInvoke bia) {
             OperationSetup os = null;
             LifetimeAccessor accessor = null;
-            if (o.site.bean.injectionManager.lifetimePoolAccessor == null) {
-                if (o.site.bean.sourceKind == BeanSourceKind.INSTANCE) {
+            if (o.bean.injectionManager.lifetimePoolAccessor == null) {
+                if (o.bean.sourceKind == BeanSourceKind.INSTANCE) {
                     
                 }
-                os = o.site.bean.operations.get(0);
+                os = o.bean.operations.get(0);
             } else {
-                accessor = o.site.bean.injectionManager.lifetimePoolAccessor;
+                accessor = o.bean.injectionManager.lifetimePoolAccessor;
             }
             bis = new DependencyNode(os, accessor);
         } else {
-            boolean isStatic = !o.site.requiresBeanInstance();
-            if (!isStatic && o.site.bean.injectionManager.lifetimePoolAccessor == null) {
+            boolean isStatic = !o.requiresBeanInstance();
+            if (!isStatic && o.bean.injectionManager.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }
-            DynamicAccessor accessor = provider.isConstant ? o.site.bean.container.lifetime.pool.reserve(Object.class) : null;
+            DynamicAccessor accessor = provider.isConstant ? o.bean.container.lifetime.pool.reserve(Object.class) : null;
             bis = new DependencyNode(o, accessor);
             addConsumer(o, accessor);
         }
-        o.site.bean.container.safeUseExtensionSetup(ServiceExtension.class, null);
+        o.bean.container.safeUseExtensionSetup(ServiceExtension.class, null);
         nodes.put(provider.entry.key, bis);
     }
 

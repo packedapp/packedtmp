@@ -29,14 +29,14 @@ import app.packed.operation.OperationSiteMirror.OfFunctionCall;
 import app.packed.operation.OperationSiteMirror.OfLifetimePoolAccess;
 import app.packed.operation.OperationSiteMirror.OfMethodHandleInvoke;
 import app.packed.operation.OperationSiteMirror.OfMethodInvoke;
-import internal.app.packed.operation.OperationSite;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * The target of an operation. This is typically a method
  * 
  * @see OperationMirror#site()
  */
-public sealed interface OperationSiteMirror permits OperationSite, OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant {
+public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant, OperationSetup {
 
     OperationType type();
     

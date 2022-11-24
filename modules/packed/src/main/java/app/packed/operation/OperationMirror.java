@@ -64,7 +64,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the bean that this operation is a part of.} */
     public BeanMirror bean() {
-        return operation().site.bean.mirror();
+        return operation().bean.mirror();
     }
 
     /** {@return the bindings of this operation.} */
@@ -141,12 +141,12 @@ public class OperationMirror implements Mirror {
 
     /** {@return the target of the operation.} */
     public OperationSiteMirror site() {
-        return operation().site;
+        return operation();
     }
 
     /** {@return the type of the operation.} */
     public OperationType type() {
-        return operation().site.type;
+        return operation().type;
     }
 }
 

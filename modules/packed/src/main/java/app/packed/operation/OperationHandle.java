@@ -115,8 +115,8 @@ public final class OperationHandle {
         // This method does not throw IllegalStateExtension, but OnBinding may.
         operation.isClosed = true;
         // custom invocationContext must have been set before calling this method
-        checkIndex(parameterIndex, operation.site.type.parameterCount());
-        return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.site.type.parameter(parameterIndex));
+        checkIndex(parameterIndex, operation.type.parameterCount());
+        return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
     }
 
     /**
@@ -164,7 +164,7 @@ public final class OperationHandle {
         if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
             throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
         }
-        return operation.site.bean.container.application.codegenHelper.addArray(bean, this);
+        return operation.bean.container.application.codegenHelper.addArray(bean, this);
     }
 
     public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
@@ -213,7 +213,7 @@ public final class OperationHandle {
     public void onCodegen(Consumer<OperationHandle> action) {
         requireNonNull(action, "action is null");
         checkConfigurable();
-        operation.site.bean.container.application.addCodegenAction(() -> action.accept(this));
+        operation.bean.container.application.addCodegenAction(() -> action.accept(this));
     }
 
     /**
@@ -245,7 +245,7 @@ public final class OperationHandle {
 
     /** {@return the type of this operation.} */
     public OperationType type() {
-        return operation.site.type;
+        return operation.type;
     }
 
 }

@@ -132,7 +132,7 @@ public class BindingMirror implements Mirror {
     /** {@return the underlying variable that has been bound.} */
     public Variable variable() {
         BindingSetup b = binding();
-        return b.operation.site.type.parameter(b.index);
+        return b.operation.type.parameter(b.index);
     }
 }
 //; // What are we having injected... Giver det mening for functions????
