@@ -17,7 +17,6 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.framework.Nullable;
 import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
 
@@ -29,9 +28,6 @@ public final class InvocationSite {
 
     // Do we compute something lazily?
 
-    /** The invocation type for this operation. */
-    @Nullable // for bean access? Maybe just an empty type
-    public final InvocationType invocationType;
 
     /** The extension that operates the operation. MethodHandles will be generated relative to this extension. */
     public final ExtensionSetup invokingExtension;
@@ -39,7 +35,6 @@ public final class InvocationSite {
     // Should we store the bean as well???
 
     public InvocationSite(InvocationType invocationType, ExtensionSetup invokingExtension) {
-        this.invocationType = requireNonNull(invocationType);
         this.invokingExtension = requireNonNull(invokingExtension);
     }
 }

@@ -33,6 +33,7 @@ import app.packed.container.Extension;
 import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.PackedInvocationType;
 
 /**
  * An operation handle is direct reference to an underlying method, constructor, field, or similar low-level operation.
@@ -173,7 +174,13 @@ public final class OperationHandle {
 
     /** {@return the invocation type of this operation.} */
     public InvocationType invocationType() {
-        return operation.invocationSite.invocationType;
+        return operation.pit;
+    }
+
+    public void invokeAs(InvocationType invocationType) {
+        requireNonNull(invocationType, "invocationType is null");
+        checkConfigurable();
+        operation.pit = (PackedInvocationType) invocationType;
     }
 
     // Kan kaldes en gang

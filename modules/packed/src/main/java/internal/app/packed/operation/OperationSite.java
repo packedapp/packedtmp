@@ -58,6 +58,10 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         return false;
     }
 
+    public MethodHandle generate(PackedInvocationType pit) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     public final OperationType type() {
         return type;
@@ -181,7 +185,6 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
 
     public static final class LifetimePoolAccessSite extends OperationSite implements OperationSiteMirror.OfLifetimePoolAccess {
 
-
         /**
          * @param methodHandle
          * @param isStatic
@@ -194,6 +197,11 @@ public sealed abstract class OperationSite implements OperationSiteMirror {
         @Override
         public Optional<OperationMirror> origin() {
             return bean.mirror().factoryOperation();
+        }
+
+        @Override
+        public MethodHandle generate(PackedInvocationType pit) {
+            return super.generate(pit);
         }
     }
 

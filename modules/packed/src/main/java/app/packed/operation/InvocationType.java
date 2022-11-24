@@ -16,9 +16,9 @@
 package app.packed.operation;
 
 import java.lang.invoke.MethodType;
-import java.util.OptionalInt;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
+import internal.app.packed.operation.PackedInvocationType;
 
 /**
  *
@@ -29,9 +29,11 @@ import app.packed.bean.BeanIntrospector.OnBinding;
 
 // InvocationSite, InvocationType, Invocation contexts
 
-public interface InvocationType {
+public sealed interface InvocationType permits PackedInvocationType {
 
-    OptionalInt beanInstanceIndex();
+    boolean requiresArena();
+
+    int beanInstanceIndex();
 
     // Tror vi styrer return type her.
     // Man boer smide custom fejl beskeder
@@ -47,11 +49,11 @@ public interface InvocationType {
      */
     InvocationType withArg(Class<?> type);
 
-    InvocationType withBeanInstance(Class<?> beanClass);
-
-    default InvocationType withBeanInstanceObject() {
+    default InvocationType withBeanInstance() {
         return withBeanInstance(Object.class);
     }
+
+    InvocationType withBeanInstance(Class<?> beanClass);
 
     InvocationType withReturnType(Class<?> type);
 
@@ -61,11 +63,11 @@ public interface InvocationType {
 
     // Takes EBC returns void
     static InvocationType defaults() {
-        return new PackedInvocationType();
+        return PackedInvocationType.DEFAULTS;
     }
 
     static InvocationType raw() {
-        return new PackedInvocationType();
+        return new PackedInvocationType(-1, -1, MethodType.methodType(void.class));
     }
 
     enum ArgumentKind {
@@ -74,45 +76,8 @@ public interface InvocationType {
         /** The invocation argument is a bean instance. */
         BEAN_INSTANCE,
 
-        CONTEXT,
-
         /** The invocation argument is an extension bean context. */
         // Maaske noget andet end context, given dens mening
         EXTENSION_BEAN_CONTEXT; // InvocationContext
     }
-}
-
-// I 
-class PackedInvocationType implements InvocationType {
-
-    /** {@inheritDoc} */
-    @Override
-    public OptionalInt beanInstanceIndex() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InvocationType withReturnType(Class<?> type) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InvocationType withArg(Class<?> type) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InvocationType withBeanInstance(Class<?> beanClass) {
-        return null;
-    }
-
 }

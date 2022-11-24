@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -28,10 +29,13 @@ import java.util.function.Supplier;
 
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.OperationSiteMirror;
+import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.operation.OperationSite.MethodOperationSite;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.operation.binding.OperationBindingSetup;
@@ -41,7 +45,7 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Represents an operation on a bean. */
-public final class OperationSetup {
+public class OperationSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OperationMirror.class, "initialize",
@@ -57,6 +61,9 @@ public final class OperationSetup {
     /** A handle that can access OperationHandle#operation. */
     private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
             OperationSetup.class);
+
+    /** The bean this operation belongs to. */
+    public final BeanSetup bean;
 
     /** Bindings for this operation. */
     public final BindingSetup[] bindings;
@@ -78,32 +85,26 @@ public final class OperationSetup {
 
     public ExtensionSetup operator;
 
+    public PackedInvocationType pit = PackedInvocationType.DEFAULTS;
+
     /** The operation site. */
     public final OperationSite site;
+
+    /** The type of this operation. */
+    public final OperationType type;
 
     public OperationSetup(ExtensionSetup operator, OperationSite site) {
         this.operator = requireNonNull(operator);
         this.site = requireNonNull(site);
+        this.type = site.type;
+        this.bean = site.bean;
         this.bindings = site.type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[site.type.parameterCount()];
     }
 
     // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
     // Fx freeze arrayet
 
-    public MethodHandle generateMethodHandle() {
-        MethodHandle mh = buildInvoker0();
-        if (mh.type().parameterCount() != 1) {
-            System.err.println(mh.type());
-            throw new Error("Bean : " + site.bean.path() + ", operation : " + name);
-        }
-        if (mh.type().parameterType(0) != LifetimeObjectArena.class) {
-            System.err.println(mh.type());
-            throw new Error();
-        }
-        return mh;
-    }
-
-    public MethodHandle buildInvoker0() {
+    public final MethodHandle buildInvoker0() {
         site.bean.container.application.checkInCodegenPhase();
 
         if (isComputed) {
@@ -113,7 +114,7 @@ public final class OperationSetup {
         isComputed = true;
 
         MethodHandle mh = site.methodHandle;
-  //      System.out.println(mh.type() + " " + site);
+        // System.out.println(mh.type() + " " + site);
 
 //        System.out.println("--------Build Invoker-------------------");
 //        System.out.println("Bean = " + bean.path() + ", operation = " + name + ", target = " + target.getClass().getSimpleName());
@@ -129,7 +130,7 @@ public final class OperationSetup {
                 return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
             }
         }
-      //  mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+        // mh = MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
 
         if (site.requiresBeanInstance()) {
             mh = MethodHandles.collectArguments(mh, 0, site.bean.injectionManager.accessBean(site.bean));
@@ -149,14 +150,11 @@ public final class OperationSetup {
             mh = MethodHandles.permuteArguments(mh, mt, new int[mh.type().parameterCount()]);
         }
 
-        requireNonNull(mh);
         // System.out.println(mh.type());
         return mh;
-        // Must be computed relative to invocating site
-        // throw new UnsupportedOperationException();
     }
 
-    public Set<BeanSetup> dependsOn() {
+    public final Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
         forEachBinding(b -> {
             if (b instanceof ExtensionServiceBindingSetup s) {
@@ -170,7 +168,7 @@ public final class OperationSetup {
     }
 
     // readOnly. Will not work if for example, resolving a binding
-    public void forEachBinding(Consumer<? super BindingSetup> binding) {
+    public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
             if (bs instanceof OperationBindingSetup nested) {
                 nested.providingOperation.forEachBinding(binding);
@@ -179,8 +177,21 @@ public final class OperationSetup {
         }
     }
 
+    public final MethodHandle generateMethodHandle() {
+        MethodHandle mh = buildInvoker0();
+        if (mh.type().parameterCount() != 1) {
+            System.err.println(mh.type());
+            throw new Error("Bean : " + site.bean.path() + ", operation : " + name);
+        }
+        if (mh.type().parameterType(0) != LifetimeObjectArena.class) {
+            System.err.println(mh.type());
+            throw new Error();
+        }
+        return mh;
+    }
+
     /** {@return a new mirror.} */
-    public OperationMirror mirror() {
+    public final OperationMirror mirror() {
         OperationMirror mirror = ClassUtil.mirrorHelper(OperationMirror.class, OperationMirror::new, mirrorSupplier);
 
         // Initialize OperationMirror by calling OperationMirror#initialize(OperationSetup)
@@ -193,7 +204,7 @@ public final class OperationSetup {
     }
 
     /** {@return an operation handle for this operation.} */
-    public OperationHandle toHandle(IntrospectedBean iBean) {
+    public final OperationHandle toHandle(IntrospectedBean iBean) {
         try {
             return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this, iBean);
         } catch (Throwable e) {
@@ -201,8 +212,13 @@ public final class OperationSetup {
         }
     }
 
+    /** {@return the type of operation.} */
+    public final OperationType type() {
+        return type;
+    }
+
     /**
-     * Extracts am operation setup from an operation handle.
+     * Extracts an operation setup from an operation handle.
      * 
      * @param handle
      *            the handle to extract from
@@ -210,5 +226,27 @@ public final class OperationSetup {
      */
     public static OperationSetup crack(OperationHandle handle) {
         return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);
+    }
+
+    /** An operation that invokes an underlying {@link Method}. */
+    public static final class MethodOperationSetup extends OperationSetup implements OperationSiteMirror.OfMethodInvoke {
+
+        /** The method to invoke. */
+        private final Method method;
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, Method method, MethodHandle methodHandle) {
+            super(operator, new MethodOperationSite(bean, methodHandle, method));
+            this.method = requireNonNull(method);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Method method() {
+            return method;
+        }
     }
 }

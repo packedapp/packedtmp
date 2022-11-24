@@ -29,7 +29,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSite.MethodOperationSite;
+import internal.app.packed.operation.OperationSetup.MethodOperationSetup;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class IntrospectedBeanMethod implements OnMethod {
@@ -108,6 +108,8 @@ public final class IntrospectedBeanMethod implements OnMethod {
     public OperationHandle newOperation() {
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
 
+        // We should be able to create this lazily
+        // Probably need to store the lookup mechanism on the bean...
         MethodHandle methodHandle;
         Lookup lookup = introspectedBean.oc.lookup(method);
         try {
@@ -116,11 +118,10 @@ public final class IntrospectedBeanMethod implements OnMethod {
             throw new InaccessibleBeanMemberException("stuff", e);
         }
 
-        MethodOperationSite mot = new MethodOperationSite(introspectedBean.bean, methodHandle, method);
-        OperationSetup bos = new OperationSetup(contributor.extension(), mot);
-        introspectedBean.bean.operations.add(bos);
-        introspectedBean.unBoundOperations.add(bos);
-        return bos.toHandle(introspectedBean);
+        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, method, methodHandle);
+        introspectedBean.bean.operations.add(operation);
+        introspectedBean.unBoundOperations.add(operation);
+        return operation.toHandle(introspectedBean);
     }
 
     /** {@inheritDoc} */
