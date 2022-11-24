@@ -67,11 +67,6 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
     private static final VarHandle VH_OPERATION_HANDLE_CRACK = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OperationHandle.class, "operation",
             OperationSetup.class);
 
-    /** Whether or not the first argument to the method handle must be the bean instance. */
-    public boolean requiresBeanInstance() {
-        return false;
-    }
-
     /** The bean this operation belongs to. */
     public final BeanSetup bean;
 
@@ -81,11 +76,17 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
     /** By who this operation is invoked */
     public InvocationSite invocationSite;
 
+    /** The invocation type of this operation. */
+    public PackedInvocationType invocationType = PackedInvocationType.DEFAULTS;
+
     /** Whether or not this operation can still be configured. */
     public boolean isClosed;
 
     /** Whether or not an invoker has been computed */
     private boolean isComputed;
+
+    // Maybe store it in subclasses?
+    public MethodHandle methodHandle;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends OperationMirror> mirrorSupplier;
@@ -96,23 +97,15 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
     // Not final atm because, we might allow an extension to transfer ownership to another extension
     public ExtensionSetup operator;
 
-    /** The invocation type of this operation. */
-    public PackedInvocationType invocationType = PackedInvocationType.DEFAULTS;
-
     /** The type of this operation. */
     public final OperationType type;
 
     private OperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type) {
         this.operator = requireNonNull(operator);
-        this.type = type;
-        this.bean = bean;
+        this.type = requireNonNull(type);
+        this.bean = requireNonNull(bean);
         this.bindings = type.parameterCount() == 0 ? NO_BINDINGS : new BindingSetup[type.parameterCount()];
     }
-
-    public MethodHandle methodHandle;
-
-    // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
-    // Fx freeze arrayet
 
     public final MethodHandle buildInvoker0() {
         bean.container.application.checkInCodegenPhase();
@@ -131,6 +124,9 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
 //        System.out.println(type);
 //        System.out.println("Building Operation [bean = " + bean.path() + ": " + mh);
 
+        // Vi kan altid have brug for en adjustment...
+        // Dependending
+        
         if (bindings.length == 0) {
             if (!requiresBeanInstance()) {
                 if (mh.type().parameterCount() > 0) {
@@ -163,6 +159,9 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         // System.out.println(mh.type());
         return mh;
     }
+
+    // Der hvor den er god, er jo hvis man gerne vil lave noget naar alle operationer er faerdige.
+    // Fx freeze arrayet
 
     public final Set<BeanSetup> dependsOn() {
         HashSet<BeanSetup> result = new HashSet<>();
@@ -197,6 +196,12 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             System.err.println(mh.type());
             throw new Error();
         }
+        if (!mh.type().equals(invocationType.methodType)) {
+            System.err.println("OperationType " + this.toString());
+            System.err.println("Expected " + invocationType.methodType);
+            System.err.println("Actual " + mh.type());
+            throw new Error();
+        }
         return mh;
     }
 
@@ -211,6 +216,11 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    /** Whether or not the first argument to the method handle must be the bean instance. */
+    public boolean requiresBeanInstance() {
+        return false;
     }
 
     /** {@return an operation handle for this operation.} */
@@ -238,43 +248,6 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);
     }
 
-    public static final class MethodHandleInvoke extends OperationSetup implements OperationSiteMirror.OfMethodHandleInvoke {
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public MethodHandleInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
-            super(operator, bean, operationType);
-            this.methodHandle = methodHandle;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodType methodType() {
-            return type.toMethodType();
-        }
-    }
-
-    public static final class LifetimePoolAccessInvoke extends OperationSetup implements OperationSiteMirror.OfLifetimePoolAccess {
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public LifetimePoolAccessInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
-            super(operator, bean, operationType);
-            this.methodHandle = methodHandle;
-            name = "InstantAccess";
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<OperationMirror> origin() {
-            return bean.mirror().factoryOperation();
-        }
-    }
-
     /** An operation that invokes an underlying {@link Method}. */
     public static final class ConstructorOperationSetup extends OperationSetup implements OperationSiteMirror.OfConstructorInvoke {
 
@@ -300,69 +273,14 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         }
     }
 
-    /** An operation that invokes an underlying {@link Constructor}. */
-    public static final class FunctionOperationSetup extends OperationSetup implements OperationSiteMirror.OfFunctionCall {
-
-        // Can read it from the method... no
-        private final Class<?> functionalInterface;
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle,
-                Class<?> functionalInterface) {
-            super(operator, bean, operationType);
-            this.methodHandle = methodHandle;
-            this.functionalInterface = requireNonNull(functionalInterface);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<?> functionalInterface() {
-            return functionalInterface;
-        }
-    }
-
-    /** An operation that invokes an underlying {@link Constructor}. */
-    public static final class MethodOperationSetup extends OperationSetup implements OperationSiteMirror.OfMethodInvoke {
-
-        /** The method to invoke. */
-        private final Method method;
-
-        public boolean requiresBeanInstance() {
-            return !Modifier.isStatic(method.getModifiers());
-        }
-
-        /**
-         * @param operator
-         * @param site
-         */
-        public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, Method method, MethodHandle methodHandle) {
-            super(operator, bean, type);
-            this.methodHandle = methodHandle;
-            this.method = requireNonNull(method);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Method method() {
-            return method;
-        }
-    }
-
     /** An operation that can access an underlying {@link Field}. */
     public static final class FieldOperationSetup extends OperationSetup implements OperationSiteMirror.OfFieldAccess {
 
-        public boolean requiresBeanInstance() {
-            return !Modifier.isStatic(field.getModifiers());
-        }
+        /** The way we access the field. */
+        private final AccessMode accessMode;
 
         /** The field to access. */
         private final Field field;
-
-        /** The way we access the field. */
-        private final AccessMode accessMode;
 
         /**
          * @param operator
@@ -398,6 +316,98 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         @Override
         public Field field() {
             return field;
+        }
+
+        public boolean requiresBeanInstance() {
+            return !Modifier.isStatic(field.getModifiers());
+        }
+    }
+
+    /** An operation that invokes an underlying {@link Constructor}. */
+    public static final class FunctionOperationSetup extends OperationSetup implements OperationSiteMirror.OfFunctionCall {
+
+        // Can read it from the method... no
+        private final Class<?> functionalInterface;
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle,
+                Class<?> functionalInterface) {
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
+            this.functionalInterface = requireNonNull(functionalInterface);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Class<?> functionalInterface() {
+            return functionalInterface;
+        }
+    }
+
+    public static final class LifetimePoolAccessInvoke extends OperationSetup implements OperationSiteMirror.OfLifetimePoolAccess {
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public LifetimePoolAccessInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
+            name = "InstantAccess";
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<OperationMirror> origin() {
+            return bean.mirror().factoryOperation();
+        }
+    }
+
+    public static final class MethodHandleInvoke extends OperationSetup implements OperationSiteMirror.OfMethodHandleInvoke {
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public MethodHandleInvoke(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle) {
+            super(operator, bean, operationType);
+            this.methodHandle = methodHandle;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType methodType() {
+            return type.toMethodType();
+        }
+    }
+
+    /** An operation that invokes an underlying {@link Constructor}. */
+    public static final class MethodOperationSetup extends OperationSetup implements OperationSiteMirror.OfMethodInvoke {
+
+        /** The method to invoke. */
+        private final Method method;
+
+        /**
+         * @param operator
+         * @param site
+         */
+        public MethodOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType type, Method method, MethodHandle methodHandle) {
+            super(operator, bean, type);
+            this.methodHandle = methodHandle;
+            this.method = requireNonNull(method);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Method method() {
+            return method;
+        }
+
+        public boolean requiresBeanInstance() {
+            return !Modifier.isStatic(method.getModifiers());
         }
     }
 }

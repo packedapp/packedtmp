@@ -39,6 +39,7 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.FieldOperationSetup;
+import internal.app.packed.operation.PackedInvocationType;
 
 /** Responsible for introspecting bean fields. */
 public final class IntrospectedBeanField implements OnField {
@@ -134,7 +135,7 @@ public final class IntrospectedBeanField implements OnField {
 
     private OperationHandle newOperation(MethodHandle mh, AccessMode accessMode) {
         OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field, accessMode);
-        
+        operation.invocationType = (PackedInvocationType) operation.invocationType.withReturnType(field.getType());
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
         return operation.toHandle(iBean);

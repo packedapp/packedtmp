@@ -41,6 +41,7 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.ConstructorOperationSetup;
+import internal.app.packed.operation.PackedInvocationType;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.StringFormatter;
@@ -137,7 +138,7 @@ public final class IntrospectedBean {
         MethodHandle mh = oc.unreflectConstructor(constructor.constructor());
 
         OperationSetup os = new ConstructorOperationSetup(bean.installedBy, bean, constructor.constructor(), mh);
-
+        os.invocationType = (PackedInvocationType) os.invocationType.withReturnType(constructor.constructor().getDeclaringClass());
         bean.operations.add(os);
         unBoundOperations.add(os);
         resolveOperations();
