@@ -29,7 +29,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.OperationSetup.MethodOperationSetup;
+import internal.app.packed.operation.OperationSetup.MethodInvokeOperationSetup;
 import internal.app.packed.operation.PackedInvocationType;
 
 /** Internal implementation of BeanMethod. Discard after use. */
@@ -119,7 +119,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
             throw new InaccessibleBeanMemberException("stuff", e);
         }
 
-        OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), method, methodHandle);
+        OperationSetup operation = new MethodInvokeOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), method, methodHandle);
         operation.invocationType = (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
 
         introspectedBean.bean.operations.add(operation);

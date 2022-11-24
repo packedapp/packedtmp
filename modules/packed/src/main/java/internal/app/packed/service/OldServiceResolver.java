@@ -16,6 +16,7 @@
 package internal.app.packed.service;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,6 +29,8 @@ import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.FieldAccessOperationSetup;
+import internal.app.packed.operation.OperationSetup.MethodInvokeOperationSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 public final class OldServiceResolver {
@@ -71,7 +74,7 @@ public final class OldServiceResolver {
     void provideService(ProvidedService provider) {
         OperationSetup o = provider.operation;
         DependencyNode bis;
-        if (o instanceof OperationSetup.LifetimePoolAccessInvoke bia) {
+        if (o instanceof OperationSetup.LifetimePoolAccessOperationSetup bia) {
             OperationSetup os = null;
             LifetimeAccessor accessor = null;
             if (o.bean.injectionManager.lifetimePoolAccessor == null) {
@@ -84,7 +87,15 @@ public final class OldServiceResolver {
             }
             bis = new DependencyNode(os, accessor);
         } else {
-            boolean isStatic = !o.requiresBeanInstance();
+            boolean isStatic;
+            if (o instanceof MethodInvokeOperationSetup ss) {
+                isStatic = Modifier.isStatic(ss.method().getModifiers());
+            } else if (o instanceof FieldAccessOperationSetup ss) {
+                isStatic = Modifier.isStatic(ss.field().getModifiers());
+            } else {
+                throw new Error();
+            }
+        
             if (!isStatic && o.bean.injectionManager.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }

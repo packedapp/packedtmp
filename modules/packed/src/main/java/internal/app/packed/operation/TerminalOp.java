@@ -53,7 +53,7 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         /** {@inheritDoc} */
         @Override
         public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-            return new OperationSetup.MethodHandleInvoke(operator, bean, type, mhOperation);
+            return new OperationSetup.MethodHandleInvokeOperationSetup(operator, bean, type, mhOperation);
         }
     }
 
