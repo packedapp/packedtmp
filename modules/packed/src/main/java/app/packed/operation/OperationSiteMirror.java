@@ -20,30 +20,26 @@ import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import app.packed.operation.OperationSiteMirror.OfConstant;
 import app.packed.operation.OperationSiteMirror.OfConstructorInvoke;
 import app.packed.operation.OperationSiteMirror.OfFieldAccess;
 import app.packed.operation.OperationSiteMirror.OfFunctionCall;
-import app.packed.operation.OperationSiteMirror.OfLifetimePoolAccess;
 import app.packed.operation.OperationSiteMirror.OfMethodHandleInvoke;
 import app.packed.operation.OperationSiteMirror.OfMethodInvoke;
 import internal.app.packed.operation.OperationSetup;
 
 /**
- * The target of an operation. This is typically a method
+ * The target of an operation, typically a method. 
  * 
  * @see OperationMirror#site()
  */
-public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant, OperationSetup {
-
-    OperationType type();
+public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfMethodInvoke, OfMethodHandleInvoke, OfConstant, OperationSetup {
 
     // AnnotataionReader annotations()???
 
     /**
-     * Represents an operation that simply returns a constant.
+     * Represents an operation simply returns a constant.
      * <p>
      * An {@link OperationMirror operation} with {@code constant} target never has any {@link OperationMirror#bindings()
      * bindings}.
@@ -54,7 +50,6 @@ public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfField
         Class<?> constantType();
     }
 
-    // Members
     /** Represents an operation that invokes a constructor. */
     public non-sealed interface OfConstructorInvoke extends OperationSiteMirror {
 
@@ -91,30 +86,6 @@ public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfField
         /** {@return the single abstract method on the functional interface.} */
         Method interfaceMethod();
     }
-
-    /**
-     * Represents an operation that it performed sometime in the lifetime of X And then returned for subsequent invocations.
-     * <p>
-     * This is typically for access container beans that are created as part of their container lifetime creation. .
-     * <p>
-     * This is typically used for beans whose instance is provided or exported as a service.
-     */
-    public non-sealed interface OfLifetimePoolAccess extends OperationSiteMirror {
-
-        // empty if the instance was provided
-        // otherwise the operation that created it, and stored it somewhere.
-        Optional<OperationMirror> origin();
-
-        // Accessing an instance that have previously been computed
-        // Was BeanInstance but we create a synthetic operation for for example BeanVarInject.provideInstance
-        // Giver ikke mening for provide...
-        // Kan ikke komme paa andre brugbare ting end @Provide
-
-        // Er det her en speciel operation istedet for et target???
-        /// InstanceProvide? IDK
-
-        // Har maaske ogsaa noget LifetimePoolMirror her????
-    } // ofLifetimePool? Hmm
 
     public non-sealed interface OfMethodHandleInvoke extends OperationSiteMirror {
         MethodType methodType();

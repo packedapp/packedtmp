@@ -16,12 +16,13 @@
 package app.packed.operation;
 
 import app.packed.service.Key;
+import app.packed.service.ServiceBindingMirror;
 
 /**
  *
  * @see BindingResolutionKind#KEY
  */
-public abstract class KeyBasedBindingMirror extends BindingMirror {
+public sealed abstract class KeyBasedBindingMirror extends BindingMirror permits ServiceBindingMirror, ContextServiceBindingMirror {
     
     /** {@return the binding key.} */
     public abstract Key<?> key();

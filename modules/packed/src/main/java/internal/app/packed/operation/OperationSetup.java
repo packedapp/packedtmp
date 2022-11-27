@@ -28,7 +28,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -45,8 +44,8 @@ import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.operation.binding.BindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.OperationBindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
-import internal.app.packed.operation.binding.OperationBindingSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -254,7 +253,6 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
 
         private final Method implementationMethod;
 
-        // Can read it from the method... no might be on super class, and we just re
         private final SamType samType;
 
         /**
@@ -289,7 +287,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
     }
 
     /** An operation that accesses an object in the lifetime pool. */
-    public static final class LifetimePoolOperationSetup extends OperationSetup implements OperationSiteMirror.OfLifetimePoolAccess {
+    public static final class LifetimePoolOperationSetup extends OperationSetup {
 
         /**
          * @param operator
@@ -300,23 +298,20 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             this.methodHandle = methodHandle;
             name = "InstantAccess";
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<OperationMirror> origin() {
-            return bean.mirror().factoryOperation();
-        }
     }
 
+    /** An operation that invokes or accesses a {@link Member}. */
     public sealed static abstract class MemberOperationSetup<T extends Member> extends OperationSetup {
 
-        private final T member;
+        /** The {@link Member member}. */
+        final T member;
 
         private MemberOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, T member) {
             super(operator, bean, operationType);
             this.member = requireNonNull(member);
         }
 
+        /** @see Member#getModifiers(). */
         public final int getModifiers() {
             return member.getModifiers();
         }
@@ -338,7 +333,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             /** {@inheritDoc} */
             @Override
             public Constructor<?> constructor() {
-                return super.member;
+                return member;
             }
         }
 
@@ -380,7 +375,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             /** {@inheritDoc} */
             @Override
             public Field field() {
-                return super.member;
+                return member;
             }
         }
 
@@ -402,7 +397,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             /** {@inheritDoc} */
             @Override
             public Method method() {
-                return super.member;
+                return member;
             }
         }
     }

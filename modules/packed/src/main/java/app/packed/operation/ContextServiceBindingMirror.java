@@ -15,19 +15,20 @@
  */
 package app.packed.operation;
 
+import app.packed.service.Key;
+
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
+// Ideen er at man kan provide nogle i en operation context...
+// Som ikke noedvendigvis er binding hooks
+// Er factory? En context??? Hmmm En slags jo...
+public non-sealed class ContextServiceBindingMirror extends KeyBasedBindingMirror {
 
-    public OperationMirror compositeOperation() {
-        return providingOperation().get();
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> key() {
+        throw new UnsupportedOperationException();
     }
-}
 
-//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
-// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-// Jo, 2 arg bindings
-//public boolean isFuncionalInterface() {
-//    throw new UnsupportedOperationException();
-//}
+}

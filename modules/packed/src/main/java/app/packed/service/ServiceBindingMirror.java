@@ -27,13 +27,12 @@ import internal.app.packed.service.ServiceBindingSetup;
  */
 // findAll(SBM.class).filterOn(key.equals(String.class)).toList();
 
-// extends OnKeyBindingMirror?
-public class ServiceBindingMirror extends KeyBasedBindingMirror {
+public non-sealed class ServiceBindingMirror extends KeyBasedBindingMirror {
 
     /** The service binding */
     private final ServiceBindingSetup binding;
 
-   public ServiceBindingMirror(@SuppressWarnings("exports") ServiceBindingSetup binding) {
+    public ServiceBindingMirror(@SuppressWarnings("exports") ServiceBindingSetup binding) {
         this.binding = requireNonNull(binding);
     }
 
@@ -56,7 +55,7 @@ public class ServiceBindingMirror extends KeyBasedBindingMirror {
         return !isRequired() || isResolved();
     }
 
-    /** {@return the binding key.} */
+    /** {@inheritDoc} */
     public Key<?> key() {
         return binding.entry.key;
     }

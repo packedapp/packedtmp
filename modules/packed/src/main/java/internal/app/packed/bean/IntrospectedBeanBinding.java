@@ -33,8 +33,8 @@ import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.binding.BindingOrigin;
 import internal.app.packed.operation.binding.BindingOrigin.BindingHookTarget;
-import internal.app.packed.operation.binding.ConstantBindingSetup;
-import internal.app.packed.operation.binding.OperationBindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.ConstantBindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.OperationBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class IntrospectedBeanBinding implements OnBinding {

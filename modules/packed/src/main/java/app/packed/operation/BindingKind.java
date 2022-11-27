@@ -20,14 +20,14 @@ package app.packed.operation;
  */
 public enum BindingKind {
     
+    /** A constant. */
+    CONSTANT,
+
     /** An argument that is provided when invoking the operation. */
     ARGUMENT,
     
     // The value is looked up in the lifetime pool...
     LIFETIME_POOL,
-    
-    /** A constant. */
-    CONSTANT,
         
     /** The binding is a result of another operation. */
     OPERATION;

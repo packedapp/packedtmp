@@ -27,7 +27,7 @@ import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.binding.BindingOrigin;
-import internal.app.packed.operation.binding.ConstantBindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.ConstantBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
 /** An intermediate (non-terminal) op. */

@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.container.User;
 import app.packed.framework.Nullable;
+import app.packed.operation.BindingKind;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
@@ -29,6 +30,10 @@ import internal.app.packed.operation.binding.BindingSetup;
  * A binding to a service.
  */
 public final class ServiceBindingSetup extends BindingSetup {
+
+    public BindingKind kind() {
+        return BindingKind.OPERATION;
+    }
 
     /** An entry corresponding to the key. */
     public final ServiceManagerEntry entry;

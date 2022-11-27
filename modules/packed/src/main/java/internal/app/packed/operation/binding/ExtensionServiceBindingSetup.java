@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
+import app.packed.operation.BindingKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -46,5 +47,9 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
     public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
         MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
         return MethodHandles.collectArguments(methodHandle, index, mh);
+    }
+
+    public BindingKind kind() {
+        return BindingKind.OPERATION;
     }
 }

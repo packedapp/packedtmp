@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation.binding;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
@@ -40,7 +42,6 @@ import internal.app.packed.util.ThrowableUtil;
 //// Non
 // Service/ExtensionService (Always opish)
 
-
 // Constant vs Op vs InvocationArgument
 
 public abstract class BindingSetup {
@@ -62,18 +63,17 @@ public abstract class BindingSetup {
 
     /** Supplies a mirror for the operation */
     public final BindingOrigin target;
-    
-    public BindingSetup(OperationSetup operation, int index, User user, BindingOrigin target) {
-        this.operation = operation;
+
+    public BindingSetup(OperationSetup operation, int index, User user, BindingOrigin origin) {
+        this.operation = requireNonNull(operation);
         this.index = index;
-        this.target = target;
-        this.boundBy = user;
+        this.target = origin;
+        this.boundBy = requireNonNull(user);
     }
 
     public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
-    public BindingKind kind() {
-        return BindingKind.OPERATION;
-    }
+
+    public abstract BindingKind kind();
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -87,4 +87,108 @@ public abstract class BindingSetup {
         }
         return mirror;
     }
+
+    public static final class ArgumentBindingSetup extends BindingSetup {
+
+        /**
+         * @param operation
+         * @param index
+         * @param user
+         * @param target
+         */
+        public ArgumentBindingSetup(OperationSetup operation, int index, User user, BindingOrigin target) {
+            super(operation, index, user, target);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+            throw new UnsupportedOperationException();
+        }
+
+        public BindingKind kind() {
+            return BindingKind.ARGUMENT;
+        }
+    }
+    /**
+     * A binding to a constant.
+     * 
+     * @see BindingKind#CONSTANT
+     */
+    public static final class ConstantBindingSetup extends BindingSetup {
+
+        /** The constant. */
+        public final Object constant;
+
+        /** The type of the constant. */
+        public final Class<?> constantType;
+
+        /**
+         * @param operation
+         * @param index
+         * @param target
+         */
+        public ConstantBindingSetup(OperationSetup operation, int index, User user, BindingOrigin target, Class<?> constantType, Object constant) {
+            super(operation, index, user, target);
+            this.constant = constant;
+            this.constantType = constantType;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+            return MethodHandles.insertArguments(methodHandle, index, constant);
+        }
+
+        /** {@inheritDoc} */
+        public BindingKind kind() {
+            return BindingKind.CONSTANT;
+        }
+    }
+    
+    public static final class LifetimePoolBindingSetup extends BindingSetup {
+
+        /**
+         * @param operation
+         * @param index
+         * @param user
+         * @param target
+         */
+        public LifetimePoolBindingSetup(OperationSetup operation, int index, User user, BindingOrigin target) {
+            super(operation, index, user, target);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+            throw new UnsupportedOperationException();
+        }
+
+        public BindingKind kind() {
+            return BindingKind.LIFETIME_POOL;
+        }
+    }
+    
+    public static final class OperationBindingSetup extends BindingSetup {
+
+        /** The operation that produces the value for the binding. */
+        public final OperationSetup providingOperation;
+
+        public OperationBindingSetup(OperationSetup operation, int index, User user, BindingOrigin target, OperationSetup providingOperation) {
+            super(operation, index, user, target);
+            this.providingOperation = requireNonNull(providingOperation);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
+            MethodHandle mh = providingOperation.generateMethodHandle();
+            return MethodHandles.collectArguments(methodHandle, index, mh);
+        }
+        
+        public BindingKind kind() {
+            return BindingKind.OPERATION;
+        }
+    }
+
 }

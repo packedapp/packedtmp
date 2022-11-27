@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package internal.app.packed.operation.binding;
 
 /**
- * A composite binding mirror
+ *
  */
-public class CompositeBindingMirror extends BindingMirror {
+public abstract class BindingResolutionSetup {
 
-    public OperationMirror compositeOperation() {
-        return providingOperation().get();
-    }
 }
-
-//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
-// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-// Jo, 2 arg bindings
-//public boolean isFuncionalInterface() {
-//    throw new UnsupportedOperationException();
-//}

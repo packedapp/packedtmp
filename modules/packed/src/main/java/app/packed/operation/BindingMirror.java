@@ -33,9 +33,6 @@ import internal.app.packed.operation.binding.BindingSetup;
  * 
  * @see OperationMirror#bindings()
  */
-/**
- *
- */
 public class BindingMirror implements Mirror {
 
     /**
