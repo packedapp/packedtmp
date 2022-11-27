@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.container.User;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingResolutionKind;
+import app.packed.operation.BindingKind;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
@@ -64,7 +64,7 @@ public final class ServiceBindingSetup extends BindingSetup {
         return entry.provider != null;
     }
 
-    public BindingResolutionKind kind() {
-        return BindingResolutionKind.KEY;
+    public BindingKind kind() {
+        return BindingKind.KEY;
     }
 }

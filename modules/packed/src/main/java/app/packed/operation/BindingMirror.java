@@ -22,7 +22,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.User;
 import app.packed.framework.Nullable;
-import app.packed.operation.bindings.DefaultBindingMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
 import internal.app.packed.container.Mirror;
@@ -65,7 +64,7 @@ public class BindingMirror implements Mirror {
         return binding().index;
     }
 
-    public Optional<BindingKind> bindingKind() {
+    public Optional<BindingTargetKind> bindingKind() {
         return Optional.ofNullable(binding().resolution).map(b -> b.kind());
     }
 
@@ -154,14 +153,14 @@ public class BindingMirror implements Mirror {
 //Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
 //Eller maaske goer det? Taenker ikke man kan vaere alle dele
 interface Sandbox {
-    BindingKind bindingKind();
+    BindingTargetKind bindingKind();
 
     // Resolved
     // Unresolved + [Optional|Default]
     // RuntimeResolvable
     // Composite -> composite.all.isSatisfiable
 
-    Optional<DefaultBindingMirror> fallback(); // Do we parse it even if we have been build-time resolved????
+    //Optional<DefaultBindingMirror> fallback(); // Do we parse it even if we have been build-time resolved????
 
     boolean isConstant();
 

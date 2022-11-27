@@ -20,7 +20,7 @@ import app.packed.service.ServiceBindingMirror;
 
 /**
  *
- * @see BindingResolutionKind#KEY
+ * @see BindingKind#KEY
  */
 public sealed abstract class KeyBasedBindingMirror extends BindingMirror permits ServiceBindingMirror, ContextServiceBindingMirror {
     

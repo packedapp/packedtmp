@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
-import app.packed.operation.BindingResolutionKind;
+import app.packed.operation.BindingKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -49,7 +49,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
 //        return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 
-    public BindingResolutionKind kind() {
-        return BindingResolutionKind.KEY;
+    public BindingKind kind() {
+        return BindingKind.KEY;
     }
 }

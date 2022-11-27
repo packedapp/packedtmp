@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import app.packed.container.User;
 import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
-import app.packed.operation.BindingResolutionKind;
+import app.packed.operation.BindingKind;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
@@ -33,18 +33,9 @@ import internal.app.packed.util.ThrowableUtil;
 
 /** The configuration of a single binding in an operation. */
 
-// Vi vil godt gemme noget om 
-// Hvorfor er denne binding blevet lavet... Vi saa det var en composite, Vi resolved den som en service, den var manuelt bounded
-
-// CompositeBinding (Always op)
-// OpBinding (Always constant)
-// @Anno/ Class Hook BindingOp
-//// Constant
-//// Non
-// Service/ExtensionService (Always opish)
-
-// Constant vs Op vs InvocationArgument
-
+// Taenkte i lang om denne skulle organiseres efter [Constant, Operation, Argument]... eller [Binding, Service, Manual]
+// I sidste endte det paa at vi ikke ved med det samme om vi har en constant, operation, ... Fx fordi services
+// bliver resolvet sent. Dette gjoerde at vi valgte den nuvaere strategi
 public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
@@ -74,7 +65,7 @@ public abstract class BindingSetup {
 
     public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
 
-    public abstract BindingResolutionKind kind();
+    public abstract BindingKind kind();
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
@@ -108,8 +99,8 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingResolutionKind kind() {
-            return BindingResolutionKind.BINDING_ANNOTATION;
+        public BindingKind kind() {
+            return BindingKind.BINDING_ANNOTATION;
         }
     }
 
@@ -132,8 +123,8 @@ public abstract class BindingSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingResolutionKind kind() {
-            return BindingResolutionKind.MANUAL;
+        public BindingKind kind() {
+            return BindingKind.MANUAL;
         }
     }
 }

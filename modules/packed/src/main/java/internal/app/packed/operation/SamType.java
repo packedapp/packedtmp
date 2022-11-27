@@ -18,12 +18,14 @@ package internal.app.packed.operation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 
+import app.packed.operation.OperationType;
+
 /**
  *
  */
-public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle) {
+public record SamType(Class<?> functionInterface, Method saMethod, MethodHandle methodHandle, OperationType type) {
     
     public static SamType of(Class<?> functionInstance) {
-        return new SamType(functionInstance, null, null);
+        return new SamType(functionInstance, null, null, null);
     }
 }

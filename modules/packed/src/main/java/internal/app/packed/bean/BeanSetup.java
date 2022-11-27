@@ -70,17 +70,16 @@ public final class BeanSetup {
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
-
-    
-    /** A pool accessor if a single instance of this bean is created. null otherwise */
-    @Nullable
-    public LifetimeAccessor lifetimePoolAccessor;
     
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
-
+    
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
+
+    /** A pool accessor if a single instance of this bean is created. null otherwise */
+    @Nullable
+    public LifetimeAccessor lifetimePoolAccessor;
 
     /** Supplies a mirror for the operation */
     public Supplier<? extends BeanMirror> mirrorSupplier;
@@ -149,6 +148,17 @@ public final class BeanSetup {
         } else {
             this.lifetime = new BeanLifetimeSetup(cls, this);
         }
+    }
+
+    public BindingResolutionSetup accessBeanX() {
+        if (sourceKind == BeanSourceKind.INSTANCE) {
+            return new ConstantResolution(source.getClass(), source);
+        } else if (beanKind == BeanKind.CONTAINER) {
+            return new LifetimePoolResolution((DynamicAccessor) lifetimePoolAccessor);
+        } else if (beanKind == BeanKind.MANYTON) {
+            return new OperationResolution(operations.get(0));
+        }
+        throw new Error();
     }
 
     public Set<BeanSetup> dependsOn() {
@@ -235,6 +245,7 @@ public final class BeanSetup {
     private static BeanSetup crack(BeanHandle<?> handle) {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
+    
 
     static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
             @Nullable BeanIntrospector introspector, @Nullable String namePrefix, boolean multiInstall, boolean synthetic) {
@@ -323,17 +334,5 @@ public final class BeanSetup {
         container.beanLast = bean;
 
         return bean;
-    }
-    
-
-    public BindingResolutionSetup accessBeanX() {
-        if (sourceKind == BeanSourceKind.INSTANCE) {
-            return new ConstantResolution(source.getClass(), source);
-        } else if (beanKind == BeanKind.CONTAINER) {
-            return new LifetimePoolResolution((DynamicAccessor) lifetimePoolAccessor);
-        } else if (beanKind == BeanKind.MANYTON) {
-            return new OperationResolution(operations.get(0));
-        }
-        throw new Error();
     }
 }

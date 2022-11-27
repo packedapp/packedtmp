@@ -15,41 +15,67 @@
  */
 package app.packed.operation;
 
+import java.lang.reflect.Field;
+
+import app.packed.bean.BeanExtensionPoint.BindingHook;
+
 /**
  *
  */
+// All dependencies have a resolution kind if those that are unresolved
+
+// Binding
+//// OnAnnotation
+//// OnClass
+// Composite
+// Key
+//// Service
+//// FactoryService
+
 public enum BindingKind {
-    
-    // LAZY (I think we need this...) IDK Lifetime_POOL beanen kan jo vaere lazy
-    
-    /** A constant. */
-    CONSTANT,
 
-    /** An argument that is provided when invoking the operation. */
-    ARGUMENT,
+    // Maaske har vi kun en Binding enum value... Ligesom vi kun har en annotering, og en metode paa inspectoren...
     
-    // The value is looked up in the lifetime pool...
-    LIFETIME_POOL,
-        
-    /** The binding is a result of another operation. */
-    OPERATION;
+    /**
+     * AnnotationBindingHook
+     * 
+     * @see BindingHook
+     **/
+    BINDING_ANNOTATION,
+
+    /**
+     * 
+     * @see Field#getType()
+     * @see Parameter#getType();
+     **/
+    BINDING_CLASS,
+
+    /**
+     * 
+     * @see Composite
+     * 
+     * @see CompositeBindingMirror
+     **/
+    COMPOSITE, // Always an operation 
+
+    // Key? Service, OperationContext, ExtensionService, LocalService, InitializationBinding
+    // Maaske er det FactoryBinding??? A binding that takes a service and can only be used when creating
+    // a bean instance
+    // method of the bean
+    KEY,
+
+    /**
+     * Manual is always because of a position
+     * 
+     * @see BindingKind#ARGUMENT
+     * @see OperationHandle#bindManually(int)
+     * @see Op#bind(Object)
+     * @see Op#bind(int, Object, Object...)
+     */
+    // Positional or an argument (which is positional as well??)
+    MANUAL; //Always a position... But not always a constant...
 }
 
-
-
-
-/**
-*
-*/
-// Det var tidligere den her...
-// Maaske er service instance... ikke en Operation Type... Men en bindingKind
-interface HowDepIsProvidedKind {
-   
-   // Build-time Constant
-   
-   // Result of an operation?
-   
-   // Background input param to operation
-   
-   // Lookup in some datastructed (service) Er det ikke bare result af en operation?
-}
+// Check if already manually bound
+// Check annotation for Prime annotations
+// check raw class for Prime Class

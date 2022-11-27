@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.operation.BindingKind;
+import app.packed.operation.BindingTargetKind;
 import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
@@ -32,7 +32,7 @@ public sealed abstract class BindingResolutionSetup {
 
     public abstract MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle);
 
-    public abstract BindingKind kind();
+    public abstract BindingTargetKind kind();
 
     public abstract MethodHandle provideSpecial();
     
@@ -46,8 +46,8 @@ public sealed abstract class BindingResolutionSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingKind kind() {
-            return BindingKind.ARGUMENT;
+        public BindingTargetKind kind() {
+            return BindingTargetKind.ARGUMENT;
         }
 
         /** {@inheritDoc} */
@@ -81,8 +81,8 @@ public sealed abstract class BindingResolutionSetup {
         }
 
         /** {@inheritDoc} */
-        public BindingKind kind() {
-            return BindingKind.CONSTANT;
+        public BindingTargetKind kind() {
+            return BindingTargetKind.CONSTANT;
         }
 
         /** {@inheritDoc} */
@@ -109,8 +109,8 @@ public sealed abstract class BindingResolutionSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingKind kind() {
-            return BindingKind.LIFETIME_POOL;
+        public BindingTargetKind kind() {
+            return BindingTargetKind.LIFETIME_POOL;
         }
 
         /** {@inheritDoc} */
@@ -138,8 +138,8 @@ public sealed abstract class BindingResolutionSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingKind kind() {
-            return BindingKind.OPERATION;
+        public BindingTargetKind kind() {
+            return BindingTargetKind.OPERATION;
         }
 
         /** {@inheritDoc} */
