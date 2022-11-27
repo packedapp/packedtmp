@@ -249,27 +249,42 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         return (OperationSetup) VH_OPERATION_HANDLE_CRACK.get(handle);
     }
 
-    /** An operation that invokes an underlying {@link Constructor}. */
+    /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
     public static final class FunctionOperationSetup extends OperationSetup implements OperationSiteMirror.OfFunctionCall {
 
-        // Can read it from the method... no
-        private final Class<?> functionalInterface;
+        // Can read it from the method... no might be on super class, and we just re
+        private final SamType samType;
+
+        private final Method implementationMethod;
 
         /**
          * @param operator
          * @param site
          */
-        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle,
-                Class<?> functionalInterface) {
+        public FunctionOperationSetup(ExtensionSetup operator, BeanSetup bean, OperationType operationType, MethodHandle methodHandle, SamType samType,
+                Method implementationMethod) {
             super(operator, bean, operationType);
-            this.methodHandle = methodHandle;
-            this.functionalInterface = requireNonNull(functionalInterface);
+            this.methodHandle = requireNonNull(methodHandle);
+            this.samType = requireNonNull(samType);
+            this.implementationMethod = requireNonNull(implementationMethod);
         }
 
         /** {@inheritDoc} */
         @Override
         public Class<?> functionalInterface() {
-            return functionalInterface;
+            return samType.functionInterface();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Method implementationMethod() {
+            return implementationMethod;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Method interfaceMethod() {
+            return samType.saMethod();
         }
     }
 
@@ -300,7 +315,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             super(operator, bean, operationType);
             this.member = requireNonNull(member);
         }
-        
+
         public final int getModifiers() {
             return member.getModifiers();
         }
@@ -391,6 +406,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         }
     }
 
+    /** An operation that invokes a method handle. */
     public static final class MethodHandleOperationSetup extends OperationSetup implements OperationSiteMirror.OfMethodHandleInvoke {
 
         /**
@@ -408,5 +424,4 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
             return type.toMethodType();
         }
     }
-
 }

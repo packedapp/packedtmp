@@ -39,7 +39,7 @@ import internal.app.packed.operation.OperationSetup;
 public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfLifetimePoolAccess, OfMethodInvoke, OfMethodHandleInvoke, OfConstant, OperationSetup {
 
     OperationType type();
-    
+
     // AnnotataionReader annotations()???
 
     /**
@@ -85,22 +85,17 @@ public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfField
         /** {@return the functional interface.} */
         Class<?> functionalInterface();
 
-        default Method implementationMethod() {
-            throw new UnsupportedOperationException();
-        }
+        /** {@return implementing method of the functional interface.} */
+        Method implementationMethod();
 
-        default Method interfaceMethod() {
-            throw new UnsupportedOperationException();
-        }
+        /** {@return the single abstract method on the functional interface.} */
+        Method interfaceMethod();
     }
 
     /**
-     * Represents an operation that it performed sometime in the lifetime of X
-     * And then returned for subsequent invocations.
+     * Represents an operation that it performed sometime in the lifetime of X And then returned for subsequent invocations.
      * <p>
-     * This is typically for access container beans that are created as
-     * part of their container lifetime creation.
-     * .
+     * This is typically for access container beans that are created as part of their container lifetime creation. .
      * <p>
      * This is typically used for beans whose instance is provided or exported as a service.
      */

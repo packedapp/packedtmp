@@ -18,6 +18,7 @@ package internal.app.packed.operation;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
 
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
@@ -34,6 +35,29 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         super(type, operation);
     }
 
+    /** An op that captures 1 or more type variables. */
+    static final class FunctionInvocationOp<R> extends TerminalOp<R> {
+
+        /** The single abstract method type of the function. */
+        private final SamType samType;
+
+        private final Method implementationMethod;
+
+        FunctionInvocationOp(OperationType type, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
+            super(type, methodHandle);
+            this.samType = requireNonNull(samType);
+            this.implementationMethod = requireNonNull(implementationMethod);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
+            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, mhOperation, samType, implementationMethod);
+            os.invocationType = (PackedInvocationType) os.invocationType.withReturnType(type.returnType());
+            return os;
+        }
+    }
+
     /** An op that wraps a MethodHandle. */
     static final class MethodHandleInvoke<R> extends TerminalOp<R> {
 
@@ -45,25 +69,6 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
         @Override
         public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
             return new OperationSetup.MethodHandleOperationSetup(operator, bean, type, mhOperation);
-        }
-    }
-
-    /** An op that captures 1 or more type variables. */
-    static final class PackedCapturingOp<R> extends TerminalOp<R> {
-
-        private final Class<?> functionalType;
-
-        PackedCapturingOp(OperationType type, MethodHandle methodHandle, Class<?> functionalType) {
-            super(type, methodHandle);
-            this.functionalType = requireNonNull(functionalType);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public OperationSetup newOperationSetup(BeanSetup bean, ExtensionSetup operator) {
-            OperationSetup os = new OperationSetup.FunctionOperationSetup(operator, bean, type, mhOperation, functionalType);
-            os.invocationType = (PackedInvocationType) os.invocationType.withReturnType(type.returnType());
-            return os;
         }
     }
 }

@@ -31,7 +31,7 @@ import app.packed.operation.Op1;
 import app.packed.operation.Op2;
 import app.packed.operation.OperationType;
 import app.packed.service.TypeToken;
-import internal.app.packed.operation.TerminalOp.PackedCapturingOp;
+import internal.app.packed.operation.TerminalOp.FunctionInvocationOp;
 import internal.app.packed.operation.binding.InternalDependency;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.MethodHandleUtil;
@@ -135,7 +135,10 @@ class TerminalOpCaptureHelper {
             methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType, parem1, parem2)); // (Object, Object)Object -> (T, U)R
         }
         OperationType type = OperationType.ofMethodType(methodHandle.type()); // TODO fix
-        return new PackedCapturingOp<>(type, methodHandle, function.getClass());
+        
+        SamType st = SamType.of(function.getClass());
+        
+        return new FunctionInvocationOp<>(type, methodHandle, st, function.getClass().getMethods()[0]);
 
     }
 
