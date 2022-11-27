@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup.FunctionOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
@@ -34,7 +35,7 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  * @see OperationMirror#site()
  */
 // Maybe this an operation site (instead of + Mirror) that is also available at runtime...
-public sealed interface OperationSiteMirror {
+public sealed interface OperationSiteMirror extends Mirror {
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
     public sealed interface OfConstructorInvoke extends OperationSiteMirror permits ConstructorOperationSetup {
