@@ -13,34 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
-
-import java.lang.reflect.Field;
+package app.packed.operation;
 
 /**
  *
  */
-// All dependencies have a resolution kind if those that are unresolved
-
-// Maaske den doer???
 public enum BindingKind {
     
-    MANUAL,
+    /** An argument that is provided when invoking the operation. */
+    ARGUMENT,
     
-    ANNOTATION,
+    // The value is looked up in the lifetime pool...
+    LIFETIME_POOL,
     
-    COMPOSITE,
-    
-    /**
-     * 
-     * @see Field#getType()
-     * @see Parameter#getType();
-     **/
-    TYPE, 
-    
-    KEY;
+    /** A constant. */
+    CONSTANT,
+        
+    /** The binding is a result of another operation. */
+    OPERATION;
 }
 
-// Check if already manually bound
-// Check annotation for Prime annotations
-// check raw class for Prime Class
+/**
+*
+*/
+// Det var tidligere den her...
+// Maaske er service instance... ikke en Operation Type... Men en bindingKind
+interface HowDepIsProvidedKind {
+   
+   // Build-time Constant
+   
+   // Result of an operation?
+   
+   // Background input param to operation
+   
+   // Lookup in some datastructed (service) Er det ikke bare result af en operation?
+}

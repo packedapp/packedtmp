@@ -38,10 +38,11 @@ abstract non-sealed class TerminalOp<R> extends PackedOp<R> {
     /** An op that captures 1 or more type variables. */
     static final class FunctionInvocationOp<R> extends TerminalOp<R> {
 
+        /** The method extending the single abstract method.  */
+        private final Method implementationMethod;
+
         /** The single abstract method type of the function. */
         private final SamType samType;
-
-        private final Method implementationMethod;
 
         FunctionInvocationOp(OperationType type, MethodHandle methodHandle, SamType samType, Method implementationMethod) {
             super(type, methodHandle);

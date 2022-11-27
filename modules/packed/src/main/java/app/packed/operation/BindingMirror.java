@@ -22,7 +22,6 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.User;
 import app.packed.framework.Nullable;
-import app.packed.operation.bindings.BindingKind;
 import app.packed.operation.bindings.DefaultBindingMirror;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
@@ -67,6 +66,10 @@ public class BindingMirror implements Mirror {
     /** {@return the index of this binding into OperationMirror#bindings().} */
     public int bindingIndex() { // alternative parameterIndex
         return binding().index;
+    }
+    
+    public BindingKind bindingKind() {
+        return binding().kind();
     }
 
     /** {@return the x who created binding.} */
@@ -115,12 +118,11 @@ public class BindingMirror implements Mirror {
 //        return isConstantBinding() || (p.isPresent() && p.get().site() instanceof ConstantOperationSite);
     }
 
-    public boolean isConstantBinding() {
-        // Can either be a constant. Or from a ConstantOperation
-        return false;
-    }
-
-    /** {@return the operation that declares this binding.} */
+    /**
+     * {@return the operation that declares this binding.}
+     * The operation the binding is part of may a nested operation (for example a composite operation).
+     * Check {@link OperationMirror#nestedIn()}.  
+     */
     public OperationMirror operation() {
         return binding().operation.mirror();
     }

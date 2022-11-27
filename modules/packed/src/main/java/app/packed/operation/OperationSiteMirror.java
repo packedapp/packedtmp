@@ -99,7 +99,6 @@ public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfField
      * <p>
      * This is typically used for beans whose instance is provided or exported as a service.
      */
-    //
     public non-sealed interface OfLifetimePoolAccess extends OperationSiteMirror {
 
         // empty if the instance was provided

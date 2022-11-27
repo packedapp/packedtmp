@@ -215,6 +215,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
+    // ClassBindingHook, AnnotationBindingHook
     public @interface BindingHook {
 
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
@@ -222,7 +223,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         // IDK about this...
         // Den virker jo kun for annotering..completesavings
-        enum BindingKind {
+        enum BindingOtherKind {
             PROVIDE, PEEK, DEFAULT, ADAPT, CONVERT, TRANSFORM, REPLACE
         }
     }

@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
-
-import java.util.List;
-
-import app.packed.operation.BindingMirror;
+package app.packed.operation;
 
 /**
  * A composite binding mirror
@@ -28,13 +24,14 @@ import app.packed.operation.BindingMirror;
 // The operation itself is always synthetic
 public class CompositeBindingMirror extends BindingMirror {
 
-    public List<BindingMirror> bindings() {
-        return providingOperation().get().bindings();
-    }
-
-    // Tror ikke laengere vi bliver resolved som en compond.
-    // get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
-    public boolean isFuncionalInterface() {
-        throw new UnsupportedOperationException();
+    public OperationMirror compositeOperation() {
+        return providingOperation().get();
     }
 }
+
+//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
+// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
+// Jo, 2 arg bindings
+//public boolean isFuncionalInterface() {
+//    throw new UnsupportedOperationException();
+//}

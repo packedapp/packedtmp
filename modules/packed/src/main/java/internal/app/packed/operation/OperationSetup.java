@@ -252,10 +252,10 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
     /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
     public static final class FunctionOperationSetup extends OperationSetup implements OperationSiteMirror.OfFunctionCall {
 
+        private final Method implementationMethod;
+
         // Can read it from the method... no might be on super class, and we just re
         private final SamType samType;
-
-        private final Method implementationMethod;
 
         /**
          * @param operator
@@ -288,6 +288,7 @@ public sealed abstract class OperationSetup implements OperationSiteMirror {
         }
     }
 
+    /** An operation that accesses an object in the lifetime pool. */
     public static final class LifetimePoolOperationSetup extends OperationSetup implements OperationSiteMirror.OfLifetimePoolAccess {
 
         /**

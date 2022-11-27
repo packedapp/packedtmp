@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.container.User;
+import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
@@ -61,7 +62,7 @@ public abstract class BindingSetup {
 
     /** Supplies a mirror for the operation */
     public final BindingOrigin target;
-
+    
     public BindingSetup(OperationSetup operation, int index, User user, BindingOrigin target) {
         this.operation = operation;
         this.index = index;
@@ -70,6 +71,9 @@ public abstract class BindingSetup {
     }
 
     public abstract MethodHandle bindIntoOperation(MethodHandle methodHandle);
+    public BindingKind kind() {
+        return BindingKind.OPERATION;
+    }
 
     /** {@return a new mirror.} */
     public BindingMirror mirror() {
