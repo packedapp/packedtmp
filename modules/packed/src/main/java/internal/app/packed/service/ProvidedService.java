@@ -32,7 +32,6 @@ public final class ProvidedService {
     public final boolean isConstant;
 
     /** The operation that provides the service. */
-    @Deprecated
     public final OperationSetup operation;
 
     public final BeanSetup bean;

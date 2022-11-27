@@ -53,7 +53,7 @@ public class EntryPointSetup {
             }
 
             try {
-                LifetimeAccessor sa = l.cs.injectionManager.lifetimePoolAccessor;
+                LifetimeAccessor sa = l.cs.lifetimePoolAccessor;
                 if (sa != null && !l.isStatic) {
                     Object o = sa.read(launchContext.pool());
                     l.methodHandle.invoke(o);

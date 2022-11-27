@@ -31,7 +31,6 @@ import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
-import internal.app.packed.operation.binding.BindingResolutionSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 public final class OldServiceResolver {
@@ -74,18 +73,17 @@ public final class OldServiceResolver {
 
     void provideService(ProvidedService provider) {
         OperationSetup o = provider.operation;
-        BindingResolutionSetup res = provider.resolution;
         DependencyNode bis;
         if (o instanceof OperationSetup.LifetimePoolOperationSetup) {
             OperationSetup os = null;
             LifetimeAccessor accessor = null;
-            if (o.bean.injectionManager.lifetimePoolAccessor == null) {
+            if (o.bean.lifetimePoolAccessor == null) {
                 if (o.bean.sourceKind == BeanSourceKind.INSTANCE) {
                     
                 }
                 os = o.bean.operations.get(0);
             } else {
-                accessor = o.bean.injectionManager.lifetimePoolAccessor;
+                accessor = o.bean.lifetimePoolAccessor;
             }
             bis = new DependencyNode(os, accessor);
         } else {
@@ -98,7 +96,7 @@ public final class OldServiceResolver {
                 throw new Error();
             }
         
-            if (!isStatic && o.bean.injectionManager.lifetimePoolAccessor == null) {
+            if (!isStatic && o.bean.lifetimePoolAccessor == null) {
                 throw new BuildException("Not okay)");
             }
             DynamicAccessor accessor = provider.isConstant ? o.bean.container.lifetime.pool.reserve(Object.class) : null;

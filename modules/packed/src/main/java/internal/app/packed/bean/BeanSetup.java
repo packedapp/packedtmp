@@ -30,12 +30,18 @@ import internal.app.packed.container.NameCheck;
 import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
+import internal.app.packed.lifetime.LifetimeAccessor;
+import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
 import internal.app.packed.operation.PackedInvocationType;
 import internal.app.packed.operation.PackedOp;
+import internal.app.packed.operation.binding.BindingResolutionSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
+import internal.app.packed.operation.binding.BindingResolutionSetup.LifetimePoolResolution;
+import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -65,10 +71,11 @@ public final class BeanSetup {
     /** The container this bean is installed in. */
     public final ContainerSetup container;
 
-    /** The bean's injection manager. Null for functional beans, otherwise non-null */
+    
+    /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
-    public BeanInjectionManager injectionManager;
-
+    public LifetimeAccessor lifetimePoolAccessor;
+    
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
 
@@ -153,9 +160,8 @@ public final class BeanSetup {
     }
 
     // Relative to x
-    @Deprecated
     public OperationSetup instanceAccessOperation() {
-        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), injectionManager.accessBeanX(this).provideSpecial());
+        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), accessBeanX().provideSpecial());
         os.invocationType = (PackedInvocationType) os.invocationType.withReturnType(beanClass);
         return os;
     }
@@ -317,5 +323,17 @@ public final class BeanSetup {
         container.beanLast = bean;
 
         return bean;
+    }
+    
+
+    public BindingResolutionSetup accessBeanX() {
+        if (sourceKind == BeanSourceKind.INSTANCE) {
+            return new ConstantResolution(source.getClass(), source);
+        } else if (beanKind == BeanKind.CONTAINER) {
+            return new LifetimePoolResolution((DynamicAccessor) lifetimePoolAccessor);
+        } else if (beanKind == BeanKind.MANYTON) {
+            return new OperationResolution(operations.get(0));
+        }
+        throw new Error();
     }
 }

@@ -164,7 +164,7 @@ public sealed abstract class OperationSetup {
         }
 
         if (requiresBeanInstance) {
-            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBeanX(bean).provideSpecial());
+            mh = MethodHandles.collectArguments(mh, 0, bean.accessBeanX().provideSpecial());
         }
 
         if (bindings.length > 0) {
@@ -291,7 +291,6 @@ public sealed abstract class OperationSetup {
     }
 
     /** An operation that accesses an object in the lifetime pool. */
-    @Deprecated
     public static final class LifetimePoolOperationSetup extends OperationSetup {
 
         /**

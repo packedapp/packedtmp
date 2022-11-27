@@ -33,12 +33,15 @@ import java.util.LinkedHashMap;
 
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.container.Extension;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionSetup;
+import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.framework.devtools.PackedDevToolsIntegration;
+import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
 import internal.app.packed.operation.PackedInvocationType;
@@ -154,8 +157,25 @@ public final class IntrospectedBean {
         if (bean.sourceKind == BeanSourceKind.CLASS && bean.beanKind.hasInstances()) {
             findConstructor();
         }
+        
+        if (bean.realm instanceof ExtensionTreeSetup e) {
+            if (bean.beanKind == BeanKind.CONTAINER) {
+                bean.ownedBy.injectionManager.addBean(bean);
+            }
+        }
+        if (bean.sourceKind == BeanSourceKind.INSTANCE) {
+            bean.lifetimePoolAccessor = new LifetimeAccessor.ConstantAccessor(bean.source);
+        } else if (bean.beanKind == BeanKind.CONTAINER) {
+            bean.lifetimePoolAccessor = bean.container.lifetime.pool.reserve(bean.beanClass);
+        } else if (bean.beanKind == BeanKind.LAZY) {
+            throw new UnsupportedOperationException();
+        }
 
-        bean.injectionManager = new BeanInjectionManager(bean); // legacy
+        // Only create an instance node if we have instances
+        if (bean.sourceKind != BeanSourceKind.INSTANCE && bean.beanKind.hasInstances()) {
+            bean.container.sm.injectionManager.addConsumer(bean.operations.get(0), bean.lifetimePoolAccessor);
+        }
+
 
         // See also java.lang.PublicMethods
 
