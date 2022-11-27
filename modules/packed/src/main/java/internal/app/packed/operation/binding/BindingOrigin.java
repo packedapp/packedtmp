@@ -36,7 +36,7 @@ public abstract sealed class BindingOrigin {
 
         public final Class<?> extensionBeanClass;
 
-        ExtensionServiceBindingTarget(Class<?> extensionBeanClass) {
+        public ExtensionServiceBindingTarget(Class<?> extensionBeanClass) {
             this.extensionBeanClass = extensionBeanClass;
         }
 

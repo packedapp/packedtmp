@@ -64,9 +64,9 @@ public class BindingMirror implements Mirror {
     public int bindingIndex() { // alternative parameterIndex
         return binding().index;
     }
-    
-    public BindingKind bindingKind() {
-        return binding().kind();
+
+    public Optional<BindingKind> bindingKind() {
+        return Optional.ofNullable(binding().resolution).map(b -> b.kind());
     }
 
     /** {@return the x who created binding.} */
@@ -116,9 +116,8 @@ public class BindingMirror implements Mirror {
     }
 
     /**
-     * {@return the operation that declares this binding.}
-     * The operation the binding is part of may a nested operation (for example a composite operation).
-     * Check {@link OperationMirror#nestedIn()}.  
+     * {@return the operation that declares this binding.} The operation the binding is part of may a nested operation (for
+     * example a composite operation). Check {@link OperationMirror#nestedIn()}.
      */
     public OperationMirror operation() {
         return binding().operation.mirror();

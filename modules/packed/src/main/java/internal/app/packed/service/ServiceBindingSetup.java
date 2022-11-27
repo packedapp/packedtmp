@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.container.User;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingKind;
+import app.packed.operation.BindingResolutionKind;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;
@@ -30,10 +30,6 @@ import internal.app.packed.operation.binding.BindingSetup;
  * A binding to a service.
  */
 public final class ServiceBindingSetup extends BindingSetup {
-
-    public BindingKind kind() {
-        return BindingKind.OPERATION;
-    }
 
     /** An entry corresponding to the key. */
     public final ServiceManagerEntry entry;
@@ -50,15 +46,10 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param index
      */
     ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
-        super(operation, index, User.extension(ServiceExtension.class), null);
+        super(operation, index, User.extension(ServiceExtension.class));
         this.entry = entry;
         this.required = required;
         mirrorSupplier = () -> new ServiceBindingMirror(this);
-    }
-
-    /** {@return whether or not the service could be resolved.} */
-    public boolean isResolved() {
-        return entry.provider != null;
     }
 
     /** {@inheritDoc} */
@@ -66,5 +57,14 @@ public final class ServiceBindingSetup extends BindingSetup {
     public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
         MethodHandle mh = entry.provider.operation.generateMethodHandle();
         return MethodHandles.collectArguments(methodHandle, index, mh);
+    }
+
+    /** {@return whether or not the service could be resolved.} */
+    public boolean isResolved() {
+        return entry.provider != null;
+    }
+
+    public BindingResolutionKind kind() {
+        return BindingResolutionKind.KEY;
     }
 }

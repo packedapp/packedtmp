@@ -170,7 +170,11 @@ public sealed abstract class OperationSetup {
         if (bindings.length > 0) {
             for (int i = 0; i < bindings.length; i++) {
                 // System.out.println("BT " + bindings[i].getClass());
-                mh = bindings[i].bindIntoOperation(mh);
+                if (bindings[i].resolution != null) {
+                    mh = bindings[i].resolution.bindIntoOperation(bindings[i], mh);
+                } else {
+                    mh = bindings[i].bindIntoOperation(mh);
+                }
             }
 
             // reduce (LifetimeObjectArena, *)X -> (LifetimeObjectArena)X

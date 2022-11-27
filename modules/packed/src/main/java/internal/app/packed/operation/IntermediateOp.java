@@ -26,8 +26,9 @@ import app.packed.operation.Op;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.ExtensionSetup;
-import internal.app.packed.operation.binding.BindingOrigin;
-import internal.app.packed.operation.binding.BindingSetup.ConstantBindingSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
+import internal.app.packed.operation.binding.BindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.util.LookupUtil;
 
 /** An intermediate (non-terminal) op. */
@@ -77,7 +78,9 @@ abstract non-sealed class IntermediateOp<R> extends PackedOp<R> {
             for (int i = 0; i < indexes.length; i++) {
                 int index = indexes[i];
                 Object argument = arguments[i];
-                os.bindings[index] = new ConstantBindingSetup(os, index, User.application(), new BindingOrigin.BindingHookTarget(), argument.getClass(), argument);
+                BindingSetup bs = new ManualBindingSetup(os, index, User.application());
+                bs.resolution = new ConstantResolution(argument.getClass(), argument);
+                os.bindings[index] = bs;
             }
             return os;
         }

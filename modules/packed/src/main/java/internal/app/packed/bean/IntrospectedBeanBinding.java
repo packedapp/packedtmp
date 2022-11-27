@@ -31,9 +31,9 @@ import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.binding.BindingOrigin;
-import internal.app.packed.operation.binding.BindingOrigin.BindingHookTarget;
-import internal.app.packed.operation.binding.BindingSetup.ConstantBindingSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
+import internal.app.packed.operation.binding.BindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.ManualBindingSetup;
 import internal.app.packed.operation.binding.BindingSetup.OperationBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
@@ -94,9 +94,11 @@ public final class IntrospectedBeanBinding implements OnBinding {
         }
         // Check assignable to
         // Create a bound thing
-        //
-        BindingOrigin bt = new BindingHookTarget();
-        operation.bindings[index] = new ConstantBindingSetup(operation, index, User.extension(bindingExtension.extensionType), bt, Object.class, obj);
+
+        BindingSetup bs = new ManualBindingSetup(operation, index, User.extension(bindingExtension.extensionType));
+        bs.resolution = new ConstantResolution(Object.class, obj);
+
+        operation.bindings[index] = bs;
     }
 
     /** {@inheritDoc} */
@@ -135,7 +137,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
         PackedOp<?> pop = PackedOp.crack(op);
 
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension);
-        OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), new BindingHookTarget(), os);
+        OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
 
         if (variable.getType() != os.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");

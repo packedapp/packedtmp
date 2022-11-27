@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
-import app.packed.operation.BindingKind;
+import app.packed.operation.BindingResolutionKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 
@@ -38,7 +38,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
      * @param index
      */
     public ExtensionServiceBindingSetup(OperationSetup operation, int index, Class<?> extensionBeanClass) {
-        super(operation, index, User.extension(BeanExtension.class), null);
+        super(operation, index, User.extension(BeanExtension.class));
         this.extensionBeanClass = extensionBeanClass;
     }
 
@@ -49,7 +49,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
         return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 
-    public BindingKind kind() {
-        return BindingKind.OPERATION;
+    public BindingResolutionKind kind() {
+        return BindingResolutionKind.KEY;
     }
 }
