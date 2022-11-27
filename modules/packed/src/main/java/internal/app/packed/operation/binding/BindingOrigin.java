@@ -15,6 +15,8 @@
  */
 package internal.app.packed.operation.binding;
 
+import internal.app.packed.bean.BeanSetup;
+
 /**
  *
  */
@@ -24,12 +26,19 @@ public abstract sealed class BindingOrigin {
     public static final class OpTarget extends BindingOrigin {
 
     }
-    
+
     public static final class CompositeBindingTarget extends BindingOrigin {
 
     }
 
     public static final class ExtensionServiceBindingTarget extends BindingOrigin {
+        public BeanSetup extensionBean;
+
+        public final Class<?> extensionBeanClass;
+
+        ExtensionServiceBindingTarget(Class<?> extensionBeanClass) {
+            this.extensionBeanClass = extensionBeanClass;
+        }
 
     }
 

@@ -21,44 +21,28 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.operation.OperationSiteMirror.OfConstant;
-import app.packed.operation.OperationSiteMirror.OfConstructorInvoke;
-import app.packed.operation.OperationSiteMirror.OfFieldAccess;
-import app.packed.operation.OperationSiteMirror.OfFunctionCall;
-import app.packed.operation.OperationSiteMirror.OfMethodHandleInvoke;
-import app.packed.operation.OperationSiteMirror.OfMethodInvoke;
-import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.FunctionOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 
 /**
- * The target of an operation, typically a method. 
+ * The target of an operation, typically a method.
  * 
  * @see OperationMirror#site()
  */
-public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfFieldAccess, OfFunctionCall, OfMethodInvoke, OfMethodHandleInvoke, OfConstant, OperationSetup {
-
-    // AnnotataionReader annotations()???
-
-    /**
-     * Represents an operation simply returns a constant.
-     * <p>
-     * An {@link OperationMirror operation} with {@code constant} target never has any {@link OperationMirror#bindings()
-     * bindings}.
-     */
-    public non-sealed interface OfConstant extends OperationSiteMirror {
-
-        /** {@return the type of constant.} */
-        Class<?> constantType();
-    }
+public sealed interface OperationSiteMirror {
 
     /** Represents an operation that invokes a constructor. */
-    public non-sealed interface OfConstructorInvoke extends OperationSiteMirror {
+    public sealed interface OfConstructorInvoke extends OperationSiteMirror permits ConstructorOperationSetup {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
     /** Represents an operation that gets, sets or updates a field. */
-    public non-sealed interface OfFieldAccess extends OperationSiteMirror {
+    public sealed interface OfFieldAccess extends OperationSiteMirror permits FieldOperationSetup {
 
         AccessMode accessMode();
 
@@ -75,7 +59,7 @@ public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfField
      * <p>
      * method on a functional interface.
      */
-    public non-sealed interface OfFunctionCall extends OperationSiteMirror {
+    public sealed interface OfFunctionCall extends OperationSiteMirror permits FunctionOperationSetup {
 
         /** {@return the functional interface.} */
         Class<?> functionalInterface();
@@ -87,14 +71,28 @@ public sealed interface OperationSiteMirror permits OfConstructorInvoke, OfField
         Method interfaceMethod();
     }
 
-    public non-sealed interface OfMethodHandleInvoke extends OperationSiteMirror {
+    public sealed interface OfMethodHandleInvoke extends OperationSiteMirror permits MethodHandleOperationSetup {
         MethodType methodType();
     }
 
     /** Represents an operation that invokes a method. */
-    public non-sealed interface OfMethodInvoke extends OperationSiteMirror {
+    public sealed interface OfMethodInvoke extends OperationSiteMirror permits MethodOperationSetup {
 
         /** {@return the invokable method.} */
         Method method();
     }
 }
+// Er det ikke bare OperationType vi skal koere den paa????
+// AnnotataionReader annotations()???
+
+///**
+// * Represents an operation simply returns a constant.
+// * <p>
+// * An {@link OperationMirror operation} with {@code constant} target never has any {@link OperationMirror#bindings()
+// * bindings}.
+// */
+//public non-sealed interface OfConstant extends OperationSiteMirror {
+//
+//    /** {@return the type of constant.} */
+//    Class<?> constantType();
+//}

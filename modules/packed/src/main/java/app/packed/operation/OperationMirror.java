@@ -147,7 +147,7 @@ public class OperationMirror implements Mirror {
 
     /** {@return the operation site.} */
     public OperationSiteMirror site() {
-        return operation();
+        return (OperationSiteMirror) operation();
     }
 
     /** {@return the type of the operation.} */
