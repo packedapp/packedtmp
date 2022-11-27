@@ -32,9 +32,9 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
+import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
 import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.binding.BindingSetup.ManualBindingSetup;
-import internal.app.packed.operation.binding.BindingSetup.OperationBindingSetup;
+import internal.app.packed.operation.binding.BindingSetup.HookBindingSetup;
 
 /** Implementation of {@link BeanIntrospector.OnBinding}. */
 public final class IntrospectedBeanBinding implements OnBinding {
@@ -95,7 +95,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
         // Check assignable to
         // Create a bound thing
 
-        BindingSetup bs = new ManualBindingSetup(operation, index, User.extension(bindingExtension.extensionType));
+        BindingSetup bs = new HookBindingSetup(operation, index, User.extension(bindingExtension.extensionType));
         bs.resolution = new ConstantResolution(Object.class, obj);
 
         operation.bindings[index] = bs;
@@ -137,7 +137,12 @@ public final class IntrospectedBeanBinding implements OnBinding {
         PackedOp<?> pop = PackedOp.crack(op);
 
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension);
-        OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
+        
+        BindingSetup bs = new HookBindingSetup(os, index, User.application());
+        bs.resolution = new OperationResolution(os);
+
+        
+        //OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);
 
         if (variable.getType() != os.methodHandle.type().returnType()) {
 //            System.out.println("FixIt");
@@ -148,7 +153,7 @@ public final class IntrospectedBeanBinding implements OnBinding {
             // os.re
         }
 
-        operation.bindings[index] = obs;
+        operation.bindings[index] = bs;
     }
 
     /** {@inheritDoc} */

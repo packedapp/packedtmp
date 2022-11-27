@@ -16,7 +16,6 @@
 package internal.app.packed.operation.binding;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.User;
@@ -45,8 +44,9 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
     /** {@inheritDoc} */
     @Override
     public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
-        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
-        return MethodHandles.collectArguments(methodHandle, index, mh);
+        throw new UnsupportedOperationException();
+//        MethodHandle mh = extensionBean.instanceAccessOperation().generateMethodHandle();
+//        return MethodHandles.collectArguments(methodHandle, index, mh);
     }
 
     public BindingResolutionKind kind() {

@@ -136,27 +136,4 @@ public abstract class BindingSetup {
             return BindingResolutionKind.MANUAL;
         }
     }
-
-    @Deprecated
-    public static final class OperationBindingSetup extends BindingSetup {
-
-        /** The operation that produces the value for the binding. */
-        public final OperationSetup providingOperation;
-
-        public OperationBindingSetup(OperationSetup operation, int index, User user, OperationSetup providingOperation) {
-            super(operation, index, user);
-            this.providingOperation = requireNonNull(providingOperation);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle bindIntoOperation(MethodHandle methodHandle) {
-            MethodHandle mh = providingOperation.generateMethodHandle();
-            return MethodHandles.collectArguments(methodHandle, index, mh);
-        }
-
-        public BindingResolutionKind kind() {
-            return BindingResolutionKind.BINDING_ANNOTATION;
-        }
-    }
 }

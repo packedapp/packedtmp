@@ -21,6 +21,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.operation.BindingKind;
+import internal.app.packed.lifetime.LifetimeAccessor;
+import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
 
 /**
@@ -32,6 +34,8 @@ public sealed abstract class BindingResolutionSetup {
 
     public abstract BindingKind kind();
 
+    public abstract MethodHandle provideSpecial();
+    
     public static final class ArgumentResolution extends BindingResolutionSetup {
 
         /** {@inheritDoc} */
@@ -45,9 +49,14 @@ public sealed abstract class BindingResolutionSetup {
         public BindingKind kind() {
             return BindingKind.ARGUMENT;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle provideSpecial() {
+            throw new UnsupportedOperationException();
+        }
     }
 
-    
     public static final class ConstantResolution extends BindingResolutionSetup {
 
         /** The constant. */
@@ -75,9 +84,22 @@ public sealed abstract class BindingResolutionSetup {
         public BindingKind kind() {
             return BindingKind.CONSTANT;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle provideSpecial() {
+            MethodHandle mh = MethodHandles.constant(constantType, constant);
+            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
+        }
     }
-    
+
     public static final class LifetimePoolResolution extends BindingResolutionSetup {
+
+        public final LifetimeAccessor.DynamicAccessor da;
+
+        public LifetimePoolResolution(LifetimeAccessor.DynamicAccessor da) {
+            this.da = da;
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -89,6 +111,12 @@ public sealed abstract class BindingResolutionSetup {
         @Override
         public BindingKind kind() {
             return BindingKind.LIFETIME_POOL;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle provideSpecial() {
+            return da.poolReader();
         }
     }
 
@@ -112,6 +140,12 @@ public sealed abstract class BindingResolutionSetup {
         @Override
         public BindingKind kind() {
             return BindingKind.OPERATION;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodHandle provideSpecial() {
+            return operation.generateMethodHandle();
         }
     }
 }

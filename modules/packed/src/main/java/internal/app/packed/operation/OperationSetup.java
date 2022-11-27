@@ -43,8 +43,8 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
 import internal.app.packed.operation.binding.BindingSetup;
-import internal.app.packed.operation.binding.BindingSetup.OperationBindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.ClassUtil;
@@ -164,7 +164,7 @@ public sealed abstract class OperationSetup {
         }
 
         if (requiresBeanInstance) {
-            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBean(bean));
+            mh = MethodHandles.collectArguments(mh, 0, bean.injectionManager.accessBeanX(bean).provideSpecial());
         }
 
         if (bindings.length > 0) {
@@ -188,8 +188,8 @@ public sealed abstract class OperationSetup {
     // readOnly. Will not work if for example, resolving a binding
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
-            if (bs instanceof OperationBindingSetup nested) {
-                nested.providingOperation.forEachBinding(binding);
+            if (bs.resolution != null && bs.resolution instanceof OperationResolution nested) {
+                nested.operation.forEachBinding(binding);
             }
             binding.accept(bs);
         }

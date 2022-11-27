@@ -15,16 +15,17 @@
  */
 package internal.app.packed.bean;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanSourceKind;
 import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.lifetime.LifetimeAccessor;
-import internal.app.packed.lifetime.LifetimeObjectArena;
+import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
+import internal.app.packed.operation.binding.BindingResolutionSetup.LifetimePoolResolution;
+import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
 
 /**
  * An injection manager for a bean.
@@ -68,16 +69,13 @@ public final class BeanInjectionManager {
         this.operation = os;
     }
 
-    public MethodHandle accessBean(BeanSetup bean) {
+    public BindingResolutionSetup accessBeanX(BeanSetup bean) {
         if (bean.sourceKind == BeanSourceKind.INSTANCE) {
-            MethodHandle mh = MethodHandles.constant(bean.source.getClass(), bean.source);
-            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
-        }
-        if (bean.beanKind == BeanKind.CONTAINER) {
-            return lifetimePoolAccessor.poolReader(); // MethodHandle(ConstantPool)T
-        }
-        if (bean.beanKind == BeanKind.MANYTON) {
-            return operation.generateMethodHandle(); // MethodHandle(ConstantPool)T
+            return new ConstantResolution(bean.source.getClass(), bean.source);
+        } else if (bean.beanKind == BeanKind.CONTAINER) {
+            return new LifetimePoolResolution((DynamicAccessor) lifetimePoolAccessor);
+        } else if (bean.beanKind == BeanKind.MANYTON) {
+            return new OperationResolution(operation);
         }
         throw new Error();
     }

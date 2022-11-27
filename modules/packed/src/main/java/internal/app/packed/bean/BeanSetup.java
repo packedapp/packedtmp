@@ -153,8 +153,9 @@ public final class BeanSetup {
     }
 
     // Relative to x
+    @Deprecated
     public OperationSetup instanceAccessOperation() {
-        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), injectionManager.accessBean(this));
+        LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), injectionManager.accessBeanX(this).provideSpecial());
         os.invocationType = (PackedInvocationType) os.invocationType.withReturnType(beanClass);
         return os;
     }

@@ -20,6 +20,8 @@ package app.packed.operation;
  */
 public enum BindingKind {
     
+    // LAZY (I think we need this...) IDK Lifetime_POOL beanen kan jo vaere lazy
+    
     /** A constant. */
     CONSTANT,
 
@@ -32,6 +34,9 @@ public enum BindingKind {
     /** The binding is a result of another operation. */
     OPERATION;
 }
+
+
+
 
 /**
 *
