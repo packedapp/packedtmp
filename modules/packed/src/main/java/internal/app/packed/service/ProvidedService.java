@@ -17,6 +17,7 @@ package internal.app.packed.service;
 
 import java.lang.invoke.MethodHandle;
 
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingResolutionSetup;
 
@@ -31,13 +32,20 @@ public final class ProvidedService {
     public final boolean isConstant;
 
     /** The operation that provides the service. */
+    @Deprecated
     public final OperationSetup operation;
+
+    public final BeanSetup bean;
 
     public MethodHandle provider;
 
+    public final BindingResolutionSetup resolution;
+
     ProvidedService(OperationSetup operation, boolean isConstant, ServiceManagerEntry entry, BindingResolutionSetup resolution) {
         this.operation = operation;
+        this.bean = operation.bean;
         this.entry = entry;
         this.isConstant = isConstant;
+        this.resolution = resolution;
     }
 }

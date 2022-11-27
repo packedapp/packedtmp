@@ -31,6 +31,7 @@ import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup;
 import internal.app.packed.util.ThrowableUtil;
 
 public final class OldServiceResolver {
@@ -73,8 +74,9 @@ public final class OldServiceResolver {
 
     void provideService(ProvidedService provider) {
         OperationSetup o = provider.operation;
+        BindingResolutionSetup res = provider.resolution;
         DependencyNode bis;
-        if (o instanceof OperationSetup.LifetimePoolOperationSetup bia) {
+        if (o instanceof OperationSetup.LifetimePoolOperationSetup) {
             OperationSetup os = null;
             LifetimeAccessor accessor = null;
             if (o.bean.injectionManager.lifetimePoolAccessor == null) {

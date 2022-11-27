@@ -131,7 +131,7 @@ public sealed abstract class OperationSetup {
                 requireNonNull(s.extensionBean);
                 result.add(s.extensionBean);
             } else if (b instanceof ServiceBindingSetup s) {
-                result.add(s.entry.provider.operation.bean);
+                result.add(s.entry.provider.bean);
             }
         });
         return result;
