@@ -21,7 +21,6 @@ import app.packed.framework.Nullable;
 import internal.app.packed.container.ExtensionTreeSetup;
 import internal.app.packed.lifetime.LifetimeAccessor;
 import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
-import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.binding.BindingResolutionSetup;
 import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
 import internal.app.packed.operation.binding.BindingResolutionSetup.LifetimePoolResolution;
@@ -31,13 +30,6 @@ import internal.app.packed.operation.binding.BindingResolutionSetup.OperationRes
  * An injection manager for a bean.
  */
 public final class BeanInjectionManager {
-
-    /**
-     * A dependency node representing a bean instance and its factory method. Or {@code null} for functional beans and other
-     * {@code void} beans.
-     */
-    @Nullable
-    private final OperationSetup operation;
 
     /** A pool accessor if a single instance of this bean is created. null otherwise */
     @Nullable
@@ -60,13 +52,10 @@ public final class BeanInjectionManager {
             this.lifetimePoolAccessor = null;
         }
 
-        OperationSetup os = null;
         // Only create an instance node if we have instances
         if (bean.sourceKind != BeanSourceKind.INSTANCE && bean.beanKind.hasInstances()) {
-            os = bean.operations.get(0);
-            bean.container.sm.injectionManager.addConsumer(os, lifetimePoolAccessor);
+            bean.container.sm.injectionManager.addConsumer(bean.operations.get(0), lifetimePoolAccessor);
         }
-        this.operation = os;
     }
 
     public BindingResolutionSetup accessBeanX(BeanSetup bean) {
@@ -75,7 +64,7 @@ public final class BeanInjectionManager {
         } else if (bean.beanKind == BeanKind.CONTAINER) {
             return new LifetimePoolResolution((DynamicAccessor) lifetimePoolAccessor);
         } else if (bean.beanKind == BeanKind.MANYTON) {
-            return new OperationResolution(operation);
+            return new OperationResolution(bean.operations.get(0));
         }
         throw new Error();
     }
