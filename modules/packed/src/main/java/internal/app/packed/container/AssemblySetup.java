@@ -20,16 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.TreeSet;
-import java.util.stream.Stream;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
 import app.packed.container.AbstractComposer.ComposerAssembly;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyHook;
 import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
@@ -40,12 +35,19 @@ import app.packed.container.Wirelet;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.service.CircularServiceDependencyChecker;
+import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends RealmSetup {
 
+
+    /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
+    private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AssemblyMirror.class,
+            "initialize", void.class, AssemblySetup.class);
+
+    
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerAssembly.class, "doBuild",
             void.class, AssemblySetup.class, AssemblyModel.class, ContainerSetup.class);
@@ -66,7 +68,7 @@ public final class AssemblySetup extends RealmSetup {
     public final ApplicationSetup application;
 
     /** The assembly instance. */
-    final Assembly assembly;
+   public final Assembly assembly;
 
     /** A model of the assembly. */
     public final AssemblyModel assemblyModel;
@@ -200,7 +202,15 @@ public final class AssemblySetup extends RealmSetup {
 
     /** {@return a mirror for this assembly.} */
     public AssemblyMirror mirror() {
-        return new BuildtimeAssemblyMirror(this);
+        AssemblyMirror mirror = ClassUtil.mirrorHelper(AssemblyMirror.class, AssemblyMirror::new, null);
+
+        // Initialize ContainerMirror by calling ContainerMirror#initialize(ContainerSetup)
+        try {
+            MH_ASSEMBLY_MIRROR_INITIALIZE.invokeExact(mirror, this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        return mirror;
     }
 
     private void onAssemblyClose(Extension<?> instance) {
@@ -244,69 +254,6 @@ public final class AssemblySetup extends RealmSetup {
             return unpack(ass, depth - 1);
         } else {
             return assembly;
-        }
-    }
-
-    /** Implementation of {@link AssemblyMirror}. */
-    public record BuildtimeAssemblyMirror(AssemblySetup assembly) implements AssemblyMirror {
-
-        /** {@inheritDoc} */
-        @Override
-        public List<Class<? extends AssemblyHook>> hooks() {
-            return List.of(); // TODO implement
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ContainerMirror container() {
-            return assembly.container.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Class<? extends Assembly> assemblyClass() {
-            return assembly.assembly.getClass();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<AssemblyMirror> parent() {
-            ContainerSetup org = assembly.container;
-            for (ContainerSetup p = org.treeParent; p != null; p = p.treeParent) {
-                if (org.assembly != p.assembly) {
-                    return Optional.of(p.assembly.mirror());
-                }
-            }
-            return Optional.empty();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Stream<AssemblyMirror> children() {
-            return children(assembly, assembly.container, new ArrayList<>()).stream();
-        }
-
-        private ArrayList<AssemblyMirror> children(AssemblySetup assembly, ContainerSetup cs, ArrayList<AssemblyMirror> list) {
-            if (assembly == cs.assembly) {
-                for (var e = cs.treeFirstChild; e != null; e = e.treeNextSiebling) {
-                    children(assembly, e, list);
-                }
-            } else {
-                list.add(cs.assembly.mirror());
-            }
-            return list;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isRoot() {
-            return assembly.container.treeParent == null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ApplicationMirror application() {
-            return assembly.application.mirror();
         }
     }
 }

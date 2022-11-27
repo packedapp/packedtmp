@@ -13,7 +13,7 @@ import internal.app.packed.service.ExportedService;
 import internal.app.packed.service.ServiceManagerEntry;
 
 /** A mirror for the {@link ServiceExtension}. */
-public class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /** The container the extension is a part of. */
     private final ContainerSetup container;

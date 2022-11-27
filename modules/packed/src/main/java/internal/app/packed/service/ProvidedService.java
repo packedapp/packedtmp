@@ -26,6 +26,8 @@ import internal.app.packed.operation.binding.BindingResolutionSetup;
  */
 public final class ProvidedService {
 
+    public final BeanSetup bean;
+
     /** The key under which this service is provided. */
     public final ServiceManagerEntry entry;
 
@@ -33,8 +35,6 @@ public final class ProvidedService {
 
     /** The operation that provides the service. */
     public final OperationSetup operation;
-
-    public final BeanSetup bean;
 
     public MethodHandle provider;
 

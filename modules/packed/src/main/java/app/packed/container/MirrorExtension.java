@@ -36,7 +36,7 @@ import internal.app.packed.bean.IntrospectedBeanBinding;
  * 
  * @see ApplicationMirror
  * @see ContainerMirror
- * @see AssemblyMirror
+ * @see OldAssemblyMirror
  * @see BeanMirror
  */
 public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
@@ -45,7 +45,7 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     MirrorExtension() {}
 
     /**
-     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, {@link AssemblyMirror}, and
+     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, {@link OldAssemblyMirror}, and
      * {@link BeanMirror}.
      * 
      * {@inheritDoc}

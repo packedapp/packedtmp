@@ -17,7 +17,6 @@ package internal.app.packed.operation;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.operation.InvocationType;
 import internal.app.packed.container.ExtensionSetup;
 
 /** The location from where an operation is invoked.  */
@@ -34,7 +33,7 @@ public final class InvocationSite {
 
     // Should we store the bean as well???
 
-    public InvocationSite(InvocationType invocationType, ExtensionSetup invokingExtension) {
+    public InvocationSite(ExtensionSetup invokingExtension) {
         this.invokingExtension = requireNonNull(invokingExtension);
     }
 }

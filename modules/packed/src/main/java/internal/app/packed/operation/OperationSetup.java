@@ -142,6 +142,11 @@ public sealed abstract class OperationSetup {
 
     protected MethodHandle doBuild() {
         MethodHandle mh = methodHandle;
+
+        if (this instanceof LifetimePoolOperationSetup) {
+            return mh;
+        }
+
         // System.out.println(mh.type() + " " + site);
 
 //        System.out.println("--------Build Invoker-------------------");
@@ -156,15 +161,11 @@ public sealed abstract class OperationSetup {
         } else if (this instanceof FieldOperationSetup s) {
             requiresBeanInstance = !Modifier.isStatic(s.getModifiers());
         }
-        if (this instanceof LifetimePoolOperationSetup) {
-            return mh;
-        }
-        if (bindings.length == 0 && !requiresBeanInstance) {
-            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
-        }
 
         if (requiresBeanInstance) {
             mh = MethodHandles.collectArguments(mh, 0, bean.accessBeanX().provideSpecial());
+        } else if (bindings.length == 0) {
+            return MethodHandles.dropArguments(mh, 0, LifetimeObjectArena.class);
         }
 
         if (bindings.length > 0) {
@@ -362,18 +363,6 @@ public sealed abstract class OperationSetup {
             @Override
             public AccessMode accessMode() {
                 return accessMode;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public boolean allowGet() {
-                return false;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public boolean allowSet() {
-                return false;
             }
 
             /** {@inheritDoc} */

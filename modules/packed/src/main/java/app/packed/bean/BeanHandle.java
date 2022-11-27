@@ -196,7 +196,7 @@ public final /* primitive */ class BeanHandle<T> {
             // or " + BeanKind.LAZY);
         }
 
-        bean.container.sm.serviceProvide(k, beanKind() != BeanKind.MANYTON, bean.instanceAccessOperation(), bean.accessBeanX());
+        bean.container.sm.serviceProvide(k, beanKind() != BeanKind.MANYTON, bean, bean.instanceAccessOperation(), bean.accessBeanX());
     }
 
     /**

@@ -29,6 +29,7 @@ import app.packed.service.ProvidedServiceMirror;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import app.packed.service.UnsatisfiableServiceDependencyException;
+import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
@@ -75,6 +76,7 @@ public final class ServiceManager {
         }).bindings;
     }
 
+    // 3 Muligheder -> Field, Method, BeanInstance
     public ExportedService serviceExport(Key<?> key, OperationSetup operation) {
         ExportedService e = new ExportedService(operation, key);
         ExportedService existing = exports.putIfAbsent(e.key, e);
@@ -98,7 +100,8 @@ public final class ServiceManager {
      *            the operation that provides the service
      * @return a provided service
      */
-    public ProvidedService serviceProvide(Key<?> key, boolean isConstant, OperationSetup operation, BindingResolutionSetup r) {
+    // 3 Muligheder -> Field, Method, BeanInstance
+    public ProvidedService serviceProvide(Key<?> key, boolean isConstant, BeanSetup bean, OperationSetup operation, BindingResolutionSetup r) {
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
         // Check lifetimes

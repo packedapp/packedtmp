@@ -15,6 +15,7 @@
  */
 package app.packed.operation;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Constructor;
@@ -32,23 +33,20 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  * 
  * @see OperationMirror#site()
  */
+// Maybe this an operation site (instead of + Mirror) that is also available at runtime...
 public sealed interface OperationSiteMirror {
 
-    /** Represents an operation that invokes a constructor. */
+    /** Represents an operation that invokes a {@link Constructor constructor}. */
     public sealed interface OfConstructorInvoke extends OperationSiteMirror permits ConstructorOperationSetup {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
-    /** Represents an operation that gets, sets or updates a field. */
+    /** Represents an operation that gets, sets or updates a {@link Field field}. */
     public sealed interface OfFieldAccess extends OperationSiteMirror permits FieldOperationSetup {
 
         AccessMode accessMode();
-
-        boolean allowGet();
-
-        boolean allowSet();
 
         /** {@return the underlying field.} */
         Field field();
@@ -71,11 +69,14 @@ public sealed interface OperationSiteMirror {
         Method interfaceMethod();
     }
 
+    /** Represents an operation that invokes a {@link MethodHandle method handle}. */
     public sealed interface OfMethodHandleInvoke extends OperationSiteMirror permits MethodHandleOperationSetup {
+
+        /** {@return the method type of the method handle.} */
         MethodType methodType();
     }
 
-    /** Represents an operation that invokes a method. */
+    /** Represents an operation that invokes a {@link Method method}. */
     public sealed interface OfMethodInvoke extends OperationSiteMirror permits MethodOperationSetup {
 
         /** {@return the invokable method.} */

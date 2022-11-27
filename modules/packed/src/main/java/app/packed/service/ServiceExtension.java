@@ -145,7 +145,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation());
-                setup.container.sm.serviceProvide(key, constant, operation, new OperationResolution(operation));
+                setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new OperationResolution(operation));
             }
 
             /** {@inheritDoc} */
@@ -158,7 +158,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
                     OperationSetup operation = OperationSetup.crack(method.newOperation());
-                    setup.container.sm.serviceProvide(key, constant, operation, new OperationResolution(operation));
+                    setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new OperationResolution(operation));
                 }
 
                 if (isExporting) {
