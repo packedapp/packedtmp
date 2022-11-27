@@ -67,6 +67,12 @@ public class OperationMirror implements Mirror {
         return operation().bean.mirror();
     }
 
+    // Composites, What about services???
+    // Services no, because one operation may be used multiple places
+    public Optional<BindingMirror> nestedIn() {
+        return Optional.ofNullable(operation().onBinding).map(b -> b.mirror());
+    }
+
     /** {@return the bindings of this operation.} */
     public List<BindingMirror> bindings() {
         BindingSetup[] bindings = operation().bindings;

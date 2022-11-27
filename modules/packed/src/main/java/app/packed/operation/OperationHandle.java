@@ -101,6 +101,13 @@ public final class OperationHandle {
         this.iBean = requireNonNull(iBean);
     }
 
+    <T> void attach(Class<T> t, T value) {
+        // detach <- removes
+        // Skal vi remove??? Taenker kun det er noget vi kan goere mens vi builder
+        // Det er ikke noget der giver mening senere hen
+        // Gem i et map i application <OperationHandle, Class> -> Value
+    }
+
     /**
      * <p>
      * This operation is no longer configurable when this method returns.

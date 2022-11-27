@@ -31,6 +31,7 @@ import app.packed.service.ServiceLocator;
 import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
 import internal.app.packed.util.StringFormatter;
 
 /** Manages services in a single container. */
@@ -142,7 +143,7 @@ public final class ServiceManager {
         if (existingTarget.bean == thisTarget.bean) {
             return "This bean is already providing a service for Key<" + key.toStringSimple() + ">, beanClass = " + format(existingTarget.bean.beanClass);
         }
-        if (existingTarget instanceof OperationSetup.LifetimePoolAccessOperationSetup) {
+        if (existingTarget instanceof OperationSetup.LifetimePoolOperationSetup) {
             return "Cannot provide a service for Key<" + key.toStringSimple() + ">, as another bean of type " + format(existingTarget.bean.beanClass)
                     + " is already providing a service for the same key";
 
@@ -151,7 +152,7 @@ public final class ServiceManager {
 
             // return "Another bean of type " + format(existingTarget.bean.beanClass) + " is already providing a service for Key<" +
             // key.toStringSimple() + ">";
-        } else if (existingTarget instanceof OperationSetup.MethodInvokeOperationSetup m) {
+        } else if (existingTarget instanceof MethodOperationSetup m) {
             String ss = StringFormatter.formatShortWithParameters(m.method());
             return "A method " + ss + " is already providing a service for Key<" + key + ">";
         }

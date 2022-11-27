@@ -87,6 +87,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new InstanceBeanConfiguration<>(handle);
     }
 
+    public BeanHandle<?> unwrap(BeanConfiguration configuration) {
+        // Can only call this on bean configurations that have been created by the extension itself.
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Creates a new installer that can be used to install new beans for the application.
      * 

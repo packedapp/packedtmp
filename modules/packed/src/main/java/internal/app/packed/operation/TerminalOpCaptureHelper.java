@@ -20,9 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -87,42 +84,6 @@ class TerminalOpCaptureHelper {
         }
     };
 
-    void analyze() {
-        // Altsaa jeg ved ikke om vi spiller tiden ved ikke at afvente og se hvad der kommer med generiks
-
-        Class<?> t = getClass();
-        Class<?> baseClass = t.getSuperclass();
-        while (baseClass.getSuperclass() != CapturingOp.class) {
-            baseClass = baseClass.getSuperclass();
-        }
-
-        // Maaske er det fint at smide en error?
-        Constructor<?>[] con = baseClass.getDeclaredConstructors();
-        if (con.length != 1) {
-            throw new Error(baseClass + " must declare a single constructor");
-        }
-        Constructor<?> c = con[0];
-        if (c.getParameterCount() != 1) {
-            throw new Error(baseClass + " must declare a single constructor taking a single parameter");
-        }
-
-        Parameter p = c.getParameters()[0];
-
-        Class<?> samType = p.getType();
-        Method m = samType.getMethods()[0];
-
-        // check SAM interface type
-
-        // Hvorfor skal det vaere public
-        MethodHandle mh;
-        try {
-            mh = MethodHandles.publicLookup().unreflect(m);
-        } catch (IllegalAccessException e) {
-            throw new Error(m + " must be accessible via MethodHandles.publicLookup()", e);
-        }
-
-        System.out.println(mh);
-    }
 
     static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
         if (!expectedType.isInstance(value)) {
@@ -250,6 +211,18 @@ class TerminalOpCaptureHelper {
         return value;
     }
 
+
+    /** A cache of extracted type variables from subclasses of this class. */
+    static final ClassValue<TypeToken<?>> FUNCTION_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        protected TypeToken<?> computeValue(Class<?> type) {
+            return TypeToken.fromTypeVariable((Class) type, CapturingOp.class, 0);
+        }
+    };
+
+    
 //    // Vi har 2 af dem, ind omkring Factory0 og en for ExtendsFactory0
 //    // Den for Factory0 skal have MethodHandlen... og noget omkring antallet af dependencies
 //

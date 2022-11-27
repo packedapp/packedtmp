@@ -9,8 +9,11 @@ import internal.app.packed.container.ContainerSetup;
 
 /**
  * A container handle is a reference to an installed container, private to the extension that installed the container.
- * 
  */
+
+// Vi skal vel have de samme genererings metoder som OperationSetup
+// Taenker ikke man skal have adgang direkte til handled
+
 public final class ContainerHandle {
 
     /** The container that can be configured. */
@@ -41,6 +44,8 @@ public final class ContainerHandle {
         return !container.assembly.isClosed();
     }
 
+    // Hmm, skal vi have selve handles'ene?
+    // Jo det skal vi faktisk nok...
     public List<OperationHandle> lifetimeOperations() {
         return List.of();
     }

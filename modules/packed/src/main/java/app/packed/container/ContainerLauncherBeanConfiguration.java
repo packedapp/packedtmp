@@ -21,6 +21,20 @@ import app.packed.bean.InstanceBeanConfiguration;
 /**
  * A bean that creates a new container lifetime.
  */
+
+// Maaske er det her bedre
+// newHolderBean(Class<?> beanClass, Bridges);
+
+// newContainerInstaller.useHolderBean(HBConfiguration)
+
+// Vi kan have flere holder beans til
+
+
+// Jeg tror vi laver en bean...
+
+// Saa resolver vi hver container vi adder op i mod den.
+
+
 public class ContainerLauncherBeanConfiguration<T> extends InstanceBeanConfiguration<T> {
 
     /**
