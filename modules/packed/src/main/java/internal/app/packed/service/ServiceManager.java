@@ -32,6 +32,7 @@ import app.packed.service.UnsatisfiableServiceDependencyException;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup;
 import internal.app.packed.util.StringFormatter;
 
 /** Manages services in a single container. */
@@ -95,7 +96,7 @@ public final class ServiceManager {
      *            the operation that provides the service
      * @return a provided service
      */
-    public ProvidedService serviceProvide(Key<?> key, boolean isConstant, OperationSetup operation) {
+    public ProvidedService serviceProvide(Key<?> key, boolean isConstant, OperationSetup operation, BindingResolutionSetup r) {
         ServiceManagerEntry entry = entries.computeIfAbsent(key, ServiceManagerEntry::new);
 
         // Check lifetimes
@@ -106,7 +107,7 @@ public final class ServiceManager {
         }
 
         // Create a new provider
-        ProvidedService provider = entry.provider = new ProvidedService(operation, isConstant, entry);
+        ProvidedService provider = entry.provider = new ProvidedService(operation, isConstant, entry, r);
 
         operation.mirrorSupplier = () -> new ProvidedServiceMirror(entry.provider);
 

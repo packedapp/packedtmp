@@ -291,6 +291,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** An operation that accesses an object in the lifetime pool. */
+    @Deprecated
     public static final class LifetimePoolOperationSetup extends OperationSetup {
 
         /**

@@ -29,6 +29,7 @@ import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -144,7 +145,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation());
-                setup.container.sm.serviceProvide(key, constant, operation);
+                setup.container.sm.serviceProvide(key, constant, operation, new OperationResolution(operation));
             }
 
             /** {@inheritDoc} */
@@ -157,7 +158,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
                     OperationSetup operation = OperationSetup.crack(method.newOperation());
-                    setup.container.sm.serviceProvide(key, constant, operation);
+                    setup.container.sm.serviceProvide(key, constant, operation, new OperationResolution(operation));
                 }
 
                 if (isExporting) {
