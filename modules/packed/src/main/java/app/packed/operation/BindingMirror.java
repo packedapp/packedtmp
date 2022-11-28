@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.bindings.DependenciesMirror;
 import app.packed.operation.bindings.ResolutionState;
@@ -64,12 +64,12 @@ public class BindingMirror implements Mirror {
         return binding().index;
     }
 
-    public Optional<BindingTargetKind> bindingKind() {
-        return Optional.ofNullable(binding().resolution).map(b -> b.kind());
+    public Optional<BindingProviderKind> bindingKind() {
+        return Optional.ofNullable(binding().provider).map(b -> b.kind());
     }
 
     /** {@return the x who created binding.} */
-    public User boundBy() {
+    public Realm boundBy() {
         return binding().boundBy;
     }
 
@@ -131,6 +131,10 @@ public class BindingMirror implements Mirror {
         BindingSetup b = binding();
         return b.operation.type.parameter(b.index);
     }
+    
+    public String toString() {
+        return binding.toString();
+    }
 }
 //; // What are we having injected... Giver det mening for functions????
 
@@ -153,7 +157,7 @@ public class BindingMirror implements Mirror {
 //Hvis den skal vaere extendable... saa fungere det sealed design ikke specielt godt?
 //Eller maaske goer det? Taenker ikke man kan vaere alle dele
 interface Sandbox {
-    BindingTargetKind bindingKind();
+    BindingProviderKind bindingKind();
 
     // Resolved
     // Unresolved + [Optional|Default]
@@ -164,7 +168,7 @@ interface Sandbox {
 
     boolean isConstant();
 
-    public User providedBy();
+    public Realm providedBy();
 
     /**
      * If this dependency is the result of another operation.
@@ -205,7 +209,7 @@ interface Sandbox {
     public ResolutionState resolutionState();
 
     // Unresolved->Empty or Composite->Empty
-    Optional<User> resolvedBy();
+    Optional<Realm> resolvedBy();
 
     Variable variableStripped(); // Remove @Nullable Quaifiers, Optional, PrimeAnnotation ect.. All annotations?? Maaske er det bare en type
 

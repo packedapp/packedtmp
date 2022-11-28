@@ -17,7 +17,6 @@ package app.packed.container;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.framework.FrameworkExtension;
 import internal.app.packed.container.ContainerSetup;
 import internal.app.packed.container.ExtensionSetup;
 

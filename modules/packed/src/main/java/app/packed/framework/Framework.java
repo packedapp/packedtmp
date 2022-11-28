@@ -15,51 +15,74 @@
  */
 package app.packed.framework;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 
 /** This class contains information about the framework. */
 public final class Framework {
-
-    /** A set of module names that makes of the framework. So far we only have one. */
-    static final Set<String> MODULE_NAMES = Set.of("app.packed");
-
-    static final String NAME = "Packed";
 //
 //    public static void main(String[] args) {
 //        Package p = FrameworkProps.class.getPackage();
 //        System.out.printf("%s%n  Title: %s%n  Version: %s%n  Vendor: %s%n", FrameworkProps.class.getName(), p.getImplementationTitle(),
 //                p.getImplementationVersion(), p.getImplementationVendor());
 //    }
-    
+
     /** No framework for you. */
     private Framework() {}
 
     /** {@return a set of names of all the modules that make up the framework.} */
     public static Set<String> moduleNames() {
-        return MODULE_NAMES;
+        return FrameworkNames.ALL_MODULE_NAMES;
     }
 
     /** {@return the name of the framework.} */
     public static String name() {
-        return NAME;
+        return FrameworkNames.FRAMEWORK;
     }
 
-    /** {return the version of the frame as a {@link Version}.} */
+    /** {@return the current version of the framework.} */
     public static Framework.Version version() {
         throw new UnsupportedOperationException();
     }
 
-    // Maybe just add it for release 2
-    enum Release {
+    /** Represents a feature release of the framework. */
+    public enum Release {
+
+        /** The first feature release of the framework. */
         RELEASE_1;
     }
-    
+
+    /** Represents a version of the framework. */
     public static final class Version implements Comparable<Version> {
+        // value should give us equals+hashCode
+
+        /** The feature release part of the version. */
+        private final Release release = Release.RELEASE_1;
 
         /** {@inheritDoc} */
         @Override
-        public int compareTo(Version o) {
+        public int compareTo(Version other) {
+            requireNonNull(other, "other is null");
+            if (release != other.release) {
+                return release.ordinal() - other.release.ordinal();
+            }
             return 0;
+        }
+
+        /** {@return whether or not this version represents a pre-release.} */
+        public boolean isPreRelease() {
+            return true;
+        }
+
+        /** {@return the feature release represented by this version.} */
+        public Release release() {
+            return release;
+        }
+
+        public static Version parse(String versionString) {
+            requireNonNull(versionString, "versionString is null");
+            throw new UnsupportedOperationException();
         }
     }
 }

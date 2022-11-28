@@ -20,23 +20,37 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.operation.BindingTargetKind;
-import internal.app.packed.lifetime.LifetimeAccessor;
+import app.packed.operation.BindingProviderKind;
+import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup;
+import internal.app.packed.util.MethodHandleUtil;
 
-/**
- *
- */
-public sealed abstract class BindingResolutionSetup {
+/** Provider of a value for a binding. */
+public sealed abstract class BindingProvider {
 
     public abstract MethodHandle bindIntoOperation(BindingSetup binding, MethodHandle methodHandle);
 
-    public abstract BindingTargetKind kind();
+    /** {@return the kind of provider.} */
+    public abstract BindingProviderKind kind();
 
     public abstract MethodHandle provideSpecial();
-    
-    public static final class ArgumentResolution extends BindingResolutionSetup {
+
+    /** Provides values from an operation invocation argument. */
+    public static final class FromArgument extends BindingProvider {
+
+        /** The index of the argument to use. */
+        public final int argumentIndex;
+
+        /**
+         * Create a new argument provider.
+         * 
+         * @param argumentIndex
+         *            the index of the argument to use
+         */
+        public FromArgument(int argumentIndex) {
+            this.argumentIndex = argumentIndex;
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -46,8 +60,8 @@ public sealed abstract class BindingResolutionSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingTargetKind kind() {
-            return BindingTargetKind.ARGUMENT;
+        public BindingProviderKind kind() {
+            return BindingProviderKind.ARGUMENT;
         }
 
         /** {@inheritDoc} */
@@ -57,7 +71,8 @@ public sealed abstract class BindingResolutionSetup {
         }
     }
 
-    public static final class ConstantResolution extends BindingResolutionSetup {
+    /** Provides values from a constant. */
+    public static final class FromConstant extends BindingProvider {
 
         /** The constant. */
         public final Object constant;
@@ -67,10 +82,10 @@ public sealed abstract class BindingResolutionSetup {
 
         /**
          * @param operation
-         * @param index
+         * @param argumentIndex
          * @param target
          */
-        public ConstantResolution(Class<?> constantType, Object constant) {
+        public FromConstant(Class<?> constantType, Object constant) {
             this.constant = constant;
             this.constantType = constantType;
         }
@@ -81,8 +96,8 @@ public sealed abstract class BindingResolutionSetup {
         }
 
         /** {@inheritDoc} */
-        public BindingTargetKind kind() {
-            return BindingTargetKind.CONSTANT;
+        public BindingProviderKind kind() {
+            return BindingProviderKind.CONSTANT;
         }
 
         /** {@inheritDoc} */
@@ -93,12 +108,20 @@ public sealed abstract class BindingResolutionSetup {
         }
     }
 
-    public static final class LifetimePoolResolution extends BindingResolutionSetup {
+    /** Provides values by accessing a lifetime arena. */
+    public static final class FromLifetimeArena extends BindingProvider {
 
-        public final LifetimeAccessor.DynamicAccessor da;
+        public final ContainerLifetimeSetup containerLifetime;
 
-        public LifetimePoolResolution(LifetimeAccessor.DynamicAccessor da) {
-            this.da = da;
+        /** The index in the arena */
+        public final int index;
+
+        public final Class<?> type;
+
+        public FromLifetimeArena(ContainerLifetimeSetup containerLifetime, int index, Class<?> type) {
+            this.containerLifetime = requireNonNull(containerLifetime);
+            this.type = type;
+            this.index = index;
         }
 
         /** {@inheritDoc} */
@@ -109,23 +132,26 @@ public sealed abstract class BindingResolutionSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingTargetKind kind() {
-            return BindingTargetKind.LIFETIME_POOL;
+        public BindingProviderKind kind() {
+            return BindingProviderKind.OPERATION;
         }
 
         /** {@inheritDoc} */
         @Override
         public MethodHandle provideSpecial() {
-            return da.poolReader();
+            // Must be calculated relative to the operation...
+            MethodHandle mh = MethodHandles.insertArguments(LifetimeObjectArena.MH_CONSTANT_POOL_READER, 1, index);
+            return MethodHandleUtil.castReturnType(mh, type); // (LifetimePool)Object -> (LifetimePool)clazz
         }
     }
 
-    public static final class OperationResolution extends BindingResolutionSetup {
+    /** Provides values from the result of an operation. */
+    public static final class FromOperation extends BindingProvider {
 
         /** The operation that produces the value for the binding. */
         public final OperationSetup operation;
 
-        public OperationResolution(OperationSetup operation) {
+        public FromOperation(OperationSetup operation) {
             this.operation = requireNonNull(operation);
         }
 
@@ -138,8 +164,8 @@ public sealed abstract class BindingResolutionSetup {
 
         /** {@inheritDoc} */
         @Override
-        public BindingTargetKind kind() {
-            return BindingTargetKind.OPERATION;
+        public BindingProviderKind kind() {
+            return BindingProviderKind.OPERATION;
         }
 
         /** {@inheritDoc} */

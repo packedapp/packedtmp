@@ -22,7 +22,9 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 /**
  *
  */
-// All dependencies have a resolution kind if those that are unresolved
+// All dependencies have a resolution kind even those that are unresolved
+
+// Algorithm is completely fixed. But lots of ways to customization
 
 // Binding
 //// OnAnnotation
@@ -31,7 +33,6 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 // Key
 //// Service
 //// FactoryService
-
 public enum BindingKind {
 
     // Maaske har vi kun en Binding enum value... Ligesom vi kun har en annotering, og en metode paa inspectoren...

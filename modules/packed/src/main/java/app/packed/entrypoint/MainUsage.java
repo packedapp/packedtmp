@@ -17,6 +17,7 @@ package app.packed.entrypoint;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
+import app.packed.operation.OperationMirror;
 
 /**
  *
@@ -26,19 +27,26 @@ public class MainUsage extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        installInstance(new MyBean());
+        install(MyBean.class);
     }
 
     public static void main(String[] args) {
-        // long l = System.nanoTime();
+        long l = System.nanoTime();
         App.run(new MainUsage());
-        // System.out.println(System.nanoTime() - l);
+        App.run(new MainUsage());
+        App.run(new MainUsage());
+        System.out.println(System.nanoTime() - l);
     }
 
     public static class MyBean {
-
+        
+        public MyBean(OperationMirror am) {
+            System.out.println(am.type());
+        }        
+        
         @Main
         public void hello() {
+            System.out.println("Hello");
         }
     }
 }

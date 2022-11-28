@@ -2,7 +2,7 @@ package app.packed.bean;
 
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.BaseAssembly;
-import app.packed.framework.FrameworkExtension;
+import app.packed.container.FrameworkExtension;
 import app.packed.lifetime.RunState;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
@@ -37,7 +37,7 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
      * @see BaseAssembly#install(Class)
      */
     public <T> ProvideableBeanConfiguration<T> install(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).install(implementation);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -50,7 +50,7 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
      * @see CommonContainerAssembly#install(Op)
      */
     public <T> ProvideableBeanConfiguration<T> install(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).install(op);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
@@ -66,17 +66,17 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
      * @return this configuration
      */
     public <T> ProvideableBeanConfiguration<T> installInstance(T instance) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).installInstance(instance);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).install(implementation);
+        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> installLazy(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).install(op);
+        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
@@ -91,7 +91,7 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
      * @see BeanSourceKind#CLASS
      */
     public BeanConfiguration installStatic(Class<?> implementation) {
-        BeanHandle<?> handle = newBean(BeanKind.STATIC).install(implementation);
+        BeanHandle<?> handle = newInstaller(BeanKind.STATIC).install(implementation);
         return new BeanConfiguration(handle);
     }
 
@@ -101,32 +101,29 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
      * @see BeanHandle.InstallOption#multiInstall()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().install(implementation);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multiInstall().install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().install(op);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multiInstall().install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = newBean(BeanKind.CONTAINER).multiInstall().installInstance(instance);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multiInstall().installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
+    // Skriv usecases naeste gang. Taenker over det hver gang
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().install(implementation);
+        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multiInstall().install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = newBean(BeanKind.LAZY).multiInstall().install(op);
+        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multiInstall().install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
-    }
-
-    BeanInstaller newBean(BeanKind kind) {
-        return new PackedBeanInstaller(extensionSetup, kind, null);
     }
 
     /**
@@ -190,5 +187,9 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
     @Override
     protected BeanExtensionPoint newExtensionPoint() {
         return new BeanExtensionPoint();
+    }
+
+    BeanInstaller newInstaller(BeanKind kind) {
+        return new PackedBeanInstaller(extensionSetup, kind, null);
     }
 }

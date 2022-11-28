@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingResolutionSetup;
+import internal.app.packed.operation.binding.BindingProvider;
 
 /**
  *
@@ -38,9 +38,9 @@ public final class ProvidedService {
 
     public MethodHandle provider;
 
-    public final BindingResolutionSetup resolution;
+    public final BindingProvider resolution;
 
-    ProvidedService(OperationSetup operation, boolean isConstant, ServiceManagerEntry entry, BindingResolutionSetup resolution) {
+    ProvidedService(OperationSetup operation, boolean isConstant, ServiceManagerEntry entry, BindingProvider resolution) {
         this.operation = operation;
         this.bean = operation.bean;
         this.entry = entry;

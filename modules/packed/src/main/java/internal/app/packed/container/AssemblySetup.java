@@ -30,8 +30,9 @@ import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.DelegatingAssembly;
 import app.packed.container.Extension;
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.container.Wirelet;
+import internal.app.packed.application.ApplicationBuildEvent;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.PackedApplicationDriver;
 import internal.app.packed.service.CircularServiceDependencyChecker;
@@ -42,12 +43,10 @@ import internal.app.packed.util.ThrowableUtil;
 /** The internal configuration of an assembly. */
 public final class AssemblySetup extends RealmSetup {
 
-
     /** A MethodHandle for invoking {@link ContainerMirror#initialize(ContainerSetup)}. */
     private static final MethodHandle MH_ASSEMBLY_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AssemblyMirror.class,
             "initialize", void.class, AssemblySetup.class);
 
-    
     /** A handle that can invoke {@link Assembly#doBuild()}. */
     private static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ContainerAssembly.class, "doBuild",
             void.class, AssemblySetup.class, AssemblyModel.class, ContainerSetup.class);
@@ -68,7 +67,7 @@ public final class AssemblySetup extends RealmSetup {
     public final ApplicationSetup application;
 
     /** The assembly instance. */
-   public final Assembly assembly;
+    public final Assembly assembly;
 
     /** A model of the assembly. */
     public final AssemblyModel assemblyModel;
@@ -130,7 +129,15 @@ public final class AssemblySetup extends RealmSetup {
 
     public void build() {
         // Invoke Assembly::doBuild, which in turn will invoke Assembly::build
+        boolean isRoot = container.treeParent == null;
 
+        ApplicationBuildEvent abe = null;
+
+        if (isRoot) {
+            abe = new ApplicationBuildEvent();
+            abe.assemblyClass = assembly.getClass();
+            abe.begin();
+        }
         try {
             MH_ASSEMBLY_DO_BUILD.invokeExact((ContainerAssembly) assembly, this, assemblyModel, container);
         } catch (Throwable e) {
@@ -139,7 +146,6 @@ public final class AssemblySetup extends RealmSetup {
 
         isClosed = true;
 
-        boolean isRoot = container.treeParent == null;
         // call Extension.onUserClose on the root container in the assembly.
         // This is turn calls recursively down Extension.onUserClose on all
         // ancestor extensions in the same realm.
@@ -168,7 +174,6 @@ public final class AssemblySetup extends RealmSetup {
 
             CircularServiceDependencyChecker.dependencyCyclesFind(container);
 
-
             // Close every extension tree
             for (ExtensionSetup extension : list) {
                 try {
@@ -185,7 +190,8 @@ public final class AssemblySetup extends RealmSetup {
             if (application.goal.isLaunchable()) {
                 application.codegen();
             }
-
+            abe.applicationName = container.name;
+            abe.commit();
         } else {
             // Similar to above, except we do not close extension trees
             ExtensionSetup e = extensions.pollFirst();
@@ -223,8 +229,8 @@ public final class AssemblySetup extends RealmSetup {
 
     /** {@inheritDoc} */
     @Override
-    public User realm() {
-        return User.application();
+    public Realm realm() {
+        return Realm.application();
     }
 
     /** {@inheritDoc} */

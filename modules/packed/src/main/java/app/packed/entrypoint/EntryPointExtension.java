@@ -13,7 +13,7 @@ import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
-import app.packed.framework.FrameworkExtension;
+import app.packed.container.FrameworkExtension;
 import app.packed.framework.Nullable;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;

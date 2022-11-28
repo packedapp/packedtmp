@@ -16,7 +16,7 @@ import app.packed.container.AssemblyMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.MirrorExtension;
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -189,12 +189,13 @@ public class BeanMirror implements Mirror {
      * 
      * @return any extension the bean's driver is part of
      */
+    // handledBy, managedBy
     Class<? extends Extension<?>> operator() { // registrant
         return bean().installedBy.extensionType;
     }
 
     /** {@return the owner of the bean.} */
-    public User owner() {
+    public Realm owner() {
         return bean().realm.realm();
     }
 

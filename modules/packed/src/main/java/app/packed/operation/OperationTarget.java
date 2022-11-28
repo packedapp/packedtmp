@@ -22,7 +22,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup.FunctionOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.ConstructorOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
@@ -30,71 +29,60 @@ import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodO
 import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
 
 /**
- * The target of an operation, typically a method.
+ * The target of an operation.
  * 
- * @see OperationMirror#site()
+ * @see OperationMirror#target()
  */
-// Maybe this an operation site (instead of + Mirror) that is also available at runtime...
-public sealed interface OperationSiteMirror extends Mirror {
+public sealed interface OperationTarget {
+
+//    /** Represents an operation that accesses a bean instance. */
+//    public non-sealed interface OfBeanAccess extends OperationTarget {
+//
+//        /** {@return the bean that is being accessed.} */
+//        BeanMirror bean();
+//    }
 
     /** Represents an operation that invokes a {@link Constructor constructor}. */
-    public sealed interface OfConstructorInvoke extends OperationSiteMirror permits ConstructorOperationSetup {
+    public sealed interface OfConstructorInvoke extends OperationTarget permits ConstructorOperationSetup {
 
         /** {@return the underlying constructor.} */
         Constructor<?> constructor();
     }
 
     /** Represents an operation that gets, sets or updates a {@link Field field}. */
-    public sealed interface OfFieldAccess extends OperationSiteMirror permits FieldOperationSetup {
+    public sealed interface OfFieldAccess extends OperationTarget permits FieldOperationSetup {
 
-        AccessMode accessMode();
+        /** {@return the mode used when accessing the field.} */
+        AccessMode accessMode(); // Could we have a list instead???
 
         /** {@return the underlying field.} */
         Field field();
     }
 
-    /**
-     * Represents an operation that calls the abstract method on a functional interface.
-     * <p>
-     * method on a functional interface.
-     */
-    public sealed interface OfFunctionCall extends OperationSiteMirror permits FunctionOperationSetup {
+    /** Represents the invocation of a function on a functional interface. */
+    public sealed interface OfFunctionCall extends OperationTarget permits FunctionOperationSetup {
 
         /** {@return the functional interface.} */
         Class<?> functionalInterface();
 
-        /** {@return implementing method of the functional interface.} */
-        Method implementationMethod();
+        /** {@return the method that implements the function.} */
+        Method implementingMethod();
 
         /** {@return the single abstract method on the functional interface.} */
         Method interfaceMethod();
     }
 
     /** Represents an operation that invokes a {@link MethodHandle method handle}. */
-    public sealed interface OfMethodHandleInvoke extends OperationSiteMirror permits MethodHandleOperationSetup {
+    public sealed interface OfMethodHandleInvoke extends OperationTarget permits MethodHandleOperationSetup {
 
         /** {@return the method type of the method handle.} */
         MethodType methodType();
     }
 
     /** Represents an operation that invokes a {@link Method method}. */
-    public sealed interface OfMethodInvoke extends OperationSiteMirror permits MethodOperationSetup {
+    public sealed interface OfMethodInvoke extends OperationTarget permits MethodOperationSetup {
 
         /** {@return the invokable method.} */
         Method method();
     }
 }
-// Er det ikke bare OperationType vi skal koere den paa????
-// AnnotataionReader annotations()???
-
-///**
-// * Represents an operation simply returns a constant.
-// * <p>
-// * An {@link OperationMirror operation} with {@code constant} target never has any {@link OperationMirror#bindings()
-// * bindings}.
-// */
-//public non-sealed interface OfConstant extends OperationSiteMirror {
-//
-//    /** {@return the type of constant.} */
-//    Class<?> constantType();
-//}

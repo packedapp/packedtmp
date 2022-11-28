@@ -18,9 +18,10 @@ package app.packed.container;
 import app.packed.application.ApplicationMirror;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanMirror;
-import app.packed.framework.FrameworkExtension;
+import app.packed.operation.OperationMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBeanBinding;
+import internal.app.packed.operation.OperationSetup;
 
 /**
  * This extension is used to provide mirror functionality at runtime.
@@ -45,8 +46,8 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
     MirrorExtension() {}
 
     /**
-     * Creates bindings for {@link ApplicationMirror}, {@link ContainerMirror}, {@link OldAssemblyMirror}, and
-     * {@link BeanMirror}.
+     * Creates bindings for {@link ApplicationMirror}, {@link AssemblyMirror}, {@link ContainerMirror}, {@link BeanMirror},
+     * and {@link OperationMirror}.
      * 
      * {@inheritDoc}
      */
@@ -56,19 +57,22 @@ public class MirrorExtension extends FrameworkExtension<MirrorExtension> {
 
             @Override
             public void onBinding(OnBinding binding) {
-                BeanSetup bean = ((IntrospectedBeanBinding) binding).operation.bean;
+                IntrospectedBeanBinding ibb = ((IntrospectedBeanBinding) binding);
+                OperationSetup operation = ibb.operation;
+                BeanSetup bean = ibb.operation.bean;
                 if (binding.hookClass() == ApplicationMirror.class) {
                     binding.bind(bean.container.application.mirror());
+                } else if (binding.hookClass() == AssemblyMirror.class) {
+                    binding.bind(bean.container.assembly.mirror());
                 } else if (binding.hookClass() == ContainerMirror.class) {
                     binding.bind(bean.container.mirror());
                 } else if (binding.hookClass() == BeanMirror.class) {
                     binding.bind(bean.mirror());
-                } else if (binding.hookClass() == AssemblyMirror.class) {
-                    binding.bind(bean.container.assembly);
+                } else if (binding.hookClass() == OperationMirror.class) {
+                    binding.bind(operation.mirror());
                 } else {
                     super.onBinding(binding);
                 }
-                // Could bind the Operation... but if we have multiple operations. This is non-trivial
             }
         };
     }

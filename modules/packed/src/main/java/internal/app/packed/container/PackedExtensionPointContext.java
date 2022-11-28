@@ -15,17 +15,17 @@
  */
 package internal.app.packed.container;
 
-import app.packed.container.ExtensionPoint.UseSite;
-import app.packed.container.User;
+import app.packed.container.ExtensionPoint.UsageContext;
+import app.packed.container.Realm;
 
 /**
  *
  */
-public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UseSite {
+public record PackedExtensionPointContext(ExtensionSetup extension, ExtensionSetup usedBy) implements UsageContext {
 
     /** {@inheritDoc} */
     @Override
-    public User realm() {
+    public Realm realm() {
         return extension.extensionRealm.extensionModel.realm();
     }
 }

@@ -27,7 +27,8 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public class CodegenHelper {
+public final class ApplicationCodegenerator {
+    
     private final HashMap<InstanceBeanConfiguration<?>, MethodHandleArray> arrayInvokers = new HashMap<>();
 
     public int addArray(InstanceBeanConfiguration<?> beanConfiguration, OperationHandle operation) {

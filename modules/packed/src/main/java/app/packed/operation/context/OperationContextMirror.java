@@ -25,7 +25,27 @@ import internal.app.packed.container.Mirror;
 /**
  *
  */
+
+// En operation kan vaere i en context
+// En operation kan starte en eller flere contexts
+// En operation kan lave en Bean/Container/Application der kun eksistere saa laenge operationen koere...
+// En Bean, Container kan vaere i en context. (Hvad med en application?)
+
+
+// Fx BeanInitializationContext er aabenlyst OperationSpan (per bean). Fordi vi kan injecte forskellige ting...
+
+// Scheduling
+// @Schedule foo() on ContainerBean -> OperationSpan
+// SExt.schedule(Op<?>) 
+// @Schedule foo() on SExt.registerScheduler(Bean) ->OperationSpan
+// @Schedule
 public interface OperationContextMirror extends Mirror {
+
+    // ContextSpan -> Operation, Bean, Container, (RestOfTree), Application
+    
+    Class<?> contextClass();
+    
+    Optional<LifetimeMirror> createsNew(); // if non-operation
 
     /**
      * The operation from which the context may be created
@@ -35,9 +55,13 @@ public interface OperationContextMirror extends Mirror {
     //fx multiple @Get on the same bean (or in the same container)
     Collection<OperationMirror> operations();
     
-    Optional<LifetimeMirror> createsNew(); // if non-operation
-
-    Class<?> contextClass();
+    ContextSpan span();
+    // span
+    
+    // Container or Container_Lifetime???
+    enum ContextSpan {
+        APPLICATION, BEAN, CONTAINER_LIFETIME, OPERATION;
+    }
 }
 
 // Object scope(); // Operation|Bean|Container(Tree?)

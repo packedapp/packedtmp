@@ -31,17 +31,16 @@ import internal.app.packed.container.RealmSetup;
 import internal.app.packed.lifetime.BeanLifetimeSetup;
 import internal.app.packed.lifetime.ContainerLifetimeSetup;
 import internal.app.packed.lifetime.LifetimeAccessor;
-import internal.app.packed.lifetime.LifetimeAccessor.DynamicAccessor;
 import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
 import internal.app.packed.operation.PackedInvocationType;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.binding.BindingResolutionSetup;
-import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
-import internal.app.packed.operation.binding.BindingResolutionSetup.LifetimePoolResolution;
-import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
+import internal.app.packed.operation.binding.BindingProvider;
+import internal.app.packed.operation.binding.BindingProvider.FromConstant;
+import internal.app.packed.operation.binding.BindingProvider.FromLifetimeArena;
+import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.service.ProvidedService;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
@@ -62,6 +61,8 @@ public final class BeanSetup {
     /** A handle that can access BeanHandle#bean. */
     private static final VarHandle VH_BEAN_HANDLE_BEAN = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), BeanHandle.class, "bean", BeanSetup.class);
 
+    private static final @Nullable LifetimeAccessor DynamicAccessor = null;
+
     /** The bean class, is typical void.class for functional beans. */
     public final Class<?> beanClass;
 
@@ -70,10 +71,10 @@ public final class BeanSetup {
 
     /** The container this bean is installed in. */
     public final ContainerSetup container;
-    
+
     /** The extension that installed the bean. */
     public final ExtensionSetup installedBy;
-    
+
     /** The lifetime the component is a part of. */
     public final LifetimeSetup lifetime;
 
@@ -150,13 +151,15 @@ public final class BeanSetup {
         }
     }
 
-    public BindingResolutionSetup accessBeanX() {
+    public int lifetimePoolAccessIndex = -1;
+
+    public BindingProvider accessBeanX() {
         if (sourceKind == BeanSourceKind.INSTANCE) {
-            return new ConstantResolution(source.getClass(), source);
+            return new FromConstant(source.getClass(), source);
         } else if (beanKind == BeanKind.CONTAINER) {
-            return new LifetimePoolResolution((DynamicAccessor) lifetimePoolAccessor);
+            return new FromLifetimeArena(container.lifetime, lifetimePoolAccessIndex, beanClass);
         } else if (beanKind == BeanKind.MANYTON) {
-            return new OperationResolution(operations.get(0));
+            return new FromOperation(operations.get(0));
         }
         throw new Error();
     }
@@ -245,7 +248,6 @@ public final class BeanSetup {
     private static BeanSetup crack(BeanHandle<?> handle) {
         return (BeanSetup) VH_BEAN_HANDLE_BEAN.get(handle);
     }
-    
 
     static BeanSetup install(PackedBeanInstaller installer, BeanKind beanKind, Class<?> beanClass, BeanSourceKind sourceKind, @Nullable Object source,
             @Nullable BeanIntrospector introspector, @Nullable String namePrefix, boolean multiInstall, boolean synthetic) {

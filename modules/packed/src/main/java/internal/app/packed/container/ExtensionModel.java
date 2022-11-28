@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
 import app.packed.container.Extension;
 import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionDescriptor;
+import app.packed.container.FrameworkExtension;
 import app.packed.container.InternalExtensionException;
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.framework.Framework;
-import app.packed.framework.FrameworkExtension;
 import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.StringFormatter;
@@ -92,7 +92,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
 
-    private final User realm;
+    private final Realm realm;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -102,7 +102,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
-        this.realm = User.extension(extensionClass);
+        this.realm = Realm.extension(extensionClass);
         this.mhConstructor = builder.mhConstructor;
         this.ordringDepth = builder.depth;
         this.dependencies = Set.copyOf(builder.dependencies);
@@ -218,7 +218,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return ordringDepth;
     }
 
-    public User realm() {
+    public Realm realm() {
         return realm;
     }
 

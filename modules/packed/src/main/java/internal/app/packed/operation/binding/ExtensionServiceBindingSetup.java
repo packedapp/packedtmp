@@ -18,7 +18,7 @@ package internal.app.packed.operation.binding;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.bean.BeanExtension;
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.operation.BindingKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -37,7 +37,7 @@ public final class ExtensionServiceBindingSetup extends BindingSetup {
      * @param index
      */
     public ExtensionServiceBindingSetup(OperationSetup operation, int index, Class<?> extensionBeanClass) {
-        super(operation, index, User.extension(BeanExtension.class));
+        super(operation, index, Realm.extension(BeanExtension.class));
         this.extensionBeanClass = extensionBeanClass;
     }
 

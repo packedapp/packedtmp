@@ -15,6 +15,7 @@
  */
 package app.packed.operation;
 
+import app.packed.operation.context.OperationContextMirror;
 import app.packed.service.Key;
 
 /**
@@ -25,10 +26,14 @@ import app.packed.service.Key;
 // Er factory? En context??? Hmmm En slags jo...
 public non-sealed class ContextServiceBindingMirror extends KeyBasedBindingMirror {
 
+    /** {@return the context that provided the binding.} */
+    public OperationContextMirror context() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public Key<?> key() {
         throw new UnsupportedOperationException();
     }
-
 }

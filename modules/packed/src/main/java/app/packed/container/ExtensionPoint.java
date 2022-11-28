@@ -10,8 +10,8 @@ import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /**
- * Extension points are the main mechanism by which extensions use other extensions. Developers that do not create their
- * own extensions will likely never have to deal with these type of classes.
+ * Extension points are the main mechanism by which an extension can use another extension. Developers that do not
+ * create their own extensions will likely never have to deal with these type of classes.
  * <p>
  * An extension point instance is acquired by calling {@link Extension#use(Class)}. Whereby the framework will create a
  * new instance (using constructor injection). Extension point instances are <strong>never</strong> cached, instead they
@@ -22,14 +22,11 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
  * {@link InternalExtensionException} being thrown when calling {@link Extension#use(Class)}.
  * <p>
  * An extension point class contains no overridable life-cycle methods similar to those on Extension. Instead extension
- * points are merely thought of as thin wrappers on top of an extension. Where every invocation on the extension point
- * delegates to package-private methods on the {@link ExtensionPoint#extension()} itself.
+ * points are just thin wrappers on top of an extension. Where every invocation on the extension point delegates to
+ * package-private methods on the {@link ExtensionPoint#extension()} itself.
  * <p>
- * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
- * {@link IllegalStateException} being thrown.
- * <p>
- * If an extension defines classes that are only usable by other extension and not application developers. They should
- * be declared as nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
+ * If an extension defines classes that are only used by other extensions and not application developers. They should be
+ * declared as nested classes on an extension point. See, for example, {@link EntryPointExtensionPoint}.
  * 
  * NOTE: In order to properly implement an extension point you:
  * <ul>
@@ -40,11 +37,11 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
  * <li>Should name the extension point class {@code $NAME_OF_EXTENSION$}Point.</li>
  * </ul>
  * <p>
- * The main reason that end-users uses {@code Extension} instances and extensions uses {@code ExtensionPoint} instances
- * is that it allows an extension to "hide" highly specialized methods that no end-users would ever need.
+ * Attempting to use any of the methods on this class from the constructor of a subclass, will result in an
+ * {@link IllegalStateException} being thrown.
  * 
  * @see Extension#use(Class)
- * @see UseSite
+ * @see UsageContext
  * 
  * @param <E>
  *            The type of extension this extension point is a part of.
@@ -140,22 +137,26 @@ public abstract class ExtensionPoint<E extends Extension<E>> {
         this.context = new PackedExtensionPointContext(extension, usedBy);
     }
 
+    protected final UsageContext usageContext() {
+        return context();
+    }
+
     /** {@return the type of extension that are using the extension point.} */
     protected final Class<? extends Extension<?>> usedBy() {
         return context().usedBy().extensionType;
     }
 
-    protected final UseSite useSite() {
-        return context();
+    public interface ExtensionBeanContext {
+        
     }
-
+    
     /**
      * A context object that can be injected into subclasses of {@link ExtensionPoint}.
      */
     // Inner class: UseSite
     //// Er lidt underlig maaske med UseSite hvis man tager den som parameter
     //// Men vil ikke mere hvor man skal tage et ExtensionPointContext???
-    public sealed interface UseSite permits PackedExtensionPointContext {
-        User realm();
+    public sealed interface UsageContext permits PackedExtensionPointContext {
+        Realm realm();
     }
 }

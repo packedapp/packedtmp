@@ -47,43 +47,15 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
         return (BeanHandle<T>) super.handle();
     }
 
-    public <K> InstanceBeanConfiguration<T> initializeWith(Op<?> op) {
-        throw new UnsupportedOperationException();
-    }
-
-    @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
-            " Det er jo ihvertfald ikke en service binding laengere" })
-    // Hvad hvis man bruger servicen i baade constructoren og i @OnStop...
-    // Saa fungere det her initialize jo ikke...
-    
-    // @Initializer -> Kan man ikke bruge det til at over
-    // Tror ikke man baade kan initialize en Key, og saa bruge den som en service andet steds.
-    // Tjah det er jo en build time instans... Saa det kan jo bare vaere -> inject()
-    // bindKey?
-    // overrideService(); takeService();
-    
-    // Overrides all occurenses of the service. and binds it to the instance
-    // Tager ikke null... Masske vi kan have en overrideServiceAsMissing
-    
-    // Det betyder vi skal have et map med key
-    // Og vi skal ikke laengere eagerly resolve services
-    // Saa naar man resolver en service for en bean. Skal man foerst kigge i mappet..
-    // Does not override hoooks I think
-    // Problemet er vi allerede har installeret ServiceExtension'en
-    
-    // installer().overrideService(asdasd).install(Key, instance);
-    //// Hvordan vil den supportere WebExtension.install()???
-    //// installer() fungere bare ikke
-    
-    // initializeWith
     public <K> InstanceBeanConfiguration<T> initializeWithInstance(Class<K> key, K instance) {
         return initializeWithInstance(Key.of(key), instance);
     }
 
     public <K> InstanceBeanConfiguration<T> initializeWithInstance(Key<K> key, K instance) {
-        throw new UnsupportedOperationException();
+        handle().initializeWithInstance(key, instance);
+        return this;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public InstanceBeanConfiguration<T> named(String name) {
@@ -100,6 +72,31 @@ public class InstanceBeanConfiguration<T> extends BeanConfiguration {
 //addAnnotation
 //resolve();
 class InstanceBeanConfigurationSandbox<T> {
+    @SpecFix({ "Da vi altid laver alle bindings naar vi installere... Fungere det ikke super godt med initializeWith.",
+            " Det er jo ihvertfald ikke en service binding laengere" })
+// Hvad hvis man bruger servicen i baade constructoren og i @OnStop...
+// Saa fungere det her initialize jo ikke...
+
+// @Initializer -> Kan man ikke bruge det til at over
+// Tror ikke man baade kan initialize en Key, og saa bruge den som en service andet steds.
+// Tjah det er jo en build time instans... Saa det kan jo bare vaere -> inject()
+// bindKey?
+// overrideService(); takeService();
+
+// Overrides all occurenses of the service. and binds it to the instance
+// Tager ikke null... Masske vi kan have en overrideServiceAsMissing
+
+// Det betyder vi skal have et map med key
+// Og vi skal ikke laengere eagerly resolve services
+// Saa naar man resolver en service for en bean. Skal man foerst kigge i mappet..
+// Does not override hoooks I think
+// Problemet er vi allerede har installeret ServiceExtension'en
+
+// installer().overrideService(asdasd).install(Key, instance);
+//// Hvordan vil den supportere WebExtension.install()???
+//// installer() fungere bare ikke
+
+// initializeWith
 
     // How do we handle null?
 
@@ -121,16 +118,18 @@ class InstanceBeanConfigurationSandbox<T> {
         throw new UnsupportedOperationException();
     }
 
+    public <K> InstanceBeanConfiguration<T> initializeWith(Op<?> op) {
+        throw new UnsupportedOperationException();
+    }
+
     // Peek when???? Maybe wrap a factory for now
     //// Do we want to peek on instances???? I don't think so
     // peekAfterCreate
     InstanceBeanConfiguration<T> peek(Consumer<? super T> consumer) {
         // peek at constr
-       // handle().peekInstance(consumer);
-       throw new UnsupportedOperationException();
+        // handle().peekInstance(consumer);
+        throw new UnsupportedOperationException();
     }
-    
-
 
     /**
      * @param state
@@ -152,8 +151,8 @@ class InstanceBeanConfigurationSandbox<T> {
     InstanceBeanConfiguration<T> peekAt(RunState state, Consumer<T> action) {
         throw new UnsupportedOperationException();
     }
- 
 }
+
 //
 //// Jeg syntes den er forfaerdelig... isaer navngivningsmaessigt.
 //// Vi maa have en special ExtensionBeanConfiguration...
@@ -176,7 +175,6 @@ class InstanceBeanConfigurationSandbox<T> {
 // inject, bind, provide
 //// Ikke provide... vi har allerede provideAs
 //// bind syntes jeg er fint at det er positionelt
-
 
 //Den bliver koert foerend vi returnere BeanConfiguration.
 //Og som giver ejeren af beanen stor control...

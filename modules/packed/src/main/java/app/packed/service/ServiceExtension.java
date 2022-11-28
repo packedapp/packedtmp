@@ -23,13 +23,13 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
+import app.packed.container.FrameworkExtension;
 import app.packed.container.Extension.DependsOn;
-import app.packed.framework.FrameworkExtension;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
-import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
+import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -145,7 +145,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
                 OperationSetup operation = OperationSetup.crack(field.newGetOperation());
-                setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new OperationResolution(operation));
+                setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new FromOperation(operation));
             }
 
             /** {@inheritDoc} */
@@ -158,7 +158,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
                     OperationSetup operation = OperationSetup.crack(method.newOperation());
-                    setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new OperationResolution(operation));
+                    setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new FromOperation(operation));
                 }
 
                 if (isExporting) {
@@ -209,12 +209,12 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
     // providePerRequest <-- every time the service is requested
     // Also these beans, can typically just be composites??? Nah
     public <T> ProvideableBeanConfiguration<T> providePrototype(Class<T> implementation) {
-        BeanHandle<T> handle = bean().newInstaller(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(implementation);
+        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(implementation);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 
     public <T> ProvideableBeanConfiguration<T> providePrototype(Op<T> op) {
-        BeanHandle<T> handle = bean().newInstaller(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(op);
+        BeanHandle<T> handle = bean().newApplicationBean(BeanKind.MANYTON).lifetimes(LifetimeConf.START_ONLY).install(op);
         return new ProvideableBeanConfiguration<T>(handle).provide();
     }
 

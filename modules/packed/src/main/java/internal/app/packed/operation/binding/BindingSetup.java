@@ -21,10 +21,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingMirror;
 import app.packed.operation.BindingKind;
+import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
@@ -32,17 +32,13 @@ import internal.app.packed.util.LookupUtil;
 import internal.app.packed.util.ThrowableUtil;
 
 /** The configuration of a single binding in an operation. */
-
-// Taenkte i lang om denne skulle organiseres efter [Constant, Operation, Argument]... eller [Binding, Service, Manual]
-// I sidste endte det paa at vi ikke ved med det samme om vi har en constant, operation, ... Fx fordi services
-// bliver resolvet sent. Dette gjoerde at vi valgte den nuvaere strategi
 public abstract class BindingSetup {
 
     /** A MethodHandle for invoking {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_BINDING_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), BindingMirror.class, "initialize",
             void.class, BindingSetup.class);
 
-    public final User boundBy;
+    public final Realm boundBy;
 
     /** The index into {@link OperationSetup#bindings}. */
     public final int index;
@@ -53,11 +49,11 @@ public abstract class BindingSetup {
     /** The operation this binding is a part of. */
     public final OperationSetup operation;
 
-    /** Supplies a mirror for the operation */
+    /** Provider for the binding. */
     @Nullable
-    public BindingResolutionSetup resolution;
+    public BindingProvider provider;
 
-    public BindingSetup(OperationSetup operation, int index, User user) {
+    public BindingSetup(OperationSetup operation, int index, Realm user) {
         this.operation = requireNonNull(operation);
         this.index = index;
         this.boundBy = requireNonNull(user);
@@ -87,7 +83,7 @@ public abstract class BindingSetup {
          * @param index
          * @param user
          */
-        public HookBindingSetup(OperationSetup operation, int index, User user) {
+        public HookBindingSetup(OperationSetup operation, int index, Realm user) {
             super(operation, index, user);
         }
 
@@ -111,7 +107,7 @@ public abstract class BindingSetup {
          * @param index
          * @param user
          */
-        public ManualBindingSetup(OperationSetup operation, int index, User user) {
+        public ManualBindingSetup(OperationSetup operation, int index, Realm user) {
             super(operation, index, user);
         }
 
@@ -128,3 +124,7 @@ public abstract class BindingSetup {
         }
     }
 }
+
+//Taenkte i lang om denne skulle organiseres efter [Constant, Operation, Argument]... eller [Binding, Service, Manual]
+//I sidste endte det paa at vi ikke ved med det samme om vi har en constant, operation, ... Fx fordi services
+//bliver resolvet sent. Dette gjoerde at vi valgte den nuvaere strategi

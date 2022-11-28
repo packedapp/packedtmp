@@ -18,12 +18,14 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.NamespacePath;
-import app.packed.container.User;
+import app.packed.bean.BeanExtensionPoint.BeanInstaller;
+import app.packed.container.Realm;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -33,10 +35,12 @@ import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.service.InternalServiceUtil;
 
 /**
- * A bean handle is a reference to an installed bean, private to the extension that installed the bean.
+ * A bean handle is a reference to an installed bean, private to the extension that installed the bean. Created by
+ * {@link BeanInstaller}
  * <p>
- * Instances of {@code BeanHandle} are never exposed directly to end-users. Instead they are returned wrapped in
- * {@link BeanConfiguration} (or subclasses hereof).
+ * Instances of {@code BeanHandle} should never be exposed directly to end-users or other extensions. Instead they
+ * should be returned wrapped in {@link BeanConfiguration} (or subclasses hereof).
+ * 
  */
 public final /* primitive */ class BeanHandle<T> {
 
@@ -87,7 +91,7 @@ public final /* primitive */ class BeanHandle<T> {
     }
 
     /**
-     * Returns the key that the bean will be made available under if provided as service.
+     * Returns the key that the bean will be made available under as default if provided as service.
      * 
      * @return the default key
      * 
@@ -107,13 +111,34 @@ public final /* primitive */ class BeanHandle<T> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof BeanHandle<?> b && bean == b.bean;
+        return obj instanceof BeanHandle<?> h && bean == h.bean;
     }
 
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return bean.hashCode();
+    }
+
+    /**
+     * @param <K>
+     *            the type of key
+     * @param key
+     *            the key
+     * @param instance
+     *            the instance to inject
+     *
+     * @throws UnsupportedOperationException
+     *             if the bean handle does not have instances
+     * 
+     * @see InstanceBeanConfiguration#initializeWithInstance(Class, Object)
+     * @see InstanceBeanConfiguration#initializeWithInstance(Key, Object)
+     */
+    public <K> void initializeWithInstance(Key<K> key, K instance) {
+        if (!beanKind().hasInstances()) {
+            throw new UnsupportedOperationException();
+        }
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -156,6 +181,13 @@ public final /* primitive */ class BeanHandle<T> {
         checkIsConfigurable();
 
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return
+     */
+    public Realm owner() {
+        return bean.ownedBy == null ? Realm.application() : Realm.extension(bean.ownedBy.extensionType);
     }
 
     public NamespacePath path() {
@@ -218,13 +250,6 @@ public final /* primitive */ class BeanHandle<T> {
     public String toString() {
         return bean.toString();
     }
-
-    /**
-     * @return
-     */
-    public User owner() {
-        return bean.ownedBy == null ? User.application() : User.extension(bean.ownedBy.extensionType);
-    }
 }
 
 class BeanHandleSandbox<T> {
@@ -235,6 +260,11 @@ class BeanHandleSandbox<T> {
 
     public void decorateInstance(Function<? super T, ? extends T> decorator) {
         throw new UnsupportedOperationException();
+    }
+
+    public <B> void onInitialize(Class<B> extensionBeanClass, BiConsumer<? super B, ? super T> consumer) {
+        // checkHasInstances
+        // We add a operation to this beanhandle...
     }
 
     public void peekInstance(Consumer<? super T> consumer) {

@@ -22,6 +22,7 @@ import app.packed.service.ServiceBindingMirror;
  *
  * @see BindingKind#KEY
  */
+// Er maaske nået til Context Services, Extension Services, Container Services
 public sealed abstract class KeyBasedBindingMirror extends BindingMirror permits ServiceBindingMirror, ContextServiceBindingMirror {
     
     /** {@return the binding key.} */

@@ -2,6 +2,7 @@ package app.packed.container;
 
 import java.util.NoSuchElementException;
 
+import app.packed.framework.Nullable;
 import internal.app.packed.util.ClassUtil;
 
 // Registrant
@@ -20,58 +21,58 @@ import internal.app.packed.util.ClassUtil;
 
 /// XIdentity
 
-public /* primitive */ final class User {
+public /* primitive */ final class Realm {
 
     /** The application realm. */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static final User APPLICATION = new User((Class) Extension.class);
+    private static final Realm APPLICATION = new Realm(Extension.class);
 
     /** The extension the realms represents. Or {@code app.packed.extension.Extension} for the application realm. */
     @SuppressWarnings("rawtypes")
-    private final Class extension;
+    @Nullable
+    private final Class extensionClass;
 
-    private User(Class<? extends Extension<?>> extension) {
-        this.extension = extension;
+    private Realm(@SuppressWarnings("rawtypes") Class extensionClass) {
+        this.extensionClass = extensionClass;
     }
 
     @SuppressWarnings("unchecked")
     public Class<? extends Extension<?>> extension() {
-        if (extension == Extension.class) {
+        if (extensionClass == Extension.class) {
             throw new NoSuchElementException("Cannot call this method on the application realm");
         }
-        return extension;
+        return extensionClass;
     }
 
     /** {@return true if this realm represents the application realm, otherwise false.} */
     public boolean isApplication() {
-        return extension == Extension.class;
+        return extensionClass == Extension.class;
     }
 
     public boolean isExtension() {
-        return extension != Extension.class;
+        return extensionClass != Extension.class;
     }
 
     /** {@inheritDoc} */
     public String toString() {
-        return isApplication() ? "Application" : extension.getSimpleName();
+        return isApplication() ? "Application" : extensionClass.getSimpleName();
     }
 
     /** {@return the application realm.} */
-    public static User application() {
+    public static Realm application() {
         return APPLICATION;
     }
 
     /**
      * Returns a realm for the specified extension.
      * 
-     * @param extensionType
+     * @param extensionClass
      *            the type of extension to return a realm for
      * @return a realm for the specified extension
      * @throws IllegalArgumentException
      *             if the specified class is not a proper subclass of Extension
      */
-    public static User extension(Class<? extends Extension<?>> extensionType) {
-        ClassUtil.checkProperSubclass(Extension.class, extensionType, "extensionType");
-        return new User(extensionType);
+    public static Realm extension(Class<? extends Extension<?>> extensionClass) {
+        ClassUtil.checkProperSubclass(Extension.class, extensionClass, "extensionClass");
+        return new Realm(extensionClass);
     }
 }

@@ -48,7 +48,7 @@ public class CheckCycles extends BaseAssembly {
 
         ApplicationMirror am = App.newMirror(new CheckCycles());
         for (var b : am.container().beans().toList()) {
-            System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().site());
+            System.out.println(b.beanClass().getSimpleName() + " " + b.factoryOperation().get().target());
         }
 
         Collection<ProvidedServiceMirror> c = am.use(ServiceExtensionMirror.class).provisions().values();

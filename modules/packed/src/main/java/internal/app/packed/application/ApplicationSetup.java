@@ -44,10 +44,12 @@ public final class ApplicationSetup {
     /** A list of actions that should be run doing the code generating phase. */
     private final ArrayList<Runnable> codegenActions = new ArrayList<>();
 
+    public final ApplicationCodegenerator codegenHelper = new ApplicationCodegenerator();
+
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
 
-    /** The driver responsible for building the application. */
+    /** The driver of the application. */
     public final PackedApplicationDriver<?> driver;
 
     /** Entry points in the application, is null if there are none. */
@@ -69,10 +71,7 @@ public final class ApplicationSetup {
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
-    public
-    final DynamicAccessor runtimeAccessor;
-
-    public final CodegenHelper codegenHelper = new CodegenHelper();
+    public final DynamicAccessor runtimeAccessor;
 
     /**
      * Create a new application setup
@@ -107,7 +106,7 @@ public final class ApplicationSetup {
         // Should we check that launcher is null? (codegen phase done)
         if (!isInCodegenPhase) {
             // Uncommented while transitioning to new Codegen
-          //  throw new IllegalStateException();
+            // throw new IllegalStateException();
         }
     }
 
@@ -115,6 +114,9 @@ public final class ApplicationSetup {
     public void codegen() {
         isInCodegenPhase = true;
 
+        CodegenEvent ce = new CodegenEvent();
+
+        ce.begin();
         // Vi bliver noedt til at have noget med order de bliver genereret i...
         /// Fx .overrideServiceDelayed der skal vi jo resolve Object[] efter de er genereret...
 
@@ -137,6 +139,8 @@ public final class ApplicationSetup {
         for (Runnable r : codegenActions) {
             r.run();
         }
+        ce.commit();
+        
         launcher = new PackedApplicationLauncher(this);
         isInCodegenPhase = false;
     }

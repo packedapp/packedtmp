@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -38,7 +39,7 @@ import app.packed.operation.InvocationType;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationSiteMirror;
+import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import app.packed.service.InvalidKeyException;
@@ -294,7 +295,7 @@ public abstract class BeanIntrospector {
         void bindEmpty();
 
         /**
-         * @param index
+         * @param argumentIndex
          *            the index of the argument
          * 
          * @throws IndexOutOfBoundsException
@@ -306,20 +307,14 @@ public abstract class BeanIntrospector {
          * 
          * @see InvocationType
          */
-        default OnBinding bindToInvocationArgument(int index) {
-            // Kan jo faktisk ogsaa bruges med context?
-            return bindToInvocationArgument(index, index);
+        default OnBinding bindToInvocationArgument(int argumentIndex) {
+            throw new UnsupportedOperationException();
         }
 
         // bindLazy-> Per Binding? PerOperation? PerBean, ?PerBeanInstance ?PerContainer ? PerContainerInstance ?
         // PerApplicationInstance
 
         // Kan only do this if is invoking extension!!
-
-        default OnBinding bindToInvocationArgument(int index, int operationIndex) {
-            // Used from ops.
-            return this;
-        }
 
         /**
          * @param postFix
@@ -343,11 +338,19 @@ public abstract class BeanIntrospector {
         /** {@return the extension that is responsible for invoking the underlying operation.} */
         Class<? extends Extension<?>> invokingExtension();
 
+        default boolean canUseInvocationArguments() {
+            return false;
+        }
+        
         default boolean isOperation(OperationHandle operation) {
             return false;
         }
 
         void provide(Op<?> op);
+
+        default void provide(Op<?> op, Map<Integer, Integer> argumentMappings) {
+            throw new UnsupportedOperationException();
+        }
 
         /**
          * @return
@@ -512,8 +515,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that read a field as specified by {@link Lookup#unreflectGetter(Field)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationSiteMirror.OfFieldAccess}
-         * as its {@link OperationMirror#site()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess}
+         * as its {@link OperationMirror#target()}.
          * 
          * @return an operation handle
          */
@@ -523,8 +526,8 @@ public abstract class BeanIntrospector {
          * Creates a new operation that can read or/and write a field as specified by
          * {@link VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationSiteMirror.OfFieldAccess}
-         * as its {@link OperationMirror#site()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess}
+         * as its {@link OperationMirror#target()}.
          * 
          * @param accessMode
          *            the access mode of the operation
@@ -542,8 +545,8 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationSiteMirror.OfFieldAccess}
-         * as its {@link OperationMirror#site()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess}
+         * as its {@link OperationMirror#target()}.
          * 
          * @return an operation handle
          */
@@ -621,10 +624,10 @@ public abstract class BeanIntrospector {
          * 
          * @return an operation handle
          * 
-         * @see OperationSiteMirror.OfMethodHandleInvoke
+         * @see OperationTarget.OfMethodHandleInvoke
          * @see Lookup#unreflect(Method)
          * @see BeanMethodHook#allowInvoke()
-         * @see BeanClassHook#allowAllAccess()
+         * @see BeanClassHook#allowFullPrivilegeAccess()
          */
         OperationHandle newOperation();
 
@@ -635,4 +638,13 @@ public abstract class BeanIntrospector {
     /** A small utility record to hold the both the extension model and the bean in one field. */
     // Replace with Introspector???
     private record Setup(ExtensionDescriptor extension, BeanSetup bean) {}
+    
+    // IDK vi bliver stadig noedt til at analysere den...
+    // Factory hint instead? Og allow en Method... saa det ikke kun er
+    // constructors
+    @interface ConstructorHint {
+        // Ideen er lidt at man bruger den for extension beans
+        
+        Class<?>[] value();
+    }
 }

@@ -15,11 +15,6 @@
  */
 package internal.app.packed.lifetime;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
-import internal.app.packed.util.MethodHandleUtil;
-
 /**
  *
  */
@@ -31,11 +26,6 @@ public sealed interface LifetimeAccessor {
 
     void store(LifetimeObjectArena pool, Object o);
     
-    MethodHandle poolReader();
-    
-    // Det giver ikke mening at indsaette constants...
-    // Vi binder dem direkte i MH
-    // Forstaar ikke jeg fik den taabelige ide.
     public record ConstantAccessor(Object constant, Class<?> type) implements LifetimeAccessor {
 
         public ConstantAccessor(Object constant) {
@@ -57,22 +47,9 @@ public sealed interface LifetimeAccessor {
         public void store(LifetimeObjectArena pool, Object o) {
             throw new UnsupportedOperationException();
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public MethodHandle poolReader() {
-           throw new UnsupportedOperationException();
-        }
     }
 
     public record DynamicAccessor(Class<?> type, int index) implements LifetimeAccessor {
-
-        // Skal vi vide hvor vi bliver laest fra???
-        public MethodHandle poolReader() {
-            // (LifetimePool, int)Object -> (LifetimePool)Object
-            MethodHandle mh = MethodHandles.insertArguments(LifetimeObjectArena.MH_CONSTANT_POOL_READER, 1, index);
-            return MethodHandleUtil.castReturnType(mh, type); // (LifetimePool)Object -> (LifetimePool)clazz
-        }
 
         public Object read(LifetimeObjectArena pool) {
             return pool.read(index);

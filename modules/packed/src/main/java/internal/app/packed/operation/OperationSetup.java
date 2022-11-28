@@ -35,7 +35,7 @@ import java.util.function.Supplier;
 import app.packed.bean.BeanFactoryMirror;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.OperationSiteMirror;
+import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.bean.IntrospectedBean;
@@ -43,12 +43,13 @@ import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
-import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
+import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.ExtensionServiceBindingSetup;
 import internal.app.packed.service.ServiceBindingSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;
+import internal.app.packed.util.StringFormatter;
 import internal.app.packed.util.ThrowableUtil;
 
 /** Represents an operation on a bean. */
@@ -79,6 +80,8 @@ public sealed abstract class OperationSetup {
     public InvocationSite invocationSite;
 
     /** How the operation is invoked. */
+    // Maaske tager vi det naar man laver operationen... Saa er vi sikker paa
+    // Alle har taget stilling til det...
     public PackedInvocationType invocationType = PackedInvocationType.DEFAULTS;
 
     /** Whether or not this operation can still be configured. */
@@ -171,8 +174,8 @@ public sealed abstract class OperationSetup {
         if (bindings.length > 0) {
             for (int i = 0; i < bindings.length; i++) {
                 // System.out.println("BT " + bindings[i].getClass());
-                if (bindings[i].resolution != null) {
-                    mh = bindings[i].resolution.bindIntoOperation(bindings[i], mh);
+                if (bindings[i].provider != null) {
+                    mh = bindings[i].provider.bindIntoOperation(bindings[i], mh);
                 } else {
                     mh = bindings[i].bindIntoOperation(mh);
                 }
@@ -189,7 +192,7 @@ public sealed abstract class OperationSetup {
     // readOnly. Will not work if for example, resolving a binding
     public final void forEachBinding(Consumer<? super BindingSetup> binding) {
         for (BindingSetup bs : bindings) {
-            if (bs.resolution != null && bs.resolution instanceof OperationResolution nested) {
+            if (bs.provider != null && bs.provider instanceof FromOperation nested) {
                 nested.operation.forEachBinding(binding);
             }
             binding.accept(bs);
@@ -254,7 +257,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** An operation that invokes the abstract method on a {@link FunctionalInterface}. */
-    public static final class FunctionOperationSetup extends OperationSetup implements OperationSiteMirror.OfFunctionCall {
+    public static final class FunctionOperationSetup extends OperationSetup implements OperationTarget.OfFunctionCall {
 
         private final Method implementationMethod;
 
@@ -280,7 +283,7 @@ public sealed abstract class OperationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Method implementationMethod() {
+        public Method implementingMethod() {
             return implementationMethod;
         }
 
@@ -322,7 +325,7 @@ public sealed abstract class OperationSetup {
         }
 
         /** An operation that invokes an underlying {@link Method}. */
-        public static final class ConstructorOperationSetup extends MemberOperationSetup<Constructor<?>> implements OperationSiteMirror.OfConstructorInvoke {
+        public static final class ConstructorOperationSetup extends MemberOperationSetup<Constructor<?>> implements OperationTarget.OfConstructorInvoke {
 
             /**
              * @param operator
@@ -340,10 +343,14 @@ public sealed abstract class OperationSetup {
             public Constructor<?> constructor() {
                 return member;
             }
+
+            public String toString() {
+                return "Constructor: " + StringFormatter.format(constructor());
+            }
         }
 
         /** An operation that can access an underlying {@link Field}. */
-        public static final class FieldOperationSetup extends MemberOperationSetup<Field> implements OperationSiteMirror.OfFieldAccess {
+        public static final class FieldOperationSetup extends MemberOperationSetup<Field> implements OperationTarget.OfFieldAccess {
 
             /** The way we access the field. */
             private final AccessMode accessMode;
@@ -373,7 +380,7 @@ public sealed abstract class OperationSetup {
         }
 
         /** An operation that invokes an underlying {@link Method}. */
-        public static final class MethodOperationSetup extends MemberOperationSetup<Method> implements OperationSiteMirror.OfMethodInvoke {
+        public static final class MethodOperationSetup extends MemberOperationSetup<Method> implements OperationTarget.OfMethodInvoke {
 
             /**
              * @param operator
@@ -396,7 +403,7 @@ public sealed abstract class OperationSetup {
     }
 
     /** An operation that invokes a method handle. */
-    public static final class MethodHandleOperationSetup extends OperationSetup implements OperationSiteMirror.OfMethodHandleInvoke {
+    public static final class MethodHandleOperationSetup extends OperationSetup implements OperationTarget.OfMethodHandleInvoke {
 
         /**
          * @param operator

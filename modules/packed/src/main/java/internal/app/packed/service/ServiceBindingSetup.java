@@ -18,7 +18,7 @@ package internal.app.packed.service;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.BindingKind;
 import app.packed.service.ServiceBindingMirror;
@@ -46,7 +46,7 @@ public final class ServiceBindingSetup extends BindingSetup {
      * @param index
      */
     ServiceBindingSetup(OperationSetup operation, int index, ServiceManagerEntry entry, boolean required) {
-        super(operation, index, User.extension(ServiceExtension.class));
+        super(operation, index, Realm.extension(ServiceExtension.class));
         this.entry = entry;
         this.required = required;
         mirrorSupplier = () -> new ServiceBindingMirror(this);

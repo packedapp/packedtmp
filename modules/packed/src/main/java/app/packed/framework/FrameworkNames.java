@@ -15,6 +15,8 @@
  */
 package app.packed.framework;
 
+import java.util.Set;
+
 import app.packed.bean.BeanExtension;
 import app.packed.service.ServiceExtension;
 
@@ -25,6 +27,7 @@ import app.packed.service.ServiceExtension;
 // Fx kan det vaere svaert at lave Application layers...
 // Hvis man ikke gider importere alle pakker
 
+// FrameworkConstants? On the other hand we would then need to append NAME on all of them
 public final class FrameworkNames {
 
     /** The name of the module that defines the framework. */
@@ -36,9 +39,17 @@ public final class FrameworkNames {
     /** The class name of {@link ServiceExtension}. */
     public static final String BASE_SERVICE_EXTENSION = BASE_MODULE + ".service.ServiceExtension";
 
+    /** The name of the devtools module. */
+    public static final String DEVTOOLS_MODULE = "app.packed.devtools";
+
+    static final String FRAMEWORK = "Packed";
+    
     static final String WEB_MODULE = "app.packed.web";
 
     static final String WEB_WEB_EXTENSION = WEB_MODULE + ".WebExtension";
+
+    /** A set of module names that makes of the framework. So far we only have one. */
+    static final Set<String> ALL_MODULE_NAMES = Set.of(BASE_MODULE);
 
     private FrameworkNames() {}
 }

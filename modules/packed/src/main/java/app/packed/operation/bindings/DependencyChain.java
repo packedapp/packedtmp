@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.bindings;
+
+import java.util.List;
+
+import app.packed.operation.BindingMirror;
 
 /**
  *
  */
-
-// Hvis vi supportere context key bindings..... Saa er det her en..
-// Saa har vi kun et ekstra concept...
-// Og ikke noget vi gider have en separat klasse for vil jeg mene,...
-public class FactoryServiceBindingMirror extends ContextServiceBindingMirror {
-
+public interface DependencyChain extends Iterable<BindingMirror> {
+    BindingMirror first();
+    
+    BindingMirror last();
+    
+    List<BindingMirror> toList();
 }

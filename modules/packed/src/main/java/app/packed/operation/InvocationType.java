@@ -53,6 +53,10 @@ public sealed interface InvocationType permits PackedInvocationType {
         return withBeanInstance(Object.class);
     }
 
+    default InvocationType withClassifier(Class<?> type) {
+        throw new UnsupportedOperationException();
+    }
+    
     InvocationType withBeanInstance(Class<?> beanClass);
 
     InvocationType withReturnType(Class<?> type);
@@ -71,6 +75,9 @@ public sealed interface InvocationType permits PackedInvocationType {
     }
 
     enum ArgumentKind {
+        
+        CLASSIFIER,
+        
         ARGUMENT,
 
         /** The invocation argument is a bean instance. */

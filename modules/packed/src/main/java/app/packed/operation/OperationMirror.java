@@ -25,13 +25,16 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
+import app.packed.container.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.bindings.DependenciesMirror;
+import app.packed.operation.context.OperationContextMirror;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.Key;
 import internal.app.packed.container.Mirror;
@@ -50,6 +53,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * <li>Must be located in the same module as the extension it is a member of.</li>
  * </ul>
  */
+@BindingHook(extension = MirrorExtension.class)
 public class OperationMirror implements Mirror {
 
     /**
@@ -67,6 +71,10 @@ public class OperationMirror implements Mirror {
         return operation().bean.mirror();
     }
 
+    public Set<OperationContextMirror> contexts() {
+        throw new UnsupportedOperationException();
+    }
+    
     // Composites, What about services???
     // Services no, because one operation may be used multiple places
     public Optional<BindingMirror> nestedIn() {
@@ -146,8 +154,8 @@ public class OperationMirror implements Mirror {
     }
 
     /** {@return the operation site.} */
-    public OperationSiteMirror site() {
-        return (OperationSiteMirror) operation();
+    public OperationTarget target() {
+        return (OperationTarget) operation();
     }
 
     /** {@return the type of the operation.} */

@@ -3,7 +3,7 @@ package app.packed.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.NamespacePath;
-import app.packed.container.User;
+import app.packed.container.Realm;
 
 /** The base configuration class for a bean. */
 public class BeanConfiguration {
@@ -71,7 +71,7 @@ public class BeanConfiguration {
     }
 
     /** {@return the owner of the bean.} */
-    public final User owner() {
+    public final Realm owner() {
         return handle.owner();
     }
 

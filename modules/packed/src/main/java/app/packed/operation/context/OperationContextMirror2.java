@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.context;
+
+import java.util.Set;
+
+import app.packed.service.Key;
+import internal.app.packed.container.Mirror;
 
 /**
  *
  */
+public class OperationContextMirror2 implements Mirror {
 
-// Hvis vi supportere context key bindings..... Saa er det her en..
-// Saa har vi kun et ekstra concept...
-// Og ikke noget vi gider have en separat klasse for vil jeg mene,...
-public class FactoryServiceBindingMirror extends ContextServiceBindingMirror {
-
+    public Set<Key<?>> keys() {
+        throw new UnsupportedOperationException();
+    }
 }
+
+
+class SchedulingContextMirror extends OperationContextMirror2 {}
+class BeanInitializationContextMirror extends OperationContextMirror2 {}

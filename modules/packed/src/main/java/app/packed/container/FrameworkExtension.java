@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.framework;
+package app.packed.container;
 
-import app.packed.container.Extension;
+import app.packed.framework.Framework;
 
 /**
- * A framework extension indicates that an extension is part of the (Packed) framework.
+ * A framework extension indicates that an extension is part of the framework (Packed).
  * <p>
- * Framework extensions receive no special treatment by the framework. It merely server as a marker class to easily see
- * whether or not a particular extension is part of the framework.
+ * Framework extensions receive no special treatment. This class merely server as a marker to easily see whether or not
+ * a particular extension is part of the framework.
  * <p>
  * A framework extension must be places in a {@link Module module} whose {@link Module#getName() name} is contained in
  * {@link Framework#moduleNames()} or the unnamed module.
  * 
- * @implNote we do not make use of sealed classes because in the future the framework may consists of multiple modules.
+ * @implNote We do not make use of sealed classes because the framework may consists of multiple modules in the future.
  */
+// Hoere maaske alligevel til i .container?
 // Are test extensions part of the framework?? Hmm Maybe have a FrameworkTestExtension?
 public abstract class FrameworkExtension<E extends FrameworkExtension<E>> extends Extension<E> {}

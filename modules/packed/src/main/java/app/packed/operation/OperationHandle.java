@@ -30,6 +30,7 @@ import app.packed.bean.BeanIntrospector.OnField;
 import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InstanceBeanConfiguration;
 import app.packed.container.Extension;
+import app.packed.service.Key;
 import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.bean.IntrospectedBeanBinding;
 import internal.app.packed.operation.OperationSetup;
@@ -81,11 +82,14 @@ import internal.app.packed.operation.PackedInvocationType;
  * @see OnField#newOperation(java.lang.invoke.VarHandle.AccessMode)
  */
 
+// interceptor().add(...);
+// interceptor().peek(e->System.out.println(e));
+
 /// Configuration -> Set InvocationType, Set InvocationBean, Set Context
-public final class OperationHandle {
+public final  /* primitive */ class OperationHandle {
 
     /** The bean that is being introspected. */
-    private final IntrospectedBean iBean;
+    private final IntrospectedBean iBean; // Hmmm Paa Bean midlertidigt istedet for? 
 
     /** The wrapped operation. */
     private final OperationSetup operation;
@@ -141,6 +145,37 @@ public final class OperationHandle {
         return obj instanceof OperationHandle h && operation == h.operation;
     }
 
+    // Must not have a classifier
+    // Will have a MH injected at runtime...
+    public void generateInto(InstanceBeanConfiguration<?> bean) {
+        generateInto(bean, Key.of(MethodHandle.class));
+    }
+
+    public void generateInto(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key) {
+        // En anden mulighed er at det er bundet i InvocationSite...
+        throw new UnsupportedOperationException();
+    }
+
+    // Must not have a classifier
+    // Will have a MH injected at runtime...
+
+    public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Class<T> classifierType) {
+        return generateIntoWithAutoClassifier(bean, Key.of(MethodHandle.class), classifierType);
+    }
+
+    public <T> T generateIntoWithAutoClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Class<T> classifierType) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Object classifier) {
+        generateIntoWithClassifier(bean, Key.of(MethodHandle.class), classifier);
+    }
+
+    public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Object classifier) {
+        // InvocationType must have a classifier with an assignable type
+    }
+
+
     /**
      * Generates a method handle that can be used to invoke the underlying operation.
      * <p>
@@ -163,22 +198,6 @@ public final class OperationHandle {
         return operation.hashCode();
     }
 
-    public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
-        requireNonNull(bean, "bean is null");
-
-        // Hvorfor maa man egentlig ikke det her???
-        // Vi kan jo altid bare lave vores egen og injecte den...
-        if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
-            throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
-        }
-        return operation.bean.container.application.codegenHelper.addArray(bean, this);
-    }
-
-    public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
-        // check is type
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the invocation type of this operation.} */
     public InvocationType invocationType() {
         return operation.invocationType;
@@ -187,6 +206,9 @@ public final class OperationHandle {
     public void invokeAs(InvocationType invocationType) {
         requireNonNull(invocationType, "invocationType is null");
         checkConfigurable();
+        if (operation.invocationType != null) {
+            throw new IllegalStateException("This method can only be called once for an operation");
+        }
         operation.invocationType = (PackedInvocationType) invocationType;
     }
 
@@ -197,6 +219,9 @@ public final class OperationHandle {
         // Vi kan have et application.HashMap<BeanSetup, Map<Key, Supplier>> delayedCodegen;
         // Som de bruger.
         // BeanSetup.codegenInjectIntoBean(IBC<?>, Key, Supplier);
+        if (operation.invocationSite != null) {
+            throw new IllegalStateException("This method can only be called once for an operation");
+        }
         throw new UnsupportedOperationException();
     }
 
@@ -257,6 +282,26 @@ public final class OperationHandle {
 
 }
 
+//
+//    public void injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean, Object classifier) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public int injectMethodHandleArrayInto(InstanceBeanConfiguration<?> bean) {
+//        requireNonNull(bean, "bean is null");
+//
+//        // Hvorfor maa man egentlig ikke det her???
+//        // Vi kan jo altid bare lave vores egen og injecte den...
+//        if (bean.owner().isApplication() || bean.owner().extension() != operation.operator.extensionType) {
+//            throw new IllegalArgumentException("Can only specify a bean that has extension " + operation.operator.extensionType.getSimpleName() + " as owner");
+//        }
+//        return operation.bean.container.application.codegenHelper.addArray(bean, this);
+//    }
+//
+//    public <T> void injectMethodHandleMapInto(InstanceBeanConfiguration<?> bean, Class<T> keyType, T key) {
+//        // check is type
+//        throw new UnsupportedOperationException();
+//    }
 interface OpNew {
 
     // I think this needs to be first operation...
@@ -272,6 +317,7 @@ interface OpNew {
 
     }
 
+    // spawn NewBean/NewContainer/NewApplication...
     default void spawnNewBean() {
         // I'm not sure this is needed.
         // It is always only configured on the bean

@@ -91,7 +91,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     /** {@inheritDoc} */
     @Override
-    public BeanHandle<Void> installNoSource() {
+    public BeanHandle<Void> installWithoutSource() {
         if (kind != BeanKind.FUNCTIONAL) {
             throw new InternalExtensionException("Only functional beans can be source less");
         }

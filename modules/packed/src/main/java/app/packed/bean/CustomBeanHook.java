@@ -32,6 +32,12 @@ import app.packed.bean.BeanExtensionPoint.FieldHook;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+// override, force
+
+// Masake Paa BEP alligevel
+// CustomHook
+// CustomBindingHook
+// CustomBindingHook
 public @interface CustomBeanHook {
 
     @Target(ElementType.ANNOTATION_TYPE)

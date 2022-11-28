@@ -23,7 +23,7 @@ import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanIntrospector.AnnotationReader;
 import app.packed.bean.BeanIntrospector.OnBinding;
 import app.packed.container.Extension;
-import app.packed.container.User;
+import app.packed.container.Realm;
 import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.Op;
@@ -31,8 +31,8 @@ import app.packed.operation.Variable;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.PackedOp;
-import internal.app.packed.operation.binding.BindingResolutionSetup.ConstantResolution;
-import internal.app.packed.operation.binding.BindingResolutionSetup.OperationResolution;
+import internal.app.packed.operation.binding.BindingProvider.FromConstant;
+import internal.app.packed.operation.binding.BindingProvider.FromOperation;
 import internal.app.packed.operation.binding.BindingSetup;
 import internal.app.packed.operation.binding.BindingSetup.HookBindingSetup;
 
@@ -95,8 +95,8 @@ public final class IntrospectedBeanBinding implements OnBinding {
         // Check assignable to
         // Create a bound thing
 
-        BindingSetup bs = new HookBindingSetup(operation, index, User.extension(bindingExtension.extensionType));
-        bs.resolution = new ConstantResolution(Object.class, obj);
+        BindingSetup bs = new HookBindingSetup(operation, index, Realm.extension(bindingExtension.extensionType));
+        bs.provider = new FromConstant(Object.class, obj);
 
         operation.bindings[index] = bs;
     }
@@ -138,8 +138,8 @@ public final class IntrospectedBeanBinding implements OnBinding {
 
         OperationSetup os = pop.newOperationSetup(operation.bean, bindingExtension);
         
-        BindingSetup bs = new HookBindingSetup(os, index, User.application());
-        bs.resolution = new OperationResolution(os);
+        BindingSetup bs = new HookBindingSetup(os, index, Realm.application());
+        bs.provider = new FromOperation(os);
 
         
         //OperationBindingSetup obs = new OperationBindingSetup(os, index, User.application(), os);

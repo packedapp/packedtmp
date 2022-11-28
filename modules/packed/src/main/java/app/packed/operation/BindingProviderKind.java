@@ -18,18 +18,14 @@ package app.packed.operation;
 /**
  *
  */
-public enum BindingTargetKind {
-    
-    // LAZY (I think we need this...) IDK Lifetime_POOL beanen kan jo vaere lazy
-    
+// What about @Default... Optional, osv)
+public enum BindingProviderKind {
+
     /** A constant. */
     CONSTANT,
-
+    
     /** An argument that is provided when invoking the operation. */
     ARGUMENT,
-    
-    // The value is looked up in the lifetime pool...
-    LIFETIME_POOL,
         
     /** The binding is a result of another operation. */
     OPERATION;
