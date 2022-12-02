@@ -98,31 +98,31 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
     /**
      * @see BeanKind#CONTAINER
      * @see BeanSourceKind#CLASS
-     * @see BeanHandle.InstallOption#multiInstall()
+     * @see BeanHandle.InstallOption#multi()
      */
     public <T> ProvideableBeanConfiguration<T> multiInstall(Class<T> implementation) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multiInstall().install(implementation);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multi().install(implementation);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstall(Op<T> op) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multiInstall().install(op);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multi().install(op);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallInstance(T instance) {
-        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multiInstall().installInstance(instance);
+        BeanHandle<T> handle = newInstaller(BeanKind.CONTAINER).multi().installInstance(instance);
         return new ProvideableBeanConfiguration<>(handle);
     }
 
     // Skriv usecases naeste gang. Taenker over det hver gang
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Class<T> implementation) {
-        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multiInstall().install(implementation);
+        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multi().install(implementation);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 
     public <T> ProvideableBeanConfiguration<T> multiInstallLazy(Op<T> op) {
-        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multiInstall().install(op);
+        BeanHandle<T> handle = newInstaller(BeanKind.LAZY).multi().install(op);
         return new ProvideableBeanConfiguration<>(handle); // Providable???
     }
 

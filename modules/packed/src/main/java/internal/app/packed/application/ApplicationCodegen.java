@@ -27,8 +27,11 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public final class ApplicationCodegenerator {
-    
+public final class ApplicationCodegen {
+
+    /** A list of actions that should be run doing the code generating phase. */
+    final ArrayList<Runnable> actions = new ArrayList<>();
+
     private final HashMap<InstanceBeanConfiguration<?>, MethodHandleArray> arrayInvokers = new HashMap<>();
 
     public int addArray(InstanceBeanConfiguration<?> beanConfiguration, OperationHandle operation) {

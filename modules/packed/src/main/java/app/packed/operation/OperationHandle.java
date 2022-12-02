@@ -86,10 +86,16 @@ import internal.app.packed.operation.PackedInvocationType;
 // interceptor().peek(e->System.out.println(e));
 
 /// Configuration -> Set InvocationType, Set InvocationBean, Set Context
-public final  /* primitive */ class OperationHandle {
+
+// OperationTemplate???? Ideeen er den forud configureret med alle mulige ting...
+// Tror godt vi kan tage den naar vi laver operationen...
+
+// ImmSetup.withInjectKey(Key<MethodHandle>>)) <-- ideen er at man har nogle templates...
+
+public final /* primitive */ class OperationHandle {
 
     /** The bean that is being introspected. */
-    private final IntrospectedBean iBean; // Hmmm Paa Bean midlertidigt istedet for? 
+    private final IntrospectedBean iBean; // Hmmm Paa Bean midlertidigt istedet for?
 
     /** The wrapped operation. */
     private final OperationSetup operation;
@@ -105,34 +111,31 @@ public final  /* primitive */ class OperationHandle {
         this.iBean = requireNonNull(iBean);
     }
 
-    <T> void attach(Class<T> t, T value) {
-        // detach <- removes
-        // Skal vi remove??? Taenker kun det er noget vi kan goere mens vi builder
-        // Det er ikke noget der giver mening senere hen
-        // Gem i et map i application <OperationHandle, Class> -> Value
-    }
-
     /**
+     * Creates a binding for the parameter with the specified index.
      * <p>
      * This operation is no longer configurable when this method returns.
      * 
-     * @param parameterIndex
+     * @param index
      *            the index of the parameter to bind
-     * @return an object that can be used to bind the parameter with the specified index
+     * @return a object that can be used to specify the details of the binding
      * @throws IndexOutOfBoundsException
      *             if the parameter index is out of bounds
      */
-    public OnBinding bindManually(int parameterIndex) {
+    // Tror vi force laver (reserves) en binding her.
+    // Det er jo kun meningen at man skal binden den hvis man kalder denne metode.
+    // Saa maaske skal vi have en Mode i IBB
+
+    // bind(index).toConstant("Foo");
+    public OnBinding bindParameter(int index) {
         // This method does not throw IllegalStateExtension, but OnBinding may.
         operation.isClosed = true;
         // custom invocationContext must have been set before calling this method
-        checkIndex(parameterIndex, operation.type.parameterCount());
-        return new IntrospectedBeanBinding(iBean, operation, parameterIndex, operation.operator, null, operation.type.parameter(parameterIndex));
+        checkIndex(index, operation.type.parameterCount());
+        return new IntrospectedBeanBinding(iBean, operation, index, operation.operator, null, operation.type.parameter(index));
     }
 
-    /**
-     * Checks that operation is still configurable
-     */
+    /** Checks that the operation is still configurable. */
     private void checkConfigurable() {
         if (operation.isClosed) {
             throw new IllegalStateException("This operation is no longer configurable");
@@ -167,14 +170,13 @@ public final  /* primitive */ class OperationHandle {
         throw new UnsupportedOperationException();
     }
 
-    public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Object classifier) {
-        generateIntoWithClassifier(bean, Key.of(MethodHandle.class), classifier);
-    }
-
     public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Key<MethodHandle> key, Object classifier) {
         // InvocationType must have a classifier with an assignable type
     }
 
+    public void generateIntoWithClassifier(InstanceBeanConfiguration<?> bean, Object classifier) {
+        generateIntoWithClassifier(bean, Key.of(MethodHandle.class), classifier);
+    }
 
     /**
      * Generates a method handle that can be used to invoke the underlying operation.
@@ -256,14 +258,10 @@ public final  /* primitive */ class OperationHandle {
      * The specified supplier should never return {@code null}.
      * 
      * @param supplier
-     *            a mirror supplier that is only called if a mirror is needed
+     *            a mirror supplier that is called if a mirror is required
      * @throws IllegalStateException
      *             if the operation is no longer configurable
      */
-    // I don't know if have a forceMirrorBaseType??? Basic idea being that if delegate the operation
-    // to someone they cannot specialize with a mirror that is not a subtype of the specified type
-    // For example, LifetimeOperationMirror.
-    // However, the best thing we can do is a runtime exception. As the supplier is lazy
     public void specializeMirror(Supplier<? extends OperationMirror> supplier) {
         checkConfigurable();
         operation.mirrorSupplier = requireNonNull(supplier, "supplier is null");
@@ -279,7 +277,6 @@ public final  /* primitive */ class OperationHandle {
     public OperationType type() {
         return operation.type;
     }
-
 }
 
 //
@@ -317,6 +314,12 @@ interface OpNew {
 
     }
 
+    // I don't know if have a forceMirrorBaseType??? Basic idea being that if delegate the operation
+    // to someone they cannot specialize with a mirror that is not a subtype of the specified type
+    // For example, LifetimeOperationMirror.
+    // However, the best thing we can do is a runtime exception. As the supplier is lazy
+    void requireMirrorSubClassOf(Class<? extends OperationMirror> mclass);
+
     // spawn NewBean/NewContainer/NewApplication...
     default void spawnNewBean() {
         // I'm not sure this is needed.
@@ -332,6 +335,13 @@ interface OpNew {
 }
 
 interface ZandboxOperationHandle {
+
+    default <T> void attach(Class<T> t, T value) {
+        // detach <- removes
+        // Skal vi remove??? Taenker kun det er noget vi kan goere mens vi builder
+        // Det er ikke noget der giver mening senere hen
+        // Gem i et map i application <OperationHandle, Class> -> Value
+    }
 
     default boolean hasBindingsBeenResolved() {
         return false;
@@ -373,7 +383,12 @@ interface ZandboxOperationHandle {
     // dependencies skal vaere her, fordi de er mutable. Ved ikke om vi skal have 2 klasser.
     // Eller vi bare kan genbruge BeanDependency
 
-    default void resolveBindings() {
+    // Resolves all parameters that have not already been resolved via bindParameter
+    // Idea was to act on all those that werent resolved
+
+    // boolean isBound(int parameterIndex)
+
+    default void resolveParameter() {
         // we need the introspected bean...
 
         // Hmm, I don't like it

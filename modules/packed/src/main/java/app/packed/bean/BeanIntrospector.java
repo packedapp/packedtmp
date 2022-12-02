@@ -331,7 +331,7 @@ public abstract class BeanIntrospector {
          * @return
          * 
          * @throws UnsupportedOperationException
-         *             if called via {@link OperationHandle#bindManually(int)}
+         *             if called via {@link OperationHandle#bindParameter(int)}
          */
         Class<?> hookClass(); // Skal vel ogsaa tilfoejes til BF, BM osv
 

@@ -118,7 +118,7 @@ public final class PackedBeanInstaller extends BeanExtensionPoint.BeanInstaller 
 
     /** {@inheritDoc} */
     @Override
-    public BeanInstaller multiInstall() {
+    public BeanInstaller multi() {
         if (!kind.hasInstances()) {
             throw new InternalExtensionException("multiInstall is not supported for functional or static beans");
         }

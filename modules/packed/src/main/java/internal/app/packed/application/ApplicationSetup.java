@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildGoal;
@@ -41,10 +40,8 @@ public final class ApplicationSetup {
     private static final MethodHandle MH_APPLICATION_MIRROR_INITIALIZE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationMirror.class,
             "initialize", void.class, ApplicationSetup.class);
 
-    /** A list of actions that should be run doing the code generating phase. */
-    private final ArrayList<Runnable> codegenActions = new ArrayList<>();
-
-    public final ApplicationCodegenerator codegenHelper = new ApplicationCodegenerator();
+    @Nullable
+    public final ApplicationCodegen codegen;
 
     /** The root container of the application (created in the constructor of this class). */
     public final ContainerSetup container;
@@ -59,15 +56,15 @@ public final class ApplicationSetup {
     /** The build goal. */
     public final BuildGoal goal;
 
-    /** Whether or not we are in the code generating phase. */
-    private boolean isInCodegenPhase;
-
     /**
      * A launcher for launching the application. Is not created for {@link BuildGoal#VERIFY} or
      * {@link BuildGoal#NEW_MIRROR}.
      */
     @Nullable
     PackedApplicationLauncher launcher;
+
+    /** Whether or not we are in the code generating phase. */
+    private ApplicationBuildPhase phase = ApplicationBuildPhase.ASSEMBLE;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     @Nullable
@@ -80,6 +77,8 @@ public final class ApplicationSetup {
         this.driver = requireNonNull(driver);
         this.goal = requireNonNull(goal);
 
+        this.codegen = goal.isLaunchable() ? new ApplicationCodegen() : null;
+
         // Create the root container of the application
         this.container = new ContainerSetup(this, assembly, null, wirelets);
 
@@ -90,10 +89,10 @@ public final class ApplicationSetup {
 
     public void addCodegenAction(Runnable action) {
         requireNonNull(action, "action is null");
-        if (isInCodegenPhase) {
+        if (phase.ordinal() >= ApplicationBuildPhase.CODEGEN.ordinal()) {
             throw new IllegalStateException("This method must be called before the code generating phase is started");
         }
-        codegenActions.add(action);
+        codegen.actions.add(action);
     }
 
     /**
@@ -104,45 +103,47 @@ public final class ApplicationSetup {
      */
     public void checkInCodegenPhase() {
         // Should we check that launcher is null? (codegen phase done)
-        if (!isInCodegenPhase) {
+        if (phase != ApplicationBuildPhase.CODEGEN) {
             // Uncommented while transitioning to new Codegen
             // throw new IllegalStateException();
         }
     }
 
-    /** This method is responsible for generating code to run the application. */
-    public void codegen() {
-        isInCodegenPhase = true;
+    public void finish() {
+        if (codegen != null) {
+            phase = ApplicationBuildPhase.CODEGEN;
 
-        CodegenEvent ce = new CodegenEvent();
+            CodegenEvent ce = new CodegenEvent();
 
-        ce.begin();
-        // Vi bliver noedt til at have noget med order de bliver genereret i...
-        /// Fx .overrideServiceDelayed der skal vi jo resolve Object[] efter de er genereret...
+            ce.begin();
+            // Vi bliver noedt til at have noget med order de bliver genereret i...
+            /// Fx .overrideServiceDelayed der skal vi jo resolve Object[] efter de er genereret...
 
-        // Saa reverse extension order tror jeg
-        // Nah burde stadig virke
+            // Saa reverse extension order tror jeg
+            // Nah burde stadig virke
 
-        // Do we need callbacks on extensions???
+            // Do we need callbacks on extensions???
 
-        // For each lifetime create lifetime operations
-        //// And install them in the lifetime
+            // For each lifetime create lifetime operations
+            //// And install them in the lifetime
 
-        // Packed relies on lazily created codegeneration
+            // Packed relies on lazily created codegeneration
 
-        // If this fails it is always a bug in either Packed or one of its extensions.
-        // It is never a user error.
+            // If this fails it is always a bug in either Packed or one of its extensions.
+            // It is never a user error.
 
-        // Codegeneration for the root lifetime
-        container.lifetime.codegen();
+            // Codegeneration for the root lifetime
+            container.lifetime.codegen();
 
-        for (Runnable r : codegenActions) {
-            r.run();
+            for (Runnable r : codegen.actions) {
+                r.run();
+            }
+            ce.commit();
+
+            launcher = new PackedApplicationLauncher(this);
         }
-        ce.commit();
-        
-        launcher = new PackedApplicationLauncher(this);
-        isInCodegenPhase = false;
+        phase = ApplicationBuildPhase.COMPLETED;
+
     }
 
     /** {@return a mirror that can be exposed to end-users.} */
@@ -156,5 +157,9 @@ public final class ApplicationSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
         return mirror;
+    }
+
+    public enum ApplicationBuildPhase {
+        ASSEMBLE, CLOSE, CODEGEN, COMPLETED;
     }
 }

@@ -169,7 +169,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          * @throws UnsupportedOperationException
          *             if bean kind is {@link BeanKind#FUNCTIONAL} or {@link BeanKind#STATIC}
          */
-        public abstract BeanInstaller multiInstall();
+        public abstract BeanInstaller multi();
 
         public abstract BeanInstaller namePrefix(String prefix);
 

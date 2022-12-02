@@ -187,9 +187,7 @@ public final class AssemblySetup extends RealmSetup {
 
             // The application has been built successfully.
             // If we need to launch it, generate code for it
-            if (application.goal.isLaunchable()) {
-                application.codegen();
-            }
+            application.finish();
             abe.applicationName = container.name;
             abe.commit();
         } else {
