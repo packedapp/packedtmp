@@ -81,7 +81,7 @@ public sealed abstract class OperationSetup {
     /** How the operation is invoked. */
     // Maaske tager vi det naar man laver operationen... Saa er vi sikker paa
     // Alle har taget stilling til det...
-    public PackedInvocationType invocationType = PackedInvocationType.DEFAULTS;
+    public PackedOperationTemplate invocationType = PackedOperationTemplate.DEFAULTS;
 
     /** Whether or not this operation can still be configured. */
     public boolean isClosed;

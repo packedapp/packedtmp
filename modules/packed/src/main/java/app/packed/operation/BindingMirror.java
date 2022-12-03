@@ -22,8 +22,9 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.bindings.DependenciesMirror;
-import app.packed.operation.bindings.ResolutionState;
+import app.packed.operation.bindings.BindingProviderKind;
+import app.packed.operation.bindings.sandbox.DependenciesMirror;
+import app.packed.operation.bindings.sandbox.ResolutionState;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.binding.BindingSetup;
 

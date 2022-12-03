@@ -7,15 +7,15 @@ import java.lang.invoke.MethodType;
 import app.packed.operation.OperationTemplate;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 
-public final class PackedInvocationType implements OperationTemplate {
+public final class PackedOperationTemplate implements OperationTemplate {
 
-    public static PackedInvocationType DEFAULTS = new PackedInvocationType(0, -1, MethodType.methodType(void.class, LifetimeObjectArena.class));
+    public static PackedOperationTemplate DEFAULTS = new PackedOperationTemplate(0, -1, MethodType.methodType(void.class, LifetimeObjectArena.class));
     final int beanInstanceIndex;
     final int extensionContext;
 
     final MethodType methodType;
 
-    public PackedInvocationType(int extensionContext, int beanInstanceIndex, MethodType methodType) {
+    public PackedOperationTemplate(int extensionContext, int beanInstanceIndex, MethodType methodType) {
         this.extensionContext = extensionContext;
         this.beanInstanceIndex = beanInstanceIndex;
         this.methodType = methodType;
@@ -44,7 +44,7 @@ public final class PackedInvocationType implements OperationTemplate {
     public OperationTemplate withArg(Class<?> type) {
         requireNonNull(type, "type is null");
         MethodType mt = methodType.appendParameterTypes(type);
-        return new PackedInvocationType(extensionContext, beanInstanceIndex, mt);
+        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt);
     }
 
     /** {@inheritDoc} */
@@ -55,7 +55,7 @@ public final class PackedInvocationType implements OperationTemplate {
             throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
         }
         int index = extensionContext == -1 ? 0 : 1;
-        return new PackedInvocationType(extensionContext, index, methodType);
+        return new PackedOperationTemplate(extensionContext, index, methodType);
     }
 
     /** {@inheritDoc} */
@@ -63,6 +63,6 @@ public final class PackedInvocationType implements OperationTemplate {
     public OperationTemplate withReturnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
-        return new PackedInvocationType(extensionContext, beanInstanceIndex, mt);
+        return new PackedOperationTemplate(extensionContext, beanInstanceIndex, mt);
     }
 }

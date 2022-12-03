@@ -18,10 +18,15 @@ package app.packed.operation;
 import java.lang.invoke.MethodType;
 
 import app.packed.bean.BeanIntrospector.OnBinding;
-import internal.app.packed.operation.PackedInvocationType;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /**
- *
+ * An operation template defines 
+ * 
+ * <p>
+ * All this configuration is typically consistent for multiple invocations
+ * 
+ * <p>
  */
 // I can't see why we should not define context here
 // I think we should have a builder probably.
@@ -41,7 +46,7 @@ import internal.app.packed.operation.PackedInvocationType;
 // OT.forNewApplication()
 // OT.forNewContainer
 
-public sealed interface OperationTemplate permits PackedInvocationType {
+public sealed interface OperationTemplate permits PackedOperationTemplate {
 
     boolean requiresArena();
 
@@ -82,11 +87,11 @@ public sealed interface OperationTemplate permits PackedInvocationType {
 
     // Takes EBC returns void
     static OperationTemplate defaults() {
-        return PackedInvocationType.DEFAULTS;
+        return PackedOperationTemplate.DEFAULTS;
     }
 
     static OperationTemplate raw() {
-        return new PackedInvocationType(-1, -1, MethodType.methodType(void.class));
+        return new PackedOperationTemplate(-1, -1, MethodType.methodType(void.class));
     }
 
     enum ArgumentKind {

@@ -31,7 +31,7 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.MethodOperationSetup;
-import internal.app.packed.operation.PackedInvocationType;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /** Internal implementation of BeanMethod. Discard after use. */
 public final class IntrospectedBeanMethod implements OnMethod {
@@ -99,7 +99,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
         }
 
         OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), method, methodHandle);
-        operation.invocationType = (PackedInvocationType) template;
+        operation.invocationType = (PackedOperationTemplate) template;
 
         introspectedBean.bean.operations.add(operation);
         introspectedBean.unBoundOperations.add(operation);

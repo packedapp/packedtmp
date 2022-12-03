@@ -40,7 +40,7 @@ import internal.app.packed.bean.BeanHookModel.AnnotatedField;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
-import internal.app.packed.operation.PackedInvocationType;
+import internal.app.packed.operation.PackedOperationTemplate;
 
 /** Responsible for introspecting bean fields. */
 public final class IntrospectedBeanField implements OnField {
@@ -136,7 +136,7 @@ public final class IntrospectedBeanField implements OnField {
 
     private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field, accessMode);
-        operation.invocationType = (PackedInvocationType) operation.invocationType.withReturnType(field.getType());
+        operation.invocationType = (PackedOperationTemplate) operation.invocationType.withReturnType(field.getType());
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
         return operation.toHandle();

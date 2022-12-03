@@ -14,6 +14,7 @@ module app.packed {
 
     // temporary sandbox thingies
     exports app.packed.operation.bindings;
+    exports app.packed.operation.bindings.sandbox;
     exports app.packed.operation.context;
 
     /* Special support for packed-devtoolks */

@@ -211,8 +211,7 @@ public final /* primitive */ class OperationHandle {
     }
 }
 
-interface OpNew {
-
+interface ZandboxOperationHandle {
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
     default void operatedBy(Object extensionHandle) {
@@ -247,11 +246,6 @@ interface OpNew {
     // If immutable... IDK
     // Fx fra mirrors. Har composite operations ogsaa templates???
     OperationTemplate template();
-
-}
-
-interface ZandboxOperationHandle {
-
  // Must not have a classifier
  //// Will have a MH injected at runtime...
  //public void generateInto(InstanceBeanConfiguration<?> bean) {

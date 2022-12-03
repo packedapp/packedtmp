@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.operation.bindings.sandbox;
 
 /**
  *
  */
-public interface DefaultBindingMirror {
+public enum ResolutionKind {
 
+    BUILD_TIME_CONSTANT,
+    
+    RUNTIME_CONSTANT,
+    
+    RUNTIME_OPERATION,
+    
+    RUNTIME_MISSING_FROM_TIME_TO_TIME
 }

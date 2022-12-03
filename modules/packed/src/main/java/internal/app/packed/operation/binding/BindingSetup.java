@@ -23,9 +23,9 @@ import java.util.function.Supplier;
 
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingKind;
 import app.packed.operation.BindingMirror;
 import app.packed.operation.OperationMirror;
+import app.packed.operation.bindings.BindingKind;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.util.ClassUtil;
 import internal.app.packed.util.LookupUtil;

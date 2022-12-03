@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.bean.BeanExtension;
 import app.packed.container.Realm;
-import app.packed.operation.BindingKind;
+import app.packed.operation.bindings.BindingKind;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.operation.OperationSetup;
 

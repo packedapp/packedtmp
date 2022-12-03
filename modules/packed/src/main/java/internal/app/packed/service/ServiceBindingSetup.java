@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.container.Realm;
 import app.packed.framework.Nullable;
-import app.packed.operation.BindingKind;
+import app.packed.operation.bindings.BindingKind;
 import app.packed.service.ServiceBindingMirror;
 import app.packed.service.ServiceExtension;
 import internal.app.packed.operation.OperationSetup;

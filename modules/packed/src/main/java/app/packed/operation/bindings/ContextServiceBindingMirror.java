@@ -15,16 +15,25 @@
  */
 package app.packed.operation.bindings;
 
+import app.packed.operation.context.OperationContextMirror;
+import app.packed.service.Key;
+
 /**
  *
  */
-public enum ResolutionKind {
+// Ideen er at man kan provide nogle i en operation context...
+// Som ikke noedvendigvis er binding hooks
+// Er factory? En context??? Hmmm En slags jo...
+public non-sealed class ContextServiceBindingMirror extends KeyBasedBindingMirror {
 
-    BUILD_TIME_CONSTANT,
-    
-    RUNTIME_CONSTANT,
-    
-    RUNTIME_OPERATION,
-    
-    RUNTIME_MISSING_FROM_TIME_TO_TIME
+    /** {@return the context that provided the binding.} */
+    public OperationContextMirror context() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> key() {
+        throw new UnsupportedOperationException();
+    }
 }

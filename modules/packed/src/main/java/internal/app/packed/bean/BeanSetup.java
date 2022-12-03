@@ -35,7 +35,7 @@ import internal.app.packed.lifetime.LifetimeOperation;
 import internal.app.packed.lifetime.LifetimeSetup;
 import internal.app.packed.operation.OperationSetup;
 import internal.app.packed.operation.OperationSetup.LifetimePoolOperationSetup;
-import internal.app.packed.operation.PackedInvocationType;
+import internal.app.packed.operation.PackedOperationTemplate;
 import internal.app.packed.operation.PackedOp;
 import internal.app.packed.operation.binding.BindingProvider;
 import internal.app.packed.operation.binding.BindingProvider.FromConstant;
@@ -179,7 +179,7 @@ public final class BeanSetup {
     // Relative to x
     public OperationSetup instanceAccessOperation() {
         LifetimePoolOperationSetup os = new LifetimePoolOperationSetup(installedBy, this, OperationType.of(beanClass), accessBeanX().provideSpecial());
-        os.invocationType = (PackedInvocationType) os.invocationType.withReturnType(beanClass);
+        os.invocationType = (PackedOperationTemplate) os.invocationType.withReturnType(beanClass);
         return os;
     }
 

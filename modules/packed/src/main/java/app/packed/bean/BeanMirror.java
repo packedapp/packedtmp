@@ -21,7 +21,7 @@ import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
-import app.packed.operation.bindings.DependenciesMirror;
+import app.packed.operation.bindings.sandbox.DependenciesMirror;
 import internal.app.packed.bean.BeanSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.operation.OperationSetup;

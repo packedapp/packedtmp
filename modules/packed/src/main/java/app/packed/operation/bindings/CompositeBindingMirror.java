@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation;
+package app.packed.operation.bindings;
 
-import app.packed.service.Key;
-import app.packed.service.ServiceBindingMirror;
+import app.packed.operation.BindingMirror;
+import app.packed.operation.OperationMirror;
 
 /**
- *
- * @see BindingKind#KEY
+ * A composite binding mirror
  */
-// Er maaske nået til Context Services, Extension Services, Container Services
-public sealed abstract class KeyBasedBindingMirror extends BindingMirror permits ServiceBindingMirror, ContextServiceBindingMirror {
-    
-    /** {@return the binding key.} */
-    public abstract Key<?> key();
+public class CompositeBindingMirror extends BindingMirror {
+
+    public OperationMirror compositeOperation() {
+        return providingOperation().get();
+    }
 }
+
+//Functions bliver ikke laengere resolve som en composite. Istedet for er det 2 argumenter...
+// get(Req, Res) -> Har bare 2 parametere. (Maaske idk)
+// Jo, 2 arg bindings
+//public boolean isFuncionalInterface() {
+//    throw new UnsupportedOperationException();
+//}

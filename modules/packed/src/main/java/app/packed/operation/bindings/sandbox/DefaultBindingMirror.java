@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.bindings;
+package app.packed.operation.bindings.sandbox;
 
 /**
  *
  */
-public enum ResolutionState {
-    UNRESOLVED, RESOLVED, RUNTIME_RESOLVABLE;
-    // Resolved_At_Runtime when the application is initialized?
-    // Resolved_At_Runtime for each invocation
-    // Not sure we have this distiction
+public interface DefaultBindingMirror {
+
 }

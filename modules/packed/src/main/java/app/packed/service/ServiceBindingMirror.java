@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.operation.KeyBasedBindingMirror;
+import app.packed.operation.bindings.KeyBasedBindingMirror;
 import internal.app.packed.service.ServiceBindingSetup;
 
 /**

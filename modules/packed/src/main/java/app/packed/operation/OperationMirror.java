@@ -33,7 +33,7 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.MirrorExtension;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.operation.bindings.DependenciesMirror;
+import app.packed.operation.bindings.sandbox.DependenciesMirror;
 import app.packed.operation.context.OperationContextMirror;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.Key;

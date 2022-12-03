@@ -35,11 +35,11 @@ import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
-import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import app.packed.service.InvalidKeyException;
@@ -341,7 +341,7 @@ public abstract class BeanIntrospector {
         default boolean canUseInvocationArguments() {
             return false;
         }
-        
+
         default boolean isOperation(OperationHandle operation) {
             return false;
         }
@@ -515,9 +515,11 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that read a field as specified by {@link Lookup#unreflectGetter(Field)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess}
-         * as its {@link OperationMirror#target()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * its {@link OperationMirror#target()}.
          * 
+         * @param template
+         *            a template for the operation
          * @return an operation handle
          */
         OperationHandle newGetOperation(OperationTemplate template);
@@ -526,8 +528,11 @@ public abstract class BeanIntrospector {
          * Creates a new operation that can read or/and write a field as specified by
          * {@link VarHandle#toMethodHandle(java.lang.invoke.VarHandle.AccessMode)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess}
-         * as its {@link OperationMirror#target()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * its {@link OperationMirror#target()}.
+         * 
+         * @param template
+         *            a template for the operation
          * 
          * @param accessMode
          *            the access mode of the operation
@@ -545,8 +550,11 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
          * <p>
-         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess}
-         * as its {@link OperationMirror#target()}.
+         * If an {@link OperationMirror} is created for this operation. It will report {@link OperationTarget.OfFieldAccess} as
+         * its {@link OperationMirror#target()}.
+         * 
+         * @param template
+         *            a template for the operation
          * 
          * @return an operation handle
          */
@@ -622,6 +630,9 @@ public abstract class BeanIntrospector {
         /**
          * Creates a new operation that can invoke the underlying method.
          * 
+         * @param template
+         *            a template for the operation
+         * 
          * @return an operation handle
          * 
          * @see OperationTarget.OfMethodHandleInvoke
@@ -638,13 +649,13 @@ public abstract class BeanIntrospector {
     /** A small utility record to hold the both the extension model and the bean in one field. */
     // Replace with Introspector???
     private record Setup(ExtensionDescriptor extension, BeanSetup bean) {}
-    
+
     // IDK vi bliver stadig noedt til at analysere den...
     // Factory hint instead? Og allow en Method... saa det ikke kun er
     // constructors
     @interface ConstructorHint {
         // Ideen er lidt at man bruger den for extension beans
-        
+
         Class<?>[] value();
     }
 }
