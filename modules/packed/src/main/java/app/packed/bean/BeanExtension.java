@@ -4,6 +4,7 @@ import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.BaseAssembly;
 import app.packed.container.FrameworkExtension;
 import app.packed.lifetime.RunState;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.service.ProvideableBeanConfiguration;
 import internal.app.packed.bean.PackedBeanInstaller;
@@ -149,29 +150,32 @@ public class BeanExtension extends FrameworkExtension<BeanExtension> {
             public void onMethod(OnMethod method) {
                 AnnotationReader ar = method.annotations();
 
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+                //(PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
+                
                 if (ar.isAnnotationPresent(OnInitialize.class)) {
                     @SuppressWarnings("unused")
                     OnInitialize oi = ar.readRequired(OnInitialize.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation());
+                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
                     os.bean.operationsLifetime.add(new LifetimeOperation(RunState.INITIALIZING, os));
                 }
 
                 if (ar.isAnnotationPresent(OnStart.class)) {
                     @SuppressWarnings("unused")
                     OnStart oi = ar.readRequired(OnStart.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation());
+                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
                     os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STARTING, os));
                 }
 
                 if (ar.isAnnotationPresent(OnStop.class)) {
                     @SuppressWarnings("unused")
                     OnStop oi = ar.readRequired(OnStop.class);
-                    OperationSetup os = OperationSetup.crack(method.newOperation());
+                    OperationSetup os = OperationSetup.crack(method.newOperation(temp));
                     os.bean.operationsLifetime.add(new LifetimeOperation(RunState.STOPPING, os));
                 }
 
                 if (ar.isAnnotationPresent(Inject.class)) {
-                    OperationSetup.crack(method.newOperation());
+                    OperationSetup.crack(method.newOperation(temp));
                 }
             }
         };

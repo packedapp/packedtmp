@@ -70,7 +70,7 @@ import internal.app.packed.util.ClassUtil;
 public abstract class Extension<E extends Extension<E>> {
 
     /** The internal configuration of the extension. */
-    final ExtensionSetup extension; //handle + handle()
+    final ExtensionSetup extension; // handle + handle()
 
     /**
      * Creates a new extension. Subclasses should have a single package-private constructor.
@@ -158,7 +158,7 @@ public abstract class Extension<E extends Extension<E>> {
      *             if the method is not overridden
      */
     protected BeanIntrospector newBeanIntrospector() {
-        // TODO we should provide some context... 
+        // TODO we should provide some context...
         // Or maybe just return a default BeanIntrospector, where nothing is overridden
         throw new InternalExtensionException("This method must be overridden by " + extension.extensionType);
     }
@@ -266,6 +266,21 @@ public abstract class Extension<E extends Extension<E>> {
         return parent == null ? Optional.empty() : Optional.of((E) parent.instance());
     }
 
+    /**
+     * Registers a action to run doing the code generation phase.
+     * <p>
+     * If the application has no code generation phase. For example, if building a {@link BuildGoal#NEW_MIRROR}. The specified
+     * action will not be executed.
+     * 
+     * @param action
+     *            the action to run
+     * @throws IllegalStateException
+     *             if the application is already in the code generation phase or has finished building
+     */
+    protected final void registerCodeGenerator(Runnable action) {
+        extension.container.application.addCodegenAction(action);
+    }
+
     /** {@return the root extension in the application.} */
     @SuppressWarnings("unchecked")
     protected final E root() {
@@ -355,8 +370,8 @@ public abstract class Extension<E extends Extension<E>> {
         // Make sure it is a proper type of the requested extension point
         if (!extensionPointClass.isInstance(newExtensionPoint)) {
             if (newExtensionPoint == null) {
-                throw new NullPointerException(
-                        "Extension " + otherExtension.descriptor().fullName() + " returned null from " + otherExtension.descriptor().name() + ".newExtensionPoint()");
+                throw new NullPointerException("Extension " + otherExtension.descriptor().fullName() + " returned null from "
+                        + otherExtension.descriptor().name() + ".newExtensionPoint()");
             }
             throw new InternalExtensionException(otherExtension.extensionType.getSimpleName() + ".newExtensionPoint() was expected to return an instance of "
                     + extensionPointClass + ", but returned an instance of " + newExtensionPoint.getClass());

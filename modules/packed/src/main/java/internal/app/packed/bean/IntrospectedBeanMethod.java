@@ -25,6 +25,7 @@ import app.packed.bean.BeanIntrospector.OnMethod;
 import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.framework.Nullable;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanHookModel.AnnotatedMethod;
 import internal.app.packed.bean.IntrospectedBean.Contributor;
@@ -59,28 +60,6 @@ public final class IntrospectedBeanMethod implements OnMethod {
     }
     
 
-    /**
-     * Look for hook annotations on a single method.
-     * 
-     * @param method
-     *            the method to look for annotations on
-     */
-    static void introspectMethodForAnnotations(IntrospectedBean iBean, Method method) {
-        Annotation[] annotations = method.getAnnotations();
-        for (int i = 0; i < annotations.length; i++) {
-            Annotation a1 = annotations[i];
-            Class<? extends Annotation> a1Type = a1.annotationType();
-            AnnotatedMethod fh = iBean.hookModel.lookupAnnotationOnMethod(a1Type);
-            if (fh != null) {
-                Contributor contributor = iBean.computeContributor(fh.extensionType(), false);
-
-                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(iBean, contributor, method, annotations, fh.isInvokable());
-
-                contributor.introspector().onMethod(pbm);
-            }
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public AnnotationReader annotations() {
@@ -106,7 +85,7 @@ public final class IntrospectedBeanMethod implements OnMethod {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation() {
+    public OperationHandle newOperation(OperationTemplate template) {
         // TODO check that we are still introspecting? Or maybe on bean.addOperation
 
         // We should be able to create this lazily
@@ -120,11 +99,11 @@ public final class IntrospectedBeanMethod implements OnMethod {
         }
 
         OperationSetup operation = new MethodOperationSetup(contributor.extension(), introspectedBean.bean, operationType(), method, methodHandle);
-        operation.invocationType = (PackedInvocationType) operation.invocationType.withReturnType(type.returnType());
+        operation.invocationType = (PackedInvocationType) template;
 
         introspectedBean.bean.operations.add(operation);
         introspectedBean.unBoundOperations.add(operation);
-        return operation.toHandle(introspectedBean);
+        return operation.toHandle();
     }
 
     /** {@inheritDoc} */
@@ -135,5 +114,28 @@ public final class IntrospectedBeanMethod implements OnMethod {
             t = type = OperationType.ofExecutable(method);
         }
         return t;
+    }
+
+
+    /**
+     * Look for hook annotations on a single method.
+     * 
+     * @param method
+     *            the method to look for annotations on
+     */
+    static void introspectMethodForAnnotations(IntrospectedBean iBean, Method method) {
+        Annotation[] annotations = method.getAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            Annotation a1 = annotations[i];
+            Class<? extends Annotation> a1Type = a1.annotationType();
+            AnnotatedMethod fh = iBean.hookModel.lookupAnnotationOnMethod(a1Type);
+            if (fh != null) {
+                Contributor contributor = iBean.computeContributor(fh.extensionType(), false);
+
+                IntrospectedBeanMethod pbm = new IntrospectedBeanMethod(iBean, contributor, method, annotations, fh.isInvokable());
+
+                contributor.introspector().onMethod(pbm);
+            }
+        }
     }
 }

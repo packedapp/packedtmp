@@ -150,7 +150,7 @@ public final class IntrospectedBean {
 
     /** Introspect the bean. */
     void introspect() {
-
+        bean.introspecting = this;
         // First, we process all annotations on the class
         introspectClass();
 
@@ -266,6 +266,8 @@ public final class IntrospectedBean {
         // Should be empty... Maybe just an assert
         resolveOperations();
 
+        bean.introspecting = null; // move up down?
+        
         // Call into every BeanIntrospector and tell them it is all over
         for (Contributor e : extensions.values()) {
             e.introspector.onIntrospectionStop();

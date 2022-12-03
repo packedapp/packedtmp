@@ -15,6 +15,7 @@ import app.packed.container.Extension.DependsOn;
 import app.packed.container.ExtensionPoint;
 import app.packed.container.FrameworkExtension;
 import app.packed.framework.Nullable;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.application.EntryPointSetup;
 import internal.app.packed.application.EntryPointSetup.MainThreadOfControl;
@@ -85,7 +86,10 @@ public class EntryPointExtension extends FrameworkExtension<EntryPointExtension>
 
                 // We should be able to just take the method handle when needed
                 
-                OperationSetup os = OperationSetup.crack(method.newOperation());
+
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+
+                OperationSetup os = OperationSetup.crack(method.newOperation(temp));
                 mc.methodHandle = os.methodHandle;
             }
 

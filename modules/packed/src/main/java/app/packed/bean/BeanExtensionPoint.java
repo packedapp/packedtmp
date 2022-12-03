@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
 import app.packed.container.Extension;
+import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
@@ -40,7 +41,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         return new InstanceBeanConfiguration<>(handle);
     }
 
-    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz) {
         return installIfAbsent(clazz, c -> {});
     }
 
@@ -56,11 +57,11 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
      * @implNote the implementation may use to return different bean configuration instances for subsequent invocations.
      *           Even for action and the returned bean
      */
-    public <T> InstanceBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
+    public <T> ExtensionBeanConfiguration<T> installIfAbsent(Class<T> clazz, Consumer<? super InstanceBeanConfiguration<T>> action) {
         requireNonNull(action, "action is null");
         BeanHandle<T> handle = newExtensionBean(BeanKind.CONTAINER, usageContext()).installIfAbsent(clazz,
                 h -> action.accept(new InstanceBeanConfiguration<>(h)));
-        return new InstanceBeanConfiguration<>(handle);
+        return new ExtensionBeanConfiguration<>(handle);
     }
 
     public <T> InstanceBeanConfiguration<T> installInstance(T instance) {

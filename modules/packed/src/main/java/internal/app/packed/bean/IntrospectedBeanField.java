@@ -33,6 +33,7 @@ import app.packed.bean.InaccessibleBeanMemberException;
 import app.packed.bean.InvalidBeanDefinitionException;
 import app.packed.container.Extension;
 import app.packed.operation.OperationHandle;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.OperationType;
 import app.packed.operation.Variable;
 import internal.app.packed.bean.BeanHookModel.AnnotatedField;
@@ -109,16 +110,16 @@ public final class IntrospectedBeanField implements OnField {
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newGetOperation() {
+    public OperationHandle newGetOperation(OperationTemplate template) {
         checkConfigurable();
         MethodHandle mh = iBean.oc.unreflectGetter(field);
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET;
-        return newOperation(mh, accessMode);
+        return newOperation(template, mh, accessMode);
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newOperation(AccessMode accessMode) {
+    public OperationHandle newOperation(OperationTemplate template, AccessMode accessMode) {
         checkConfigurable();
         Lookup lookup = iBean.oc.lookup(field);
 
@@ -130,20 +131,20 @@ public final class IntrospectedBeanField implements OnField {
         }
 
         MethodHandle mh = varHandle.toMethodHandle(accessMode);
-        return newOperation(mh, accessMode);
+        return newOperation(template, mh, accessMode);
     }
 
-    private OperationHandle newOperation(MethodHandle mh, AccessMode accessMode) {
+    private OperationHandle newOperation(OperationTemplate template, MethodHandle mh, AccessMode accessMode) {
         OperationSetup operation = new FieldOperationSetup(contributer.extension(), iBean.bean, OperationType.ofFieldAccess(field, accessMode), mh, field, accessMode);
         operation.invocationType = (PackedInvocationType) operation.invocationType.withReturnType(field.getType());
         iBean.unBoundOperations.add(operation);
         iBean.bean.operations.add(operation);
-        return operation.toHandle(iBean);
+        return operation.toHandle();
     }
 
     /** {@inheritDoc} */
     @Override
-    public OperationHandle newSetOperation() {
+    public OperationHandle newSetOperation(OperationTemplate template) {
         checkConfigurable();
         Lookup lookup = iBean.oc.lookup(field);
 
@@ -155,7 +156,7 @@ public final class IntrospectedBeanField implements OnField {
         }
 
         AccessMode accessMode = Modifier.isVolatile(field.getModifiers()) ? AccessMode.SET_VOLATILE : AccessMode.SET;
-        return newOperation(methodHandle, accessMode);
+        return newOperation(template, methodHandle, accessMode);
     }
 
     /** {@inheritDoc} */

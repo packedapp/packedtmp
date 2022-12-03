@@ -35,7 +35,7 @@ import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import app.packed.framework.Nullable;
 import app.packed.operation.BindingMirror;
-import app.packed.operation.InvocationType;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationMirror;
@@ -300,12 +300,12 @@ public abstract class BeanIntrospector {
          * 
          * @throws IndexOutOfBoundsException
          * @throws IllegalArgumentException
-         *             if the invocation argument is not of kind {@link InvocationType.ArgumentKind#ARGUMENT}
+         *             if the invocation argument is not of kind {@link OperationTemplate.ArgumentKind#ARGUMENT}
          * @throws UnsupportedOperationException
          *             if the {@link #invokingExtension()} is not identical to the binding extension
          * @throws ClassCastException
          * 
-         * @see InvocationType
+         * @see OperationTemplate
          */
         default OnBinding bindToInvocationArgument(int argumentIndex) {
             throw new UnsupportedOperationException();
@@ -443,7 +443,7 @@ public abstract class BeanIntrospector {
          */
         int getModifiers();
 
-        OperationHandle newOperation();
+        OperationHandle newOperation(OperationTemplate template);
 
         /** {@return a factory type for this method.} */
         OperationType operationType();
@@ -520,7 +520,7 @@ public abstract class BeanIntrospector {
          * 
          * @return an operation handle
          */
-        OperationHandle newGetOperation();
+        OperationHandle newGetOperation(OperationTemplate template);
 
         /**
          * Creates a new operation that can read or/and write a field as specified by
@@ -540,7 +540,7 @@ public abstract class BeanIntrospector {
          *          for write). You must create an operation per access mode. If this is needed at some point. We could take a
          *          varargs of access modes and then allow repeat calls to methodHandleNow.
          */
-        OperationHandle newOperation(VarHandle.AccessMode accessMode);
+        OperationHandle newOperation(OperationTemplate template, VarHandle.AccessMode accessMode);
 
         /**
          * Creates a new operation that can write to a field as specified by {@link Lookup#unreflectSetter(Field)}.
@@ -550,7 +550,7 @@ public abstract class BeanIntrospector {
          * 
          * @return an operation handle
          */
-        OperationHandle newSetOperation();
+        OperationHandle newSetOperation(OperationTemplate template);
 
         /**
          * {@return the underlying field represented as a {@code Variable}.}
@@ -629,7 +629,7 @@ public abstract class BeanIntrospector {
          * @see BeanMethodHook#allowInvoke()
          * @see BeanClassHook#allowFullPrivilegeAccess()
          */
-        OperationHandle newOperation();
+        OperationHandle newOperation(OperationTemplate template);
 
         /** {@return a operation type for this method.} */
         OperationType operationType();

@@ -4,10 +4,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodType;
 
-import app.packed.operation.InvocationType;
+import app.packed.operation.OperationTemplate;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 
-public final class PackedInvocationType implements InvocationType {
+public final class PackedInvocationType implements OperationTemplate {
 
     public static PackedInvocationType DEFAULTS = new PackedInvocationType(0, -1, MethodType.methodType(void.class, LifetimeObjectArena.class));
     final int beanInstanceIndex;
@@ -29,7 +29,7 @@ public final class PackedInvocationType implements InvocationType {
 
     /** {@inheritDoc} */
     @Override
-    public MethodType methodType() {
+    public MethodType invocationType() {
         return methodType;
     }
 
@@ -41,7 +41,7 @@ public final class PackedInvocationType implements InvocationType {
 
     /** {@inheritDoc} */
     @Override
-    public InvocationType withArg(Class<?> type) {
+    public OperationTemplate withArg(Class<?> type) {
         requireNonNull(type, "type is null");
         MethodType mt = methodType.appendParameterTypes(type);
         return new PackedInvocationType(extensionContext, beanInstanceIndex, mt);
@@ -49,7 +49,7 @@ public final class PackedInvocationType implements InvocationType {
 
     /** {@inheritDoc} */
     @Override
-    public InvocationType withBeanInstance(Class<?> beanClass) {
+    public OperationTemplate withBeanInstance(Class<?> beanClass) {
         requireNonNull(beanClass, "beanClass is null");
         if (beanInstanceIndex != -1) {
             throw new UnsupportedOperationException("Already has a bean instance at index " + beanInstanceIndex);
@@ -60,7 +60,7 @@ public final class PackedInvocationType implements InvocationType {
 
     /** {@inheritDoc} */
     @Override
-    public InvocationType withReturnType(Class<?> returnType) {
+    public OperationTemplate withReturnType(Class<?> returnType) {
         requireNonNull(returnType, "returnType is null");
         MethodType mt = methodType.changeReturnType(returnType);
         return new PackedInvocationType(extensionContext, beanInstanceIndex, mt);

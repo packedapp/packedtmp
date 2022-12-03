@@ -38,7 +38,6 @@ import app.packed.operation.OperationMirror;
 import app.packed.operation.OperationTarget;
 import app.packed.operation.OperationType;
 import internal.app.packed.bean.BeanSetup;
-import internal.app.packed.bean.IntrospectedBean;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.lifetime.LifetimeObjectArena;
 import internal.app.packed.operation.OperationSetup.MemberOperationSetup.FieldOperationSetup;
@@ -61,7 +60,7 @@ public sealed abstract class OperationSetup {
 
     /** A MethodHandle for creating a new handle {@link OperationMirror#initialize(OperationSetup)}. */
     private static final MethodHandle MH_NEW_OPERATION_HANDLE = LookupUtil.lookupConstructorPrivate(MethodHandles.lookup(), OperationHandle.class,
-            OperationSetup.class, IntrospectedBean.class);
+            OperationSetup.class);
 
     /** An empty array of {@code BindingSetup}. */
     private static final BindingSetup[] NO_BINDINGS = new BindingSetup[0];
@@ -232,9 +231,9 @@ public sealed abstract class OperationSetup {
     }
 
     /** {@return an operation handle for this operation.} */
-    public final OperationHandle toHandle(IntrospectedBean iBean) {
+    public final OperationHandle toHandle() {
         try {
-            return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this, iBean);
+            return (OperationHandle) MH_NEW_OPERATION_HANDLE.invokeExact(this);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

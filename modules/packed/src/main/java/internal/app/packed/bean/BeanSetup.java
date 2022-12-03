@@ -116,6 +116,10 @@ public final class BeanSetup {
     /** The type of source the installer is created from. */
     public final BeanSourceKind sourceKind;
 
+    /** Non-null while a bean is being introspected. */
+    @Nullable
+    public IntrospectedBean introspecting;
+    
     /**
      * Create a new bean.
      */

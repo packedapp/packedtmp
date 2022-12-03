@@ -27,9 +27,27 @@ import app.packed.operation.OperationHandle;
 /**
  *
  */
-public final class ApplicationCodegen {
+// Alt bliver koert recursivt... Der er ingen order
 
-    /** A list of actions that should be run doing the code generating phase. */
+// Vi supportere de her ting tror
+//// * Extension.registerCodeGenerator(Runnable r); 
+
+// Den her IBC kan du injecte en supplier// Altid en service binding... (contextulized intialization)
+
+//// * ?.registerCodegenResource(IBC<?> ibc, Class, Supplier<?>>);
+////* ?.registerCodegenResource(IBC<?> ibc, Key, Supplier<?>>);
+
+
+
+// Strategies
+//// * Single MethodHandle from a single OperationHandle
+//// * MethodHandle[] from multiple operation handles 
+//// * X by combining multiple operation handles. (Kan man selv lave via regCodRes)
+//// * Classifier
+
+final class ApplicationCodegen {
+
+    /** A list of actions that will be executed doing the code generating phase. */
     final ArrayList<Runnable> actions = new ArrayList<>();
 
     private final HashMap<InstanceBeanConfiguration<?>, MethodHandleArray> arrayInvokers = new HashMap<>();

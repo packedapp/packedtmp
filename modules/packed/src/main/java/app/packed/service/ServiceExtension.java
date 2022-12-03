@@ -23,9 +23,10 @@ import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanHandle;
 import app.packed.bean.BeanIntrospector;
 import app.packed.bean.BeanKind;
-import app.packed.container.FrameworkExtension;
 import app.packed.container.Extension.DependsOn;
+import app.packed.container.FrameworkExtension;
 import app.packed.lifetime.LifetimeConf;
+import app.packed.operation.OperationTemplate;
 import app.packed.operation.Op;
 import internal.app.packed.container.ExtensionSetup;
 import internal.app.packed.operation.OperationSetup;
@@ -144,7 +145,7 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 Key<?> key = field.fieldToKey();
                 boolean constant = field.annotations().readRequired(ProvideService.class).constant();
 
-                OperationSetup operation = OperationSetup.crack(field.newGetOperation());
+                OperationSetup operation = OperationSetup.crack(field.newGetOperation(OperationTemplate.defaults()));
                 setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new FromOperation(operation));
             }
 
@@ -154,26 +155,23 @@ public class ServiceExtension extends FrameworkExtension<ServiceExtension> {
                 Key<?> key = method.methodToKey();
                 boolean isProviding = method.annotations().isAnnotationPresent(ProvideService.class);
                 boolean isExporting = method.annotations().isAnnotationPresent(ExportService.class);
+
+                OperationTemplate temp = OperationTemplate.defaults().withReturnType(method.operationType().returnType());
+
                 if (isProviding) {
                     boolean constant = method.annotations().readRequired(ProvideService.class).constant();
 
-                    OperationSetup operation = OperationSetup.crack(method.newOperation());
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
                     setup.container.sm.serviceProvide(key, constant, operation.bean, operation, new FromOperation(operation));
                 }
 
                 if (isExporting) {
-                    OperationSetup operation = OperationSetup.crack(method.newOperation());
+                    OperationSetup operation = OperationSetup.crack(method.newOperation(temp));
                     setup.container.sm.serviceExport(key, operation);
                 }
             }
         };
     }
-//
-//    @Override
-//    protected void onAssemblyClose() {
-//        super.onAssemblyClose();
-//        delegate.container.sm.verify();
-//    }
 
     /** {@return a mirror for this extension.} */
     @Override
