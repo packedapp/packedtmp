@@ -15,7 +15,7 @@
  */
 package internal.app.packed.application.sandbox;
 
-import app.packed.lifetime.managed.LifetimeState;
+import app.packed.lifetime.sandbox.LifetimeState;
 
 /**
  *

@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.context;
-
-import java.util.Set;
-
-import app.packed.service.Key;
-import internal.app.packed.container.Mirror;
+package app.packed.operation.bindings;
 
 /**
  *
  */
-public class OperationContextMirror2 implements Mirror {
+// Nullable? Det er vel en slags Optional
 
-    public Set<Key<?>> keys() {
-        throw new UnsupportedOperationException();
-    }
+// Binding wrappers
+
+// OnBinding()
+
+public enum BindingWrapperType {
+    OPTIONAL, PROVIDER, LAZY;
 }
-
-
-class SchedulingContextMirror extends OperationContextMirror2 {}
-class BeanInitializationContextMirror extends OperationContextMirror2 {}

@@ -17,7 +17,10 @@ package internal.app.packed.service;
 
 import static internal.app.packed.util.StringFormatter.format;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import app.packed.bean.BeanHandle;
 import app.packed.service.ExportedServiceCollisionException;
@@ -54,6 +57,18 @@ public final class ServiceManager {
 
     public ServiceLocator newServiceLocator(LifetimeObjectArena region) {
         return injectionManager.newServiceLocator(region);
+    }
+
+    public Set<Key<?>> keysAvailableInternally() {
+        HashSet<Key<?>> result = new HashSet<>();
+        // All all requirements
+        for (Entry<Key<?>, ServiceManagerEntry> e : entries.entrySet()) {
+            ServiceManagerEntry sme = e.getValue();
+            if (sme.provider != null) {
+                result.add(e.getKey());
+            }
+        }
+        return Set.copyOf(result);
     }
 
     public ServiceBindingSetup serviceBind(Key<?> key, boolean isRequired, OperationSetup operation, int index) {

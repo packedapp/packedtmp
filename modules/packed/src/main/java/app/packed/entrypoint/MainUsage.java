@@ -27,7 +27,9 @@ public class MainUsage extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        install(MyBean.class);
+        provide(MyBean.class);
+        provideInstance("asdsd");
+        provideInstance(123);
     }
 
     public static void main(String[] args) {
@@ -42,6 +44,7 @@ public class MainUsage extends BaseAssembly {
         
         public MyBean(OperationMirror am) {
             System.out.println(am.type());
+            System.out.println(am.keys());
         }        
         
         @Main

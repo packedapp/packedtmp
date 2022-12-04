@@ -8,6 +8,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.framework.Nullable;
+import app.packed.operation.OperationMirror;
 import internal.app.packed.application.ApplicationSetup;
 import internal.app.packed.container.Mirror;
 import internal.app.packed.lifetime.LifetimeSetup;
@@ -90,7 +91,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      * @return
      */
     public Optional<BeanMirror> managedByBean() {
-        List<LifetimeOperationMirror> operations = operations();
+        List<OperationMirror> operations = operations();
         return operations.isEmpty() ? Optional.empty() : Optional.of(operations.get(0).bean());
     }
 
@@ -107,7 +108,7 @@ public abstract sealed class LifetimeMirror implements Mirror permits BeanLifeti
      * 
      * @return a list of this lifetime's lifetime operations
      */
-    public List<LifetimeOperationMirror> operations() {
+    public List<OperationMirror> operations() {
         throw new UnsupportedOperationException();
     }
 

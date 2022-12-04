@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.context;
+package app.packed.context;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.Set;
 
-import app.packed.lifetime.LifetimeMirror;
+import app.packed.container.Extension;
 import app.packed.operation.OperationMirror;
+import app.packed.service.Key;
 import internal.app.packed.container.Mirror;
 
 /**
  *
  */
 
+// En context laver ikke en ny bean. Men en ny bean lifetime
+
 // En operation kan vaere i en context
 // En operation kan starte en eller flere contexts
-// En operation kan lave en Bean/Container/Application der kun eksistere saa laenge operationen koere...
+// En operation kan lave en Bean/Container/Application lifetime der kun eksistere saa laenge operationen koere...
 // En Bean, Container kan vaere i en context. (Hvad med en application?)
-
 
 // Fx BeanInitializationContext er aabenlyst OperationSpan (per bean). Fordi vi kan injecte forskellige ting...
 
@@ -39,29 +41,31 @@ import internal.app.packed.container.Mirror;
 // SExt.schedule(Op<?>) 
 // @Schedule foo() on SExt.registerScheduler(Bean) ->OperationSpan
 // @Schedule
-public interface OperationContextMirror extends Mirror {
+public interface ContextSpanMirror extends Mirror {
 
-    // ContextSpan -> Operation, Bean, Container, (RestOfTree), Application
-    
-    Class<?> contextClass();
-    
-    Optional<LifetimeMirror> createsNew(); // if non-operation
+    /** {@return the context.} */
+    Class<? extends RuntimeContext<?>> contextClass();
+
+    /** {@return the extension that defines the context.} */
+    Class<? extends Extension<?>> extensionType();
 
     /**
-     * The operation from which the context may be created
+     * All the operations that may create the context.
      * 
      * @return
      */
-    //fx multiple @Get on the same bean (or in the same container)
-    Collection<OperationMirror> operations();
+    Collection<OperationMirror> initiatedFrom();
     
+    /** {@return services that are made specially available because of the context.} */
+    Set<Key<?>> keys();
+
+    ContextualizedElement element();
+
     ContextSpan span();
-    // span
-    
-    // Container or Container_Lifetime???
+
     enum ContextSpan {
-        APPLICATION, BEAN, CONTAINER_LIFETIME, OPERATION;
+        APPLICATION, BEAN, CONTAINER, OPERATION;
     }
 }
-
-// Object scope(); // Operation|Bean|Container(Tree?)
+// Tror ikke vi supporter Tree downward
+// ContextSpan -> Operation, Bean, Container, (RestOfTree), Application

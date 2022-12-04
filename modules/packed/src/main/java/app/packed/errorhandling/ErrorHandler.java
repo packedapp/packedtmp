@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.context;
-
-import app.packed.bean.BeanIntrospector.OnBinding;
+package app.packed.errorhandling;
 
 /**
  *
  */
-public abstract class OperationContextSpec<T> {
 
-    
-    // IDK
-    protected void notInContext(OnBinding dep) {
-        
-    }
+// Ideen er selvfoelige
+
+// Application <- Container <- Bean <- Operation <- Interceptor
+
+
+// Naar man haandtere ting. Skal man vide om man har en parent der kan haandtere det
+
+
+// Er det altid en operation der fejler???
+public class ErrorHandler {
+
 }

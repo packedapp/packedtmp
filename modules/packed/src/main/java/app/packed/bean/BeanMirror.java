@@ -17,6 +17,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.MirrorExtension;
 import app.packed.container.Realm;
+import app.packed.context.ContextualizedElement;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import app.packed.lifetime.LifetimeMirror;
@@ -33,7 +34,7 @@ import internal.app.packed.util.StreamUtil;
  * Instances of this class is typically obtained from calls to {@link ApplicationMirror} or {@link ContainerMirror}.
  */
 @BindingHook(extension = MirrorExtension.class)
-public class BeanMirror implements Mirror {
+public class BeanMirror implements ContextualizedElement, Mirror {
 
     /**
      * The internal configuration of the bean we are mirroring. Is initially null but populated via

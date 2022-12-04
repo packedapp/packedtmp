@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.managed.StopOption;
+import app.packed.lifetime.sandbox.StopOption;
 
 /**
  * Application runtime wirelet that can be specified when building or launching an application that includes the
@@ -80,7 +80,7 @@ public final class ApplicationWirelets {
      * <p>
      * 
      * @return a shutdown hook wirelet
-     * @see #shutdownHook(Function, app.packed.lifetime.managed.StopOption...)
+     * @see #shutdownHook(Function, app.packed.lifetime.sandbox.StopOption...)
      * @see Runtime#addShutdownHook(Thread)
      */
     // cannot specify it on ServiceLocator or anyone else that is not closeable

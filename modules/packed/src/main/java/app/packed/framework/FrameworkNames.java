@@ -27,6 +27,8 @@ import app.packed.service.ServiceExtension;
 // Fx kan det vaere svaert at lave Application layers...
 // Hvis man ikke gider importere alle pakker
 
+// Om vi smider det hele her... Eller paa noget $Extension$Constants klasse afgoeres jo nok om vi ta
+
 // FrameworkConstants? On the other hand we would then need to append NAME on all of them
 public final class FrameworkNames {
 

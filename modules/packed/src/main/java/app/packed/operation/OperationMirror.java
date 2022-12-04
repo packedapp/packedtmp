@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,10 +32,11 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.MirrorExtension;
+import app.packed.context.ContextSpanMirror;
+import app.packed.context.ContextualizedElement;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.bindings.sandbox.DependenciesMirror;
-import app.packed.operation.context.OperationContextMirror;
 import app.packed.service.ExportedServiceMirror;
 import app.packed.service.Key;
 import internal.app.packed.container.Mirror;
@@ -54,7 +56,7 @@ import internal.app.packed.operation.binding.BindingSetup;
  * </ul>
  */
 @BindingHook(extension = MirrorExtension.class)
-public class OperationMirror implements Mirror {
+public class OperationMirror implements ContextualizedElement, Mirror {
 
     /**
      * The internal configuration of the operation we are mirrored. Is initially null but populated via
@@ -71,7 +73,12 @@ public class OperationMirror implements Mirror {
         return operation().bean.mirror();
     }
 
-    public Set<OperationContextMirror> contexts() {
+    /** {@return a set of any contexts initiated by invoking the operation.} */
+    public Set<ContextSpanMirror> createsContexts() {
+        throw new UnsupportedOperationException();
+    }
+    
+    public Optional<LifetimeMirror> createsLifetime() {
         throw new UnsupportedOperationException();
     }
     
@@ -97,6 +104,17 @@ public class OperationMirror implements Mirror {
             }
         }
         return List.of(hooks);
+    }
+    
+    // The returned set of keys may contains key that result in a cycle.
+    // For example, if a bean is provided as a service. Calling this method on any of the
+    // operations on the bean will include the key under which the bean is being provided.
+    public Set<Key<?>> keys() {
+        Set<Key<?>> set = new HashSet<>(operation().bean.container.sm.keysAvailableInternally());
+        for (ContextSpanMirror ocm : contexts()) {
+            set.addAll(ocm.keys());
+        }
+        return Set.copyOf(set);
     }
 
     /** {@return the dependencies this operation introduces.} */

@@ -35,7 +35,7 @@ import app.packed.container.Assembly;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
-import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.operation.Op;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.AssemblySetup;

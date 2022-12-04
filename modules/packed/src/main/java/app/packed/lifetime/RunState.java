@@ -15,7 +15,7 @@
  */
 package app.packed.lifetime;
 
-import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
 
 /**
  * An enum containing all valid states of a {@link ManagedLifetimeController}.

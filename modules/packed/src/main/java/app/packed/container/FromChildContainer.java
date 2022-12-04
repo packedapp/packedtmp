@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.bean.BeanExtensionPoint.BindingHook;
+import app.packed.context.RuntimeContext;
 
 /**
  *
@@ -32,6 +33,10 @@ import app.packed.bean.BeanExtensionPoint.BindingHook;
 @Documented
 
 @BindingHook(extension = ContainerExtension.class)
-public @interface FromChildContainer {
+public @interface FromChildContainer {}
 
-}
+//Alternativt en ContainerLaucherContext? med context services.
+//Saa kan vi ogsaa se praecis hvad der er tilgaengelig via OperationContext
+
+//
+interface ContainerLaunchContext extends RuntimeContext<ContainerExtension> {}

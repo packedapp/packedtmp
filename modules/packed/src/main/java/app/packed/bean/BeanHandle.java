@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint.BeanInstaller;
 import app.packed.container.Realm;
+import app.packed.errorhandling.ErrorHandler;
 import app.packed.operation.Op;
 import app.packed.operation.OperationHandle;
 import app.packed.operation.OperationType;
@@ -190,6 +191,10 @@ public final /* primitive */ class BeanHandle<T> {
         return bean.ownedBy == null ? Realm.application() : Realm.extension(bean.ownedBy.extensionType);
     }
 
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        
+    }
+    
     public NamespacePath path() {
         return bean.path();
     }

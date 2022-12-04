@@ -18,7 +18,6 @@ package app.packed.bean;
 import java.util.Optional;
 
 import app.packed.lifetime.LifetimeMirror;
-import app.packed.lifetime.LifetimeOperationMirror;
 import app.packed.lifetime.RunState;
 import app.packed.operation.OperationMirror;
 
@@ -43,7 +42,7 @@ public class BeanLifecycleOperationMirror extends OperationMirror {
 
     // IDK, supportere vi Lifecycle events there ikke har en Lifetime operation???
     // Saa er det ikke en lifetime. Fx restart
-    public LifetimeOperationMirror lifetimeOperation() {
+    public OperationMirror lifetimeOperation() {
         throw new UnsupportedOperationException();
     }
 

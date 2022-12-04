@@ -35,13 +35,6 @@ import internal.app.packed.operation.OperationSetup.MethodHandleOperationSetup;
  */
 public sealed interface OperationTarget {
 
-//    /** Represents an operation that accesses a bean instance. */
-//    public non-sealed interface OfBeanAccess extends OperationTarget {
-//
-//        /** {@return the bean that is being accessed.} */
-//        BeanMirror bean();
-//    }
-
     /** Represents an operation that invokes a {@link Constructor constructor}. */
     public sealed interface OfConstructorInvoke extends OperationTarget permits ConstructorOperationSetup {
 
@@ -86,3 +79,10 @@ public sealed interface OperationTarget {
         Method method();
     }
 }
+
+///** Represents an operation that accesses a bean instance. */
+//public non-sealed interface OfBeanAccess extends OperationTarget {
+//
+//  /** {@return the bean that is being accessed.} */
+//  BeanMirror bean();
+//}

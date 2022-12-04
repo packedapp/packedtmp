@@ -19,11 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-
-import app.packed.framework.Nullable;
-
 import java.lang.invoke.VarHandle;
 
+import app.packed.framework.Nullable;
 import internal.app.packed.container.AssemblyModel;
 import internal.app.packed.container.AssemblySetup;
 import internal.app.packed.container.ContainerSetup;
@@ -171,6 +169,8 @@ public non-sealed abstract class ContainerAssembly extends Assembly {
      * 
      * @param lookup
      *            the lookup object
+     * @throws IllegalStateException
+     *             if called from outside of {@link #build()}
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null");

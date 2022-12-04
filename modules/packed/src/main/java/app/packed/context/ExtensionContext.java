@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.operation.context;
+package app.packed.context;
+
+import app.packed.container.ContainerExtension;
 
 /**
- *
+ * All extensions operate within an ExtensionContext...
  */
-// Er det altid kun en operation??? 
-// Kan man forstille sig det er statisk for en container
-public abstract class OperationContext {}
+// A special context available at runtime to extensions only...
+/// Hmmhmm hhmm
+
+
+// Okay og CSM??? Det maa vaere en container bare   
+
+interface ExtensionContext extends RuntimeContext<ContainerExtension>{
+    
+}

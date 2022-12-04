@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionBeanConfiguration;
 import app.packed.container.ExtensionPoint;
+import app.packed.context.RuntimeContext;
 import app.packed.lifetime.LifetimeConf;
 import app.packed.operation.Op;
 import internal.app.packed.bean.BeanSetup;
@@ -218,6 +219,13 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
         /** The extension this hook is a part of. Must be located in the same module as the annotated element. */
         Class<? extends Extension<?>> extension();
 
+        /**
+         * Any runtime contexts that are required in order to use the binding class or annotation.
+         * 
+         * @return stuff
+         */
+        Class<? extends RuntimeContext<?>>[] requiringContexts() default {}; // maybe just requiring???
+
         // IDK about this...
         // Den virker jo kun for annotering..completesavings
         enum BindingOtherKind {
@@ -233,9 +241,7 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
 
         /** Whether or not the sidecar is allow to get the contents of a field. */
         // maybe allowAllAccess
-        boolean allowFullPrivilegeAccess()
-
-        default false;
+        boolean allowFullPrivilegeAccess() default false;
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
@@ -283,12 +289,14 @@ public class BeanExtensionPoint extends ExtensionPoint<BeanExtension> {
          */
         // maybe just invokable = true, idk og saa Field.gettable and settable
         // invocationAccess
-        boolean allowInvoke()
-
-        default false; // allowIntercept...
+        boolean allowInvoke() default false; // allowIntercept...
 
         /** The extension the hook is a part of. */
         Class<? extends Extension<?>> extension();
+        
+        // IDK, don't we just want to ignore it most of the time???
+        // Nah maybe fail. People might think it does something
+        boolean requiresVoidReturn() default false;
     }
 }
 

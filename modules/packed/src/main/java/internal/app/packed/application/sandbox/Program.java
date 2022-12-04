@@ -23,7 +23,7 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.lifetime.RunState;
-import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.Key;
 import app.packed.service.ServiceLocator;
 

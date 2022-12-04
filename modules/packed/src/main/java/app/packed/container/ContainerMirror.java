@@ -12,6 +12,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.NamespacePath;
 import app.packed.bean.BeanExtensionPoint.BindingHook;
 import app.packed.bean.BeanMirror;
+import app.packed.context.ContextualizedElement;
 import app.packed.framework.Nullable;
 import app.packed.lifetime.ContainerLifetimeMirror;
 import internal.app.packed.container.ContainerSetup;
@@ -22,7 +23,7 @@ import internal.app.packed.util.typevariable.TypeVariableExtractor;
 
 /** A mirror of a container. */
 @BindingHook(extension = MirrorExtension.class)
-public class ContainerMirror implements Mirror {
+public class ContainerMirror implements ContextualizedElement, Mirror {
 
     /** Extract the (extension class) type variable from ExtensionMirror. */
     private final static ClassValue<Class<? extends Extension<?>>> EXTENSION_TYPES = new ClassValue<>() {

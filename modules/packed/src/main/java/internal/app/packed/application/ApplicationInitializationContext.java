@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.container.Wirelet;
 import app.packed.framework.Nullable;
-import app.packed.lifetime.managed.ManagedLifetimeController;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
 import app.packed.service.ServiceLocator;
 import internal.app.packed.container.InternalWirelet;
 import internal.app.packed.container.WireletWrapper;

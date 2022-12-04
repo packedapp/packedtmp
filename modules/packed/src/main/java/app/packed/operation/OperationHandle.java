@@ -176,6 +176,7 @@ public final /* primitive */ class OperationHandle {
         throw new UnsupportedOperationException();
     }
 
+    // Ogsaa en template ting taenker jeg? IDK
     public void named(String name) {
         requireNonNull(name, "name is null");
         checkConfigurable();
@@ -212,6 +213,13 @@ public final /* primitive */ class OperationHandle {
 }
 
 interface ZandboxOperationHandle {
+    
+    // Can be used to optimize invocation...
+    // Very advanced though
+    // Ideen er nok at vi har den model hvad der er til raadighed...
+    // Hvilke argumenter skal du egentlig bruge...
+    boolean isInvocationArgumentUsed(int index);
+    
     // I think this needs to be first operation...
     // Once we start calling onBuild() which schedules it for the extension its over
     default void operatedBy(Object extensionHandle) {

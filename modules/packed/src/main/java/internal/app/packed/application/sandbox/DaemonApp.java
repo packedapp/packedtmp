@@ -20,8 +20,8 @@ import app.packed.application.ApplicationLauncher;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
-import app.packed.lifetime.managed.ManagedLifetimeController;
-import app.packed.lifetime.managed.StopOption;
+import app.packed.lifetime.sandbox.ManagedLifetimeController;
+import app.packed.lifetime.sandbox.StopOption;
 
 /**
  *

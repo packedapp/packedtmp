@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifetime;
+package app.packed.lifetime.sandbox;
 
 import java.util.List;
 
+import app.packed.lifetime.LifetimeMirror;
 import app.packed.operation.OperationMirror;
 
 /**
@@ -24,6 +25,14 @@ import app.packed.operation.OperationMirror;
  */
 // Ved ikke om den kommer med som en egentlig operation
 // Giver god mening med
+
+// Altsaa hvis en @Get laver en ny bean saa er det jo ikke en LifetimeOperation
+// WebGetOperationMirror ved jo ikke om den laver en ny lifetime...
+
+// Virker den kun hvis man har create and destroy a.la. Session.
+// Men App.run() med kun en operations
+
+
 public final class LifetimeOperationMirror extends /* Nested */ OperationMirror {
     
     // Wehether or not this lifetime operation concerns the bean that defines it.
